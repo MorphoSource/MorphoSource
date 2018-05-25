@@ -21,5 +21,12 @@ test:
   database: db/test.sqlite3
 
 production:
-  <<: *default
-  database: db/production.sqlite3
+  adapter: mysql2
+  encoding: utf8
+  database: <%= ENV['MORPHOSOURCE_DB_NAME'] %>
+  host: 127.0.0.1
+  port: 3306
+  username: <%= ENV['MORPHOSOURCE_DB_USER'] %>
+  password: <%= ENV['MORPHOSOURCE_DB_PASS'] %>
+  pool: 5
+  

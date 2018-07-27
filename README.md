@@ -124,8 +124,19 @@ This repo ([MorphoSource_SF](https://github.com/morphosource/MorphoSource_SF)) i
 
 ## Tests
 
-* You will need to install Firefox to run tests. See further instructions in the [Wiki](https://github.com/MorphoSource/MorphoSource_SF/wiki/Tests).
+* You will need to install Firefox to run tests. 
 
+### 1. From your browser: 
+* download [Firefox](https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US) to morphosource-vagrant/downloads. 
+
+### 2. From the command line: 
+Navigate to morphosource-vagrant and run the following commands:
+```
+    vagrant ssh
+    cd /vagrant/downloads
+    tar xjf firefox-61.0.1.tar.bz2 (your filename may be different)
+    sudo mv firefox /opt/firefox
+```
 
 ## References
 

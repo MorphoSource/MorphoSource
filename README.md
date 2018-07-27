@@ -122,6 +122,10 @@ This repo ([MorphoSource_SF](https://github.com/morphosource/MorphoSource_SF)) i
 * [Rails 5.1.4](http://rubyonrails.org/)
 * [Hyrax v2.1.0.beta2](http://hyr.ax/)
 
+## Tests
+
+* You will need to install Firefox to run tests. See further instructions in the [Wiki](https://github.com/MorphoSource/MorphoSource_SF/wiki/Tests).
+
 
 ## References
 

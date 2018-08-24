@@ -28,6 +28,7 @@ module Hyrax
        :periodic_time,
        # :publisher,
        # :related_url,
+       # :title,
        :vouchered,
 
        # Biological Specimens only
@@ -39,7 +40,7 @@ module Hyrax
 
        # CHOs only
        :cho_type,
-       # :title,
+
        # :contributor,
        # :creator,
        :material
@@ -47,7 +48,7 @@ module Hyrax
 
     self.terms -= [:based_near, :keyword, :license, :rights_statement, :subject, :language, :source, :resource_type]
 
-    self.required_fields = [:vouchered, :physical_object_type]
+    self.required_fields = [:title, :vouchered, :physical_object_type]
 
     self.single_valued_fields = [
       :bibliographic_citation,

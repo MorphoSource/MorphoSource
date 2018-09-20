@@ -1,9 +1,9 @@
-# app/services/Morphosource/sides_service.rb
+# app/services/morphosource/sides_service.rb
 module Morphosource
   # Provide select options for the sides field
-  class MapTypesService < Hyrax::QaSelectService
+  class UnitsService < Hyrax::QaSelectService
     def initialize(_authority_name = nil)
-      super('map_types')
+      super('units')
     end
 
     def include_current_value(value, _index, render_options, html_options)

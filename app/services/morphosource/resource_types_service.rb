@@ -1,4 +1,4 @@
-# app/services/Morphosource/resource_types_service.rb
+# app/services/morphosource/resource_types_service.rb
 module Morphosource
   # Provide select options for the resource_type field
 

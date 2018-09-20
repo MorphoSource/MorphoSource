@@ -1,4 +1,4 @@
-# app/services/Morphosource/media_types_service.rb
+# app/services/morphosource/media_types_service.rb
 module Morphosource
   # Provide select options for the media types field
   class MediaTypesService < Hyrax::QaSelectService

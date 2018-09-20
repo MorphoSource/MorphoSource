@@ -1,9 +1,9 @@
-# app/services/Morphosource/modalities_service.rb
+# app/services/morphosource/sides_service.rb
 module Morphosource
-  # Provide select options for the modalities field
-  class ModalitiesService < Hyrax::QaSelectService
+  # Provide select options for the sides field
+  class SidesService < Hyrax::QaSelectService
     def initialize(_authority_name = nil)
-      super('modalities')
+      super('sides')
     end
 
     def include_current_value(value, _index, render_options, html_options)

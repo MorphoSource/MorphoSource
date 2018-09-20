@@ -1,9 +1,9 @@
-# app/services/Morphosource/sides_service.rb
+# app/services/morphosource/physical_object_types_service.rb
 module Morphosource
   # Provide select options for the sides field
-  class UnitsService < Hyrax::QaSelectService
+  class PhysicalObjectTypesService < Hyrax::QaSelectService
     def initialize(_authority_name = nil)
-      super('units')
+      super('physical_object_types')
     end
 
     def include_current_value(value, _index, render_options, html_options)

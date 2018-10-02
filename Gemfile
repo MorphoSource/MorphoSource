@@ -25,7 +25,7 @@ gem 'riiif', '~> 1.1'
 # pul_uv_rails fork upgraded for universal viewer v3 beta
 gem 'pul_uv_rails', :git => 'https://github.com/JuliaWinchester/pul_uv_rails.git'
 
-gem 'hyrax', '2.3.0'
+gem 'hyrax', '2.3.2'
 gem 'hydra-role-management'
 
 gem 'resque'

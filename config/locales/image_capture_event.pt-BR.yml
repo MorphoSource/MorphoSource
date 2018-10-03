@@ -1,0 +1,8 @@
+pt-BR:
+  hyrax:
+    icons:
+      image_capture_event:     'fa fa-file-text-o'
+    select_type:
+      image_capture_event:
+        description:        "Image capture event trabalhos"
+        name:               "Image Capture Event"

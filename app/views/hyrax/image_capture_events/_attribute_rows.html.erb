@@ -1,0 +1,46 @@
+<!-- Fields on the show page are in the order below -->
+
+<!-- Hyrax Basic Metadata -->
+<%= presenter.attribute_to_html(:date_modified, label: t('hyrax.base.show.last_modified'), html_dl: true) %>
+<%= presenter.attribute_to_html(:creator, render_as: :faceted, html_dl: true) %>
+<%= presenter.attribute_to_html(:date_created, render_as: :linked, search_field: 'date_created_tesim', html_dl: true) %>
+
+<!-- Image Capture Event Custom Fields -->
+<%= presenter.attribute_to_html(:ice_modality, label: t('Scanner modality'), html_dl: true) %>
+<%= presenter.attribute_to_html(:software, html_dl: true) %>
+
+<!-- X-ray CT metadata -->
+<%= presenter.attribute_to_html(:exposure_time, html_dl: true) %>
+<%= presenter.attribute_to_html(:flux_normalization, html_dl: true) %>
+<%= presenter.attribute_to_html(:geometric_calibration, html_dl: true) %>
+<%= presenter.attribute_to_html(:shading_correction, html_dl: true) %>
+<%= presenter.attribute_to_html(:filter_material, html_dl: true) %> 
+<%= presenter.attribute_to_html(:filter_thickness, html_dl: true) %>
+<%= presenter.attribute_to_html(:frame_averaging, html_dl: true) %>
+<%= presenter.attribute_to_html(:projections, html_dl: true) %>
+<%= presenter.attribute_to_html(:voltage, html_dl: true) %>
+<%= presenter.attribute_to_html(:power, html_dl: true) %>
+<%= presenter.attribute_to_html(:amperage, html_dl: true) %>
+<%= presenter.attribute_to_html(:surrounding_material, html_dl: true) %>
+<%= presenter.attribute_to_html(:xray_tube_type, html_dl: true) %>
+<%= presenter.attribute_to_html(:target_type, html_dl: true) %>
+<%= presenter.attribute_to_html(:detector_type, html_dl: true) %>
+<%= presenter.attribute_to_html(:detector_configuration, html_dl: true) %>
+<%= presenter.attribute_to_html(:source_object_distance, html_dl: true) %>
+<%= presenter.attribute_to_html(:source_detector_distance, html_dl: true) %>
+<%= presenter.attribute_to_html(:target_material, html_dl: true) %>
+<%= presenter.attribute_to_html(:rotation_number, html_dl: true) %>
+<%= presenter.attribute_to_html(:phase_contrast, html_dl: true) %>
+<%= presenter.attribute_to_html(:optical_magnification, html_dl: true) %>
+<!-- Photogrammetry properties -->
+<%= presenter.attribute_to_html(:focal_length_type, html_dl: true) %>
+<%= presenter.attribute_to_html(:background_removal, html_dl: true) %>
+<!-- Photogrammetry properties and Photography properties -->
+<%= presenter.attribute_to_html(:lens_make, html_dl: true) %>
+<%= presenter.attribute_to_html(:lens_model, html_dl: true) %>
+<%= presenter.attribute_to_html(:light_source, html_dl: true) %>
+
+<script>
+alert('smc attr rows html');
+</script>
+

@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      image_capture_event:     'fa fa-file-text-o'
+    select_type:
+      image_capture_event:
+        # TODO: translate `human_name` into Spanish
+        description:        "Image capture event trabajos"
+        name:               "Image Capture Event"
+        # TODO: translate `human_name` into Spanish

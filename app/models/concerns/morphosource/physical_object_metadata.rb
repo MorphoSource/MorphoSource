@@ -50,7 +50,7 @@ module Morphosource
       index.as :stored_searchable, :facetable
     end
 
-    property :physical_object_type, predicate: ::RDF::Vocab::DC.type do |index|
+    property :physical_object_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/physicalObjectType") do |index|
       index.as :stored_searchable, :facetable
     end
 

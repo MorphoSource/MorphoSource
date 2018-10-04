@@ -168,6 +168,10 @@ class SolrDocument
     self[Solrizer.solr_name('vouchered', :stored_searchable)]
   end
 
+  def bits_per_sample
+    self[Solrizer.solr_name('bits_per_sample', :stored_searchable)]
+  end
+
   # Biological Specimens only
   def idigbio_recordset_id
     self[Solrizer.solr_name('idigbio_recordset_id', :stored_searchable)]

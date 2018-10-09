@@ -4,7 +4,7 @@ require 'rails_helper'
 include Warden::Test::Helpers
 
 # NOTE: If you generated more than one work, you have to set "js: true"
-RSpec.feature 'Create a ImageCaptureEvent', js: false do
+RSpec.feature 'Create a ImageCaptureEvent', js: true do
   context 'a logged in user' do
     let(:user_attributes) do
       { email: 'test@example.com' }
@@ -36,22 +36,29 @@ RSpec.feature 'Create a ImageCaptureEvent', js: false do
       click_link "Add new work"
 
       # If you generate more than one work uncomment these lines
-      # choose "payload_concern", option: "ImageCaptureEvent"
-      # click_button "Create work"
+      choose "payload_concern", option: "ImageCaptureEvent"
+      click_button "Create work"
 
-      expect(page).to have_content "Add New Image capture event"
-      click_link "Files" # switch tab
-      expect(page).to have_content "Add files"
-      expect(page).to have_content "Add folder"
-      within('span#addfiles') do
-        attach_file("files[]", "#{Hyrax::Engine.root}/spec/fixtures/image.jp2", visible: false)
-        attach_file("files[]", "#{Hyrax::Engine.root}/spec/fixtures/jp2_fits.xml", visible: false)
-      end
-      click_link "Descriptions" # switch tab
-      fill_in('Title', with: 'My Test Work')
+      expect(page).to have_content "Add New Image Capture Event"
+      #click_link "Files" # switch tab
+      #expect(page).to have_content "Add files"
+      #expect(page).to have_content "Add folder"
+      #within('span#addfiles') do
+        #$attach_file("files[]", "#{Hyrax::Engine.root}/spec/fixtures/image.jp2", visible: false)
+        #attach_file("files[]", "#{Hyrax::Engine.root}/spec/fixtures/jp2_fits.xml", visible: false)
+      #end
+      #click_link "Descriptions" # switch tab
+        
+      fill_in('Title', with: 'My Rspec Test image capture event')
+      select('Photogrammetry', from: 'Scanner Modality')
+
+    select('Photography', from: 'Scanner Modality')
       fill_in('Creator', with: 'Doe, Jane')
-      fill_in('Keyword', with: 'testing')
-      select('In Copyright', from: 'Rights statement')
+      #fill_in('Keyword', with: 'testing')
+      #select('In Copyright', from: 'Rights statement')
+        
+#not working??
+        expect(first('#image_capture_event_focal_length_type', visible: false)['class']).to include('optional')
 
       # With selenium and the chrome driver, focus remains on the
       # select box. Click outside the box so the next line can't find
@@ -62,8 +69,7 @@ RSpec.feature 'Create a ImageCaptureEvent', js: false do
       check('agreement')
 
       click_on('Save')
-      expect(page).to have_content('My Test Work')
-      expect(page).to have_content "Your files are being processed by Hyrax in the background."
+      expect(page).to have_content('My Rspec Test image capture event')
     end
   end
 end

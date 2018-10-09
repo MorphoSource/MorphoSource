@@ -21,8 +21,7 @@ module Hyrax
             :flux_normalization,
             :geometric_calibration,
             :shading_correction,
-            :filter_material, #         todo: This and the field below will need to be repeatable, these two fields should be concatenated and made repeatable (similar to the current media work task concerning scale bars)
-
+            :filter_material,
             :filter_thickness,
             :frame_averaging,
             :projections,

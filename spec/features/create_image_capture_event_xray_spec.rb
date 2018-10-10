@@ -85,9 +85,11 @@ RSpec.feature 'Create a ImageCaptureEvent, Xray modality type', js: true do
         check('agreement')
 
         # scroll to the page bottom, otherwise will get the error "could not be scrolled into view" 
-        page.execute_script "window.scrollBy(0,10000)"
+        page.execute_script "window.scrollBy(0,5000)"
         
         click_on('Save')
+        # click to set focus again, otherwise content might not be found
+        find('body').click
         expect(page).to have_content('My Rspec Test image capture event')
     end
   end

@@ -66,6 +66,8 @@ RSpec.feature 'Create a ImageCaptureEvent, Photography modality type', js: true 
         check('agreement')
 
         click_on('Save')
+        # click to set focus again, otherwise content might not be found
+        find('body').click
         expect(page).to have_content('My Rspec Test image capture event')
     end
   end

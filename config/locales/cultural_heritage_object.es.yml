@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      cultural_heritage_object:     'fa fa-file-text-o'
+    select_type:
+      cultural_heritage_object:
+        # TODO: translate `human_name` into Spanish
+        description:        "Cultural heritage object trabajos"
+        name:               "Cultural Heritage Object"
+        # TODO: translate `human_name` into Spanish

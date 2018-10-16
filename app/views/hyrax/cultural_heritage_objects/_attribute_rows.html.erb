@@ -22,15 +22,7 @@
 <%= presenter.attribute_to_html(:numeric_time, html_dl: true) %>
 <%= presenter.attribute_to_html(:original_location, html_dl: true) %>
 <%= presenter.attribute_to_html(:periodic_time, html_dl: true) %>
-<%= presenter.attribute_to_html(:physical_object_type, html_dl: true) %>
 <%= presenter.attribute_to_html(:vouchered, render_as: :faceted, html_dl: true) %>
-
-<!-- Biological Specimens -->
-<%= presenter.attribute_to_html(:idigbio_recordset_id, html_dl: true) %>
-<%= presenter.attribute_to_html(:idigbio_uuid, html_dl: true) %>
-<%= presenter.attribute_to_html(:is_type_specimen, render_as: :faceted, html_dl: true) %>
-<%= presenter.attribute_to_html(:occurrence_id, html_dl: true) %>
-<%= presenter.attribute_to_html(:sex, render_as: :faceted, html_dl: true) %>
 
 <!-- CHOs -->
 <%= presenter.attribute_to_html(:cho_type, html_dl: true) %>

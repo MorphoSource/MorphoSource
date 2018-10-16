@@ -1,0 +1,10 @@
+zh:
+  hyrax:
+    icons:
+      cultural_heritage_object:     'fa fa-file-text-o'
+    select_type:
+      cultural_heritage_object:
+        # TODO: translate `human_name` into Chinese
+        description:        "Cultural heritage object 作品"
+        name:               "Cultural Heritage Object"
+        # TODO: translate `human_name` into Chinese

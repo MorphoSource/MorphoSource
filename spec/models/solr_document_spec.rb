@@ -32,7 +32,7 @@ RSpec.describe ::SolrDocument, type: :model do
 					it "returns true" do
 						expect(document.mesh?).to be true
 					end
-				end		
+				end
 			end
 		end
 
@@ -56,9 +56,9 @@ RSpec.describe ::SolrDocument, type: :model do
 
 	describe "#mesh_mime_type" do
 		context "when label is a mesh filename" do
-			mesh_mime_types = { "test.ply" => "application/ply", 
-                        	"test.stl" => "application/sla", 
-                        	"test.obj" => "text/plain", 
+			mesh_mime_types = { "test.ply" => "application/ply",
+                        	"test.stl" => "application/sla",
+                        	"test.obj" => "text/plain",
                         	"test.gltf" => "model/gltf+json" }
 
 			mesh_mime_types.each do |f, mime_type|
@@ -101,7 +101,7 @@ RSpec.describe ::SolrDocument, type: :model do
 				country: ['United States']
 			})
 		end
-		
+
 		subject { SolrDocument.new(work.to_solr) }
 
 		it "return institution_code" do
@@ -123,5 +123,26 @@ RSpec.describe ::SolrDocument, type: :model do
 		it "return country" do
 			expect(subject.country.first).to eq('United States')
 		end
-	end
+  end
+
+  describe '#geographic coordinates' do
+    let(:latitude) { '35.994034' }
+    let(:longitude) { '-78.898621' }
+    before do
+      allow(subject).to receive(:latitude) { [ latitude ] }
+      allow(subject).to receive(:longitude) { [ longitude ] }
+    end
+    describe 'latitude and longitude both present' do
+      its(:geographic_coordinates) { is_expected.to eq("Latitude: #{latitude}, Longitude: #{longitude}") }
+    end
+    describe 'longitude missing' do
+      before { allow(subject).to receive(:longitude) }
+      its(:geographic_coordinates) { is_expected.to eq("Latitude: #{latitude}") }
+    end
+    describe 'latitude missing' do
+      before { allow(subject).to receive(:latitude) }
+      its(:geographic_coordinates) { is_expected.to eq("Longitude: #{longitude}") }
+    end
+  end
+
 end

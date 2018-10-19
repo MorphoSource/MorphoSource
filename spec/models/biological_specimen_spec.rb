@@ -6,6 +6,8 @@ RSpec.describe BiologicalSpecimen do
 
   describe 'metadata' do
 
+    it_behaves_like 'a Morphosource work'
+
     it_behaves_like 'a work with physical object metadata'
 
     it 'has biological specimen descriptive metadata' do

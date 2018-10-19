@@ -1,6 +1,4 @@
-# Generated via
-#  `rails generate hyrax:work Institution`
-class Institution < ActiveFedora::Base
+class Institution < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
 
   self.indexer = InstitutionIndexer

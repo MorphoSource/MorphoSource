@@ -3,6 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Institution do
+
+	it_behaves_like 'a Morphosource work'
+
 	describe "metadata attributes" do
 		it "include the appropriate terms" do
 			expect(subject.attributes).to include('title', 'institution_code', 'description', 'address', 'city', 'state_province', 'country')

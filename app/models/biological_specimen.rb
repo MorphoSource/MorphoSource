@@ -1,6 +1,4 @@
-# Generated via
-#  `rails generate hyrax:work BiologicalSpecimen`
-class BiologicalSpecimen < ActiveFedora::Base
+class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
 
   self.indexer = BiologicalSpecimenIndexer

@@ -1,6 +1,4 @@
-# Generated via
-#  `rails generate hyrax:work ProcessingEvent`
-class ProcessingEvent < ActiveFedora::Base
+class ProcessingEvent < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
 
   self.indexer = ProcessingEventIndexer

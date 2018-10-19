@@ -1,6 +1,4 @@
-# Generated via
-#  `rails generate hyrax:work CulturalHeritageObject`
-class CulturalHeritageObject < ActiveFedora::Base
+class CulturalHeritageObject < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
 
   self.indexer = CulturalHeritageObjectIndexer

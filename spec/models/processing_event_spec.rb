@@ -4,6 +4,8 @@ require 'rails_helper'
 
 RSpec.describe ProcessingEvent do
 
+  it_behaves_like 'a Morphosource work'
+
   describe 'metadata' do
 
     it "has descriptive metadata" do

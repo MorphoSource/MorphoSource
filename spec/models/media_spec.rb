@@ -5,6 +5,8 @@ require 'rails_helper'
 RSpec.describe Media do
   subject { described_class.new }
 
+  it_behaves_like 'a Morphosource work'
+
   it "is valid with valid attributes" do
       subject.title = ["foo"]
       subject.modality = ["foo"]
@@ -57,5 +59,5 @@ RSpec.describe Media do
       expect(subject).to_not be_valid
   end
 
-    
+
 end

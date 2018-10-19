@@ -4,6 +4,8 @@ require 'rails_helper'
 
 RSpec.describe CulturalHeritageObject do
 
+  it_behaves_like 'a Morphosource work'
+
   describe 'metadata' do
 
     it_behaves_like 'a work with physical object metadata'

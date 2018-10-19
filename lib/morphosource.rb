@@ -5,4 +5,10 @@ module Morphosource
 
   include Morphosource::Configurable
 
+  module Works
+    extend ActiveSupport::Autoload
+
+    autoload :Base
+  end
+
 end

@@ -11,7 +11,7 @@ RSpec.describe CulturalHeritageObject do
     it_behaves_like 'a work with physical object metadata'
 
     it 'has cultural heritage object metadata' do
-      expect(subject.attributes.keys).to include('cho_type', 'material')
+      expect(subject.attributes.keys).to include('cho_type', 'material', 'short_title')
     end
 
   end

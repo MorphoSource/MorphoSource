@@ -12,5 +12,6 @@ RSpec.describe Hyrax::CulturalHeritageObjectPresenter do
 
   it { is_expected.to delegate_method(:cho_type).to(:solr_document) }
   it { is_expected.to delegate_method(:material).to(:solr_document) }
+  it { is_expected.to delegate_method(:short_title).to(:solr_document) }
 
 end

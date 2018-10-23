@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::BiologicalSpecimenForm do
 
-  let(:required_fields) { [ :institution, :title, :vouchered ] }
+  let(:required_fields) { [ :institution, :vouchered ] }
 
   describe 'class attributes' do
 
@@ -14,8 +14,8 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
                                                :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen,
                                                :occurrence_id, :sex)
 
-      expect(described_class.terms).to_not include(:keyword, :license, :rights_statement, :subject, :language, :source,
-                                                   :resource_type)
+      expect(described_class.terms).to_not include(:keyword, :license, :rights_statement, :subject, :title, :language,
+                                                   :source, :resource_type)
     end
 
     it 'has expected required metadata terms' do
@@ -23,7 +23,7 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
     end
 
     it 'has expected single valued metadata terms' do
-      expect(described_class.single_valued_fields).to match_array([ :bibliographic_citation, :title, :catalog_number,
+      expect(described_class.single_valued_fields).to match_array([ :bibliographic_citation, :catalog_number,
                                                                     :collection_code, :date_created, :description,
                                                                     :institution, :latitude, :longitude, :numeric_time,
                                                                     :original_location, :publisher, :vouchered,

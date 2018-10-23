@@ -198,6 +198,10 @@ class SolrDocument
     self[Solrizer.solr_name('material', :stored_searchable)]
   end
 
+  def short_title
+    self[Solrizer.solr_name('short_title', :stored_searchable)]
+  end
+
   # Institution fields
   def institution_code
     self[Solrizer.solr_name('institution_code', :stored_searchable)]
@@ -223,7 +227,7 @@ class SolrDocument
   def facility
     self[Solrizer.solr_name('facility', :stored_searchable)]
   end
-  
+
   # Processing Event
   def software
     self[Solrizer.solr_name('software', :stored_searchable)]

@@ -27,13 +27,12 @@ module Hyrax
         :sex
     ]
 
-    self.terms -= [ :keyword, :license, :rights_statement, :subject, :language, :source, :resource_type ]
+    self.terms -= [ :keyword, :license, :rights_statement, :subject, :title, :language, :source, :resource_type ]
 
-    self.required_fields = [ :institution, :title, :vouchered ]
+    self.required_fields = [ :institution, :vouchered ]
 
     self.single_valued_fields = [
         :bibliographic_citation,
-        :title,
         :catalog_number,
         :collection_code,
         :date_created,
@@ -65,6 +64,5 @@ module Hyrax
       ]
     end
 
-    # TODO make title required for CHOs, not for Biological Specimens
   end
 end

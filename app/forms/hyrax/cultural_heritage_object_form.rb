@@ -21,12 +21,13 @@ module Hyrax
         :periodic_time,
         :vouchered,
         :cho_type,
-        :material
+        :material,
+        :short_title
     ]
 
-    self.terms -= [ :keyword, :license, :rights_statement, :subject, :language, :source, :resource_type ]
+    self.terms -= [ :keyword, :license, :rights_statement, :subject, :title, :language, :source, :resource_type ]
 
-    self.required_fields = [ :title, :vouchered ]
+    self.required_fields = [ :vouchered ]
 
     self.single_valued_fields = [
         :bibliographic_citation,
@@ -42,12 +43,13 @@ module Hyrax
         :publisher,
         :vouchered,
         :creator,
-        :title
+        :short_title
     ]
 
     # These show above the fold
     def primary_terms
       required_fields + [
+          :short_title,
           :bibliographic_citation,
           :based_near,
           :catalog_number,
@@ -59,6 +61,5 @@ module Hyrax
       ]
     end
 
-    # TODO make title required for CHOs, not for Biological Specimens
   end
 end

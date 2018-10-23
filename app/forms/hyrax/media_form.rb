@@ -11,7 +11,7 @@ module Hyrax
 
     # Customizing field terms
 
-    self.terms = [:title, :modality, :media_type, :x_spacing, :y_spacing, :z_spacing,
+    self.terms = [:modality, :media_type, :x_spacing, :y_spacing, :z_spacing,
                     :scale_bar, :unit, :map_type,
                     :part, :side, :orientation,
                     :description, :keyword, :identifier, :related_url, :creator, :date_created,
@@ -23,9 +23,9 @@ module Hyrax
                     :visibility, :ordered_member_ids, :in_works_ids,
                     :member_of_collection_ids, :admin_set_id]
 
-    self.required_fields = [:title, :modality, :media_type]
+    self.required_fields = [:modality, :media_type]
 
-    self.single_valued_fields = [:title, :media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :unit]
+    self.single_valued_fields = [:media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :unit]
 
   end
 end

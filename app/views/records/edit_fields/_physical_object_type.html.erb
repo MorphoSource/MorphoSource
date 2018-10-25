@@ -1,8 +1,0 @@
-<!-- app/views/records/edit_fields/_physical_object_type.html.erb -->
-<% physical_object_types_service = Morphosource::PhysicalObjectTypesService.new %>
-<%= f.input :physical_object_type, as: :select,
-    collection: physical_object_types_service.select_all_options,
-    include_blank: true,
-    item_helper: physical_object_types_service.method(:include_current_value),
-    input_html: { class: 'form-control' }
-%>

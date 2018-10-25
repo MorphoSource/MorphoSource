@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      attachment:     'fa fa-file-text-o'
+    select_type:
+      attachment:
+        # TODO: translate `human_name` into Spanish
+        description:        "Attachment trabajos"
+        name:               "Attachment"
+        # TODO: translate `human_name` into Spanish

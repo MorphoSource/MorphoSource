@@ -1,4 +1,4 @@
-<% # app/views/records/edit_fields/_media_type.html.erb %>
+<% # app/views/records/edit_fields/_units.html.erb %>
 <% units_service = Morphosource::UnitsService.new %>
 <%= f.input :unit, as: :select,
     collection: units_service.select_all_options,

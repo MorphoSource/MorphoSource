@@ -1,0 +1,8 @@
+pt-BR:
+  hyrax:
+    icons:
+      device:     'fa fa-file-text-o'
+    select_type:
+      device:
+        description:        "Device trabalhos"
+        name:               "Device"

@@ -1,7 +1,7 @@
-# Generated via
-#  `rails generate hyrax:work Media`
-class Media < ActiveFedora::Base
+class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
+
+  self.work_requires_files = true
 
   self.indexer = MediaIndexer
   # Change this to restrict which works can be added as a child.

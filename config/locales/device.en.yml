@@ -1,0 +1,14 @@
+en:
+  hyrax:
+    icons:
+      device:     'fa fa-file-text-o'
+    select_type:
+      device:
+        description:        "Device works"
+        name:               "Device"
+  simple_form:
+    labels:
+      device:
+        title: Model
+        creator: Manufacturer
+        

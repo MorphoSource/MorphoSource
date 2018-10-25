@@ -1,0 +1,7 @@
+en:
+  morphosource:
+    validation:
+      missing:
+        title: 'Your work must have a title.'
+        vouchered: 'Missing value in vouchered? field. Does the object you are adding still physically exist?'
+    fallback_object_title: "%{voucher} object contributed by %{user}"

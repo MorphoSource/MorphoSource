@@ -1,0 +1,18 @@
+en:
+  hyrax:
+    icons:
+      processing_event:     'fa fa-file-text-o'
+    select_type:
+      processing_event:
+        description:        "Processing event works"
+        name:               "Processing Event"
+  simple_form:
+    labels:
+      processing_event:
+        description: Description
+        date_created: Date
+    hints:
+      processing_event:
+        software: Software used to process the media
+        description: A description of the workflow or processing steps taken
+        creator: The person or group responsible for the processing event

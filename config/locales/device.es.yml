@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      device:     'fa fa-file-text-o'
+    select_type:
+      device:
+        # TODO: translate `human_name` into Spanish
+        description:        "Device trabajos"
+        name:               "Device"
+        # TODO: translate `human_name` into Spanish

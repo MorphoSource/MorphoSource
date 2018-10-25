@@ -1,0 +1,8 @@
+fr:
+  hyrax:
+    icons:
+      institution:     'fa fa-file-text-o'
+    select_type:
+      institution:
+        description:        "Institution œuvres"
+        name:               "Institution"

@@ -1,0 +1,10 @@
+zh:
+  hyrax:
+    icons:
+      device:     'fa fa-file-text-o'
+    select_type:
+      device:
+        # TODO: translate `human_name` into Chinese
+        description:        "Device 作品"
+        name:               "Device"
+        # TODO: translate `human_name` into Chinese

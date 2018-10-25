@@ -1,0 +1,8 @@
+de:
+  hyrax:
+    icons:
+      cultural_heritage_object:     'fa fa-file-text-o'
+    select_type:
+      cultural_heritage_object:
+        description:        "Cultural heritage object Werke"
+        name:               "Cultural Heritage Object"

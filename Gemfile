@@ -60,6 +60,8 @@ group :development, :test do
   gem 'factory_bot_rails', '~> 4.8'
   gem 'webmock'
   gem 'geckodriver-helper'
+  gem 'shoulda-callback-matchers', '~> 1.1.1'
+  gem 'shoulda-matchers', '~> 3.1'
 end
 
 group :production do

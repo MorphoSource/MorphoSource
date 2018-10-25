@@ -1,0 +1,10 @@
+<!-- Fields on the show page are in the order below -->
+
+<!-- Hyrax Basic Metadata -->
+<%= presenter.attribute_to_html(:date_modified, label: t('hyrax.base.show.last_modified'), html_dl: true) %>
+<%= presenter.attribute_to_html(:creator, render_as: :faceted, html_dl: true) %>
+
+<!-- Institution Custom Fields -->
+<%= presenter.attribute_to_html(:modality, html_dl: true) %>
+<%= presenter.attribute_to_html(:facility, html_dl: true) %>
+

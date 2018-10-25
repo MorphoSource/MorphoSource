@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      institution:     'fa fa-file-text-o'
+    select_type:
+      institution:
+        # TODO: translate `human_name` into Spanish
+        description:        "Institution trabajos"
+        name:               "Institution"
+        # TODO: translate `human_name` into Spanish

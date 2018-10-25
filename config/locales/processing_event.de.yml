@@ -1,0 +1,8 @@
+de:
+  hyrax:
+    icons:
+      processing_event:     'fa fa-file-text-o'
+    select_type:
+      processing_event:
+        description:        "Processing event Werke"
+        name:               "Processing Event"

@@ -5,6 +5,7 @@ module Hyrax
   class InstitutionForm < Hyrax::Forms::WorkForm
     self.model_class = ::Institution
     include Morphosource::FormMethods
+    include ChildCreateButton
     include SingleValuedForm
 
     class_attribute :single_value_fields

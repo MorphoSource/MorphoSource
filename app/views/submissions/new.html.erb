@@ -1,0 +1,40 @@
+<% provide :page_title, curation_concern_page_title(@curation_concern) %>
+<% provide :page_header do %>
+  <h1><%= t("hyrax.works.create.header", type: @curation_concern.human_readable_type) %></h1>
+<% end %>
+
+<div>Your new <%= @curation_concern.human_readable_type %> must belong to one the following types of objects:
+  <%= valid_work_types_list(@curation_concern, :parent) %>.</div>
+
+<h3>Either select an existing work (<%= valid_work_types_list(@curation_concern, :parent) %>)</h3>
+<%= simple_form_for @submission,
+    html: {
+        data: { behavior: 'work-form', 'param-key' => 'submission' },
+    } do |f| %>
+
+  <div class="form-group" data-behavior="parent-relationships" data-param-key="submission" data-members="[]">
+    <div class="form-inline">
+      <%= f.label :find_parent_work %>
+      <%= f.input_field :find_parent_work,
+                        prompt: :translate,
+                        autocomplete: 'off',
+                        data: {
+                            autocomplete: 'work',
+                            'autocomplete-url' => find_works_autocomplete_url(@curation_concern, :parent),
+                            'exclude-work': "NewRecord" # exclude this item from the result set.
+                        } %>
+      <%= f.submit 'Next' %>
+    </div>
+    <div class="message has-warning hidden"></div>
+  </div>
+
+<% end %>
+
+<h3>Or create a new work if the appropriate one does not already exist</h3>
+<% @curation_concern.valid_parent_concerns.map(&:to_s).sort.each do |concern| %>
+  <% @create_path = "new_hyrax_#{concern.underscore}" %>
+  <%= link_to("Create #{concern.constantize.human_readable_type}",
+              [ main_app, @create_path ],
+              class: "btn btn-info",
+              role: "button") %>
+<% end %>

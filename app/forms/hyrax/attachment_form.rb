@@ -5,6 +5,7 @@ module Hyrax
   class AttachmentForm < Hyrax::Forms::WorkForm
     self.model_class = ::Attachment
     include Morphosource::FormMethods
+    include ChildCreateButton
     include SingleValuedForm
 
     self.terms = [:title]

@@ -4,6 +4,7 @@ module Hyrax
   # Generated form for CulturalHeritageObject
   class CulturalHeritageObjectForm < Hyrax::Forms::WorkForm
     include Morphosource::FormMethods
+    include ChildCreateButton
     include SingleValuedForm
     class_attribute :single_value_fields
 

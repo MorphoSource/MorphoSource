@@ -5,8 +5,9 @@ module Hyrax
   class ImagingEventForm < Hyrax::Forms::WorkForm
 
     include SingleValuedForm
-    
+
     include Morphosource::FormMethods
+    include ChildCreateButton
 
     class_attribute :single_value_fields
 
@@ -47,7 +48,7 @@ module Hyrax
         :lens_make,
         :lens_model,
         :light_source
-    ]        
+    ]
 
     #self.terms += [:software, :scanner_modality]
     #self.terms -= [:keyword, :license, :rights_statement, :subject, :language, :source, :resource_type]
@@ -129,6 +130,6 @@ module Hyrax
             :light_source
         ]
     end
-      
+
   end
 end

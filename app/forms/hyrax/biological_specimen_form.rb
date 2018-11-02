@@ -4,10 +4,13 @@ module Hyrax
   # Generated form for BiologicalSpecimen
   class BiologicalSpecimenForm < Hyrax::Forms::WorkForm
     include Morphosource::FormMethods
+    include ChildCreateButton
     include SingleValuedForm
     class_attribute :single_value_fields
 
     self.model_class = ::BiologicalSpecimen
+
+    self.child_create_button = true
 
     self.terms += [
         :bibliographic_citation,

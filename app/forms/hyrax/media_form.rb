@@ -5,6 +5,7 @@ module Hyrax
   class MediaForm < Hyrax::Forms::WorkForm
     self.model_class = ::Media
     include Morphosource::FormMethods
+    include ChildCreateButton
     include SingleValuedForm
 
     class_attribute :single_value_fields

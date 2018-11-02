@@ -5,6 +5,7 @@ module Hyrax
   class DeviceForm < Hyrax::Forms::WorkForm
     self.model_class = ::Device
     include Morphosource::FormMethods
+    include ChildCreateButton
     include SingleValuedForm
 
     # Customizing field terms

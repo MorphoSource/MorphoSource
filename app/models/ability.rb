@@ -1,6 +1,6 @@
 class Ability
   include Hydra::Ability
-  
+
   include Hyrax::Ability
   self.ability_logic += [:everyone_can_create_curation_concerns]
 
@@ -20,5 +20,10 @@ class Ability
     # if user_groups.include? 'special_group'
     #   can [:create], ActiveFedora::Base
     # end
+
+    if registered_user?
+      can [ :create ], Submission
+    end
+
   end
 end

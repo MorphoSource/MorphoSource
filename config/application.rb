@@ -17,5 +17,11 @@ module MorphoSourceSf
 
     config.autoload_paths += %W(#{config.root}/lib)
 
+    config.to_prepare do
+      Qa::Authorities::FindWorks.class_eval do
+        self.search_builder_class = ::FindWorksSearchBuilder
+      end
+    end
+
   end
 end

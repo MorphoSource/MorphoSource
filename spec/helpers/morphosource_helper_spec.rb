@@ -58,33 +58,6 @@ RSpec.describe MorphosourceHelper, type: :helper do
     end
   end
 
-  describe '#find_works_autocomplete_url' do
-    let(:curation_concern) { double('Morphosource::Works::Base') }
-    let(:autocomplete_url_base) { Rails.application.routes.url_helpers.qa_path + '/search/find_works' }
-    let(:autocomplete_url) { "#{autocomplete_url_base}#{expected_query_string}" }
-    describe 'for child relationship' do
-      let(:valid_child_types) { %w(Media ProcessingEvent) }
-      let(:expected_query_string) { '?type[]=Media&type[]=ProcessingEvent' }
-      before do
-        allow(helper).to receive(:valid_lineage_types).with(curation_concern, :child) { valid_child_types }
-      end
-      it 'searches for appropriate child work types' do
-        expect(helper.find_works_autocomplete_url(curation_concern, :child)).to eq(autocomplete_url)
-      end
-    end
-    describe 'for parent relationship' do
-      let(:valid_parent_types) { %w(BiologicalSpecimen Device) }
-      let(:expected_query_string) { '?type[]=BiologicalSpecimen&type[]=Device' }
-      before do
-        allow(helper).to receive(:valid_lineage_types).with(curation_concern, :parent) { valid_parent_types }
-      end
-      it 'searches for appropriate parent work types' do
-        expect(helper.find_works_autocomplete_url(curation_concern, :parent)).to eq(autocomplete_url)
-      end
-    end
-
-  end
-
   describe '#ms_work_form_tabs' do
     let(:work) { double }
     let(:with_files_tab) { [ 'metadata', 'files', 'relationships' ] }
@@ -109,7 +82,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
     end
   end
 
-  describe '#valid_lineage_types' do
+  describe 'work type lineage helpers' do
     let(:curation_concern) { double('Morphosource::Works::Base',
                                     valid_child_concerns: valid_child_models,
                                     valid_parent_concerns: valid_parent_models) }
@@ -119,42 +92,38 @@ RSpec.describe MorphosourceHelper, type: :helper do
       allow(curation_concern).to receive(:valid_child_concerns) { valid_child_models }
       allow(curation_concern).to receive(:valid_parent_concerns) { valid_parent_models }
     end
-    describe 'child' do
-      let(:expected_list) { %w(Media ProcessingEvent) }
-      it 'returns the valid child concerns as an array of strings' do
-        expect(helper.valid_lineage_types(curation_concern, :child)).to match_array(expected_list)
-      end
-    end
-    describe 'parent' do
-      let(:expected_list) { %w(BiologicalSpecimen Device) }
-      it 'returns the valid parent concerns as an array of strings' do
-        expect(helper.valid_lineage_types(curation_concern, :parent)).to match_array(expected_list)
-      end
-    end
-  end
 
-  describe '#valid_work_types_list' do
-    let(:curation_concern) { double('Morphosource::Works::Base') }
-    describe 'child' do
-      let(:valid_child_types) { %w(Media ProcessingEvent) }
-      before do
-        allow(helper).to receive(:valid_lineage_types).with(curation_concern, :child) { valid_child_types }
+    describe '#find_works_autocomplete_url' do
+      let(:autocomplete_url_base) { Rails.application.routes.url_helpers.qa_path + '/search/find_works' }
+      let(:autocomplete_url) { "#{autocomplete_url_base}#{expected_query_string}" }
+      describe 'for child relationship' do
+        let(:expected_query_string) { '?type[]=Media&type[]=ProcessingEvent' }
+        it 'searches for appropriate child work types' do
+          expect(helper.find_works_autocomplete_url(curation_concern, :child)).to eq(autocomplete_url)
+        end
       end
-      it 'is a string containing the expected elements' do
-        expect(helper.valid_work_types_list(curation_concern, :child)).to eq('Media, ProcessingEvent')
-                                                                              .or eq('ProcessingEvent, Media')
+      describe 'for parent relationship' do
+        let(:expected_query_string) { '?type[]=BiologicalSpecimen&type[]=Device' }
+        it 'searches for appropriate parent work types' do
+          expect(helper.find_works_autocomplete_url(curation_concern, :parent)).to eq(autocomplete_url)
+        end
+      end
+
+    end
+
+    describe '#valid_work_types_list' do
+      describe 'child' do
+        it 'is a string containing the expected elements' do
+          expect(helper.valid_work_types_list(curation_concern, :child)).to eq('Media, Processing Event')
+        end
+      end
+      describe 'parent' do
+        it 'is a string containing the expected elements' do
+          expect(helper.valid_work_types_list(curation_concern, :parent)).to eq('Biological Specimen, Device')
+        end
       end
     end
-    describe 'parent' do
-      let(:valid_parent_types) { %w(BiologicalSpecimen Device) }
-      before do
-        allow(helper).to receive(:valid_lineage_types).with(curation_concern, :parent) { valid_parent_types }
-      end
-      it 'is a string containing the expected elements' do
-        expect(helper.valid_work_types_list(curation_concern, :parent)).to eq('BiologicalSpecimen, Device')
-                                                                              .or eq('Device, BiologicalSpecimen')
-      end
-    end
+
   end
 
 end

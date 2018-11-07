@@ -80,6 +80,7 @@ en:
     works:
       form:
         find_parent_work: Parent Works
+      valid_work_types: Valid Types
   simple_form:
     labels:
       defaults:

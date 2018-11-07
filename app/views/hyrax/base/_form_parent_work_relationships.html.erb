@@ -13,13 +13,14 @@ HTML Properties:
     data-param-key : the parameter key value for this model type %>
 <div class="form-group" data-behavior="parent-relationships" data-param-key="<%= f.object.model_name.param_key %>" data-members="<%= f.object.member_of_works_json %>">
   <div class="form-inline">
+      <div><%= t('hyrax.works.valid_work_types') %>: <%= valid_work_types_list(f.object.model, :parent)%></div>
       <%= f.label :find_parent_work %>
       <%= f.input_field :find_parent_work,
                         prompt: :translate,
                         autocomplete: 'off',
                         data: {
                           autocomplete: 'work',
-                          'autocomplete-url' => Rails.application.routes.url_helpers.qa_path + '/search/find_works',
+                          'autocomplete-url' => find_works_autocomplete_url(f.object.model, :parent),
                           'exclude-work': f.object.model.id || "NewRecord" # exclude this item from the result set.
                         } %>
       <a class="btn btn-primary" data-behavior="add-relationship">Add</a>

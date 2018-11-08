@@ -4,6 +4,7 @@ RSpec.describe 'hyrax/base/_parents.html.erb', type: :view do
   let(:ability) { double }
   let(:request) { double "request", params: params }
   let(:params) { ActionController::Parameters.new(rows: 10) }
+  let(:model) { double(valid_parent_concerns: [ Device, Media ]) }
 
   context 'when parents are not present' do
     let(:member_list) { [] }
@@ -11,6 +12,7 @@ RSpec.describe 'hyrax/base/_parents.html.erb', type: :view do
     let(:work) { double(:work, in_works_ids: member_list)}
 
     before do
+      allow(presenter).to receive_message_chain(:model_name, :name, :constantize) { model }
       expect(work).to receive(:in_works_ids).and_return(member_list)
     end
 
@@ -18,6 +20,7 @@ RSpec.describe 'hyrax/base/_parents.html.erb', type: :view do
       it 'renders an alert' do
         expect(view).to receive(:can?).with(:edit, presenter.id).and_return(true)
         render 'hyrax/base/parents', presenter: presenter
+        expect(rendered).to have_css('div', text: '(Device, Media)')
         expect(rendered).to have_css('.alert-warning[role=alert]', text: 'This Thing has no files associated with it. Click "edit" to add more files.')
       end
     end
@@ -25,6 +28,7 @@ RSpec.describe 'hyrax/base/_parents.html.erb', type: :view do
       it 'renders an alert' do
         expect(view).to receive(:can?).with(:edit, presenter.id).and_return(false)
         render 'hyrax/base/parents', presenter: presenter
+        expect(rendered).to have_css('div', text: '(Device, Media)')
         expect(rendered).to have_css('.alert-warning[role=alert]', text: "There are no publicly available items in this Thing.")
       end
     end
@@ -49,10 +53,12 @@ RSpec.describe 'hyrax/base/_parents.html.erb', type: :view do
       stub_template 'hyrax/base/_member.html.erb' => '<%= member %>'
       allow(presenter).to receive(:total_pages).and_return(1)
       allow(presenter).to receive(:list_of_item_ids_to_display).and_return(member_list_ids)
+      allow(presenter).to receive_message_chain(:model_name, :name, :constantize) { model }
     end
 
     it "shows the parents heading" do
       expect(page).to have_content("Parents")
+      expect(page).to have_content('(Device, Media)')
     end
 
     it "shows parents" do

@@ -1,6 +1,7 @@
 <!-- Modified version of _items partial -->
 
 <h2><%= t('.header') %></h2>
+<div>(<%= valid_work_types_list(presenter.model_name.name.constantize, :parent)%>)</div>
 <%  array_of_ids = presenter.work.in_works_ids %>
 <%  members = presenter.member_presenters_for(array_of_ids) %>
 

@@ -3,12 +3,12 @@ require 'rails_helper'
 RSpec.describe Submission, type: :model do
 
   describe 'steps' do
-    specify { expect(subject.steps).to eq(%w(institution)) }
-    specify { expect(subject.current_step).to eq('institution') }
+    specify { expect(subject.steps).to eq([ described_class::STEP_INSTITUTION ]) }
+    specify { expect(subject.current_step).to eq(described_class::STEP_INSTITUTION) }
 
     describe '#first_step?' do
       describe 'current step is first step' do
-        before { subject.current_step = 'institution' }
+        before { subject.current_step = described_class::STEP_INSTITUTION }
         specify { expect(subject.first_step?).to be true }
       end
       describe 'current step is not first step' do
@@ -19,7 +19,7 @@ RSpec.describe Submission, type: :model do
 
     describe '#last_step?' do
       describe 'current step is last step' do
-        before { subject.current_step = 'institution' }
+        before { subject.current_step = described_class::STEP_INSTITUTION }
         specify { expect(subject.last_step?).to be true }
       end
       describe 'current step is not last step' do

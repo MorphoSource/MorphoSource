@@ -2,8 +2,19 @@ class Submission < ActiveRecord::Base
 
   attr_writer :current_step
 
+  STEP_INSTITUTION = 'institution'
+
+  validates_presence_of :institution_id, if: :selecting_institution?
+
+  def all_valid?
+    steps.all? do |step|
+      self.current_step = step
+      valid?
+    end
+  end
+
   def steps
-    %w(institution)
+    [ STEP_INSTITUTION ]
   end
 
   def current_step
@@ -24,6 +35,10 @@ class Submission < ActiveRecord::Base
 
   def previous_step
     self.current_step = steps[steps.index(current_step) - 1]
+  end
+
+  def selecting_institution?
+    current_step == STEP_INSTITUTION
   end
 
 end

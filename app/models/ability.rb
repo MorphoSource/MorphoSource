@@ -22,7 +22,7 @@ class Ability
     # end
 
     if registered_user?
-      can [ :create ], Submission
+      can [ :create, :show ], Submission
     end
 
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180727212032) do
+ActiveRecord::Schema.define(version: 20181113194516) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -472,6 +472,10 @@ ActiveRecord::Schema.define(version: 20180727212032) do
     t.boolean "active"
     t.boolean "allows_access_grant"
     t.index ["permission_template_id", "name"], name: "index_sipity_workflows_on_permission_template_and_name", unique: true
+  end
+
+  create_table "submissions", force: :cascade do |t|
+    t.string "institution_id"
   end
 
   create_table "tinymce_assets", force: :cascade do |t|

@@ -24,3 +24,4 @@
 //= require hyrax
 //= require morphosource/add_parent
 //= require morphosource/editor
+//= require select2

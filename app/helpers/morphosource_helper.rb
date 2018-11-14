@@ -8,6 +8,13 @@ module MorphosourceHelper
     end
   end
 
+  def institution_selector
+    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
+    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Institution"
+    hits = ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
+    hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
+  end
+
   def find_works_autocomplete_url(curation_concern, relation)
     valid_concerns = curation_concern.send("valid_#{relation}_concerns").map(&:to_s)
     type_params = valid_concerns.sort.map { |type| "type[]=#{type}" }

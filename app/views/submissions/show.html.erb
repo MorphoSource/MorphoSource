@@ -1,0 +1,13 @@
+<% provide :page_title, t('morphosource.submission.page_title') %>
+<% provide :page_header do %>
+  <h1><%= t('morphosource.submission.page_header') %></h1>
+<% end %>
+
+<h2>Placeholder End Page</h2>
+
+<h4>Submission Info</h4>
+
+<dl>
+  <dt>Institution</dt>
+  <dd><%= "#{@institution.title.first} (#{@submission.institution_id})" %></dd>
+</dl>

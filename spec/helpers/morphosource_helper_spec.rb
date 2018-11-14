@@ -58,6 +58,17 @@ RSpec.describe MorphosourceHelper, type: :helper do
     end
   end
 
+  describe '#institution_selector' do
+    let!(:institutions) do
+      [ Institution.create(title: [ 'Foo' ]),
+        Institution.create(title: [ 'Bar' ]) ]
+    end
+    it 'returns the appropriate array' do
+      expect(helper.institution_selector).to eq([ [ institutions[1].title.first, institutions[1].id ],
+                                                  [ institutions[0].title.first, institutions[0].id ] ])
+    end
+  end
+
   describe '#ms_work_form_tabs' do
     let(:work) { double }
     let(:with_files_tab) { [ 'metadata', 'files', 'relationships' ] }

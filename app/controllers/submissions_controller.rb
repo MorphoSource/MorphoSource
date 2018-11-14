@@ -3,21 +3,42 @@ class SubmissionsController < ApplicationController
   load_and_authorize_resource
 
   def new
-    @curation_concern = Media.new
+    session[:submission_params] ||= {}
+    @submission = Submission.new(session[:submission_params])
+    @submission.current_step = session[:submission_step]
   end
 
   def create
-    if @submission.valid?
-      redirect_to polymorphic_path([main_app, :new, :hyrax, :parent, 'media'], parent_id: @submission.find_parent_work)
+    session[:submission_params].deep_merge!(submission_params) if params[:submission]
+    @submission = Submission.new(session[:submission_params])
+    @submission.current_step = session[:submission_step]
+    if params[:previous_button]
+      @submission.previous_step
+    elsif @submission.last_step?
+      @submission.save
     else
-      render :new
+      @submission.next_step
     end
+    session[:submission_step] = @submission.current_step
+
+    if @submission.new_record?
+      render 'new'
+    else
+      session[:submission_step] = session[:submission_params] = nil
+      flash[:notice] = 'Submission completed.'
+      redirect_to @submission
+    end
+  end
+
+  def show
+    @submission = Submission.find(params[:id])
+    @institution = Institution.find(@submission.institution_id)
   end
 
   private
 
   def submission_params
-    params.require(:submission).permit(:find_parent_work)
+    params.fetch(:submission, {}).permit(:institution_id)
   end
 
 end

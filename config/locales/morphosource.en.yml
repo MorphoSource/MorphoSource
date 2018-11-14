@@ -1,5 +1,8 @@
 en:
   morphosource:
+    submission:
+      page_title: 'Submit Media // MorphoSource'
+      page_header: 'Submit Media File(s)'
     validation:
       missing:
         title: 'Your work must have a title.'

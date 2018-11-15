@@ -1,0 +1,14 @@
+<%# TODO: This may not be the best place for this script. %>
+<script>
+    $(document).ready(function () {
+        $("#submission_object_id").select2();
+    });
+</script>
+
+<div class="form-group">
+  <div class="form-inline">
+    <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
+    <%= f.input :object_id, collection: institution_object_selector(@submission.institution_id),
+                prompt: 'Select physical object', input_html: {style: 'width: 400px'} %>
+  </div>
+</div>

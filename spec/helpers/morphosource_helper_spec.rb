@@ -58,6 +58,31 @@ RSpec.describe MorphosourceHelper, type: :helper do
     end
   end
 
+  describe '#institution_object_selector' do
+    let!(:institutions) do
+      [ Institution.create(title: [ 'Foo' ]),
+        Institution.create(title: [ 'Bar' ]) ]
+    end
+    let!(:physical_objects) do
+      [ BiologicalSpecimen.create(title: [ 'Baz' ], institution: [ 'A' ], vouchered: [ true ]),
+        BiologicalSpecimen.create(title: [ 'Boo' ], institution: [ 'B' ], vouchered: [ true ]),
+        CulturalHeritageObject.create(title: [ 'Ai' ], institution: [ 'C' ], vouchered: [ true ]) ]
+    end
+    before do
+      institutions[0].ordered_members << physical_objects[0]
+      institutions[0].ordered_members << physical_objects[2]
+      institutions[0].save!
+      institutions[1].ordered_members << physical_objects[1]
+      institutions[1].save!
+    end
+    it 'returns the appropriate array' do
+      expect(helper.institution_object_selector(institutions[0].id)).to eq([ [ physical_objects[2].title.first,
+                                                                               physical_objects[2].id ],
+                                                                             [ physical_objects[0].title.first,
+                                                                               physical_objects[0].id ] ])
+    end
+  end
+
   describe '#institution_selector' do
     let!(:institutions) do
       [ Institution.create(title: [ 'Foo' ]),

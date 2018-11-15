@@ -8,6 +8,16 @@ module MorphosourceHelper
     end
   end
 
+  def institution_object_selector(institution_id)
+    inst_doc = SolrDocument.find(institution_id)
+    inst_member_ids = inst_doc[Solrizer.solr_name('member_ids', :symbol)]
+    inst_member_docs = inst_member_ids.map { |id| SolrDocument.find(id) }
+    inst_object_docs = inst_member_docs.select do |doc|
+      [ 'BiologicalSpecimen', 'CulturalHeritageObject' ].include?(doc[Solrizer.solr_name('has_model', :symbol)].first)
+    end
+    inst_object_docs.map { |doc| [ doc.sortable_title, doc.id ] }.sort_by { |e| e[0] }
+  end
+
   def institution_selector
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
     qry = "#{Solrizer.solr_name('has_model', :symbol)}:Institution"

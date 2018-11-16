@@ -2,11 +2,13 @@ class Submission < ActiveRecord::Base
 
   attr_writer :current_step
 
+  STEP_IMAGING_EVENT = 'imaging_event'
   STEP_INSTITUTION = 'institution'
   STEP_OBJECT = 'object'
 
   validates_presence_of :institution_id, if: :selecting_institution?
   validates_presence_of :object_id, if: :selecting_object?
+  validates_presence_of :imaging_event_id, if: :selecting_imaging_event?
 
   def all_valid?
     steps.all? do |step|
@@ -16,7 +18,7 @@ class Submission < ActiveRecord::Base
   end
 
   def steps
-    [ STEP_INSTITUTION, STEP_OBJECT ]
+    [ STEP_INSTITUTION, STEP_OBJECT, STEP_IMAGING_EVENT ]
   end
 
   def current_step
@@ -51,6 +53,10 @@ class Submission < ActiveRecord::Base
 
   def selecting_object?
     current_step == STEP_OBJECT
+  end
+
+  def selecting_imaging_event?
+    current_step == STEP_IMAGING_EVENT
   end
 
 end

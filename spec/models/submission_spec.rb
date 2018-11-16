@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe Submission, type: :model do
 
   describe 'steps' do
-    specify { expect(subject.steps).to eq([ described_class::STEP_INSTITUTION, described_class::STEP_OBJECT ]) }
+    specify { expect(subject.steps).to eq([ described_class::STEP_INSTITUTION, described_class::STEP_OBJECT,
+                                            described_class::STEP_IMAGING_EVENT ]) }
 
     describe '#current_step' do
       describe 'current_step variable is nil' do

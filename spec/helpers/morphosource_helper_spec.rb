@@ -94,6 +94,26 @@ RSpec.describe MorphosourceHelper, type: :helper do
     end
   end
 
+  describe '#object_imaging_event_selector' do
+    let!(:physical_objects) do
+      [ BiologicalSpecimen.create(title: [ 'Baz' ], institution: [ 'A' ], vouchered: [ true ]),
+        BiologicalSpecimen.create(title: [ 'Boo' ], institution: [ 'B' ], vouchered: [ true ]) ]
+    end
+    let!(:imaging_events) do
+      [ ImagingEvent.create(title: [ 'Foo' ]), ImagingEvent.create(title: [ 'Bar' ]) ]
+    end
+    before do
+      physical_objects[0].ordered_members << imaging_events[1]
+      physical_objects[0].save!
+      physical_objects[1].ordered_members << imaging_events[0]
+      physical_objects[1].save!
+    end
+    it 'returns the appropriate array' do
+      expect(helper.object_imaging_event_selector(physical_objects[0].id)).to eq([ [ imaging_events[1].title.first,
+                                                                                     imaging_events[1].id ] ])
+    end
+  end
+
   describe '#ms_work_form_tabs' do
     let(:work) { double }
     let(:with_files_tab) { [ 'metadata', 'files', 'relationships' ] }

@@ -25,6 +25,16 @@ module MorphosourceHelper
     hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
   end
 
+  def object_imaging_event_selector(object_id)
+    obj_doc = SolrDocument.find(object_id)
+    obj_member_ids = obj_doc[Solrizer.solr_name('member_ids', :symbol)]
+    obj_member_docs = obj_member_ids.map { |id| SolrDocument.find(id) }
+    obj_object_docs = obj_member_docs.select do |doc|
+      doc[Solrizer.solr_name('has_model', :symbol)].first == 'ImagingEvent'
+    end
+    obj_object_docs.map { |doc| [ doc.sortable_title, doc.id ] }.sort_by { |e| e[0] }
+  end
+
   def find_works_autocomplete_url(curation_concern, relation)
     valid_concerns = curation_concern.send("valid_#{relation}_concerns").map(&:to_s)
     type_params = valid_concerns.sort.map { |type| "type[]=#{type}" }

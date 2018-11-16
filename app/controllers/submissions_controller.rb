@@ -35,12 +35,13 @@ class SubmissionsController < ApplicationController
     @submission = Submission.find(params[:id])
     @institution = Institution.find(@submission.institution_id)
     @object = ActiveFedora::Base.find(@submission.object_id)
+    @imaging_event = ImagingEvent.find(@submission.imaging_event_id)
   end
 
   private
 
   def submission_params
-    params.fetch(:submission, {}).permit(:institution_id, :object_id)
+    params.fetch(:submission, {}).permit(:institution_id, :object_id, :imaging_event_id)
   end
 
 end

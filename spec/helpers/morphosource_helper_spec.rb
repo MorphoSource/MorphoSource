@@ -59,59 +59,154 @@ RSpec.describe MorphosourceHelper, type: :helper do
   end
 
   describe '#institution_object_selector' do
-    let!(:institutions) do
-      [ Institution.create(title: [ 'Foo' ]),
-        Institution.create(title: [ 'Bar' ]) ]
+    describe 'institution has objects' do
+      let(:object_docs) do
+        [ double('SolrDocument', id: 'def', sortable_title: 'Ai'),
+          double('SolrDocument', id: 'abc', sortable_title: 'Baz') ]
+      end
+      before do
+        allow(helper).to receive(:institution_objects).with('zyx') { object_docs }
+      end
+      it 'returns the appropriate array' do
+        expect(helper.institution_object_selector('zyx')).to eq([ [ 'Ai', 'def' ],
+                                                                  [ 'Baz', 'abc' ] ])
+      end
     end
-    let!(:physical_objects) do
-      [ BiologicalSpecimen.create(title: [ 'Baz' ], vouchered: [ true ]),
-        BiologicalSpecimen.create(title: [ 'Boo' ], vouchered: [ true ]),
-        CulturalHeritageObject.create(title: [ 'Ai' ], vouchered: [ true ]) ]
+    describe 'institution has no objects' do
+      before do
+        allow(helper).to receive(:institution_objects).with('zyx') { [] }
+      end
+      it 'returns an empty array' do
+        expect(helper.institution_object_selector('zyx')).to match([])
+      end
+
     end
-    before do
-      institutions[0].ordered_members << physical_objects[0]
-      institutions[0].ordered_members << physical_objects[2]
-      institutions[0].save!
-      institutions[1].ordered_members << physical_objects[1]
-      institutions[1].save!
+  end
+
+  describe '#institution_objects' do
+    describe 'institution has objects' do
+      let!(:institutions) do
+        [ Institution.create(title: [ 'Foo' ]),
+          Institution.create(title: [ 'Bar' ]) ]
+      end
+      let!(:physical_objects) do
+        [ BiologicalSpecimen.create(title: [ 'Baz' ], vouchered: [ true ]),
+          BiologicalSpecimen.create(title: [ 'Boo' ], vouchered: [ true ]),
+          CulturalHeritageObject.create(title: [ 'Ai' ], vouchered: [ true ]) ]
+      end
+      before do
+        institutions[0].ordered_members << physical_objects[0]
+        institutions[0].ordered_members << physical_objects[2]
+        institutions[0].save!
+        institutions[1].ordered_members << physical_objects[1]
+        institutions[1].save!
+      end
+      it 'returns the appropriate array' do
+        results = helper.institution_objects(institutions[0].id)
+        expect(results).to match([ an_instance_of(SolrDocument), an_instance_of(SolrDocument) ])
+        expect(results.map { |result| result.sortable_title }).to eq([ 'Ai', 'Baz' ])
+      end
     end
-    it 'returns the appropriate array' do
-      expect(helper.institution_object_selector(institutions[0].id)).to eq([ [ physical_objects[2].title.first,
-                                                                               physical_objects[2].id ],
-                                                                             [ physical_objects[0].title.first,
-                                                                               physical_objects[0].id ] ])
+    describe 'institution has no objects' do
+      let!(:institution) { Institution.create(title: [ 'Foo' ]) }
+      it 'returns an empty array' do
+        expect(helper.institution_objects(institution.id)).to match([])
+      end
     end
   end
 
   describe '#institution_selector' do
-    let!(:institutions) do
-      [ Institution.create(title: [ 'Foo' ]),
-        Institution.create(title: [ 'Bar' ]) ]
+    describe 'there are institutions' do
+      let(:institution_hits) do
+        [ double('ActiveFedora::SolrHit', id: 'abc'),
+          double('ActiveFedora::SolrHit', id: 'def') ]
+      end
+      before do
+        allow(institution_hits[0]).to receive(:[]).with('title_ssi') { 'Bar' }
+        allow(institution_hits[1]).to receive(:[]).with('title_ssi') { 'Foo' }
+        allow(helper).to receive(:institutions) { institution_hits }
+      end
+      it 'returns the appropriate array' do
+        expect(helper.institution_selector).to eq([ [ 'Bar', 'abc' ],
+                                                    [ 'Foo', 'def' ] ])
+      end
     end
-    it 'returns the appropriate array' do
-      expect(helper.institution_selector).to eq([ [ institutions[1].title.first, institutions[1].id ],
-                                                  [ institutions[0].title.first, institutions[0].id ] ])
+    describe 'there are no institutions' do
+      it 'returns an empty array' do
+        expect(helper.institution_selector).to match([])
+      end
+    end
+  end
+
+  describe '#institutions' do
+    describe 'there are institutions' do
+      let!(:institutions) do
+        [ Institution.create(title: [ 'Foo' ]),
+          Institution.create(title: [ 'Bar' ]) ]
+      end
+      it 'returns the appropriate array' do
+        results = helper.institutions
+        expect(results).to match([ an_instance_of(ActiveFedora::SolrHit), an_instance_of(ActiveFedora::SolrHit) ])
+        expect(results.map { |result| result['title_ssi'] }).to eq([ 'Bar', 'Foo' ])
+      end
+    end
+    describe 'there are no institutions' do
+      it 'returns an empty array' do
+        expect(helper.institutions).to match([])
+      end
     end
   end
 
   describe '#object_imaging_event_selector' do
-    let!(:physical_objects) do
-      [ BiologicalSpecimen.create(title: [ 'Baz' ], vouchered: [ true ]),
-        BiologicalSpecimen.create(title: [ 'Boo' ], vouchered: [ true ]) ]
+    describe 'object has imaging events' do
+      let(:imaging_event_docs) do
+        [ double('SolrDocument', id: 'def', sortable_title: 'Bar') ]
+      end
+      before do
+        allow(helper).to receive(:object_imaging_events).with('zyx') { imaging_event_docs }
+      end
+      it 'returns the appropriate array' do
+        expect(helper.object_imaging_event_selector('zyx')).to eq([ [ 'Bar', 'def' ] ])
+      end
     end
-    let!(:imaging_events) do
-      [ ImagingEvent.create(title: [ 'Foo' ]), ImagingEvent.create(title: [ 'Bar' ]) ]
+    describe 'object has no imaging events' do
+      before do
+        allow(helper).to receive(:object_imaging_events).with('zyx') { [] }
+      end
+      it 'returns an empty array' do
+        expect(helper.object_imaging_events('zyx')).to match([])
+      end
     end
-    before do
-      physical_objects[0].ordered_members << imaging_events[1]
-      physical_objects[0].save!
-      physical_objects[1].ordered_members << imaging_events[0]
-      physical_objects[1].save!
+  end
+
+  describe '#object_imaging_events' do
+    describe 'object has imaging events' do
+      let!(:physical_objects) do
+        [ BiologicalSpecimen.create(title: [ 'Baz' ], vouchered: [ true ]),
+          BiologicalSpecimen.create(title: [ 'Boo' ], vouchered: [ true ]) ]
+      end
+      let!(:imaging_events) do
+        [ ImagingEvent.create(title: [ 'Foo' ]), ImagingEvent.create(title: [ 'Bar' ]) ]
+      end
+      before do
+        physical_objects[0].ordered_members << imaging_events[1]
+        physical_objects[0].save!
+        physical_objects[1].ordered_members << imaging_events[0]
+        physical_objects[1].save!
+      end
+      it 'returns the appropriate array' do
+        results = helper.object_imaging_events(physical_objects[0].id)
+        expect(results).to match([ an_instance_of(SolrDocument) ])
+        expect(results.map { |result| result.sortable_title }).to eq([ 'Bar' ])
+      end
     end
-    it 'returns the appropriate array' do
-      expect(helper.object_imaging_event_selector(physical_objects[0].id)).to eq([ [ imaging_events[1].title.first,
-                                                                                     imaging_events[1].id ] ])
+    describe 'object has no imaging events' do
+      let!(:physical_object) { BiologicalSpecimen.create(title: [ 'Baz' ], vouchered: [ true ]) }
+      it 'returns an empty array' do
+        expect(helper.object_imaging_events(physical_object.id)).to match([])
+      end
     end
+
   end
 
   describe '#ms_work_form_tabs' do

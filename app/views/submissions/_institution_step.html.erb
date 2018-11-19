@@ -1,14 +1,21 @@
-<%# TODO: This may not be the best place for this script. %>
-<script>
-    $(document).ready(function () {
-        $("#submission_institution_id").select2();
-    });
-</script>
+<h3>Institution</h3>
 
-<div class="form-group">
-  <div class="form-inline">
-    <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
-    <%= f.input :institution_id, collection: institution_selector, prompt: 'Select institution',
-                input_html: {style: 'width: 400px'} %>
+<%# TODO: Currently retrieves the institutions twice; once in the line below and again in the 'input' field %>
+<% if institutions.present? %>
+<h5>Select an existing institution</h5>
+  <div class="form-group">
+    <div class="form-inline">
+      <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
+      <%= f.input :institution_id, collection: institution_selector, prompt: 'Select institution',
+                  input_html: {style: 'width: 400px'}, label: false %>
+    </div>
+    <div>
+      <%= f.submit 'Continue with selected institution', class: 'btn btn-info', role: 'button' %>
+    </div>
   </div>
+<% end %>
+
+<h5>Create a new institution</h5>
+<div>
+  <%= link_to 'Create Institution', [ main_app, 'new_hyrax_institution' ], class: 'btn btn-info', role: 'button' %>
 </div>

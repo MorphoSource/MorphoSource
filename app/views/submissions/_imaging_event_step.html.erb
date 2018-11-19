@@ -1,14 +1,25 @@
-<%# TODO: This may not be the best place for this script. %>
-<script>
-    $(document).ready(function () {
-        $("#submission_imaging_event_id").select2();
-    });
-</script>
-
-<div class="form-group">
-  <div class="form-inline">
-    <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
-    <%= f.input :imaging_event_id, collection: object_imaging_event_selector(@submission.object_id),
-                prompt: 'Select imaging event', input_html: {style: 'width: 400px'} %>
-  </div>
+<div>
+  <dl>
+    <dt>Institution</dt>
+    <dd><%= SolrDocument.find(@submission.institution_id).title.first %></dd>
+    <dt>Physical Object</dt>
+    <dd><%= SolrDocument.find(@submission.object_id).title.first %></dd>
+  </dl>
 </div>
+
+<h3>Imaging Event</h3>
+
+<%# TODO: Currently retrieves the imaging_events for an object twice; once in the line below and again in the 'input' field %>
+<% if object_imaging_events(@submission.object_id).present? %>
+  <h5>Select an existing imaging event for the selected object</h5>
+  <div class="form-group">
+    <div class="form-inline">
+      <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
+      <%= f.input :imaging_event_id, collection: object_imaging_event_selector(@submission.object_id),
+                  prompt: 'Select imaging event', input_html: {style: 'width: 400px'} %>
+    </div>
+    <div>
+      <%= f.submit 'Continue with selected imaging event', class: 'btn btn-info', role: 'button' %>
+    </div>
+  </div>
+<% end %>

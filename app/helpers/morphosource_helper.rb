@@ -9,30 +9,50 @@ module MorphosourceHelper
   end
 
   def institution_object_selector(institution_id)
+    institution_objects(institution_id).map { |doc| [ doc.sortable_title, doc.id ] }.sort_by { |e| e[0] }
+  end
+
+  def institution_objects(institution_id)
     inst_doc = SolrDocument.find(institution_id)
-    inst_member_ids = inst_doc[Solrizer.solr_name('member_ids', :symbol)]
-    inst_member_docs = inst_member_ids.map { |id| SolrDocument.find(id) }
-    inst_object_docs = inst_member_docs.select do |doc|
-      [ 'BiologicalSpecimen', 'CulturalHeritageObject' ].include?(doc[Solrizer.solr_name('has_model', :symbol)].first)
+    if inst_member_ids = inst_doc[Solrizer.solr_name('member_ids', :symbol)]
+      inst_member_docs = inst_member_ids.map { |id| SolrDocument.find(id) }
+      inst_member_docs.select do |doc|
+        [ 'BiologicalSpecimen', 'CulturalHeritageObject' ].include?(doc[Solrizer.solr_name('has_model', :symbol)].first)
+      end
+      inst_member_docs.sort_by { |doc| doc.sortable_title }
+    else
+      []
     end
-    inst_object_docs.map { |doc| [ doc.sortable_title, doc.id ] }.sort_by { |e| e[0] }
   end
 
   def institution_selector
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Institution"
-    hits = ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
+    hits = institutions
     hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
   end
 
+  def institutions
+    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
+    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Institution"
+    ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
+  end
+
   def object_imaging_event_selector(object_id)
-    obj_doc = SolrDocument.find(object_id)
-    obj_member_ids = obj_doc[Solrizer.solr_name('member_ids', :symbol)]
-    obj_member_docs = obj_member_ids.map { |id| SolrDocument.find(id) }
-    obj_object_docs = obj_member_docs.select do |doc|
-      doc[Solrizer.solr_name('has_model', :symbol)].first == 'ImagingEvent'
+    if obj_imaging_event_docs = object_imaging_events(object_id)
+      obj_imaging_event_docs.map { |doc| [ doc.sortable_title, doc.id ] }.sort_by { |e| e[0] }
+    else
+      []
     end
-    obj_object_docs.map { |doc| [ doc.sortable_title, doc.id ] }.sort_by { |e| e[0] }
+  end
+
+  def object_imaging_events(object_id)
+    obj_doc = SolrDocument.find(object_id)
+    if obj_member_ids = obj_doc[Solrizer.solr_name('member_ids', :symbol)]
+      obj_member_docs = obj_member_ids.map { |id| SolrDocument.find(id) }
+      obj_member_docs.select { |doc| doc[Solrizer.solr_name('has_model', :symbol)].first == 'ImagingEvent' }
+    else
+      []
+    end
   end
 
   def find_works_autocomplete_url(curation_concern, relation)

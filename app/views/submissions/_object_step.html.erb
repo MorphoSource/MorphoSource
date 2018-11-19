@@ -1,14 +1,35 @@
-<%# TODO: This may not be the best place for this script. %>
-<script>
-    $(document).ready(function () {
-        $("#submission_object_id").select2();
-    });
-</script>
+<div>
+  <dl>
+    <dt>Institution</dt>
+    <dd><%= SolrDocument.find(@submission.institution_id).title.first %></dd>
+  </dl>
+</div>
 
-<div class="form-group">
-  <div class="form-inline">
-    <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
-    <%= f.input :object_id, collection: institution_object_selector(@submission.institution_id),
-                prompt: 'Select physical object', input_html: {style: 'width: 400px'} %>
+<h3>Physical Object</h3>
+
+<%# TODO: Currently retrieves the objects for an institution twice; once in the line below and again in the 'input' field %>
+<% if institution_objects(@submission.institution_id).present? %>
+  <h5>Select an existing physical object from the selected institution</h5>
+  <div class="form-group">
+    <div class="form-inline">
+      <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
+      <%= f.input :object_id, collection: institution_object_selector(@submission.institution_id),
+                  prompt: 'Select physical object', input_html: {style: 'width: 400px'}, label: false %>
+    </div>
+    <div>
+      <%= f.submit 'Continue with selected physical object', class: 'btn btn-info', role: 'button' %>
+    </div>
   </div>
+<% end %>
+
+<h5>Create a new physical object for the selected institution</h5>
+<div>
+  <%= link_to 'Create Biological Specimen',
+              [ main_app, :new, :hyrax, :parent, 'biological_specimen', parent_id: @submission.institution_id ],
+              class: 'btn btn-info',
+              role: 'button' %>
+  <%= link_to 'Create Cultural Heritage Object',
+              [ main_app, :new, :hyrax, :parent, 'cultural_heritage_object', parent_id: @submission.institution_id ],
+              class: 'btn btn-info',
+              role: 'button' %>
 </div>

@@ -64,9 +64,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
         Institution.create(title: [ 'Bar' ]) ]
     end
     let!(:physical_objects) do
-      [ BiologicalSpecimen.create(title: [ 'Baz' ], institution: [ 'A' ], vouchered: [ true ]),
-        BiologicalSpecimen.create(title: [ 'Boo' ], institution: [ 'B' ], vouchered: [ true ]),
-        CulturalHeritageObject.create(title: [ 'Ai' ], institution: [ 'C' ], vouchered: [ true ]) ]
+      [ BiologicalSpecimen.create(title: [ 'Baz' ], vouchered: [ true ]),
+        BiologicalSpecimen.create(title: [ 'Boo' ], vouchered: [ true ]),
+        CulturalHeritageObject.create(title: [ 'Ai' ], vouchered: [ true ]) ]
     end
     before do
       institutions[0].ordered_members << physical_objects[0]
@@ -96,8 +96,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
 
   describe '#object_imaging_event_selector' do
     let!(:physical_objects) do
-      [ BiologicalSpecimen.create(title: [ 'Baz' ], institution: [ 'A' ], vouchered: [ true ]),
-        BiologicalSpecimen.create(title: [ 'Boo' ], institution: [ 'B' ], vouchered: [ true ]) ]
+      [ BiologicalSpecimen.create(title: [ 'Baz' ], vouchered: [ true ]),
+        BiologicalSpecimen.create(title: [ 'Boo' ], vouchered: [ true ]) ]
     end
     let!(:imaging_events) do
       [ ImagingEvent.create(title: [ 'Foo' ]), ImagingEvent.create(title: [ 'Bar' ]) ]

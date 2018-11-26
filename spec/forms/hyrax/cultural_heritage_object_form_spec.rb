@@ -9,8 +9,8 @@ RSpec.describe Hyrax::CulturalHeritageObjectForm do
   describe 'class attributes' do
 
     it 'has expected metadata terms' do
-      expect(described_class.terms).to include(:bibliographic_citation, :catalog_number, :collection_code, :institution,
-                                               :latitude, :longitude, :numeric_time, :original_location, :periodic_time,
+      expect(described_class.terms).to include(:bibliographic_citation, :catalog_number, :collection_code, :latitude,
+                                               :longitude, :numeric_time, :original_location, :periodic_time,
                                                :vouchered, :cho_type, :material, :short_title)
 
       expect(described_class.terms).to_not include(:keyword, :license, :rights_statement, :subject, :title, :language,
@@ -24,7 +24,7 @@ RSpec.describe Hyrax::CulturalHeritageObjectForm do
     it 'has expected single valued metadata terms' do
       expect(described_class.single_valued_fields).to match_array([ :bibliographic_citation, :catalog_number,
                                                                     :collection_code, :date_created, :description,
-                                                                    :institution, :latitude, :longitude, :numeric_time,
+                                                                    :latitude, :longitude, :numeric_time,
                                                                     :original_location, :publisher, :vouchered,
                                                                     :creator, :short_title ])
     end
@@ -42,8 +42,7 @@ RSpec.describe Hyrax::CulturalHeritageObjectForm do
     it 'has the expected primary metadata terms' do
       expect(subject.primary_terms).to match_array(required_fields + [ :short_title, :bibliographic_citation,
                                                                        :based_near, :catalog_number, :collection_code,
-                                                                       :date_created, :identifier, :institution,
-                                                                       :related_url ])
+                                                                       :date_created, :identifier, :related_url ])
     end
 
   end

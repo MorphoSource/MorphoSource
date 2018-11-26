@@ -131,7 +131,6 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name('catalog_number', :stored_searchable)
     config.add_show_field solr_name('collection_code', :stored_searchable)
     config.add_show_field solr_name('current_location', :stored_searchable)
-    config.add_show_field solr_name('institution', :stored_searchable)
     config.add_show_field solr_name('numeric_time', :stored_searchable)
     config.add_show_field solr_name('original_location', :stored_searchable)
     config.add_show_field solr_name('periodic_time', :stored_searchable)

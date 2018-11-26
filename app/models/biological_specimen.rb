@@ -6,7 +6,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # Change this to restrict which works can be added as a child.
   self.valid_child_concerns = [ImagingEvent, Attachment]
 
-  validates_presence_of(:institution)
   validates :title, presence: { message: I18n.t('morphosource.validation.missing.title') }
   validates :vouchered, presence: { message: I18n.t('morphosource.validation.missing.vouchered')}
 

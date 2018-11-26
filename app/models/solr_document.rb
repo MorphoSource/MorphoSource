@@ -143,10 +143,6 @@ class SolrDocument
     end
   end
 
-  def institution
-    self[Solrizer.solr_name('institution', :stored_searchable)]
-  end
-
   def latitude
     self[Solrizer.solr_name('latitude', :stored_searchable)]
   end

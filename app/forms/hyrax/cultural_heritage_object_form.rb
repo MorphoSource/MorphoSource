@@ -14,7 +14,6 @@ module Hyrax
         :bibliographic_citation,
         :catalog_number,
         :collection_code,
-        :institution,
         :latitude,
         :longitude,
         :numeric_time,
@@ -36,7 +35,6 @@ module Hyrax
         :collection_code,
         :date_created,
         :description,
-        :institution,
         :latitude,
         :longitude,
         :numeric_time,
@@ -57,7 +55,6 @@ module Hyrax
           :collection_code,
           :date_created,
           :identifier,
-          :institution,
           :related_url
       ]
     end

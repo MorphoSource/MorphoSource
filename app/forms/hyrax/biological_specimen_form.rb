@@ -16,7 +16,6 @@ module Hyrax
         :bibliographic_citation,
         :catalog_number,
         :collection_code,
-        :institution,
         :latitude,
         :longitude,
         :numeric_time,
@@ -32,7 +31,7 @@ module Hyrax
 
     self.terms -= [ :keyword, :license, :rights_statement, :subject, :title, :language, :source, :resource_type ]
 
-    self.required_fields = [ :institution, :vouchered ]
+    self.required_fields = [ :vouchered ]
 
     self.single_valued_fields = [
         :bibliographic_citation,
@@ -40,7 +39,6 @@ module Hyrax
         :collection_code,
         :date_created,
         :description,
-        :institution,
         :latitude,
         :longitude,
         :numeric_time,

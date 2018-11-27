@@ -1,4 +1,8 @@
-class Submission < ActiveRecord::Base
+class Submission
+  include ActiveModel::Model
+
+  attr_accessor :imaging_event_id, :institution_id, :object_id
+  attr_writer :current_step
 
   Step = Struct.new(:name, :previous_step, :next_step) do
     def to_s
@@ -38,8 +42,6 @@ class Submission < ActiveRecord::Base
   def self.step(step_name)
     STEPS.find { |step| step.name == step_name }
   end
-
-  attr_writer :current_step
 
   validates_presence_of :institution_id, if: :selecting_institution?
   validates_presence_of :object_id, if: :selecting_object?

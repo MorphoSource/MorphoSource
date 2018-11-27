@@ -6,6 +6,7 @@
 <%= simple_form_for @submission do |f| %>
 
   <%= f.submit 'Back to previous step', name: 'previous_button' unless @submission.first_step? %>
+  <%= f.submit 'Start over', name: 'start_over' unless @submission.first_step? %>
 
   <%= render "#{@submission.current_step}_step", f: f %>
 

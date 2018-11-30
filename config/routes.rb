@@ -36,6 +36,12 @@ Rails.application.routes.draw do
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  resources :submissions, only: [ :new, :create, :show ]
+  resources :submissions, only: [ :new, :create ] do
+    collection do
+      post 'create_biological_specimen'
+      post 'create_cultural_heritage_object'
+      post 'create_institution'
+    end
+  end
 
 end

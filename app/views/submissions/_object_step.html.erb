@@ -1,35 +1,59 @@
-<div>
-  <dl>
-    <dt>Institution</dt>
-    <dd><%= SolrDocument.find(@submission.institution_id).title.first %></dd>
-  </dl>
-</div>
-
 <h3>Physical Object</h3>
 
-<%# TODO: Currently retrieves the objects for an institution twice; once in the line below and again in the 'input' field %>
-<% if institution_objects(@submission.institution_id).present? %>
-  <h5>Select an existing physical object from the selected institution</h5>
-  <div class="form-group">
-    <div class="form-inline">
-      <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
-      <%= f.input :object_id, collection: institution_object_selector(@submission.institution_id),
-                  prompt: 'Select physical object', input_html: {style: 'width: 400px'}, label: false %>
-    </div>
+<div id="select_physical_object">
+  <%= simple_form_for @submission do |f| %>
+    <%= f.submit 'Back to previous step', name: 'previous_button' unless @submission.first_step? %>
+    <%= f.submit 'Start over', name: 'start_over' unless @submission.first_step? %>
     <div>
-      <%= f.submit 'Continue with selected physical object', class: 'btn btn-info', role: 'button' %>
+      <dl>
+        <dt>Institution</dt>
+        <dd><%= SolrDocument.find(@submission.institution_id).title.first %></dd>
+      </dl>
+    </div><%# TODO: Currently retrieves the objects for an institution twice; once in the line below and again in the 'input' field %>
+    <% if institution_objects(@submission.institution_id).present? %>
+      <h5>Select an existing physical object</h5>
+      <div class="form-group">
+        <div class="form-inline">
+          <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
+          <%= f.input :object_id, collection: institution_object_selector(@submission.institution_id),
+                      prompt: 'Select physical object', input_html: {style: 'width: 400px'}, label: false %>
+        </div>
+        <div>
+          <%= f.submit 'Continue with selected physical object', class: 'btn btn-info', role: 'button' %>
+        </div>
+      </div>
+    <% end %>
+    <div>
+      <a href="#" id="show_create_biological_specimen" class="btn btn-info">Create New Biological Specimen</a>
+      <a href="#" id="show_create_cultural_heritage_object" class="btn btn-info">Create New Cultural Heritage Object</a>
     </div>
-  </div>
-<% end %>
+  <% end %>
+</div>
 
-<h5>Create a new physical object for the selected institution</h5>
-<div>
-  <%= link_to 'Create Biological Specimen',
-              [ main_app, :new, :hyrax, :parent, 'biological_specimen', parent_id: @submission.institution_id ],
-              class: 'btn btn-info',
-              role: 'button' %>
-  <%= link_to 'Create Cultural Heritage Object',
-              [ main_app, :new, :hyrax, :parent, 'cultural_heritage_object', parent_id: @submission.institution_id ],
-              class: 'btn btn-info',
-              role: 'button' %>
+<div id="create_biological_specimen" class="hidden">
+  <h5>Create a new biological specimen</h5>
+
+  <%= simple_form_for @biological_specimen_form, url: create_biological_specimen_submissions_url do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+      <div>
+        <%= f.submit 'Create New Biological Specimen', class: "btn btn-primary" %>
+        <a href="#" id="show_select_physical_object" class="btn btn-info">Select Existing Physical Object</a>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<div id="create_cultural_heritage_object" class="hidden">
+  <h5>Create a new cultural heritage object</h5>
+
+  <%= simple_form_for @cultural_heritage_object_form, url: create_cultural_heritage_object_submissions_url do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+      <div>
+        <%= f.submit 'Create New Cultural Heritage Object', class: "btn btn-primary" %>
+        <a href="#" id="show_select_physical_object" class="btn btn-info">Select Existing Physical Object</a>
+      </div>
+    </div>
+  <% end %>
 </div>

@@ -1,0 +1,20 @@
+<div class="base-terms">
+  <% f.object.primary_terms.each do |term| %>
+    <%= render_edit_field_partial(term, f: f) %>
+  <% end %>
+</div>
+<% if f.object.display_additional_fields? %>
+  <% extended_terms_id = "extended-#{f.object.class.name.underscore.split('/').last}-terms" %>
+  <%= link_to t('hyrax.works.form.additional_fields'),
+              "##{extended_terms_id}",
+              class: 'btn btn-default additional-fields',
+              data: {toggle: 'collapse'},
+              role: "button",
+              'aria-expanded' => "false",
+              'aria-controls' => "extended-terms" %>
+  <div id=<%= extended_terms_id %> class='collapse'>
+    <% f.object.secondary_terms.each do |term| %>
+      <%= render_edit_field_partial(term, f: f) %>
+    <% end %>
+  </div>
+<% end %>

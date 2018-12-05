@@ -28,7 +28,7 @@ gem 'pul_uv_rails', :git => 'https://github.com/JuliaWinchester/pul_uv_rails.git
 # pull iiif_manifest fork that can handle 3D manifests
 gem 'iiif_manifest', :git => 'https://github.com/JuliaWinchester/iiif_manifest.git'
 
-gem 'hyrax', '2.4.0'
+gem 'hyrax', '2.4.1'
 gem 'hydra-role-management'
 
 gem 'resque'

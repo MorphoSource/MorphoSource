@@ -58,27 +58,31 @@ RSpec.describe MorphosourceHelper, type: :helper do
     end
   end
 
-  describe '#institution_object_selector' do
-    describe 'institution has objects' do
-      let(:object_docs) do
-        [ double('SolrDocument', id: 'def', sortable_title: 'Ai'),
-          double('SolrDocument', id: 'abc', sortable_title: 'Baz') ]
+  describe '#physical_object_selector' do
+    describe 'institution present' do
+      describe 'institution has objects' do
+        let(:object_docs) do
+          [ double('SolrDocument', id: 'def', sortable_title: 'Ai'),
+            double('SolrDocument', id: 'abc', sortable_title: 'Baz') ]
+        end
+        before do
+          allow(helper).to receive(:institution_objects).with('zyx') { object_docs }
+        end
+        it 'returns the appropriate array' do
+          expect(helper.physical_object_selector('zyx')).to eq([ [ 'Ai', 'def' ],
+                                                                    [ 'Baz', 'abc' ] ])
+        end
       end
-      before do
-        allow(helper).to receive(:institution_objects).with('zyx') { object_docs }
-      end
-      it 'returns the appropriate array' do
-        expect(helper.institution_object_selector('zyx')).to eq([ [ 'Ai', 'def' ],
-                                                                  [ 'Baz', 'abc' ] ])
+      describe 'institution has no objects' do
+        before do
+          allow(helper).to receive(:institution_objects).with('zyx') { [] }
+        end
+        it 'returns an empty array' do
+          expect(helper.physical_object_selector('zyx')).to match([])
+        end
       end
     end
-    describe 'institution has no objects' do
-      before do
-        allow(helper).to receive(:institution_objects).with('zyx') { [] }
-      end
-      it 'returns an empty array' do
-        expect(helper.institution_object_selector('zyx')).to match([])
-      end
+    describe 'institution not present' do
 
     end
   end
@@ -207,6 +211,27 @@ RSpec.describe MorphosourceHelper, type: :helper do
       end
     end
 
+  end
+
+  describe '#physical_objects' do
+    describe 'objects exist' do
+      let!(:physical_objects) do
+        [ BiologicalSpecimen.create(title: [ 'Baz' ], vouchered: [ true ]),
+          BiologicalSpecimen.create(title: [ 'Boo' ], vouchered: [ true ]),
+          CulturalHeritageObject.create(title: [ 'Ai' ], vouchered: [ true ]) ]
+      end
+      it 'returns the appropriate array' do
+        results = helper.physical_objects
+        expect(results).to match([ an_instance_of(ActiveFedora::SolrHit), an_instance_of(ActiveFedora::SolrHit),
+                                   an_instance_of(ActiveFedora::SolrHit) ])
+        expect(results.map { |result| result['title_ssi'] }).to eq([ 'Ai', 'Baz', 'Boo' ])
+      end
+    end
+    describe 'no objects exist' do
+      it 'returns an empty array' do
+        expect(helper.physical_objects).to match([])
+      end
+    end
   end
 
   describe '#ms_work_form_tabs' do

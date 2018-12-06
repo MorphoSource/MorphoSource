@@ -43,7 +43,6 @@ class Submission
     STEPS.find { |step| step.name == step_name }
   end
 
-  validates_presence_of :institution_id, if: :selecting_institution?
   validates_presence_of :object_id, if: :selecting_object?
   validates_presence_of :imaging_event_id, if: :selecting_imaging_event?
 
@@ -72,10 +71,6 @@ class Submission
 
   def step_back
     self.current_step = current_step.previous_step
-  end
-
-  def selecting_institution?
-    current_step == STEP_INSTITUTION
   end
 
   def selecting_object?

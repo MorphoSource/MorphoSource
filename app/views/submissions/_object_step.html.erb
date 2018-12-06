@@ -4,18 +4,21 @@
   <%= simple_form_for @submission do |f| %>
     <%= f.submit 'Back to previous step', name: 'previous_button' unless @submission.first_step? %>
     <%= f.submit 'Start over', name: 'start_over' unless @submission.first_step? %>
-    <div>
-      <dl>
-        <dt>Institution</dt>
-        <dd><%= SolrDocument.find(@submission.institution_id).title.first %></dd>
-      </dl>
-    </div><%# TODO: Currently retrieves the objects for an institution twice; once in the line below and again in the 'input' field %>
-    <% if institution_objects(@submission.institution_id).present? %>
+    <% if @submission.institution_id.present? %>
+      <div>
+        <dl>
+          <dt>Institution</dt>
+          <dd><%= SolrDocument.find(@submission.institution_id).title.first %></dd>
+        </dl>
+      </div><%# TODO: Currently retrieves the objects for an institution twice; once in the line below and again in the 'input' field %>
+    <% end %>
+    <% if (@submission.institution_id.present? && institution_objects(@submission.institution_id).present?) ||
+            (@submission.institution_id.blank? && physical_objects.present?) %>
       <h5>Select an existing physical object</h5>
       <div class="form-group">
         <div class="form-inline">
           <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
-          <%= f.input :object_id, collection: institution_object_selector(@submission.institution_id),
+          <%= f.input :object_id, collection: physical_object_selector(@submission.institution_id),
                       prompt: 'Select physical object', input_html: {style: 'width: 400px'}, label: false %>
         </div>
         <div>

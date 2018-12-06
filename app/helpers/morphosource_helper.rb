@@ -8,8 +8,14 @@ module MorphosourceHelper
     end
   end
 
-  def institution_object_selector(institution_id)
-    institution_objects(institution_id).map { |doc| [ doc.sortable_title, doc.id ] }.sort_by { |e| e[0] }
+  def physical_object_selector(institution_id=nil)
+    if institution_id.present?
+      institution_objects(institution_id).map { |doc| [ doc.sortable_title, doc.id ] }.sort_by { |e| e[0] }
+    else
+      sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
+      hits = physical_objects
+      hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
+    end
   end
 
   def institution_objects(institution_id)
@@ -53,6 +59,14 @@ module MorphosourceHelper
     else
       []
     end
+  end
+
+  def physical_objects
+    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
+    biospec_clause = "#{Solrizer.solr_name('has_model', :symbol)}:BiologicalSpecimen"
+    cho_clause = "#{Solrizer.solr_name('has_model', :symbol)}:CulturalHeritageObject"
+    qry = "#{biospec_clause} OR #{cho_clause}"
+    ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
   def find_works_autocomplete_url(curation_concern, relation)

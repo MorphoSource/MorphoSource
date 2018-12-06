@@ -43,13 +43,9 @@ RSpec.describe SubmissionsController, type: :controller do
         before do
           @request.session['submission'] = {}
         end
-        it 'does not advance the step' do
+        it 'sets the next step correctly' do
           post :create, params: form_params
-          expect(session['submission']['current_step']).to eq(Submission::STEP_INSTITUTION.name)
-        end
-        it 'renders the new template' do
-          post :create, params: form_params
-          expect(response).to render_template('new')
+          expect(session['submission']['current_step']).to eq(Submission::STEP_OBJECT.name)
         end
       end
     end

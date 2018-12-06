@@ -7,8 +7,10 @@
     <%# TODO: Currently retrieves the imaging_events for an object twice; once in the line below and again in the 'input' field %>
     <div>
       <dl>
-        <dt>Institution</dt>
-        <dd><%= SolrDocument.find(@submission.institution_id).title.first %></dd>
+        <% if @submission.institution_id.present? %>
+          <dt>Institution</dt>
+          <dd><%= SolrDocument.find(@submission.institution_id).title.first %></dd>
+        <% end %>
         <dt>Physical Object</dt>
         <dd><%= SolrDocument.find(@submission.object_id).title.first %></dd>
       </dl>

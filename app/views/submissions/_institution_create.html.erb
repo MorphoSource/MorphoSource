@@ -1,0 +1,10 @@
+<div id="submission_create_institution" class="hidden">
+  <%= simple_form_for @institution_form, url: stage_institution_submissions_url do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+      <div>
+        <%= f.submit 'Create New Institution', class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>

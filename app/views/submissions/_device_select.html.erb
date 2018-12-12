@@ -1,0 +1,18 @@
+<div id="submission_device_select">
+  <% if devices.present? %>
+    <h5><%= t('morphosource.submission.device_select') %></h5>
+    <div class="form-group">
+      <div class="form-inline">
+        <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
+        <%= f.input :device_id, collection: device_selector, prompt: 'Select device',
+                    input_html: {style: 'width: 400px'}, label: false %>
+      </div>
+      <div>
+        <%= f.submit 'Continue with selected device', name: 'device_select', class: 'btn btn-info', role: 'button' %>
+      </div>
+    </div>
+  <% end %>
+  <div id="submission_choose_create_device">
+    <a href="#" id="submission_show_create_device" class="btn btn-info">Create New Device</a>
+  </div>
+</div>

@@ -22,7 +22,8 @@ class Ability
     # end
 
     if registered_user?
-      can [ :create, :create_biological_specimen, :create_cultural_heritage_object, :create_institution ], Submission
+      can [ :create, :stage_biological_specimen, :stage_cultural_heritage_object, :stage_device, :stage_imaging_event,
+            :stage_institution, :stage_media ], Submission
     end
 
   end

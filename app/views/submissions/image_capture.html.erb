@@ -1,0 +1,8 @@
+<% provide :page_title, t('morphosource.submission.page_title') %>
+<% provide :page_header do %>
+  <h1><%= t('morphosource.submission.page_header') %></h1>
+<% end %>
+
+<div id="submission_image_capture">
+  <%= render(partial: 'image_capture_details') %>
+</div>

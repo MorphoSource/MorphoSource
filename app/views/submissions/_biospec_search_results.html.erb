@@ -1,0 +1,23 @@
+<div id="submission_biospec_search_results">
+  <div class="h4">
+    <%= "Search Results" %>
+  </div>
+  <% if @docs.nil? || @docs.empty? %>
+    <div id="empty_search_results">
+      No Biological Specimens found in MorphoSource that match the search criteria.  Search again or create a new
+      Biological Specimen.
+    </div>
+    <% else %>
+      <div id="submission_select_biospec">
+        <%= f.input :biospec_id,
+                    as: :radio_buttons,
+                    collection: @docs.map{ |doc| [ doc.sortable_title, doc.id ]} %>
+      </div>
+      <div>
+        <%= f.submit 'Continue with selected Biological Specimen', name: 'biospec_select', class: 'btn btn-primary' %>
+      </div>
+      <div id="submission_choose_create_biospec">
+        <a href="#" id="submission_show_create_biospec" class="btn btn-info">Create New Biological Specimen</a>
+      </div>
+    <% end %>
+</div>

@@ -1,0 +1,5 @@
+<div id="submission_choose_raw_or_derived_media">
+  <%= f.input :raw_or_derived_media,
+              as: :radio_buttons,
+              collection: [ Submission::MEDIA_RAW, Submission::MEDIA_DERIVED ] %>
+</div>

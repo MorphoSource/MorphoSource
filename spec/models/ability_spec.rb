@@ -17,31 +17,58 @@ RSpec.describe Ability, type: :model do
         it { is_expected.to_not be_able_to(:create, Submission) }
       end
     end
-    describe 'create_biological_specimen' do
+    describe 'stage_biological_specimen' do
       describe 'logged in' do
         before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:create_biological_specimen, Submission) }
+        it { is_expected.to be_able_to(:stage_biological_specimen, Submission) }
       end
       describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:create_biological_specimen, Submission) }
+        it { is_expected.to_not be_able_to(:stage_biological_specimen, Submission) }
       end
     end
-    describe 'create_cultural_heritage_object' do
+    describe 'stage_cultural_heritage_object' do
       describe 'logged in' do
         before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:create_cultural_heritage_object, Submission) }
+        it { is_expected.to be_able_to(:stage_cultural_heritage_object, Submission) }
       end
       describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:create_cultural_heritage_object, Submission) }
+        it { is_expected.to_not be_able_to(:stage_cultural_heritage_object, Submission) }
       end
     end
-    describe 'create_institution' do
+    describe 'stage_device' do
       describe 'logged in' do
         before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:create_institution, Submission) }
+        it { is_expected.to be_able_to(:stage_device, Submission) }
       end
       describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:create_institution, Submission) }
+        it { is_expected.to_not be_able_to(:stage_device, Submission) }
+      end
+    end
+    describe 'stage_imaging_event' do
+      describe 'logged in' do
+        before { allow(user).to receive(:groups) { [ 'registered' ] } }
+        it { is_expected.to be_able_to(:stage_imaging_event, Submission) }
+      end
+      describe 'not logged in' do
+        it { is_expected.to_not be_able_to(:stage_imaging_event, Submission) }
+      end
+    end
+    describe 'stage_institution' do
+      describe 'logged in' do
+        before { allow(user).to receive(:groups) { [ 'registered' ] } }
+        it { is_expected.to be_able_to(:stage_institution, Submission) }
+      end
+      describe 'not logged in' do
+        it { is_expected.to_not be_able_to(:stage_institution, Submission) }
+      end
+    end
+    describe 'stage_media' do
+      describe 'logged in' do
+        before { allow(user).to receive(:groups) { [ 'registered' ] } }
+        it { is_expected.to be_able_to(:stage_media, Submission) }
+      end
+      describe 'not logged in' do
+        it { is_expected.to_not be_able_to(:stage_media, Submission) }
       end
     end
   end

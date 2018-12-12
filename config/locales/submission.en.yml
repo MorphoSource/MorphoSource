@@ -1,0 +1,22 @@
+en:
+  morphosource:
+    submission:
+      page_title: 'Submit Media // MorphoSource'
+      page_header: 'Submit Media File(s)'
+      biospec_search: 'Search for a Biological Specimen already in MorphoSource or iDigBio, or create a new Biological Specimen'
+      device_select: 'Select the device used to capture this media, or create new device'
+      image_capture_details: 'Enter image capture details'
+      institution_select: 'If this object or device is managed by an institution, select it here or create a new institution. Or select “no institution”'
+  simple_form:
+    labels:
+      submission:
+        biospec_id: 'Biological Specimens in MorphoSource'
+        biospec_or_cho: 'Is the physical object represented by the media a biological specimen or a cultural heritage object?'
+        biospec_search_catalog_number: 'Catalog Number'
+        biospec_search_collection_code: 'Collection Code'
+        biospec_search_genus: 'Genus'
+        biospec_search_institution_code: 'Institution Code'
+        biospec_search_ms_specimen_id: 'MS Specimen ID'
+        biospec_search_occurrence_id: 'Occurrence ID'
+        biospec_search_species: 'Species'
+        raw_or_derived_media: 'Is this media raw or derived?'

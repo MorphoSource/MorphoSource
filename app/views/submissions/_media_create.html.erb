@@ -1,0 +1,12 @@
+<div id="submission_create_media">
+  <%= simple_form_for @media_form, url: stage_media_submissions_url do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: { f: f } %>
+      <%= render partial: 'hyrax/base/form_files', locals: { f: f } %>
+      <%= render partial: 'hyrax/base/form_visibility_component', locals: { f: f } %>
+      <div>
+        <%= f.submit 'Submit Media', class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>

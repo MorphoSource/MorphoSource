@@ -3,11 +3,10 @@
   <h1><%= t('morphosource.submission.page_header') %></h1>
 <% end %>
 
-<div id="submission_new">
+<div id="select_institution">
   <%= simple_form_for @submission do |f| %>
-    <%= render(partial: 'raw_derived_media', locals: { f: f }) %>
-    <%= render(partial: 'physical_object', locals: { f: f }) %>
-    <%= render(partial: 'biospec_search', locals: {f: f }) %>
+    <%= render(partial: 'institution_select', locals: { f: f }) %>
   <% end %>
 </div>
 
+<%= render(partial: 'institution_create') %>

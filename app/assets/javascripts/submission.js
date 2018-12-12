@@ -1,50 +1,55 @@
-/*
-    TODO: Including this in a file like this may not be the best way to handle this.
-    This javascript is needed for using Select2 to provide search functionality in the respective selection widgets.
-*/
 $(document).ready(function () {
+
+    $("#submission_device_id").select2();
     $("#submission_institution_id").select2();
-    $("#submission_object_id").select2();
-    $("#submission_imaging_event_id").select2();
-});
 
-$(document).ready(function() {
-    $('a#show_create_institution').click(function(event){
-        event.preventDefault();
-        $('div#select_institution').addClass('hidden');
-        $('div#create_institution').removeClass('hidden');
-    });
-});
+    $('div#submission_new div#submission_choose_biospec_or_cho').addClass('hidden');
+    $('div#submission_new div#submission_biospec').addClass('hidden')
 
-$(document).ready(function() {
-    $('a#show_select_institution').click(function(event){
-        event.preventDefault();
-        $('div#create_institution').addClass('hidden');
-        $('div#select_institution').removeClass('hidden');
-    });
-});
+    $('input#submission_raw_or_derived_media_raw').click(function(event){
+        $('div#submission_choose_biospec_or_cho').removeClass('hidden')
+        }
+    );
 
-$(document).ready(function() {
-    $('a#show_create_biological_specimen').click(function(event){
+    $('input#submission_raw_or_derived_media_derived').click(function(event){
         event.preventDefault();
-        $('div#select_physical_object').addClass('hidden');
-        $('div#create_biological_specimen').removeClass('hidden');
-    });
-});
+        alert('Not yet implemented');
+        }
+    );
 
-$(document).ready(function() {
-    $('a#show_create_cultural_heritage_object').click(function(event){
-        event.preventDefault();
-        $('div#select_physical_object').addClass('hidden');
-        $('div#create_cultural_heritage_object').removeClass('hidden');
-    });
-});
+    $('input#submission_biospec_or_cho_biospec').click(function(event){
+        $('div#submission_biospec').removeClass('hidden')
+        }
+    );
 
-$(document).ready(function() {
-    $('a#show_select_physical_object').click(function(event){
+    $('input#submission_biospec_or_cho_cho').click(function(event){
         event.preventDefault();
-        $('div#create_biological_specimen').addClass('hidden');
-        $('div#create_cultural_heritage_object').addClass('hidden');
-        $('div#select_physical_object').removeClass('hidden');
-    });
+        alert('Not yet implemented');
+        }
+    );
+
+    $('a#submission_show_create_biospec').click(function(event){
+        event.preventDefault();
+        $('div#submission_biospec_search').addClass('hidden')
+        $('div#submission_choose_create_biospec').addClass('hidden');
+        $('div#submission_create_biospec').removeClass('hidden');
+        }
+    );
+
+    $('a#submission_show_create_institution').click(function(event){
+            event.preventDefault();
+            $('div#submission_institution_select').addClass('hidden')
+            $('div#submission_choose_create_institution').addClass('hidden');
+            $('div#submission_create_institution').removeClass('hidden');
+        }
+    );
+
+    $('a#submission_show_create_device').click(function(event){
+            event.preventDefault();
+            $('div#submission_device_select').addClass('hidden')
+            $('div#submission_choose_create_institution').addClass('hidden');
+            $('div#submission_create_institution').removeClass('hidden');
+        }
+    );
+
 });

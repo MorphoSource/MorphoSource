@@ -1,0 +1,6 @@
+<div id="submission_choose_biospec_or_cho">
+  <%= f.input :biospec_or_cho,
+              as: :radio_buttons,
+              collection: [ [ Submission::PHYSICAL_OBJECT_BIOSPEC[:label], Submission::PHYSICAL_OBJECT_BIOSPEC[:code] ],
+                            [ Submission::PHYSICAL_OBJECT_CHO[:label], Submission::PHYSICAL_OBJECT_CHO[:code] ] ] %>
+</div>

@@ -1,0 +1,22 @@
+<div id="submission_institution_select">
+  <h5><%= t('morphosource.submission.institution_select') %></h5>
+  <div>
+    <%= f.submit 'No institution', name: 'no_institution', class: 'btn btn-info', role: 'button' %>
+  </div>
+  <% if institutions.present? %>
+    <h5>Select an existing institution</h5>
+    <div class="form-group">
+      <div class="form-inline">
+        <%# TODO: Width set to an arbitrary pixel value for now.  This is probably not appropriate for accessibility. %>
+        <%= f.input :institution_id, collection: institution_selector, prompt: 'Select institution',
+                    input_html: {style: 'width: 400px'}, label: false %>
+      </div>
+      <div>
+        <%= f.submit 'Continue with selected institution', name: 'institution_select', class: 'btn btn-info', role: 'button' %>
+      </div>
+    </div>
+  <% end %>
+  <div id="submission_choose_create_insititution">
+    <a href="#" id="submission_show_create_institution" class="btn btn-info">Create New Institution</a>
+  </div>
+</div>

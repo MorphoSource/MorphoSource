@@ -1,0 +1,81 @@
+<%# This is a temporary final landing page for the submission process during development.  It will likely be removed. %>
+<% provide :page_title, t('morphosource.submission.page_title') %>
+<% provide :page_header do %>
+  <h1><%= t('morphosource.submission.page_header') %></h1>
+<% end %>
+
+<div>
+  <dl class="row">
+    <dt class="col-sm-3">raw_or_derived_media</dt>
+    <dd class="col-sm-9"><%= @submission.raw_or_derived_media %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">biospec_or_cho</dt>
+    <dd class="col-sm-9"><%= @submission.biospec_or_cho %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">biospec_id</dt>
+    <dd class="col-sm-9"><%= @submission.biospec_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">institution_id</dt>
+    <dd class="col-sm-9"><%= @submission.institution_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">device_id</dt>
+    <dd class="col-sm-9"><%= @submission.device_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">imaging_event_id</dt>
+    <dd class="col-sm-9"><%= @submission.imaging_event_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">media_id</dt>
+    <dd class="col-sm-9"><%= @submission.media_id %></dd>
+  </dl>
+  <h4>Biological Specimen Create Params</h4>
+    <% if @biospec_create_params.present? %>
+    <% @biospec_create_params.each do |k,v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+    <% end %>
+  <h4>Institution Create Params</h4>
+  <% if @institution_create_params.present? %>
+    <% @institution_create_params.each do |k,v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+  <h4>Device Create Params</h4>
+  <% if @device_create_params.present? %>
+    <% @device_create_params.each do |k, v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+  <h4>Imaging Event Create Params</h4>
+  <% if @imaging_event_create_params.present? %>
+    <% @imaging_event_create_params.each do |k, v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+  <h4>Media Create Params</h4>
+  <% if @media_create_params.present? %>
+    <% @media_create_params.each do |k, v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,10 @@
+<div id="submission_create_biospec" class="hidden">
+  <%= simple_form_for @biological_specimen_form, url: stage_biological_specimen_submissions_url do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+      <div>
+        <%= f.submit 'Create New Biological Specimen', class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>

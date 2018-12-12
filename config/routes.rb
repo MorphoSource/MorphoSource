@@ -38,9 +38,11 @@ Rails.application.routes.draw do
 
   resources :submissions, only: [ :new, :create ] do
     collection do
-      post 'create_biological_specimen'
-      post 'create_cultural_heritage_object'
-      post 'create_institution'
+      post 'stage_biological_specimen'
+      post 'stage_device'
+      post 'stage_imaging_event'
+      post 'stage_institution'
+      post 'stage_media'
     end
   end
 

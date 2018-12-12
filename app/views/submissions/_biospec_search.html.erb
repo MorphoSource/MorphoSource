@@ -1,0 +1,22 @@
+<div id="submission_biospec">
+  <div class="h5">
+    <%= t('morphosource.submission.biospec_search') %>
+  </div>
+  <div class="form-group row">
+    <div class="col-sm-2">
+      <%= f.input :biospec_search_occurrence_id, input_html: { class: 'form-control-sm' } %>
+    </div>
+    <div class="col-sm-2">
+      <%= f.input :biospec_search_institution_code, input_html: {class: 'form-control-sm'} %>
+    </div>
+    <div class="col-sm-2">
+      <%= f.input :biospec_search_collection_code, input_html: { class: 'form-control-sm' } %>
+    </div>
+    <div class="col-sm-2">
+      <%= f.input :biospec_search_catalog_number, input_html: {class: 'form-control-sm'} %>
+    </div>
+  </div>
+  <div>
+    <%= f.submit 'Search', name: 'biospec_search', class: 'btn btn-primary' %>
+  </div>
+</div>

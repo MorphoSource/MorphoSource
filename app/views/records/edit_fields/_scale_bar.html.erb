@@ -48,7 +48,7 @@ function buildScaleBar(scaleBar) {
   scaleBarGroupUl.appendChild(li);
 }
 
-$(document).on('turbolinks:load', function(){
+$(document).ready(function(){
 
   // When editing a record, this populates the three-part scale bar fields with previously saved metadata.
   for (i = 0; i < concatScaleBarCount; i++) {

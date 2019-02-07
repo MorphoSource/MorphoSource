@@ -201,7 +201,7 @@ function unallowedFilesAlert() {
   }
 }
 
-$(document).on('turbolinks:load', function() {
+$(document).ready(function() {
   if ($('form[id*="media"]').length) { // if media form page
     // Adds file formats requirement to the Requirements list
     // Inserts placeholders for allowed formats and uploaded files with the wrong format.

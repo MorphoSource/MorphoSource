@@ -1,7 +1,7 @@
-$(document).on('turbolinks:load', function(){
-  
-  if ($('div[class="submission_flow"]').length) { // check if the page is submission new page 
-  
+$(document).ready(function(){
+
+  if ($('div[class="submission_flow"]').length) { // check if the page is submission new page
+
     // possibly not needed. remove later
     //$("#submission_device_id").select2();
     //$("#submission_institution_id").select2();
@@ -9,7 +9,7 @@ $(document).on('turbolinks:load', function(){
     //$('div#submission_new div#submission_biospec').addClass('hide').removeClass('show');
 
     //$('.new_media, .derived_media').addClass('hide').removeClass('show');
-    
+
     // Begin Raw media flow
     $('input#submission_raw_or_derived_media_raw').click(function(event){
       $('div#submission_choose_raw_or_derived_media').addClass('hide').removeClass('show');
@@ -49,19 +49,19 @@ $(document).on('turbolinks:load', function(){
     });
 
     // End Raw media flow
-  
-    // Begin Derived media flow 
+
+    // Begin Derived media flow
     $('input#submission_raw_or_derived_media_derived').click(function(event){
       $('div#submission_choose_raw_or_derived_media').addClass('hide').removeClass('show');
       $('div#submission_parents_in_ms').addClass('show').removeClass('hide');
     });
-    
+
     $('#btn_parents_not_in_morphosource').click(function(event){
       event.preventDefault();
       $('div#submission_parents_in_ms').addClass('hide').removeClass('show');
       $('div#submission_parents_not_in_ms').addClass('show').removeClass('hide');
     });
-    
+
     $('#btn_parent_media_how_to_proceed_continue').click(function(event){
       event.preventDefault();
       $('div#submission_parents_not_in_ms').addClass('hide').removeClass('show');
@@ -69,13 +69,13 @@ $(document).on('turbolinks:load', function(){
         // start over
         $('div#submission_choose_raw_or_derived_media').addClass('show').removeClass('hide');
       } else {
-        // go to phsyical object 
+        // go to phsyical object
         $('#submission_choose_biospec_or_cho').addClass('show').removeClass('hide');
       }
       clearForms();
     });
-    // End Derived media flow 
-    
+    // End Derived media flow
+
     var clearForms = function() {
       // if there are other forms (or radios) on the page that should not be cleared. Add condition here.
       $('form').each(function() {
@@ -83,7 +83,7 @@ $(document).on('turbolinks:load', function(){
       });
       $('.radio_buttons').prop('checked', false);
     }
-    
+
     $('#btn_add_parent').click(function(event){
       event.preventDefault();
       var currentParentList = $('input[id="submission_parent_media_list"]').val();
@@ -108,7 +108,7 @@ $(document).on('turbolinks:load', function(){
     var newParentRow = function(id){
       var row = '<div class="parent_row ' + id + '">'
         + '<div class="col-sm-4"><div class="parent_title">'
-        + $("input.parent_title").val() + '</div></div>' 
+        + $("input.parent_title").val() + '</div></div>'
         + '<div class="col-sm-2"><a class="btn_remove_parent btn btn-primary" onClick="removeParent(\'' + id + '\')">Remove</a> <!--' + id + '--></div>'
         + '</div>';
       return row;
@@ -120,20 +120,20 @@ $(document).on('turbolinks:load', function(){
       var newParentList = removeValue(currentParentList, id);
       $('input[id="submission_parent_media_list"]').val(newParentList);
     }
-    
+
     function removeValue(list, value) {
       list = list.split(',');
       list.splice(list.indexOf(value), 1);
       return list.join(',');
     }
 
-    /*  
+    /*
     $('.btn_remove_parent').click(function(event){
       event.preventDefault();
       var removeId = $(this).attr('data-remove-id').val();
       alert('removing ' + removeId);
-      
-    }); 
+
+    });
     */
   }
 });

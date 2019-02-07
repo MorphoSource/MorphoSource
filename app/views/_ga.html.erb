@@ -1,7 +1,5 @@
 <%# Overrides hyrax/app/views/_ga.html.erb, which uses the long-deprecated ga.js library. %>
 <%# Its successor analytics.js is also deprecated. Instead, use modern gtag.js tracking. %>
-<%# Meta tag added because Google analytics charts were not loading except on page refresh. %>
-<%= "<meta name='turbolinks-visit-control' content='reload'/>".html_safe %>
 <%
 if Hyrax.config.google_analytics_id?
 tracking_id = Hyrax.config.google_analytics_id

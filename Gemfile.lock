@@ -11,6 +11,17 @@ GIT
   specs:
     pul_uv_rails (2.9)
 
+GIT
+  remote: https://github.com/rails/activerecord-session_store.git
+  revision: 50e81319339d847a07a67eb32d77dbbbe4636317
+  specs:
+    activerecord-session_store (1.1.3)
+      actionpack (>= 4.0)
+      activerecord (>= 4.0)
+      multi_json (~> 1.11, >= 1.11.2)
+      rack (>= 1.5.2, < 3)
+      railties (>= 4.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -861,6 +872,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-session_store!
   bootstrap-sass (~> 3.4)
   byebug
   capybara

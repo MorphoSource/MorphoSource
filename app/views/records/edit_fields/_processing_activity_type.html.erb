@@ -1,2 +1,8 @@
-<% # app/views/records/edit_fields/_processing_activity_type.html.erb %>
-<% # see: app/views/records/edit_fields/_processing_activity.html.erb %>
+<% processing_activity_types_service = Morphosource::ProcessingActivityTypesService.new %>
+<%= f.input :processing_activity_type, as: :select,
+    label: 'Processing Activity Type',
+    collection: processing_activity_types_service.select_all_options,
+    include_blank: false,
+    item_helper: processing_activity_types_service.method(:include_current_value),
+    input_html: { class: 'form-control' }
+%>

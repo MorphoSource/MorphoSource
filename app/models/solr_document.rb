@@ -128,17 +128,6 @@ class SolrDocument
     self[Solrizer.solr_name('current_location', :stored_searchable)]
   end
 
-  def processing_activity
-    Rails.logger.info("Processing Activity: #{processing_activity_type.inspect} #{processing_activity_software.inspect} #{processing_activity_description.inspect}")
-    if processing_activity_type.nil?
-      return ''
-    else
-      return processing_activity_type.map.with_index do |item, index|
-        "Activity Type: #{item}, Software: #{processing_activity_software[index]}, Activity Description: #{processing_activity_description[index]}"
-      end
-    end
-  end
-
   def processing_activity_type
     self[Solrizer.solr_name('processing_activity_type', :stored_searchable)]
   end
@@ -390,6 +379,11 @@ class SolrDocument
   # Device fields, also uses modality currently in media above
   def facility
     self[Solrizer.solr_name('facility', :stored_searchable)]
+  end
+
+  # Processing Event Activity
+  def index
+    self[Solrizer.solr_name('index', :sortable)]
   end
 
   # Processing Event & Image Capture Event

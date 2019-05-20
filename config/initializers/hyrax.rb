@@ -17,6 +17,8 @@ Hyrax.config do |config|
   config.register_curation_concern :imaging_event
   # Injected via `rails g hyrax:work Taxonomy`
   config.register_curation_concern :taxonomy
+  # Injected via `rails g hyrax:work ProcessingEventActivity`
+  config.register_curation_concern :processing_event_activity
 
   # Register roles that are expected by your implementation.
   # @see Hyrax::RoleRegistry for additional details.

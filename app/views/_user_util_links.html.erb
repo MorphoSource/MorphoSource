@@ -21,7 +21,7 @@
     </li><!-- /.btn-group -->
     <!-- Show shopping cart icon if user signed in -->
     <li>
-      <%= link_to main_app.my_cart_path do %>
+      <%= link_to main_app.my_cart_path, aria: {label: 'Media cart'} do %>
         <span class="fa fa-shopping-cart" aria-hidden="true"></span>
       <% end %>
     </li>

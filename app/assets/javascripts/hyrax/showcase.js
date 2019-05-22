@@ -14,10 +14,12 @@ $(document).on('ready', function(){
     $(".collapse-accordion, .glyphicon-only").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');
       $("span."+thisId).removeClass("glyphicon-triangle-top").addClass("glyphicon-triangle-bottom")
+      $("a."+thisId).attr('aria-label', 'Expand');
     });
     $(".collapse-accordion, .glyphicon-only").on("show.bs.collapse", function(){
       var thisId = $(this).attr('id');
       $("span."+thisId).removeClass("glyphicon-triangle-bottom").addClass("glyphicon-triangle-top")
+      $("a."+thisId).attr('aria-label', 'Collapse');
     });
 
   } // end if the page is showcase page 

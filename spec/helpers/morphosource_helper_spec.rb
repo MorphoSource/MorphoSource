@@ -207,5 +207,21 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
       end
     end
+
+    describe 'collapse_expand_panel' do
+      it 'shows expand icon' do
+        expect(helper.collapse_expand_panel("collapse-block-foobar")).to include('glyphicon-triangle-bottom')
+      end
+    end
+
+    describe 'collapse_accordion_panel' do
+      it 'shows expand icon' do
+        expect(helper.collapse_accordion_panel("collapse-block-foobar", "foobar-accordion-group", "foo", "bar", true)).to include('glyphicon-triangle-bottom')
+      end
+      it 'shows collapse icon' do
+        expect(helper.collapse_accordion_panel("collapse-block-foobar", "foobar-accordion-group", "foo", "bar", false)).to include('glyphicon-triangle-top')
+      end
+    end
+
   end
 end

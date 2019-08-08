@@ -18,7 +18,10 @@ module Hyrax
                  '1_column'
                when 'showcase'
                  'morphosource_2_columns'
-               # todo: later might need to add different layout for EDIT or other actions here
+               when 'new'
+                 'morphosource_2_columns'
+               when 'edit'
+                 'morphosource_2_columns'
                else
                  'dashboard'
                end

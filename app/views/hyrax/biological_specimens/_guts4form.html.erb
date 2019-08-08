@@ -1,0 +1,28 @@
+
+
+
+<%#= render @presenter.showcase_work_title_partial, presenter: @presenter %>
+
+<div class="row">
+  <div class="col-sm-6">
+
+    <div class="content-block">
+      <%= render "form_metadata", f: f %>
+
+
+    </div>
+
+  </div>
+
+  <div class="col-sm-6">
+    <div class="content-block">
+      <%= render 'form_member_of_collections', f: f %>
+
+    </div>
+  </div>
+
+</div>
+
+      <%= render 'form_progress', f: f %>
+
+

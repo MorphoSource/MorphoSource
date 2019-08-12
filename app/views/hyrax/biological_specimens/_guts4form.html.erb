@@ -1,28 +1,38 @@
-
-
-
 <%#= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
 <div class="row">
   <div class="col-sm-6">
-
     <div class="content-block">
-      <%= render "form_metadata", f: f %>
 
+      <%#= render "form_metadata", f: f %>
+
+<%= f.input :vouchered, as: :select,
+    collection: ['Yes','No'],
+    include_blank: true,
+    # item_helper: method(:include_current_value),
+    input_html: { class: 'form-control' }
+%>
 
     </div>
-
+    <div class="content-block">
+      <h2>GENERAL DETAILS</h2>
+      <%= f.input :description, as: :string %>
+    
+    </div>
   </div>
 
   <div class="col-sm-6">
     <div class="content-block">
+
       <%= render 'form_member_of_collections', f: f %>
 
     </div>
   </div>
+</div>
 
+<div style="display: none;">
+  <!-- todo: there are js code looking for this. remove later -->
+<%= render "form_relationships", f: f %>
 </div>
 
       <%= render 'form_progress', f: f %>
-
-

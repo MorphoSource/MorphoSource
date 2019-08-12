@@ -7,7 +7,7 @@
 
   <body>
     <%= render '/masthead' %>
-    <div id="content-wrapper" class="container-fluid showcase" role="main">
+    <div id="content-wrapper" class="container-fluid showcase <%= content_for(:content_css_classes) %>" role="main">
       <a name="skip-to-content" id="skip-to-content"></a>
       <%= content_for?(:content) ? yield(:content) : yield %>
     </div><!-- /#content-wrapper -->

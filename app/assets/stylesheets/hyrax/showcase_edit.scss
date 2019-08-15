@@ -1,4 +1,18 @@
 
 div.showcase-edit {
-  border: 2px solid red
+
+  .form-group {
+    .control-label {
+
+    }
+    .help-block {
+      display:none;
+    }
+    .form-control {
+      display: inline-block;
+      width: auto;
+    }
+  }
 }
+
+

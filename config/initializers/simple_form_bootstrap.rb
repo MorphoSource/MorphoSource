@@ -8,6 +8,31 @@ SimpleForm.setup do |config|
   config.button_class = 'btn btn-default'
   config.boolean_label_class = nil
 
+  config.wrappers :showcase_default, tag: 'div', class: 'form-group row', error_class: 'has-error' do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :maxlength
+    b.optional :pattern
+    b.optional :min_max
+    b.optional :readonly
+    b.wrapper :tag => 'div', :class => 'col-xs-6 showcase-label' do |ba|
+      ba.use :label, class: 'control-label'
+      ba.wrapper :tag => 'span', :class => "glyphicon glyphicon-question-sign tooltip-icon" do |bb|
+        bb.use :hint,  wrap_with: { tag: 'p', class: 'hint hide' }
+      end
+    end
+    b.wrapper :tag => 'div', :class => 'col-xs-6 showcase-value' do |ba|
+      ba.use :input, class: 'form-control'
+    end
+  end
+
+  # this config is another option to return input without wrapper
+  # remove later if not needed
+  config.wrappers :showcase_minimal do |b|
+    b.use :placeholder
+    b.use :input
+  end
+
   config.wrappers :vertical_form, tag: 'div', class: 'form-group', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder

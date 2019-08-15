@@ -32,6 +32,13 @@ module Hyrax
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       render '/hyrax/physical_objects/showcase', presenter: @presenter
     end
+
+    def edit
+      build_form
+      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      render '/hyrax/base/edit', presenter: @presenter
+    end
+
   end
 
 end

@@ -13,6 +13,37 @@ div.showcase-edit {
       width: auto;
     }
   }
+
+  .tooltip-inner {
+    text-align: left;
+  }
+
+  .row {
+    padding: 2px 20px;
+  }
+
+  .form-group {
+    margin-bottom: 0; 
+  }
+
+  .controls-remove-text {
+    display: none;
+  }
+
+  .field-controls .add, 
+  .field-controls .remove {
+    width: auto;
+    text-align: left;
+  }
+
+  .form-control {
+    height: 30px;
+    padding: 2px 12px;
+  }
+
+  .multi_value .listing li:not(:last-child), .controlled_vocabulary .listing li:not(:last-child) {
+    margin-bottom: 0rem;
+  }
 }
 
 

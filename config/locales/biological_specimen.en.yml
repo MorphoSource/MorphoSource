@@ -6,6 +6,31 @@ en:
       biological_specimen:
         description:        "Biological specimen works"
         name:               "Biological Specimen"
+    biological_specimens:
+      form_parent_work_relationships_institution:
+        actions:
+          remove: Remove
+        attach_new_work: Deposit new institution as parent of this work
+        caption: Current institution
+        confirm:
+          cancel: Cancel
+          remove: Remove
+          text: Removing this institution will not remove it from the repository, only its relationship to the biological specimen you are editing. Are you sure you want to remove this institution?
+        header:
+          actions: Action
+          title: Institution
+      form_parent_work_relationships_taxonomy:
+        actions:
+          remove: Remove
+        attach_new_work: Deposit new taxonomy as parent of this work
+        caption: Current taxonomies
+        confirm:
+          cancel: Cancel
+          remove: Remove
+          text: Removing this taxonomy will not remove it from the repository, only its relationship to the biological specimen you are editing. Are you sure you want to remove this taxonomy?
+        header:
+          actions: Action
+          title: Taxonomy
   simple_form:
     labels:
       biological_specimen:

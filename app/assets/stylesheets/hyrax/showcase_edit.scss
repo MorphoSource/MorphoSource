@@ -44,6 +44,11 @@ div.showcase-edit {
   .multi_value .listing li:not(:last-child), .controlled_vocabulary .listing li:not(:last-child) {
     margin-bottom: 0rem;
   }
+
+  .indent {
+    margin-left: 20px;
+    padding-left: 20px;
+  }
 }
 
 

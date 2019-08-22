@@ -7,12 +7,45 @@ en:
         description:        "Biological specimen works"
         name:               "Biological Specimen"
     biological_specimens:
+      parents:
+        actions: Actions
+        date_uploaded: Date Uploaded
+        empty: This %{type} has no files associated with it. Click "edit" to add more files.
+        header: Parents
+        thumbnail: Thumbnail
+        title: Title
+        unauthorized: There are no publicly available items in this %{type}.
+        visibility: Visibility
+      form_member_of_collections:
+        actions:
+          remove: Remove from collection
+        add: Add
+        caption: This work is currently in these collections
+        confirm:
+          cancel: Cancel
+          remove: Remove
+          text: Removing this work will not remove it from the repository, only from this collection. Are you sure you want to remove this work from the collection?
+        header:
+          actions: Action
+          title: Collection title
+      form_parent_work_relationships:
+        actions:
+          remove: Remove from work
+        attach_new_work: Deposit new work as parent of this work
+        caption: This work is currently in these works
+        confirm:
+          cancel: Cancel
+          remove: Remove
+          text: Removing this work will not remove it from the repository, only its relationship to the work you are editing. Are you sure you want to remove this work?
+        header:
+          actions: Action
+          title: Work title
       form_parent_work_relationships_institution:
         actions:
           remove: Remove
         attach_new_work: Deposit new institution as parent of this work
         caption: Current institution
-        confirm:
+        confirm: 
           cancel: Cancel
           remove: Remove
           text: Removing this institution will not remove it from the repository, only its relationship to the biological specimen you are editing. Are you sure you want to remove this institution?

@@ -15,13 +15,16 @@ SimpleForm.setup do |config|
     b.optional :pattern
     b.optional :min_max
     b.optional :readonly
-    b.wrapper :tag => 'div', :class => 'col-xs-6 showcase-label' do |ba|
+    b.wrapper :label_wrapper, :tag => 'div', :class => 'col-xs-6 showcase-label' do |ba|
       ba.use :label, class: 'control-label'
-      ba.wrapper :tag => 'span', :class => "glyphicon glyphicon-question-sign tooltip-icon" do |bb|
+      ba.wrapper :tooltip_wrapper, :tag => 'span', :class => "glyphicon glyphicon-question-sign tooltip-icon" do |bb|
         bb.use :hint,  wrap_with: { tag: 'p', class: 'hint hide' }
       end
+      ba.wrapper :flag_wrapper, :tag => 'span', :class => "label label-info" do |bb|
+        bb.use :placeholder
+      end
     end
-    b.wrapper :tag => 'div', :class => 'col-xs-6 showcase-value' do |ba|
+    b.wrapper :value_wrapper, :tag => 'div', :class => 'col-xs-6 showcase-value' do |ba|
       ba.use :input, class: 'form-control'
     end
   end

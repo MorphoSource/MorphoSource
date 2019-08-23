@@ -1,6 +1,18 @@
 
 div.showcase-edit {
 
+  /* temporarily use fix font size */
+  .showcase-label, 
+  .showcase-value, 
+  .content-block-lg .row > div, 
+  .content-block .row > div {
+    font-size: 14px;
+  }
+
+  h2 {
+    font-size: 15px;    
+  }
+
   .form-group {
     .control-label {
 
@@ -38,7 +50,7 @@ div.showcase-edit {
 
   .form-control {
     height: 30px;
-    padding: 2px 12px;
+    padding: 2px 8px;
   }
 
   .multi_value .listing li:not(:last-child), .controlled_vocabulary .listing li:not(:last-child) {
@@ -46,8 +58,43 @@ div.showcase-edit {
   }
 
   .indent {
-    margin-left: 20px;
-    padding-left: 20px;
+    padding-left: 30px;
+  }
+
+  .required-tag {
+    display: none;
+  }
+
+  .required-flag, .recommended-flag {
+    .label:empty {
+      display:inline-block !important;
+    }
+    .label {
+      font-size: 60%;
+      font-weight: normal;
+      margin-left: 3px;
+      margin-top: 2px;
+      vertical-align: text-top;
+    }
+  }
+  .required-flag {
+    .label:before {
+      content: 'required';
+    }
+  }
+
+  .recommended-flag {
+    .label:before {
+      content: 'recommended';
+    }
+  }
+
+  .glyphicon {
+    margin-left: 3px;
+  }
+
+  .showcase-label, .showcase-value {
+    padding-right: 6px;
   }
 }
 

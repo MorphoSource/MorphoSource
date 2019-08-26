@@ -89,6 +89,15 @@ div.showcase-edit {
     }
   }
 
+  .material-icons.tooltip-icon:before {
+    content: 'help_outline';
+  }
+  
+  .material-icons.tooltip-icon {
+    font-size: 11px;
+    margin-left: 3px;
+  }
+
   .glyphicon {
     margin-left: 3px;
   }

@@ -17,7 +17,10 @@ SimpleForm.setup do |config|
     b.optional :readonly
     b.wrapper :label_wrapper, :tag => 'div', :class => 'col-xs-6 showcase-label' do |ba|
       ba.use :label, class: 'control-label'
-      ba.wrapper :tooltip_wrapper, :tag => 'span', :class => "glyphicon glyphicon-question-sign tooltip-icon" do |bb|
+      #ba.wrapper :tooltip_wrapper, :tag => 'span', :class => "glyphicon glyphicon-question-sign tooltip-icon" do |bb|
+      #  bb.use :hint,  wrap_with: { tag: 'p', class: 'hint hide' }
+      #end
+      ba.wrapper :tooltip_wrapper, :tag => 'i', :class => "material-icons tooltip-icon" do |bb|
         bb.use :hint,  wrap_with: { tag: 'p', class: 'hint hide' }
       end
       ba.wrapper :flag_wrapper, :tag => 'span', :class => "label label-info" do |bb|

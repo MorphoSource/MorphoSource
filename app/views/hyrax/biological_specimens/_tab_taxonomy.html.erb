@@ -1,0 +1,39 @@
+<div id="parent-relationships-taxonomies" class="form-group" data-behavior="parent-relationships-taxonomies" data-param-key="<%= f.object.model_name.param_key %>" data-members="<%= f.object.member_of_works_json('Taxonomy') %>" data-new-work-created="">
+
+  <div class="row">
+    <div class="col-sm-6">
+
+      <div class="content-block">
+        <%= render 'form_parent_work_relationships_taxonomy', f: f %>
+        <div class="form-group">
+          <a class="btn btn-sm btn-primary" id="btn_new_taxonomy">Create new taxonomy</a>
+          <div id="embedded_div_new_taxonomy" class="embedded_div ui-loading" data-relationship-control="#parent-relationships-taxonomies" data-add-button="#btn-add-taxonomy" style="display: none;">
+            <!-- new taxonomy form will be loaded here -->
+          </div>
+        </div>
+      </div>
+    
+    </div>
+
+    <!-- right column  -->
+    <div class="col-sm-6">
+
+      <div class="content-block">
+        <h2>TAXONOMIES ASSOCIATED WITH THIS SPECIMEN <i class="material-icons tooltip-icon" data-original-title="" title="Taxonomies associated with this specimen"></i></h2>
+        <div class="message has-warning hidden"></div>
+        <table class="table table-striped">
+          <div style="margin-top: 10px">
+        </div>
+          <caption><%= t('.caption') %></caption>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <!-- / right column -->
+
+  </div>
+
+</div>
+

@@ -1,0 +1,31 @@
+
+<div class="row">
+  <div class="col-sm-6">
+
+    <div class="content-block">
+      <%= render 'form_parent_work_relationships_institution', f: f %>
+      <%= f.input :institution_code %>
+
+      <div class="form-group">
+        <a class="btn btn-sm btn-primary" id="btn_new_institution">Create new institution</a>
+        <div id="embedded_div_new_institution" class="embedded_div ui-loading" data-relationship-control="#parent-relationships-institutions" data-add-button="#btn-add-institution" style="display: none;">
+          <!-- new institution form will be loaded here -->
+        </div>
+      </div>
+    </div>
+  
+  </div>
+
+  <!-- right column  -->
+  <div class="col-sm-6">
+
+
+
+
+  </div>
+  <!-- / right column -->
+
+</div>
+
+
+

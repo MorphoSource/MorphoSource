@@ -55,13 +55,17 @@
 
     </div><!-- /panel panel-default tabs -->
 
-    <div id="savewidget" class="col-xs-12 col-sm-4 fixedsticky" role="complementary">
-      <%= render 'form_progress', f: f %>
-    </div>
   </div>
 </div>
 
-<div style="display: none;">
-  <!-- todo: there are js code looking for this. remove later -->
-<%= render "form_relationships", f: f %>
+
+
+<div style="display: block;">
+    <!-- todo: there are js code looking for this. remove later -->
+  <%= render "form_relationships", f: f %>
+
+  <!-- remove later -->
+  <div id="savewidget" >
+    <%= render 'form_progress', f: f %>
+  </div>
 </div>

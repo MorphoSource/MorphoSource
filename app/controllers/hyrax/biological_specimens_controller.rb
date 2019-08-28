@@ -18,8 +18,8 @@ module Hyrax
                  '1_column'
                when 'showcase'
                  'morphosource_2_columns'
-               when 'new'
-                 'morphosource_2_columns'
+               #when 'new'
+               #  'morphosource_2_columns'
                when 'edit'
                  'morphosource_2_columns'
                else
@@ -33,11 +33,21 @@ module Hyrax
       render '/hyrax/physical_objects/showcase', presenter: @presenter
     end
 
+    # overriding action methods from works_controller_behavior.rb
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       @presenter.get_institution_data
-      render '/hyrax/base/edit', presenter: @presenter
+      render '/hyrax/biological_specimens/edit', presenter: @presenter
+    end
+
+    def new
+      curation_concern.depositor = current_user.user_key
+      curation_concern.admin_set_id = admin_set_id_for_new
+      build_form
+      #@presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      #@presenter.get_institution_data
+      render '/hyrax/base/new' #, presenter: @presenter
     end
 
   end

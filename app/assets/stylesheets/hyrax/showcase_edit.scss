@@ -31,7 +31,7 @@ div.showcase-edit {
   }
 
   .row {
-    padding: 2px 20px;
+    padding: 2px 8px;
   }
 
   .form-group {
@@ -111,9 +111,18 @@ div.showcase-edit {
     margin-right: 12px;
     margin-bottom: 6px;
   }
+
   .dropdown-toggle {
     min-width: 80px;
   }
+
+  .panel {
+    border: none;
+    margin-right: -15px;
+    margin-left: -15px;
+  }
+
+  .nav-tabs {
+    background-color: #efefef;
+  }
 }
-
-

@@ -1,24 +1,23 @@
-<%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
+<%= render "edit_work_title", presenter: @presenter, f: f %>
 
 <div class="row">
   <div class="col-xs-12">
     <div class="panel panel-default tabs" role="main">
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active">
+        <li role="presentation" class="active">
           <a href="#institution" aria-controls="institution" role="tab" data-toggle="tab" aria-expanded="true">
-            Institution
+          <i class="fa fa-university"></i> Institution
           </a>
-          </li>
-            <li role="presentation" class="">
+        </li>
+        <li role="presentation" class="">
           <a href="#taxonomy" aria-controls="taxonomy" role="tab" data-toggle="tab" aria-expanded="false">
-            Taxonomy
+          <i class="fab fa-pagelines"></i> Taxonomy
           </a>
-          </li>
-
+        </li>
         <li role="presentation" id="tab-physical-object-details" class="">
           <a href="#physical-object-details" aria-controls="physical-object-details" role="tab" data-toggle="tab" aria-expanded="false">
-            Object Details
+            <i class="fa fa-frog"></i> Object Details
           </a>
         </li>
       </ul>
@@ -48,24 +47,9 @@
 
           </div>
         </div>
-
       </div>
-  
-
 
     </div><!-- /panel panel-default tabs -->
 
-  </div>
-</div>
-
-
-
-<div style="display: block;">
-    <!-- todo: there are js code looking for this. remove later -->
-  <%= render "form_relationships", f: f %>
-
-  <!-- remove later -->
-  <div id="savewidget" >
-    <%= render 'form_progress', f: f %>
   </div>
 </div>

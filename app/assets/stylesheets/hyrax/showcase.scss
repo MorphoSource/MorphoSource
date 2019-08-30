@@ -48,6 +48,7 @@ div.showcase {
   }
 
   #showcase-title {
+    overflow-wrap: break-word;
     margin-bottom: 0.5vw;
     padding-bottom: 8px;
     border-bottom: 2px solid #337ab7;

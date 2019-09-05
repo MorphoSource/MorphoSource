@@ -102,6 +102,10 @@ div.showcase-edit {
     margin-left: 3px;
   }
 
+  .multi_value .btn.remove, .controlled_vocabulary .btn.remove, .multi_value .remove.facets-toggle, .controlled_vocabulary .remove.facets-toggle, .multi_value td.toggle input.remove[type=submit], td.toggle .multi_value input.remove[type=submit], .controlled_vocabulary td.toggle input.remove[type=submit], td.toggle .controlled_vocabulary input.remove[type=submit] {
+      color: inherit;
+  }
+
   .showcase-label, .showcase-value {
     padding-right: 6px;
   }
@@ -124,5 +128,19 @@ div.showcase-edit {
 
   .nav-tabs {
     background-color: #efefef;
+  }
+
+  .btn.btn-link.add {
+    margin-top: -18px;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    .glyphicon {
+    }
+  }
+
+  .input-group-btn {
+    width: 10px;
   }
 }

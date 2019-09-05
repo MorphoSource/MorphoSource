@@ -9,6 +9,12 @@ $(document).on('turbolinks:load', function() {
 	      return $(this).find('.hint').text() 
 	    } 
 	  })
-		  
+
+	  // remove the last repeatable field for each group
+	  $('.form-group.multi_value').each(function(i) {
+	    var lastli = $(this).find('.listing .input-group:last-child');
+	    lastli.find('.remove').trigger('click');
+	  })
+			  
   }
 });

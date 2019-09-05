@@ -2,8 +2,16 @@ import Editor from 'hyrax/editor'
 //import RelationshipsControl from 'hyrax/relationships/control'
 import RelationshipsControl from './ms_control'
 import MorphosourceSaveWorkControl from './ms_save_work_control'
+//import MorphosourceControlledVocabulary from 'hyrax/editor/controlled_vocabulary'
+import MorphosourceControlledVocabulary from './ms_controlled_vocabulary'
 
 export default class MorphosourceEditor extends Editor {
+
+  controlledVocabularies() {
+    this.element.find('.controlled_vocabulary.form-group').each((_idx, controlled_field) =>
+      new MorphosourceControlledVocabulary(controlled_field, this.paramKey)
+    )
+  }
 
   relationshipsControl() {
     let collections = this.element.find('[data-behavior="collection-relationships"]')

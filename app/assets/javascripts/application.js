@@ -31,3 +31,5 @@
 //= require morphosource/ms_control
 //= require morphosource/ms_registry
 //= require morphosource/ms_registry_entry
+//= require morphosource/ms_controlled_vocabulary
+//= require morphosource/field_manager

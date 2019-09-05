@@ -1,3 +1,4 @@
+$button-color: #286090;
 
 div.showcase-edit {
 
@@ -130,17 +131,24 @@ div.showcase-edit {
     background-color: #efefef;
   }
 
-  .btn.btn-link.add {
-    margin-top: -18px;
+  .btn.btn-link.add,
+  .btn.btn-link.remove {
+    margin-top: 0;
     margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0;
+    color: $button-color;
+    background-color: transparent;
+    border-color: transparent;
 
     .glyphicon {
     }
   }
 
-  .input-group-btn {
-    width: 10px;
+  .listing li {
+    width: 200px !important;
+  }
+
+  .input-group-btn.field-controls .btn {
+    padding: 0;
   }
 }

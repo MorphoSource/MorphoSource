@@ -61,10 +61,10 @@ export class FieldManager {
       $(this.fieldWrapperClass + ' .field-controls', this.element).append(this.remover)
     }
 
-    // overriding 
+    // customization: overriding _createAddControl
     _createAddControl() {
-      //this.element.find(this.listClass).after(this.adder)
-      $(this.fieldWrapperClass + ' .field-controls:last-child', this.element).after(this.adder)
+        //this.element.find(this.listClass).after(this.adder)
+        this.element.find(this.listClass + ' ' + this.removeSelector).after(this.adder)
     }
 
     _hasRemoveControl() {

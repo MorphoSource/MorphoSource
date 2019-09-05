@@ -1,5 +1,29 @@
 $button-color: #286090;
 
+
+/* NOTE: the styles below are shared between
+   showcase edit page and hyrax edit page.  These styles will effect both pages 
+   TODO: might need to move these to global style sheet later */
+.btn.btn-link.add,
+.btn.btn-link.remove {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  color: $button-color;
+  background-color: transparent;
+  border-color: transparent;
+
+  .glyphicon {
+  }
+}
+
+form[id^='edit_biological_specimen'] .select2-container {
+  width:100% !important;
+}
+
+/*  ************************** */
+
+
 div.showcase-edit {
 
   /* temporarily use fix font size */
@@ -12,19 +36,6 @@ div.showcase-edit {
 
   h2 {
     font-size: 15px;    
-  }
-
-  .form-group {
-    .control-label {
-
-    }
-    .help-block {
-      display:none;
-    }
-    .form-control {
-      display: inline-block;
-      width: auto;
-    }
   }
 
   .tooltip-inner {
@@ -131,18 +142,6 @@ div.showcase-edit {
     background-color: #efefef;
   }
 
-  .btn.btn-link.add,
-  .btn.btn-link.remove {
-    margin-top: 0;
-    margin-bottom: 0;
-    padding: 0;
-    color: $button-color;
-    background-color: transparent;
-    border-color: transparent;
-
-    .glyphicon {
-    }
-  }
 
   .listing li {
     width: 200px !important;
@@ -151,4 +150,41 @@ div.showcase-edit {
   .input-group-btn.field-controls .btn {
     padding: 0;
   }
+
+  .content-block p {
+    padding: 2px 10px;
+  }
+
+  .content-block div:not(.row) {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  .button-wrapper .btn {
+    margin: 8px;
+    width: 170px;
+  }
+
+  /* object detail tab specific styles */
+  #physical-object-details {
+
+    .form-group {
+      .control-label {
+
+      }
+      .help-block {
+        display:none;
+      }
+      .form-control {
+        display: inline-block;
+        width: auto;
+      }
+    }
+
+  } /* /object detail tab specific styles */
+
+
+
 }
+
+

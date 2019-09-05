@@ -20,10 +20,12 @@ export default class MorphosourceControlledVocabulary extends FieldManager {
         listClass:         '.listing',
         inputTypeClass:    '.controlled_vocabulary',
 
-        addHtml:           '<button type=\"button\" class=\"btn btn-link add\"><i class=\"fa fa-plus-circle\"></i></span><span class="controls-add-text"></span></button>',
+        //addHtml:           '<button type=\"button\" class=\"btn btn-link add\"><i class=\"fa fa-plus-circle\"></i><span class="controls-add-text"></span></button>',
+        addHtml:           '<button type=\"button\" class=\"btn btn-link add\"><i class=\"fa fa-plus-circle\"></i></button>',
         addText:           'Add another',
 
-        removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i></span><span class="controls-remove-text"></span> <span class=\"sr-only\"> previous <span class="controls-field-name-text">field</span></span></button>',
+        //removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i></span><span class="controls-remove-text"></span> <span class=\"sr-only\"> previous <span class="controls-field-name-text">field</span></span></button>',
+        removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i></button>',
         removeText:         'Remove',
 
         labelControls:      true,

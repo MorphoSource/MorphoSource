@@ -16,5 +16,11 @@ $(document).on('turbolinks:load', function() {
 	    lastli.find('.remove').trigger('click');
 	  })
 			  
+		$('#btn_no_institution').click(function() {
+			var removeInstitutionButton = $('#parent-relationships-institutions').find('[data-behavior="remove-relationship"]');
+			if (removeInstitutionButton.length) {
+				removeInstitutionButton.trigger('click');
+			}
+		})
   }
 });

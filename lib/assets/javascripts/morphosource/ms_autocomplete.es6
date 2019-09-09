@@ -1,5 +1,5 @@
 import Default from 'hyrax/autocomplete/default'
-import Resource from './autocomplete/resource'
+import MorphosourceResource from './autocomplete/ms_resource'
 import Autocomplete from 'hyrax/autocomplete'
 import LinkedData from 'hyrax/autocomplete/linked_data'
 
@@ -13,14 +13,14 @@ export default class MorphosourceAutocomplete extends Autocomplete {
   setup (element, fieldName, url) {
     switch (fieldName) {
       case 'work':
-        new Resource(
+        new MorphosourceResource(
           element,
           url,
           { excluding: element.data('exclude-work') }
         )
         break
       case 'collection':
-        new Resource(
+        new MorphosourceResource(
           element,
           url)
         break

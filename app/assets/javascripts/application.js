@@ -35,5 +35,5 @@
 //= require morphosource/ms_institution_resource
 //= require morphosource/field_manager
 //= require morphosource/ms_autocomplete
-//= require morphosource/autocomplete/resource
+//= require morphosource/autocomplete/ms_resource
 

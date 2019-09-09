@@ -48,7 +48,13 @@ function setupEmbeddedWorkForm(work_name) {
 			$(relationship_input).val(data.work.id);
 			var new_data = {
 				id: data.work.id, 
-				text: data.work.title
+				text: data.work.title,
+				institution_code: data.work.institution_code,
+        description: data.work.description,
+        address: data.work.address, 
+        city: data.work.city, 
+        state_province: data.work.state_province,
+        country: data.work.country
 			};
 	    $(relationship_element).data('new-work-created', new_data);
 			var relationship_add_btn = $(this_div).data("add-button");

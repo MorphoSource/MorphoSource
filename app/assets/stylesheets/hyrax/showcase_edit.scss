@@ -165,8 +165,20 @@ div.showcase-edit {
     width: 170px;
   }
 
+  /* Institution tab specific styles */
+  .tab-content > #institution {
+    [data-behavior="remove-relationship"] {
+      display: none;
+    }
+    .content-block {
+      table, tbody {
+        width: 100%;
+      }    
+    }
+  }
+
   /* object detail tab specific styles */
-  #physical-object-details {
+  .tab-content > #physical-object-details {
 
     .form-group {
       .control-label {

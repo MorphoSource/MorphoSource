@@ -15,12 +15,19 @@ $(document).on('turbolinks:load', function() {
 	    var lastli = $(this).find('.listing .input-group:last-child');
 	    lastli.find('.remove').trigger('click');
 	  })
-			  
+			
+		// remove institution when clicking no institution button  
 		$('#btn_no_institution').click(function() {
 			var removeInstitutionButton = $('#parent-relationships-institutions').find('[data-behavior="remove-relationship"]');
 			if (removeInstitutionButton.length) {
 				removeInstitutionButton.trigger('click');
 			}
 		})
+
+		// set the institution code field on the object detail tab when an institution has been selected
+		$('#btn-add-institution').click(function() {
+			$('#biological_specimen_institution_code').val( $('#institution-code').text() );
+		})
+
   }
 });

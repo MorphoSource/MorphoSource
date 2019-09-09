@@ -89,8 +89,8 @@ export default class RelationshipsControl {
       })
     }
     if (this.workType == 'institution') {
-console.log("addRow data : ", data)
-      this.registry.addResource(new InstitutionResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country))
+      //console.log("addRow data : ", data)
+      this.registry.addResource(new InstitutionResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
     } else {
       this.registry.addResource(new Resource(data.id, data.text))
     }
@@ -103,7 +103,7 @@ console.log("addRow data : ", data)
     var new_data = this.element.data("new-work-created")
     //console.log('new_data : ', new_data)
     if ($.isEmptyObject(new_data)) {
-      console.log('searchData data : ', this.input.select2('data'))
+      //console.log('searchData data : ', this.input.select2('data'))
       return this.input.select2('data')
     } else {
       return new_data

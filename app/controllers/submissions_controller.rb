@@ -436,7 +436,12 @@ class SubmissionsController < ApplicationController
       new_work = {
         :id => new_institution_id,
         :title => new_institution.title.first,
-        :institution_code => new_institution.institution_code.first
+        :institution_code => new_institution.institution_code.first,
+        :description => new_institution.description.first, 
+        :address => new_institution.address.first, 
+        :city => new_institution.city.first, 
+        :state_province => new_institution.state_province.first, 
+        :country => new_institution.country.first
       }
     else
       status = 'FAIL'

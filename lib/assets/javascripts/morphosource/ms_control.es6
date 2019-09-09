@@ -1,6 +1,7 @@
 //import Registry from 'hyrax/relationships/registry'
 import Registry from './ms_registry'
 import Resource from 'hyrax/relationships/resource'
+import InstitutionResource from './ms_institution_resource'
 
 /**
  * This depends on the passed in element containing `data-autocomplete="work'"`
@@ -28,11 +29,12 @@ export default class RelationshipsControl {
     this.addButton = this.element.find("[data-behavior='add-relationship']")
     this.errors = null
     this.repeatable = this.element.data('repeatable') || 'yes'
+    this.workType = this.element.data('work-type')
   }
 
   init() {
     this.bindAddButton();
-    this.displayMembers();
+    this.displayMembers();      
   }
 
   validate() {
@@ -42,9 +44,15 @@ export default class RelationshipsControl {
   }
 
   displayMembers() {
-    this.members.forEach((elem) =>
-      this.registry.addResource(new Resource(elem.id, elem.label))
-    )
+    if (this.workType == 'institution') {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new InstitutionResource(elem.id, elem.label, elem.institution_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
+      )      
+    } else {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new Resource(elem.id, elem.label))
+      )
+    }
   }
 
   isValid() {
@@ -80,8 +88,12 @@ export default class RelationshipsControl {
         item.removeResource();
       })
     }
-    this.registry.addResource(new Resource(data.id, data.text))
-
+    if (this.workType == 'institution') {
+console.log("addRow data : ", data)
+      this.registry.addResource(new InstitutionResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country))
+    } else {
+      this.registry.addResource(new Resource(data.id, data.text))
+    }
     // finally, empty the "add" row input value
     this.clearSearch();
   }
@@ -91,6 +103,7 @@ export default class RelationshipsControl {
     var new_data = this.element.data("new-work-created")
     //console.log('new_data : ', new_data)
     if ($.isEmptyObject(new_data)) {
+      console.log('searchData data : ', this.input.select2('data'))
       return this.input.select2('data')
     } else {
       return new_data

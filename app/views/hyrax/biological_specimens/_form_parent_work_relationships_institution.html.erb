@@ -1,5 +1,5 @@
 <h2>INSTITUTION</h2>
-<div id="parent-relationships-institutions" class="form-group" data-behavior="parent-relationships-institutions" data-param-key="<%= f.object.model_name.param_key %>" data-members="<%= f.object.member_of_works_json('Institution') %>" data-new-work-created="" data-repeatable="no">
+<div id="parent-relationships-institutions" class="form-group" data-behavior="parent-relationships-institutions" data-param-key="<%= f.object.model_name.param_key %>" data-members="<%= f.object.member_of_institutions_json('Institution') %>" data-new-work-created="" data-repeatable="no" data-work-type="institution">
 
   <p>If this object is managed by an institution, either select it from the list or create a new institution record if it is not currently present in the list. If the object is not managed by an institution, select No Institution.</p>
 
@@ -28,7 +28,38 @@
 
 <script type="text/x-tmpl" id="tmpl-parent-work-institutions">
 <tr>
-  <td>{%= o.title %}</td>
+  <td>
+
+      <div class="row">
+          <div class="col-xs-6 showcase-label">Institution code</div>
+          <div class="col-xs-6 showcase-value">{%= o.institution_code %}</div>
+      </div>
+      <div class="row">
+          <div class="col-xs-6 showcase-label">Institution title</div>
+          <div class="col-xs-6 showcase-value">{%= o.title %}</div>
+      </div>
+      <div class="row">
+          <div class="col-xs-6 showcase-label">Institution description</div>
+          <div class="col-xs-6 showcase-value">{%= o.description %}</div>
+      </div>
+      <div class="row">
+          <div class="col-xs-6 showcase-label">Institution address</div>
+          <div class="col-xs-6 showcase-value">{%= o.address %}</div>
+      </div>
+      <div class="row">
+          <div class="col-xs-6 showcase-label">Institution city</div>
+          <div class="col-xs-6 showcase-value">{%= o.city %}</div>
+      </div>
+      <div class="row">
+          <div class="col-xs-6 showcase-label">Institution state/province</div>
+          <div class="col-xs-6 showcase-value">{%= o.state_province %}</div>
+      </div>
+      <div class="row">
+          <div class="col-xs-6 showcase-label">Institution country</div>
+          <div class="col-xs-6 showcase-value">{%= o.country %}</div>
+      </div>
+
+  </td>
   <td><button class="btn btn-sm btn-danger" data-behavior="remove-relationship"><%= t('.actions.remove') %></button></td>
 </tr>
 </script>

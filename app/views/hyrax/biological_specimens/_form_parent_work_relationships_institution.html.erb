@@ -1,4 +1,5 @@
-<h2>INSTITUTION</h2>
+<div id="institution_details">
+  <h2>INSTITUTION</h2>
 
   <p>If this object is managed by an institution, either select it from the list or create a new institution record if it is not currently present in the list. If the object is not managed by an institution, select No Institution.</p>
 
@@ -17,6 +18,10 @@
     <a class="btn btn-md btn-primary" id="btn_new_institution">Create new institution</a>
     <a class="btn btn-md btn-primary" id="btn_no_institution">No institution</a>    
   </div>
+</div>
 
+<div id="embedded_div_new_institution" class="embedded_div ui-loading" data-relationship-control="#parent-relationships-institutions" data-add-button="#btn-add-institution" style="display: none;">
+  <!-- new institution form will be loaded here -->
+</div>
 
 

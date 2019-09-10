@@ -89,7 +89,7 @@ function setupEmbeddedWorkForm(work_name, action) {
    	$(this_div).html('');
 		return false;
   });
-  $(this_div).on("click", "button.cancel", function() {
+  $(this_div).on("click", ".cancel", function() {
 		$(this_div).hide();
    	$(this_div).html('');
 		$(detail_div).show();

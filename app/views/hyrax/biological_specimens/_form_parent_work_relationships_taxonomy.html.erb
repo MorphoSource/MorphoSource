@@ -1,7 +1,10 @@
-<h2>BIOLOGICAL SPECIMEN TAXONOMY</h2>
+<div id="taxonomy_details">
+  <h2>TAXONOMY</h2>
+
+  <p>Select a taxonomy to associate with this biological specimen by searching below. Or select Create New Taxonomy.</p>
 
   <div class="form-inline">
-    <div><label><%= f.label "Taxonomies" %></label></div>
+
     <%= f.input_field :find_parent_work,
                       prompt: :translate,
                       autocomplete: 'off',
@@ -9,13 +12,13 @@
                         autocomplete: 'work',
                         'autocomplete-url' => find_taxonomy_autocomplete_url()
                       } %>
-    <a class="btn btn-sm btn-primary" id="btn-add-taxonomy" data-behavior="add-relationship">Add taxonomy</a>
+    <div class="text-center button-wrapper">
+      <a class="btn btn-sm btn-primary" id="btn-add-taxonomy" data-behavior="add-relationship">Add taxonomy</a>
+      <a class="btn btn-sm btn-primary" id="btn_new_taxonomy">Create new taxonomy</a>
+    </div>
   </div>
+</div>
 
-
-<script type="text/x-tmpl" id="tmpl-parent-work-taxonomies">
-<tr>
-  <td>{%= o.title %}</td>
-  <td><button class="btn btn-sm btn-danger" data-behavior="remove-relationship" data-confirm-text="<%= t('.confirm.text') %>" data-confirm-cancel="<%= t('.confirm.cancel') %>" data-confirm-remove="<%= t('.confirm.remove') %>"><%= t('.actions.remove') %></button></td>
-</tr>
-</script>
+<div id="embedded_div_new_taxonomy" class="embedded_div ui-loading" data-relationship-control="#parent-relationships-taxonomies" data-add-button="#btn-add-taxonomy" style="display: none;">
+  <!-- new taxonomy form will be loaded here -->
+</div>

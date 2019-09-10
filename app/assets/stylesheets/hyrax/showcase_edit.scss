@@ -151,13 +151,23 @@ div.showcase-edit {
     padding: 0;
   }
 
-  .content-block p {
-    padding: 2px 10px;
-  }
+  .content-block {
+    padding-left: 10px;
+    padding-right: 10px;
 
-  .content-block div:not(.row) {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    p {
+      padding: 2px 10px;
+    }
+
+    h2 {
+      margin-left: -10px;
+      margin-right: -10px;
+    }
+
+    div:not(.row) {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
   }
 
   .button-wrapper .btn {
@@ -171,11 +181,8 @@ div.showcase-edit {
     min-height: 300px; /* pushing down the spinner icon */
   }
 
-  /* Institution tab specific styles */
-  .tab-content > #institution {
-    [data-behavior="remove-relationship"] {
-      display: none;
-    }
+  /* tab specific styles */
+  .tab-content {
     .content-block {
       table, tbody {
         width: 100%;

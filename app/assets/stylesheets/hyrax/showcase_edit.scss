@@ -165,6 +165,10 @@ div.showcase-edit {
     width: 170px;
   }
 
+  .embedded_div {
+    min-height: 300px; /* pushing down the spinner icon */
+  }
+
   /* Institution tab specific styles */
   .tab-content > #institution {
     [data-behavior="remove-relationship"] {

@@ -32,6 +32,10 @@ div.showcase {
     }
 
     .label {
+      color: $font-color;
+      border: 1px solid $font-color;
+      border-radius: .75em;
+      background-color: transparent;
       font-size: 1.6vw;
       @media (min-width: 768px) {
         font-size: 1.3vw;

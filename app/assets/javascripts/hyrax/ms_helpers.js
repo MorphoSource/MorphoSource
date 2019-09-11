@@ -13,7 +13,7 @@ function hide_fields(field_array, clear = true) {
 }
 
 // setup embedded work form, when to load the form, submit and close handling
-function setupEmbeddedWorkForm(work_name, action) {
+function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	var this_btn = "#btn_" + action + '_' + work_name;
 	var this_div = "#embedded_div_" + action + '_' + work_name;
 	var this_form = "form#" + action + '_' + work_name;
@@ -73,13 +73,9 @@ function setupEmbeddedWorkForm(work_name, action) {
 			var relationship_add_btn = $(this_div).data("add-button");
 			$(relationship_add_btn).trigger("click");
 
-			// perform any work specifc function
-			switch(action + '_' + work_name) {
-				case 'new_institution':
-					$('#biological_specimen_institution_code').val(data.work.institution_code);
-					break;
-				default:
-			}
+			// perform any on-the-fly form update after new work has been created
+			if(callbackAfterSubmit) callbackAfterSubmit();
+
 			$(this_div).hide();
 			$(detail_div).show();
 	  });

@@ -10,7 +10,7 @@ module Hyrax
 
     # Draws a span tag with styles for a bootstrap label
     def render
-      content_tag(:span, text, class: "label label-primary")
+      content_tag(:span, text, class: "label label-primary", id: "in-collection-badge")
     end
 
     private

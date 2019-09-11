@@ -4,6 +4,10 @@ $button-color: #286090;
 /* NOTE: the styles below are shared between
    showcase edit page and hyrax edit page.  These styles will effect both pages 
    TODO: might need to move these to global style sheet later */
+.btn {
+  border-radius: 0;
+}
+
 .btn.btn-link.add,
 .btn.btn-link.remove {
   margin-top: 0;
@@ -90,6 +94,9 @@ div.showcase-edit {
     }
   }
   .required-flag {
+    .label {
+      background-color: #528253;
+    }
     .label:before {
       content: 'required';
     }
@@ -140,6 +147,7 @@ div.showcase-edit {
 
   .nav-tabs {
     background-color: #efefef;
+    padding-top: 20px;
   }
 
 

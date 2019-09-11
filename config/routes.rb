@@ -129,6 +129,7 @@ Rails.application.routes.draw do
 
       # cart items
       post 'add_to_cart', action: :create, controller: :cart_items
+      get 'download_work', action: :download, controller: :cart_items
 
       # media cart
       get 'dashboard/my/cart', action: :index, controller: :media_carts, as: 'my_cart'

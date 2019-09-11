@@ -190,8 +190,12 @@ module Morphosource
         works.each do |work|
           unless work_in_cart_or_requested?(work.id)
             item = create_cart_item(work.id)
-            mark_as('requested',item,date: value)
-            mark_as('note',item,date: @intended_use)
+            if user_is_approver?(item)
+              unrestrict(item)
+            elsif requested == 'requested'
+              mark_as('requested',item,date: value)
+              mark_as('note',item,date: @intended_use)
+            end
             @count += 1
           else
             if work_requested?(work.id) && !work_already_in_cart?(work.id)
@@ -203,8 +207,18 @@ module Morphosource
         end
       end
 
+      def create_downloaded_item(work_id)
+        item = create_cart_item(work_id)
+        mark_as('in_cart',item,date: false)
+        mark_as('downloaded',item)
+      end
+
       def work_in_cart_or_requested?(work_id)
         work_already_in_cart?(work_id) || work_requested?(work_id)
+      end
+
+      def downloadable_item_for_work?(work_id)
+        downloadable_item_work_ids.include?(work_id)
       end
 
       def work_requested?(work_id)
@@ -212,7 +226,11 @@ module Morphosource
       end
 
       def find_requested_item(work_id)
-        current_user.my_active_requests.find{|item| item.work_id == work_id}
+        my_active_requests.find{|item| item.work_id == work_id}
+      end
+
+      def find_downloadable_item(work_id)
+        current_user.cart_items.find{|item| item.downloadable? && item.work_id == work_id}
       end
 
       def create_cart_item(work_id)
@@ -245,7 +263,7 @@ module Morphosource
         item.save
       end
 
-      delegate :downloaded_work_ids, :downloaded_items, :items_in_cart, :item_ids_in_cart, :my_requests_ids, :my_requests_work_ids, :requested_items, :previously_requested_items, :newly_requested_items, :requested_item_ids, :previously_requested_item_ids, :newly_requested_item_ids, :requested_items_work_ids, :previously_requested_items_work_ids, :newly_requested_items_work_ids, :work_ids_in_cart, :my_active_requests_work_ids, :newly_requested_items_user_ids, :previously_requested_items_user_ids, to: :current_user
+      delegate :downloaded_work_ids, :downloaded_items, :items_in_cart, :item_ids_in_cart, :my_requests_ids, :my_requests_work_ids, :my_active_requests, :my_active_requests_work_ids, :requested_items, :previously_requested_items, :newly_requested_items, :requested_item_ids, :previously_requested_item_ids, :newly_requested_item_ids, :requested_items_work_ids, :previously_requested_items_work_ids, :newly_requested_items_work_ids, :work_ids_in_cart,  :newly_requested_items_user_ids, :previously_requested_items_user_ids, :downloadable_item_work_ids, to: :current_user
     end
   end
 end

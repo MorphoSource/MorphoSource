@@ -43,7 +43,7 @@ module Morphosource
 
       # Request download from media showcase page
       def request_work
-        work_id = params[:work_id]
+        work_id = params[:work_id].first
         if work_already_in_cart?(work_id)
           item = find_item_in_cart(work_id)
           if item_is_unrequested?(item)

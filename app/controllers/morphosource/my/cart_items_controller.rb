@@ -29,6 +29,22 @@ module Morphosource
         after_create_response(work)
       end
 
+      # used when downloading from the showcase page
+      def download
+        work_id = params[:work_id].first
+        if downloadable_item_for_work?(work_id)
+          item = find_downloadable_item(work_id)
+          if item.date_downloaded
+            create_downloaded_item(work_id)
+          else
+            mark_as('downloaded',item)
+          end
+        else
+          create_downloaded_item(work_id)
+        end
+        redirect_to main_app.zip_hyrax_media_index_path(ids: [work_id])
+      end
+
     end
   end
 end

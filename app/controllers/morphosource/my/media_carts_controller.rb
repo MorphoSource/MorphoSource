@@ -12,7 +12,13 @@ module Morphosource
 
       def download
         get_downloadable_items
-        mark_as('downloaded')
+        @items.each do |item|
+          if item.date_downloaded
+            create_downloaded_item(item.work_id)
+          else
+            mark_as('downloaded',item)
+          end
+        end
         get_work_ids_by_items
         redirect_to main_app.zip_hyrax_media_index_path(ids: @work_ids)
       end

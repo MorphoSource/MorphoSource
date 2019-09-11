@@ -17,6 +17,14 @@ class Media < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
+  def self.parent_works(work)
+    if work.in_works.empty?
+      return []
+    else
+      return work.in_works.reject{|w| w.class == self}.map{|w| self.parent_works(w)}.flatten + work.in_works
+    end
+  end
+
   # array of all visibilities that apply to the file sets of a Media work
   # used to populate File Visibility column in dashboard works list
   def file_set_visibilities

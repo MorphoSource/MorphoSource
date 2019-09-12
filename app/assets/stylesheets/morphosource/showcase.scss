@@ -1,4 +1,4 @@
-$font-color: #333;
+@import 'shared';
 
 /* set box sizing for the circles and line in between */
 html {
@@ -16,6 +16,16 @@ div.showcase {
   max-width: 1200px;
   border: 2px solid #efefef;
   margin-top: 18px;
+
+  .btn {
+    border-radius: 0;
+  }
+
+  .btn-primary, .btn-default {
+    background-color: $button-color;
+    color: $button-font-color;
+    border-color: $button-border-color
+  }
 
   .show-actions {
      padding: 3.5vw 1vw 0 0;
@@ -82,7 +92,7 @@ div.showcase {
       font-size: 17px;
     }
     a.btn {
-      float:right;
+      float: right;
       color: $font-color;
       .glyphicon {
         font-size: 2vw;
@@ -335,7 +345,10 @@ div.showcase {
   }
 
   .dropdown-menu, .twitter-typeahead .tt-menu {
-    min-width: 88px;
+    min-width: 82px;
+    right: 0;
+    left: unset;
+    top: 80%;
   }
 
   div.preview {

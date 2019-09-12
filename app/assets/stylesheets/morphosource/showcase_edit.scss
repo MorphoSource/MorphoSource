@@ -1,12 +1,8 @@
-$button-color: #286090;
-
+@import 'shared';
 
 /* NOTE: the styles below are shared between
    showcase edit page and hyrax edit page.  These styles will effect both pages 
    TODO: might need to move these to global style sheet later */
-.btn {
-  border-radius: 0;
-}
 
 .btn.btn-link.add,
 .btn.btn-link.remove {
@@ -39,7 +35,15 @@ div.showcase-edit {
   }
 
   h2 {
-    font-size: 15px;    
+    font-size: 15px;
+    span {
+      padding:0;
+    }
+    a.btn {
+      float: right;
+      margin: -6px -10px -6px 0;
+      color: $button-font-color;
+    }
   }
 
   .tooltip-inner {

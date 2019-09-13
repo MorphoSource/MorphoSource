@@ -87,6 +87,22 @@ module Morphosource
           label: parent.to_s,
           taxonomy_domain: parent.taxonomy_domain.first.to_s,
           taxonomy_kingdom: parent.taxonomy_kingdom.first.to_s,
+          taxonomy_phylum: parent.taxonomy_phylum.first.to_s,
+          taxonomy_superclass: parent.taxonomy_superclass.first.to_s,
+          taxonomy_class: parent.taxonomy_class.first.to_s,
+          taxonomy_subclass: parent.taxonomy_subclass.first.to_s,
+          taxonomy_superorder: parent.taxonomy_superorder.first.to_s,
+          taxonomy_order: parent.taxonomy_order.first.to_s,
+          taxonomy_suborder: parent.taxonomy_suborder.first.to_s,
+          taxonomy_superfamily: parent.taxonomy_superfamily.first.to_s,
+          taxonomy_family: parent.taxonomy_family.first.to_s,
+          taxonomy_subfamily: parent.taxonomy_subfamily.first.to_s,
+          taxonomy_tribe: parent.taxonomy_tribe.first.to_s,
+          taxonomy_genus: parent.taxonomy_genus.first.to_s,
+          taxonomy_subgenus: parent.taxonomy_subgenus.first.to_s,
+          taxonomy_species: parent.taxonomy_species.first.to_s,
+          taxonomy_subspecies: parent.taxonomy_subspecies.first.to_s,
+          depositor: parent.depositor.to_s,
           path: @controller.url_for(parent)
         }
       end.to_json

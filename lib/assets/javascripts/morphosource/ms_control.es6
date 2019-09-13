@@ -51,13 +51,40 @@ export default class RelationshipsControl {
       )      
     } else if (this.workType == 'taxonomy') {
       this.members.forEach((elem) =>
-        this.registry.addResource(new TaxonomyResource(elem.id, elem.label, elem.taxonomy_domain, elem.taxonomy_kingdom))
+        this.registry.addResource(new TaxonomyResource(
+          elem.id, 
+          elem.label, 
+          elem.taxonomy_domain, 
+          elem.taxonomy_kingdom,
+          elem.taxonomy_phylum,
+          elem.taxonomy_superclass,
+          elem.taxonomy_class,
+          elem.taxonomy_subclass,
+          elem.taxonomy_superorder,
+          elem.taxonomy_order,
+          elem.taxonomy_suborder,
+          elem.taxonomy_superfamily,
+          elem.taxonomy_family,
+          elem.taxonomy_subfamily,
+          elem.taxonomy_tribe,
+          elem.taxonomy_genus,
+          elem.taxonomy_subgenus,
+          elem.taxonomy_species,
+          elem.taxonomy_subspecies,
+          elem.depositor,
+          this.depositorLink(elem.depositor)
+         ))
       )      
     } else {
       this.members.forEach((elem) =>
         this.registry.addResource(new Resource(elem.id, elem.label))
       )
     }
+  }
+
+  depositorLink(email) {
+    // url example: /users/johndoe@gmail-dot-com
+    return "/users/" + email.replace(/(.+)@([^.]+)\.(.+)/, '$1@$2-dot-$3')
   }
 
   isValid() {
@@ -97,7 +124,29 @@ export default class RelationshipsControl {
       //console.log("addRow data : ", data)
       this.registry.addResource(new InstitutionResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
     } else if (this.workType == 'taxonomy') {
-      this.registry.addResource(new TaxonomyResource(data.id, data.text, data.taxonomy_domain, data.taxonomy_kingdom))
+      this.registry.addResource(new TaxonomyResource(
+        data.id, 
+        data.text, 
+        data.taxonomy_domain, 
+        data.taxonomy_kingdom,
+        data.taxonomy_phylum,
+        data.taxonomy_superclass,
+        data.taxonomy_class,
+        data.taxonomy_subclass,
+        data.taxonomy_superorder,
+        data.taxonomy_order,
+        data.taxonomy_suborder,
+        data.taxonomy_superfamily,
+        data.taxonomy_family,
+        data.taxonomy_subfamily,
+        data.taxonomy_tribe,
+        data.taxonomy_genus,
+        data.taxonomy_subgenus,
+        data.taxonomy_species,
+        data.taxonomy_subspecies,
+        data.depositor,
+        data.depositor_link
+        ))
     } else {
       this.registry.addResource(new Resource(data.id, data.text))
     }

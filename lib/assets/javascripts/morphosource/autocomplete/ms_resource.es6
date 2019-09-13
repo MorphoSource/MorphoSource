@@ -22,7 +22,29 @@ export default class MorphosourceResource extends Resource {
                             })
     } else if (this.url.indexOf('taxonomies') != -1) {
       results = data.map((obj) => {
-                               return { id: obj.id, text: obj.label[0], taxonomy_domain: obj.taxonomy_domain, taxonomy_kingdom: obj.taxonomy_kingdom };
+                              return { 
+                                id: obj.id, 
+                                text: obj.label[0], 
+                                taxonomy_domain: obj.taxonomy_domain,
+                                taxonomy_kingdom: obj.taxonomy_kingdom,
+                                taxonomy_phylum: obj.taxonomy_phylum,
+                                taxonomy_superclass: obj.taxonomy_superclass,
+                                taxonomy_class: obj.taxonomy_class,
+                                taxonomy_subclass: obj.taxonomy_subclass,
+                                taxonomy_superorder: obj.taxonomy_superorder,
+                                taxonomy_order: obj.taxonomy_order,
+                                taxonomy_suborder: obj.taxonomy_suborder,
+                                taxonomy_superfamily: obj.taxonomy_superfamily,
+                                taxonomy_family: obj.taxonomy_family,
+                                taxonomy_subfamily: obj.taxonomy_subfamily,
+                                taxonomy_tribe: obj.taxonomy_tribe,
+                                taxonomy_genus: obj.taxonomy_genus,
+                                taxonomy_subgenus: obj.taxonomy_subgenus,
+                                taxonomy_species: obj.taxonomy_species,
+                                taxonomy_subspecies: obj.taxonomy_subspecies,
+                                depositor: obj.depositor,
+                                depositor_link: obj.depositor_link
+                              };
                             })
     } else {
       results = data.map((obj) => {
@@ -31,4 +53,5 @@ export default class MorphosourceResource extends Resource {
     }
     return { results: results };
   }
+
 }

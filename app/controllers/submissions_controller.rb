@@ -478,8 +478,23 @@ class SubmissionsController < ApplicationController
         :id => new_taxonomy_id,
         :title => new_taxonomy.title.first,
         :taxonomy_domain => new_taxonomy.taxonomy_domain.first,
-        :taxonomy_kingdom => new_taxonomy.taxonomy_kingdom.first
-        
+        :taxonomy_kingdom => new_taxonomy.taxonomy_kingdom.first,
+        :taxonomy_phylum => new_taxonomy.taxonomy_phylum.first,
+        :taxonomy_superclass => new_taxonomy.taxonomy_superclass.first,
+        :taxonomy_class => new_taxonomy.taxonomy_class.first,
+        :taxonomy_subclass => new_taxonomy.taxonomy_subclass.first,
+        :taxonomy_superorder => new_taxonomy.taxonomy_superorder.first,
+        :taxonomy_order => new_taxonomy.taxonomy_order.first,
+        :taxonomy_suborder => new_taxonomy.taxonomy_suborder.first,
+        :taxonomy_superfamily => new_taxonomy.taxonomy_superfamily.first,
+        :taxonomy_family => new_taxonomy.taxonomy_family.first,
+        :taxonomy_subfamily => new_taxonomy.taxonomy_subfamily.first,
+        :taxonomy_tribe => new_taxonomy.taxonomy_tribe.first,
+        :taxonomy_genus => new_taxonomy.taxonomy_genus.first,
+        :taxonomy_subgenus => new_taxonomy.taxonomy_subgenus.first,
+        :taxonomy_species => new_taxonomy.taxonomy_species.first,
+        :taxonomy_subspecies => new_taxonomy.taxonomy_subspecies.first,
+        :depositor => new_taxonomy.depositor        
       }
     else
       status = 'FAIL'

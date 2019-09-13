@@ -12,6 +12,11 @@ function hide_fields(field_array, clear = true) {
   }
 }
 
+function depositorLink(email) {
+  // url example: /users/johndoe@gmail-dot-com
+  return "/users/" + email.replace(/(.+)@([^.]+)\.(.+)/, '$1@$2-dot-$3')
+}
+
 // setup embedded work form, when to load the form, submit and close handling
 function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	var this_btn = "#btn_" + action + '_' + work_name;
@@ -69,8 +74,24 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 					id: data.work.id, 
 					text: data.work.title,
 					taxonomy_domain: data.work.taxonomy_domain,
-					taxonomy_kingdom: data.work.taxonomy_kingdom
-
+					taxonomy_kingdom: data.work.taxonomy_kingdom,
+          taxonomy_phylum: data.work.taxonomy_phylum,
+          taxonomy_superclass: data.work.taxonomy_superclass,
+          taxonomy_class: data.work.taxonomy_class,
+          taxonomy_subclass: data.work.taxonomy_subclass,
+          taxonomy_superorder: data.work.taxonomy_superorder,
+          taxonomy_order: data.work.taxonomy_order,
+          taxonomy_suborder: data.work.taxonomy_suborder,
+          taxonomy_superfamily: data.work.taxonomy_superfamily,
+          taxonomy_family: data.work.taxonomy_family,
+          taxonomy_subfamily: data.work.taxonomy_subfamily,
+          taxonomy_tribe: data.work.taxonomy_tribe,
+          taxonomy_genus: data.work.taxonomy_genus,
+          taxonomy_subgenus: data.work.taxonomy_subgenus,
+          taxonomy_species: data.work.taxonomy_species,
+          taxonomy_subspecies: data.work.taxonomy_subspecies,
+          depositor: data.work.depositor,
+          depositor_link: depositorLink(data.work.depositor)
 				}
 			} else {
 				var new_data = {

@@ -12,9 +12,6 @@
   color: $button-color;
   background-color: transparent;
   border-color: transparent;
-
-  .glyphicon {
-  }
 }
 
 form[id^='edit_biological_specimen'] .select2-container {
@@ -66,6 +63,9 @@ div.showcase-edit {
   .field-controls .remove {
     width: auto;
     text-align: left;
+    .fa {
+      font-size: 15px;
+    }
   }
 
   .form-control {

@@ -2,6 +2,7 @@
 import Registry from './ms_registry'
 import Resource from 'hyrax/relationships/resource'
 import InstitutionResource from './ms_institution_resource'
+import TaxonomyResource from './ms_taxonomy_resource'
 
 /**
  * This depends on the passed in element containing `data-autocomplete="work'"`
@@ -48,6 +49,10 @@ export default class RelationshipsControl {
       this.members.forEach((elem) =>
         this.registry.addResource(new InstitutionResource(elem.id, elem.label, elem.institution_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
       )      
+    } else if (this.workType == 'taxonomy') {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new TaxonomyResource(elem.id, elem.label, elem.taxonomy_domain, elem.taxonomy_kingdom))
+      )      
     } else {
       this.members.forEach((elem) =>
         this.registry.addResource(new Resource(elem.id, elem.label))
@@ -91,6 +96,8 @@ export default class RelationshipsControl {
     if (this.workType == 'institution') {
       //console.log("addRow data : ", data)
       this.registry.addResource(new InstitutionResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
+    } else if (this.workType == 'taxonomy') {
+      this.registry.addResource(new TaxonomyResource(data.id, data.text, data.taxonomy_domain, data.taxonomy_kingdom))
     } else {
       this.registry.addResource(new Resource(data.id, data.text))
     }

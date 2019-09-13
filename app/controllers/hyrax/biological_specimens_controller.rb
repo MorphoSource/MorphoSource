@@ -37,7 +37,7 @@ module Hyrax
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      @presenter.get_institution_data
+      #@presenter.get_institution_data
       render '/hyrax/biological_specimens/edit', presenter: @presenter
     end
 

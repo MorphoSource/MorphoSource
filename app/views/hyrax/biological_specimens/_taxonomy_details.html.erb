@@ -9,10 +9,37 @@
     <script type="text/x-tmpl" id="tmpl-parent-work-taxonomies">
     <tr>
         <td>
-            <div class="row">
-                <div class="col-xs-5 showcase-label">User supplied</div>
-                <div class="col-xs-6 showcase-value">{%= o.title %}</div>
-                <div class="col-xs-1"><i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-relationship"></i></div>
+
+            <div class="panel-group" id="taxonomy-accordion-group">
+                <div class="panel">
+                    <div class="row">
+                        <div class="col-xs-5 showcase-label taxonomy-label">User Supplied</div>
+                        <div class="col-xs-5 showcase-value taxonomy-title">{%= o.title %}</div>
+                        <div class="col-xs-1"><span data-toggle="collapse" data-parent="#taxonomy-accordion-group" href="#collapse-taxonomy-{%= o.id %}" class="col-xs-1 glyphicon collapse-taxonomy-{%= o.id %} glyphicon-triangle-bottom collapsed" aria-expanded="false"></span></div>
+                        <div class="col-xs-1"><i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-relationship"></i></div>
+                    </div>
+
+                    <div id="collapse-taxonomy-{%= o.id %}" class="panel-collapse collapse-accordion collapse" aria-expanded="false" style="height: 0px;">
+                        <div class="row taxonomy-rank">
+                            <div class="col-xs-6 showcase-label">Domain</div>
+                            <div class="col-xs-6 showcase-value">{%= o.taxonomy_domain %}</div>
+                        </div>
+                        <div class="row taxonomy-rank">
+                            <div class="col-xs-6 showcase-label">Kingdom</div>
+                            <div class="col-xs-6 showcase-value">{%= o.taxonomy_kingdom %}</div>
+                        </div>
+
+                        <div class="row taxonomy-rank">
+                            <div class="col-xs-6 showcase-label">Phylum</div>
+                            <div class="col-xs-6 showcase-value">21</div>
+                        </div>
+                        <div class="row taxonomy-rank">
+                            <div class="col-xs-6 showcase-label">Contributing User</div>
+                            <div class="col-xs-6 showcase-value"><a class="contributing-user" href="/users/chaumug@gmail-dot-com">chaumug@gmail.com</a></div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </td>
     </tr>

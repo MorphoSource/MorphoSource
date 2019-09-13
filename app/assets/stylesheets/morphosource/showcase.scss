@@ -24,7 +24,14 @@ div.showcase {
   .btn-primary, .btn-default {
     background-color: $button-color;
     color: $button-font-color;
-    border-color: $button-border-color
+    border-color: $button-border-color;
+  }
+
+  .input-group-btn.field-controls .btn {
+    /* mainly applies to button wrapper around add and remove glyphicons */
+    background-color: transparent;
+    color: $font-color;
+    border-color: transparent;  
   }
 
   .show-actions {
@@ -344,11 +351,16 @@ div.showcase {
     word-break: break-all;
   }
 
-  .dropdown-menu, .twitter-typeahead .tt-menu {
+  .dropdown-menu {
+    background-color: $button-color;
     min-width: 82px;
     right: 0;
     left: unset;
     top: 80%;
+    .btn-default:hover {
+      color : $button-font-color;
+      background-color: $button-color;
+    }
   }
 
   div.preview {

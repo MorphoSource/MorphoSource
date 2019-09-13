@@ -94,7 +94,7 @@ module MorphosourceHelper
   end
 
   def find_taxonomy_autocomplete_url
-    Rails.application.routes.url_helpers.qa_path + '/search/find_works?type[]=Taxonomy&id=NA&q='
+    Rails.application.routes.url_helpers.qa_path + '/search/find_taxonomies?type[]=Taxonomy&id=NA&q='
   end
 
   def collapse_expand_panel(block, state:"COLLAPSE", expand_button_text:"Show more", collapse_button_text:"Show less")

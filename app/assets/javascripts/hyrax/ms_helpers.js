@@ -63,6 +63,15 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	        state_province: data.work.state_province,
 	        country: data.work.country
 				};
+			} else if (work_name == 'taxonomy') {
+				console.log('in taxonomy '+data.work.taxonomy_kingdom)
+				var new_data = {
+					id: data.work.id, 
+					text: data.work.title,
+					taxonomy_domain: data.work.taxonomy_domain,
+					taxonomy_kingdom: data.work.taxonomy_kingdom
+
+				}
 			} else {
 				var new_data = {
 					id: data.work.id, 

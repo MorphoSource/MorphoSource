@@ -476,7 +476,10 @@ class SubmissionsController < ApplicationController
       new_taxonomy = Taxonomy.where('id' => new_taxonomy_id).first
       new_work = {
         :id => new_taxonomy_id,
-        :title => new_taxonomy.title.first
+        :title => new_taxonomy.title.first,
+        :taxonomy_domain => new_taxonomy.taxonomy_domain.first,
+        :taxonomy_kingdom => new_taxonomy.taxonomy_kingdom.first
+        
       }
     else
       status = 'FAIL'

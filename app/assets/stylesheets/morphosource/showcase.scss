@@ -11,6 +11,43 @@ html {
 }
 
 
+/* utility classes below.  Some will be available in Boostrap 4.0+ */
+.m-0 {
+  margin: 0 !important;
+}
+.ml-0 {
+  margin-left: 0 !important;
+}
+.mr-0 {
+  margin-right: 0 !important;
+}
+.mt-0 {
+  margin-top: 0 !important;
+}
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+.p-0 {
+  padding: 0 !important;
+}
+.pl-0 {
+  padding-left: 0 !important;
+}
+.pr-0 {
+  padding-right: 0 !important;
+}
+.pt-0 {
+  padding-top: 0 !important;
+}
+.pb-0 {
+  padding-bottom: 0 !important;
+}
+.no-gutter > [class*='col-'] {
+  padding-right:0 !important;
+  padding-left:0 !important;
+}
+
+
 div.showcase {
 
   max-width: 1200px;

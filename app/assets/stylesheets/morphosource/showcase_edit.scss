@@ -59,6 +59,10 @@ div.showcase-edit {
     display: none;
   }
 
+  .fa {
+    color: $button-color;
+  }
+
   .field-controls .add, 
   .field-controls .remove {
     width: auto;
@@ -145,13 +149,18 @@ div.showcase-edit {
 
   .panel {
     border: none;
-    margin-right: -15px;
     margin-left: -15px;
+    margin-right: -15px;
   }
 
   .nav-tabs {
     background-color: #efefef;
     padding-top: 20px;
+    .active {
+      .fa {
+        color: $font-color;
+      }
+    }
   }
 
 

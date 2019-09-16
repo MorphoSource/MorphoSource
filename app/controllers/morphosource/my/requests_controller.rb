@@ -16,7 +16,7 @@ module Morphosource
         @items = @items.select{|item| !item.downloadable? }
         re_request(inactive(@items)) unless inactive(@items).empty?
         unless unrequested(@items).empty?
-          mark_as('note',unrequested(@items),date: @intended_use)
+          mark_as('use',unrequested(@items),value: @intended_use)
           # this step must go last, otherwise unrequested(@items) will become empty
           mark_as('requested',unrequested(@items))
         end
@@ -36,7 +36,7 @@ module Morphosource
       end
 
       def move_to_cart
-        mark_as('in_cart',date: true)
+        mark_as('in_cart',value: true)
         flash[:notice] = "Item Moved to Cart"
         redirect_back(fallback_location: my_requests_path)
       end
@@ -48,7 +48,7 @@ module Morphosource
           item = find_item_in_cart(work_id)
           if item_is_unrequested?(item)
             mark_as('requested',item)
-            mark_as('note',item,date: @intended_use)
+            mark_as('use',item,value: @intended_use)
           else
             re_request(item)
           end
@@ -70,9 +70,9 @@ module Morphosource
 
         def create_new_requested_item(work_id)
           item = create_cart_item(work_id)
-          mark_as('note',item,date: @intended_use)
+          mark_as('use',item,value: @intended_use)
           mark_as('requested',item)
-          mark_as('in_cart',item,date: true)
+          mark_as('in_cart',item,value: true)
         end
 
     end

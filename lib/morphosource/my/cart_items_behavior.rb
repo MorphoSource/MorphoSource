@@ -59,7 +59,7 @@ module Morphosource
       end
 
       def new_request_items(ids)
-        CartItem.where(id: ids).includes(:media_cart).order("user_id desc").order("note desc").references(:media_cart)
+        CartItem.where(id: ids).order("user_id desc").order("use desc")
       end
 
       def get_requesters(page)
@@ -92,19 +92,6 @@ module Morphosource
         params[:item_id] || params[:batch_document_ids]
       end
 
-      def after_create_response(curation_concern)
-        respond_to do |format|
-          format.html { redirect_to [main_app, @curation_concern] }
-          format.json { render work_to_render, status: :ok, location: polymorphic_path([main_app, @curation_concern]) }
-        end
-      end
-
-      def get_curation_concern
-        work_type = eval(params[:work_type])
-        @curation_concern = work_type.find(params[:work_id]) unless @curation_concern
-        work_to_render = (params[:work_type].downcase.concat('/show'))
-      end
-
       def get_intended_use
         @intended_use = params[:intended_use].first
       end
@@ -119,36 +106,36 @@ module Morphosource
         work_ids_in_cart.include? id
       end
 
-      def mark_as(action,items=@items,date: nil)
+      def mark_as(action,items=@items,value: nil)
         items = Array(items)
-        date = attribute_value(date)
+        value = attribute_value(value)
         attribute = get_attribute(action)
          items.each do |item|
           item.date_cleared = nil if item.date_cleared
-          item.send(attribute, date)
+          item.send(attribute, value)
           item.save
         end
       end
 
       def get_attribute(action)
-        return 'note=' if action == 'note'
+        return 'use=' if action == 'use'
         return 'in_cart=' if action == 'in_cart'
         'date_'.concat(action).concat('=')
       end
 
-      def attribute_value(date)
-        case date
+      def attribute_value(value)
+        case value
         when nil
           Time.now
         when 'nil'
           nil
         else
-          date
+          value
         end
       end
 
       def re_request(items)
-        mark_as('in_cart',items,date: false)
+        mark_as('in_cart',items,value: false)
         create_new_items(items)
       end
 
@@ -193,8 +180,8 @@ module Morphosource
             if user_is_approver?(item)
               unrestrict(item)
             elsif requested == 'requested'
-              mark_as('requested',item,date: value)
-              mark_as('note',item,date: @intended_use)
+              mark_as('requested',item,value: value)
+              mark_as('use',item,value: @intended_use)
             end
             @count += 1
           else
@@ -209,7 +196,7 @@ module Morphosource
 
       def create_downloaded_item(work_id)
         item = create_cart_item(work_id)
-        mark_as('in_cart',item,date: false)
+        mark_as('in_cart',item,value: false)
         mark_as('downloaded',item)
       end
 
@@ -235,7 +222,7 @@ module Morphosource
 
       def create_cart_item(work_id)
         work = Media.find(work_id)
-        CartItem.create({:media_cart_id => current_user.media_cart.id, :work_id => work.id, :restricted => work.restricted?, :approver => work.depositor})
+        CartItem.create({:user_id => current_user.id, :work_id => work.id, :restricted => work.restricted?, :approver => work.depositor})
       end
 
       def uniq_downloaded_work_ids

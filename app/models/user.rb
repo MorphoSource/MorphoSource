@@ -1,10 +1,7 @@
 class User < ApplicationRecord
-  has_one :media_cart, dependent: :destroy
-  has_many :cart_items, through: :media_cart
+  has_many :cart_items
 
   paginates_per 10
-
-  after_create :create_user_media_cart
 
   # Connects this user object to Hydra behaviors.
   include Hydra::User
@@ -37,15 +34,6 @@ class User < ApplicationRecord
   # in order to send emails
   def mailboxer_email(_object)
     email
-  end
-
-  # Create shopping cart for user when they create an account
-  def create_user_media_cart
-    MediaCart.create( { user_id: self.id } )
-  end
-
-  def cart_id
-    media_cart.id
   end
 
   def items_in_cart
@@ -149,11 +137,11 @@ class User < ApplicationRecord
   end
 
   def newly_requested_items_user_ids
-    newly_requested_items.map{ |item| item.media_cart.user_id }
+    newly_requested_items.map{ |item| item.user_id }
   end
 
   def previously_requested_items_user_ids
-    previously_requested_items.map{ |item| item.media_cart.user_id }
+    previously_requested_items.map{ |item| item.user_id }
   end
 
   def downloaded_items

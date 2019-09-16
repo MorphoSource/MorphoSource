@@ -7,15 +7,13 @@ module Morphosource
       class_attribute :create_work_presenter_class
       self.create_work_presenter_class = Hyrax::SelectTypeListPresenter
 
-      before_action :get_curation_concern, only: [:create]
-
       # Used by Add to Cart button on Work showcase page
       def create
-        work = @curation_concern
+        work = Media.find(params[:work_id])
         unless work_already_in_cart?(work.id)
           if work_requested?(work.id)
             item = find_requested_item(work.id)
-            mark_as('in_cart',item,date: true)
+            mark_as('in_cart',item,value: true)
           else
             item = create_cart_item(work.id)
             if item.restricted? && user_is_approver?(item)
@@ -26,7 +24,7 @@ module Morphosource
         else
           flash[:alert] = 'Item Already in Cart or Requested'
         end
-        after_create_response(work)
+        redirect_back(fallback_location: my_cart_path)
       end
 
       # used when downloading from the showcase page

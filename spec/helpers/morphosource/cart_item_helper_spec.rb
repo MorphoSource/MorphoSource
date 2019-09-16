@@ -7,7 +7,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
   describe '#item_status_label and #item_action_button' do
 
     let(:work)  { double('work', id: 'www', depositor: 'test@test.com')}
-    let(:item)  { CartItem.create( id: 'aaa', media_cart_id: 'bbb', work_id: work.id)}
+    let(:item)  { CartItem.create( id: 'aaa', user_id: '555', work_id: work.id)}
 
     before do
       allow(Media).to receive(:find).with(item.work_id).and_return(work)
@@ -204,7 +204,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
     end
     context "the work is not in the user's cart" do
       it 'displays the add to cart button' do
-        expect(choose_cart_button(presenter2)).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?media_cart_id=555&amp;work_id=ddd&amp;work_type=Media\">Add to Cart</a>")
+        expect(choose_cart_button(presenter2)).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=ddd\">Add to Cart</a>")
       end
     end
   end

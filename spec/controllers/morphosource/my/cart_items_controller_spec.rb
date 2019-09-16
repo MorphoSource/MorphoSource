@@ -11,7 +11,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
   describe "POST #create" do
 
     context 'item is not in cart and has not been requested' do
-      let(:post_params) { {:media_cart_id => media_cart.id, :work_id => work6.id, :work_type => "Media" } }
+      let(:post_params) { {:work_id => work6.id} }
 
       it "creates a new CartItem" do
         expect{
@@ -22,7 +22,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
       it "creates the correct metadata" do
         post :create, params: post_params
         item = CartItem.last
-        expect(item.media_cart_id).to eq(media_cart.id)
+        expect(item.user_id).to eq(current_user.id)
         expect(item.work_id).to eq(work6.id)
         expect(item.in_cart).to be(true)
         expect(item.restricted).to be(work6.restricted?)
@@ -32,11 +32,6 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
       it "returns flash message 'Item Added to Cart'" do
         post :create, params: post_params
         expect(response.flash[:notice]).to eq('Item Added to Cart')
-      end
-
-      it "should call 'after_create_response' with @curation_concern" do
-        expect(subject).to receive(:after_create_response).with(work6)
-        post :create, params: post_params
       end
 
       context 'work is restricted' do
@@ -66,7 +61,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
     end
 
     context 'item is not in cart and has already been requested' do
-      let(:post_params) { {:media_cart_id => media_cart.id, :work_id => work5.id, :work_type => "Media" } }
+      let(:post_params) { {:work_id => work5.id} }
 
       it "finds the requested CartItem and moves it to the cart" do
         expect{
@@ -78,15 +73,10 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
         post :create, params: post_params
         expect(response.flash[:notice]).to eq('Item Added to Cart')
       end
-
-      it "should call 'after_create_response' with @curation_concern" do
-        expect(subject).to receive(:after_create_response).with(work5)
-        post :create, params: post_params
-      end
     end
 
     context 'item is already in cart' do
-      let(:post_params) { {:media_cart_id => media_cart.id, :work_id => work2.id, :file_accessibility => "open", :work_type => "Media"} }
+      let(:post_params) { {:work_id => work2.id} }
 
       it "Does not create a new CartItem" do
         expect{
@@ -98,17 +88,12 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
         post :create, params: post_params
         expect(response.flash[:alert]).to eq('Item Already in Cart or Requested')
       end
-
-      it "should call 'after_create_response' with @curation_concern" do
-        expect(subject).to receive(:after_create_response).with(work2)
-        post :create, params: post_params
-      end
     end
   end
 
   describe '#GET download' do
     let(:testwork)         { Media.create(id: 'xxx', title: ["Test Media Work"], depositor: "test@test.com")}
-    let(:cart_item)     { CartItem.create( media_cart_id: media_cart.id, work_id: testwork.id) }
+    let(:cart_item)     { CartItem.create( user_id: current_user.id, work_id: testwork.id) }
 
     before do
       allow(Media).to receive(:find).with(testwork.id).and_return(testwork)
@@ -238,7 +223,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
         end
       end
       context 'the user has an item in their cart and an inactive request' do
-        let(:cart_item2) { CartItem.create(media_cart_id: media_cart.id, work_id: testwork.id, in_cart: false, date_requested: Date.yesterday, date_canceled: Date.yesterday) }
+        let(:cart_item2) { CartItem.create(user_id: current_user.id, work_id: testwork.id, in_cart: false, date_requested: Date.yesterday, date_canceled: Date.yesterday) }
         before do
           cart_item.in_cart = true
           cart_item.save
@@ -337,7 +322,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
           cart_item.destroy
         end
         context 'the user has downloaded the work before' do
-          let(:cart_item3) { CartItem.create( media_cart_id: media_cart.id, work_id: testwork.id, in_cart: false, date_downloaded: Date.yesterday) }
+          let(:cart_item3) { CartItem.create( user_id: current_user.id, work_id: testwork.id, in_cart: false, date_downloaded: Date.yesterday) }
 
           it 'creates a new downloaded item' do
             expect{

@@ -31,7 +31,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
 
         it "adds the intended use to the request" do
-          expect(cartItem3.reload.note).to eq("Intended Use")
+          expect(cartItem3.reload.use).to eq("Intended Use")
         end
 
         it "creates a flash notice with the number of items requested" do
@@ -61,7 +61,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
 
         it "updates the intended use" do
-          expect(cartItem3.reload.note).to eq("Intended Use")
+          expect(cartItem3.reload.use).to eq("Intended Use")
         end
 
         it "creates a flash notice with the number of items requested" do
@@ -75,7 +75,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
       context 'the item is a previous request' do
         let(:requested_work) { Media.create(id: "abc", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
-        let(:requested_item) { CartItem.create(media_cart_id: media_cart.id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday, restricted: true)}
+        let(:requested_item) { CartItem.create(user_id: current_user.id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday, restricted: true)}
         let(:put_params) { {item_id: requested_item.id, intended_use: ["Intended Use"]} }
         let(:items_in_cart) { current_user.items_in_cart }
 
@@ -102,14 +102,14 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           put :request_item, params: put_params
           item = CartItem.last
           work = requested_work
-          expect(item.media_cart_id).to eq(current_user.media_cart.id)
+          expect(item.user_id).to eq(current_user.id)
           expect(item.work_id).to eq(work.id)
           expect(item.approver).to eq(work.depositor)
           expect(item.date_requested.to_date).to eq(Date.today)
           expect(item.restricted).to be(true)
           expect(item.in_cart).to be(true)
           expect(item.date_cleared).to be(nil)
-          expect(item.note).to eq("Intended Use")
+          expect(item.use).to eq("Intended Use")
         end
 
         it "reloads the page" do
@@ -134,8 +134,8 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it "saves the intended use" do
           [cartItem3,cartItem7].each(&:reload)
-          expect(cartItem3.note).to eq("Intended Use")
-          expect(cartItem7.note).to eq("Intended Use")
+          expect(cartItem3.use).to eq("Intended Use")
+          expect(cartItem7.use).to eq("Intended Use")
         end
 
         it "creates a flash notice with the number of items requested" do
@@ -163,8 +163,8 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it "saves the previously unrequested items' intended use" do
           [cartItem3,cartItem7].each(&:reload)
-          expect(cartItem3.note).to eq("Intended Use")
-          expect(cartItem7.note).to eq("Intended Use")
+          expect(cartItem3.use).to eq("Intended Use")
+          expect(cartItem7.use).to eq("Intended Use")
         end
 
         it 'removes the previously requested items from the cart' do
@@ -175,14 +175,14 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         it 'assigns the correct attribute values to the new cart item' do
           item = CartItem.last
           work = Media.find(cartItem1.work_id)
-          expect(item.media_cart_id).to eq(current_user.media_cart.id)
+          expect(item.user_id).to eq(current_user.id)
           expect(item.work_id).to eq(work.id)
           expect(item.in_cart).to be(true)
           expect(item.approver).to eq(work.depositor)
           expect(item.date_requested.to_date).to eq(Date.today)
           expect(item.restricted).to be(work.restricted?)
           expect(item.date_cleared).to be(nil)
-          expect(item.note).to eq("Intended Use")
+          expect(item.use).to eq("Intended Use")
         end
 
         it "creates a flash notice with the number of items requested" do
@@ -232,14 +232,14 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       it 'assigns the correct attribute values to the new cart item' do
         item = CartItem.last
         work = Media.find(cartItem1.work_id)
-        expect(item.media_cart_id).to eq(current_user.media_cart.id)
+        expect(item.user_id).to eq(current_user.id)
         expect(item.work_id).to eq(work.id)
         expect(item.in_cart).to be(true)
         expect(item.approver).to eq(work.depositor)
         expect(item.date_requested.to_date).to eq(Date.today)
         expect(item.restricted).to be(work.restricted?)
         expect(item.date_cleared).to be(nil)
-        expect(item.note).to eq("Intended Use")
+        expect(item.use).to eq("Intended Use")
       end
 
       it "reloads the page" do
@@ -277,23 +277,23 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         item2 = items[1]
         work2 = Media.find(item2.work_id)
 
-        expect(item1.media_cart_id).to eq(current_user.media_cart.id)
+        expect(item1.user_id).to eq(current_user.id)
         expect(item1.work_id).to eq(work1.id)
         expect(item1.in_cart).to be(true)
         expect(item1.approver).to eq(work1.depositor)
         expect(item1.date_requested.to_date).to eq(Date.today)
         expect(item1.restricted).to be(work1.restricted?)
         expect(item1.date_cleared).to be(nil)
-        expect(item1.note).to eq("Intended Use")
+        expect(item1.use).to eq("Intended Use")
 
-        expect(item2.media_cart_id).to eq(current_user.media_cart.id)
+        expect(item2.user_id).to eq(current_user.id)
         expect(item2.work_id).to eq(work2.id)
         expect(item2.in_cart).to be(true)
         expect(item2.approver).to eq(work2.depositor)
         expect(item2.date_requested.to_date).to eq(Date.today)
         expect(item2.restricted).to be(work2.restricted?)
         expect(item2.date_cleared).to be(nil)
-        expect(item2.note).to eq("Intended Use")
+        expect(item2.use).to eq("Intended Use")
       end
 
       it "reloads the page" do
@@ -355,12 +355,12 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       it "creates the correct metadata" do
         post :request_work, params: post_params
         item = CartItem.last
-        expect(item.media_cart_id).to eq(media_cart.id)
+        expect(item.user_id).to eq(current_user.id)
         expect(item.work_id).to eq(new_work.id)
         expect(item.in_cart).to be(true)
         expect(item.restricted).to be(new_work.restricted?)
         expect(item.approver).to eq(new_work.depositor)
-        expect(item.note).to eq("Intended Use")
+        expect(item.use).to eq("Intended Use")
       end
     end
     context "work is in the cart and hasn't been requested" do
@@ -373,7 +373,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       it "marks the item as requested, saves the intended use, and leaves it in the cart" do
         expect(cartItem3.in_cart).to be(true)
         expect(cartItem3.date_requested.to_date).to eq(Date.today)
-        expect(cartItem3.note).to eq("Intended Use")
+        expect(cartItem3.use).to eq("Intended Use")
       end
       it "reloads the page" do
         expect(response).to redirect_to("original_page")

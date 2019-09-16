@@ -1,7 +1,6 @@
 RSpec.shared_context 'cart items', :shared_context => :metadata do
 
   let(:current_user)  { User.create(email: "example@email.com", password: "password") }
-  let(:media_cart)    { MediaCart.where(user_id: current_user.id)[0] }
 
   let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
   let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: [''])}
@@ -11,13 +10,13 @@ RSpec.shared_context 'cart items', :shared_context => :metadata do
   let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: "test@test.com", fileset_accessibility: ['']) }
   let(:work7)         { Media.create(id: "ggg", title: ["Test Work Title"], depositor: "test@test.com", fileset_accessibility: ['restricted_download']) }
 
-  let(:cartItem1)     { CartItem.create( media_cart_id: media_cart.id, work_id: work1.id, in_cart: true, date_requested: Date.yesterday, date_downloaded: Date.yesterday, restricted: true, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
-  let(:cartItem2)     { CartItem.create( media_cart_id: media_cart.id, work_id: work2.id, in_cart: true, date_downloaded: Date.yesterday, restricted: false) }
-  let(:cartItem3)     { CartItem.create( media_cart_id: media_cart.id, work_id: work3.id, in_cart: true, date_downloaded: nil, restricted: true) }
-  let(:cartItem4)     { CartItem.create( media_cart_id: media_cart.id, work_id: work4.id, in_cart: false, date_downloaded: Date.yesterday, restricted: false) }
-  let(:cartItem5)     { CartItem.create( media_cart_id: media_cart.id, work_id: work5.id, in_cart: false, date_downloaded: nil, restricted: true, date_requested: Date.yesterday) }
-  let(:cartItem6)     { CartItem.create( media_cart_id: media_cart.id, work_id: work6.id, in_cart: false, date_downloaded: nil, restricted: false) }
-  let(:cartItem7)     { CartItem.create( media_cart_id: media_cart.id, work_id: work7.id, in_cart: false, date_downloaded: nil, restricted: true) }
+  let(:cartItem1)     { CartItem.create( user_id: current_user.id, work_id: work1.id, in_cart: true, date_requested: Date.yesterday, date_downloaded: Date.yesterday, restricted: true, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
+  let(:cartItem2)     { CartItem.create( user_id: current_user.id, work_id: work2.id, in_cart: true, date_downloaded: Date.yesterday, restricted: false) }
+  let(:cartItem3)     { CartItem.create( user_id: current_user.id, work_id: work3.id, in_cart: true, date_downloaded: nil, restricted: true) }
+  let(:cartItem4)     { CartItem.create( user_id: current_user.id, work_id: work4.id, in_cart: false, date_downloaded: Date.yesterday, restricted: false) }
+  let(:cartItem5)     { CartItem.create( user_id: current_user.id, work_id: work5.id, in_cart: false, date_downloaded: nil, restricted: true, date_requested: Date.yesterday) }
+  let(:cartItem6)     { CartItem.create( user_id: current_user.id, work_id: work6.id, in_cart: false, date_downloaded: nil, restricted: false) }
+  let(:cartItem7)     { CartItem.create( user_id: current_user.id, work_id: work7.id, in_cart: false, date_downloaded: nil, restricted: true) }
 
   let(:doc1)          { SolrDocument.new(id: work1.id) }
   let(:doc2)          { SolrDocument.new(id: work2.id) }

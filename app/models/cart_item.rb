@@ -1,5 +1,5 @@
 class CartItem < ApplicationRecord
-  belongs_to :media_cart
+  belongs_to :user
   paginates_per 10
 
   before_create :set_approver

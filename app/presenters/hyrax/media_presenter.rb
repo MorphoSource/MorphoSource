@@ -87,11 +87,7 @@ module Hyrax
       # todo: need to get the user name (and a link to user) from the email address
       @data_managed_by = solr_document.depositor
 
-      if media.fileset_visibility.include? 'restricted'
-        @download_permission = 'restricted'
-      else
-        @download_permission = 'open'
-      end
+      @download_permission = get_download_permission(media)
 
       @ark = media.ark
       @doi = media.doi
@@ -426,6 +422,18 @@ module Hyrax
 
       def members_include_viewable_volume?
         file_set_presenters.any? { |presenter| presenter.volume? && current_ability.can?(:read, presenter.id) }
+      end
+
+      #TODO: Update once publication statuses have been implemented fully
+      def get_download_permission(media)
+        case media.fileset_accessibility.first
+        when "open"
+          "open"
+        when "restricted_download"
+          "restricted"
+        else
+          "forbidden"
+        end
       end
 
   end

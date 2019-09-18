@@ -41,6 +41,25 @@ HTML Properties:
   </table>
 </div>
 
+<% if f.object.model_name.name == 'Media' %>
+  <div>
+    <h2>Parent Work Details</h2>
+    <ul>
+    <% Media.parent_works(f.object.model).each do |parent_work| %>
+      <li><%= parent_work.class.to_s.underscore.titleize %>: <%= parent_work.title.first %>
+      <% if ['ImagingEvent','ProcessingEvent'].include? parent_work.class.to_s %>
+        <ul>
+          <% parent_work.attributes.reject{|k,v| %w{head tail title}.include?(k) || v.blank? || (v.class != ActiveTriples::Relation)}.each do |key, value| %>
+            <li><%= key.to_s.titleize %>: <%= value.join(', ') %>
+          <% end %>
+        </ul>
+      <% end %>
+      </li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <script type="text/x-tmpl" id="tmpl-parent-work">
 <tr>
   <td>{%= o.title %}</td>

@@ -116,11 +116,11 @@ module Morphosource::CartItemHelper
   end
 
   def requester_uses
-    @requester_items.map{|item| item.note }.uniq
+    @requester_items.map{|item| item.use }.uniq
   end
 
   def use_requests(items,use)
-    items.select{|item| item.note == use }
+    items.select{|item| item.use == use }
   end
 
   def page

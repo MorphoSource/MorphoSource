@@ -133,7 +133,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         %(<span class=\"label label-info\" style=\"background-color: teal;\">Not Requested</span>)
       end
       let(:button_content) do
-        %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info\" data-toggle=\"modal\" data-target=\"#pageModal\">Request Download</button>)
+        %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\">Request Download</button>)
       end
 
       it 'creates a "Not Requested" label' do
@@ -181,7 +181,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
     end
     context "item is in the user's cart, has been requested, and has been approved" do
       it 'displays the download button' do
-        expect(choose_download_button('aaa')).to eq("<a class=\"btn btn-default\" role=\"button\" download=\"true\" target=\"_blank\" href=\"/concern/media/zip?ids%5B%5D=aaa\">Download</a>")
+        expect(choose_download_button('aaa')).to eq("<a class=\"btn btn-default\" download=\"true\" target=\"_blank\" role=\"button\" href=\"/download_work?work_id%5B%5D=aaa\">Download</a>")
       end
     end
   end

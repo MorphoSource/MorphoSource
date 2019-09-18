@@ -5,7 +5,7 @@ class CartItem < ApplicationRecord
   before_create :set_approver
 
   def requester
-    self.media_cart.user
+    media_cart.user
   end
 
   def requester_email
@@ -17,60 +17,60 @@ class CartItem < ApplicationRecord
   end
 
   def unrestricted?
-    !self.restricted?
+    !restricted?
   end
 
   def active_request?
-    return false if self.unrestricted?
+    return false if unrestricted?
     statuses = ["Approved","Requested","Cleared"]
     statuses.include?(self.request_status)
   end
 
   def inactive_request?
-    return false if self.unrestricted?
+    return false if unrestricted?
     statuses = ["Canceled","Denied","Expired"]
-    statuses.include?(self.request_status)
+    statuses.include?(request_status)
   end
 
   def request_status
-    if self.date_canceled.present?
+    if date_canceled?
       "Canceled"
-    elsif self.date_denied.present?
+    elsif date_denied?
       "Denied"
-    elsif self.expired?
+    elsif expired?
       "Expired"
-    elsif self.date_approved.present?
+    elsif date_approved?
       "Approved"
-    elsif self.date_cleared.present?
+    elsif date_cleared?
       "Cleared"
-    elsif self.date_requested.present?
+    elsif date_requested?
       "Requested"
-    elsif self.restricted?
+    elsif restricted?
       "Not Requested"
-    elsif self.downloadable?
+    elsif downloadable?
       "Downloadable"
     end
   end
 
   def downloadable?
-    self.unrestricted? || self.request_status == 'Approved'
+    unrestricted? || request_status == 'Approved'
   end
 
   def approving_user
-    User.find_by email: self.approver
+    User.find_by email: approver
   end
 
   def work
-    Media.find(self.work_id)
+    Media.find(work_id)
   end
 
   def expired?
-    return false unless self.date_expired
-    self.date_expired.to_date < Date.today
+    return false unless date_expired
+    date_expired.to_date < Date.today
   end
 
   def approved?
-    self.request_status == 'Approved'
+    request_status == 'Approved'
   end
 
   # for now, approver = depositor

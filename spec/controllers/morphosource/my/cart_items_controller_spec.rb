@@ -105,4 +105,254 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
       end
     end
   end
+
+  describe '#GET download' do
+    let(:testwork)         { Media.create(id: 'xxx', title: ["Test Media Work"], depositor: "test@test.com")}
+    let(:cart_item)     { CartItem.create( media_cart_id: media_cart.id, work_id: testwork.id) }
+
+    before do
+      allow(Media).to receive(:find).with(testwork.id).and_return(testwork)
+      cart_item.touch
+    end
+
+    context 'the work is restricted' do
+      let(:get_params) {{:intended_use => ["Intended Use"], :work_id => [testwork.id]}}
+      before do
+        testwork.fileset_accessibility = ["restricted_download"]
+        testwork.save
+        cart_item.restricted = true
+        cart_item.save
+      end
+      context 'the user has an item in their cart for the work' do
+        before do
+          cart_item.in_cart = true
+          cart_item.save
+        end
+        context 'the item is approved' do
+          before do
+            cart_item.date_requested = Date.yesterday
+            cart_item.date_approved = Date.today
+            cart_item.save
+          end
+          context 'the item has already been downloaded' do
+            before do
+              cart_item.date_downloaded = Date.yesterday
+              cart_item.save
+            end
+            it 'creates a new downloaded cart item with the correct metadata' do
+              expect{
+                process :download, method: :get, params: get_params
+              }.to change{CartItem.count}.by(1)
+
+              item = CartItem.last
+              expect(item.date_downloaded.to_date).to eq(Date.today)
+              expect(item.restricted).to be(true)
+              expect(item.work_id).to eq(testwork.id)
+              expect(item.date_requested).to be(nil)
+            end
+            it 'does not change the date downloaded on the original item' do
+              get :download, params: get_params
+              expect(cart_item.reload.date_downloaded.to_date).to eq(Date.yesterday)
+            end
+          end
+          context 'the item has not been downloaded' do
+            it 'marks the item as downloaded' do
+              get :download, params: get_params
+              expect(cart_item.reload.date_downloaded).to_not be(nil)
+            end
+          end
+          context 'the user is the approver for the item' do
+            before do
+              cart_item.approver = current_user.email
+              cart_item.save
+            end
+            context 'the item has not been downloaded' do
+              it 'marks the item as downloaded' do
+                get :download, params: get_params
+                expect(cart_item.reload.date_downloaded).to_not be(nil)
+              end
+              it 'does not create a new cart item' do
+                expect{
+                  process :download, method: :get, params: get_params
+                }.not_to change{CartItem.count}
+              end
+            end
+            context 'the item has been downloaded' do
+              before do
+                cart_item.date_downloaded = Date.yesterday
+                cart_item.save
+              end
+              it 'creates a new cart item with the correct metadata' do
+                expect{
+                  process :download, method: :get, params: get_params
+                }.to change{CartItem.count}.by(1)
+
+                item = CartItem.last
+                expect(item.date_downloaded.to_date).to eq(Date.today)
+                expect(item.restricted).to be(true)
+                expect(item.work_id).to eq(testwork.id)
+                expect(item.date_requested).to be(nil)
+              end
+            end
+          end
+        end
+      end
+      context 'the user has an approved item for the work not in their cart' do
+        before do
+          cart_item.in_cart = false
+          cart_item.save
+        end
+        context 'the item is an approved request' do
+          before do
+            cart_item.date_requested = Date.yesterday
+            cart_item.date_approved = Date.yesterday
+            cart_item.save
+          end
+          context 'the item has been downloaded' do
+            before do
+              cart_item.date_downloaded = Date.yesterday
+              cart_item.save
+            end
+            it 'creates a new cart item with the correct metadata' do
+              expect{
+                process :download, method: :get, params: get_params
+              }.to change{CartItem.count}.by(1)
+
+              item = CartItem.last
+              expect(item.date_downloaded.to_date).to eq(Date.today)
+              expect(item.restricted).to be(true)
+              expect(item.work_id).to eq(testwork.id)
+              expect(item.date_requested).to be(nil)
+            end
+            it 'does not change the date downloaded for the original item' do
+              get :download, params: get_params
+              expect(cart_item.reload.date_downloaded.to_date).to eq(Date.yesterday)
+            end
+          end
+          context 'the item has not been downloaded' do
+            it 'marks the item as downloaded' do
+              get :download, params: get_params
+              expect(cart_item.reload.date_downloaded.to_date).to eq(Date.today)
+            end
+          end
+        end
+      end
+      context 'the user has an item in their cart and an inactive request' do
+        let(:cart_item2) { CartItem.create(media_cart_id: media_cart.id, work_id: testwork.id, in_cart: false, date_requested: Date.yesterday, date_canceled: Date.yesterday) }
+        before do
+          cart_item.in_cart = true
+          cart_item.save
+        end
+        context 'the item in their cart is approved' do
+          before do
+            cart_item.date_requested = Date.yesterday
+            cart_item.date_approved = Date.yesterday
+            cart_item.save
+          end
+          context 'the item in the cart has been downloaded' do
+            before do
+              cart_item.date_downloaded = Date.yesterday
+              cart_item.save
+            end
+            it 'creates a new cart item with the correct metadata' do
+              expect{
+                process :download, method: :get, params: get_params
+              }.to change{CartItem.count}.by(1)
+
+              item = CartItem.last
+              expect(item.date_downloaded.to_date).to eq(Date.today)
+              expect(item.restricted).to be(true)
+              expect(item.work_id).to eq(testwork.id)
+              expect(item.date_requested).to be(nil)
+            end
+            it 'does not change the original cart items' do
+              get :download, params: get_params
+              expect(cart_item.reload.date_downloaded.to_date).to eq(Date.yesterday)
+              expect(cart_item2.reload.date_downloaded).to be(nil)
+            end
+          end
+          context 'the item in the cart has not been downloaded' do
+            it 'marks the item in the cart as downloaded' do
+              get :download, params: get_params
+              expect(cart_item.reload.date_downloaded.to_date).to eq(Date.today)
+            end
+            it 'does not create a new cart item' do
+              expect{
+                process :download, method: :get, params: get_params
+              }.not_to change{CartItem.count}
+            end
+            it 'does not alter the item not in the cart' do
+              get :download, params: get_params
+              expect(cart_item2.reload.date_downloaded).to be(nil)
+            end
+          end
+        end
+      end
+    end
+    context 'the work is unrestricted' do
+      let(:get_params) {{:intended_use => ["Intended Use"], :work_id => [testwork.id]}}
+      before do
+        testwork.fileset_accessibility = [""]
+        testwork.save
+        cart_item.restricted = false
+        cart_item.save
+      end
+
+      context 'the user has an item in their cart' do
+        before do
+          cart_item.in_cart = true
+          cart_item.save
+        end
+        context 'the item has not been downloaded' do
+          it 'marks the item as downloaded' do
+            get :download, params: get_params
+            expect(cart_item.reload.date_downloaded.to_date).to eq(Date.today)
+          end
+          it 'does not create another cart item' do
+            expect{
+              process :download, method: :get, params: get_params
+            }.not_to change{CartItem.count}
+          end
+        end
+        context 'the item has been downloaded' do
+          before do
+            cart_item.date_downloaded = Date.yesterday
+            cart_item.save
+          end
+          it 'creates a new downloaded item with the correct metadata' do
+            expect{
+              process :download, method: :get, params: get_params
+            }.to change{CartItem.count}.by(1)
+
+            item = CartItem.last
+            expect(item.date_downloaded.to_date).to eq(Date.today)
+            expect(item.restricted).to be(false)
+            expect(item.work_id).to eq(testwork.id)
+            expect(item.date_requested).to be(nil)
+          end
+        end
+      end
+      context 'the user does not have an item in their cart' do
+        before do
+          cart_item.destroy
+        end
+        context 'the user has downloaded the work before' do
+          let(:cart_item3) { CartItem.create( media_cart_id: media_cart.id, work_id: testwork.id, in_cart: false, date_downloaded: Date.yesterday) }
+
+          it 'creates a new downloaded item' do
+            expect{
+              process :download, method: :get, params: get_params
+            }.to change{CartItem.count}.by(1)
+          end
+        end
+        context 'the user has not downloaded the work before' do
+          it 'creates a new downloaded item' do
+            expect{
+              process :download, method: :get, params: get_params
+            }.to change{CartItem.count}.by(1)
+          end
+        end
+      end
+    end
+  end
 end

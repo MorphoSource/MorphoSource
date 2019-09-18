@@ -340,7 +340,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
   describe "POST #request_work" do
     context "work is not in the user's cart and hasn't been requested" do
       let(:new_work)    { Media.create(id: 'zzz', fileset_accessibility: ["restricted_download"], depositor: 'test@test.com')}
-      let(:post_params) { { work_id: new_work.id, intended_use: ["Intended Use"] } }
+      let(:post_params) { { work_id: [new_work.id], intended_use: ["Intended Use"] } }
       before do
         request.env["HTTP_REFERER"] = "original_page"
         allow(Media).to receive(:find).with('zzz').and_return(new_work)
@@ -364,7 +364,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
     end
     context "work is in the cart and hasn't been requested" do
-      let(:post_params) { {work_id: work3.id, intended_use: ["Intended Use"]} }
+      let(:post_params) { {work_id: [work3.id], intended_use: ["Intended Use"]} }
       before do
         request.env["HTTP_REFERER"] = "original_page"
         post :request_work, params: post_params
@@ -380,7 +380,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
     end
     context "work is in the cart, but is an inactive request (expired,denied,cleared,canceled)" do
-      let(:post_params) {{work_id: cartItem1.work_id, intended_use: ["Intended Use"]}}
+      let(:post_params) {{work_id: [cartItem1.work_id], intended_use: ["Intended Use"]}}
       before do
         request.env["HTTP_REFERER"] = "original_page"
         cartItem1.date_expired = Date.yesterday

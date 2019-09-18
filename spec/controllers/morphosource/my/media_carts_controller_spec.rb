@@ -45,6 +45,8 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
       context 'the item is unrestricted' do
         before do
+          cartItem2.date_downloaded = nil
+          cartItem2.save
           get :download, params: {item_id: cartItem2.id}
         end
 
@@ -92,6 +94,8 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
     context 'the user batch-selects items to download' do
       context 'the selected items are unrestricted' do
         before do
+          cartItem2.date_downloaded = nil
+          cartItem2.save
           get :download, params: { batch_document_ids: [cartItem2.id] }
         end
         it "sets the items' date_downloaded" do
@@ -134,6 +138,8 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
       context 'the selected items are a mix of restricted and unrestricted' do
         before do
+          cartItem2.date_downloaded = nil
+          cartItem2.save
           get :download, params: { batch_document_ids: [cartItem2.id,cartItem3.id] }
         end
         it "sets only the unrestricted item's date_downloaded" do
@@ -157,9 +163,10 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
     context 'the user uses the download all button' do
       context 'the cart has only unrestricted items' do
         before do
-          restricted_items = [cartItem1,cartItem3]
+          restricted_items = [cartItem1,cartItem2,cartItem3]
           restricted_items.each do |item|
             item.restricted = false
+            item.date_downloaded = nil
             item.save
           end
           get :download, params: {}
@@ -202,6 +209,8 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
       context 'the page has a mix of restricted and unrestricted items' do
         before do
+          cartItem2.date_downloaded = nil
+          cartItem2.save
           get :download, params: {}
         end
         it "sets only the unrestricted items' date_downloaded" do

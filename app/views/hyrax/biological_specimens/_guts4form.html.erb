@@ -3,12 +3,12 @@
     <div class="panel panel-default tabs" role="main">
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="">
+        <li role="presentation" class="active">
           <a href="#institution" aria-controls="institution" role="tab" data-toggle="tab" aria-expanded="true">
           <i class="fa fa-university"></i> Institution
           </a>
         </li>
-        <li role="presentation" class="active">
+        <li role="presentation" class="">
           <a href="#taxonomy" aria-controls="taxonomy" role="tab" data-toggle="tab" aria-expanded="false">
           <i class="fab fa-pagelines"></i> Taxonomy
           </a>
@@ -22,7 +22,7 @@
 
       <!-- Tab panes -->
       <div class="tab-content">
-        <div role="tabpanel" class="tab-pane" id="institution">
+        <div role="tabpanel" class="tab-pane active" id="institution">
           <div class="form-tab-content">
 
             <%= render 'tab_institution', f: f %>
@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <div role="tabpanel" class="tab-pane active" id="taxonomy">
+        <div role="tabpanel" class="tab-pane" id="taxonomy">
           <div class="form-tab-content">
 
             <%= render 'tab_taxonomy', f: f %>

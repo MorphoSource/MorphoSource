@@ -1,0 +1,14 @@
+<h2>NEW INSTITUTION</h2>
+
+<p>Create a new institution by filling in fields below and selecting Create New Institution. You can also go back and select institution or no institution instead. </p>
+
+<%= i.input :title, label_wrapper_html: { class: 'recommended-flag' }  %>
+<%= i.input :institution_code, label_wrapper_html: { class: 'recommended-flag' }  %>
+<%= i.input :description %>
+
+<div>
+  <%= i.submit 'Create New Institution', class: "btn btn-primary" %>
+  <button type="button" class="btn btn-secondary cancel">Cancel</button>
+</div>
+
+<%#= i.submit class: 'btn btn-primary btn-save', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_with_files", value: "Save", data: { :disable_with => 'Saving...' } %>

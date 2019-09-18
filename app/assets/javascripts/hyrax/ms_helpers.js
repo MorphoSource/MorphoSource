@@ -17,6 +17,28 @@ function depositorLink(email) {
   return "/users/" + email.replace(/(.+)@([^.]+)\.(.+)/, '$1@$2-dot-$3')
 }
 
+/*
+function preloadWorkForm(this_btn, this_div, this_path) {
+	// pre-loading new work forms
+	$.ajax({
+	  url: this_path,
+	  success: function(result) {
+	  	// new work form has been retrieved in the request
+	  	try {
+		    $(this_div).html(result);
+	  	} catch (e) {
+	  		// catching the error " incorrect module build, no module name "
+	  		// todo: resolve the error later
+	  		// console.log(e);
+	  	}
+	  	
+			$(this_btn).show();
+			$(this_btn).removeClass('disabled');
+	  }
+	});	
+}
+*/
+
 // setup embedded work form, when to load the form, submit and close handling
 function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	var this_btn = "#btn_" + action + '_' + work_name;
@@ -25,30 +47,20 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	var this_path = "/submissions/" + action + '_' + work_name;
 	var detail_div = '#' + work_name + '_details';
 
+//	preloadWorkForm(this_btn, this_div, this_path);
+
   $(document).on("click", this_btn, function() {		
   	// the new work form button has been clicked	
-		$(this_div).addClass('ui-loading').show();
+		$(this_div).show();
 		// hide detail section if any
 		$(detail_div).hide();
 
-		$.ajax({
-		  url: this_path,
-		  success: function(result) {
-		  	// new work form has been retrieved in the request
-		  	try {
-			    $(this_div).html(result);
-		  	} catch (e) {
-		  		// catching the error " incorrect module build, no module name "
-		  		// todo: resolve the error later
-		  		// console.log(e);
-		  	}
-		  	$(this_div).removeClass('ui-loading');		    
-		  }
-		});
 	});
 
   $(this_div).on("submit", this_form, function() {
   	// the new work form's save button has been clicked
+		$(this_div).addClass('ui-loading');
+
 		// replace with ajax form post to trigger other actions
 		$.post($(this_form).attr('action'),
 	  $(this_form).serialize(), function(data, status){
@@ -110,14 +122,10 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 			$(detail_div).show();
 	  });
 	  
-		$(this_div).addClass('ui-loading');
-		//$(this_div).hide();
-   	$(this_div).html('');
 		return false;
   });
   $(this_div).on("click", ".cancel", function() {
 		$(this_div).hide();
-   	$(this_div).html('');
 		$(detail_div).show();
   });
 }

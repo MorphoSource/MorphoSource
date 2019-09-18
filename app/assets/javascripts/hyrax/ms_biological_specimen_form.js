@@ -9,6 +9,9 @@ $(document).on('turbolinks:load', function() {
 			$('#showcase-title').text(updatedTitle);			
 		}
 
+		// move the new work forms to inside the tabs
+		$("#embedded_div_new_institution").detach().insertAfter('#institution_details');
+
     setupEmbeddedWorkForm('taxonomy', 'new');
     setupEmbeddedWorkForm('institution', 'new', updateObjectTitle);
 

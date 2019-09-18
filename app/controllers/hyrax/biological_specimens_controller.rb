@@ -38,6 +38,8 @@ module Hyrax
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       #@presenter.get_institution_data
+      @new_institution_submit_submissions_url = '/submissions/new_institution_submit'
+      @new_institution_form = Hyrax::WorkFormService.build(Institution.new, current_ability, self)
       render '/hyrax/biological_specimens/edit', presenter: @presenter
     end
 

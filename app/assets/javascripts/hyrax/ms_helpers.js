@@ -54,18 +54,18 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 		$(this_div).show();
 		// hide detail section if any
 		$(detail_div).hide();
-
 	});
 
   $(this_div).on("submit", this_form, function() {
   	// the new work form's save button has been clicked
 		$(this_div).addClass('ui-loading');
+		$(this_div).find('.btn-save').addClass('disabled');
 
 		// replace with ajax form post to trigger other actions
 		$.post($(this_form).attr('action'),
 	  $(this_form).serialize(), function(data, status){
 	    // got the data back after the new work has been created
-	    console.log(data.message, data);
+	    //console.log(data.message, data);
 			var relationship_element = $(this_div).data("relationship-control");
 	  	var relationship_input = $(relationship_element).find('input[name*="[find_parent_work]"]');
 			$(relationship_input).val(data.work.id);
@@ -118,13 +118,16 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 			// perform any on-the-fly form update after new work has been created
 			if(callbackAfterSubmit) callbackAfterSubmit();
 
-			$(this_div).hide();
+			$(this_div).removeClass('ui-loading').hide();
+			$(this_div).find('.btn-save').removeClass('disabled');
+			$(this_div).find('form')[0].reset();
 			$(detail_div).show();
 	  });
 	  
 		return false;
   });
   $(this_div).on("click", ".cancel", function() {
+		$(this_div).find('form')[0].reset();
 		$(this_div).hide();
 		$(detail_div).show();
   });

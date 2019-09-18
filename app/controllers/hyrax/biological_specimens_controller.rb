@@ -40,6 +40,7 @@ module Hyrax
       #@presenter.get_institution_data
       @new_institution_submit_submissions_url = '/submissions/new_institution_submit'
       @new_institution_form = Hyrax::WorkFormService.build(Institution.new, current_ability, self)
+      @countries_service = Morphosource::CountriesService.new
       render '/hyrax/biological_specimens/edit', presenter: @presenter
     end
 

@@ -29,6 +29,12 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     Hyrax::MediaPresenter.new(work_solr_document, ability, request)
   end
 
+  let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
+  let(:private)     { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
+  let(:embargo)     { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO }
+  let(:lease)       { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE }
+
+
   describe "manifest builder " do
     it "is a IIIFManifest::ManifestBuilder object" do
       allow(subject).to receive(:presenter).and_return(test_presenter)
@@ -202,10 +208,6 @@ RSpec.describe Hyrax::MediaController, type: :controller do
   describe "#set_fileset_visibility" do
     let(:work)        { Media.new(title: ["Test Media Work"]) }
     let(:file_set_1)  { FileSet.new }
-    let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
-    let(:private)     { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
-    let(:embargo)     { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO }
-    let(:lease)       { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE }
 
     before do
       allow(subject).to receive(:curation_concern).and_return(work)

@@ -17,6 +17,7 @@ module Hyrax
     self.show_presenter = Hyrax::MediaPresenter
 
     before_action :save_fileset_visibility, only: [:update]
+    before_action :save_publication_status, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
     skip_load_and_authorize_resource only: [:zip]
 
@@ -72,21 +73,22 @@ module Hyrax
     # Overriding WorksControllerBehavior to add file format validation
     # Could not do this as an ActiveModel validation because new file uploads are not added until after create
     def create
-     if file_formats_valid? && actor.create(actor_environment)
-       after_create_response
-     else
-       respond_to do |wants|
-         wants.html do
-           build_form
-           render 'new', status: :unprocessable_entity
-         end
-         wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
-       end
-     end
-   end
+      if file_formats_valid? && actor.create(actor_environment)
+        after_create_response
+      else
+        respond_to do |wants|
+          wants.html do
+            build_form
+            render 'new', status: :unprocessable_entity
+          end
+          wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
+        end
+      end
+    end
 
-   def update
+    def update
       if file_formats_valid? && actor.update(actor_environment)
+        update_cart_items if publication_status_changed?
         after_update_response
       else
         respond_to do |wants|
@@ -231,6 +233,35 @@ module Hyrax
           file.save!
         end
         curation_concern.update_index
+      end
+
+      # If publication status is updated, update all cart items for that work
+      def save_publication_status
+        @saved_publication_status = curation_concern.publication_status
+      end
+
+      def publication_status_changed?
+        @saved_publication_status != curation_concern.publication_status
+      end
+
+      def update_cart_items
+        items = CartItem.where(work_id: curation_concern.id)
+        value = restrict_items?
+        items.each do |item|
+          item.restricted = value
+          item.save
+        end
+      end
+
+      def restrict_items?
+        if curation_concern.active_lease?
+          status = curation_concern.visibility_during_lease
+        elsif curation_concern.under_embargo?
+          status = curation_concern.visibility_during_embargo
+        else
+          status = curation_concern.publication_status
+        end
+        status != "open"
       end
   end
 end

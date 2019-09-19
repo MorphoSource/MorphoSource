@@ -41,6 +41,8 @@ module Hyrax
       @new_institution_submit_submissions_url = '/submissions/new_institution_submit'
       @new_institution_form = Hyrax::WorkFormService.build(Institution.new, current_ability, self)
       @countries_service = Morphosource::CountriesService.new
+      @new_taxonomy_submit_submissions_url = '/submissions/new_taxonomy_submit'
+      @new_taxonomy_form = Hyrax::WorkFormService.build(Taxonomy.new, current_ability, self)
       render '/hyrax/biological_specimens/edit', presenter: @presenter
     end
 

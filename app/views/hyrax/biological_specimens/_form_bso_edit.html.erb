@@ -22,13 +22,25 @@
   <%= render 'guts4form', f: f %>
 <% end %>
 
-<div id="embedded_div_new_institution" class="embedded_div" data-relationship-control="#parent-relationships-institutions" data-add-button="#btn-add-institution" style="display: none;" >
+<% 
+# the embedded divs are created here so that the forms will not be nested 
+# after page is loaded, the divs will be moved to the corresponding tabs
+# see function moveWorkForms()
+%>
+
+<div id="embedded_div_new_institution" class="embedded_div" data-relationship-control="#parent-relationships-institutions" data-add-button="#btn-add-institution"  >
     <%= simple_form_for @new_institution_form, 
                         wrapper: :showcase_default,
                         url: @new_institution_submit_submissions_url do |i| %>
-      <div class="form-group">
         <%= render 'form_new_institution', i: i %>
-      </div>
+    <% end %>
+</div>
+
+<div id="embedded_div_new_taxonomy" class="embedded_div" data-relationship-control="#parent-relationships-taxonomies" data-add-button="#btn-add-taxonomy" style="display: none;">
+    <%= simple_form_for @new_taxonomy_form, 
+                        wrapper: :showcase_default,
+                        url: @new_taxonomy_submit_submissions_url do |t| %>
+        <%= render 'form_new_taxonomy', t: t %>
     <% end %>
 </div>
 

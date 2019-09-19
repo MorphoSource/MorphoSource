@@ -2,6 +2,19 @@
 $(document).on('turbolinks:load', function() {
   if ($('form[id*="biological_specimen"]').length) { // if BSO form page
 
+  	function moveWorkForms() {
+			// move the new work forms to inside the tabs
+			$("#embedded_div_new_institution").detach().insertAfter('#institution_details');
+			//$("#embedded_div_new_taxonomy").detach().insertAfter('#taxonomy_details');
+			//$("#embedded_div_new_institution").position({
+			//    my:        "left top",
+			//    at:        "left top",
+			//    of:        $("#institution_details"),
+			//    collision: "none",
+			//    within: 	 $(".institution-content-block")
+			//});
+  	}
+
 		function updateObjectTitle() {
 			var updatedTitle = $('#biological_specimen_institution_code').val() + ':' +
 													$('#biological_specimen_collection_code').val() + ':' +
@@ -9,9 +22,7 @@ $(document).on('turbolinks:load', function() {
 			$('#showcase-title').text(updatedTitle);			
 		}
 
-		// move the new work forms to inside the tabs
-		$("#embedded_div_new_institution").detach().insertAfter('#institution_details');
-
+		moveWorkForms();
     setupEmbeddedWorkForm('taxonomy', 'new');
     setupEmbeddedWorkForm('institution', 'new', updateObjectTitle);
 

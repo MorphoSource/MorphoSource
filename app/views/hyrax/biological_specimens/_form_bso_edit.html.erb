@@ -28,7 +28,7 @@
 # see function moveWorkForms()
 %>
 
-<div id="embedded_div_new_institution" class="embedded_div" data-relationship-control="#parent-relationships-institutions" data-add-button="#btn-add-institution"  >
+<div id="embedded_div_new_institution" class="embedded_div" data-relationship-control="#parent-relationships-institutions" data-add-button="#btn-add-institution" style="display: none;">
     <%= simple_form_for @new_institution_form, 
                         wrapper: :showcase_default,
                         url: @new_institution_submit_submissions_url do |i| %>

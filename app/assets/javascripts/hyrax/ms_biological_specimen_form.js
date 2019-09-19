@@ -2,17 +2,26 @@
 $(document).on('turbolinks:load', function() {
   if ($('form[id*="biological_specimen"]').length) { // if BSO form page
 
+
+		/*$('.btn-save-bso').click(function() {
+			
+			console.log($('form.edit_biological_specimen').length);
+			console.log($('form.edit_biological_specimen').attr('action'));
+			$('form.edit_biological_specimen')[0].submit();
+		})*/
+
   	function moveWorkForms() {
 			// move the new work forms to inside the tabs
-			$("#embedded_div_new_institution").detach().insertAfter('#institution_details');
+			//$("#embedded_div_new_institution").detach().insertAfter('#institution_details');
 			//$("#embedded_div_new_taxonomy").detach().insertAfter('#taxonomy_details');
-			//$("#embedded_div_new_institution").position({
-			//    my:        "left top",
-			//    at:        "left top",
-			//    of:        $("#institution_details"),
-			//    collision: "none",
-			//    within: 	 $(".institution-content-block")
-			//});
+			
+			$("#embedded_div_new_institution").position({
+			    my:        "left top",
+			    at:        "left top",
+			    of:        $("#institution_details"),
+			    collision: "none",
+			    within: 	 $(".institution-content-block")
+			});
   	}
 
 		function updateObjectTitle() {
@@ -51,7 +60,7 @@ $(document).on('turbolinks:load', function() {
 			$('#biological_specimen_institution_code').val( $('#institution-code').text() );
 			updateObjectTitle();
 		})
-
+		
 		// Change title on the fly when corresponding fields are updated
 		$('#biological_specimen_institution_code, #biological_specimen_collection_code, #biological_specimen_catalog_number').change(updateObjectTitle);
 

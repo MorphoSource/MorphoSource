@@ -4,19 +4,16 @@
 
     <div class="col-sm-6">
       <div class="content-block">
+      <%= render 'institution_details', presenter: @presenter %>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="content-block">
         <%= render 'form_parent_work_relationships_institution', f: f %>
       </div>
     </div>
 
-    <!-- right column  -->
-    <div class="col-sm-6">
-      <div class="content-block">
-      <%= render 'institution_details', presenter: @presenter %>
-      </div>
-    </div>
-    <!-- / right column -->
-
   </div>
-
 
 </div>

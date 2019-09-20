@@ -53,7 +53,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
   	// the new work form button has been clicked	
 		$(this_div).show();
 		// hide detail section if any
-		$(detail_div).hide();
+		//$(detail_div).hide();
 	});
 
   $(this_div).on("submit", this_form, function() {
@@ -120,7 +120,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 			$(this_div).removeClass('ui-loading').hide();
 			$(this_div).find('.btn-save').removeClass('disabled');
 			$(this_div).find('form')[0].reset();
-			$(detail_div).show();
+			//$(detail_div).show();
 	  });
 	  
 		return false;
@@ -128,6 +128,6 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
   $(this_div).on("click", ".cancel", function() {
 		$(this_div).find('form')[0].reset();
 		$(this_div).hide();
-		$(detail_div).show();
+		//$(detail_div).show();
   });
 }

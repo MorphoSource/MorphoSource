@@ -30,9 +30,8 @@ build_job:
   tags:
     - build
 
-test_job:
+.test_job_template: &test_job_def
   stage: test
-  allow_failure: true
   variables:
     RAILS_ENV: test
   before_script:
@@ -46,10 +45,20 @@ test_job:
     - img2dcm --version
     - dcmdjpeg --version
     - gltf-pipeline --version
-  script:
-    - bin/rake db:reset ci
+    - bin/rake db:reset
   tags:
     - test
+
+test_job:
+  <<: *test_job_def
+  script:
+    - bin/rspec spec --tag ~accessibility
+
+accessibility_job:
+  <<: *test_job_def
+  allow_failure: true
+  script:
+    - bin/rspec spec --tag accessibility
 
 deploy_dev:
   environment:

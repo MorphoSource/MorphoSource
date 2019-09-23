@@ -32,6 +32,9 @@ RSpec.configure do |config|
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
+  # skip accessibility tests by default
+  config.filter_run_excluding :accessibility => true
+
 end
 
 RSpec::Mocks.configuration.allow_message_expectations_on_nil = true

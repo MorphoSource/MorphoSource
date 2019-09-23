@@ -1,6 +1,5 @@
 class CartItem < ApplicationRecord
   belongs_to :user
-  paginates_per 10
 
   before_create :set_approver
 
@@ -54,6 +53,10 @@ class CartItem < ApplicationRecord
 
   def downloadable?
     unrestricted? || request_status == 'Approved'
+  end
+
+  def editable?
+    approved? || expired?
   end
 
   def approving_user

@@ -1,11 +1,7 @@
 <div class="row record-padding">
- <div class="col-md-9">
-   <div class="pagination">
-     <% if @tab == 'new' %>
-       <%= paginate @requesters, outer_window: 2, theme: 'blacklight' %>
-     <% elsif @tab == 'previous' %>
-       <%= paginate @items, outer_window: 2, theme: 'blacklight' %>
-     <% end %>
-   </div>
- </div>
+  <div class="col-md-9">
+    <div class="pagination">
+      <%= paginate @requesters, outer_window: 2, theme: 'blacklight' %>
+    </div>
+  </div>
 </div>

@@ -26,9 +26,7 @@
   <%= render 'morphosource/my/request_manager/tabs' %>
   <div class="panel-body">
     <h2 class="sr-only">Works listing</h2>
-    <% if @tab == 'new' %>
-      <%= render 'morphosource/my/request_manager/batch_actions' %>
-    <% end %>
+    <%= render 'morphosource/my/request_manager/batch_actions' %>
     <%= render 'morphosource/my/request_manager/document_list' %>
     <%= render 'morphosource/my/request_manager/results_pagination' %>
   </div>

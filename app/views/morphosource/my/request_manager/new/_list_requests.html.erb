@@ -15,27 +15,16 @@
         <tr>
           <th></th>
           <th></th>
-          <% if @tab == 'new' %>
-            <th>Date Requested</th>
-            <th></th>
-            <th></th>
-            <th></th>
-          <% elsif @tab == 'previous' %>
-            <th>Status</th>
-            <th>Requested</th>
-            <th>Approved</th>
-            <th>Denied</th>
-            <th>Canceled</th>
-            <th>Expiration</th>
-            <th>Cleared</th>
-            <th>Downloaded</th>
-            <th></th>
-          <% end %>
+          <th>Date Requested</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
       </thead>
       <tbody>
         <% use_requests(items,use).each_with_index do |item, counter| %>
           <% document = @solr_docs.select{|doc| doc.id == item.work_id}[0] %>
-          <%= render 'morphosource/my/request_manager/list_works', document: document, counter: counter, item: item, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
+          <%= render 'morphosource/my/request_manager/new/list_works', document: document, counter: counter, item: item, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
         <% end %>
       </tbody>
     </table>

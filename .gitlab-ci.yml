@@ -52,13 +52,13 @@ build_job:
 test_job:
   <<: *test_job_def
   script:
-    - bin/rspec spec --tag ~accessibility
+    - bin/rake ci:wrapped_spec[~accessibility]
 
 accessibility_job:
   <<: *test_job_def
   allow_failure: true
   script:
-    - bin/rspec spec --tag accessibility
+    - bin/rake ci:wrapped_spec[accessibility]
 
 deploy_dev:
   environment:

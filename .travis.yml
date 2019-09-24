@@ -88,8 +88,7 @@ before_script:
   - "cp config/database.yml.travis config/database.yml"
   - "psql -c 'create database travis_ci_test;' -U postgres"
 
-script: 
-  - RAILS_ENV=test bundle exec rake ci spec SPEC_OPTS="--tag ~accessibility"
+script: "bundle exec rake ci"
 jdk:
   - oraclejdk8
 dist: trusty

@@ -62,7 +62,7 @@ module Morphosource
       def move_active_requests_to_cart
         @items.each do |item|
           if item.active_request? && item.in_cart == false
-            mark_as('in_cart',item,date: true)
+            mark_as('in_cart',item,value: true)
           end
         end
       end

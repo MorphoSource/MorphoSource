@@ -22,16 +22,11 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
     let(:user3) { User.create(email: "user3@test.com", password: "password")}
     let(:user4) { User.create(email: "user4@test.com", password: "password")}
 
-    let(:media_cart1)    { MediaCart.find_by(user_id: user1.id) }
-    let(:media_cart2)    { MediaCart.find_by(user_id: user2.id) }
-    let(:media_cart3)    { MediaCart.find_by(user_id: user3.id) }
-    let(:media_cart4)    { MediaCart.find_by(user_id: user4.id) }
-
     before do
-      cartItem1.media_cart_id = media_cart1.id
-      cartItem3.media_cart_id = media_cart2.id
-      cartItem5.media_cart_id = media_cart3.id
-      cartItem7.media_cart_id = media_cart4.id
+      cartItem1.user_id = user1.id
+      cartItem3.user_id = user2.id
+      cartItem5.user_id = user3.id
+      cartItem7.user_id = user4.id
       [cartItem1,cartItem3,cartItem5,cartItem7].each(&:save)
     end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190724214348) do
+ActiveRecord::Schema.define(version: 20190917142759) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,7 +28,6 @@ ActiveRecord::Schema.define(version: 20190724214348) do
   end
 
   create_table "cart_items", force: :cascade do |t|
-    t.integer "media_cart_id", null: false
     t.string "work_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -41,9 +40,9 @@ ActiveRecord::Schema.define(version: 20190724214348) do
     t.datetime "date_denied"
     t.datetime "date_canceled"
     t.datetime "date_expired"
-    t.text "note"
+    t.text "use"
     t.datetime "date_cleared"
-    t.index ["media_cart_id"], name: "index_cart_items_on_media_cart_id"
+    t.integer "user_id"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end
 
@@ -237,13 +236,6 @@ ActiveRecord::Schema.define(version: 20190724214348) do
     t.string "message_id"
     t.index ["notification_id"], name: "index_mailboxer_receipts_on_notification_id"
     t.index ["receiver_id", "receiver_type"], name: "index_mailboxer_receipts_on_receiver_id_and_receiver_type"
-  end
-
-  create_table "media_carts", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_media_carts_on_user_id"
   end
 
   create_table "minter_states", force: :cascade do |t|
@@ -607,7 +599,6 @@ ActiveRecord::Schema.define(version: 20190724214348) do
     t.binary "zotero_token"
     t.string "zotero_userid"
     t.string "preferred_locale"
-    t.integer "media_cart_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

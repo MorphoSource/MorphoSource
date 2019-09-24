@@ -15,13 +15,13 @@ module Morphosource
 
       def approve_download
         mark_as('approved')
-        mark_as('expired', date: @date)
+        mark_as('expired', value: @date)
         flash[:notice] = get_flash('approve')
         redirect_to main_app.request_manager_path
       end
 
       def clear_request
-        mark_as('requested', date: 'nil')
+        mark_as('requested', value: 'nil')
         mark_as('cleared')
         flash[:notice] = get_flash('clear')
         redirect_to main_app.request_manager_path
@@ -34,7 +34,7 @@ module Morphosource
       end
 
       def edit_expiration
-        mark_as('expired', date: @date)
+        mark_as('expired', value: @date)
         flash[:notice] = get_flash('expiration')
         redirect_to main_app.previous_requests_path
       end

@@ -31,8 +31,7 @@ module Morphosource::CartItemHelper
   end
 
   def add_to_cart_button(id)
-    # TODO: don't need media_cart_id
-    link_to "Add to Cart", main_app.add_to_cart_path(:work_id => id, :media_cart_id => current_user.media_cart.id, :work_type => "Media"), class: 'btn btn-default', :method => :post
+    link_to "Add to Cart", main_app.add_to_cart_path(:work_id => id), class: 'btn btn-default', :method => :post
   end
 
   def choose_cart_button(presenter)
@@ -113,15 +112,15 @@ module Morphosource::CartItemHelper
   end
 
   def get_requester_items(items,requester)
-    @requester_items = items.select{|item| item.media_cart.user_id == requester.id}
+    @requester_items = items.select{|item| item.user_id == requester.id}
   end
 
   def requester_uses
-    @requester_items.map{|item| item.note }.uniq
+    @requester_items.map{|item| item.use }.uniq
   end
 
   def use_requests(items,use)
-    items.select{|item| item.note == use }
+    items.select{|item| item.use == use }
   end
 
   def page

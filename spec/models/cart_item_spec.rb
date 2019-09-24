@@ -3,13 +3,12 @@ require 'rails_helper'
 RSpec.describe CartItem, type: :model do
 
   let(:current_user)  { User.create(id: 1, email: "example@email.com", password: "password") }
-  let(:media_cart)    { MediaCart.where(user_id: current_user.id)[0] }
 
   let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
   let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: [''])}
 
-  let(:cartItem1)     { CartItem.create( media_cart_id: media_cart.id, work_id: work1.id, restricted: true) }
-  let(:cartItem2)     { CartItem.create( media_cart_id: media_cart.id, work_id: work2.id, restricted: false) }
+  let(:cartItem1)     { CartItem.create( user_id: current_user.id, work_id: work1.id, restricted: true) }
+  let(:cartItem2)     { CartItem.create( user_id: current_user.id, work_id: work2.id, restricted: false) }
 
   before do
     cartItem1.touch

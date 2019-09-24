@@ -88,7 +88,7 @@ class Media < Morphosource::Works::Base
     when self.lease && self.lease.active?
       "lease"
       #TODO: remove after migrated media have fileset_accessibility values
-    when fileset_accessibility == nil
+    when fileset_accessibility == "" || fileset_accessibility == nil
       "open"
     end
   end

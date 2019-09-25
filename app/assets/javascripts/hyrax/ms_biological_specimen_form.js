@@ -9,7 +9,6 @@ $(document).on('turbolinks:load', function() {
 			$('#showcase-title').text(updatedTitle);			
 		}
 
-		//moveWorkForms();
     setupEmbeddedWorkForm('taxonomy', 'new');
     setupEmbeddedWorkForm('institution', 'new', updateObjectTitle);
 
@@ -24,6 +23,7 @@ $(document).on('turbolinks:load', function() {
 	    var lastli = $(this).find('.listing .input-group:last-child');
 	    lastli.find('.remove').trigger('click');
 	  })
+		window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle
 			
 		// remove institution when clicking no institution button  
 		$('#btn_no_institution').click(function() {

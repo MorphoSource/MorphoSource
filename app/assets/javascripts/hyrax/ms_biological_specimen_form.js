@@ -2,22 +2,6 @@
 $(document).on('turbolinks:load', function() {
   if ($('form[id*="biological_specimen"]').length) { // if BSO form page
 
-  	/*
-  	function moveWorkForms() {
-			// move the new work forms to inside the tabs
-			//$("#embedded_div_new_institution").detach().insertAfter('#institution_details');
-			//$("#embedded_div_new_taxonomy").detach().insertAfter('#taxonomy_details');
-			
-			$("#embedded_div_new_institution").position({
-			    my:        "left top",
-			    at:        "left top",
-			    of:        $("#institution_details"),
-			    collision: "none",
-			    within: 	 $(".institution-content-block")
-			});
-  	}
-  	*/
-
 		function updateObjectTitle() {
 			var updatedTitle = $('#biological_specimen_institution_code').val() + ':' +
 													$('#biological_specimen_collection_code').val() + ':' +
@@ -55,6 +39,11 @@ $(document).on('turbolinks:load', function() {
 			$('#biological_specimen_institution_code').val( $('#institution-code').text() );
 			updateObjectTitle();
 		})
+		
+		// when selecting an institution or taxonomy, hide the new work form if any
+		$('[data-behavior="add-relationship"]').click(function() {
+			$('.embedded_div').hide();
+		})
 
 		// when switching to another tab, hide the new work form from other tab if any
 		$('.nav-tabs > li').click(function() {
@@ -72,6 +61,10 @@ $(document).on('turbolinks:load', function() {
 			else
 				$('#in-collection-badge').text('Not in Collection');				
 		})
-		
+
+	  $(document).on("submit", 'form[data-param-key="biological_specimen"]', function() {
+			$('.btn').addClass('disabled');
+		})
+
   }
 });

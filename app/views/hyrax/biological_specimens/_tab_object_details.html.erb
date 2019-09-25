@@ -1,8 +1,8 @@
-
-<%#= render "form_metadata", f: f %>
-
 <div class="row">
+
+  <!-- left column  -->
   <div class="col-sm-6">
+
     <div class="content-block">
       <h2>SPECIMEN IDENTIFIERS AND EXTERNAL LINKS</h2>
       <%= f.input :vouchered, as: :select,
@@ -20,6 +20,7 @@
       <%= f.input :related_url, as: :multi_value %>
 
     </div>
+
     <div class="content-block">
       <h2>GENERAL DETAILS</h2>
       
@@ -59,6 +60,7 @@
     </div>    
   
   </div>
+  <!-- /left column  -->
 
   <!-- right column  -->
   <div class="col-sm-6">
@@ -97,6 +99,3 @@
   <!-- / right column -->
 
 </div>
-
-
-

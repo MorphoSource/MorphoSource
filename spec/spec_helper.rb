@@ -1,14 +1,15 @@
 require 'capybara/rspec'
 require 'selenium/webdriver'
+require 'axe/rspec'
 require "rspec/json_expectations"
 
-unless Selenium::WebDriver::Firefox::Binary
+#unless Selenium::WebDriver::Firefox::Binary.path.present?
   if `sh -c 'command -v firefox'`.chomp.empty?
     Selenium::WebDriver::Firefox::Binary.path = "/opt/firefox/firefox"
   else
     Selenium::WebDriver::Firefox::Binary.path = `sh -c 'command -v firefox'`.chomp
   end
-end
+#end
 
 Capybara.register_driver :firefox_headless do |app|
   options = ::Selenium::WebDriver::Firefox::Options.new
@@ -30,6 +31,9 @@ RSpec.configure do |config|
   end
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
+
+  # skip accessibility tests by default
+  config.filter_run_excluding :accessibility => true
 
 end
 

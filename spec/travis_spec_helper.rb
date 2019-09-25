@@ -1,5 +1,6 @@
 require 'capybara/rspec'
 require 'selenium/webdriver'
+require 'axe/rspec'
 
 # Selenium::WebDriver::Firefox::Binary.path = "/opt/firefox/firefox" || Selenium::WebDriver::Firefox::Binary.path
 

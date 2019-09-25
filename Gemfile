@@ -72,6 +72,9 @@ group :development, :test do
 end
 
 group :test do
+  # note: the newer version of axe-matchers (2.4.1) throws the error below.  For now use 2.3.0 which is working 
+  # Selenium::WebDriver::Error::JavascriptError:ReferenceError: __magic__ is not defined
+  gem 'axe-matchers', '~> 2.3.0'
   gem 'rspec-json_expectations'
 end
 

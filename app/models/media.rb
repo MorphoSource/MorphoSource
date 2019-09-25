@@ -51,44 +51,37 @@ class Media < Morphosource::Works::Base
     all_visibilities & file_visibilities
   end
 
+  # after media are migrated next round, should all have fileset_accessibility
   def restricted?
-    if fileset_accessibility
-      fileset_accessibility.first == "restricted_download"
-    else
-      false
-    end
+    return false if !fileset_accessibility.first
+    fileset_accessibility.first == "restricted_download"
   end
 
+  # after media are migrated next round, should all have fileset_accessibility
   def open?
-    accessibility = fileset_accessibility.first
-    unless accessibility.nil?
-      accessibility == "open"
-    # TODO: remove after migrated media have fileset_accessibility
-    else
-      true
-    end
+    return true if !fileset_accessibility.first
+    fileset_accessibility.first == "open"
   end
 
   def publication_status
-    fileset_accessibility = self.fileset_accessibility.first
-
+    accessibility = fileset_accessibility.first
     case
-    when fileset_accessibility == "open"
+    when accessibility == "open"
       "open"
-    when fileset_accessibility == "restricted_download"
+    when accessibility == "restricted_download"
       "restricted"
-    when fileset_accessibility == "preview_only"
+    when accessibility == "preview_only"
       "preview"
-    when fileset_accessibility == "hidden"
+    when accessibility == "hidden"
       "hidden"
-    when fileset_accessibility == "private"
+    when accessibility == "private"
       "private"
-    when self.embargo && self.embargo.active?
+    when under_embargo?
       "embargo"
-    when self.lease && self.lease.active?
+    when active_lease?
       "lease"
       #TODO: remove after migrated media have fileset_accessibility values
-    when fileset_accessibility == "" || fileset_accessibility == nil
+    when accessibility == "" || accessibility == nil
       "open"
     end
   end

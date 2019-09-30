@@ -123,6 +123,10 @@ module Morphosource::CartItemHelper
     items.select{|item| item.use == use }
   end
 
+  def editable_use_requests(items,use)
+    items.select{|item| (item.use == use && item.editable?)}
+  end
+
   def page
     path = request.fullpath
     case
@@ -139,6 +143,10 @@ module Morphosource::CartItemHelper
     when path.include?('media')
       'showcase'
     end
+  end
+
+  def editable_items(items)
+    items.select{|item| item.editable?}
   end
 
 end

@@ -5,14 +5,25 @@
   </div>
 
   <div class="requests-wrapper">
-    <div class="check-all-div">
+    <% if @tab == 'new' %>
+      <div class="check-all-div">
         <%= check_box_tag 'check_all_div', 'no', false, class: 'check_all_user' %>
-      <span>Select All Media for This User</span>
-    </div>
-
-    <% requester_uses.each_with_index do |use, counter| %>
-      <%= render 'morphosource/my/request_manager/list_requests', requester: requester, counter: counter, use: use, items: @requester_items %>
+        <span>Select All Media for This User</span>
+      </div>
+    <% elsif @tab == 'previous' %>
+      <div class="check-all-div">
+        <% if editable_items(@requester_items).count > 0 %>
+          <%= check_box_tag 'check_all_div', 'no', false, class: 'check_all_user' %>
+          <span>Select All Editable Requests for This User</span>
+        <% end %>
+      </div>
     <% end %>
-
+    <% requester_uses.each_with_index do |use, counter| %>
+      <% if @tab == 'new' %>
+        <%= render 'morphosource/my/request_manager/new/list_requests', requester: requester, counter: counter, use: use, items: @requester_items %>
+      <% elsif @tab == 'previous' %>
+        <%= render 'morphosource/my/request_manager/previous/list_requests', requester: requester, counter: counter, use: use, items: @requester_items %>
+      <% end %>
+    <% end %>
   </div>
 </div>

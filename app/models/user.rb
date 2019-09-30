@@ -1,6 +1,5 @@
 class User < ApplicationRecord
   has_many :cart_items
-
   paginates_per 10
 
   # Connects this user object to Hydra behaviors.

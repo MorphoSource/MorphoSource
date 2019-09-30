@@ -116,4 +116,42 @@ RSpec.describe CartItem, type: :model do
       it { expect(cartItem2.expired?).to be(false) }
     end
   end
+
+  describe '#editable?' do
+    before do
+      [cartItem1,cartItem1].each do |items|
+        items.date_requested = Date.yesterday
+      end
+    end
+    context 'item is approved' do
+      before do
+        cartItem1.date_approved = Date.today
+      end
+      it { expect(cartItem1.editable?).to be(true) }
+      it { expect(cartItem2.editable?).to be(false) }
+    end
+    context 'item is expired' do
+      before do
+        cartItem2.date_approved = Date.today
+        cartItem2.date_expired = Date.yesterday
+      end
+      it { expect(cartItem1.editable?).to be(false) }
+      it { expect(cartItem2.editable?).to be(true) }
+    end
+    context 'item is denied' do
+      before do
+        cartItem1.date_denied = Date.today
+      end
+      it { expect(cartItem1.editable?).to be(false) }
+      it { expect(cartItem2.editable?).to be(false) }
+    end
+    context 'item is cleared' do
+      before do
+        cartItem1.date_cleared = Date.today
+        cartItem2.date_approved = Date.yesterday
+      end
+      it { expect(cartItem1.editable?).to be(false) }
+      it { expect(cartItem2.editable?).to be(true) }
+    end
+  end
 end

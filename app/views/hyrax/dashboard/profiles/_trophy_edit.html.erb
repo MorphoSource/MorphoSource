@@ -1,16 +1,21 @@
 <% if trophies.any? %>
   <div class="form-group">
-    <span>
+    <label class='col-sm-4 control-label'>
       <i class="glyphicon glyphicon-star trophy-on"></i> Remove Highlight Designation
       <a href="#" id="remove_trophy_help" data-toggle="popover" data-content="If you would like to remove a highlight designation, check the box and save your profile." data-original-title="Remove Highlight Designation"><i class="glyphicon glyphicon-question-sign"></i></a>
-    </span>
-    <% trophies.each do |t| %>
-      <div class="checkbox">
-        <label>
-          <%= check_box_tag "remove_trophy_#{t.id}" %>
-          <%= link_to t, [main_app, t] %>
-        </label>
-      </div>
-    <% end %>
+    </label>
+    <div class='col-sm-8'>
+      <% trophies.each do |t| %>
+        <div class="checkbox">
+          <label>
+            <%= check_box_tag "remove_trophy_#{t.id}" %>
+            <%= link_to [main_app, t] do %>
+              <%= image_tag t.thumbnail_path, width: 90 %>
+            <% end %>
+            <%= link_to t, [main_app, t] %>
+          </label>
+        </div>
+      <% end %>
+    </div>
   </div>
 <% end %>

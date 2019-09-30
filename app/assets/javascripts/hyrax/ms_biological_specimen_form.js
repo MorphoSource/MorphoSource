@@ -1,6 +1,70 @@
+
 $(document).on('turbolinks:load', function() {
   if ($('form[id*="biological_specimen"]').length) { // if BSO form page
-    setupEmbeddedWorkForm('new_taxonomy');
-    setupEmbeddedWorkForm('new_institution');
+
+		function updateObjectTitle() {
+			var updatedTitle = $('#biological_specimen_institution_code').val() + ':' +
+													$('#biological_specimen_collection_code').val() + ':' +
+													$('#biological_specimen_catalog_number').val();
+			$('#showcase-title').text(updatedTitle);			
+		}
+
+    setupEmbeddedWorkForm('taxonomy', 'new');
+    setupEmbeddedWorkForm('institution', 'new', updateObjectTitle);
+
+	  $('.tooltip-icon').tooltip({ 
+	    title: function(){
+	      return $(this).find('.hint').text() 
+	    } 
+	  })
+
+	  // remove the last repeatable field for each group
+	  $('.form-group.multi_value').each(function(i) {
+	    var lastli = $(this).find('.listing .input-group:last-child');
+	    lastli.find('.remove').trigger('click');
+	  })
+		window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle
+			
+		// remove institution when clicking no institution button  
+		$('#btn_no_institution').click(function() {
+			var removeInstitutionButton = $('#parent-relationships-institutions').find('[data-behavior="remove-relationship"]');
+			if (removeInstitutionButton.length) {
+				removeInstitutionButton.trigger('click');
+			}
+			$('#embedded_div_new_institution').hide();
+		})
+
+		// An institution has been selected.  set the institution code field on the object detail tab, then update title
+		$('#btn-add-institution').click(function() {
+			$('#biological_specimen_institution_code').val( $('#institution-code').text() );
+			updateObjectTitle();
+		})
+		
+		// when selecting an institution or taxonomy, hide the new work form if any
+		$('[data-behavior="add-relationship"]').click(function() {
+			$('.embedded_div').hide();
+		})
+
+		// when switching to another tab, hide the new work form from other tab if any
+		$('.nav-tabs > li').click(function() {
+			if ($(this).find('a[aria-expanded="false"]').length)
+				$('.embedded_div').hide();
+		})
+
+		// Change title on the fly when corresponding fields are updated
+		$('#biological_specimen_institution_code, #biological_specimen_collection_code, #biological_specimen_catalog_number').change(updateObjectTitle);
+
+		// change badges on the fly when corresponding fields are updated
+		$('#biological_specimen_vouchered').change(function(){
+			if ($(this).val() == 'Yes')
+				$('#in-collection-badge').text('In Collection');
+			else
+				$('#in-collection-badge').text('Not in Collection');				
+		})
+
+	  $(document).on("submit", 'form[data-param-key="biological_specimen"]', function() {
+			$('.btn').addClass('disabled');
+		})
+
   }
 });

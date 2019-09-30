@@ -8,6 +8,37 @@ module Hyrax
 
     delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :user_taxonomies, to: :work
 
+# TODO: remove below block later if not needed any more.
+    #attr_accessor :institution_code, :institution_title, :institution_description, :institution_address, :#institution_city, :institution_state_province, :institution_country #
+#
+#    #def get_institution_data
+#    #  institution = parent_institution
+#    #  if institution.present?
+#    #    if institution.institution_code.present?
+#    #      @institution_code = institution.institution_code.first
+#    #    end
+#    #    if institution.title.present?
+#    #      @institution_title = institution.title.first
+#    #    end
+#    #    if institution.description.present?
+#    #      @institution_description = institution.description.first
+#    #    end
+#    #    if institution.address.present?
+#    #      @institution_address = institution.address.first
+#    #    end
+#    #    if institution.city.present?
+#    #      @institution_city = institution.city.first
+#    #    end
+#    #    if institution.state_province.present?
+#    #      @institution_state_province = institution.state_province.first
+#    #    end
+#    #    if institution.country.present?
+#    #      @institution_country = institution.country.first
+#    #    end
+#    #    
+    #  end
+    #end
+
     def canonical_taxonomy_label
       if canonical_taxonomy_object.present?
         if canonical_taxonomy_object.trusted == ["Yes"]
@@ -24,7 +55,7 @@ module Hyrax
     def canonical_taxonomy_solr
       Taxonomy.find(work.canonical_taxonomy.first).to_solr
     end
-  
+
     # methods for showcase partials
     def showcase_work_title_partial
       'showcase_work_title'

@@ -1,6 +1,8 @@
 //import Registry from 'hyrax/relationships/registry'
 import Registry from './ms_registry'
 import Resource from 'hyrax/relationships/resource'
+import InstitutionResource from './ms_institution_resource'
+import TaxonomyResource from './ms_taxonomy_resource'
 
 /**
  * This depends on the passed in element containing `data-autocomplete="work'"`
@@ -28,11 +30,12 @@ export default class RelationshipsControl {
     this.addButton = this.element.find("[data-behavior='add-relationship']")
     this.errors = null
     this.repeatable = this.element.data('repeatable') || 'yes'
+    this.workType = this.element.data('work-type')
   }
 
   init() {
     this.bindAddButton();
-    this.displayMembers();
+    this.displayMembers();      
   }
 
   validate() {
@@ -42,9 +45,46 @@ export default class RelationshipsControl {
   }
 
   displayMembers() {
-    this.members.forEach((elem) =>
-      this.registry.addResource(new Resource(elem.id, elem.label))
-    )
+    if (this.workType == 'institution') {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new InstitutionResource(elem.id, elem.label, elem.institution_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
+      )      
+    } else if (this.workType == 'taxonomy') {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new TaxonomyResource(
+          elem.id, 
+          elem.label, 
+          elem.taxonomy_domain, 
+          elem.taxonomy_kingdom,
+          elem.taxonomy_phylum,
+          elem.taxonomy_superclass,
+          elem.taxonomy_class,
+          elem.taxonomy_subclass,
+          elem.taxonomy_superorder,
+          elem.taxonomy_order,
+          elem.taxonomy_suborder,
+          elem.taxonomy_superfamily,
+          elem.taxonomy_family,
+          elem.taxonomy_subfamily,
+          elem.taxonomy_tribe,
+          elem.taxonomy_genus,
+          elem.taxonomy_subgenus,
+          elem.taxonomy_species,
+          elem.taxonomy_subspecies,
+          elem.depositor,
+          this.depositorLink(elem.depositor)
+         ))
+      )      
+    } else {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new Resource(elem.id, elem.label))
+      )
+    }
+  }
+
+  depositorLink(email) {
+    // url example: /users/johndoe@gmail-dot-com
+    return "/users/" + email.replace(/(.+)@([^.]+)\.(.+)/, '$1@$2-dot-$3')
   }
 
   isValid() {
@@ -80,8 +120,36 @@ export default class RelationshipsControl {
         item.removeResource();
       })
     }
-    this.registry.addResource(new Resource(data.id, data.text))
-
+    if (this.workType == 'institution') {
+      //console.log("addRow data : ", data)
+      this.registry.addResource(new InstitutionResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
+    } else if (this.workType == 'taxonomy') {
+      this.registry.addResource(new TaxonomyResource(
+        data.id, 
+        data.text, 
+        data.taxonomy_domain, 
+        data.taxonomy_kingdom,
+        data.taxonomy_phylum,
+        data.taxonomy_superclass,
+        data.taxonomy_class,
+        data.taxonomy_subclass,
+        data.taxonomy_superorder,
+        data.taxonomy_order,
+        data.taxonomy_suborder,
+        data.taxonomy_superfamily,
+        data.taxonomy_family,
+        data.taxonomy_subfamily,
+        data.taxonomy_tribe,
+        data.taxonomy_genus,
+        data.taxonomy_subgenus,
+        data.taxonomy_species,
+        data.taxonomy_subspecies,
+        data.depositor,
+        data.depositor_link
+        ))
+    } else {
+      this.registry.addResource(new Resource(data.id, data.text))
+    }
     // finally, empty the "add" row input value
     this.clearSearch();
   }
@@ -91,6 +159,7 @@ export default class RelationshipsControl {
     var new_data = this.element.data("new-work-created")
     //console.log('new_data : ', new_data)
     if ($.isEmptyObject(new_data)) {
+      //console.log('searchData data : ', this.input.select2('data'))
       return this.input.select2('data')
     } else {
       return new_data

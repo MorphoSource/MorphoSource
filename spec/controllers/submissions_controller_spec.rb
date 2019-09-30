@@ -317,7 +317,15 @@ RSpec.describe SubmissionsController, type: :controller do
   describe '#new_institution_submit' do
     describe 'successfully created a new institution' do
       let(:form_attributes) do
-        { 'id' => 'abc', 'title' => 'Institution', 'institution_code' => 'inst' }
+        { 'id' => 'abc', 
+          'title' => 'Institution', 
+          'institution_code' => 'inst',
+          'description' => 'test', 
+          'address' => 'test',
+          'city' => 'test',
+          'state_province' => 'test',
+          'country' => 'test'
+        }
       end
       let(:form_params) { { institution: form_attributes } }
       it 'return institution data in json response' do
@@ -328,7 +336,12 @@ RSpec.describe SubmissionsController, type: :controller do
           message: 'New institution created',
           work: {
             title: 'Institution',
-            institution_code: 'inst'
+            institution_code: 'inst',
+            description: 'test', 
+            address: 'test',
+            city: 'test',
+            state_province: 'test',
+            country: 'test'
           }
         )
       end
@@ -362,7 +375,8 @@ RSpec.describe SubmissionsController, type: :controller do
           status: 'OK',
           message: 'New Taxonomy created',
           work: {
-            title: "1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1"
+            title: "1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1 > 1",
+            taxonomy_domain:  '1', taxonomy_kingdom:  '1', taxonomy_phylum:  '1', taxonomy_superclass:  '1', taxonomy_class:  '1', taxonomy_subclass:  '1', taxonomy_superorder:  '1', taxonomy_order:  '1', taxonomy_suborder:  '1', taxonomy_superfamily:  '1', taxonomy_family:  '1', taxonomy_subfamily:  '1', taxonomy_tribe:  '1', taxonomy_genus:  '1', taxonomy_subgenus:  '1', taxonomy_species:  '1', taxonomy_subspecies:  '1'
           }
         )
       end

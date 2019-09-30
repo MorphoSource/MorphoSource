@@ -1,0 +1,239 @@
+@import 'shared';
+
+/* NOTE: the styles below are shared between
+   showcase edit page and hyrax edit page.  These styles will effect both pages 
+   TODO: might need to move these to global style sheet later */
+
+.btn.btn-link.add,
+.btn.btn-link.remove {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  color: $button-color;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+input.disabled {
+  padding: 6px 12px;
+  margin: inherit;
+}
+
+form[id^='edit_biological_specimen'] .select2-container {
+  width:100% !important;
+}
+
+/*  ************************** */
+
+
+div.showcase-edit {
+
+  /* temporarily use fix font size */
+  .showcase-label, 
+  .showcase-value, 
+  .content-block-lg .row > div, 
+  .content-block .row > div {
+    font-size: 14px;
+  }
+
+  h2 {
+    font-size: 15px;
+    span {
+      padding:0;
+    }
+    a.btn {
+      float: right;
+      margin: -5px -10px -7px 0;
+      color: $button-font-color;
+    }
+  }
+
+  .tooltip-inner {
+    text-align: left;
+  }
+
+  .row {
+    padding: 2px 8px;
+  }
+
+  .form-group {
+    margin-bottom: 0; 
+  }
+
+  .controls-remove-text {
+    display: none;
+  }
+
+  .fa {
+    color: $button-color;
+  }
+
+  .field-controls .add, 
+  .field-controls .remove {
+    width: auto;
+    text-align: left;
+    .fa {
+      font-size: 15px;
+    }
+  }
+
+  .form-control {
+    height: 30px;
+    padding: 2px 8px;
+  }
+
+  .multi_value .listing li:not(:last-child), .controlled_vocabulary .listing li:not(:last-child) {
+    margin-bottom: 0rem;
+  }
+
+  .indent {
+    padding-left: 30px;
+  }
+
+  .required-tag {
+    display: none;
+  }
+
+  .required-flag, .recommended-flag {
+    .label:empty {
+      display:inline-block !important;
+    }
+    .label {
+      font-size: 60%;
+      font-weight: normal;
+      margin-left: 3px;
+      margin-top: 2px;
+      vertical-align: text-top;
+    }
+  }
+  .required-flag {
+    .label {
+      background-color: #528253;
+    }
+    .label:before {
+      content: 'required';
+    }
+  }
+
+  .recommended-flag {
+    .label:before {
+      content: 'recommended';
+    }
+  }
+
+  .material-icons.tooltip-icon:before {
+    content: 'help_outline';
+  }
+  
+  .material-icons.tooltip-icon {
+    font-size: 11px;
+    margin-left: 3px;
+  }
+
+  .glyphicon {
+    margin-left: 3px;
+  }
+
+  .multi_value .btn.remove, .controlled_vocabulary .btn.remove, .multi_value .remove.facets-toggle, .controlled_vocabulary .remove.facets-toggle, .multi_value td.toggle input.remove[type=submit], td.toggle .multi_value input.remove[type=submit], .controlled_vocabulary td.toggle input.remove[type=submit], td.toggle .controlled_vocabulary input.remove[type=submit] {
+      color: inherit;
+  }
+
+  .showcase-label, .showcase-value {
+    padding-right: 6px;
+  }
+
+  .showcase-label {
+    font-weight: bold;
+  }
+
+  .btn-save {
+    min-width: 80px;
+    margin-right: 12px;
+    margin-bottom: 6px;
+  }
+
+  .dropdown-toggle {
+    min-width: 80px;
+  }
+
+  .panel {
+    border: none;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+
+  .nav-tabs {
+    background-color: #efefef;
+    padding-top: 20px;
+    .active {
+      .fa {
+        color: $font-color;
+      }
+    }
+  }
+
+
+  .listing li {
+    width: 200px !important;
+  }
+
+  .input-group-btn.field-controls .btn {
+    padding: 0;
+  }
+
+  .content-block {
+    padding-left: 10px;
+    padding-right: 10px;
+
+    p {
+      padding: 2px 10px;
+    }
+
+    h2 {
+      margin-left: -10px;
+      margin-right: -10px;
+    }
+
+    div:not(.row) {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+  }
+
+  .button-wrapper .btn {
+    margin: 8px;
+    width: 170px;
+  }
+
+  /* tab specific styles */
+  .tab-content {
+    .content-block {
+      table, tbody {
+        width: 100%;
+      }    
+    }
+  }
+
+  /* object detail tab specific styles */
+  .tab-content > #physical-object-details {
+
+    .form-group {
+      .control-label {
+
+      }
+      .help-block {
+        display:none;
+      }
+      .form-control {
+        display: inline-block;
+        width: auto;
+      }
+    }
+
+  } /* /object detail tab specific styles */
+
+
+
+}
+
+

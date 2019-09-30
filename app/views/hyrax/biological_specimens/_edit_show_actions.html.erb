@@ -1,0 +1,29 @@
+<div class="show-actions">
+  <% if presenter.editor? %>
+
+    <div class="btn-group">
+      <%= f.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if f.object.persisted? %>
+      <%= f.submit class: 'btn btn-primary btn-save btn-save-bso', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_with_files", value: "Save", data: { :disable_with => 'Saving...' } %>
+      <%# Provide immediate feedback after the form is submitted while the subsequent page is loading 
+          todo: remove later if not needed
+      <div class="panel-footer hidden">
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-complete active">
+          <span id="form-feedback" aria-live="assertive">Saving your work. This may take a few moments</span>
+        </div>
+      </div>
+      </div>
+      %>
+
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Actions <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <%= link_to "Edit", edit_polymorphic_path([main_app, presenter]), class: 'btn btn-default' %>
+        </li>
+      </ul>
+    </div>
+
+  <% end %>
+</div>

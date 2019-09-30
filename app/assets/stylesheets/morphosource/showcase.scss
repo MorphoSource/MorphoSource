@@ -1,4 +1,4 @@
-$font-color: #333;
+@import 'shared';
 
 /* set box sizing for the circles and line in between */
 html {
@@ -11,11 +11,65 @@ html {
 }
 
 
+/* utility classes below.  Some will be available in Boostrap 4.0+ */
+.m-0 {
+  margin: 0 !important;
+}
+.ml-0 {
+  margin-left: 0 !important;
+}
+.mr-0 {
+  margin-right: 0 !important;
+}
+.mt-0 {
+  margin-top: 0 !important;
+}
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+.p-0 {
+  padding: 0 !important;
+}
+.pl-0 {
+  padding-left: 0 !important;
+}
+.pr-0 {
+  padding-right: 0 !important;
+}
+.pt-0 {
+  padding-top: 0 !important;
+}
+.pb-0 {
+  padding-bottom: 0 !important;
+}
+.no-gutter > [class*='col-'] {
+  padding-right:0 !important;
+  padding-left:0 !important;
+}
+
+
 div.showcase {
 
   max-width: 1200px;
   border: 2px solid #efefef;
   margin-top: 18px;
+
+  .btn {
+    border-radius: 0;
+  }
+
+  .btn-primary, .btn-default {
+    background-color: $button-color;
+    color: $button-font-color;
+    border-color: $button-border-color;
+  }
+
+  .input-group-btn.field-controls .btn {
+    /* mainly applies to button wrapper around add and remove glyphicons */
+    background-color: transparent;
+    color: $font-color;
+    border-color: transparent;  
+  }
 
   .show-actions {
      padding: 3.5vw 1vw 0 0;
@@ -32,6 +86,10 @@ div.showcase {
     }
 
     .label {
+      color: $font-color;
+      border: 1px solid $font-color;
+      border-radius: .75em;
+      background-color: transparent;
       font-size: 1.6vw;
       @media (min-width: 768px) {
         font-size: 1.3vw;
@@ -48,6 +106,7 @@ div.showcase {
   }
 
   #showcase-title {
+    overflow-wrap: break-word;
     margin-bottom: 0.5vw;
     padding-bottom: 8px;
     border-bottom: 2px solid #337ab7;
@@ -77,7 +136,7 @@ div.showcase {
       font-size: 17px;
     }
     a.btn {
-      float:right;
+      float: right;
       color: $font-color;
       .glyphicon {
         font-size: 2vw;
@@ -329,8 +388,16 @@ div.showcase {
     word-break: break-all;
   }
 
-  .dropdown-menu, .twitter-typeahead .tt-menu {
-    min-width: 88px;
+  .dropdown-menu {
+    background-color: $button-color;
+    min-width: 82px;
+    right: 0;
+    left: unset;
+    top: 80%;
+    .btn-default:hover {
+      color : $button-font-color;
+      background-color: $button-color;
+    }
   }
 
   div.preview {

@@ -1,12 +1,6 @@
 <% unless current_controller?('submissions') # no need to display this in submissions flow %>
 
-	<%= render 'form_parent_work_relationships_institution', f: f %>
-
-  <div class="form-group">
-	  <a class="btn btn-sm btn-primary" id="btn_new_institution">Create new institution</a>
-	  <div id="embedded_div_new_institution" class="embedded_div ui-loading" data-relationship-control="#parent-relationships-institutions" data-add-button="#btn-add-institution" style="display: none;">
-	  	<!-- new institution form will be loaded here -->
-	  </div>
-	</div>
+<%# todo: will handle adding institution later 
+	= render 'form_parent_work_relationships_institution', f: f %>
 
 <% end %>

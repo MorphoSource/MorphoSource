@@ -2,7 +2,7 @@ module Morphosource
   module My
     class RequestManagersController < Hyrax::MyController
 
-      include Morphosource::My::CartItemsBehavior
+      include Morphosource::CartItems
 
       before_action :get_items_by_id, only: [:clear_request, :approve_download, :deny_download, :edit_expiration]
 

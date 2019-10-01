@@ -2,7 +2,7 @@ module Morphosource
   module My
     class CartItemsController < Hyrax::MyController
 
-      include Morphosource::My::CartItemsBehavior
+      include Morphosource::CartItems
 
       class_attribute :create_work_presenter_class
       self.create_work_presenter_class = Hyrax::SelectTypeListPresenter
@@ -14,20 +14,18 @@ module Morphosource
           if work_requested?(work.id)
             item = find_requested_item(work.id)
             mark_as('in_cart',item,value: true)
+            flash[:notice] = 'Previously Requested Item Moved to Cart'
           else
             item = create_cart_item(work.id)
-            if item.restricted? && user_is_approver?(item)
-              unrestrict(item)
-            end
+            flash[:notice] = 'Item Added to Cart'
           end
-          flash[:notice] = 'Item Added to Cart'
         else
-          flash[:alert] = 'Item Already in Cart or Requested'
+          flash[:alert] = 'Item Already in Cart'
         end
         redirect_back(fallback_location: my_cart_path)
       end
 
-      # used when downloading from the showcase page
+      # Used when downloading from the showcase page
       def download
         work_id = params[:work_id].first
         if downloadable_item_for_work?(work_id)
@@ -42,7 +40,6 @@ module Morphosource
         end
         redirect_to main_app.zip_hyrax_media_index_path(ids: [work_id])
       end
-
     end
   end
 end

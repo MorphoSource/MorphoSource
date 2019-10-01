@@ -6,16 +6,32 @@ RSpec.describe User, type: :model do
   let(:data_owner)    { User.create(email: "test@test.com", password: "password") }
 
   let(:work)          { Media.create(id: "aaa", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['open'])}
-  let(:cartItem1)     { CartItem.create(id: 1, user_id: user.id, work_id: "aaa", in_cart: true, restricted: true, date_cleared: Time.current) }
-  let(:cartItem2)     { CartItem.create(id: 2, user_id: user.id, work_id: "bbb", in_cart: true, restricted: false) }
-  let(:cartItem3)     { CartItem.create(id: 3, user_id: user.id, work_id: "ccc", in_cart: true, restricted: true, date_requested: Date.yesterday) }
-  let(:cartItem4)     { CartItem.create(id: 4, user_id: user.id, work_id: "ddd", in_cart: false, restricted: false, date_downloaded: Time.current) }
-  let(:cartItem5)     { CartItem.create(id: 5, user_id: user.id, work_id: "eee", in_cart: false, restricted: true, date_downloaded: Time.current, date_requested: Date.yesterday) }
+
+  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
+
+  let(:work3)          { Media.create(id: "ccc", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['open'])}
+
+  let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
+
+  let(:work5)          { Media.create(id: "eee", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['open'])}
+
+  let(:work6)         { Media.create(id: "fff", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
+
+  let(:cartItem1)     { CartItem.create(id: 1, user_id: user.id, work_id: "bbb", date_cleared: Time.current) }
+  let(:cartItem2)     { CartItem.create(id: 2, user_id: user.id, work_id: "ccc") }
+  let(:cartItem3)     { CartItem.create(id: 3, user_id: user.id, work_id: "ddd", date_requested: Date.yesterday) }
+  let(:cartItem4)     { CartItem.create(id: 4, user_id: user.id, work_id: "eee", in_cart: false, date_downloaded: Time.current) }
+  let(:cartItem5)     { CartItem.create(id: 5, user_id: user.id, work_id: "fff", in_cart: false, date_downloaded: Time.current, date_requested: Date.yesterday) }
 
   let(:allCartItems)  { [cartItem1, cartItem2, cartItem3, cartItem4, cartItem5] }
 
   before do
-    allow(Media).to receive(:find).with(anything()).and_return(work)
+    allow(Media).to receive(:find).with('aaa').and_return(work)
+    allow(Media).to receive(:find).with('bbb').and_return(work2)
+    allow(Media).to receive(:find).with('ccc').and_return(work3)
+    allow(Media).to receive(:find).with('ddd').and_return(work4)
+    allow(Media).to receive(:find).with('eee').and_return(work5)
+    allow(Media).to receive(:find).with('fff').and_return(work6)    
     # Makes user aware of its cart_items
     allCartItems.each(&:touch)
   end

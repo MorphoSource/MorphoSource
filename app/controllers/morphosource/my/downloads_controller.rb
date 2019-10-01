@@ -2,7 +2,7 @@ module Morphosource
   module My
     class DownloadsController < Hyrax::MyController
 
-      include Morphosource::My::CartItemsBehavior
+      include Morphosource::CartItems
 
       def index
         get_items('downloads')
@@ -21,6 +21,7 @@ module Morphosource
 
       private
 
+      # If user batch selects multiple items for the same work
       def get_duplicate_requests
         @ids = get_work_ids_by_items.dup
         duplicate_work_ids

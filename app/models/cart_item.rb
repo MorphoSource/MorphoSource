@@ -2,6 +2,7 @@ class CartItem < ApplicationRecord
   belongs_to :user
 
   before_create :set_approver
+  before_create :set_restriction
 
   def requester
     media_cart.user
@@ -59,6 +60,14 @@ class CartItem < ApplicationRecord
     approved? || expired?
   end
 
+  def unrequested?
+    date_requested == nil
+  end
+
+  def cleared?
+    date_cleared != nil
+  end
+
   def approving_user
     User.find_by email: approver
   end
@@ -79,5 +88,9 @@ class CartItem < ApplicationRecord
   # for now, approver = depositor
   def set_approver
     self.approver = work.depositor
+  end
+
+  def set_restriction
+    self.restricted = work.restricted?
   end
 end

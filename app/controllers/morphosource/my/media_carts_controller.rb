@@ -2,7 +2,7 @@ module Morphosource
   module My
     class MediaCartsController < Hyrax::MyController
       helper CartItemHelper
-      include Morphosource::My::CartItemsBehavior
+      include Morphosource::CartItems
 
       def index
         get_items('cart')

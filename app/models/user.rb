@@ -98,6 +98,14 @@ class User < ApplicationRecord
     my_active_requests.map{ |item| item.work_id }
   end
 
+  def my_cleared_requests
+    my_requests.select{|item| item.request_status == "Cleared" }
+  end
+
+  def my_cleared_requests_work_ids
+    my_cleared_requests.map{|item| item.work_id }
+  end
+
   # items requested from user (items where user is data manager)
   def requested_items
     CartItem.where(approver: self.email).where(restricted: true).where.not(date_requested: nil).or(CartItem.where(approver: self.email).where(restricted: true).where.not(date_cleared: nil))

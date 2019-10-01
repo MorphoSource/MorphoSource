@@ -71,7 +71,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
 
       it "returns flash message 'Item Added to Cart'" do
         post :create, params: post_params
-        expect(response.flash[:notice]).to eq('Item Added to Cart')
+        expect(response.flash[:notice]).to eq('Previously Requested Item Moved to Cart')
       end
     end
 
@@ -86,7 +86,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
 
       it "returns flash message 'Item Already in Cart'" do
         post :create, params: post_params
-        expect(response.flash[:alert]).to eq('Item Already in Cart or Requested')
+        expect(response.flash[:alert]).to eq('Item Already in Cart')
       end
     end
   end

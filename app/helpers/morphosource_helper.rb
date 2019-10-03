@@ -43,6 +43,10 @@ module MorphosourceHelper
   def find_works_autocomplete_url(curation_concern, relation)
     valid_concerns = curation_concern.send("valid_#{relation}_concerns").map(&:to_s)
     type_params = valid_concerns.sort.map { |type| "type[]=#{type}" }
+    # add id in the url if missing since id is expected by find_works 
+    if type_params.find { |e| /^id=/ =~ e }.nil?
+      type_params << "id=NA"
+    end
     Rails.application.routes.url_helpers.qa_path + '/search/find_works?' + type_params.join('&')
   end
 

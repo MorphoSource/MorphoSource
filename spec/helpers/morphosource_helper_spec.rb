@@ -181,13 +181,13 @@ RSpec.describe MorphosourceHelper, type: :helper do
       let(:autocomplete_url_base) { Rails.application.routes.url_helpers.qa_path + '/search/find_works' }
       let(:autocomplete_url) { "#{autocomplete_url_base}#{expected_query_string}" }
       describe 'for child relationship' do
-        let(:expected_query_string) { '?type[]=Media&type[]=ProcessingEvent' }
+        let(:expected_query_string) { '?type[]=Media&type[]=ProcessingEvent&id=NA' }
         it 'searches for appropriate child work types' do
           expect(helper.find_works_autocomplete_url(curation_concern, :child)).to eq(autocomplete_url)
         end
       end
       describe 'for parent relationship' do
-        let(:expected_query_string) { '?type[]=BiologicalSpecimen&type[]=Device' }
+        let(:expected_query_string) { '?type[]=BiologicalSpecimen&type[]=Device&id=NA' }
         it 'searches for appropriate parent work types' do
           expect(helper.find_works_autocomplete_url(curation_concern, :parent)).to eq(autocomplete_url)
         end

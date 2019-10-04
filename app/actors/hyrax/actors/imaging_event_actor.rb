@@ -10,8 +10,72 @@ module Hyrax
 
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
+        # look for media associated with this IE (child works)
+        # for each media, update the media title with the IE modality
+        media_ids = []
+        if env.curation_concern.ordered_work_ids.present?
+          env.curation_concern.ordered_work_ids.each do |child_id|
+            work_child = Morphosource::Works::Base.find(child_id)
+            case work_child.class.to_s
+            when 'Media'
+              media_ids << work_child.id
+            end              
+          end
+          media_ids.each do |media_id|
+            media = ::ActiveFedora::Base.find(media_id)
+            updated_title = generated_media_title(media_id, media.part, media.media_type, env.attributes['ie_modality'])
+            media.title = [updated_title]
+            media.save!
+          end
+        end
+
         super
       end
+
+# need to move below 2 methods elsewhere to share with media_actor
+
+      def generated_media_title(id, part, media_type, ie_modality)
+        id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
+        parts = part.presence || ['Element unspecified']
+        media_type = media_type&.first.presence || ''
+        modality_abbrevs = ie_modality.map { |m| modality_abbrev(m) }
+        id_prefix + parts.sort.join(', ').titleize + (media_type.presence ? ' [' + media_type.to_s + ']' : '') + (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : '')
+      end
+
+      def modality_abbrev(m)
+        case m
+        when 'MicroNanoXRayComputedTomography'
+          'μCT'
+        when 'MedicalXRayComputedTomography'
+          'CT'
+        when 'MagneticResonanceImaging'
+          'MRI'
+        when 'PositronEmissionTomography'
+          'PET'
+        when 'SynchrotronImaging'
+          'Synchro'
+        when 'NeutrinoImaging'
+          'Neutrino'
+        when 'Photogrammetry'
+          'Photogram'
+        when 'StructuredLight'
+          'StrLight'
+        when 'LaserScan'
+          'Laser'
+        when 'ConfocalImageStacking'
+          'Confocal'
+        when 'ReflectanceTransformationImaging'
+          'RTI'
+        when 'Photography'
+          'Photo'
+        when 'ScanningElectronMicroscopy'
+          'SEM'
+        else
+          'Etc' 
+        end
+      end
+
+#####
 
       def generated_title(env)
         # <device parent manufacturer> <device parent name> <modality> Imaging Event (<date created>)

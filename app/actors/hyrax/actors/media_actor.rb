@@ -18,9 +18,19 @@ module Hyrax
         attrs = env.attributes
         parts = attrs['part'].presence || ['Element unspecified']
         media_type = attrs['media_type']&.first.presence || ''
-        modality = attrs['modality'].presence || []
-        modality_abbrevs = modality.map { |m| modality_abbrev(m) }
-
+        # get the modality from the parent imaging event
+        ie_modality = []
+        if attrs['work_parents_attributes'].present?
+          attrs['work_parents_attributes'].each do |key, wp|
+            work_parent = Morphosource::Works::Base.find(wp['id'])
+            work_parent_string = case work_parent.class.to_s
+              when 'ImagingEvent'
+                "#{work_parent.ie_modality.first}"
+            end
+            ie_modality << "#{work_parent_string}"
+          end
+        end
+        modality_abbrevs = ie_modality.map { |m| modality_abbrev(m) }
         id = attrs['id'].presence || env.curation_concern.id.presence || ''
         id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
 

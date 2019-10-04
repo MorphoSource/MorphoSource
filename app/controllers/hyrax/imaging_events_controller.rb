@@ -45,10 +45,15 @@ module Hyrax
     private
     def imaging_event_modality_valid?
       parent_devices = []
-      params['imaging_event']['work_parents_attributes'].values.map do |v| 
-        if Device.where('id' => v['id']).present?
-          parent_devices << Device.find(v['id'])
+      if params['imaging_event']['work_parents_attributes'].present?
+        params['imaging_event']['work_parents_attributes'].values.map do |v| 
+          if Device.where('id' => v['id']).present?
+            parent_devices << Device.find(v['id'])
+          end
         end
+      else
+        # if there is no parent device, no need to compare modalities.
+        return true
       end
       parent_modalities = parent_devices.map{|d| d.modality.to_a}.flatten.uniq
       if parent_modalities.include?(params['imaging_event']['ie_modality'])

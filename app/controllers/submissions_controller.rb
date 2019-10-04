@@ -396,6 +396,12 @@ class SubmissionsController < ApplicationController
   def create_media(params, uploaded_files)
     parent_attributes = {}
     if @submission.imaging_event_id.present?
+      cookies.permanent[:imaging_event_id] = @submission.imaging_event_id
+
+
+
+      
+
       if cookies[:absentee_parent].present?
         # when creating a media with absentee parent
         # do not add IE as parent, since the relationship should be PO > IE > PE > media

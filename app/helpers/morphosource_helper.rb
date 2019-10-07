@@ -149,4 +149,46 @@ module MorphosourceHelper
     )
   end
 
+  def generated_media_title(id, part, media_type, ie_modality)
+    id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
+    parts = part.presence || ['Element unspecified']
+    media_type = media_type&.first.presence || ''
+    modality_abbrevs = ie_modality.map { |m| modality_abbrev(m) }
+    title = id_prefix + parts.sort.join(', ').titleize + (media_type.presence ? ' [' + media_type.to_s + ']' : '') + (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : '')
+    title
+  end
+
+  def modality_abbrev(m)
+    case m
+    when 'MicroNanoXRayComputedTomography'
+      'μCT'
+    when 'MedicalXRayComputedTomography'
+      'CT'
+    when 'MagneticResonanceImaging'
+      'MRI'
+    when 'PositronEmissionTomography'
+      'PET'
+    when 'SynchrotronImaging'
+      'Synchro'
+    when 'NeutrinoImaging'
+      'Neutrino'
+    when 'Photogrammetry'
+      'Photogram'
+    when 'StructuredLight'
+      'StrLight'
+    when 'LaserScan'
+      'Laser'
+    when 'ConfocalImageStacking'
+      'Confocal'
+    when 'ReflectanceTransformationImaging'
+      'RTI'
+    when 'Photography'
+      'Photo'
+    when 'ScanningElectronMicroscopy'
+      'SEM'
+    else
+      'Etc' 
+    end
+  end
+
 end

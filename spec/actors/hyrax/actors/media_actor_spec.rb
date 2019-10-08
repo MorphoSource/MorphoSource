@@ -51,42 +51,50 @@ RSpec.describe Hyrax::Actors::MediaActor do
     let(:modality_attr) { [ 'MagneticResonanceImaging', 'NeutrinoImaging' ] }
     let(:modality_labels) { [ 'MRI', 'Neutrino' ] }
     let(:part_attr) { [ 'leg', 'arm' ] }
+    let(:work_parents_attributes) { { "0"=>{"id"=>"parentIE", "_destroy"=>"false"} } }
+    let(:work_parents_attributes_multiple) { { "0"=>{"id"=>"parentIE", "_destroy"=>"false"}, "1"=>{"id"=>"parentIEmultiple", "_destroy"=>"false"} } }
     let(:env) { Hyrax::Actors::Environment.new(work, ability, attrs) }
+
+    before do
+      ImagingEvent.create(title: ["Test ImagingEvent"], id: "parentIE", ie_modality: [modality_attr.first])
+      ImagingEvent.create(title: ["Test ImagingEvent multiple modality"], id: "parentIEmultiple", ie_modality: [modality_attr[1]])
+    end
+
     describe 'one modality' do
       describe 'no part' do
-        let(:attrs) { { 'modality' => [ modality_attr.first ],
-                        'part' => [] } }
+        let(:attrs) { { 'part' => [], 'work_parents_attributes' => [ work_parents_attributes.first ] } }
         let(:expected_title) { "Element Unspecified [#{modality_labels.first}]" }
         specify { expect(subject.generated_title(env)).to eq(expected_title)}
       end
       describe 'one part' do
-        let(:attrs) { { 'modality' => [ modality_attr.first ],
+        let(:attrs) { { 'work_parents_attributes' => [ work_parents_attributes.first ],
                         'part' => [ part_attr.first ] } }
         let(:expected_title) { "#{part_attr.first.titleize} [#{modality_labels.first}]"}
         specify { expect(subject.generated_title(env)).to eq(expected_title)}
       end
       describe 'more than one part' do
-        let(:attrs) { { 'modality' => [ modality_attr.first ],
+        let(:attrs) { { 'work_parents_attributes' => [ work_parents_attributes.first ],
                         'part' => part_attr } }
         let(:expected_title) { "#{part_attr.sort.join(', ').titleize} [#{modality_labels.first}]"}
         specify { expect(subject.generated_title(env)).to eq(expected_title)}
       end
     end
+    
     describe 'more than one modality' do
       describe 'no part' do
-        let(:attrs) { { 'modality' => modality_attr,
+        let(:attrs) { { 'work_parents_attributes' => work_parents_attributes_multiple,
                         'part' => [] } }
         let(:expected_title) { "Element Unspecified [#{modality_labels.sort.join('/')}]" }
         specify { expect(subject.generated_title(env)).to eq(expected_title)}
       end
       describe 'one part' do
-        let(:attrs) { { 'modality' => modality_attr,
+        let(:attrs) { { 'work_parents_attributes' => work_parents_attributes_multiple,
                         'part' => [ part_attr.first ] } }
         let(:expected_title) { "#{part_attr.first.titleize} [#{modality_labels.sort.join('/')}]" }
         specify { expect(subject.generated_title(env)).to eq(expected_title)}
       end
       describe 'more than one part' do
-        let(:attrs) { { 'modality' => modality_attr,
+        let(:attrs) { { 'work_parents_attributes' => work_parents_attributes_multiple,
                         'part' => part_attr } }
         let(:expected_title) { "#{part_attr.sort.join(', ').titleize} [#{modality_labels.sort.join('/')}]"}
         specify { expect(subject.generated_title(env)).to eq(expected_title)}

@@ -121,11 +121,14 @@ RSpec.describe SubmissionsController, type: :controller do
 
     describe 'parent_media_select' do
       before do
-        Media.create({
+        ie = ImagingEvent.create(title: ["Test ImagingEvent"], id: "parentIE", ie_modality: ['MedicalXRayComputedTomography'])
+        media = Media.create({
             id: 'abc123',
-            title: ['media 1'],
-            modality: ['MedicalXRayComputedTomography']
+            title: ['media 1']
         })
+        ie.ordered_members << media
+        ie.save!
+        media.save!
         @request.session['submission'] = {}
       end
       let(:media_id) { 'abc123' }
@@ -266,7 +269,7 @@ RSpec.describe SubmissionsController, type: :controller do
 
   describe '#stage_media' do
     let(:metadata_attributes) do
-      { 'modality' => [ 'LaserScan', 'Infrared' ], 'media_type' => 'Mesh' }
+      { 'media_type' => 'Mesh' }
     end
     let(:uploaded_files) { [ '12', '13' ] }
     let(:visibility) { 'authenticated' }

@@ -41,10 +41,6 @@ module Hyrax
 
       private
 
-      def generated_title_modalities(attrs)
-        attrs['modality'].map { |m| modalities_service.label(m) }.sort.join(', ')
-      end
-
       def generated_title_parts(attrs)
         attrs['part'].sort.join(', ').titleize
       end

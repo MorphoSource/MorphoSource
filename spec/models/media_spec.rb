@@ -23,7 +23,6 @@ RSpec.describe Media do
 
     it "is valid with valid attributes" do
         subject.title = ["foo"]
-        subject.modality = ["foo"]
         subject.media_type = ["foo"]
         subject.side = nil
         subject.part = nil
@@ -47,9 +46,8 @@ RSpec.describe Media do
         expect(subject).to be_valid
     end
 
-    it "is not valid without required fields - title, modality, media_type" do
+    it "is not valid without required fields - title, media_type" do
         subject.title = nil
-        subject.modality = nil
         subject.media_type = nil
         subject.side = ["foo"]
         subject.part = nil

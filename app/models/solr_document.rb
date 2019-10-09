@@ -71,10 +71,6 @@ class SolrDocument
     self[Solrizer.solr_name('media_type', :stored_searchable)]
   end
 
-  def modality
-    self[Solrizer.solr_name('modality', :stored_searchable)]
-  end
-
   def orientation
     self[Solrizer.solr_name('orientation', :stored_searchable)]
   end

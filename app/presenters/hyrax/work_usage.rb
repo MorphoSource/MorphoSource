@@ -10,6 +10,10 @@ module Hyrax
     alias work model
     delegate :to_s, to: :model
 
+    def total_downloads
+      downloads.reduce(0) { |total, result| total + result[1].to_i }
+    end
+
     def total_pageviews
       pageviews.reduce(0) { |total, result| total + result[1].to_i }
     end
@@ -17,7 +21,8 @@ module Hyrax
     # Package data for visualization using JQuery Flot
     def to_flot
       [
-        { label: "Pageviews", data: pageviews }
+        { label: "Pageviews", data: pageviews },
+        { label: "Downloads", data: downloads }
       ]
     end
 
@@ -26,5 +31,10 @@ module Hyrax
       def pageviews
         to_flots WorkViewStat.statistics(model, created, user_id)
       end
+
+      def downloads
+        to_flots(FileDownloadStat.statistics(model, created, user_id))
+      end
+
   end
 end

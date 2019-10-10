@@ -14,7 +14,7 @@
     <%= content_tag :h2, "Work Analytics" %>
     <div class="alert alert-info">
       <i class="glyphicon glyphicon-signal large-icon"></i>
-      <%= content_tag :strong, @stats.total_pageviews %> views since <%= @stats.created.strftime("%B %-d, %Y") %>
+      <%= content_tag :strong, @stats.total_pageviews %> views and <%= content_tag :strong, @stats.total_downloads %> downloads since <%= @stats.created.strftime("%B %-d, %Y") %>
     </div>
     <div class="stats-container">
       <div id="usage-stats" class="stats-placeholder"></div>

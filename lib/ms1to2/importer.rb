@@ -105,8 +105,15 @@ module Ms1to2
       @ie = get_table(:ImagingEvent)
       @pe = get_table(:ProcessingEvent)
       combined_table = {}.merge(media).merge(ie).merge(pe)
+      
+      if combined_table.length == 1
+        ids = [combined_table.keys.first]
+      else
+        ids = ids_in_order
+      end
 
-      ids_in_order.each do |id|
+      puts(ids)
+      ids.each do |id|
         if combined_table.key?(id)
           # prepare
           attrs = combined_table[id]
@@ -184,7 +191,7 @@ module Ms1to2
     def get_table(m)
       {}.tap do |t|
         CSVParser.new(File.join(input_path, csvfile(m))).each do |attrs|
-          t[attrs[:id].first] = attrs
+          t[attrs[:id].first] = attrs unless attrs[:id].nil?
         end
       end
     end

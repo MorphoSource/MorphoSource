@@ -6,7 +6,9 @@ module Morphosource::Derivatives::Processors
   	end
 
 	class CTImageSeries < Hydra::Derivatives::Processors::Processor
-		attr_accessor :tmp_dir_path, :img_coll, :ext, :input_path, :jpeg_path, :output_path, :manifest_path
+		attr_accessor :tmp_dir_path, :img_coll, :ext
+    attr_accessor :input_path, :scaled_path, :raw_dcm_path, :output_path, :manifest_path
+    attr_accessor :raw_dcm_file_path, :output_file_path
     attr_accessor :x, :y, :z, :linear_scale_factor
     attr_accessor :x_spacing, :y_spacing, :z_spacing, :slice_thickness
     attr_accessor :derivatives_tmp_path
@@ -30,14 +32,19 @@ module Morphosource::Derivatives::Processors
 		protected
 
     	def create_ct_image_series_derivative
-    		@tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
+        @tmp_dir_path = '/vagrant/downloads/dcm_out/' 
+    		# @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
         Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
     		@input_path = File.join(tmp_dir_path, 'input')
         Dir.mkdir input_path unless File.exist? input_path
-    		@jpeg_path = File.join(tmp_dir_path, 'jpeg')
-        Dir.mkdir jpeg_path unless File.exist? jpeg_path
+        @scaled_path = File.join(tmp_dir_path, 'scaled')
+        Dir.mkdir scaled_path unless File.exist? scaled_path
+    		@raw_dcm_path = File.join(tmp_dir_path, 'raw_dcm')
+        Dir.mkdir raw_dcm_path unless File.exist? raw_dcm_path
+        @raw_dcm_file_path = File.join(raw_dcm_path, 'derivative.dcm')
     		@output_path = File.join(tmp_dir_path, 'output')
         Dir.mkdir output_path unless File.exist? output_path
+        @output_file_path = File.join(output_path, 'derivative.dcm')
 
         
         @x_spacing = directives.fetch(:x_spacing, 1).presence || 1
@@ -54,28 +61,23 @@ module Morphosource::Derivatives::Processors
             return
           end 
           
-      		# unzip zip archive to input_dir
-      		import_image_archive
-
+          # extract and process images
+          extract_images
           uncompress_dcm if ext == '.dcm'
-
-      		# todo: have a step to convert whatever to tiff pre-imagej
-
-      		# use imagej to convert input_dir whatever to jpeg_dir jpegs
-      		img_to_jpeg
-
-      		# use img2dcm to convert jpeg_dir jpegs to output_dir dcms
-      		jpeg_to_dcm
-
+          extract_image_metadata
+          scale_images
+          tif_to_raw_dcm
+          compress_dcm
+          
       		# generate manifest json
-      		@manifest_path = gen_manifest
+      		# @manifest_path = gen_manifest
 
       		# place files
       		write_files
         rescue StandardError => e
           raise e
         ensure
-    		  cleanup_tmp_files
+    		  # cleanup_tmp_files
         end
     	end
 
@@ -119,8 +121,42 @@ module Morphosource::Derivatives::Processors
       end
     end
 
-    def import_image_archive
-      x, y, z = extract_file_and_metadata
+    def extract_images
+      Zip::File.open(source_path) do |zip_file|
+        img_coll.each do |f|
+          f_path = File.join(input_path, File.basename(f))
+          zip_file.extract(f, f_path)
+        end
+      end
+    end
+
+    def uncompress_dcm
+      dcmdjpeg = Morphosource::Derivatives::Dcmdjpeg.new(input_path, input_path)
+      dcmdjpeg.call
+    end
+
+    def extract_image_metadata
+      x = []
+      y = []
+      z = 0
+      Dir.foreach(input_path) do |f|
+        next if f == '.' or f == '..'
+        x_dim, y_dim = image_dims(File.join(input_path, File.basename(f)))
+        x << x_dim if x_dim
+        y << y_dim if y_dim
+        z += 1 if x_dim && y_dim
+      end
+      set_series_metadata(x, y, z)
+    end
+
+    def image_dims(f)
+      img = MiniMagick::Image.open(f)
+      if img.valid?
+        return img.width, img.height
+      end
+    end
+
+    def set_series_metadata(x, y, z)
       if x.uniq.length != 1 || y.uniq.length != 1 || z == 0
         raise "No images or different types of images located in image series archive"
       else
@@ -131,50 +167,24 @@ module Morphosource::Derivatives::Processors
       end
     end
 
-    # extracts zipped images and grabs x, y, z dimensions
-    def extract_file_and_metadata(format='.dcm')
-      x = []
-      y = []
-      z = 0
-      Zip::File.open(source_path) do |zip_file|
-        img_coll.each do |f|
-          f_path = File.join(input_path, File.basename(f))
-          zip_file.extract(f, f_path)
-          x_dim, y_dim = image_dims(f_path)
-          x << x_dim if x_dim
-          y << y_dim if y_dim
-          z += 1 if x_dim && y_dim
-        end
-      end
-      return x, y, z
-    end
-
-    def image_dims(f)
-      img = MiniMagick::Image.open(f)
-      if img.valid?
-        return img.width, img.height
-      end
+    def vf # voxel volume factor, i.e. approx. length on a side in pixels
+      400.0
     end
 
     def linear_scale_factor
-      ( (300.0**3) / (x.to_f * y.to_f * z.to_f) )**( 1.0/3.0 )
+      ( (vf**3) / (x.to_f * y.to_f * z.to_f) )**( 1.0/3.0 )
     end
 
-    def uncompress_dcm
-      dcmdjpeg = Morphosource::Derivatives::Dcmdjpeg.new(input_path, input_path)
-      dcmdjpeg.call
-    end
-
-		def img_to_jpeg
-      fiji = Morphosource::Derivatives::Fiji.new(input_path, jpeg_path, linear_scale_factor)
+		def scale_images
+      fiji = Morphosource::Derivatives::Fiji.new(input_path, scaled_path, linear_scale_factor)
       fiji.call
 		end
 
-		def jpeg_to_dcm
+    def tif_to_raw_dcm
       new_x, new_y, new_z, new_slice_thickness = new_spacing
-      img2dcm = Morphosource::Derivatives::Img2dcm.new(jpeg_path, output_path, new_x, new_y, new_z, new_slice_thickness)
-      img2dcm.call
-		end
+      alembic = Morphosource::Derivatives::Alembic.new(scaled_path, raw_dcm_file_path, new_x, new_y, new_z, new_slice_thickness)
+      alembic.call
+    end
 
     def new_spacing
       # height and width
@@ -193,48 +203,48 @@ module Morphosource::Derivatives::Processors
       ( var.to_f * linear_scale_factor ).to_i
     end
 
-		def gen_manifest
-      erb_src = File.join(__dir__, 'manifest.json.erb')
-      txt_dst = File.join(tmp_dir_path, File.basename(erb_src, '.erb'))
-      File.open(txt_dst, 'w') do |f|
-        f.write(ERB.new(File.read(erb_src)).result(binding))
-      end
-      txt_dst
-		end
-
-    def gen_dcm_path(id)
-      id.to_s.chars.each_slice(2).map(&:join).join('/')
+    def compress_dcm
+      dcmcjpeg = Morphosource::Derivatives::Dcmcjpeg.new(raw_dcm_path, output_path)
+      dcmcjpeg.call
     end
 
-    def dicom_series
-      id = directives[:file_set_id]
-      file_n = Dir[File.join(output_path, '**', '*')].count { |file| File.file?(file) }
-      ((1..file_n).to_a.map { |i| "\"derivatives/#{gen_dcm_path(id)}/#{i}.dcm\""}).join(',')
-      #((1..file_n).to_a.map { |i| "\"downloads/#{id}?file=dcm#{i}\""}).join(',')
-    end
+		# def gen_manifest
+  #     erb_src = File.join(__dir__, 'manifest.json.erb')
+  #     txt_dst = File.join(tmp_dir_path, File.basename(erb_src, '.erb'))
+  #     File.open(txt_dst, 'w') do |f|
+  #       f.write(ERB.new(File.read(erb_src)).result(binding))
+  #     end
+  #     txt_dst
+		# end
 
-    def base_derivative_path
-      # todo: add derived path here if necessary
-      ''
-    end
+    # def gen_dcm_path(id)
+    #   id.to_s.chars.each_slice(2).map(&:join).join('/')
+    # end
+
+    # def dicom_series
+    #   id = directives[:file_set_id]
+    #   file_n = Dir[File.join(output_path, '**', '*')].count { |file| File.file?(file) }
+    #   ((1..file_n).to_a.map { |i| "\"derivatives/#{gen_dcm_path(id)}/#{i}.dcm\""}).join(',')
+    #   #((1..file_n).to_a.map { |i| "\"downloads/#{id}?file=dcm#{i}\""}).join(',')
+    # end
+
+    # def base_derivative_path
+    #   # todo: add derived path here if necessary
+    #   ''
+    # end
 
     def write_files
-      # write manifest file
-      output_file_service.call(manifest_path, directives)
-
-      # write dcm images
-      files = (Dir.entries(output_path).select {|f| File.file? File.join(output_path, f) }).sort
-      files.each_with_index { |f, i| write_dcm_file(File.join(output_path, f), (i+1).to_s+'.dcm') }
+      output_file_service.call(output_file_path, directives)
     end
 
-    def write_dcm_file(f_path, new_f_name)
-      f_directives = directives.merge( { url: File.join(dcm_derivative_path, new_f_name) } )
-      output_file_service.call(f_path, f_directives)
-    end
+    # def write_dcm_file(f_path, new_f_name)
+    #   f_directives = directives.merge( { url: File.join(dcm_derivative_path, new_f_name) } )
+    #   output_file_service.call(f_path, f_directives)
+    # end
 
-    def dcm_derivative_path
-      File.join(File.dirname(directives[:url]), File.basename(directives[:url])[0])
-    end
+    # def dcm_derivative_path
+    #   File.join(File.dirname(directives[:url]), File.basename(directives[:url])[0])
+    # end
 
 		def cleanup_tmp_files
 			FileUtils.remove_dir tmp_dir_path

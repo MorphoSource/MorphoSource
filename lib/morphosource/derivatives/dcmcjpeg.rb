@@ -1,8 +1,8 @@
 module Morphosource::Derivatives
-  class DcmdjpegError < RuntimeError
+  class DcmcjpegError < RuntimeError
   end
 
-  class Dcmdjpeg < DerivativeTool
+  class Dcmcjpeg < DerivativeTool
     attr_reader :source_path, :out_path, :file_path, :file_out_path
     def initialize(source_path, out_path)
       @source_path = source_path
@@ -11,7 +11,7 @@ module Morphosource::Derivatives
 
     def call
       unless Dir.exists?(source_path)
-        raise Morphosource::Derivatives::DcmdjpegError.new("Source directory: #{source_path} does not exist.")
+        raise Morphosource::Derivatives::DcmcjpegError.new("Source directory: #{source_path} does not exist.")
       end
 
       internal_call # to do add some output/post-process controls
@@ -28,7 +28,7 @@ module Morphosource::Derivatives
       end
 
       def command
-        "dcmdjpeg #{file_path} #{file_out_path}"
+        "dcmcjpeg --encode-lossless-sv1 #{file_path} #{file_out_path}"
       end
   end
 end

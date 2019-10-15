@@ -113,7 +113,6 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name('funding', :stored_searchable)
     config.add_show_field solr_name('map_type', :stored_searchable)
     config.add_show_field solr_name('media_type', :stored_searchable)
-    config.add_show_field solr_name('modality', :stored_searchable)
     config.add_show_field solr_name('orientation', :stored_searchable)
     config.add_show_field solr_name('part', :stored_searchable)
     config.add_show_field solr_name('rights_holder', :stored_searchable)

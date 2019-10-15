@@ -118,7 +118,9 @@ class SubmissionsController < ApplicationController
       modality_to_set = []
       submission_params[:parent_media_list].split(',').each do |id|
         media = Media.where('id' => id).first
-        modality_to_set += media.modality.to_a
+        # might need to handle multiple IEs if necessary later
+        imaging_event = ImagingEvent.where('member_ids_ssim' => media.id)&.first.presence || nil
+        modality_to_set += imaging_event.ie_modality.to_a if imaging_event.present?
       end
       cookies.permanent[:modality_to_set] = modality_to_set.join(',')
       store_submission
@@ -396,6 +398,7 @@ class SubmissionsController < ApplicationController
   def create_media(params, uploaded_files)
     parent_attributes = {}
     if @submission.imaging_event_id.present?
+      cookies.permanent[:imaging_event_id] = @submission.imaging_event_id
       if cookies[:absentee_parent].present?
         # when creating a media with absentee parent
         # do not add IE as parent, since the relationship should be PO > IE > PE > media

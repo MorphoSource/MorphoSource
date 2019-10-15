@@ -1,8 +1,8 @@
-# Generated via
-#  `rails generate hyrax:work ImagingEvent`
 module Hyrax
   module Actors
     class ImagingEventActor < Hyrax::Actors::BaseActor
+      include MorphosourceHelper
+
       def create(env)
         env.attributes['title'] = [ generated_title(env) ]
         super
@@ -10,6 +10,25 @@ module Hyrax
 
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
+        # look for media associated with this IE (child works)
+        # for each media, update the media title with the IE modality
+        media_ids = []
+        if env.curation_concern.ordered_work_ids.present?
+          env.curation_concern.ordered_work_ids.each do |child_id|
+            work_child = Morphosource::Works::Base.find(child_id)
+            case work_child.class.to_s
+            when 'Media'
+              media_ids << work_child.id
+            end              
+          end
+          media_ids.each do |media_id|
+            media = ::ActiveFedora::Base.find(media_id)
+            updated_title = generated_media_title(media_id, media.part, media.media_type, env.attributes['ie_modality'])
+            media.title = [updated_title]
+            media.save!
+          end
+        end
+
         super
       end
 

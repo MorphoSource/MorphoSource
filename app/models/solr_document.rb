@@ -463,6 +463,22 @@ class SolrDocument
       self[Solrizer.solr_name('detector_type', :stored_searchable)]
   end
 
+  def detector_pixels_x
+    self[Solrizer.solr_name('detector_pixels_x', :stored_searchable)]
+  end
+
+  def detector_pixel_size_x
+    self[Solrizer.solr_name('detector_pixel_size_x', :stored_searchable)]
+  end
+
+  def detector_pixels_y
+    self[Solrizer.solr_name('detector_pixels_y', :stored_searchable)]
+  end
+  
+  def detector_pixel_size_y
+    self[Solrizer.solr_name('detector_pixel_size_y', :stored_searchable)]
+  end
+
   def detector_configuration
       self[Solrizer.solr_name('detector_configuration', :stored_searchable)]
   end

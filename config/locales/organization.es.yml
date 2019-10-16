@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      organization:     'fa fa-file-text-o'
+    select_type:
+      organization:
+        # TODO: translate `human_name` into Spanish
+        description:        "Organization trabajos"
+        name:               "Organization"
+        # TODO: translate `human_name` into Spanish

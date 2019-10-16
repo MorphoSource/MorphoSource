@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'records/edit_fields/_country.html.erb', type: :view do
-  let(:work) { Institution.new }
-  let(:form) { Hyrax::InstitutionForm.new(work, nil, controller) }
+  let(:work) { Organization.new }
+  let(:form) { Hyrax::OrganizationForm.new(work, nil, controller) }
   let(:form_template) do
     %(
       <%= simple_form_for [main_app, @form] do |f| %>

@@ -8,9 +8,9 @@ RSpec.describe 'submission routing', type: :routing do
     expect(:get => new_submission_path).to route_to(route)
   end
 
-  it 'has a route for new institution submit' do
-    route = { controller: 'submissions', action: 'new_institution_submit' }
-    expect(:post => '/submissions/new_institution_submit').to route_to(route)
+  it 'has a route for new organization submit' do
+    route = { controller: 'submissions', action: 'new_organization_submit' }
+    expect(:post => '/submissions/new_organization_submit').to route_to(route)
   end
 
   it 'has a route for new taxonomy submit' do

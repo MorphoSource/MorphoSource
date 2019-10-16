@@ -19,7 +19,7 @@ module Ms1to2
       end
 
       def derive_parent_id(v)
-        inst_id = ms2_output_data.find('f_to_i', v[:facility_id].first, 'institution_id') 
+        inst_id = ms2_output_data.find('f_to_i', v[:facility_id].first, 'organization_id') 
         inst_id ? (inst_id) : ('I' + v[:facility_id].first) 
         hyraxify(inst_id)
       end

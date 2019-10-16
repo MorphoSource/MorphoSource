@@ -60,8 +60,8 @@ en:
       change_access_no_message: No. I want to go back.
     taxonomy:
       labels:
-        canonical: "Institutional"
-        trusted_canonical: "Institutional / MorphoSource Inferred"
+        canonical: "Organizational"
+        trusted_canonical: "Organizational / MorphoSource Inferred"
         trusted: "MorphoSource Inferred"
         user: "User Supplied"
     visibility:

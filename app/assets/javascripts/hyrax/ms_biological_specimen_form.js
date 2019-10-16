@@ -3,14 +3,14 @@ $(document).on('turbolinks:load', function() {
   if ($('form[id*="biological_specimen"]').length) { // if BSO form page
 
 		function updateObjectTitle() {
-			var updatedTitle = $('#biological_specimen_institution_code').val() + ':' +
+			var updatedTitle = $('#biological_specimen_organization_code').val() + ':' +
 													$('#biological_specimen_collection_code').val() + ':' +
 													$('#biological_specimen_catalog_number').val();
 			$('#showcase-title').text(updatedTitle);			
 		}
 
     setupEmbeddedWorkForm('taxonomy', 'new');
-    setupEmbeddedWorkForm('institution', 'new', updateObjectTitle);
+    setupEmbeddedWorkForm('organization', 'new', updateObjectTitle);
 
 	  $('.tooltip-icon').tooltip({ 
 	    title: function(){
@@ -25,22 +25,22 @@ $(document).on('turbolinks:load', function() {
 	  })
 		window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle
 			
-		// remove institution when clicking no institution button  
-		$('#btn_no_institution').click(function() {
-			var removeInstitutionButton = $('#parent-relationships-institutions').find('[data-behavior="remove-relationship"]');
-			if (removeInstitutionButton.length) {
-				removeInstitutionButton.trigger('click');
+		// remove organization when clicking no organization button  
+		$('#btn_no_organization').click(function() {
+			var removeOrganizationButton = $('#parent-relationships-organizations').find('[data-behavior="remove-relationship"]');
+			if (removeOrganizationButton.length) {
+				removeOrganizationButton.trigger('click');
 			}
-			$('#embedded_div_new_institution').hide();
+			$('#embedded_div_new_organization').hide();
 		})
 
-		// An institution has been selected.  set the institution code field on the object detail tab, then update title
-		$('#btn-add-institution').click(function() {
-			$('#biological_specimen_institution_code').val( $('#institution-code').text() );
+		// An organization has been selected.  set the organization code field on the object detail tab, then update title
+		$('#btn-add-organization').click(function() {
+			$('#biological_specimen_organization_code').val( $('#organization-code').text() );
 			updateObjectTitle();
 		})
 		
-		// when selecting an institution or taxonomy, hide the new work form if any
+		// when selecting an organization or taxonomy, hide the new work form if any
 		$('[data-behavior="add-relationship"]').click(function() {
 			$('.embedded_div').hide();
 		})
@@ -52,7 +52,7 @@ $(document).on('turbolinks:load', function() {
 		})
 
 		// Change title on the fly when corresponding fields are updated
-		$('#biological_specimen_institution_code, #biological_specimen_collection_code, #biological_specimen_catalog_number').change(updateObjectTitle);
+		$('#biological_specimen_organization_code, #biological_specimen_collection_code, #biological_specimen_catalog_number').change(updateObjectTitle);
 
 		// change badges on the fly when corresponding fields are updated
 		$('#biological_specimen_vouchered').change(function(){

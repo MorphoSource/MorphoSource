@@ -46,13 +46,13 @@ de:
           subject_tesim: Fach
           title_tesim: Titel
   hyrax:
-    account_name: Meine Institution Konto-ID
+    account_name: Meine Organization Konto-ID
     directory:
       suffix: "@ Example.org"
     footer:
       copyright_html: "<strong>Copyright © 2017 Samvera lizenziert</strong> unter der Apache Lizenz, Version 2.0"
       service_html: Ein Dienst von <a href="http://samvera.org/" class="navbar-link" target="_blank">Samvera</a> .
-    institution_name: Institution
-    institution_name_full: Name des Instituts
+    organization_name: Organization
+    organization_name_full: Name des Instituts
     product_name: Hyrax
     product_twitter_handle: "@SamveraRepo"

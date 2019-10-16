@@ -18,8 +18,8 @@ RSpec.describe BiologicalSpecimen do
 
   describe "valid work relationships" do
 
-    it "has only Institution as a valid parent" do
-      expect(subject.valid_parent_concerns).to match_array([Institution, Taxonomy])
+    it "has only Organization as a valid parent" do
+      expect(subject.valid_parent_concerns).to match_array([Organization, Taxonomy])
     end
 
     it "has ImagingEvent and Attachment as valid child concerns" do
@@ -33,8 +33,8 @@ RSpec.describe BiologicalSpecimen do
 
     describe "valid work relationships" do
 
-      it "has Institution and Taxonomy as valid parents" do
-        expect(subject.valid_parent_concerns).to match_array([Institution, Taxonomy])
+      it "has Organization and Taxonomy as valid parents" do
+        expect(subject.valid_parent_concerns).to match_array([Organization, Taxonomy])
       end
 
       it "has ImagingEvent and Attachment as valid child concerns" do
@@ -47,8 +47,8 @@ RSpec.describe BiologicalSpecimen do
       let (:taxonomy1)  { Taxonomy.create(id: "1", title: ["taxonomy1 title"], trusted: ["Yes"]) }
       let (:taxonomy2)  { Taxonomy.create(id: "2", title: ["taxonomy2 title"], trusted: ["Yes"]) }
       let (:taxonomy3)  { Taxonomy.create(id: "3", title: ["taxonomy3 title"], trusted: ["No"]) }
-      let (:institution){ Institution.create(id: "4", title: ["institution title"]) }
-      let (:parents) {[taxonomy1, taxonomy2, taxonomy3, institution]}
+      let (:organization){ Organization.create(id: "4", title: ["organization title"]) }
+      let (:parents) {[taxonomy1, taxonomy2, taxonomy3, organization]}
 
       before do
         parents.each do |parent|
@@ -83,7 +83,7 @@ RSpec.describe BiologicalSpecimen do
       end
 
       describe "#trusted_taxonomies" do
-        it 'returns all institutional taxonomies except the canonical taxonomy' do
+        it 'returns all organizational taxonomies except the canonical taxonomy' do
           expect(subject.trusted_taxonomies).to match_array([taxonomy2])
         end
       end

@@ -3,10 +3,11 @@ $(document).on('turbolinks:load', function() {
   if ($('form[id*="biological_specimen"]').length) { // if BSO form page
 
 		function updateObjectTitle() {
-			var updatedTitle = $('#biological_specimen_organization_code').val() + ':' +
-													$('#biological_specimen_collection_code').val() + ':' +
-													$('#biological_specimen_catalog_number').val();
-			$('#showcase-title').text(updatedTitle);			
+			var title = [ $('#biological_specimen_organization_code').val(),
+													$('#biological_specimen_collection_code').val(),
+													$('#biological_specimen_catalog_number').val() ]
+			title = $.map( title, function(v){ return v === "" ? null : v; });
+			$('#showcase-title').text(title.join(':'));			
 		}
 
     setupEmbeddedWorkForm('taxonomy', 'new');
@@ -32,6 +33,8 @@ $(document).on('turbolinks:load', function() {
 				removeOrganizationButton.trigger('click');
 			}
 			$('#embedded_div_new_organization').hide();
+			$('#biological_specimen_organization_code').val('');
+			updateObjectTitle();
 		})
 
 		// An organization has been selected.  set the organization code field on the object detail tab, then update title
@@ -39,7 +42,7 @@ $(document).on('turbolinks:load', function() {
 			$('#biological_specimen_organization_code').val( $('#organization-code').text() );
 			updateObjectTitle();
 		})
-		
+
 		// when selecting an organization or taxonomy, hide the new work form if any
 		$('[data-behavior="add-relationship"]').click(function() {
 			$('.embedded_div').hide();

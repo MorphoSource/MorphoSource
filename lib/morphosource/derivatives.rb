@@ -14,5 +14,9 @@ module Morphosource
     	def self.fiji_path
     		Hyrax.config.fiji_path
     	end
+
+        def self.python_path
+            Hyrax.config.python_path
+        end
 	end
 end

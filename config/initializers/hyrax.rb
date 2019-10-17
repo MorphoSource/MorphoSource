@@ -124,6 +124,8 @@ Hyrax.config do |config|
   
   config.fiji_path = ENV.fetch("FIJI_PATH", "fiji")
 
+  config.python_path = ENV.fetch("MORPHOSOURCE_PYTHON", "python3")
+
   # Path to where derivative generation tmp files should be placed (temporary method)
   config.derivatives_tmp_path = Rails.env.production? ? '/nas/morphosource_demo/tmp/' : ENV.fetch("DERIVATIVES_TMP_PATH", Rails.root.join("tmp"))
 

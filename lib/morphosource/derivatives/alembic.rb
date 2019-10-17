@@ -25,12 +25,12 @@ module Morphosource::Derivatives
     end
 
     def tool_path
-      @tool_path || Morphosource::Derivatives.alembic_path
+      @tool_path || Morphosource::Derivatives.python_path
     end
 
     protected
       def command
-        cmd = "python vendor/alembic/transmute.py -- -i #{source_path} -o #{out_path} " +
+        cmd = "#{tool_path} vendor/alembic/transmute.py -- -i #{source_path} -o #{out_path} " +
           ( x ? "-x #{x} " : "") +
           ( y ? "-y #{y} " : "") +
           ( z ? "-s #{z} " : "") +

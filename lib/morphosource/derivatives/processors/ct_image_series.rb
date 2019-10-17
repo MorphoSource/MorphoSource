@@ -32,8 +32,7 @@ module Morphosource::Derivatives::Processors
 		protected
 
     	def create_ct_image_series_derivative
-        @tmp_dir_path = '/vagrant/downloads/dcm_out/' 
-    		# @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
+    		@tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
         Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
     		@input_path = File.join(tmp_dir_path, 'input')
         Dir.mkdir input_path unless File.exist? input_path
@@ -55,7 +54,6 @@ module Morphosource::Derivatives::Processors
         # todo: grab image resolutions from dicom if possible? (or should that be done via work characterization?)
 
         begin
-      		# todo: locate images in zip
           locate_images
           if !img_coll
             return
@@ -77,7 +75,7 @@ module Morphosource::Derivatives::Processors
         rescue StandardError => e
           raise e
         ensure
-    		  # cleanup_tmp_files
+    		  cleanup_tmp_files
         end
     	end
 

@@ -1,0 +1,37 @@
+<%= render "edit_work_title", presenter: @presenter, f: f %>
+
+    <div class="panel panel-default tabs" role="main">
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" id="tab-physical-object-details" class="">
+          <a href="#physical-object-details" aria-controls="physical-object-details" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fas fa-frog"></i> Physical Object
+          </a>
+        </li>
+        <li role="presentation" id="tab-media-details" class="active">
+          <a href="#media-details" aria-controls="media-details" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fas fa-frog"></i> Media Details
+          </a>
+        </li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane" id="physical-object-details">
+          <div class="form-tab-content">
+
+            <%#= render 'tab_object_details', f: f %>
+
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane active" id="media-details">
+          <div class="form-tab-content">
+
+            <%= render 'tab_media_details', f: f %>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel panel-default tabs -->

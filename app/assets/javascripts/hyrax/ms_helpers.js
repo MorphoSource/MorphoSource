@@ -103,3 +103,23 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 		$(this_div).hide();
   });
 }
+
+function setupTooltip() {
+  $('.tooltip-icon').tooltip({ 
+    title: function(){
+      return $(this).find('.hint').text() 
+    } 
+  })
+}
+
+function removeLastRepeatable() {
+  // remove the last repeatable field for each group
+  $('.form-group.multi_value').each(function(i) {
+  	// do not remove if there is only one field (e.g creating a new work, empty field)
+    if ($(this).find('.listing .input-group').length > 1) {
+	    var lastli = $(this).find('.listing .input-group:last-child');
+	    lastli.find('.remove').trigger('click');	    	
+    }
+  })
+	window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle	
+}

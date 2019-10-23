@@ -51,9 +51,9 @@ module Hyrax
           genus = taxonomy.taxonomy_genus&.first
           species = taxonomy.taxonomy_species&.first
           subspecies = taxonomy.taxonomy_subspecies&.first
-          return '' + 
-            (genus ? ' ' + genus.to_s : '') + 
-            (species ? ' ' + species.to_s : '') + 
+          return '' +
+            (genus ? ' ' + genus.to_s : '') +
+            (species ? ' ' + species.to_s : '') +
             (subspecies ? ' ' + subspecies.to_s : '')
         else
           return ''
@@ -66,7 +66,7 @@ module Hyrax
 
       def fallback_generated_title(vouchered, user)
         voucher_term = vouchered.first == 'Yes' ? 'Vouchered' : 'Unvouchered'
-        user_term = user.display_name.present? ? user.display_name : user.user_key
+        user_term = user.display_name.present? ? user.display_name : user.email
         I18n.t('morphosource.fallback_object_title', voucher: voucher_term, user: user_term)
       end
 

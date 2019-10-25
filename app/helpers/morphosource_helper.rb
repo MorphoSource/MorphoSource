@@ -50,15 +50,15 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_works?' + type_params.join('&')
   end
 
-  def institution_selector
+  def organization_selector
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-    hits = institutions
+    hits = organizations
     hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
   end
 
-  def institutions
+  def organizations
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Institution"
+    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Organization"
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
@@ -93,8 +93,8 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_works?type[]=Media&id=NA&q='
   end
 
-  def find_institution_autocomplete_url
-    Rails.application.routes.url_helpers.qa_path + '/search/find_institutions?type[]=Institution&id=NA&q='
+  def find_organization_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_organizations?type[]=Organization&id=NA&q='
   end
 
   def find_taxonomy_autocomplete_url

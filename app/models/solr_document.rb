@@ -132,8 +132,8 @@ class SolrDocument
     self[Solrizer.solr_name('collection_code', :stored_searchable)]
   end
 
-  def institution_code
-    self[Solrizer.solr_name('institution_code', :stored_searchable)]
+  def organization_code
+    self[Solrizer.solr_name('organization_code', :stored_searchable)]
   end
 
   def current_location
@@ -371,9 +371,9 @@ class SolrDocument
     self[Solrizer.solr_name('short_title', :stored_searchable)]
   end
 
-  # Institution fields
-  def institution_code
-    self[Solrizer.solr_name('institution_code', :stored_searchable)]
+  # Organization fields
+  def organization_code
+    self[Solrizer.solr_name('organization_code', :stored_searchable)]
   end
 
   def address
@@ -390,6 +390,10 @@ class SolrDocument
 
   def country
     self[Solrizer.solr_name('country', :stored_searchable)]
+  end
+
+  def institution_name
+    self[Solrizer.solr_name('institution_name', :stored_searchable)]
   end
 
   # Device fields, also uses modality currently in media above

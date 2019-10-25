@@ -50,14 +50,14 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
         expect(results.map(&:id)).to match_array([ biospecs[1].id ])
       end
     end
-    describe 'institution provided' do
-      let!(:institution) { Institution.create(title: [ 'Inst' ], institution_code: [ 'xyz' ]) }
-      let(:params) { { 'collection_code' => 'abc', 'institution_code' => 'xyz' } }
+    describe 'organization provided' do
+      let!(:organization) { Organization.create(title: [ 'Inst' ], organization_code: [ 'xyz' ]) }
+      let(:params) { { 'collection_code' => 'abc', 'organization_code' => 'xyz' } }
       before do
-        institution.ordered_members << biospecs[1]
-        institution.save!
+        organization.ordered_members << biospecs[1]
+        organization.save!
       end
-      it 'returns SolrDocuments for specified model that match search params and belong to institution' do
+      it 'returns SolrDocuments for specified model that match search params and belong to organization' do
         results = subject.call
         expect(results).to match_array([ SolrDocument ])
         expect(results.map(&:id)).to match_array([ biospecs[1].id ])

@@ -46,7 +46,7 @@ module Morphosource
       end.to_json
     end
 
-    def member_of_institutions_json(work_type=nil)
+    def member_of_organizations_json(work_type=nil)
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id
       if @controller.params[:parent_id]
@@ -60,7 +60,7 @@ module Morphosource
         {
           id: parent.id,
           label: parent.to_s,
-          institution_code: parent.institution_code.first.to_s,
+          organization_code: parent.organization_code.first.to_s,
           description: parent.description.first.to_s,
           address: parent.address.first.to_s,
           city: parent.city.first.to_s,

@@ -37,16 +37,16 @@ RSpec.describe SubmissionsController, type: :controller do
       end
     end
 
-    describe 'institution_select when creating new BSO' do
+    describe 'organization_select when creating new BSO' do
       let(:saved_step) {'biospec_will_create'}
-      let(:institution_id) { 'abc123' }
-      let(:form_params) { { submission: { institution_id: institution_id }, institution_select: 'foo' } }
+      let(:organization_id) { 'abc123' }
+      let(:form_params) { { submission: { organization_id: organization_id }, organization_select: 'foo' } }
       before do
         @request.session['submission'] = {saved_step: saved_step}
       end
-      it 'sets the institution id in the session' do
+      it 'sets the organization id in the session' do
         post :create, params: form_params
-        expect(@request.session[:submission]).to include({ institution_id: institution_id })
+        expect(@request.session[:submission]).to include({ organization_id: organization_id })
       end
       it 'renders the biospec create view' do
         post :create, params: form_params
@@ -54,16 +54,16 @@ RSpec.describe SubmissionsController, type: :controller do
       end
     end
 
-    describe 'device_institution_select when creating new device' do
+    describe 'device_organization_select when creating new device' do
       let(:saved_step) {'device_will_create'}
-      let(:institution_id) { 'abc123' }
-      let(:form_params) { { submission: { device_institution_id: institution_id }, institution_select: 'foo' } }
+      let(:organization_id) { 'abc123' }
+      let(:form_params) { { submission: { device_organization_id: organization_id }, organization_select: 'foo' } }
       before do
         @request.session['submission'] = {saved_step: saved_step}
       end
-      it 'sets the device institution id in the session' do
+      it 'sets the device organization id in the session' do
         post :create, params: form_params
-        expect(@request.session[:submission]).to include({ device_institution_id: institution_id })
+        expect(@request.session[:submission]).to include({ device_organization_id: organization_id })
       end
       it 'renders the device create view' do
         post :create, params: form_params
@@ -71,16 +71,16 @@ RSpec.describe SubmissionsController, type: :controller do
       end
     end
 
-    describe 'institution_select when creating new CHO' do
+    describe 'organization_select when creating new CHO' do
       let(:saved_step) {'cho_will_create'}
-      let(:institution_id) { 'abc123' }
-      let(:form_params) { { submission: { institution_id: institution_id }, institution_select: 'foo' } }
+      let(:organization_id) { 'abc123' }
+      let(:form_params) { { submission: { organization_id: organization_id }, organization_select: 'foo' } }
       before do
         @request.session['submission'] = {saved_step: saved_step}
       end
-      it 'sets the institution id in the session' do
+      it 'sets the organization id in the session' do
         post :create, params: form_params
-        expect(@request.session[:submission]).to include({ institution_id: institution_id })
+        expect(@request.session[:submission]).to include({ organization_id: organization_id })
       end
       it 'renders the CHO create view' do
         post :create, params: form_params
@@ -165,7 +165,7 @@ RSpec.describe SubmissionsController, type: :controller do
       post :stage_biological_specimen, params: form_params
       expect(@request.session[:submission_biospec_create_params]).to include(model_attributes)
     end
-    it 'renders the institution view' do
+    it 'renders the organization view' do
       post :stage_biological_specimen, params: form_params
       expect(response).to render_template(:device)
     end
@@ -207,62 +207,62 @@ RSpec.describe SubmissionsController, type: :controller do
     end
   end
 
-  describe '#stage_institution when creating new biospec' do
+  describe '#stage_organization when creating new biospec' do
     let(:saved_step) {'biospec_will_create'}
     before do
       @request.session['submission'] = {saved_step: saved_step}
     end
     let(:form_attributes) do
-      { 'title' => 'Institution', 'institution_code' => 'inst' }
+      { 'title' => 'Organization', 'organization_code' => 'inst' }
     end
-    let(:form_params) { { institution: form_attributes } }
+    let(:form_params) { { organization: form_attributes } }
     let(:model_attributes) { form_attributes.transform_values { |value| Array(value) } }
     it 'stores the model attributes in the session' do
-      post :stage_institution, params: form_params
-      expect(@request.session[:submission_institution_create_params]).to include(model_attributes)
+      post :stage_organization, params: form_params
+      expect(@request.session[:submission_organization_create_params]).to include(model_attributes)
     end
     it 'renders the taxonomy page' do
-      post :stage_institution, params: form_params
+      post :stage_organization, params: form_params
       expect(response).to render_template(:taxonomy)
     end
   end
 
-  describe '#stage_device_institution when creating new device' do
+  describe '#stage_device_organization when creating new device' do
     let(:saved_step) {'device_will_create'}
     before do
       @request.session['submission'] = {saved_step: saved_step}
     end
     let(:form_attributes) do
-      { 'title' => 'Institution', 'institution_code' => 'inst' }
+      { 'title' => 'Organization', 'organization_code' => 'inst' }
     end
-    let(:form_params) { { institution: form_attributes } }
+    let(:form_params) { { organization: form_attributes } }
     let(:model_attributes) { form_attributes.transform_values { |value| Array(value) } }
     it 'stores the model attributes in the session' do
-      post :stage_device_institution, params: form_params
-      expect(@request.session[:submission_device_institution_create_params]).to include(model_attributes)
+      post :stage_device_organization, params: form_params
+      expect(@request.session[:submission_device_organization_create_params]).to include(model_attributes)
     end
     it 'renders the device create view' do
-      post :stage_device_institution, params: form_params
+      post :stage_device_organization, params: form_params
       expect(response).to render_template(:device_create)
     end
   end
 
-  describe '#stage_institution when creating new cho' do
+  describe '#stage_organization when creating new cho' do
     let(:saved_step) {'cho_will_create'}
     before do
       @request.session['submission'] = {saved_step: saved_step}
     end
     let(:form_attributes) do
-      { 'title' => 'Institution', 'institution_code' => 'inst' }
+      { 'title' => 'Organization', 'organization_code' => 'inst' }
     end
-    let(:form_params) { { institution: form_attributes } }
+    let(:form_params) { { organization: form_attributes } }
     let(:model_attributes) { form_attributes.transform_values { |value| Array(value) } }
     it 'stores the model attributes in the session' do
-      post :stage_institution, params: form_params
-      expect(@request.session[:submission_institution_create_params]).to include(model_attributes)
+      post :stage_organization, params: form_params
+      expect(@request.session[:submission_organization_create_params]).to include(model_attributes)
     end
     it 'renders the cho create view' do
-      post :stage_institution, params: form_params
+      post :stage_organization, params: form_params
       expect(response).to render_template(:cho_create)
     end
   end
@@ -298,7 +298,7 @@ RSpec.describe SubmissionsController, type: :controller do
   end
 
   describe '#stage_taxonomy' do
-    let(:saved_step) {'biospec_institution_select'}
+    let(:saved_step) {'biospec_organization_select'}
     before do
       @request.session['submission'] = {saved_step: saved_step}
     end
@@ -317,12 +317,12 @@ RSpec.describe SubmissionsController, type: :controller do
     end
   end
 
-  describe '#new_institution_submit' do
-    describe 'successfully created a new institution' do
+  describe '#new_organization_submit' do
+    describe 'successfully created a new organization' do
       let(:form_attributes) do
         { 'id' => 'abc', 
-          'title' => 'Institution', 
-          'institution_code' => 'inst',
+          'title' => 'Organization', 
+          'organization_code' => 'inst',
           'description' => 'test', 
           'address' => 'test',
           'city' => 'test',
@@ -330,16 +330,16 @@ RSpec.describe SubmissionsController, type: :controller do
           'country' => 'test'
         }
       end
-      let(:form_params) { { institution: form_attributes } }
-      it 'return institution data in json response' do
-        post :new_institution_submit, params: form_params
+      let(:form_params) { { organization: form_attributes } }
+      it 'return organization data in json response' do
+        post :new_organization_submit, params: form_params
         
         expect(JSON.parse(response.body)).to include_json(
           status: 'OK',
-          message: 'New institution created',
+          message: 'New organization created',
           work: {
-            title: 'Institution',
-            institution_code: 'inst',
+            title: 'Organization',
+            organization_code: 'inst',
             description: 'test', 
             address: 'test',
             city: 'test',
@@ -350,14 +350,14 @@ RSpec.describe SubmissionsController, type: :controller do
       end
     end
 
-    describe 'failed to create a new institution' do
-      let(:form_params) { { institution: {} } } # no form attribute will throw an exception
+    describe 'failed to create a new organization' do
+      let(:form_params) { { organization: {} } } # no form attribute will throw an exception
       it 'return failure status in json response' do
-        post :new_institution_submit, params: form_params
+        post :new_organization_submit, params: form_params
         
         expect(JSON.parse(response.body)).to include_json(
           status: 'FAIL',
-          message: 'There is a problem creating the institution.',
+          message: 'There is a problem creating the organization.',
           work: {}
         )
       end

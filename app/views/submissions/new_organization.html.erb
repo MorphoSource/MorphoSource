@@ -1,0 +1,16 @@
+<div>
+	<h2>NEW ORGANIZATION</h2>
+
+	<p>Create a new organization by filling in fields below and selecting Create New Institution. You can also go back and select organization or no organization instead. </p>
+
+	<%= simple_form_for @organization_form, url: new_organization_submit_submissions_url do |f| %>
+	  <div class="form-group">
+	    <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+	    <div>
+	      <%= f.submit 'Create New Institution', class: "btn btn-primary" %>
+			  <button type="button" class="btn btn-secondary cancel">Cancel</button>
+	    </div>
+	  </div>
+	<% end %>
+
+</div>

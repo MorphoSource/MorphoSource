@@ -37,9 +37,9 @@ module Hyrax
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      #@presenter.get_institution_data
-      @new_institution_submit_submissions_url = '/submissions/new_institution_submit'
-      @new_institution_form = Hyrax::WorkFormService.build(::Institution.new, current_ability, self)
+      #@presenter.get_organization_data
+      @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
+      @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
       @countries_service = Morphosource::CountriesService.new
       @new_taxonomy_submit_submissions_url = '/submissions/new_taxonomy_submit'
       @new_taxonomy_form = Hyrax::WorkFormService.build(::Taxonomy.new, current_ability, self)
@@ -51,7 +51,7 @@ module Hyrax
       curation_concern.admin_set_id = admin_set_id_for_new
       build_form
       #@presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      #@presenter.get_institution_data
+      #@presenter.get_organization_data
       render '/hyrax/base/new' #, presenter: @presenter
     end
 

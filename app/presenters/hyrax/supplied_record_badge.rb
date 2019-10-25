@@ -17,7 +17,7 @@ module Hyrax
 
       def text
         if @idigbio_uuid.present?
-          'Institution Supplied Record'
+          'Organization Supplied Record'
         else
           'User Supplied Record'
         end

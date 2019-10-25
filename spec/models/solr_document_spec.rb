@@ -4,11 +4,11 @@ RSpec.describe ::SolrDocument, type: :model do
 	let(:document) { described_class.new(attributes) }
 	let(:attributes) { {} }
 
-	describe "institution metadata field solrizer methods" do
+	describe "organization metadata field solrizer methods" do
 		let(:work) do
-			Institution.new({
+			Organization.new({
 				title: ['American Museum of Natural History'],
-				institution_code: ['AMNH'],
+				organization_code: ['AMNH'],
 				description: ['A sample description'],
 				address: ['Central Park West'],
 				city: ['New York City'],
@@ -19,8 +19,8 @@ RSpec.describe ::SolrDocument, type: :model do
 
 		subject { SolrDocument.new(work.to_solr) }
 
-		it "return institution_code" do
-			expect(subject.institution_code.first).to eq('AMNH')
+		it "return organization_code" do
+			expect(subject.organization_code.first).to eq('AMNH')
 		end
 
 		it "return address" do

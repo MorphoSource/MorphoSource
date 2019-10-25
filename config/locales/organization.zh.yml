@@ -1,0 +1,10 @@
+zh:
+  hyrax:
+    icons:
+      organization:     'fa fa-file-text-o'
+    select_type:
+      organization:
+        # TODO: translate `human_name` into Chinese
+        description:        "Organization 作品"
+        name:               "Organization"
+        # TODO: translate `human_name` into Chinese

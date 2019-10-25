@@ -15,7 +15,7 @@ module Hyrax
 
       def generated_title(env)
         attrs = env.attributes
-        inst = attrs['institution_code']&.first.presence || ''
+        inst = attrs['organization_code']&.first.presence || ''
         coll = attrs['collection_code']&.first.presence || ''
         cnum = attrs['catalog_number']&.first.presence || ''
         taxn = taxonomy_title(env).presence || ''
@@ -34,8 +34,8 @@ module Hyrax
 
       private
 
-      def collection_catalog_generated_title(institution_code='', collection_code='', catalog_number='', taxonomy_terms='')
-        [institution_code, collection_code, catalog_number].keep_if { |x| x.presence } .join(':') + taxonomy_terms
+      def collection_catalog_generated_title(organization_code='', collection_code='', catalog_number='', taxonomy_terms='')
+        [organization_code, collection_code, catalog_number].keep_if { |x| x.presence } .join(':') + taxonomy_terms
       end
 
       def taxonomy_title(env)

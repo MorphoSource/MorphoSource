@@ -53,9 +53,9 @@ module Morphosource
       parent_organization.title.first
     end
 
-    def parent_organization_code
+    def parent_institution_code
       return '' unless parent_organization.present?
-      parent_organization.organization_code.first
+      parent_organization.institution_code.first
     end
 
     def source_of_record

@@ -1,7 +1,7 @@
 module Morphosource
   class PhysicalObjectsSearchService
 
-    attr_reader :organization_code, :model, :params
+    attr_reader :institution_code, :model, :params
 
     SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
@@ -11,14 +11,14 @@ module Morphosource
 
     def initialize(model, params={})
       @model = model
-      @organization_code = params.delete('organization_code')
+      @institution_code = params.delete('institution_code')
       @params = params
     end
 
     def call
       qry = assemble_query
       hits = search_solr(qry)
-      hits = filter_on_organization(hits) if organization_code.present?
+      hits = filter_on_organization(hits) if institution_code.present?
       hits.map { |hit| SolrDocument.new(hit) }
     end
 
@@ -35,14 +35,14 @@ module Morphosource
       if inst_member_ids.present?
         hits.select { |hit| inst_member_ids.include?(hit.id) }
       else
-        # inst_member_ids will return nil if organization code is not found, in that case, return empty set 
+        # inst_member_ids will return nil if institution code is not found, in that case, return empty set 
         [] 
       end
     end
 
     def organization_doc
       inst_qry_clauses = [ "#{Solrizer.solr_name('has_model', :symbol)}:Organization",
-                           "#{Solrizer.solr_name('organization_code', :stored_searchable)}:#{organization_code}" ]
+                           "#{Solrizer.solr_name('institution_code', :stored_searchable)}:#{institution_code}" ]
       inst_qry = inst_qry_clauses.join(' AND ')
       SolrDocument.new(ActiveFedora::SolrService.query(inst_qry, rows: 999999).first)
     end

@@ -4,18 +4,18 @@ module Hyrax
   class BiologicalSpecimenPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :bibliographic_citation, :catalog_number,  :collection_code, :organization_code, :numeric_time, :original_location, :periodic_time, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, :member_ids, to: :solr_document
+    delegate :bibliographic_citation, :catalog_number,  :collection_code, :institution_code, :numeric_time, :original_location, :periodic_time, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, :member_ids, to: :solr_document
 
     delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :user_taxonomies, to: :work
 
 # TODO: remove below block later if not needed any more.
-    #attr_accessor :organization_code, :organization_title, :organization_description, :organization_address, :#organization_city, :organization_state_province, :organization_country #
+    #attr_accessor :institution_code, :organization_title, :organization_description, :organization_address, :#organization_city, :organization_state_province, :organization_country #
 #
 #    #def get_organization_data
 #    #  organization = parent_organization
 #    #  if organization.present?
-#    #    if organization.organization_code.present?
-#    #      @organization_code = organization.organization_code.first
+#    #    if organization.institution_code.present?
+#    #      @institution_code = organization.institution_code.first
 #    #    end
 #    #    if organization.title.present?
 #    #      @organization_title = organization.title.first

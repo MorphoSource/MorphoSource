@@ -5,7 +5,7 @@ module Ms1to2
         {
           :catalog_number => :catalog_number,
           :collection_code => :collection_code,
-          :organization_code => :organization_code,
+          :institution_code => :institution_code,
           :collected_on => :date_created,
           :url => :related_url,
           :collector => :creator,

@@ -51,8 +51,8 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
       end
     end
     describe 'organization provided' do
-      let!(:organization) { Organization.create(title: [ 'Inst' ], organization_code: [ 'xyz' ]) }
-      let(:params) { { 'collection_code' => 'abc', 'organization_code' => 'xyz' } }
+      let!(:organization) { Organization.create(title: [ 'Inst' ], institution_code: [ 'xyz' ]) }
+      let(:params) { { 'collection_code' => 'abc', 'institution_code' => 'xyz' } }
       before do
         organization.ordered_members << biospecs[1]
         organization.save!

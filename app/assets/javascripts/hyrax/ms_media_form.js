@@ -1,7 +1,7 @@
 $(document).on('turbolinks:load', function() {
   if ($('form[id*="media"]').length) { // if media form page
-	hide_fields(['.media_number_of_images_in_set','.media_scale_bar']);
-	adjust_form_media_type();
+  	hide_fields(['.media_number_of_images_in_set','.media_scale_bar']);
+  	adjust_form_media_type();
     
     // concatenate rights holder name, type to rights holder
     var form = $('form[id*="media"]')[0];
@@ -48,7 +48,7 @@ $(document).on('turbolinks:load', function() {
         li.appendChild(nameInput);
 
         $('<select />', {
-          id : "media_rights_holder_type_"+i,
+          id : "media_rights_holder_type_" + i.toString(),
           name : 'media[rights_holder_type][]',
           class : "form-control select optional form-control",
           style : "margin:5px; width:50%; border-radius:5px;",
@@ -64,16 +64,17 @@ $(document).on('turbolinks:load', function() {
 
         var span = document.createElement('span');
         span.className = "input-group-btn field-controls";
-        span.innerHTML = `<button type="button" class="btn btn-link remove">
-                            <span class="glyphicon glyphicon-remove"></span>
-                            <span class="controls-remove-text">Remove</span>
-                            <span class="sr-only"> previous
-                              <span class="controls-field-name-text"> RIGHTS HOLDER</span>
-                            </span>
-                          </button>`
+        //span.innerHTML = `<button type="button" class="btn btn-link remove">
+        //                    <span class="glyphicon glyphicon-remove"></span>
+        //                    <span class="controls-remove-text">Remove</span>
+        //                    <span class="sr-only"> previous
+        //                      <span class="controls-field-name-text"> RIGHTS HOLDER</span>
+        //                    </span>
+        //                  </button>`
+
+        span.innerHTML = '<button type="button" class="btn btn-link remove remove-rights-holder" data-index="' + i.toString() + '"><i class="fa fa-times-circle" aria-hidden="true"></i></button><button type="button" class="btn btn-link add"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>'
 
         li.appendChild(span);
-
         targetWrapperUl.appendChild(li);
 
       }
@@ -85,6 +86,7 @@ $(document).on('turbolinks:load', function() {
 
     // On submit, name and type fields are concatenated and inserted into hidden default rights holder field.
     form.addEventListener("submit", function() {
+      $(targetGroupUl).empty(); // remove all items and re-build 
       var rightsHolderCount = $('select[name="media[rights_holder_type][]"]').length;
       for (i = 0; i < rightsHolderCount; i++) {
 
@@ -135,5 +137,11 @@ $(document).on('turbolinks:load', function() {
     });
 
   } // end if media form page
+
+  if ($('form[id*="edit_media"]').length) { // if edit media form page
+    setupTooltip();
+    removeLastRepeatable();
+
+  } // end if edit media form page
 })
 

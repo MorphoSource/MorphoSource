@@ -115,11 +115,35 @@ function setupTooltip() {
 function removeLastRepeatable() {
   // remove the last repeatable field for each group
   $('.form-group.multi_value').each(function(i) {
-  	// do not remove if there is only one field (e.g creating a new work, empty field)
+  	// do not remove if there is only one field
     if ($(this).find('.listing .input-group').length > 1) {
 	    var lastli = $(this).find('.listing .input-group:last-child');
-	    lastli.find('.remove').trigger('click');	    	
+	    /* remove only:  
+	    	either input or select field exists
+	    	if input field exists, input must be empty
+	    	if select field exists, nothing is selected
+	    */
+	  	var isRemovable = true;
+			var lastInput = lastli.find('input');
+			var lastSelect = lastli.find('select');
+	    if (lastInput.length && lastInput.val() != '') {
+	    	isRemovable = false;
+  		}
+	    if (lastSelect.length && lastSelect.val() != '') {
+	    	isRemovable = false;
+  		}
+  		if ( (lastInput.length || lastSelect.length) && (isRemovable) ) {
+		    lastli.find('.remove').trigger('click');	    	
+  		}
+
     }
   })
 	window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle	
 }
+
+
+
+
+
+
+

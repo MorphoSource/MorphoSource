@@ -46,6 +46,7 @@ module Hyrax
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter.get_showcase_data
 
 
       @new_organization_submit_submissions_url = '/submissions/new_organization_submit'

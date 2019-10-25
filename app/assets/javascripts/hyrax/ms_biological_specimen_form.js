@@ -12,9 +12,7 @@ $(document).on('turbolinks:load', function() {
 
     setupEmbeddedWorkForm('taxonomy', 'new');
     setupEmbeddedWorkForm('organization', 'new', updateObjectTitle);
-
     setupTooltip();
-
 		removeLastRepeatable();
 					
 		// remove organization when clicking no organization button  

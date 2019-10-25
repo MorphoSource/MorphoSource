@@ -24,6 +24,12 @@ Rails.application.routes.draw do
     get 'concern/cultural_heritage_objects/show/:id', to: 'cultural_heritage_objects#show'
   end
 
+  # override ProfilesController
+  scope module: :morphosource do
+    put 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
+    patch 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
+  end
+
   require "resque_web"
   mount ResqueWeb::Engine => "/queues"
 
@@ -36,7 +42,7 @@ Rails.application.routes.draw do
     concerns :searchable
   end
 
-  devise_for :users
+  devise_for :users, :controllers => { registrations: 'registrations' }
   mount Hydra::RoleManagement::Engine => '/'
 
   mount Qa::Engine => '/authorities'

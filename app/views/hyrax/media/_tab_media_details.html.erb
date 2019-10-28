@@ -34,28 +34,23 @@
       <div class="row"><div class="col-xs-6 showcase-label">Commercial use permitted</div><div class="col-xs-6 showcase-value">No</div></div>
       <div class="row"><div class="col-xs-6 showcase-label">3D printing permitted</div><div class="col-xs-6 showcase-value">Not yet implemented</div></div>
 
-
-
-
-
-<%= f.input :rights_holder, as: :multi_value %>
-
-<div id="media_rights_holder_wrapper" class="form-group multi_value optional managed ie_xray_ct" style="margin-right:7em;">
-
-  <label class="control-label multi_value optional" for="media_rights_holder">Rights holder</label>
-
-  <ul class="listing rights_holder_listing" aria-live="polite" style=" border:solid 1px lightgray; border-radius: 5px;">
-    <li class="field-wrapper input-group input-append" style="display:flex; flex-direction:row; justify-content:space-evenly;">
-      <input class="string multi_value optional form-control media_rights_holder_name form-control multi-text-field" name="media[rights_holder_name][]" value="" id="media_rights_holder_name" type="text" style="margin:5px; width:50%; border-radius:5px;">
-      <select class="form-control select optional form-control" name="media[rights_holder_type][]" id="media_rights_holder_type" style="margin:5px; width:50%;">
-        <option value=""></option>
-        <option value="Copyright and License">Copyright and License</option>
-        <option value="Copyright">Copyright</option>
-        <option value="License">License</option>
-      </select>
-    </li>
-  </ul>
-</div>
+      <%= f.input :rights_holder, as: :multi_value %>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Rights holder</div>
+        <div class="col-xs-6 showcase-value form-group multi_value optional managed ie_xray_ct" id="media_rights_holder_wrapper">
+          <ul class="listing rights_holder_listing" aria-live="polite">
+            <li class="field-wrapper input-group input-append">
+              <input class="string multi_value optional form-control media_rights_holder_name form-control multi-text-field" name="media[rights_holder_name][]" value="" id="media_rights_holder_name" type="text">
+              <select class="form-control select optional form-control" name="media[rights_holder_type][]" id="media_rights_holder_type">
+                <option value=""></option>
+                <option value="Copyright and License">Copyright and License</option>
+                <option value="Copyright">Copyright</option>
+                <option value="License">License</option>
+              </select>
+            </li>
+          </ul>
+        </div>
+      </div>
 
 
     </div>

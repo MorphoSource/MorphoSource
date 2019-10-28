@@ -22,10 +22,11 @@ module Hyrax
             markup << %(--)
           end
         else
-          Array(values).each do |value|
+          Array(values).each_with_index do |value, index|
             if is_number_with_decimal?(value)
               value = value.to_f.round(3)
             end
+            markup << '; ' unless index == 0
             markup << attribute_value_to_html(value.to_s)
           end
         end

@@ -37,13 +37,13 @@ $(document).on('turbolinks:load', function() {
         // Assemble new name, type 
         var li = document.createElement('li');
         li.className = 'field-wrapper input-group input-append';
-        li.setAttribute('style', "display:flex; flex-direction:row; justify-content:space-evenly;");
+        //li.setAttribute('style', "display:flex; flex-direction:row; justify-content:space-evenly;");
 
         var nameInput = document.createElement('input');
         nameInput.className = "string multi_value optional form-control media_rights_holder_name form-control multi-text-field";
         nameInput.setAttribute("id", "media_rights_holder_name");
         nameInput.setAttribute("name", "media[rights_holder_name][]");
-        nameInput.setAttribute("style", "margin:5px; width:50%; border-radius:5px;");
+        //nameInput.setAttribute("style", "margin:5px; width:50%; border-radius:5px;");
         nameInput.value = name;
         li.appendChild(nameInput);
 
@@ -51,7 +51,7 @@ $(document).on('turbolinks:load', function() {
           id : "media_rights_holder_type_" + i.toString(),
           name : 'media[rights_holder_type][]',
           class : "form-control select optional form-control",
-          style : "margin:5px; width:50%; border-radius:5px;",
+          //style : "margin:5px; width:50%; border-radius:5px;",
           append : [
             $('<option />', {value : "", text : ""}),
             $('<option />', {value : "Copyright and License", text : "Copyright and License"}),

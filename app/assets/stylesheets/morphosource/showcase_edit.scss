@@ -233,7 +233,16 @@ div.showcase-edit {
   } /* /object detail tab specific styles */
 
 
-
-}
-
-
+  #media_rights_holder_wrapper {
+    li {
+      display:flex; 
+      flex-direction:row; 
+      justify-content:left;
+    }
+    input, select {
+      margin:1px;
+      width:45%;
+      border-radius: 5px;
+    }
+  }
+} /* / div.showcase-edit */

@@ -4,4 +4,43 @@ class Collection < ActiveFedora::Base
   # You can replace these metadata if they're not suitable
   include Hyrax::BasicMetadata
   self.indexer = Hyrax::CollectionWithBasicMetadataIndexer
+
+  after_create :create_collection_groups, if: :type_assigns_groups?
+
+  DEFAULT_GROUP_ROLES = ["managers", "depositors", "viewers"]
+
+  def type_assigns_groups?
+    team? || project?
+  end
+
+  # managers_group, depositors_group, and viewers_group methods
+  DEFAULT_GROUP_ROLES.each do |role|
+    define_method("#{role}_group") do
+      Role.find_by(name: id.concat("_#{role}"))
+    end
+  end
+
+  def team?
+    collection_type.title == "Team"
+  end
+
+  def project?
+    collection_type.title == "Project"
+  end
+
+  private
+
+    # Create manager/depositor/viewer roles for each Team/Project collection
+    def create_collection_groups
+      DEFAULT_GROUP_ROLES.each do |role|
+        Role.create(name: id.concat("_#{role}"))
+      end
+      add_depositor_to_managers
+    end
+
+    def add_depositor_to_managers
+      user = User.find_by(ms_id: depositor)
+      managers_group.users << user
+      managers_group.save
+    end
 end

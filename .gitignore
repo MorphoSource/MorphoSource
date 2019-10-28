@@ -58,3 +58,6 @@
 # ---------------------------------------------------
 
 /derivatives
+
+#ignore banners and logos added to collections 
+/public/branding

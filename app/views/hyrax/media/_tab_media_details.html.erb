@@ -36,7 +36,7 @@
 
       <%= f.input :rights_holder, as: :multi_value %>
       <div class="row">
-        <div class="col-xs-6 showcase-label">Rights holder</div>
+        <div class="col-xs-6 showcase-label">IP holder(s)</div>
         <div class="col-xs-6 showcase-value form-group multi_value optional managed ie_xray_ct" id="media_rights_holder_wrapper">
           <ul class="listing rights_holder_listing" aria-live="polite">
             <li class="field-wrapper input-group input-append">
@@ -51,10 +51,64 @@
           </ul>
         </div>
       </div>
-
-
+      <%= render_edit_field_partial('funding', f: f) %>
+      <%= render_edit_field_partial('publisher', f: f) %>
+      <%= render_edit_field_partial('cite_as', f: f) %>
     </div>
 
+    <div class="content-block">
+      <h2>IDENTIFIERS AND EXTERNAL LINKS</h2>
+
+      <%= @presenter.attribute_to_html(:ark, label: 'MorphoSource ARK', render_as: :showcase_ark_link, include_empty: true, text_if_empty: 'Not assigned', html_dl: false) %>
+      <%= @presenter.attribute_to_html(:doi, label: 'MorphoSource DOI', render_as: :showcase_doi_link, include_empty: true, text_if_empty: 'Not assigned', html_dl: false) %>
+      <%= f.input :identifier, label: 'External identifier' %>
+      <%= f.input :related_url, label: 'External media URL' %>
+    </div>
+
+    <div class="content-block">
+      <h2>FILE OBJECT DETAILS</h2>
+      <p>Please Note: If uploading a DICOM image stack, fields with the <i class="fa fa-search"></i> icon will be parsed automatically. Otherwise, enter this information. </p>
+
+      <%= render_edit_field_partial('series_type', f: f) %>
+      <%= render_edit_field_partial('x_spacing', f: f) %>
+      <%= render_edit_field_partial('y_spacing', f: f) %>
+      <%= render_edit_field_partial('z_spacing', f: f) %>
+      <%= render_edit_field_partial('slice_thickness', f: f) %>
+      <%= render_edit_field_partial('unit', f: f) %>
+
+
+      <% if @presenter.this_media_type == 'Mesh' %>
+          <%= @presenter.attribute_to_html(:point_count, label: "Points", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:face_count, label: "Polygons", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:color_format, label: "Color information format", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:normals_format, label: "Normal information format", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:has_uv_space, label: "UV coordinates", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:vertex_color, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:bounding_box_dimensions, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:centroid_location, label: "Centroid coordinates", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:unit, label: "Units of point coordinates", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+      <% elsif @presenter.this_media_type.match(/image/i) %>
+        <%= @presenter.attribute_to_html(:image_width, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(:image_height, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(:color_space, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(:color_depth, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(:compression, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+
+        <% if @presenter.this_media_type == 'CTImageSeries' %>
+          <%= @presenter.attribute_to_html(:series_type, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:x_spacing, label: "X pixel spacing", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:y_spacing, label: "Y pixel spacing", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:z_spacing, label: "Z pixel spacing", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:unit, label: "Pixel spacing units", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:slice_thickness, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:number_of_images_in_set, label: "Number of slices", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <% elsif @presenter.this_media_type == "PhotogrammetryImageSeries" %>
+          <%= @presenter.attribute_to_html(:number_of_images_in_set, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+          <%= @presenter.attribute_to_html(:scale_bar, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <% end %>
+
+      <% end %>
+    </div>
   
   </div>
   <!-- /left column  -->

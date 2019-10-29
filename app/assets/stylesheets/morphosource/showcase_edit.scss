@@ -130,6 +130,10 @@ div.showcase-edit {
     margin-left: 3px;
   }
 
+  .tooltip {
+    pointer-events: none; /* fix the boostrap tooltip flickering issue */
+  }
+
   .glyphicon {
     margin-left: 3px;
   }

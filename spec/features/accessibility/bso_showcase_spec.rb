@@ -6,17 +6,48 @@ RSpec.feature "BSO showcase Accessibility check", :accessibility => true, :type 
 
 	before do
    	@test_user = User.create(id: 1, email: "example@email.com", password: "password") 
-   	# todo: create related works later (media, institution, device, taxonomy) for a complete test
- 		# Media.create(id: "media123", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['open'])
-	 	bso1 = BiologicalSpecimen.create(
-	 		id: "abc123", 
+    # PO > IE > media 
+    # or
+    # PO > IE > PE > media (media with absentee parent) 
+    media = Media.create({
+        id: 'media123',
+        title: ['media 1']
+    })
+
+    pe = ProcessingEvent.create(
+    	title: ["Test ProcessingEvent"], 
+    	id: "pe123"
+  	)
+    pe.members = [media]
+    pe.save!
+
+    ie = ImagingEvent.create(
+    	title: ["Test ImagingEvent"], 
+    	id: "ie123", 
+    	ie_modality: ['MedicalXRayComputedTomography']
+  	)
+    ie.members = [pe]
+    ie.save!
+
+	 	bso = BiologicalSpecimen.create(
+	 		id: "bso123", 
 	 		title: ["test biological specimen"], 
 	 		vouchered: ['Yes'], 
-	 		institution_code: ['abc123'], 
+	 		organization_code: ['inst123'], 
 	 		collection_code: ['xyz'], 
 	 		catalog_number: ['xyz'],
 	 		visibility: public
 	 	) 
+    bso.members = [ie]
+    bso.save!
+
+    inst = Organization.create({
+        id: 'inst123',
+        title: ['organization 1'],
+		 		organization_code: ['inst123'] 
+    })
+    inst.members = [bso]
+    inst.save!
 
 	end
 

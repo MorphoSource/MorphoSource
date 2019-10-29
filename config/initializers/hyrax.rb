@@ -1,8 +1,8 @@
 Hyrax.config do |config|
   # Injected via `rails g hyrax:work Media`
   config.register_curation_concern :media
-  # Injected via `rails g hyrax:work Institution`
-  config.register_curation_concern :institution
+  # Injected via `rails g hyrax:work Organization`
+  config.register_curation_concern :organization
   # Injected via `rails g hyrax:work Device`
   config.register_curation_concern :device
   # Injected via `rails g hyrax:work ProcessingEvent`
@@ -63,7 +63,7 @@ Hyrax.config do |config|
   # Defaults to false
   # Requires a Google Analytics id and OAuth2 keyfile.  See README for more info
   # config.analytics = false
-  config.analytics = ENV['TRACK_GOOGLE_ANALYTICS'] == 'true' ? true : false
+  config.analytics = ENV['TRACK_GOOGLE_ANALYTICS'] == 'true'
 
   # Google Analytics tracking ID to gather usage statistics
   # config.google_analytics_id = 'UA-99999999-1'
@@ -108,20 +108,20 @@ Hyrax.config do |config|
 
   # find blender in PATH variable.  If exists, set config.blender_path to it
   # if blender is not in PATH, get the path from BLENDER_PATH variable
-  # note that tool_path (e.g. used in blender.rb) is by default set to config.blender_path, but can 
+  # note that tool_path (e.g. used in blender.rb) is by default set to config.blender_path, but can
   # be overridden by an argument
-  begin  
-    blender_in_path = ENV.fetch("PATH").split(':').select{|path| path.include?('blender')} 
+  begin
+    blender_in_path = ENV.fetch("PATH").split(':').select{|path| path.include?('blender')}
     if blender_in_path.present?
       config.blender_path = blender_in_path.first
     else
       config.blender_path = ENV.fetch("BLENDER_PATH")
     end
-  rescue  
-    puts 'Error: unable to get Blender path from PATH or BLENDER_PATH'  
+  rescue
+    puts 'Error: unable to get Blender path from PATH or BLENDER_PATH'
     exit
-  end  
-  
+  end
+
   config.fiji_path = ENV.fetch("FIJI_PATH", "fiji")
 
   config.python_path = ENV.fetch("MORPHOSOURCE_PYTHON", "python3")

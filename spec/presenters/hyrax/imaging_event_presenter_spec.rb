@@ -26,6 +26,10 @@ RSpec.describe Hyrax::ImagingEventPresenter do
     let(:xray_tube_type)  {['test']}
     let(:target_type)  {['test']}
     let(:detector_type)  {['test']}
+    let(:detector_pixels_x) {['test']}
+    let(:detector_pixel_size_x) {['test']}
+    let(:detector_pixels_y) {['test']}
+    let(:detector_pixel_size_y) {['test']}
     let(:detector_configuration)  {['test']}
     let(:source_object_distance)  {['test']}
     let(:source_detector_distance)  {['test']}
@@ -68,6 +72,10 @@ RSpec.describe Hyrax::ImagingEventPresenter do
             xray_tube_type: xray_tube_type,
             target_type: target_type,
             detector_type: detector_type,
+            detector_pixels_x: detector_pixels_x,
+            detector_pixel_size_x: detector_pixel_size_x,
+            detector_pixels_y: detector_pixels_y,
+            detector_pixel_size_y: detector_pixel_size_y,
             detector_configuration: detector_configuration,
             source_object_distance: source_object_distance,
             source_detector_distance: source_detector_distance,
@@ -82,7 +90,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
             lens_make: lens_make,
             lens_model: lens_model,
             light_source: light_source
-	            
+
         )
   end
 
@@ -107,6 +115,10 @@ RSpec.describe Hyrax::ImagingEventPresenter do
             xray_tube_type: xray_tube_type,
             target_type: target_type,
             detector_type: detector_type,
+            detector_pixels_x: detector_pixels_x,
+            detector_pixel_size_x: detector_pixel_size_x,
+            detector_pixels_y: detector_pixels_y,
+            detector_pixel_size_y: detector_pixel_size_y,
             detector_configuration: detector_configuration,
             source_object_distance: source_object_distance,
             source_detector_distance: source_detector_distance,
@@ -121,7 +133,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
             lens_make: lens_make,
             lens_model: lens_model,
             light_source: light_source
-      ) 
+      )
     }
 
 end

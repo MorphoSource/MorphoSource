@@ -50,15 +50,15 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_works?' + type_params.join('&')
   end
 
-  def institution_selector
+  def organization_selector
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-    hits = institutions
+    hits = organizations
     hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
   end
 
-  def institutions
+  def organizations
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Institution"
+    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Organization"
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
@@ -93,8 +93,8 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_works?type[]=Media&id=NA&q='
   end
 
-  def find_institution_autocomplete_url
-    Rails.application.routes.url_helpers.qa_path + '/search/find_institutions?type[]=Institution&id=NA&q='
+  def find_organization_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_organizations?type[]=Organization&id=NA&q='
   end
 
   def find_taxonomy_autocomplete_url
@@ -147,6 +147,48 @@ module MorphosourceHelper
       id: "permission_#{document.id}",
       class: 'visibility-link'
     )
+  end
+
+  def generated_media_title(id, part, media_type, ie_modality)
+    id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
+    parts = part.presence || ['Element unspecified']
+    media_type = media_type&.first.presence || ''
+    modality_abbrevs = ie_modality.map { |m| modality_abbrev(m) }
+    title = id_prefix + parts.sort.join(', ').titleize + (media_type.presence ? ' [' + media_type.to_s + ']' : '') + (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : '')
+    title
+  end
+
+  def modality_abbrev(m)
+    case m
+    when 'MicroNanoXRayComputedTomography'
+      'μCT'
+    when 'MedicalXRayComputedTomography'
+      'CT'
+    when 'MagneticResonanceImaging'
+      'MRI'
+    when 'PositronEmissionTomography'
+      'PET'
+    when 'SynchrotronImaging'
+      'Synchro'
+    when 'NeutrinoImaging'
+      'Neutrino'
+    when 'Photogrammetry'
+      'Photogram'
+    when 'StructuredLight'
+      'StrLight'
+    when 'LaserScan'
+      'Laser'
+    when 'ConfocalImageStacking'
+      'Confocal'
+    when 'ReflectanceTransformationImaging'
+      'RTI'
+    when 'Photography'
+      'Photo'
+    when 'ScanningElectronMicroscopy'
+      'SEM'
+    else
+      'Etc' 
+    end
   end
 
 end

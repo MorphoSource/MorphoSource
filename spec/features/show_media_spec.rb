@@ -14,7 +14,6 @@ RSpec.feature 'Display a Media Work' do
   let(:funding)           {['NSF']}
   let(:map_type)          {['Color Map']}
   let(:media_type)        {['PhotogrammetryImageStack']}
-  let(:modality)          {['MagneticResonanceImaging']}
   let(:orientation)       {['Media Orientation']}
   let(:part)              {['Part 7']}
   let(:rights_holder)     {['Martha Stewart']}
@@ -41,7 +40,6 @@ RSpec.feature 'Display a Media Work' do
                  funding:          funding,
                  map_type:         map_type,
                  media_type:       media_type,
-                 modality:         modality,
                  orientation:      orientation,
                  part:             part,
                  rights_holder:    rights_holder,
@@ -70,7 +68,6 @@ RSpec.feature 'Display a Media Work' do
     expect(page).to have_content work.funding.first
     expect(page).to have_content work.map_type.first
     expect(page).to have_content work.media_type.first
-    expect(page).to have_content work.modality.first
     expect(page).to have_content work.orientation.first
     expect(page).to have_content work.part.first
     expect(page).to have_content work.rights_holder.first

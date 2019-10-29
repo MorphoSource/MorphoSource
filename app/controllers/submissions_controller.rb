@@ -9,7 +9,7 @@ class SubmissionsController < ApplicationController
   # override the layout from WorksControllerBehavior
   def decide_layout
     layout = case action_name
-             when 'new_institution'
+             when 'new_organization'
                'embedded_page'
              when 'new_taxonomy'
                'embedded_page'
@@ -30,7 +30,7 @@ class SubmissionsController < ApplicationController
       # last_render saves the page that needs to be rendered if the user reload the page, or
       # come back to when the user has left off later
       # saved_step stores the last page usually. it's needed when, for example, the user needs to go back
-      # to new device after creating / selecting an institution.
+      # to new device after creating / selecting an organization.
       # if needed, read the var from session instead: session[:submission]['saved_step']
       saved_step = cookies[:saved_step]
       last_render = cookies[:last_render]
@@ -72,25 +72,25 @@ class SubmissionsController < ApplicationController
       # possibly need to store other flow data here
       @submission.saved_step = "biospec_will_create"
       store_submission
-      render_and_save 'institution'
-    elsif params['institution_select'].present? || params['no_institution'].present?
+      render_and_save 'organization'
+    elsif params['organization_select'].present? || params['no_organization'].present?
       if @submission.saved_step == "biospec_will_create"
-        if params['institution_select'].present?
-          session[:submission][:institution_id] = submission_params[:institution_id]
+        if params['organization_select'].present?
+          session[:submission][:organization_id] = submission_params[:organization_id]
         end
-        @submission.saved_step = "biospec_institution_select"
+        @submission.saved_step = "biospec_organization_select"
         render_and_save 'taxonomy'
       elsif @submission.saved_step == "cho_will_create"
-        if params['institution_select'].present?
-          session[:submission][:institution_id] = submission_params[:institution_id]
+        if params['organization_select'].present?
+          session[:submission][:organization_id] = submission_params[:organization_id]
         end
-        @submission.saved_step = "cho_institution_select"
+        @submission.saved_step = "cho_organization_select"
         render_and_save 'cho_create'
       elsif @submission.saved_step == "device_will_create"
-        if params['institution_select'].present?
-          session[:submission][:device_institution_id] = submission_params[:institution_id]
+        if params['organization_select'].present?
+          session[:submission][:device_organization_id] = submission_params[:organization_id]
         end
-        @submission.saved_step = "device_institution_select"
+        @submission.saved_step = "device_organization_select"
         render_and_save 'device_create'
       else
         # should not end up here
@@ -111,14 +111,16 @@ class SubmissionsController < ApplicationController
       # possibly need to store other flow data here
       @submission.saved_step = "device_will_create"
       store_submission
-      render_and_save 'device_institution'
+      render_and_save 'device_organization'
     elsif params['parent_media_select'].present?
       session[:submission][:parent_media_list] = submission_params[:parent_media_list]
       # get and store the modality, to be used for imaging event and media
       modality_to_set = []
       submission_params[:parent_media_list].split(',').each do |id|
         media = Media.where('id' => id).first
-        modality_to_set += media.modality.to_a
+        # might need to handle multiple IEs if necessary later
+        imaging_event = ImagingEvent.where('member_ids_ssim' => media.id)&.first.presence || nil
+        modality_to_set += imaging_event.ie_modality.to_a if imaging_event.present?
       end
       cookies.permanent[:modality_to_set] = modality_to_set.join(',')
       store_submission
@@ -139,7 +141,7 @@ class SubmissionsController < ApplicationController
       # possibly need to store other flow data here
       @submission.saved_step = "cho_will_create"
       store_submission
-      render_and_save 'institution'
+      render_and_save 'organization'
     else
       finish_submission
     end
@@ -204,12 +206,12 @@ class SubmissionsController < ApplicationController
     end
   end
 
-  def stage_institution
+  def stage_organization
     reinstantiate_submission
-    @submission.institution_id = 'new'
+    @submission.organization_id = 'new'
     store_submission
-    institution_model_params = Hyrax::InstitutionForm.model_attributes(params[:institution])
-    session[:submission_institution_create_params] = institution_model_params
+    organization_model_params = Hyrax::OrganizationForm.model_attributes(params[:organization])
+    session[:submission_organization_create_params] = organization_model_params
     if @submission.saved_step == "biospec_will_create"
       render_and_save 'taxonomy'
     elsif @submission.saved_step == "cho_will_create"
@@ -219,12 +221,12 @@ class SubmissionsController < ApplicationController
     end
   end
 
-  def stage_device_institution
+  def stage_device_organization
     reinstantiate_submission
-    @submission.device_institution_id = 'new'
+    @submission.device_organization_id = 'new'
     store_submission
-    device_institution_model_params = Hyrax::InstitutionForm.model_attributes(params[:institution])
-    session[:submission_device_institution_create_params] = device_institution_model_params
+    device_organization_model_params = Hyrax::OrganizationForm.model_attributes(params[:organization])
+    session[:submission_device_organization_create_params] = device_organization_model_params
     render_and_save 'device_create'
   end
 
@@ -265,18 +267,18 @@ class SubmissionsController < ApplicationController
     @biospec_create_params = session[:submission_biospec_create_params]
     @cho_create_params = session[:submission_cho_create_params]
     @imaging_event_create_params = session[:submission_imaging_event_create_params]
-    @institution_create_params = session[:submission_institution_create_params]
-    @device_institution_create_params = session[:submission_device_institution_create_params]
+    @organization_create_params = session[:submission_organization_create_params]
+    @device_organization_create_params = session[:submission_device_organization_create_params]
     @device_create_params = session[:submission_device_create_params]
     @media_create_params = session[:submission_media_create_params]
     @processing_event_create_params = session[:submission_processing_event_create_params]
     @taxonomy_create_params = session[:submission_taxonomy_create_params]
     media_uploaded_files = session[:submission_media_uploaded_files]
-    if @institution_create_params.present?
-      @submission.institution_id = create_institution(@institution_create_params)
+    if @organization_create_params.present?
+      @submission.organization_id = create_organization(@organization_create_params)
     end
-    if @device_institution_create_params.present?
-      @submission.device_institution_id = create_institution(@device_institution_create_params)
+    if @device_organization_create_params.present?
+      @submission.device_organization_id = create_organization(@device_organization_create_params)
     end
     if @taxonomy_create_params.present?
       @submission.taxonomy_id = create_taxonomy(@taxonomy_create_params)
@@ -306,8 +308,8 @@ class SubmissionsController < ApplicationController
 
   def create_biological_specimen(params)
     parent_attributes = {}
-    if @submission.institution_id.present?
-      parent_attributes.merge!({ '0' => { "id" => @submission.institution_id, "_destroy" => "false" } })
+    if @submission.organization_id.present?
+      parent_attributes.merge!({ '0' => { "id" => @submission.organization_id, "_destroy" => "false" } })
     end
     if @submission.taxonomy_id.present?
       parent_attributes.merge!({ '1' => { "id" => @submission.taxonomy_id, "_destroy" => "false" } })
@@ -320,8 +322,8 @@ class SubmissionsController < ApplicationController
 
   def create_cho(params)
     parent_attributes = {}
-    if @submission.institution_id.present?
-      parent_attributes.merge!({ '0' => { "id" => @submission.institution_id, "_destroy" => "false" } })
+    if @submission.organization_id.present?
+      parent_attributes.merge!({ '0' => { "id" => @submission.organization_id, "_destroy" => "false" } })
     end
     unless parent_attributes.empty?
       params.merge!('work_parents_attributes' => parent_attributes)
@@ -331,13 +333,13 @@ class SubmissionsController < ApplicationController
 
   def create_device(params)
     parent_attributes = {}
-    if @submission.device_institution_id.present?
-      if @submission.device_institution_id == 'new_institution_id_to_be_created'
-        # user has selected the new institution which is waiting to be created
-        # at this point this new institution has been created.  set the id to the new institution id
-        @submission.device_institution_id = @submission.institution_id
+    if @submission.device_organization_id.present?
+      if @submission.device_organization_id == 'new_organization_id_to_be_created'
+        # user has selected the new organization which is waiting to be created
+        # at this point this new organization has been created.  set the id to the new organization id
+        @submission.device_organization_id = @submission.organization_id
       end
-      parent_attributes.merge!({ '0' => { "id" => @submission.device_institution_id, "_destroy" => "false" } })
+      parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
     end
     unless parent_attributes.empty?
       params.merge!('work_parents_attributes' => parent_attributes)
@@ -389,13 +391,14 @@ class SubmissionsController < ApplicationController
     create_work(Taxonomy, params)
   end
 
-  def create_institution(params)
-    create_work(Institution, params)
+  def create_organization(params)
+    create_work(Organization, params)
   end
 
   def create_media(params, uploaded_files)
     parent_attributes = {}
     if @submission.imaging_event_id.present?
+      cookies.permanent[:imaging_event_id] = @submission.imaging_event_id
       if cookies[:absentee_parent].present?
         # when creating a media with absentee parent
         # do not add IE as parent, since the relationship should be PO > IE > PE > media
@@ -415,37 +418,37 @@ class SubmissionsController < ApplicationController
     create_work(Media, @media_create_params)
   end
 
-  def new_institution
+  def new_organization
     @submission = Submission.new(session[:submission])
-    render 'new_institution'
+    render 'new_organization'
   end
 
-  def new_institution_submit
+  def new_organization_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      institution_model_params = Hyrax::InstitutionForm.model_attributes(params[:institution])
-      new_institution_id = create_institution(institution_model_params)
+      organization_model_params = Hyrax::OrganizationForm.model_attributes(params[:organization])
+      new_organization_id = create_organization(organization_model_params)
     rescue
-      new_institution_id = nil    
+      new_organization_id = nil    
     end
 
-    if new_institution_id.present?
+    if new_organization_id.present?
       status = 'OK'
-      message = 'New institution created'
-      new_institution = Institution.where('id' => new_institution_id).first
+      message = 'New organization created'
+      new_organization = Organization.where('id' => new_organization_id).first
       new_work = {
-        :id => new_institution_id,
-        :title => new_institution.title.first,
-        :institution_code => new_institution.institution_code.first,
-        :description => new_institution.description.first, 
-        :address => new_institution.address.first, 
-        :city => new_institution.city.first, 
-        :state_province => new_institution.state_province.first, 
-        :country => new_institution.country.first
+        :id => new_organization_id,
+        :title => new_organization.title.first,
+        :organization_code => new_organization.organization_code.first,
+        :description => new_organization.description.first, 
+        :address => new_organization.address.first, 
+        :city => new_organization.city.first, 
+        :state_province => new_organization.state_province.first, 
+        :country => new_organization.country.first
       }
     else
       status = 'FAIL'
-      message = 'There is a problem creating the institution.'
+      message = 'There is a problem creating the organization.'
       new_work = {}
     end
     response_object = { 
@@ -518,8 +521,8 @@ class SubmissionsController < ApplicationController
     session[:submission_device_create_params] = nil
     session[:submission_imaging_event_create_params] = nil
     session[:submission_processing_event_create_params] = nil
-    session[:submission_institution_create_params] = nil
-    session[:submission_device_institution_create_params] = nil
+    session[:submission_organization_create_params] = nil
+    session[:submission_device_organization_create_params] = nil
     session[:submission_media_create_params] = nil
     session[:submission_taxonomy_create_params] = nil
     cookies.delete :ms_submission_start_over
@@ -593,7 +596,7 @@ class SubmissionsController < ApplicationController
     @device_form = Hyrax::WorkFormService.build(Device.new, current_ability, self)
     @imaging_event_form = Hyrax::WorkFormService.build(ImagingEvent.new, current_ability, self)
     @processing_event_form = Hyrax::WorkFormService.build(ProcessingEvent.new, current_ability, self)
-    @institution_form = Hyrax::WorkFormService.build(Institution.new, current_ability, self)
+    @organization_form = Hyrax::WorkFormService.build(Organization.new, current_ability, self)
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
     @taxonomy_form = Hyrax::WorkFormService.build(Taxonomy.new, current_ability, self)
   end
@@ -626,8 +629,8 @@ class SubmissionsController < ApplicationController
                               cho_id: @submission.cho_id,
                               biospec_or_cho: @submission.biospec_or_cho,
                               device_id: @submission.device_id,
-                              institution_id: @submission.institution_id,
-                              device_institution_id: @submission.device_institution_id,
+                              organization_id: @submission.organization_id,
+                              device_organization_id: @submission.device_organization_id,
                               raw_or_derived_media: @submission.raw_or_derived_media,
                               parent_media_how_to_proceed: @submission.parent_media_how_to_proceed,
                               parent_media_list: @submission.parent_media_list,
@@ -645,17 +648,17 @@ class SubmissionsController < ApplicationController
                                           :biospec_or_cho,
                                           :biospec_search_catalog_number,
                                           :biospec_search_collection_code,
-                                          :biospec_search_institution_code,
+                                          :biospec_search_organization_code,
                                           :biospec_search_occurrence_id,
                                           :cho_id,
                                           :cho_search_catalog_number,
                                           :cho_search_collection_code,
-                                          :cho_search_institution_code,
+                                          :cho_search_organization_code,
                                           :cho_search_occurrence_id,
                                           :device_id,
                                           :imaging_event_id,
-                                          :institution_id,
-                                          :device_institution_id,
+                                          :organization_id,
+                                          :device_organization_id,
                                           :media_id,
                                           :processing_event_id,
                                           :raw_or_derived_media,

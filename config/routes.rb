@@ -24,6 +24,12 @@ Rails.application.routes.draw do
     get 'concern/cultural_heritage_objects/show/:id', to: 'cultural_heritage_objects#show'
   end
 
+  # override ProfilesController
+  scope module: :morphosource do
+    put 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
+    patch 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
+  end
+
   require "resque_web"
   mount ResqueWeb::Engine => "/queues"
 
@@ -36,7 +42,7 @@ Rails.application.routes.draw do
     concerns :searchable
   end
 
-  devise_for :users
+  devise_for :users, :controllers => { registrations: 'registrations' }
   mount Hydra::RoleManagement::Engine => '/'
 
   mount Qa::Engine => '/authorities'
@@ -98,15 +104,15 @@ Rails.application.routes.draw do
       post 'stage_biological_specimen'
       post 'stage_device'
       post 'stage_imaging_event'
-      post 'stage_institution'
-      post 'stage_device_institution'
+      post 'stage_organization'
+      post 'stage_device_organization'
       post 'stage_media'
       post 'stage_processing_event'
       post 'stage_cho'
       post 'stage_taxonomy'
       # for new work modal
-      get 'new_institution'
-      post 'new_institution_submit'
+      get 'new_organization'
+      post 'new_organization_submit'
       get 'new_taxonomy'
       post 'new_taxonomy_submit'
     end
@@ -116,8 +122,8 @@ Rails.application.routes.draw do
   get '/submissions/stage_biological_specimen', to: 'submissions#new'
   get '/submissions/stage_device', to: 'submissions#new'
   get '/submissions/stage_imaging_event', to: 'submissions#new'
-  get '/submissions/stage_institution', to: 'submissions#new'
-  get '/submissions/stage_device_institution', to: 'submissions#new'
+  get '/submissions/stage_organization', to: 'submissions#new'
+  get '/submissions/stage_device_organization', to: 'submissions#new'
   get '/submissions/stage_media', to: 'submissions#new'
   get '/submissions/stage_processing_event', to: 'submissions#new'
   get '/submissions/stage_cho', to: 'submissions#new'

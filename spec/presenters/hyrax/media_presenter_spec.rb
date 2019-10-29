@@ -129,7 +129,6 @@ RSpec.describe Hyrax::MediaPresenter do
     let(:funding)           {['NSF']}
     let(:map_type)          {['Color Map']}
     let(:media_type)        {['PhotogrammetryImageStack']}
-    let(:modality)          {['MagneticResonanceImaging']}
     let(:orientation)       {['Media Orientation']}
     let(:part)              {['Part 7']}
     let(:rights_holder)     {['Martha Stewart']}
@@ -156,7 +155,6 @@ RSpec.describe Hyrax::MediaPresenter do
                    funding:          funding,
                    map_type:         map_type,
                    media_type:       media_type,
-                   modality:         modality,
                    orientation:      orientation,
                    part:             part,
                    rights_holder:    rights_holder,
@@ -170,7 +168,7 @@ RSpec.describe Hyrax::MediaPresenter do
                    depositor:        user)
     end
 
-    it { is_expected.to have_attributes(title: ["M#{id}: #{title.first}"], publisher: publisher, identifier: identifier, keyword: keyword, date_created: date_created, related_url: related_url, rights_statement: rights_statement, agreement_uri: agreement_uri, cite_as: cite_as, funding: funding, map_type: map_type, media_type:  media_type, modality: modality, orientation: orientation, part: part, rights_holder: rights_holder,
+    it { is_expected.to have_attributes(title: ["M#{id}: #{title.first}"], publisher: publisher, identifier: identifier, keyword: keyword, date_created: date_created, related_url: related_url, rights_statement: rights_statement, agreement_uri: agreement_uri, cite_as: cite_as, funding: funding, map_type: map_type, media_type:  media_type, orientation: orientation, part: part, rights_holder: rights_holder,
     scale_bar: scale_bar, side: side, unit: unit, x_spacing: x_spacing, y_spacing: y_spacing, z_spacing: z_spacing) }
   end
 end

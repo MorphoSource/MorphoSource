@@ -53,13 +53,13 @@ RSpec.describe Ability, type: :model do
         it { is_expected.to_not be_able_to(:stage_imaging_event, Submission) }
       end
     end
-    describe 'stage_institution' do
+    describe 'stage_organization' do
       describe 'logged in' do
         before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:stage_institution, Submission) }
+        it { is_expected.to be_able_to(:stage_organization, Submission) }
       end
       describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:stage_institution, Submission) }
+        it { is_expected.to_not be_able_to(:stage_organization, Submission) }
       end
     end
     describe 'stage_media' do

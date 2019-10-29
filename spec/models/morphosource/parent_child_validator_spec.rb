@@ -4,7 +4,7 @@ require 'rails_helper'
 
     let(:record) { Media.new( { title: ["Sample Media"] } ) }
     let(:valid_child) { ProcessingEvent.new( { title: ["Sample Processing Event"] } ) }
-    let(:invalid_child) { Institution.new( { title: ["Sample Institution"]} )}
+    let(:invalid_child) { Organization.new( { title: ["Sample Organization"]} )}
     let(:invalid_child2) { BiologicalSpecimen.new( { title: ["Sample BiologicalSpecimen"] } ) }
     let(:valid_parent) { ImagingEvent.new( { title: ["Sample Imaging Event"]} )}
     let(:invalid_parent) { Attachment.new( { title: ["Sample Attachment"]} )}
@@ -19,7 +19,7 @@ require 'rails_helper'
       end
 
       it "raises an error" do
-        expect( record.errors[:works] ).to match_array( ['valid children for Media do not include Institution.'] )
+        expect( record.errors[:works] ).to match_array( ['valid children for Media do not include Organization.'] )
       end
     end
 
@@ -63,7 +63,7 @@ require 'rails_helper'
       end
 
       it "raises errors" do
-        expect( record.errors[:works][0] ).to include("valid children for Media do not include", "BiologicalSpecimen", "Institution" )
+        expect( record.errors[:works][0] ).to include("valid children for Media do not include", "BiologicalSpecimen", "Organization" )
         expect( invalid_parent.errors[:works] ).to match_array( ["valid children for Attachment do not include Media."])
         expect( invalid_parent2.errors[:works] ).to match_array( ["valid children for CulturalHeritageObject do not include Media."])
       end

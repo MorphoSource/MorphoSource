@@ -14,7 +14,7 @@
 <%= presenter.attribute_to_html(:bibliographic_citation, html_dl: true) %>
 <%= presenter.attribute_to_html(:catalog_number, html_dl: true) %>
 <%= presenter.attribute_to_html(:collection_code, html_dl: true) %>
-<%= presenter.attribute_to_html(:institution_code, html_dl: true) %>
+<%= presenter.attribute_to_html(:organization_code, html_dl: true) %>
 <%= presenter.attribute_to_html(:current_location, html_dl: true) %>
 <%= presenter.attribute_to_html(:geographic_coordinates, label: 'Geographic Coordinates', html_dl: true) %>
 <%= presenter.attribute_to_html(:numeric_time, html_dl: true) %>
@@ -30,13 +30,13 @@
 <%= presenter.attribute_to_html(:sex, render_as: :faceted, html_dl: true) %>
 
 
-<% institutional_taxonomy = presenter.attribute_to_html(:canonical_taxonomy_object, label: presenter.canonical_taxonomy_label, render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
+<% organizational_taxonomy = presenter.attribute_to_html(:canonical_taxonomy_object, label: presenter.canonical_taxonomy_label, render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
 <% trusted_taxonomies = presenter.attribute_to_html(:trusted_taxonomies, label: I18n.t('morphosource.taxonomy.labels.trusted'), render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
 <% user_taxonomies = presenter.attribute_to_html(:user_taxonomies, label: I18n.t('morphosource.taxonomy.labels.user'), render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
 
-<% unless institutional_taxonomy.blank? && trusted_taxonomies.blank? && user_taxonomies.blank? %>
+<% unless organizational_taxonomy.blank? && trusted_taxonomies.blank? && user_taxonomies.blank? %>
   <h4>Taxonomies</h4>
-  <%= institutional_taxonomy %>
+  <%= organizational_taxonomy %>
   <%= trusted_taxonomies %>
   <%= user_taxonomies %>
 <% end %>

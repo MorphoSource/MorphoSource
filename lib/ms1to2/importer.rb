@@ -209,7 +209,7 @@ module Ms1to2
     end
 
     def models
-      [:Collection, :Institution, :Device, :Taxonomy, :BiologicalSpecimen, :Media]
+      [:Collection, :Organization, :Device, :Taxonomy, :BiologicalSpecimen, :Media]
     end
 
     def coll_models

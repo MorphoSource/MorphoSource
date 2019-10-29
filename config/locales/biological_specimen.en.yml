@@ -40,18 +40,18 @@ en:
         header:
           actions: Action
           title: Work title
-      form_parent_work_relationships_institution:
+      form_parent_work_relationships_organization:
         actions:
           remove: Remove
-        attach_new_work: Deposit new institution as parent of this work
-        caption: Current institution
+        attach_new_work: Deposit new organization as parent of this work
+        caption: Current organization
         confirm: 
           cancel: Cancel
           remove: Remove
-          text: Removing this institution will not remove it from the repository, only its relationship to the biological specimen you are editing. Are you sure you want to remove this institution?
+          text: Removing this organization will not remove it from the repository, only its relationship to the biological specimen you are editing. Are you sure you want to remove this organization?
         header:
           actions: Action
-          title: Institution
+          title: Organization
       form_parent_work_relationships_taxonomy:
         actions:
           remove: Remove

@@ -39,7 +39,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
     end
     describe 'there are no devices' do
       it 'returns an empty array' do
-        expect(helper.institutions).to match([])
+        expect(helper.organizations).to match([])
       end
     end
   end
@@ -100,44 +100,44 @@ RSpec.describe MorphosourceHelper, type: :helper do
     end
   end
 
-  describe '#institution_selector' do
-    describe 'there are institutions' do
-      let(:institution_hits) do
+  describe '#organization_selector' do
+    describe 'there are organizations' do
+      let(:organization_hits) do
         [ double('ActiveFedora::SolrHit', id: 'abc'),
           double('ActiveFedora::SolrHit', id: 'def') ]
       end
       before do
-        allow(institution_hits[0]).to receive(:[]).with('title_ssi') { 'Bar' }
-        allow(institution_hits[1]).to receive(:[]).with('title_ssi') { 'Foo' }
-        allow(helper).to receive(:institutions) { institution_hits }
+        allow(organization_hits[0]).to receive(:[]).with('title_ssi') { 'Bar' }
+        allow(organization_hits[1]).to receive(:[]).with('title_ssi') { 'Foo' }
+        allow(helper).to receive(:organizations) { organization_hits }
       end
       it 'returns the appropriate array' do
-        expect(helper.institution_selector).to eq([ [ 'Bar', 'abc' ],
+        expect(helper.organization_selector).to eq([ [ 'Bar', 'abc' ],
                                                     [ 'Foo', 'def' ] ])
       end
     end
-    describe 'there are no institutions' do
+    describe 'there are no organizations' do
       it 'returns an empty array' do
-        expect(helper.institution_selector).to match([])
+        expect(helper.organization_selector).to match([])
       end
     end
   end
 
-  describe '#institutions' do
-    describe 'there are institutions' do
-      let!(:institutions) do
-        [ Institution.create(title: [ 'Foo' ]),
-          Institution.create(title: [ 'Bar' ]) ]
+  describe '#organizations' do
+    describe 'there are organizations' do
+      let!(:organizations) do
+        [ Organization.create(title: [ 'Foo' ]),
+          Organization.create(title: [ 'Bar' ]) ]
       end
       it 'returns the appropriate array' do
-        results = helper.institutions
+        results = helper.organizations
         expect(results).to match([ an_instance_of(ActiveFedora::SolrHit), an_instance_of(ActiveFedora::SolrHit) ])
         expect(results.map { |result| result['title_ssi'] }).to eq([ 'Bar', 'Foo' ])
       end
     end
-    describe 'there are no institutions' do
+    describe 'there are no organizations' do
       it 'returns an empty array' do
-        expect(helper.institutions).to match([])
+        expect(helper.organizations).to match([])
       end
     end
   end

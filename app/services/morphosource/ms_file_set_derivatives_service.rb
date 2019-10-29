@@ -36,9 +36,15 @@ module Morphosource
       def create_archive_derivatives(filename)
         if file_set.member_of.first.media_type.first == 'CTImageSeries'
           Morphosource::Derivatives::CTImageSeriesDerivatives.create(filename,
-                                                                     outputs: [{ label: :aleph,
-                                                                                 file_set_id: file_set.id,
-                                                                                 url: derivative_url('dcm')}])
+                                                                     outputs: [{ label: :dcm,
+                                                                                 format: 'dcm',
+                                                                                 slice_thickness: file_set.member_of.first.slice_thickness.first,
+                                                                                 unit: file_set.member_of.first.unit.first,
+                                                                                 url: derivative_url('dcm'),
+                                                                                 x_spacing: file_set.member_of.first.x_spacing.first,
+                                                                                 y_spacing: file_set.member_of.first.y_spacing.first,
+                                                                                 z_spacing: file_set.member_of.first.z_spacing.first
+                                                                              }])
         elsif file_set.member_of.first.media_type.first == 'Mesh'
            Morphosource::Derivatives::MeshDerivatives.create(filename,
                                                              outputs: [{ label: :glb,

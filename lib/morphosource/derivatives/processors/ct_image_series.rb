@@ -10,7 +10,7 @@ module Morphosource::Derivatives::Processors
     attr_accessor :input_path, :scaled_path, :raw_dcm_path, :output_path, :manifest_path
     attr_accessor :raw_dcm_file_path, :output_file_path
     attr_accessor :x, :y, :z, :linear_scale_factor
-    attr_accessor :x_spacing, :y_spacing, :z_spacing, :slice_thickness
+    attr_accessor :slice_thickness, :unit, :x_spacing, :y_spacing, :z_spacing
     attr_accessor :derivatives_tmp_path
 
 		class_attribute :timeout
@@ -50,8 +50,20 @@ module Morphosource::Derivatives::Processors
         @y_spacing = directives.fetch(:y_spacing, 1).presence || 1
         @z_spacing = directives.fetch(:z_spacing, 0).presence
         @slice_thickness = directives.fetch(:slice_thickness, 0).presence || 0
-        @z_spacing = 1 if z_spacing == 0 && slice_thickness == 0
-        # todo: grab image resolutions from dicom if possible? (or should that be done via work characterization?)
+        if z_spacing == 0 && slice_thickness == 0
+          puts('first if hit')
+          if x_spacing && y_spacing
+            puts('second if')
+            @z_spacing = x_spacing
+          else
+            @z_spacing = 1
+          end
+        end
+        # @z_spacing = 1 if z_spacing == 0 && slice_thickness == 0
+
+        # If unit is not Mm, must convert spacing values to Mm
+        @unit = directives.fetch(:unit, 'Mm').presence || 'Mm'
+        correct_spacing_scale if unit != 'Mm'
 
         begin
           locate_images
@@ -67,9 +79,6 @@ module Morphosource::Derivatives::Processors
           tif_to_raw_dcm
           compress_dcm
           
-      		# generate manifest json
-      		# @manifest_path = gen_manifest
-
       		# place files
       		write_files
         rescue StandardError => e
@@ -81,6 +90,12 @@ module Morphosource::Derivatives::Processors
 
     def derivatives_tmp_path
       @derivatives_tmp_path = Hyrax.config.derivatives_tmp_path
+    end
+
+    def correct_spacing_scale
+      unit_factors = { 'Cm': 10.0, 'M': 1000.0, 'Km': 1e6, 'In': 25.4, 'Ft': 304.8, 'Mi': 1.609e+6 }
+      uf = unit_factors[unit]
+      [x_spacing, y_spacing, z_spacing, slice_thickness].each { |var| var = var * uf }
     end
 
     def locate_images
@@ -205,44 +220,10 @@ module Morphosource::Derivatives::Processors
       dcmcjpeg = Morphosource::Derivatives::Dcmcjpeg.new(raw_dcm_path, output_path)
       dcmcjpeg.call
     end
-
-		# def gen_manifest
-  #     erb_src = File.join(__dir__, 'manifest.json.erb')
-  #     txt_dst = File.join(tmp_dir_path, File.basename(erb_src, '.erb'))
-  #     File.open(txt_dst, 'w') do |f|
-  #       f.write(ERB.new(File.read(erb_src)).result(binding))
-  #     end
-  #     txt_dst
-		# end
-
-    # def gen_dcm_path(id)
-    #   id.to_s.chars.each_slice(2).map(&:join).join('/')
-    # end
-
-    # def dicom_series
-    #   id = directives[:file_set_id]
-    #   file_n = Dir[File.join(output_path, '**', '*')].count { |file| File.file?(file) }
-    #   ((1..file_n).to_a.map { |i| "\"derivatives/#{gen_dcm_path(id)}/#{i}.dcm\""}).join(',')
-    #   #((1..file_n).to_a.map { |i| "\"downloads/#{id}?file=dcm#{i}\""}).join(',')
-    # end
-
-    # def base_derivative_path
-    #   # todo: add derived path here if necessary
-    #   ''
-    # end
-
+    
     def write_files
       output_file_service.call(output_file_path, directives)
     end
-
-    # def write_dcm_file(f_path, new_f_name)
-    #   f_directives = directives.merge( { url: File.join(dcm_derivative_path, new_f_name) } )
-    #   output_file_service.call(f_path, f_directives)
-    # end
-
-    # def dcm_derivative_path
-    #   File.join(File.dirname(directives[:url]), File.basename(directives[:url])[0])
-    # end
 
 		def cleanup_tmp_files
 			FileUtils.remove_dir tmp_dir_path

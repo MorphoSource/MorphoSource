@@ -16,7 +16,7 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      property :institution_code, predicate: ::RDF::Vocab::DWC.institutionCode do |index|
+      property :organization_code, predicate: ::RDF::Vocab::DWC.organizationCode do |index|
         index.as :stored_searchable
       end
 

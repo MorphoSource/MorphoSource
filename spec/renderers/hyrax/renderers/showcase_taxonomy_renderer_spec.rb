@@ -63,7 +63,7 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
       let(:content) do
         %( <div class="panel">
        <div class="row">
-       <div class="col-xs-6 showcase-label taxonomy-label">Institutional</div>
+       <div class="col-xs-6 showcase-label taxonomy-label">Organizational</div>
        <div class="col-xs-5 showcase-value taxonomy-title">genus subgenus species subspecies</div>
        <span data-toggle="collapse" data-parent="#taxonomy-accordion-group" href="#collapse-taxonomy-imxatwyl" class="col-xs-1 glyphicon glyphicon-triangle-bottom collapse-taxonomy-imxatwyl"></span>
        </div>

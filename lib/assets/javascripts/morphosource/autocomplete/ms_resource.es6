@@ -12,13 +12,13 @@ export default class MorphosourceResource extends Resource {
     super(element, url, options = {});
   }
 
-  // overriding  processResults to output additional attributes for Institution
+  // overriding  processResults to output additional attributes for Organization
   processResults(data, page) {
     let results;
     // TODO: need a better way to pass the work type or attribute list to here
-    if (this.url.indexOf('institutions') != -1) {
+    if (this.url.indexOf('organizations') != -1) {
       results = data.map((obj) => {
-                               return { id: obj.id, text: obj.label[0], institution_code: obj.institution_code, description: obj.description, address: obj.address, city: obj.city, state_province: obj.state_province, country: obj.country };
+                               return { id: obj.id, text: obj.label[0], organization_code: obj.organization_code, description: obj.description, address: obj.address, city: obj.city, state_province: obj.state_province, country: obj.country };
                             })
     } else if (this.url.indexOf('taxonomies') != -1) {
       results = data.map((obj) => {

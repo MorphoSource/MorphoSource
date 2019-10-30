@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190917142759) do
+ActiveRecord::Schema.define(version: 20190930182018) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -577,14 +577,9 @@ ActiveRecord::Schema.define(version: 20190917142759) do
     t.boolean "guest", default: false
     t.string "facebook_handle"
     t.string "twitter_handle"
-    t.string "googleplus_handle"
     t.string "display_name"
     t.string "address"
-    t.string "admin_area"
     t.string "department"
-    t.string "title"
-    t.string "office"
-    t.string "chat_id"
     t.string "website"
     t.string "affiliation"
     t.string "telephone"
@@ -592,13 +587,24 @@ ActiveRecord::Schema.define(version: 20190917142759) do
     t.string "avatar_content_type"
     t.integer "avatar_file_size"
     t.datetime "avatar_updated_at"
-    t.string "linkedin_handle"
     t.string "orcid"
     t.string "arkivo_token"
     t.string "arkivo_subscription"
     t.binary "zotero_token"
     t.string "zotero_userid"
     t.string "preferred_locale"
+    t.string "state"
+    t.string "country"
+    t.string "postal_code"
+    t.boolean "terms_read", default: false
+    t.string "demographics"
+    t.text "intent"
+    t.string "status"
+    t.string "software"
+    t.string "mesh_file_type"
+    t.string "volume_file_type"
+    t.string "printer_model"
+    t.string "printer_file"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

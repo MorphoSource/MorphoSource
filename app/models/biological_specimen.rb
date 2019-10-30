@@ -48,8 +48,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
     other_taxonomies.reject{|taxonomy| taxonomy.trusted == ["Yes"]}
   end
 
-  def institutions
-    member_of.select{|work| work.class == Institution}
+  def organizations
+    member_of.select{|work| work.class == Organization}
   end
 
   private

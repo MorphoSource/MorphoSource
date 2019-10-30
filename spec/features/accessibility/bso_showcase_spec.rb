@@ -33,7 +33,7 @@ RSpec.feature "BSO showcase Accessibility check", :accessibility => true, :type 
 	 		id: "bso123", 
 	 		title: ["test biological specimen"], 
 	 		vouchered: ['Yes'], 
-	 		institution_code: ['inst123'], 
+	 		organization_code: ['inst123'], 
 	 		collection_code: ['xyz'], 
 	 		catalog_number: ['xyz'],
 	 		visibility: public
@@ -41,10 +41,10 @@ RSpec.feature "BSO showcase Accessibility check", :accessibility => true, :type 
     bso.members = [ie]
     bso.save!
 
-    inst = Institution.create({
+    inst = Organization.create({
         id: 'inst123',
-        title: ['institution 1'],
-		 		institution_code: ['inst123'] 
+        title: ['organization 1'],
+		 		organization_code: ['inst123'] 
     })
     inst.members = [bso]
     inst.save!

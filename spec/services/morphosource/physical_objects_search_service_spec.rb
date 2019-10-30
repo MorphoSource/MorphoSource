@@ -19,12 +19,12 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
       [
           BiologicalSpecimen.create(title: [ 'abc:123' ],
                                     catalog_number: [ '123' ],
-                                    institution_code: [ 'INST1' ],
+                                    organization_code: [ 'INST1' ],
                                     collection_code: [ 'abc' ],
                                     vouchered: [ true ]),
           BiologicalSpecimen.create(title: [ 'abc:456' ],
                                     catalog_number: [ '456' ],
-                                    institution_code: [ 'INST2' ],
+                                    organization_code: [ 'INST2' ],
                                     collection_code: [ 'abc' ],
                                     vouchered: [ true ]),
       ]
@@ -52,8 +52,8 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
         expect(results.map(&:id)).to match_array([ biospecs[1].id ])
       end
     end
-    describe 'search params with institution_code' do
-      let(:params) { { 'catalog_number' => '123', 'institution_code' => 'INST1', 'collection_code' => 'abc' } }
+    describe 'search params with organization_code' do
+      let(:params) { { 'catalog_number' => '123', 'organization_code' => 'INST1', 'collection_code' => 'abc' } }
       it 'returns SolrDocuments for specified model that match search params' do
         results = subject.call
         expect(results).to match_array([ SolrDocument ])
@@ -61,7 +61,7 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
       end
     end
     describe 'search params with no matches' do
-      let(:params) { { 'catalog_number' => '456', 'institution_code' => 'INST1', 'collection_code' => 'abc' } }
+      let(:params) { { 'catalog_number' => '456', 'organization_code' => 'INST1', 'collection_code' => 'abc' } }
       it 'returns no SolrDocuments when there are no models that match search params' do
         results = subject.call
         expect(results).to match_array([ ])

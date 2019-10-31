@@ -49,6 +49,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
     let(:unvouchered_attr) { [ 'No' ] }
     let(:env) { Hyrax::Actors::Environment.new(work, ability, attrs) }
     before do
+      
       allow(User).to receive(:find_by_user_key).with(depositor.user_key) { depositor }
     end
     describe 'collection code and catalog number' do
@@ -109,7 +110,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
             end
             describe 'depositor does not have display name' do
               let(:expected_title) do
-                I18n.t('morphosource.fallback_object_title', voucher: 'Vouchered', user: depositor.user_key)
+                I18n.t('morphosource.fallback_object_title', voucher: 'Vouchered', user: depositor.email)
               end
               specify { expect(subject.generated_title(env)).to eq(expected_title) }
             end
@@ -124,7 +125,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
             end
             describe 'user does not have display name' do
               let(:expected_title) do
-                I18n.t('morphosource.fallback_object_title', voucher: 'Vouchered', user: user.user_key)
+                I18n.t('morphosource.fallback_object_title', voucher: 'Vouchered', user: user.email)
               end
               specify { expect(subject.generated_title(env)).to eq(expected_title) }
             end
@@ -146,7 +147,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
             end
             describe 'depositor does not have display name' do
               let(:expected_title) do
-                I18n.t('morphosource.fallback_object_title', voucher: 'Unvouchered', user: depositor.user_key)
+                I18n.t('morphosource.fallback_object_title', voucher: 'Unvouchered', user: depositor.email)
               end
               specify { expect(subject.generated_title(env)).to eq(expected_title) }
             end
@@ -161,7 +162,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
             end
             describe 'user does not have display name' do
               let(:expected_title) do
-                I18n.t('morphosource.fallback_object_title', voucher: 'Unvouchered', user: user.user_key)
+                I18n.t('morphosource.fallback_object_title', voucher: 'Unvouchered', user: user.email)
               end
               specify { expect(subject.generated_title(env)).to eq(expected_title) }
             end

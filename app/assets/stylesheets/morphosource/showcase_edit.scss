@@ -1,5 +1,15 @@
 @import 'shared';
 
+
+
+
+
+
+                            .hide {display: block !important}
+
+
+
+
 /* NOTE: the styles below are shared between
    showcase edit page and hyrax edit page.  These styles will effect both pages 
    TODO: might need to move these to global style sheet later */
@@ -237,7 +247,7 @@ div.showcase-edit {
   } /* /object detail tab specific styles */
 
 
-  #media_rights_holder_wrapper {
+  [class*="wrapper_for_"] {
     li {
       display:flex; 
       flex-direction:row; 
@@ -245,8 +255,20 @@ div.showcase-edit {
     }
     input, select {
       margin:1px;
-      width:45%;
       border-radius: 5px;
     }
   }
+
+  .wrapper_for_2 {
+    input, select {
+      width:45%;
+    }
+  }
+
+  .wrapper_for_3 {
+    input, select {
+      width:30%;
+    }
+  }
+
 } /* / div.showcase-edit */

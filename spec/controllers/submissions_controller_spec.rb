@@ -213,7 +213,7 @@ RSpec.describe SubmissionsController, type: :controller do
       @request.session['submission'] = {saved_step: saved_step}
     end
     let(:form_attributes) do
-      { 'title' => 'Organization', 'organization_code' => 'inst' }
+      { 'title' => 'Organization', 'institution_code' => 'inst' }
     end
     let(:form_params) { { organization: form_attributes } }
     let(:model_attributes) { form_attributes.transform_values { |value| Array(value) } }
@@ -233,7 +233,7 @@ RSpec.describe SubmissionsController, type: :controller do
       @request.session['submission'] = {saved_step: saved_step}
     end
     let(:form_attributes) do
-      { 'title' => 'Organization', 'organization_code' => 'inst' }
+      { 'title' => 'Organization', 'institution_code' => 'inst' }
     end
     let(:form_params) { { organization: form_attributes } }
     let(:model_attributes) { form_attributes.transform_values { |value| Array(value) } }
@@ -253,7 +253,7 @@ RSpec.describe SubmissionsController, type: :controller do
       @request.session['submission'] = {saved_step: saved_step}
     end
     let(:form_attributes) do
-      { 'title' => 'Organization', 'organization_code' => 'inst' }
+      { 'title' => 'Organization', 'institution_code' => 'inst' }
     end
     let(:form_params) { { organization: form_attributes } }
     let(:model_attributes) { form_attributes.transform_values { |value| Array(value) } }
@@ -322,7 +322,7 @@ RSpec.describe SubmissionsController, type: :controller do
       let(:form_attributes) do
         { 'id' => 'abc', 
           'title' => 'Organization', 
-          'organization_code' => 'inst',
+          'institution_code' => 'inst',
           'description' => 'test', 
           'address' => 'test',
           'city' => 'test',
@@ -339,7 +339,7 @@ RSpec.describe SubmissionsController, type: :controller do
           message: 'New organization created',
           work: {
             title: 'Organization',
-            organization_code: 'inst',
+            institution_code: 'inst',
             description: 'test', 
             address: 'test',
             city: 'test',

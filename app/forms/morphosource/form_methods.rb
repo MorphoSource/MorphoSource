@@ -60,7 +60,7 @@ module Morphosource
         {
           id: parent.id,
           label: parent.to_s,
-          organization_code: parent.organization_code.first.to_s,
+          institution_code: parent.institution_code.first.to_s,
           description: parent.description.first.to_s,
           address: parent.address.first.to_s,
           city: parent.city.first.to_s,

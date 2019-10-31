@@ -3,7 +3,7 @@ $(document).on('turbolinks:load', function() {
   if ($('form[id*="biological_specimen"]').length) { // if BSO form page
 
 		function updateObjectTitle() {
-			var title = [ $('#biological_specimen_organization_code').val(),
+			var title = [ $('#biological_specimen_institution_code').val(),
 													$('#biological_specimen_collection_code').val(),
 													$('#biological_specimen_catalog_number').val() ]
 			title = $.map( title, function(v){ return v === "" ? null : v; });
@@ -33,13 +33,13 @@ $(document).on('turbolinks:load', function() {
 				removeOrganizationButton.trigger('click');
 			}
 			$('#embedded_div_new_organization').hide();
-			$('#biological_specimen_organization_code').val('');
+			$('#biological_specimen_institution_code').val('');
 			updateObjectTitle();
 		})
 
-		// An organization has been selected.  set the organization code field on the object detail tab, then update title
+		// An organization has been selected.  set the institution code field on the object detail tab, then update title
 		$('#btn-add-organization').click(function() {
-			$('#biological_specimen_organization_code').val( $('#organization-code').text() );
+			$('#biological_specimen_institution_code').val( $('#organization-code').text() );
 			updateObjectTitle();
 		})
 
@@ -55,7 +55,7 @@ $(document).on('turbolinks:load', function() {
 		})
 
 		// Change title on the fly when corresponding fields are updated
-		$('#biological_specimen_organization_code, #biological_specimen_collection_code, #biological_specimen_catalog_number').change(updateObjectTitle);
+		$('#biological_specimen_institution_code, #biological_specimen_collection_code, #biological_specimen_catalog_number').change(updateObjectTitle);
 
 		// change badges on the fly when corresponding fields are updated
 		$('#biological_specimen_vouchered').change(function(){

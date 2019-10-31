@@ -12,10 +12,10 @@ module Hyrax
 
     # Customizing field terms
 
-    self.terms = [:title, :organization_code, :description, :address, :city, :state_province, :country, :institution_name, :collection_code]
+    self.terms = [:title, :institution_code, :description, :address, :city, :state_province, :country, :institution_name, :collection_code]
 
-    self.required_fields = [:title, :organization_code]
+    self.required_fields = [:title, :institution_code]
 
-    self.single_valued_fields = [:title, :organization_code, :description, :address, :city, :state_province, :country, :institution_name]
+    self.single_valued_fields = [:title, :institution_code, :description, :address, :city, :state_province, :country, :institution_name]
   end
 end

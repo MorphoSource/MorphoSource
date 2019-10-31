@@ -2,10 +2,10 @@
  * Represents a Child work or related Collection
  */
 export default class OrganizationResource {
-    constructor(id, title, organization_code, description, address, city, state_province, country) {
+    constructor(id, title, institution_code, description, address, city, state_province, country) {
         this.id = id
         this.title = title
-        this.organization_code = organization_code
+        this.institution_code = institution_code
         this.description = description
         this.address = address
         this.city = city

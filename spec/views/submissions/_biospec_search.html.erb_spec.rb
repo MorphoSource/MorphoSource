@@ -17,7 +17,7 @@ RSpec.describe 'submissions/_biospec_search', type: :view do
   it 'displays the biological specimen search form' do
     expect(page).to have_content(I18n.t('morphosource.submission.biospec_search'))
     expect(page).to have_field(I18n.t('simple_form.labels.submission.biospec_search_occurrence_id'))
-    expect(page).to have_field(I18n.t('simple_form.labels.submission.biospec_search_organization_code'))
+    expect(page).to have_field(I18n.t('simple_form.labels.submission.biospec_search_institution_code'))
     expect(page).to have_field(I18n.t('simple_form.labels.submission.biospec_search_collection_code'))
     expect(page).to have_field(I18n.t('simple_form.labels.submission.biospec_search_catalog_number'))
   end

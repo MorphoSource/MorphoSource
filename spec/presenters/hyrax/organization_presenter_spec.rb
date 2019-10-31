@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Hyrax::OrganizationPresenter do
   subject { described_class.new(double, double) }
 
-  it { is_expected.to delegate_method(:organization_code).to(:solr_document) }
+  it { is_expected.to delegate_method(:institution_code).to(:solr_document) }
   it { is_expected.to delegate_method(:address).to(:solr_document) }
   it { is_expected.to delegate_method(:city).to(:solr_document) }
   it { is_expected.to delegate_method(:state_province).to(:solr_document) }

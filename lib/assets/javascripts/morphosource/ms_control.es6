@@ -47,7 +47,7 @@ export default class RelationshipsControl {
   displayMembers() {
     if (this.workType == 'organization') {
       this.members.forEach((elem) =>
-        this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.organization_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
+        this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.institution_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
       )      
     } else if (this.workType == 'taxonomy') {
       this.members.forEach((elem) =>
@@ -122,7 +122,7 @@ export default class RelationshipsControl {
     }
     if (this.workType == 'organization') {
       //console.log("addRow data : ", data)
-      this.registry.addResource(new OrganizationResource(data.id, data.text, data.organization_code, data.description, data.address, data.city, data.state_province, data.country));
+      this.registry.addResource(new OrganizationResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
     } else if (this.workType == 'taxonomy') {
       this.registry.addResource(new TaxonomyResource(
         data.id, 

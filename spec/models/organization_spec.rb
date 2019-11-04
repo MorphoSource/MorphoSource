@@ -8,7 +8,7 @@ RSpec.describe Organization do
 
   describe "metadata attributes" do
     it "include the appropriate terms" do
-      expect(subject.attributes).to include('title', 'organization_code', 'description', 'address', 'city', 'state_province', 'country')
+      expect(subject.attributes).to include('title', 'institution_code', 'description', 'address', 'city', 'state_province', 'country')
     end
   end
 
@@ -25,7 +25,7 @@ RSpec.describe Organization do
   describe "instance" do
     subject { Organization.new({
         title: ['American Museum of Natural History'],
-        organization_code: ['AMNH'],
+        institution_code: ['AMNH'],
         description: ['A sample description'],
         address: ['Central Park West'],
         city: ['New York City'],
@@ -38,8 +38,8 @@ RSpec.describe Organization do
       expect(subject.title.first).to eq('American Museum of Natural History')
     end
 
-    it "creates with correct organization_code" do
-      expect(subject.organization_code.first).to eq('AMNH')
+    it "creates with correct institution_code" do
+      expect(subject.institution_code.first).to eq('AMNH')
     end
 
     it "creates with correct description" do

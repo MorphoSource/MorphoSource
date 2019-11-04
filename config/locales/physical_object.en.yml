@@ -25,7 +25,7 @@ en:
         periodic_time: Periodic Time
         catalog_number: Catalog Number
         collection_code: Collection Code
-        organization_code: Organization Code
+        institution_code: Institution Code
         # Biological Specimens
         idigbio_uuid: iDigBio UUID
         idigbio_recordset_id: iDigBio Recordset ID

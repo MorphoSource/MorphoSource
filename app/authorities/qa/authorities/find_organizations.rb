@@ -11,13 +11,13 @@ module Qa::Authorities
       docs.map do |doc|
         id = doc.id
         title = doc.title
-        organization_code = doc.organization_code
+        institution_code = doc.institution_code
         description = doc.description
         address = doc.address
         city = doc.city
         state_province = doc.state_province
         country = doc.country
-        { id: id, label: title, value: id, organization_code: organization_code, description: description, address: address, city: city, state_province: state_province, country: country }
+        { id: id, label: title, value: id, institution_code: institution_code, description: description, address: address, city: city, state_province: state_province, country: country }
       end
     end
 

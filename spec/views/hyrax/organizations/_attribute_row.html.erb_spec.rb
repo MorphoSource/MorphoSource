@@ -6,7 +6,7 @@ RSpec.describe 'hyrax/organizations/_attribute_rows.html.erb', type: :view do
 	let(:work) do
 		Organization.new({
 			title: ['American Museum of Natural History'],
-			organization_code: ['AMNH'],
+			institution_code: ['AMNH'],
 			description: ['A sample description'],
 			address: ['Central Park West'],
 			city: ['New York City'],
@@ -22,8 +22,8 @@ RSpec.describe 'hyrax/organizations/_attribute_rows.html.erb', type: :view do
     Capybara::Node::Simple.new(rendered)
   end
 
-  it "shows organization_code info" do
-  	expect(page).to have_content("Organization code")
+  it "shows institution_code info" do
+  	expect(page).to have_content("Institution code")
   	expect(page).to have_content("AMNH")
   end
 

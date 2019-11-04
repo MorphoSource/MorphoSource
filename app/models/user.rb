@@ -1,6 +1,12 @@
 class User < ApplicationRecord
+  # used for creating ms_id
+  require 'securerandom'
+
   has_many :cart_items
   paginates_per 10
+
+  # assign user a ms_id to use as user_key
+  before_create :check_ms_id
 
   # Connects this user object to Hydra behaviors.
   include Hydra::User
@@ -187,6 +193,20 @@ class User < ApplicationRecord
     define_method('other_'.concat(field.to_s).to_sym) do
       (self.send(field) - values).join
     end
+  end
+
+  private
+
+  # Assigns a random string to be used as the user_key
+  def assign_ms_id
+    loop do
+      self.ms_id = SecureRandom.hex(3)
+      break unless User.where(ms_id: ms_id).exists?
+    end
+  end
+
+  def check_ms_id
+    assign_ms_id if ms_id.nil?
   end
 
 end

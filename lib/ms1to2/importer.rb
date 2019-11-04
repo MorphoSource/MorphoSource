@@ -6,6 +6,7 @@ module Ms1to2
       @input_path = input_path
       @update = update
       @update_only_if_no_file = update_only_if_no_file
+      @julie = User.find_by(email: 'julia.m.winchester@gmail.com')
       # ::Hyrax.config.whitelisted_ingest_dirs = input_path
     end
 
@@ -60,14 +61,14 @@ module Ms1to2
     def import_collections(m)
       # Create collection type
       coll_type = Hyrax::CollectionType.where({:title => 'Project'})&.first
-      
+
       if !coll_type
         puts("Creating collection type")
         coll_type = Hyrax::CollectionType.new(attributes={ :title => 'Project' })
         coll_type.save!
       end
 
-      # Create collections  
+      # Create collections
       colls = get_table(:Collection)
       colls.each do |collection_id, v|
         if !Collection.exists?(collection_id)
@@ -75,7 +76,7 @@ module Ms1to2
           coll_attrs = {
             :id => collection_id,
             :title => v[:title],
-            :depositor => 'julia.m.winchester@gmail.com',
+            :depositor => @julie.user_key,
             :visibility => 'open',
             :collection_type => coll_type
           }
@@ -83,8 +84,8 @@ module Ms1to2
           coll.save!
           puts('Establishing collection permissions')
           ::Hyrax::Collections::PermissionsCreateService.create_default(
-            collection: coll, 
-            creating_user: User.find_by_user_key('julia.m.winchester@gmail.com'))
+            collection: coll,
+            creating_user: @julie)
         end
       end
     end
@@ -93,8 +94,8 @@ module Ms1to2
       del_col_ids = ( m == :BiologicalSpecimen ) ? true : false
       csv_importer = ::Importer::CSVImporter.new(
         File.join(input_path, csvfile(m)),
-        '', 
-        { :depositor => 'julia.m.winchester@gmail.com', :model => m.to_s } )
+        '',
+        { :depositor => @julie.user_key, :model => m.to_s } )
       csv_importer.import_all(del_col_ids)
     end
 
@@ -111,18 +112,18 @@ module Ms1to2
           # prepare
           attrs = combined_table[id]
           attrs.delete(:collection_id)
-          attrs = attrs.merge({ :depositor => 'julia.m.winchester@gmail.com' })
+          attrs = attrs.merge({ :depositor => @julie.user_key })
           csv_importer = ::Importer::CSVImporter.new('', input_path, { :model => to_model(id) })
 
           if !to_model(id).to_s.constantize.exists?(id)
             # create
             csv_importer.import_batch_object(attrs)
-          elsif ( update && 
-            update_models.include?(to_model(id)) && 
+          elsif ( update &&
+            update_models.include?(to_model(id)) &&
             ( !update_only_if_no_file || !has_original_file?(id, to_model(id)) ) )
             # update
             csv_importer.update_batch_object(attrs)
-          end 
+          end
         end
       end
     end
@@ -195,9 +196,9 @@ module Ms1to2
 
     def has_original_file?(id, model)
       work = to_model(id).to_s.constantize.find(id)
-      return true if ( work.file_sets&.first && 
-        work.file_sets&.first.respond_to?(:original_file) && 
-        work.file_sets&.first.original_file.presence ) 
+      return true if ( work.file_sets&.first &&
+        work.file_sets&.first.respond_to?(:original_file) &&
+        work.file_sets&.first.original_file.presence )
       false
     end
 

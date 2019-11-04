@@ -8,7 +8,7 @@ RSpec.describe ::SolrDocument, type: :model do
 		let(:work) do
 			Organization.new({
 				title: ['American Museum of Natural History'],
-				organization_code: ['AMNH'],
+				institution_code: ['AMNH'],
 				description: ['A sample description'],
 				address: ['Central Park West'],
 				city: ['New York City'],
@@ -19,8 +19,8 @@ RSpec.describe ::SolrDocument, type: :model do
 
 		subject { SolrDocument.new(work.to_solr) }
 
-		it "return organization_code" do
-			expect(subject.organization_code.first).to eq('AMNH')
+		it "return institution_code" do
+			expect(subject.institution_code.first).to eq('AMNH')
 		end
 
 		it "return address" do

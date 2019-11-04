@@ -5,7 +5,7 @@ module Morphosource
 	extend ActiveSupport::Concern
 
 		included do
-		  property :organization_code, predicate: ::RDF::Vocab::DWC.organizationID do |index|
+		  property :institution_code, predicate: ::RDF::Vocab::DWC.organizationID do |index|
 		  	index.as :stored_searchable
 		  end
 

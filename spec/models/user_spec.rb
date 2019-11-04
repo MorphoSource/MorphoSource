@@ -31,7 +31,7 @@ RSpec.describe User, type: :model do
     allow(Media).to receive(:find).with('ccc').and_return(work3)
     allow(Media).to receive(:find).with('ddd').and_return(work4)
     allow(Media).to receive(:find).with('eee').and_return(work5)
-    allow(Media).to receive(:find).with('fff').and_return(work6)    
+    allow(Media).to receive(:find).with('fff').and_return(work6)
     # Makes user aware of its cart_items
     allCartItems.each(&:touch)
   end
@@ -169,6 +169,22 @@ RSpec.describe User, type: :model do
         expect(data_owner.previously_requested_items).to match_array([cartItem12, cartItem13,cartItem14,cartItem15,cartItem16])
       end
       it { expect(data_owner.previously_requested_items).not_to include([cartItem11])}
+    end
+
+    describe '#check_ms_id' do
+      let(:new_user1) { User.new(email: "testemail@email.com", password: "password")}
+      let(:old_ms_id) { "abc123" }
+      let(:new_user2) { User.new(email: "another@email.com", password: "password", ms_id: old_ms_id)}
+      before do
+        [new_user1, new_user2].each(&:save)
+        [new_user1, new_user2].each(&:reload)
+      end
+      it 'assigns an ms_id to new users without one' do
+        expect(new_user1.ms_id).to_not be(nil)
+      end
+      it 'does not assign an ms_id to users who already have one' do
+        expect(new_user2.ms_id).to eq(old_ms_id)
+      end
     end
   end
 end

@@ -248,6 +248,9 @@ $( document ).on('turbolinks:load', function() {
         $(clickElements[i]).trigger('click');
       }
     } else {
+      if (getCookie('saved_step') == 'biospec_search') {
+        $('div#submission_biospec').addClass('show').removeClass('hide');
+      }
       if ($('div#submission_choose_raw_or_derived_media').length) {
         $('#start_over').hide();
       }

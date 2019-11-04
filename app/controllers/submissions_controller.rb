@@ -650,6 +650,8 @@ class SubmissionsController < ApplicationController
                                           :biospec_search_collection_code,
                                           :biospec_search_institution_code,
                                           :biospec_search_occurrence_id,
+                                          :biospec_search_taxonomy_genus,
+                                          :biospec_search_taxonomy_species,
                                           :cho_id,
                                           :cho_search_catalog_number,
                                           :cho_search_collection_code,

@@ -19,10 +19,12 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
       [
           BiologicalSpecimen.create(title: [ 'abc:123' ],
                                     catalog_number: [ '123' ],
+                                    institution_code: [ 'INST1' ],
                                     collection_code: [ 'abc' ],
                                     vouchered: [ true ]),
           BiologicalSpecimen.create(title: [ 'abc:456' ],
                                     catalog_number: [ '456' ],
+                                    institution_code: [ 'INST2' ],
                                     collection_code: [ 'abc' ],
                                     vouchered: [ true ]),
       ]
@@ -50,14 +52,29 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
         expect(results.map(&:id)).to match_array([ biospecs[1].id ])
       end
     end
-    describe 'organization provided' do
-      let!(:organization) { Organization.create(title: [ 'Inst' ], institution_code: [ 'xyz' ]) }
-      let(:params) { { 'collection_code' => 'abc', 'institution_code' => 'xyz' } }
-      before do
-        organization.ordered_members << biospecs[1]
-        organization.save!
+    describe 'search params with institution_code' do
+      let(:params) { { 'catalog_number' => '123', 'institution_code' => 'INST1', 'collection_code' => 'abc' } }
+      it 'returns SolrDocuments for specified model that match search params' do
+        results = subject.call
+        expect(results).to match_array([ SolrDocument ])
+        expect(results.map(&:id)).to match_array([ biospecs[0].id ])
       end
-      it 'returns SolrDocuments for specified model that match search params and belong to organization' do
+    end
+    describe 'search params with no matches' do
+      let(:params) { { 'catalog_number' => '456', 'institution_code' => 'INST1', 'collection_code' => 'abc' } }
+      it 'returns no SolrDocuments when there are no models that match search params' do
+        results = subject.call
+        expect(results).to match_array([ ])
+      end
+    end
+    describe 'taxonomy provided' do
+      let!(:taxonomy) { Taxonomy.create(title: [ 'Tax' ], taxonomy_genus: [ 'Test Genus' ], taxonomy_species: [ 'Test Species' ]) }
+      let(:params) { { 'collection_code' => 'abc', 'taxonomy_genus' => 'Test Genus', 'taxonomy_species' => 'Test Species'  } }
+      before do
+        taxonomy.ordered_members << biospecs[1]
+        taxonomy.save!
+      end
+      it 'returns SolrDocuments for specified model that match search params and belong to taxonomy' do
         results = subject.call
         expect(results).to match_array([ SolrDocument ])
         expect(results.map(&:id)).to match_array([ biospecs[1].id ])

@@ -7,6 +7,8 @@ class Submission
                 :biospec_search_collection_code,
                 :biospec_search_institution_code,
                 :biospec_search_occurrence_id,
+                :biospec_search_taxonomy_genus,
+                :biospec_search_taxonomy_species,
                 :device_id,
                 :imaging_event_id,
                 :organization_id,

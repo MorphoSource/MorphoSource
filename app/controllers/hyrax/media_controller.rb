@@ -30,6 +30,8 @@ module Hyrax
                  'morphosource_2_columns'
                when 'edit'
                  'morphosource_2_columns'
+               when 'update'
+                 'morphosource_2_columns'
                else
                  'dashboard'
                end
@@ -110,7 +112,17 @@ module Hyrax
         respond_to do |wants|
           wants.html do
             build_form
-            render 'edit', status: :unprocessable_entity
+            #render 'edit', status: :unprocessable_entity
+            # todo: make sure to handle error when changing media type
+            @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+            @presenter.get_showcase_data
+
+
+            @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
+            @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
+            @countries_service = Morphosource::CountriesService.new
+            render '/hyrax/media/edit', presenter: @presenter, status: :unprocessable_entity
+
           end
           wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
         end

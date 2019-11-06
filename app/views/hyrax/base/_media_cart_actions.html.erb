@@ -1,0 +1,15 @@
+<div class="show-actions">
+  <div class="btn-group">
+    <% if signed_in? %>
+      <% if presenter.editor? || @curation_concern.open? %>
+        <%= download_button(presenter.id) %>
+        <%= choose_cart_button(presenter) %>
+      <% elsif @curation_concern.restricted? %>
+        <%= choose_download_button(presenter.id) %>
+        <%= choose_cart_button(presenter) %>
+      <% else %>
+        <%= unavailable_for_download_button %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

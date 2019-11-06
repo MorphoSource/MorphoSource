@@ -48,16 +48,17 @@ div.showcase-edit {
 
   h2 {
     font-size: 15px;
-    span {
-      padding:0;
-    }
     a.btn {
       float: right;
       margin: -5px -10px -7px 0;
       color: $button-font-color;
     }
   }
-
+  h2:not(.required-flag) {
+    span {
+      padding:0;
+    }    
+  }
   .tooltip-inner {
     text-align: left;
   }
@@ -101,7 +102,7 @@ div.showcase-edit {
   }
 
   .required-tag {
-    display: none;
+    display: none; /* hide the hyrax required tag (use required-flag instead) */
   }
 
   .required-flag, .recommended-flag {

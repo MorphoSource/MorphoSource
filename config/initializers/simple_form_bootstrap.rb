@@ -23,6 +23,9 @@ SimpleForm.setup do |config|
       ba.wrapper :tooltip_wrapper, :tag => 'i', :class => "material-icons tooltip-icon" do |bb|
         bb.use :hint,  wrap_with: { tag: 'p', class: 'hint hide' }
       end
+      ba.wrapper :parsed_wrapper, :tag => 'i', :class => "fa fa-search parsed" do |bb|
+        bb.use :placeholder
+      end
       ba.wrapper :flag_wrapper, :tag => 'span', :class => "label label-info" do |bb|
         bb.use :placeholder
       end

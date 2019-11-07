@@ -2,17 +2,18 @@
 
   <!-- left column  -->
   <div class="col-sm-6">
-
     <div class="content-block">
-
-    <%= render 'items_edit', presenter: @presenter %>
-
-    <h2 class="required-flag">UPLOAD FILE(S)<span class="label label-info"></span></h2>
-
-    <%= render 'form_files_edit', f: f %>
-
+      <h2 class="required-flag">UPLOAD FILE(S)<span class="label label-info"></span></h2>
+      <%= render 'form_files_edit', f: f %>
     </div>
+  </div>
 
+  <!-- right column  -->
+  <div class="col-sm-6">
+    <div class="content-block">
+      <h2>FILE(S) IN THIS MEDIA</h2>
+      <%= render 'items_edit', presenter: @presenter %>
+    </div>
   </div>
 
 </div>

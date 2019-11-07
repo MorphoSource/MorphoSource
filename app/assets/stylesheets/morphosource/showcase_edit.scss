@@ -5,7 +5,14 @@
 
 
 
-/*                            .hide {display: block !important} */
+
+
+
+
+
+
+
+    .hide {display: block !important}
 
 
 
@@ -137,6 +144,7 @@ div.showcase-edit {
   }
   
   .material-icons.tooltip-icon {
+    color: $font-color;
     font-size: 11px;
     margin-left: 3px;
   }
@@ -159,6 +167,17 @@ div.showcase-edit {
 
   .showcase-label {
     font-weight: bold;
+    i.parsed {
+      color: $font-color;
+      font-size: 11px;
+      margin-left: 3px;
+    }
+  }
+
+  .showcase-label:not(.parsed) {
+    i.parsed {
+      display: none
+    }
   }
 
   .btn-save {

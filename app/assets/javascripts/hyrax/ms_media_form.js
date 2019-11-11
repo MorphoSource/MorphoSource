@@ -166,22 +166,33 @@ $(document).on('turbolinks:load', function() {
 
       // Clear default scale bar fields when done.
       scaleBarGroupUl.innerHTML = '';
-
+      $(scaleBarGroup).hide(); // hide the field label and add button
 
     } // /setupScaleBar
 
     function adjust_form_media_type() {
+       $('.media_type_block').hide();
       if ($('#media_media_type').val() == 'CTImageSeries') {
+        $('.CTImageSeries').show();
+
+        // show/hide in hyrax add media form
         show_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit']);
-//        hide_fields(['.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
+        hide_fields(['.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
       } else if ($('#media_media_type').val() == 'PhotogrammetryImageSeries') {
+        $('.PhotogrammetryImageSeries').show();
+
+        // show/hide in hyrax add media form
         show_fields(['#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
-//        hide_fields(['.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type']);
+        hide_fields(['.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type']);
       } else if ($('#media_media_type').val() == 'Mesh') {
+        $('.Mesh').show();
+
+        // show/hide in hyrax add media form
         show_fields(['.media_unit', '.media_map_type']);
-//        hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
+        hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
       } else {
-//        hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
+        // show/hide in hyrax add media form
+        hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
       }
     }
 
@@ -266,6 +277,7 @@ $(document).on('turbolinks:load', function() {
   if ($('form[id*="edit_media"]').length) { // if edit media form page
     setupTooltip();
     removeLastRepeatable();
+    adjust_form_media_type();
 
   } // end if edit media form page
 })

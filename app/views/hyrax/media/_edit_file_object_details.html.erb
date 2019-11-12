@@ -24,9 +24,9 @@ Please enter information for editable fields. Uneditable fields will be parsed a
   <%= @presenter.attribute_to_html(:vertex_color, render_as: :showcase_default, include_empty: true, text_if_empty: 'Parsed on submission', html_dl: false) %>
   <%= @presenter.attribute_to_html(:bounding_box_dimensions, render_as: :showcase_default, include_empty: true, text_if_empty: 'Parsed on submission', html_dl: false) %>
   <%= @presenter.attribute_to_html(:centroid_location, label: "Centroid coordinates", render_as: :showcase_default, include_empty: true, text_if_empty: 'Parsed on submission', html_dl: false) %>
+</div>
 
-  <%# todo: if DICOM, show read only with magnifier icon %>
-
+<div class="media_type_block Mesh CTImageSeries">
   <%= render_edit_field_partial('unit', f: f) %>
 </div>
 
@@ -35,16 +35,10 @@ Please enter information for editable fields. Uneditable fields will be parsed a
   <%= render_edit_field_partial('x_spacing', f: f) %>
   <%= render_edit_field_partial('y_spacing', f: f) %>
   <%= render_edit_field_partial('z_spacing', f: f) %>
-  <%= render_edit_field_partial('unit', f: f) %>
   <%= render_edit_field_partial('slice_thickness', f: f) %>
-
-  <%# todo: seems like the number_of_images_in_set is not in the form and not being set anywhere.  investigate
-  						and fix if needed %> 
-  <%= @presenter.attribute_to_html(:number_of_images_in_set, label: "Number of slices", render_as: :showcase_default, include_empty: true, html_dl: false) %>
 </div>
 
 <div class="media_type_block PhotogrammetryImageSeries">
-  <%= @presenter.attribute_to_html(:number_of_images_in_set, render_as: :showcase_default, include_empty: true, html_dl: false) %>
   <%= f.input :scale_bar, as: :multi_value %>
   <div class="row" id="media_scale_bar_wrapper">
     <div class="col-xs-6 showcase-label">Scale Bar (Target type, Distance, Units)</div>
@@ -67,6 +61,7 @@ Please enter information for editable fields. Uneditable fields will be parsed a
   <%= @presenter.attribute_to_html(:color_space, render_as: :showcase_default, include_empty: true, text_if_empty: 'Parsed on submission', html_dl: false) %>
   <%= @presenter.attribute_to_html(:color_depth, render_as: :showcase_default, include_empty: true, text_if_empty: 'Parsed on submission', html_dl: false) %>
   <%= @presenter.attribute_to_html(:compression, render_as: :showcase_default, include_empty: true, text_if_empty: 'Parsed on submission', html_dl: false) %>
+  <%= @presenter.attribute_to_html(:number_of_images_in_set, render_as: :showcase_default, include_empty: true, text_if_empty: 'Parsed on submission', html_dl: false) %>
 </div>
 
 

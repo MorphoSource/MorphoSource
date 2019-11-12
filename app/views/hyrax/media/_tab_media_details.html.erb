@@ -4,11 +4,6 @@
   <div class="col-sm-6">
 
     <div class="content-block">
-      <%= render 'edit_file_object_details', f: f %>
-    </div>
-
-
-    <div class="content-block">
       <h2>GENERAL DETAILS</h2>
       <%= render_edit_field_partial('media_type', f: f) %>
       <%= f.input :part, label: 'Element or part of the object', as: :multi_value %>
@@ -17,8 +12,6 @@
       <%= f.input :short_description, label: 'Short description' %>
       <%= f.input :description, label: 'Full description', as: :multi_value %>
     </div>
-
-
 
     <div class="content-block">
       <h2>OWNERSHIP AND PERMISSIONS</h2>
@@ -69,11 +62,11 @@
       <%= f.input :identifier, label: 'External identifier' %>
       <%= f.input :related_url, label: 'External media URL' %>
     </div>
-
-    <div class="content-block">
-      <%# render 'edit_file_object_details', f: f %>
-    </div>
   
+    <div class="content-block">
+      <%= render 'edit_file_object_details', f: f %>
+    </div>
+
   </div>
   <!-- /left column  -->
 

@@ -10,9 +10,9 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//=
+
 //= require turbolinks
-//
+
 // Required by Blacklight
 //= require jquery
 //= require jquery_ujs
@@ -23,6 +23,7 @@
 //= require_tree .
 //= require hyrax
 //= require select2
+//= require morphosource/ms_collections_v2
 //= require morphosource/ms_app
 //= require morphosource/ms_editor
 //= require morphosource/media/upload_formats
@@ -37,4 +38,3 @@
 //= require morphosource/field_manager
 //= require morphosource/ms_autocomplete
 //= require morphosource/autocomplete/ms_resource
-

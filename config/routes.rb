@@ -163,4 +163,8 @@ Rails.application.routes.draw do
       put 'edit_expiration', action: :edit_expiration, controller: :request_managers, as: 'edit_expiration'
     end
   end
+
+  # Add users to auto-generated collection groups
+  post 'dashboard/collections/:id/update_collection_groups', action: :update_collection_groups, controller: :collection_roles, as: 'update_collection_groups'
+
 end

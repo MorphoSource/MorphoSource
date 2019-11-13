@@ -129,4 +129,12 @@ namespace :morphosource do
 
     admin.save
   end
+
+  desc 'Set up Team and Project collection types'
+  task :create_collection_types => :environment do
+    Hyrax::CollectionType.create(Morphosource::CollectionTypes::Teams::SETTINGS)
+    Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
+    puts 'Team and Project collection types created'
+  end
+
 end

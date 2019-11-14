@@ -8,6 +8,11 @@
             <i class="fas fa-frog"></i> Physical Object
           </a>
         </li>
+        <li role="presentation" id="tab-processing" class="">
+          <a href="#processing" aria-controls="processing" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fas fa-frog"></i> Processing
+          </a>
+        </li>
         <li role="presentation" id="tab-file-upload" class="">
           <a href="#file-upload" aria-controls="file-upload" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fas fa-frog"></i> File Upload
@@ -26,6 +31,14 @@
           <div class="form-tab-content">
 
             <%#= render 'tab_object_details', f: f %>
+
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="processing">
+          <div class="form-tab-content">
+
+            <%= render 'tab_processing', f: f %>
 
           </div>
         </div>

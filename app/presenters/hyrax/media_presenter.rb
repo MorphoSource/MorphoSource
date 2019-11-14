@@ -14,7 +14,7 @@ module Hyrax
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
-      :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
+      :processing_events, :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
       :processing_activity_count, :processing_activity_items,
       :raw_or_derived, :is_absentee_parent,
       :imaging_event_exist,
@@ -175,12 +175,12 @@ module Hyrax
 
       # get processing event:  media < processing_event
       # then get processing activities
-      processing_events = ProcessingEvent.where('member_ids_ssim' => solr_document.id)
+      @processing_events = ProcessingEvent.where('member_ids_ssim' => solr_document.id)
       processing_event_ids = []
       @processing_activity_items = []
-      if processing_events.present?
-        @processing_event_count = processing_events.count
-        processing_events.each do |processing_event|
+      if @processing_events.present?
+        @processing_event_count = @processing_events.count
+        @processing_events.each do |processing_event|
           processing_event_ids << processing_event.id
           processing_event.processing_activity.each do |processing_activity|
             @processing_activity_items << Hash[processing_activity.split(/\s*,\s*/).map {|el| el.split ': '}]

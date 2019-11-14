@@ -1,0 +1,10 @@
+      <%= p.input :description, label: 'Full description' %>
+      <%= p.input :software, as: :multi_value %>
+
+    <% if presenter.editor? %>
+
+      <%= p.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if p.object.persisted? %>
+      <%= p.submit class: 'btn btn-primary btn-save btn-save-processing-event', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_pe", value: "Save", data: { :disable_with => 'Saving...' } %>
+
+    <% end %>
+ 

@@ -2,12 +2,12 @@
 
 <%= f.input :processing_activity, as: :multi_value %>
 
-<div id="processing_event_processing_activity_wrapper" class="form-group multi_value optional managed" style="margin-right:7em;">
+<div id="processing_event_processing_activity_wrapper" class="form-group multi_value optional managed">
 
   <label class="control-label multi_value optional" for="processing_event_processing_activity">Processing Activity</label>
 
-  <ul class="listing" aria-live="polite" style=" border:solid 1px lightgray; border-radius: 5px;">
-    <div id="processing_activity_labels" style="display:flex; flex-direction:row; justify-content:space-evenly; margin-top:.5em;">
+  <ul class="listing" aria-live="polite">
+    <div id="processing_activity_labels">
       <div style="width:10%;margin-left:8px"><label for="processing_event_processing_activity_step">Step</label></div>
       <div style="width:23%;margin-left:8px"><label for="processing_event_processing_activity_type">Type</label></div>
       <div style="width:33%;margin-left:8px"><label for="processing_event_processing_activity_software">Software</label></div>
@@ -16,17 +16,17 @@
     <li class="field-wrapper input-group input-append" style="display:flex; flex-direction:row; justify-content:space-evenly;">
       <!--input class="string multi_value optional form-control processing_event_processing_activity_step form-control multi-text-field" name="processing_event[processing_activity_step][]" value="" id="processing_event_processing_activity_step" type="text" style="margin:5px; width:10%; border-radius:5px;"-->
 
-      <%= select_tag( "processing_event[processing_activity_step][]", options_for_select(1..20), {:class => 'string multi_value optional form-control processing_event_processing_activity_step multi-text-field', :id => 'processing_event_processing_activity_step', :style => 'margin:5px; width:10%; border-radius:5px; min-width:unset', :onChange => 'processingActivityStepChanged()'} ) %>
+      <%= select_tag( "processing_event[processing_activity_step][]", options_for_select(1..20), {:class => 'string multi_value optional form-control processing_event_processing_activity_step multi-text-field', :id => 'processing_event_processing_activity_step', :onChange => 'processingActivityStepChanged()'} ) %>
 
-      <select class="form-control select optional form-control" name="processing_event[processing_activity_type][]" id="processing_event_processing_activity_type" style="margin:5px; width:23%; min-width:unset">
+      <select class="form-control select optional form-control" name="processing_event[processing_activity_type][]" id="processing_event_processing_activity_type">
         <option value=""></option>
         <% processing_activity_types_service.select_all_options.each do |processing_activity_type_option| %>
           <option value="<%= processing_activity_type_option[0] %>" ><%= processing_activity_type_option[1] %></option>
         <% end %>
       </select>
 
-      <input class="string multi_value optional form-control processing_event_processing_activity_software form-control multi-text-field" name="processing_event[processing_activity_software][]" value="" id="processing_event_processing_activity_software" type="text" style="margin:5px; width:33%; border-radius:5px;">
-      <input class="string multi_value optional form-control processing_event_processing_activity_description form-control multi-text-field" name="processing_event[processing_activity_description][]" value="" id="processing_event_processing_activity_description" type="text" style="margin:5px; width:33%; border-radius:5px;">
+      <input class="string multi_value optional form-control processing_event_processing_activity_software form-control multi-text-field" name="processing_event[processing_activity_software][]" value="" id="processing_event_processing_activity_software" type="text">
+      <input class="string multi_value optional form-control processing_event_processing_activity_description form-control multi-text-field" name="processing_event[processing_activity_description][]" value="" id="processing_event_processing_activity_description" type="text">
     </li>
   </ul>
 </div>
@@ -37,7 +37,6 @@ var appendProcessingActivityStepSelect = function(appendToElement) {
     id : "processing_event_processing_activity_step_"+i,
     name : 'processing_event[processing_activity_step][]',
     class : "form-control select optional form-control processing_event_processing_activity_step",
-    style : "margin:5px; width:10%; border-radius:5px; min-width:unset",
     append : [
       $('<option />', {value : "", text : ""}),
       <% (1..20).each do |processing_activity_step_option| %>
@@ -52,7 +51,6 @@ var appendProcessingActivityTypeSelect = function(appendToElement) {
     id : "processing_event_processing_activity_type_"+i,
     name : 'processing_event[processing_activity_type][]',
     class : "form-control select optional form-control processing_event_processing_activity_type",
-    style : "margin:5px; width:33%; border-radius:5px; min-width:unset",
     append : [
       $('<option />', {value : "", text : ""}),
       <% processing_activity_types_service.select_all_options.each do |processing_activity_type_option| %>

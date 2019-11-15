@@ -1,6 +1,5 @@
 $(document).on('turbolinks:load', function() {
   if ($('form[id*="processing_event"]').length) { // if PE form page
-  	hide_fields(['.processing_event_processing_activity']);
     
     // concatenate rights holder name, type to rights holder
     var form = $('form[id*="processing_event"]')[0];
@@ -9,12 +8,22 @@ $(document).on('turbolinks:load', function() {
     var targetGroup = document.querySelector('div.processing_event_processing_activity');
     var targetGroupUl = targetGroup.querySelector("ul");
     var concatFields = targetGroup.querySelectorAll("input");
-    var concatFieldCount = (targetGroup.querySelectorAll("input").length) - 1;
+    var concatFieldCount = (targetGroup.querySelectorAll("input").length);
 
     // Two part processingActivity entry
     var targetWrapper = document.getElementById("processing_event_processing_activity_wrapper");
     var targetWrapperUl = targetWrapper.querySelector('ul');
     var targetWrapperLi = targetWrapper.querySelector('li');
+
+    if ($('form[id*="edit_media"]').length) { // if edit media form page
+    
+    } else { // if not in media edit page, it is the standalone PE form with additional empty field
+      concatFieldCount--;
+      // also, build the Processing Activity fields before submit (only in the standalone PE form )
+      form.addEventListener("submit", function() {
+        buildProcessingActivity();
+      });
+    }
 
     // remove the first set of fields if in editing (not adding) mode
     if (concatFieldCount > 0) {
@@ -63,13 +72,7 @@ $(document).on('turbolinks:load', function() {
 
       var span = document.createElement('span');
       span.className = "input-group-btn field-controls";
-      span.innerHTML = `<button type="button" class="btn btn-link remove">
-                          <span class="glyphicon glyphicon-remove"></span>
-                          <span class="controls-remove-text">Remove</span>
-                          <span class="sr-only"> previous
-                            <span class="controls-field-name-text"> processing_event</span>
-                          </span>
-                        </button>`
+      span.innerHTML = '<button type="button" class="btn btn-link remove"><i class="fa fa-times-circle" aria-hidden="true"></i></button><button type="button" class="btn btn-link add"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>';
 
       li.appendChild(span);
       targetWrapperUl.appendChild(li);
@@ -86,60 +89,62 @@ $(document).on('turbolinks:load', function() {
     //console.log(targetWrapperUl);
 
     // Clear default fields when done.
+    hide_fields(['.processing_event_processing_activity']);
     targetGroupUl.innerHTML = '';
     $(targetGroup).hide(); // hide the field label and add button
 
-    // On submit, the three fields are concatenated and inserted into hidden default processing activity field.
-    form.addEventListener("submit", function() {
-
-      var processingActivityCount = $('select[name="processing_event[processing_activity_type][]"]').length;
-      var steps = [];
-      for (var i = 0; i < processingActivityCount; i++) {
-
-        var processingActivityStep = $('select[name="processing_event[processing_activity_step][]"]')[i].value || '';
-        var processingActivityType = $('select[name="processing_event[processing_activity_type][]"]')[i].value || '';
-        var processingActivitySoftware = $('input[name="processing_event[processing_activity_software][]"]')[i].value || '';
-        var processingActivityDescription = $('input[name="processing_event[processing_activity_description][]"]')[i].value || '';
-        processingActivityStep = parseInt(processingActivityStep);
-        steps.push(processingActivityStep);
-
-        // As long as at least one input is filled out, proceed with creating a processingActivity string. Otherwise, create an empty string.
-        if ((processingActivityType != '') || (processingActivitySoftware != '')) {
-          var processingActivity = "Step: " + processingActivityStep + ", Type: " + processingActivityType + ", Software: " + processingActivitySoftware + ", Description: " + processingActivityDescription;
-        } else {
-          var processingActivity = '';
-        }
-        buildTargetField(processingActivity, targetGroupUl);
-        //alert('processingActivity: '+processingActivity);
-        // clear the individual fields to avoid confusion
-        $('select[name="processing_event[processing_activity_type][]"]')[i].value = '';
-        $('input[name="processing_event[processing_activity_software][]"]')[i].value = '';
-        $('input[name="processing_event[processing_activity_description][]"]')[i].value = '';
-      }
-      // validate the step values
-      if (!stepsValid(steps.sort())) {
-        alert('Please select the steps in sequence.');
-        event.preventDefault();
-      } 
-
-    });
-
-    // Puts concatenated values into processingActivityHolder on submit.
-    function buildTargetField(inputValue, targetGroupUl) {
-      var li = document.createElement('li');
-      var input = document.createElement('input');
-      input.className = 'string multi_value optional processing_event_processing_activity form-control multi-text-field';
-      input.setAttribute("id", "processing_event_processing_activity");
-      input.setAttribute("name", "processing_event[processing_activity][]");
-      input.value = inputValue;
-
-      li.appendChild(input);
-      targetGroupUl.appendChild(li);
-    }
-
-
   } // end if PE form page
 })
+
+function buildProcessingActivity() {
+  var targetGroup = document.querySelector('div.processing_event_processing_activity');
+  var targetGroupUl = targetGroup.querySelector("ul");
+  
+  // the three fields are concatenated and inserted into hidden default processing activity field.
+  var processingActivityCount = $('select[name="processing_event[processing_activity_type][]"]').length;
+  var steps = [];
+  for (var i = 0; i < processingActivityCount; i++) {
+
+    var processingActivityStep = $('select[name="processing_event[processing_activity_step][]"]')[i].value || '';
+    var processingActivityType = $('select[name="processing_event[processing_activity_type][]"]')[i].value || '';
+    var processingActivitySoftware = $('input[name="processing_event[processing_activity_software][]"]')[i].value || '';
+    var processingActivityDescription = $('input[name="processing_event[processing_activity_description][]"]')[i].value || '';
+    processingActivityStep = parseInt(processingActivityStep);
+    steps.push(processingActivityStep);
+
+    // As long as at least one input is filled out, proceed with creating a processingActivity string. Otherwise, create an empty string.
+    if ((processingActivityType != '') || (processingActivitySoftware != '')) {
+      var processingActivity = "Step: " + processingActivityStep + ", Type: " + processingActivityType + ", Software: " + processingActivitySoftware + ", Description: " + processingActivityDescription;
+    } else {
+      var processingActivity = '';
+    }
+    buildTargetField(processingActivity, targetGroupUl);
+    //alert('processingActivity: '+processingActivity);
+    // clear the individual fields to avoid confusion
+    $('select[name="processing_event[processing_activity_type][]"]')[i].value = '';
+    $('input[name="processing_event[processing_activity_software][]"]')[i].value = '';
+    $('input[name="processing_event[processing_activity_description][]"]')[i].value = '';
+  }
+  // validate the step values
+  if (!stepsValid(steps.sort())) {
+    alert('Please select the steps in sequence.');
+    event.preventDefault();
+  } 
+
+}
+
+// Puts concatenated values into processingActivityHolder on submit.
+function buildTargetField(inputValue, targetGroupUl) {
+  var li = document.createElement('li');
+  var input = document.createElement('input');
+  input.className = 'string multi_value optional processing_event_processing_activity form-control multi-text-field';
+  input.setAttribute("id", "processing_event_processing_activity");
+  input.setAttribute("name", "processing_event[processing_activity][]");
+  input.value = inputValue;
+
+  li.appendChild(input);
+  targetGroupUl.appendChild(li);
+}
 
 
 var processingActivityStepChanged = function() {

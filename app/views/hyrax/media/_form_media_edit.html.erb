@@ -27,12 +27,10 @@
 # after page is loaded, the divs will be moved to the corresponding tabs
 # see function moveWorkForms()
 %>
-<div class="col-sm-12">
-  <div class="content-block">
-    <div id="embedded_div_processing_event" class="embedded_div">
+<div class="row related_form" id="related_form_processing_event">
+
 
         <%= simple_form_for [main_app, @processing_event_form],
-                            #builder: Hyrax::ShowcaseFormBuilder,
                             wrapper: :showcase_default,
                             html: {
                               data: { behavior: 'work-form',
@@ -42,8 +40,7 @@
 
             <%= render 'form_processing_event', p: p, presenter: @presenter %>
         <% end %>
-    </div>
-  </div>
+
 </div>
 
 <div class="col-sm-12">

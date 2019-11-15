@@ -1,10 +1,31 @@
-      <%= p.input :description, label: 'Full description' %>
-      <%= p.input :software, as: :multi_value %>
+<div class="col-sm-6">
+  <div class="content-block">
+  	<h2>PROCESSING DETAILS</h2>
+    <%= p.input :creator, as: :multi_value %>
+    <%= p.input :date_created %>
+    <%= p.input :software, as: :multi_value %>
+    <%= p.input :description, label: 'Full description' %>
 
-    <% if presenter.editor? %>
 
-      <%= p.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if p.object.persisted? %>
-      <%= p.submit class: 'btn btn-primary btn-save btn-save-processing-event', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_pe", value: "Save", data: { :disable_with => 'Saving...' } %>
 
-    <% end %>
+	</div>
+</div>
+<div class="col-sm-6">
+  <div class="content-block">
+  	<h2>INDIVIDUAL PROCESSING STEPS</h2>
+
+	  <%= render_edit_field_partial('processing_activity', f: p) %>
+
+	</div>
+</div>
+
+
+<% if presenter.editor? %>
+
+  <%= p.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if p.object.persisted? %>
+  <%#= p.submit class: 'btn btn-primary btn-save btn-save-processing-event', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_pe", value: "Save", data: { :disable_with => 'Saving...' } %>
+
+  <a href="javascript:void(0)" id="btn-save-processing-event" class="btn btn-save">save</a>
+
+<% end %>
  

@@ -80,6 +80,15 @@ $(document).on('turbolinks:load', function() {
       else {
         buildScaleBar('', scaleBarGroupUl);
       }
+  
+      // will loop here to submit each form
+      
+      buildProcessingActivity(); // this is needed before saving PE
+
+
+
+
+      return submitRelatedWork(".related_form form");
 
     }); // /on submit
 
@@ -274,10 +283,32 @@ $(document).on('turbolinks:load', function() {
 
   } // end if media form page
 
+
+  // this is for using the save button for testing.  remove this later
+  $(".related_form .btn-save").click(function() {
+    buildProcessingActivity(); // this is needed before saving PE
+    submitRelatedWork(".related_form form");
+  })
+
+  function submitRelatedWork(this_form) {
+    //console.log('submitting '+ this_form);
+    // replace with ajax form post to trigger other actions
+    $.post($(this_form).attr('action'), $(this_form).serialize(), function(data){
+      // not sure why code is not executed here after post
+    }).always(function() {
+      //console.log(this_form + " submitted" );
+      //alert(data); // todo: might need to get data back to check if saving is successful
+      return true;
+    });
+
+    return false;
+  }
+
   if ($('form[id*="edit_media"]').length) { // if edit media form page
     setupTooltip();
     removeLastRepeatable();
     adjust_form_media_type();
+
 
   } // end if edit media form page
 })

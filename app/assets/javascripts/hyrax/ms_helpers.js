@@ -22,7 +22,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	var this_btn = "#btn_" + action + '_' + work_name;
 	var this_div = "#embedded_div_" + action + '_' + work_name;
 	var this_form = "form#" + action + '_' + work_name;
-	var this_path = "/submissions/" + action + '_' + work_name;
+	//var this_path = "/submissions/" + action + '_' + work_name;
 	var detail_div = '#' + work_name + '_details';
 
   $(document).on("click", this_btn, function() {		

@@ -309,7 +309,18 @@ $(document).on('turbolinks:load', function() {
     removeLastRepeatable();
     adjust_form_media_type();
 
+    // when switching tab, show/hide content
+    $('.nav-tabs > li').click(function() {
+      $(".related_form").hide();
+      var clickedTab = $(this).find("a").attr("aria-controls");
+      $(".related_form." + clickedTab).show();
+    })
+
+    // when page is loaded, show/hide content based on which tab is active
+    var activeTab = $('.nav-tabs > li.active').find("a").attr("aria-controls");
+    $(".related_form." + activeTab).show();
 
   } // end if edit media form page
+
 })
 

@@ -27,19 +27,20 @@
 # after page is loaded, the divs will be moved to the corresponding tabs
 # see function moveWorkForms()
 %>
-<div class="row related_form" id="related_form_processing_event">
 
 
-        <%= simple_form_for [main_app, @processing_event_form],
-                            wrapper: :showcase_default,
-                            html: {
-                              data: { behavior: 'work-form',
-                                      'param-key' => @processing_event_form.model_name.param_key },
-                              multipart: true
-                            } do |p| %>
+<div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
 
-            <%= render 'form_processing_event', p: p, presenter: @presenter %>
-        <% end %>
+  <%= simple_form_for [main_app, @processing_event_form],
+                      wrapper: :showcase_default,
+                      html: {
+                        data: { behavior: 'work-form',
+                                'param-key' => @processing_event_form.model_name.param_key },
+                        multipart: true
+                      } do |p| %>
+
+      <%= render 'form_processing_event', p: p, presenter: @presenter %>
+  <% end %>
 
 </div>
 

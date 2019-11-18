@@ -15,14 +15,6 @@
 
 	</div>
 </div>
-
-
-<% if presenter.editor? %>
-
-  <%= p.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if p.object.persisted? %>
-  <%#= p.submit class: 'btn btn-primary btn-save btn-save-processing-event', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_pe", value: "Save", data: { :disable_with => 'Saving...' } %>
-
-  <a href="javascript:void(0)" id="btn-save-processing-event" class="btn btn-save">save</a>
-
-<% end %>
- 
+<%# this save button is for debugging in a standalone form
+<a href="javascript:void(0)" id="btn-save-processing-event" class="btn btn-save">save</a>
+%>

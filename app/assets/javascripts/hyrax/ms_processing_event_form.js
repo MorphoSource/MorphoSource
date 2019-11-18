@@ -40,10 +40,11 @@ $(document).on('turbolinks:load', function() {
       var software = concatFieldValue.match(/, Software: (.*), Description: /)[1];
       var description = concatFieldValue.match(/, Description: (.*)/)[1];
 
+
+
       // Assemble new triple fields
       var li = document.createElement('li');
-      li.className =  'field-wrapper input-group input-append';
-      li.setAttribute('style', "display:flex; flex-direction:row; justify-content:space-evenly;");
+      li.className =  'field-wrapper input-group input-append processing_activity_items';
       li.setAttribute('data-step', step);
 
       appendProcessingActivityStepSelect(li);
@@ -58,17 +59,35 @@ $(document).on('turbolinks:load', function() {
       softwareInput.className = "string multi_value optional form-control processing_event_processing_activity_software form-control multi-text-field";
       softwareInput.setAttribute("id", "processing_event_processing_activity_software");
       softwareInput.setAttribute("name", "processing_event[processing_activity_software][]");
-      softwareInput.setAttribute("style", "margin:5px; width:23%; border-radius:5px;");
       softwareInput.value = software;
-      li.appendChild(softwareInput);
+      var row = document.createElement('div');
+      row.className = "row";
+      var label = document.createElement('div');
+      label.className = "col-xs-6 showcase-label";
+      label.innerHTML = "Activity software";
+      var value = document.createElement('div');
+      value.className = "col-xs-6 showcase-value";
+      value.appendChild(softwareInput);
+      row.appendChild(label);
+      row.appendChild(value);
+      li.appendChild(row);
 
       var descriptionInput = document.createElement('input');
       descriptionInput.className = "string multi_value optional form-control processing_event_processing_activity_description form-control multi-text-field";
       descriptionInput.setAttribute("id", "processing_event_processing_activity_description");
       descriptionInput.setAttribute("name", "processing_event[processing_activity_description][]");
-      descriptionInput.setAttribute("style", "margin:5px; width:33%; border-radius:5px;");
       descriptionInput.value = description;
-      li.appendChild(descriptionInput);
+      var row = document.createElement('div');
+      row.className = "row";
+      var label = document.createElement('div');
+      label.className = "col-xs-6 showcase-label";
+      label.innerHTML = "Description/Parameter settings";
+      var value = document.createElement('div');
+      value.className = "col-xs-6 showcase-value";
+      value.appendChild(descriptionInput);
+      row.appendChild(label);
+      row.appendChild(value);
+      li.appendChild(row);
 
       var span = document.createElement('span');
       span.className = "input-group-btn field-controls";

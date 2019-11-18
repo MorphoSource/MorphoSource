@@ -192,8 +192,20 @@ div.showcase-edit {
   }
 
 
-  .listing li {
-    width: 200px !important;
+  .listing li:not(.processing_activity_items) {
+    width: 200px !important; 
+  }
+
+  .processing_activity_items {
+    .field-controls {
+      vertical-align: top;
+      padding-top: 10px;
+    }
+    .row:not(:first-child) {
+      .showcase-label {
+        padding-left:30px;
+      }
+    }
   }
 
   .input-group-btn.field-controls .btn {

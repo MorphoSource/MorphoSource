@@ -132,8 +132,10 @@ namespace :morphosource do
 
   desc 'Set up Team and Project collection types'
   task :create_collection_types => :environment do
-    Hyrax::CollectionType.create(Morphosource::CollectionTypes::Teams::SETTINGS)
-    Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
+    team = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Teams::SETTINGS)
+    project = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
+    Hyrax::CollectionTypes::CreateService.add_default_participants(team.id)
+    Hyrax::CollectionTypes::CreateService.add_default_participants(project.id)
     puts 'Team and Project collection types created'
   end
 

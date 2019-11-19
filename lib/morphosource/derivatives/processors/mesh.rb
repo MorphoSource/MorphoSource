@@ -87,29 +87,33 @@ module Morphosource::Derivatives::Processors
     end
 
     def create_glb_texture
-      gltf_pipeline = Morphosource::Derivatives::GltfPipeline.new(glb_file_path, glb_texture_file_path, separate_textures=true)
+      gltf_pipeline = Morphosource::Derivatives::GltfPipeline.new(glb_file_path, glb_texture_file_path, draco=false, separate_textures=true)
       gltf_pipeline.call # todo add output and error check it
     end
 
     def texture_present?
       Dir.foreach(glb_texture_path) do |f|
         next if f == '.' or f == '..'
-        return true if acceptable_texture_image_formats.include? File.extname(f).downcase
+        return true if is_acceptable_image? f
       end
       return false
+    end
+
+    def is_acceptable_image?(f)
+      acceptable_texture_image_formats.include? File.extname(f).downcase
     end
 
     def compress_textures
       Dir.foreach(glb_texture_path) do |f|
         next if f == '.' or f == '..'
-        compress_texture(File.join(glb_texture_path, f))
+        compress_texture(File.join(glb_texture_path, f)) if is_acceptable_image? f
       end
     end
 
     def compress_texture(f)
       # use image magick to resave jpegs as lower quality
       img = MiniMagick::Image.open(f)
-      img.format("jpg", read_opts={'quality': 50})
+      img.format("jpg", page=0, read_opts={'quality': '50'})
       img.write(f)
     end
 
@@ -118,7 +122,7 @@ module Morphosource::Derivatives::Processors
       gltf_pipeline.call # todo add output and error check it
     end
 
-    def write_draco_glb
+    def write_glb_draco
       output_file_service.call(glb_draco_file_path, directives)
     end
 

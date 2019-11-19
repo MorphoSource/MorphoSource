@@ -3,10 +3,11 @@ module Morphosource::Derivatives
   end
 
   class GltfPipeline < DerivativeTool
-    attr_reader :source_path, :out_path, :separate_textures
-    def initialize(source_path, out_path, separate_textures=false)
+    attr_reader :source_path, :out_path, :draco, :separate_textures
+    def initialize(source_path, out_path, draco=true, separate_textures=false)
       @source_path = source_path
       @out_path = out_path
+      @draco = draco
       @separate_textures = separate_textures
     end
 
@@ -20,8 +21,9 @@ module Morphosource::Derivatives
 
     protected     
       def command
-        "gltf-pipeline -i #{source_path} -o #{out_path} -d " +
-        ( separate_textures ? "-t" : "" )
+        "gltf-pipeline -i #{source_path} -o #{out_path} " +
+        ( draco ? "-d " : "" ) +
+        ( separate_textures ? "-t " : "" )
       end
   end
 end

@@ -107,7 +107,7 @@ if (args.input and args.output and args.unit and
                                 v.co = v.co * sf
                
                 bpy.ops.object.origin_set()
-                bpy.ops.export_scene.gltf(filepath=ofile)
+                bpy.ops.export_scene.gltf(filepath=ofile, export_image_format='JPEG')
             else:
                 # likely invalid file error, not an easy way to capture this from Blender
                 err_msg = stdout.replace("\n", "; ")

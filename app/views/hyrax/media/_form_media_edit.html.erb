@@ -22,15 +22,23 @@
   <%= render 'guts4form', f: f %>
 <% end %>
 
-<% 
-# the embedded divs are created here so that the forms will not be nested 
-# after page is loaded, the divs will be moved to the corresponding tabs
-# see function moveWorkForms()
-%>
 
+<%# the following forms are placed here so that the forms will not be nested inside the media form %>
+
+<div class="row related_form imaging-event" id="related_form_imaging_event" style="display:none">
+  <%= simple_form_for [main_app, @imaging_event_form],
+                      wrapper: :showcase_default,
+                      html: {
+                        data: { behavior: 'work-form',
+                                'param-key' => @imaging_event_form.model_name.param_key },
+                        multipart: true
+                      } do |i| %>
+
+      <%= render 'form_imaging_event', i: i, presenter: @presenter %>
+  <% end %>
+</div>
 
 <div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
-
   <%= simple_form_for [main_app, @processing_event_form],
                       wrapper: :showcase_default,
                       html: {
@@ -41,7 +49,6 @@
 
       <%= render 'form_processing_event', p: p, presenter: @presenter %>
   <% end %>
-
 </div>
 
 <div class="col-sm-12">

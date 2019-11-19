@@ -8,7 +8,12 @@
             <i class="fas fa-frog"></i> Physical Object
           </a>
         </li>
-        <li role="presentation" id="tab-processing-event" class="active">
+        <li role="presentation" id="tab-imaging-event" class="active">
+          <a href="#imaging-event" aria-controls="imaging-event" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fas fa-frog"></i> Imaging
+          </a>
+        </li>
+        <li role="presentation" id="tab-processing-event" class="">
           <a href="#processing-event" aria-controls="processing-event" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fas fa-frog"></i> Processing
           </a>
@@ -35,10 +40,18 @@
           </div>
         </div>
 
-        <div role="tabpanel" class="tab-pane active" id="processing-event">
+        <div role="tabpanel" class="tab-pane active" id="imaging-event">
           <div class="form-tab-content">
 
-            <%#= render 'tab_processing', f: f %>
+            <%# the form is in _form_media_edit %>
+
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="processing-event">
+          <div class="form-tab-content">
+
+            <%# the form is in _form_media_edit %>
 
           </div>
         </div>

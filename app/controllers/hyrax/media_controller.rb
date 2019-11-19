@@ -50,12 +50,14 @@ module Hyrax
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       @presenter.get_showcase_data
 
-
+      if @presenter.imaging_event.present?
+        ie_work = @presenter.imaging_event
+        @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
+      end
 
       if @presenter.processing_events.present?
         pe_work = @presenter.processing_events.first
         @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
-
       end
 
       @new_organization_submit_submissions_url = '/submissions/new_organization_submit'

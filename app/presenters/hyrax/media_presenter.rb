@@ -17,7 +17,7 @@ module Hyrax
       :processing_events, :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
       :processing_activity_count, :processing_activity_items,
       :raw_or_derived, :is_absentee_parent,
-      :imaging_event_exist,
+      :imaging_event, :imaging_event_exist,
       :direct_parent_members_raw_or_derived,
       :file_size, :mime_type, :this_media_type,
       # mesh specific
@@ -250,10 +250,11 @@ module Hyrax
       # or
       # media < PE < IE < PO (for media with absentee parent)
       if @is_absentee_parent == true
-        imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
+        @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
       else
-        imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
+        @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
       end
+
       if imaging_event.present?
         imaging_event_exist = true
         biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => imaging_event.id).first

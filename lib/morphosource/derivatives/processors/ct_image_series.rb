@@ -121,7 +121,7 @@ module Morphosource::Derivatives::Processors
       coll_by_ext = {}
       img_locs.each do |k, v|
         max = v.max_by { |sub_k, sub_v| sub_v.length }
-        coll_by_ext[k] = max[1] if max[1].length > 9
+        coll_by_ext[k] = max[1] if (max[1].length > 9 || k.downcase == '.dcm' || k.downcase == '.dicom')
       end
 
       # return largest group of most preferred file type

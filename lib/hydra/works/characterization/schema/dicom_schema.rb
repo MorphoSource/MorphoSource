@@ -21,6 +21,7 @@ module Hydra::Works::Characterization
     property :rows, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#Rows')
     property :columns, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#Columns')
     property :pixel_spacing, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#PixelSpacing')
+    property :slice_thickness, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#SliceThickness')
     property :bits_allocated, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#BitsAllocated')
     property :bits_stored, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#BitsStored')
     property :high_bit, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#HighBit')

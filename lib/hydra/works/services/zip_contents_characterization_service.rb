@@ -15,9 +15,9 @@ module Hydra::Works
       set_blender_options if mesh_file_types.include? File.extname(file_name).downcase
       extracted_md = extract_metadata(content)
       terms = parse_metadata(extracted_md)
-      store_metadata(terms)
-      transfer_metadata_to_object
-      transfer_special_fields_to_object
+      store_metadata(terms) # places fields in sub_object (always have to call fields directly)
+      transfer_metadata_to_object # places fields in object
+      transfer_special_fields_to_object # places mime_type and file_size in object from sub_object
     end
 
     # Gets representative zip file as content.

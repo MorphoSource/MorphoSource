@@ -2,17 +2,15 @@
 <%# Its successor analytics.js is also deprecated. Instead, use modern gtag.js tracking. %>
 <%# Meta tag added because Google analytics charts were not loading except on page refresh. %>
 <%= "<meta name='turbolinks-visit-control' content='reload'/>".html_safe %>
-<%
-if Hyrax.config.google_analytics_id?
-tracking_id = Hyrax.config.google_analytics_id
-%>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=<%= tracking_id %>"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', '<%= tracking_id %>', { 'anonymize_ip': true, 'transport_type': 'beacon' });
-</script>
+<% if Hyrax.config.google_analytics_id? %>
+  <% tracking_id = Hyrax.config.google_analytics_id %>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= tracking_id %>"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '<%= tracking_id %>', { 'anonymize_ip': true, 'transport_type': 'beacon' });
+  </script>
 
 <% end %>

@@ -9,31 +9,31 @@ module Hyrax
     delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :user_taxonomies, to: :work
 
 # TODO: remove below block later if not needed any more.
-    #attr_accessor :institution_code, :institution_title, :institution_description, :institution_address, :#institution_city, :institution_state_province, :institution_country #
+    #attr_accessor :institution_code, :organization_title, :organization_description, :organization_address, :#organization_city, :organization_state_province, :organization_country #
 #
-#    #def get_institution_data
-#    #  institution = parent_institution
-#    #  if institution.present?
-#    #    if institution.institution_code.present?
-#    #      @institution_code = institution.institution_code.first
+#    #def get_organization_data
+#    #  organization = parent_organization
+#    #  if organization.present?
+#    #    if organization.institution_code.present?
+#    #      @institution_code = organization.institution_code.first
 #    #    end
-#    #    if institution.title.present?
-#    #      @institution_title = institution.title.first
+#    #    if organization.title.present?
+#    #      @organization_title = organization.title.first
 #    #    end
-#    #    if institution.description.present?
-#    #      @institution_description = institution.description.first
+#    #    if organization.description.present?
+#    #      @organization_description = organization.description.first
 #    #    end
-#    #    if institution.address.present?
-#    #      @institution_address = institution.address.first
+#    #    if organization.address.present?
+#    #      @organization_address = organization.address.first
 #    #    end
-#    #    if institution.city.present?
-#    #      @institution_city = institution.city.first
+#    #    if organization.city.present?
+#    #      @organization_city = organization.city.first
 #    #    end
-#    #    if institution.state_province.present?
-#    #      @institution_state_province = institution.state_province.first
+#    #    if organization.state_province.present?
+#    #      @organization_state_province = organization.state_province.first
 #    #    end
-#    #    if institution.country.present?
-#    #      @institution_country = institution.country.first
+#    #    if organization.country.present?
+#    #      @organization_country = organization.country.first
 #    #    end
 #    #    
     #  end

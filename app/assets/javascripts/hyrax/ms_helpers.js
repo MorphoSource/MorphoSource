@@ -43,7 +43,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 			var relationship_element = $(this_div).data("relationship-control");
 	  	var relationship_input = $(relationship_element).find('input[name*="[find_parent_work]"]');
 			$(relationship_input).val(data.work.id);
-			if (work_name == 'institution') {
+			if (work_name == 'organization') {
 				var new_data = {
 					id: data.work.id, 
 					text: data.work.title,

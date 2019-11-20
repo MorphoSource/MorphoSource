@@ -6,6 +6,7 @@
 <div class="submission_flow" id="submission_biospec_search">
   <%= simple_form_for @submission do |f| %>
     <%= render(partial: 'biospec_search', locals: { f: f }) %>
+    <br />
     <%= render(partial: 'biospec_search_results', locals: { f: f }) %>
   <% end %>
 </div>

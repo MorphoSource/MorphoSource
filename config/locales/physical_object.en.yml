@@ -20,7 +20,7 @@ en:
         bibliographic_citation: Citation
         publisher: Publisher
         vouchered: Vouchered?
-        institution: Institution
+        organization: Organization
         numeric_time: Numeric Time
         periodic_time: Periodic Time
         catalog_number: Catalog Number
@@ -45,12 +45,12 @@ en:
         current_location: Information about the current physical location of the object.
         original_location: Information about the original location of the object.
         date_created: Date the object or record representing the object was created.
-        identifier: Institutional or other identifier for the object.
+        identifier: Organizational or other identifier for the object.
         related_url: URL pointing to authoritative metadata about the object.
         bibliographic_citation: Citation information for the object.
         publisher: The person or entity making the object available.
         vouchered: Does the physical object still exist?
-        institution: The institution holding the object.
+        organization: The organization holding the object.
         numeric_time: The absolute age of the object.
         periodic_time: Artistic, cultural, historical, archaeological, geological or cosmological eras or periods.
         catalog_number: Unique identifier for an object within a repository.

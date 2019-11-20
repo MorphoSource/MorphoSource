@@ -1,12 +1,20 @@
 class User < ApplicationRecord
+  # used for creating ms_id
+  require 'securerandom'
+
   has_many :cart_items
   paginates_per 10
+
+  # assign user a ms_id to use as user_key
+  before_create :check_ms_id
 
   # Connects this user object to Hydra behaviors.
   include Hydra::User
   # Connects this user object to Role-management behaviors.
   include Hydra::RoleManagement::UserRoles
 
+  # Retrieves profile checkbox options
+  include Morphosource::UserProfile::CheckboxValues
 
   # Connects this user object to Hyrax behaviors.
   include Hyrax::User
@@ -21,6 +29,20 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
+
+  MULTI_VALUE_FIELDS = {
+    demographics: DEMOGRAPHICS,
+    intent: INTENT,
+    software: SOFTWARE,
+    mesh_file_type: MESH,
+    volume_file_type: VOLUME,
+    printer_model: PRINTER_MODEL,
+    printer_file: PRINTER_FILE
+  }
+
+   MULTI_VALUE_FIELDS.each_key do |field|
+     serialize field, Array
+   end
 
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
@@ -162,4 +184,29 @@ class User < ApplicationRecord
   def downloaded_work_ids
     downloaded_items.map{ |i| i.work_id }
   end
+
+  # profile methods
+  # populate 'other' field in checkbox lists
+  # field name and constant from CheckboxValues
+
+  MULTI_VALUE_FIELDS.each do |field, values|
+    define_method('other_'.concat(field.to_s).to_sym) do
+      (self.send(field) - values).join
+    end
+  end
+
+  private
+
+  # Assigns a random string to be used as the user_key
+  def assign_ms_id
+    loop do
+      self.ms_id = SecureRandom.hex(3)
+      break unless User.where(ms_id: ms_id).exists?
+    end
+  end
+
+  def check_ms_id
+    assign_ms_id if ms_id.nil?
+  end
+
 end

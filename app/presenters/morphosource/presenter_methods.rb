@@ -42,20 +42,20 @@ module Morphosource
     end
 
     # physical objects showcase page methods
-    def parent_institution
-      institution = Institution.where('member_ids_ssim' => solr_document.id).first
-      return nil unless institution.present?
-      institution
+    def parent_organization
+      organization = Organization.where('member_ids_ssim' => solr_document.id).first
+      return nil unless organization.present?
+      organization
     end
 
-    def parent_institution_title
-      return '' unless parent_institution.present?
-      parent_institution.title.first
+    def parent_organization_title
+      return '' unless parent_organization.present?
+      parent_organization.title.first
     end
 
     def parent_institution_code
-      return '' unless parent_institution.present?
-      parent_institution.institution_code.first
+      return '' unless parent_organization.present?
+      parent_organization.institution_code.first
     end
 
     def source_of_record

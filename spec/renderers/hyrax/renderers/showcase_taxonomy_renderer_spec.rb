@@ -63,7 +63,7 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
       let(:content) do
         %( <div class="panel">
        <div class="row">
-       <div class="col-xs-6 showcase-label taxonomy-label">Institutional</div>
+       <div class="col-xs-6 showcase-label taxonomy-label">Organizational</div>
        <div class="col-xs-5 showcase-value taxonomy-title">genus subgenus species subspecies</div>
        <span data-toggle="collapse" data-parent="#taxonomy-accordion-group" href="#collapse-taxonomy-imxatwyl" class="col-xs-1 glyphicon glyphicon-triangle-bottom collapse-taxonomy-imxatwyl"></span>
        </div>
@@ -265,17 +265,17 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
 
     context 'user_taxonomies' do
       let(:field)               { :user_taxonomies }
-      let(:taxonomy1)           { Taxonomy.new(full_attrs.merge({ depositor: "example@email.com"})) }
-      let(:taxonomy2)           { Taxonomy.new(some_attrs.merge({ depositor: "test@email.com"})) }
+      let(:taxonomy1)           { Taxonomy.new(full_attrs.merge({ depositor: "msid123"})) }
+      let(:taxonomy2)           { Taxonomy.new(some_attrs.merge({ depositor: "msid456"})) }
       let(:user_taxonomies)     { [ taxonomy1, taxonomy2 ] }
-      let(:user1)               { User.new(id: 1, email: "example@email.com", display_name: "T. Ruxpin") }
-      let(:user2)               { User.new(id: 2, email: "test@email.com", display_name: nil) }
+      let(:user1)               { User.new(id: 1, email: "example@email.com", display_name: "T. Ruxpin", ms_id: "msid123") }
+      let(:user2)               { User.new(id: 2, email: "test@email.com", display_name: nil, ms_id: "msid456") }
       let(:renderer)            { described_class.new(field, user_taxonomies, data_parent: "taxonomy-accordion-group", label: I18n.t('morphosource.taxonomy.labels.user'), is_collapsed: true) }
       let(:markup)              { '' << renderer.render }
 
       before do
-        allow(User).to receive(:find_by_user_key).with("example@email.com").and_return(user1)
-        allow(User).to receive(:find_by_user_key).with("test@email.com").and_return(user2)
+        allow(User).to receive(:find_by_user_key).with("msid123").and_return(user1)
+        allow(User).to receive(:find_by_user_key).with("msid456").and_return(user2)
       end
 
       it 'uses the user-supplied label' do

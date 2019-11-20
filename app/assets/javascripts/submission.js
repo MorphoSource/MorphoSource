@@ -46,18 +46,18 @@ $( document ).on('turbolinks:load', function() {
       $('div#submission_create_cho').addClass('show').removeClass('hide');
     });
 
-    $('a#submission_show_create_institution').click(function(event){
+    $('a#submission_show_create_organization').click(function(event){
       event.preventDefault();
-      $('div#submission_institution_select').addClass('hide').removeClass('show');
-      $('div#submission_choose_create_institution').addClass('hide').removeClass('show');;
-      $('div#submission_create_institution').addClass('show').removeClass('hide');
+      $('div#submission_organization_select').addClass('hide').removeClass('show');
+      $('div#submission_choose_create_organization').addClass('hide').removeClass('show');;
+      $('div#submission_create_organization').addClass('show').removeClass('hide');
     });
 
-    $('a#submission_show_create_device_institution').click(function(event){
+    $('a#submission_show_create_device_organization').click(function(event){
       event.preventDefault();
-      $('div#submission_device_institution_select').addClass('hide').removeClass('show');
-      $('div#submission_choose_create_device_institution').addClass('hide').removeClass('show');;
-      $('div#submission_create_device_institution').addClass('show').removeClass('hide');
+      $('div#submission_device_organization_select').addClass('hide').removeClass('show');
+      $('div#submission_choose_create_device_organization').addClass('hide').removeClass('show');;
+      $('div#submission_create_device_organization').addClass('show').removeClass('hide');
     });
 
     $('a#submission_show_create_taxonomy').click(function(event){
@@ -248,6 +248,9 @@ $( document ).on('turbolinks:load', function() {
         $(clickElements[i]).trigger('click');
       }
     } else {
+      if (getCookie('saved_step') == 'biospec_search') {
+        $('div#submission_biospec').addClass('show').removeClass('hide');
+      }
       if ($('div#submission_choose_raw_or_derived_media').length) {
         $('#start_over').hide();
       }

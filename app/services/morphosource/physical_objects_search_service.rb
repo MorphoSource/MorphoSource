@@ -1,7 +1,7 @@
 module Morphosource
   class PhysicalObjectsSearchService
 
-    attr_reader :institution_code, :model, :params
+    attr_reader :taxonomy_genus, :taxonomy_species, :model, :params
 
     SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
@@ -11,14 +11,15 @@ module Morphosource
 
     def initialize(model, params={})
       @model = model
-      @institution_code = params.delete('institution_code')
+      @taxonomy_genus = params.delete('taxonomy_genus')
+      @taxonomy_species = params.delete('taxonomy_species')
       @params = params
     end
 
     def call
       qry = assemble_query
       hits = search_solr(qry)
-      hits = filter_on_institution(hits) if institution_code.present?
+      hits = filter_on_taxonomy(hits) if (taxonomy_genus.present? || taxonomy_species.present?)
       hits.map { |hit| SolrDocument.new(hit) }
     end
 
@@ -29,22 +30,22 @@ module Morphosource
       query_clauses.join(' AND ')
     end
 
-    def filter_on_institution(hits)
-      inst_doc = institution_doc
-      inst_member_ids = inst_doc[Solrizer.solr_name('member_ids', :symbol)]
-      if inst_member_ids.present?
-        hits.select { |hit| inst_member_ids.include?(hit.id) }
+    def filter_on_taxonomy(hits)
+      tax_doc = taxonomy_doc
+      taxonomy_member_ids = tax_doc[Solrizer.solr_name('member_ids', :symbol)]
+      if taxonomy_member_ids.present?
+        hits.select { |hit| taxonomy_member_ids.include?(hit.id) }
       else
-        # inst_member_ids will return nil if institution code is not found, in that case, return empty set 
-        [] 
+        []
       end
     end
 
-    def institution_doc
-      inst_qry_clauses = [ "#{Solrizer.solr_name('has_model', :symbol)}:Institution",
-                           "#{Solrizer.solr_name('institution_code', :stored_searchable)}:#{institution_code}" ]
-      inst_qry = inst_qry_clauses.join(' AND ')
-      SolrDocument.new(ActiveFedora::SolrService.query(inst_qry, rows: 999999).first)
+    def taxonomy_doc
+      taxonomy_query_clauses = [ "#{Solrizer.solr_name('has_model', :symbol)}:Taxonomy" ]
+      taxonomy_query_clauses << "#{Solrizer.solr_name('taxonomy_genus', :stored_searchable)}:(#{taxonomy_genus})" if taxonomy_genus.present?
+      taxonomy_query_clauses << "#{Solrizer.solr_name('taxonomy_species', :stored_searchable)}:(#{taxonomy_species})" if taxonomy_species.present?
+      taxonomy_query = taxonomy_query_clauses.join(' AND ')
+      SolrDocument.new(ActiveFedora::SolrService.query(taxonomy_query, rows: 999999).first)
     end
 
     def model_name

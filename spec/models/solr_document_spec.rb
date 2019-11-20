@@ -4,9 +4,9 @@ RSpec.describe ::SolrDocument, type: :model do
 	let(:document) { described_class.new(attributes) }
 	let(:attributes) { {} }
 
-	describe "institution metadata field solrizer methods" do
+	describe "organization metadata field solrizer methods" do
 		let(:work) do
-			Institution.new({
+			Organization.new({
 				title: ['American Museum of Natural History'],
 				institution_code: ['AMNH'],
 				description: ['A sample description'],

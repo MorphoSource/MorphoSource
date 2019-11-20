@@ -6,7 +6,7 @@ module Hyrax
     include Morphosource::PresenterMethods
     include MorphosourceHelper
 
-    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :modality, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, to: :solr_document
+    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, to: :solr_document
 
     attr_accessor :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
@@ -19,7 +19,7 @@ module Hyrax
       :raw_or_derived, :is_absentee_parent,
       :imaging_event_exist,
       :direct_parent_members_raw_or_derived,
-      :file_size, :mime_type, :this_media_type, :this_media_modality,
+      :file_size, :mime_type, :this_media_type,
       # mesh specific
       :point_count,
       :face_count,
@@ -94,7 +94,6 @@ module Hyrax
 
       # get file characterization metadata, and add up the values (face count, point count, file size, etc)
       @this_media_type = media.media_type.first
-      @this_media_modality = media.modality.first
       @mime_type = []
       @file_size = 0
       @point_count = 0

@@ -19,6 +19,18 @@ before_install:
   - mkdir geckodriver
   - tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver
   - export PATH=$PATH:$PWD/geckodriver
+
+  # begin installing Alembic python dependencies --------
+  - sudo apt-get install python-pip
+  - sudo pip install numpy
+  - python -c 'import numpy; print(numpy.__version__)'
+  - sudo pip install Pillow
+  - python -c 'import PIL; print(PIL.__version__)'
+  - sudo pip install pydicom
+  - python -c 'import pydicom; print(pydicom.__version__)'
+  - export MORPHOSOURCE_PYTHON="python"
+  # end installing Alembic python dependencies --------
+
   # begin FITS setup --------
   - mkdir $TRAVIS_BUILD_DIR/download
   - cd $TRAVIS_BUILD_DIR/download

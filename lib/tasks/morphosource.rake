@@ -44,7 +44,7 @@ namespace :morphosource do
   desc 'Loop over all FileSets and determine how many are missing derivatives'
   task :check_derivatives => :environment do
     Rails.logger.info("#{Media.count} Media works deposited, #{FileSet.count} FileSets deposited")
-    
+
     n = 0
     FileSet.find_each do |fs|
       next if !fs.original_file.presence
@@ -90,7 +90,7 @@ namespace :morphosource do
         n += 1
       else
         fs_error = false
-        
+
         m.file_sets.each do |fs|
           if !fs.original_file.presence
             Rails.logger.warn("Media work ID #{m&.id.to_s} (media type #{media_type.to_s}) has FileSet (ID: #{fs.id}), but FileSet lacks original_file")
@@ -106,28 +106,35 @@ namespace :morphosource do
   end
 
   desc 'Mass ingest data'
-  task :mass_ingest => :environment do  
+  task :mass_ingest => :environment do
     MassIngestJob.perform_later({csv_path: File.expand_path("tmp/ingest/"), update: true, update_only_if_no_file: true})
   end
 
   desc 'Mass ingest data not in a job context'
-  task :mass_ingest_no_job => :environment do  
+  task :mass_ingest_no_job => :environment do
     Ms1to2::Importer.new(File.expand_path("tmp/ingest/"), true, true).call
   end
 
   desc 'Set up MS dev team user accounts'
   task :create_users => :environment do
-    emails = ['julia.m.winchester@gmail.com', 'jocelyn.triplett@duke.edu', 'simon.choy@duke.edu', 'douglasmb@gmail.com']
+    emails = ['julia.m.winchester@gmail.com', 'jocelyn.triplett@duke.edu', 'simon.choy@duke.edu', 'douglasmb@gmail.com', 'ryan.baumann@duke.edu']
     admin = Role.where("name = 'admin'")[0] || Role.create(name: 'admin')
 
     emails.each do |email|
-      if !User.find_by_user_key(email)
-        u = User.new(attributes={email: email, password: 'testpass'})
-        u.save!
+      if !User.find_by(email: email)
+        User.create(email: email, password: 'testpass')
       end
-      admin.users << User.find_by_user_key(email)
+      admin.users << User.find_by(email: email)
     end
 
     admin.save
   end
+
+  desc 'Set up Team and Project collection types'
+  task :create_collection_types => :environment do
+    Hyrax::CollectionType.create(Morphosource::CollectionTypes::Teams::SETTINGS)
+    Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
+    puts 'Team and Project collection types created'
+  end
+
 end

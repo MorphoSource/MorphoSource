@@ -1,8 +1,0 @@
-en:
-  hyrax:
-    icons:
-      institution:     'fa fa-file-text-o'
-    select_type:
-      institution:
-        description:        "Institution works"
-        name:               "Institution"

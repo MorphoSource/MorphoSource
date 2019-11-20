@@ -1,0 +1,10 @@
+<div id="submission_create_organization" class="hide">
+  <%= simple_form_for @organization_form, url: stage_organization_submissions_url do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+      <div>
+        <%= f.submit 'Create New Organization', class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>

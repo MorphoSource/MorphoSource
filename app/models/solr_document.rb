@@ -71,10 +71,6 @@ class SolrDocument
     self[Solrizer.solr_name('media_type', :stored_searchable)]
   end
 
-  def modality
-    self[Solrizer.solr_name('modality', :stored_searchable)]
-  end
-
   def orientation
     self[Solrizer.solr_name('orientation', :stored_searchable)]
   end
@@ -379,7 +375,7 @@ class SolrDocument
     self[Solrizer.solr_name('short_title', :stored_searchable)]
   end
 
-  # Institution fields
+  # Organization fields
   def institution_code
     self[Solrizer.solr_name('institution_code', :stored_searchable)]
   end
@@ -398,6 +394,10 @@ class SolrDocument
 
   def country
     self[Solrizer.solr_name('country', :stored_searchable)]
+  end
+
+  def institution_name
+    self[Solrizer.solr_name('institution_name', :stored_searchable)]
   end
 
   # Device fields, also uses modality currently in media above
@@ -469,6 +469,22 @@ class SolrDocument
 
   def detector_type
       self[Solrizer.solr_name('detector_type', :stored_searchable)]
+  end
+
+  def detector_pixels_x
+    self[Solrizer.solr_name('detector_pixels_x', :stored_searchable)]
+  end
+
+  def detector_pixel_size_x
+    self[Solrizer.solr_name('detector_pixel_size_x', :stored_searchable)]
+  end
+
+  def detector_pixels_y
+    self[Solrizer.solr_name('detector_pixels_y', :stored_searchable)]
+  end
+  
+  def detector_pixel_size_y
+    self[Solrizer.solr_name('detector_pixel_size_y', :stored_searchable)]
   end
 
   def detector_configuration

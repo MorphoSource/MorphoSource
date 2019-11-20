@@ -22,8 +22,8 @@
     <dd class="col-sm-9"><%= @submission.cho_id %></dd>
   </dl>
   <dl class="row">
-    <dt class="col-sm-3">institution_id</dt>
-    <dd class="col-sm-9"><%= @submission.institution_id %></dd>
+    <dt class="col-sm-3">organization_id</dt>
+    <dd class="col-sm-9"><%= @submission.organization_id %></dd>
   </dl>
   <dl class="row">
     <dt class="col-sm-3">taxonomy_id</dt>
@@ -34,8 +34,8 @@
     <dd class="col-sm-9"><%= @submission.device_id %></dd>
   </dl>
   <dl class="row">
-    <dt class="col-sm-3">device_institution_id</dt>
-    <dd class="col-sm-9"><%= @submission.device_institution_id %></dd>
+    <dt class="col-sm-3">device_organization_id</dt>
+    <dd class="col-sm-9"><%= @submission.device_organization_id %></dd>
   </dl>
   <dl class="row">
     <dt class="col-sm-3">imaging_event_id</dt>
@@ -69,18 +69,18 @@
       </dl>
     <% end %>
     <% end %>
-  <h4>Institution Create Params</h4>
-  <% if @institution_create_params.present? %>
-    <% @institution_create_params.each do |k,v| %>
+  <h4>Organization Create Params</h4>
+  <% if @organization_create_params.present? %>
+    <% @organization_create_params.each do |k,v| %>
       <dl class="row">
         <dt class="col-sm-3"><%= k %></dt>
         <dd class="col-sm-9"><%= v %></dd>
       </dl>
     <% end %>
   <% end %>
-  <h4>Device Institution Create Params</h4>
-  <% if @device_institution_create_params.present? %>
-    <% @device_institution_create_params.each do |k,v| %>
+  <h4>Device Organization Create Params</h4>
+  <% if @device_organization_create_params.present? %>
+    <% @device_organization_create_params.each do |k,v| %>
       <dl class="row">
         <dt class="col-sm-3"><%= k %></dt>
         <dd class="col-sm-9"><%= v %></dd>

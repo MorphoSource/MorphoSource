@@ -16,7 +16,7 @@ en:
         # X-ray CT metadata
         exposure_time: Exposure time of a volume shall be the time of the X-Ray radiation in position with this volume. It depends on the travel speed and the total collimation width.
         flux_normalization: Flux Normalization Calibration
-        geometric_calibration: 
+        geometric_calibration:
         shading_correction: Shading Correction Calibration
         filter: Filter (material that xrays must pass through before encounter object and detector and its thickness in millimeters)
         frame_averaging: Frame Averaging. The number of images acquired at each projection angle and their average.
@@ -26,8 +26,12 @@ en:
         amperage: Amperage, units in microAmps
         surrounding_material: Wedge (material surrounding/enveloping the focal object of the scan)
         xray_tube_type: brand/model, reflection vs. transmission target (a little like 'lens type' for photogrammetry)
-        target_type: 
+        target_type:
         detector_type: The type of detector used to acquire this image.
+        detector_pixels_x: The number of pixels in the X direction of the detector (number of columns).
+        detector_pixel_size_x: Length in mmm of each pixel in the X direction.
+        detector_pixels_y: The number of pixels in the Y direction of the detector (number of rows).
+        detector_pixel_size_y: Length in mmm of each pixel in the Y direction.
         detector_configuration: The physical configuration of the detector.
         source_object_distance: Distance between x-ray source and target object.
         source_detector_distance: Distance between x-ray source and x-ray detector.

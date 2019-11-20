@@ -30,13 +30,13 @@
 <%= presenter.attribute_to_html(:sex, render_as: :faceted, html_dl: true) %>
 
 
-<% institutional_taxonomy = presenter.attribute_to_html(:canonical_taxonomy_object, label: presenter.canonical_taxonomy_label, render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
+<% organizational_taxonomy = presenter.attribute_to_html(:canonical_taxonomy_object, label: presenter.canonical_taxonomy_label, render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
 <% trusted_taxonomies = presenter.attribute_to_html(:trusted_taxonomies, label: I18n.t('morphosource.taxonomy.labels.trusted'), render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
 <% user_taxonomies = presenter.attribute_to_html(:user_taxonomies, label: I18n.t('morphosource.taxonomy.labels.user'), render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
 
-<% unless institutional_taxonomy.blank? && trusted_taxonomies.blank? && user_taxonomies.blank? %>
+<% unless organizational_taxonomy.blank? && trusted_taxonomies.blank? && user_taxonomies.blank? %>
   <h4>Taxonomies</h4>
-  <%= institutional_taxonomy %>
+  <%= organizational_taxonomy %>
   <%= trusted_taxonomies %>
   <%= user_taxonomies %>
 <% end %>

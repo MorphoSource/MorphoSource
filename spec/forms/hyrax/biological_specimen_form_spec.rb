@@ -29,7 +29,7 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
                                                                     :original_location, :publisher, :vouchered,
                                                                     :idigbio_recordset_id, :idigbio_uuid,
                                                                     :is_type_specimen, :occurrence_id, :sex, :canonical_taxonomy,
-                                                                    :institution_relationship ])
+                                                                    :organization_relationship ])
     end
 
   end
@@ -46,7 +46,7 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
       expect(subject.primary_terms).to match_array(required_fields + [ :bibliographic_citation, :based_near,
                                                                        :catalog_number, :collection_code, :date_created,
                                                                        :identifier, :related_url, :canonical_taxonomy,
-                                                                       :institution_code, :institution_relationship ])
+                                                                       :institution_code, :organization_relationship ])
     end
 
   end

@@ -8,10 +8,6 @@ module Morphosource
     # -- Core metadata --
 
     # Required select values
-    property :modality, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/modality3D") do |index|
-      index.as :stored_searchable, :facetable
-    end
-
     property :media_type, predicate: ::RDF::URI.new("http://rs.tdwg.org/ac/terms/subtypeLiteral") do |index|
     index.as :stored_searchable, :facetable
     end

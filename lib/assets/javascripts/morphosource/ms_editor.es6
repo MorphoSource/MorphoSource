@@ -36,13 +36,13 @@ export default class MorphosourceEditor extends Editor {
                                  works_parents.data('paramKey'),
                                  'work_parents_attributes',
                                  'tmpl-parent-work').init())
-     let works_parents_institutions = this.element.find('[data-behavior="parent-relationships-institutions"]')
-    works_parents_institutions.each((_idx, element) =>
+     let works_parents_organizations = this.element.find('[data-behavior="parent-relationships-organizations"]')
+    works_parents_organizations.each((_idx, element) =>
         new RelationshipsControl(element,
-                                 works_parents_institutions.data('members'),
-                                 works_parents_institutions.data('paramKey'),
+                                 works_parents_organizations.data('members'),
+                                 works_parents_organizations.data('paramKey'),
                                  'work_parents_attributes',
-                                 'tmpl-parent-work-institutions',
+                                 'tmpl-parent-work-organizations',
                                  0).init())
      let works_parents_taxonomies = this.element.find('[data-behavior="parent-relationships-taxonomies"]')
     works_parents_taxonomies.each((_idx, element) =>

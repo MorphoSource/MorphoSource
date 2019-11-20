@@ -36,6 +36,7 @@ class FileSet < ActiveFedora::Base
     :rows,
     :columns,
     :pixel_spacing,
+    :slice_thickness,
     :bits_allocated,
     :bits_stored,
     :high_bit,

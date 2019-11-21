@@ -1,7 +1,5 @@
-run("Input/Output...", "jpeg=95 gif=-1 file=.csv copy_row save_column save_row");
-
 run("Image Sequence...", "open=<%= @input_path %> sort use");
 
 run("Scale...", "x=<%= @linear_scale_factor %> y=<%= @linear_scale_factor %> z=<%= @linear_scale_factor %> interpolation=Bilinear average process");
 
-run("Image Sequence... ", "format=JPEG save=<%= @output_path %>");
+run("Image Sequence... ", "format=TIFF save=<%= @output_path %>");

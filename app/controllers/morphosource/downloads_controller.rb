@@ -6,8 +6,8 @@ module Morphosource
         case File.extname(file)
         when '.glb'
           'model/gltf+json'
-        when '.aleph'
-          'application/json'
+        when '.dcm'
+          'application/dicom'
         else
           MIME::Types.type_for(File.extname(file)).first.content_type
         end

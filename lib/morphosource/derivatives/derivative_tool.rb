@@ -18,7 +18,7 @@ module Morphosource::Derivatives
         IO.popen(command) do |command_io|
           res = command_io.readlines.join('; ')
           command_io.close
-          puts "Possible issue with derivative tool executing command \"#{command}\": \"#{res}\"" if $?.to_i == 0
+          puts "Possible issue with derivative tool executing command \"#{command}\": \"#{res}\"" if $?.to_i == 0 && res
         end
       end
 

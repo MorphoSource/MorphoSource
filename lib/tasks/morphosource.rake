@@ -57,7 +57,7 @@ namespace :morphosource do
       elsif media_type == "CTImageSeries"
         derivatives.each do |d|
           if File.exists?(d)
-            if File.extname(d).downcase == '.aleph'
+            if File.extname(d).downcase == '.dcm'
               missing = []
               dcm_path = File.join(File.dirname(d), File.basename(d)[0])
               JSON.parse(File.read(d))["series"].each do |dcm|

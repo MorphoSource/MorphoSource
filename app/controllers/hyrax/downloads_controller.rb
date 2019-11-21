@@ -31,13 +31,7 @@ class Hyrax::DownloadsController
     def load_file
       file_reference = params[:file]
       return default_file unless file_reference
-      if file_reference.include? 'dcm'
-        file_reference.slice!('dcm')
-        file_path = Morphosource::DerivativePath.derivative_path_for_reference(params[asset_param_key], 'dcm', file_reference.to_i)
-      else
-        file_path = Morphosource::DerivativePath.derivative_path_for_reference(params[asset_param_key], file_reference)
-      end
-
+      file_path = Morphosource::DerivativePath.derivative_path_for_reference(params[asset_param_key], file_reference)
       File.exist?(file_path) ? file_path : nil
     end
 end

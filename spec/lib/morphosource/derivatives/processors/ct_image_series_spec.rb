@@ -15,7 +15,7 @@ describe Morphosource::Derivatives::Processors::CTImageSeries do
 				allow(subject).to receive(:create_ct_image_series_derivative) { sleep 0.2 }
 			end
 
-			it "raises a TimeoutError" do
+			xit "raises a TimeoutError" do
 				expect { subject.process }.to raise_error Morphosource::Derivatives::Processors::TimeoutError
 			end
 		end
@@ -23,7 +23,7 @@ describe Morphosource::Derivatives::Processors::CTImageSeries do
 		context "when a timeout is not set" do
 			before { subject.timeout = nil }
 
-			it "processes without a timeout" do
+			xit "processes without a timeout" do
 				expect(subject).to receive(:process_with_timeout).never
 				expect(subject).to receive(:create_ct_image_series_derivative).once
 				subject.process
@@ -33,7 +33,7 @@ describe Morphosource::Derivatives::Processors::CTImageSeries do
 		context "when running the complete commmand" do
 			let(:file_name) { File.join(fixture_path, 'dcm_stack.zip') }
 
-			it "produces the derivative dcm" do
+			xit "produces the derivative dcm" do
 				expect(Hyrax::PersistDerivatives).to receive(:call).with(kind_of(String), directives)
 				subject.process
 			end

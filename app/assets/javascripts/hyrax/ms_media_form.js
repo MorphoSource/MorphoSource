@@ -1,5 +1,8 @@
 $(document).on('turbolinks:load', function() {
-  relatedWorkSaved = 0;
+
+  IsImagingEventSaved = false;
+  IsProcessingEventSaved = false;
+
   if ($('form[id*="media"]').length) { // if media form page (add/edit)
 
     var form = $('form[id*="media"]')[0];
@@ -38,6 +41,8 @@ $(document).on('turbolinks:load', function() {
 
     // On submit, name and type fields are concatenated and inserted into hidden default rights holder field.
     form.addEventListener("submit", function(mediaSubmitEvent) {
+      mediaSubmitEvent.preventDefault();
+      $(".btn-save-media").prop('disabled', true).val('Saving...');
 
       $(targetGroupUl).empty(); // remove all items and re-build 
       var rightsHolderCount = $('select[name="media[rights_holder_type][]"]').length;
@@ -85,22 +90,19 @@ $(document).on('turbolinks:load', function() {
         buildProcessingActivity(); // populate the PA field before saving PE
       }
       // submit each related work form
-      mediaSubmitEvent.preventDefault();
       $(".related_form form").each(function() {
         $(this).submitRelatedWork(saveMediaIfReady);
       }) 
 
       function saveMediaIfReady() {
-        console.log('relatedWorkSaved=' + relatedWorkSaved);
-        if (relatedWorkSaved == 2) {
+        if (IsImagingEventSaved && IsProcessingEventSaved) {
+          $(".btn-save-media").prop('disabled', true).val('Saving...');
           form.submit();
         } else {
           // re-enable save button
-
-          // will need to count how many form submitted also
+          $(".btn-save-media").prop('disabled', false).val('Save');
         }
       }
-
 
     }); // /on submit
 
@@ -307,11 +309,15 @@ $(document).on('turbolinks:load', function() {
 
   jQuery.fn.extend({
     submitRelatedWork: function (callback) {
-      console.log('submitting '+ $(this).attr('id'));
+      var relatedFormId = $(this).attr('id');
+      console.log('submitting '+ relatedFormId );
       // replace with ajax form post to trigger other actions
       $.post($(this).attr('action'), $(this).serialize(), function(data){
         console.log("submitted work ID: " + data.id );
-        relatedWorkSaved++;
+        if (relatedFormId.indexOf('imaging_event') != -1)
+          IsImagingEventSaved = true;
+        else if (relatedFormId.indexOf('processing_event') != -1)
+          IsProcessingEventSaved = true;
         callback();
       }, "json").fail(function(data) {
         console.log("getting a fail status ", data );

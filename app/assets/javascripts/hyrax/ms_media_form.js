@@ -1,5 +1,5 @@
 $(document).on('turbolinks:load', function() {
-
+  relatedWorkSaved = 0;
   if ($('form[id*="media"]').length) { // if media form page (add/edit)
 
     var form = $('form[id*="media"]')[0];
@@ -37,7 +37,7 @@ $(document).on('turbolinks:load', function() {
     });
 
     // On submit, name and type fields are concatenated and inserted into hidden default rights holder field.
-    form.addEventListener("submit", function() {
+    form.addEventListener("submit", function(mediaSubmitEvent) {
 
       $(targetGroupUl).empty(); // remove all items and re-build 
       var rightsHolderCount = $('select[name="media[rights_holder_type][]"]').length;
@@ -85,12 +85,35 @@ $(document).on('turbolinks:load', function() {
         buildProcessingActivity(); // populate the PA field before saving PE
       }
       // submit each related work form
+      mediaSubmitEvent.preventDefault();
       $(".related_form form").each(function() {
-        $(this).submitRelatedWork();
+        $(this).submitRelatedWork(saveMediaIfReady);
       }) 
+
+      function saveMediaIfReady() {
+        console.log('relatedWorkSaved=' + relatedWorkSaved);
+        if (relatedWorkSaved == 2) {
+          form.submit();
+        } else {
+          // re-enable save button
+
+          // will need to count how many form submitted also
+        }
+      }
+
 
     }); // /on submit
 
+    // debug: click save button in standalone form to submit related work form
+    $(".btn-save.debug").click(function() {
+      var targetForm = $('form[id*="' + $(this).attr('id') + '"]');
+      console.log('clicked save button for ' + targetForm.attr('id'));
+      if ($('form[id*="processing_event"]').length) { // if PE form 
+        buildProcessingActivity(); // populate the PA field before saving PE
+      }
+      targetForm.submitRelatedWork();
+      return false;
+    }) 
 
     // Puts concatenated values into scale bar on submit.
     function buildScaleBar(scaleBar, scaleBarGroupUl) {
@@ -283,19 +306,29 @@ $(document).on('turbolinks:load', function() {
   } // end if media form page
 
   jQuery.fn.extend({
-    submitRelatedWork: function () {
-
-      //console.log('submitting '+ $(this).attr('id'));
+    submitRelatedWork: function (callback) {
+      console.log('submitting '+ $(this).attr('id'));
       // replace with ajax form post to trigger other actions
       $.post($(this).attr('action'), $(this).serialize(), function(data){
-        // not sure why code is not executed here after post
-      }).always(function() {
-        //console.log("... submitted" );
-        //alert(data); // todo: might need to get data back to check if saving is successful
-        return true;
+        console.log("submitted work ID: " + data.id );
+        relatedWorkSaved++;
+        callback();
+      }, "json").fail(function(data) {
+        console.log("getting a fail status ", data );
+        var errors = data.responseJSON.errors;
+        var msg = "";
+        if (errors !== undefined) {
+          $.map(errors, function( errorsArray, field ) {
+            $.map(errorsArray, function( errorMsg ) {
+              msg += errorMsg + '\n';
+            });
+          });
+        }
+        if (msg) alert(msg);
+        callback();
+      }).always(function(data) {
+        
       });
-
-      return false;
     }
   });
 

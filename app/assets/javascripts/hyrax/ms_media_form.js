@@ -1,34 +1,41 @@
 $(document).on('turbolinks:load', function() {
 
-  IsImagingEventSaved = false;
-  IsProcessingEventSaved = false;
-
   if ($('form[id*="media"]').length) { // if media form page (add/edit)
 
-    var form = $('form[id*="media"]')[0];
+    if ($('form[id*="imaging_event"]').length)
+      IsImagingEventReady = false;
+    else
+      IsImagingEventReady = true;  // this means no IE form or IE is not editable
+
+    if ($('form[id*="processing_event"]').length)
+      IsProcessingEventReady = false;
+    else
+      IsProcessingEventReady = true;
+
+    form = $('form[id*="media"]')[0];
 
     // Hidden Default Scale Bar Field
-    var scaleBarGroup = document.querySelector('div.media_scale_bar');
-    var scaleBarGroupUl = scaleBarGroup.querySelector("ul");
-    var concatScaleBars = scaleBarGroup.querySelectorAll("input");
-    var concatScaleBarCount = (scaleBarGroup.querySelectorAll("input").length) - 1;
+    scaleBarGroup = document.querySelector('div.media_scale_bar');
+    scaleBarGroupUl = scaleBarGroup.querySelector("ul");
+    concatScaleBars = scaleBarGroup.querySelectorAll("input");
+    concatScaleBarCount = (scaleBarGroup.querySelectorAll("input").length) - 1;
 
     // Three part scale bar entry
-    var scaleBarWrapper = document.getElementById("media_scale_bar_wrapper");
-    var scaleBarWrapperUl = scaleBarWrapper.querySelector('ul');
-    var scaleBarWrapperLi = scaleBarWrapper.querySelector('li');
+    scaleBarWrapper = document.getElementById("media_scale_bar_wrapper");
+    scaleBarWrapperUl = scaleBarWrapper.querySelector('ul');
+    scaleBarWrapperLi = scaleBarWrapper.querySelector('li');
 
     // concatenate rights holder name, type to rights holder
     // Check the rightsHolder Field (will be hidden)
-    var targetGroup = document.querySelector('div.media_rights_holder');
-    var targetGroupUl = targetGroup.querySelector("ul");
-    var concatFields = targetGroup.querySelectorAll("input");
-    var concatFieldCount = (targetGroup.querySelectorAll("input").length) - 1;
+    targetGroup = document.querySelector('div.media_rights_holder');
+    targetGroupUl = targetGroup.querySelector("ul");
+    concatFields = targetGroup.querySelectorAll("input");
+    concatFieldCount = (targetGroup.querySelectorAll("input").length) - 1;
 
     // Two part rightsHolder entry
-    var targetWrapper = document.getElementById("media_rights_holder_wrapper");
-    var targetWrapperUl = targetWrapper.querySelector('ul');
-    var targetWrapperLi = targetWrapper.querySelector('li');
+    targetWrapper = document.getElementById("media_rights_holder_wrapper");
+    targetWrapperUl = targetWrapper.querySelector('ul');
+    targetWrapperLi = targetWrapper.querySelector('li');
 
   	hide_fields(['.media_number_of_images_in_set','.media_scale_bar']);
   	adjust_form_media_type();
@@ -39,11 +46,19 @@ $(document).on('turbolinks:load', function() {
       adjust_form_media_type();
     });
 
-    // On submit, name and type fields are concatenated and inserted into hidden default rights holder field.
-    form.addEventListener("submit", function(mediaSubmitEvent) {
-      mediaSubmitEvent.preventDefault();
-      $(".btn-save-media").prop('disabled', true).val('Saving...');
+    // debug: click save button in standalone form to submit related work form
+    $(".btn-save.debug").click(function() {
+      var targetForm = $('form[id*="' + $(this).attr('id') + '"]');
+      console.log('clicked save button for ' + targetForm.attr('id'));
+      if ($('form[id*="processing_event"]').length) { // if PE form 
+        buildProcessingActivity(); // populate the PA field before saving PE
+      }
+      targetForm.submitRelatedWork();
+      return false;
+    }) 
 
+    function prepareFieldsBeforeSubmit() {
+      // Before submit, name and type fields are concatenated and inserted into hidden default rights holder field.
       $(targetGroupUl).empty(); // remove all items and re-build 
       var rightsHolderCount = $('select[name="media[rights_holder_type][]"]').length;
       for (i = 0; i < rightsHolderCount; i++) {
@@ -85,37 +100,8 @@ $(document).on('turbolinks:load', function() {
       else {
         buildScaleBar('', scaleBarGroupUl);
       }
-        
-      if ($('form[id*="processing_event"]').length) { // if PE form 
-        buildProcessingActivity(); // populate the PA field before saving PE
-      }
-      // submit each related work form
-      $(".related_form form").each(function() {
-        $(this).submitRelatedWork(saveMediaIfReady);
-      }) 
 
-      function saveMediaIfReady() {
-        if (IsImagingEventSaved && IsProcessingEventSaved) {
-          $(".btn-save-media").prop('disabled', true).val('Saving...');
-          form.submit();
-        } else {
-          // re-enable save button
-          $(".btn-save-media").prop('disabled', false).val('Save');
-        }
-      }
-
-    }); // /on submit
-
-    // debug: click save button in standalone form to submit related work form
-    $(".btn-save.debug").click(function() {
-      var targetForm = $('form[id*="' + $(this).attr('id') + '"]');
-      console.log('clicked save button for ' + targetForm.attr('id'));
-      if ($('form[id*="processing_event"]').length) { // if PE form 
-        buildProcessingActivity(); // populate the PA field before saving PE
-      }
-      targetForm.submitRelatedWork();
-      return false;
-    }) 
+    }
 
     // Puts concatenated values into scale bar on submit.
     function buildScaleBar(scaleBar, scaleBarGroupUl) {
@@ -315,9 +301,9 @@ $(document).on('turbolinks:load', function() {
       $.post($(this).attr('action'), $(this).serialize(), function(data){
         console.log("submitted work ID: " + data.id );
         if (relatedFormId.indexOf('imaging_event') != -1)
-          IsImagingEventSaved = true;
+          IsImagingEventReady = true;
         else if (relatedFormId.indexOf('processing_event') != -1)
-          IsProcessingEventSaved = true;
+          IsProcessingEventReady = true;
         callback();
       }, "json").fail(function(data) {
         console.log("getting a fail status ", data );
@@ -354,7 +340,46 @@ $(document).on('turbolinks:load', function() {
     var activeTab = $('.nav-tabs > li.active').find("a").attr("aria-controls");
     $(".related_form." + activeTab).show();
 
+    form.addEventListener("submit", function(mediaSubmitEvent) {
+
+      mediaSubmitEvent.preventDefault();
+      $(".btn-save-media").prop('disabled', true).val('Saving...');
+
+      prepareFieldsBeforeSubmit();
+        
+      if ($('form[id*="processing_event"]').length) { // if PE form 
+        buildProcessingActivity(); // populate the PA field before saving PE
+      }
+      // submit each related work form
+      $(".related_form form").each(function() {
+        $(this).submitRelatedWork(saveMediaIfReady);
+      }) 
+
+      function saveMediaIfReady() {
+        if (IsImagingEventReady && IsProcessingEventReady) {
+          $(".btn-save-media").prop('disabled', true).val('Saving...');
+          form.submit();
+        } else {
+          // re-enable save button
+          $(".btn-save-media").prop('disabled', false).val('Save');
+        }
+      }
+
+    }); // /on submit
+
   } // end if edit media form page
+
+  if ($('form[id*="new_media"]').length) { // if new media form page
+
+    form.addEventListener("submit", function(mediaSubmitEvent) {
+
+      $(".btn-save-media").prop('disabled', true).val('Saving...');
+
+      prepareFieldsBeforeSubmit();
+      
+    }); // /on submit
+
+  } // end if new media form page
 
 })
 

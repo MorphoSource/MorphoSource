@@ -25,31 +25,39 @@
 
 <%# the following forms are placed here so that the forms will not be nested inside the media form %>
 
-<div class="row related_form imaging-event" id="related_form_imaging_event" style="display:none">
-  <%= simple_form_for [main_app, @imaging_event_form],
-                      wrapper: :showcase_default,
-                      html: {
-                        data: { behavior: 'work-form',
-                                'param-key' => @imaging_event_form.model_name.param_key },
-                        multipart: true
-                      } do |i| %>
+<% if @presenter.hasImagingEvents? %>
+  <div class="row related_form imaging-event" id="related_form_imaging_event" style="display:none">
+  <% if @presenter.imaging_event_editable? %>
+      <%= simple_form_for [main_app, @imaging_event_form],
+                          wrapper: :showcase_default,
+                          html: {
+                            data: { behavior: 'work-form',
+                                    'param-key' => @imaging_event_form.model_name.param_key },
+                            multipart: true
+                          } do |i| %>
 
-      <%= render 'form_imaging_event', i: i, presenter: @presenter %>
+          <%= render 'form_imaging_event', i: i, presenter: @presenter %>
+      <% end %>
+  <% else %>
+    <%= render 'form_imaging_event_parent', presenter: @presenter %>
   <% end %>
-</div>
+  </div>
+<% end %>
 
-<div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
-  <%= simple_form_for [main_app, @processing_event_form],
-                      wrapper: :showcase_default,
-                      html: {
-                        data: { behavior: 'work-form',
-                                'param-key' => @processing_event_form.model_name.param_key },
-                        multipart: true
-                      } do |p| %>
+<% if @presenter.hasProcessingEvents? %>
+  <div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
+    <%= simple_form_for [main_app, @processing_event_form],
+                        wrapper: :showcase_default,
+                        html: {
+                          data: { behavior: 'work-form',
+                                  'param-key' => @processing_event_form.model_name.param_key },
+                          multipart: true
+                        } do |p| %>
 
-      <%= render 'form_processing_event', p: p, presenter: @presenter %>
-  <% end %>
-</div>
+        <%= render 'form_processing_event', p: p, presenter: @presenter %>
+    <% end %>
+  </div>
+<% end %>
 
 <div class="col-sm-12">
   <div class="content-block">

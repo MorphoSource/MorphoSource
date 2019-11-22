@@ -17,9 +17,9 @@ module Hyrax
       :processing_events, :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
       :processing_activity_count, :processing_activity_items,
       :raw_or_derived, :is_absentee_parent,
-      :imaging_event, :imaging_event_exist,
+      :imaging_event, :imaging_event_exist, :imaging_event_editable,
       :direct_parent_members_raw_or_derived,
-      :file_size, :mime_type, :this_media_type,
+      :file_size, :mime_type, :this_media_type, :file_set_list,
       # mesh specific
       :point_count,
       :face_count,
@@ -64,6 +64,18 @@ module Hyrax
         ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.volume? ) &&
         Hyrax.config.iiif_image_server? &&
         ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_volume? )
+    end
+
+    def hasProcessingEvents?
+      @processing_events.present?
+    end
+
+    def hasImagingEvents?
+      @imaging_event.present?
+    end
+
+    def imaging_event_editable?
+      imaging_event_editable == true
     end
 
     def round_it(string_value)
@@ -111,8 +123,8 @@ module Hyrax
       @color_depth = []
       temp = ""
       contents_mime_type = ""
-      file_set_list = media.file_set_ids
-      file_set_list.each do |id|
+      @file_set_list = media.file_set_ids
+      @file_set_list.each do |id|
         file_set = ::FileSet.find(id)
         # since mime type can me a zip, first try to get the actual content mime type if exists
         # if content mime type does not exist, use the mime type
@@ -224,9 +236,11 @@ module Hyrax
         # (whether parent, grandparent, etc) should be connected to an IE from which metadata should be derived.
         @direct_parent_members = member_presenters_for(direct_parent_id_list)
         target_media = Media.where('id' => direct_parent_id).first
+        @imaging_event_editable = false;
         @raw_or_derived = "Derived"
         @direct_parent_members_raw_or_derived = "Raw"
       else
+        @imaging_event_editable = true;
         # check if this is a Derived media with "absentee parent" by checking if PE exists
         if @processing_event_count > 0
           @is_absentee_parent = true
@@ -255,10 +269,10 @@ module Hyrax
         @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
       end
 
-      if imaging_event.present?
+      if @imaging_event.present?
         imaging_event_exist = true
-        biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => imaging_event.id).first
-        cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => imaging_event.id).first
+        biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
+        cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
 
         if biological_specimen.present?
           @physical_object_title = biological_specimen.title.first
@@ -278,7 +292,7 @@ module Hyrax
         end
 
         # get device from imaging event
-        device = Device.where('member_ids_ssim' => imaging_event.id).first
+        device = Device.where('member_ids_ssim' => @imaging_event.id).first
         if device.present?
           @device = device.title.first
           @device_facility = device.facility.first
@@ -288,43 +302,43 @@ module Hyrax
         end
 
         # get imaging event details
-        @imaging_event_modality = imaging_event.ie_modality.first
+        @imaging_event_modality = @imaging_event.ie_modality.first
         if @imaging_event_modality == "Photogrammetry" or
             @imaging_event_modality == "Photography"
           @lens = ""
-          @lens << imaging_event.lens_make.first if imaging_event.lens_make.present?
-          @lens << " " + imaging_event.lens_model.first if imaging_event.lens_model.present?
+          @lens << @imaging_event.lens_make.first if @imaging_event.lens_make.present?
+          @lens << " " + @imaging_event.lens_model.first if @imaging_event.lens_model.present?
           @other_details = []
-          @other_details << imaging_event.focal_length_type.first + " focal length" if imaging_event.focal_length_type.present?
-          @other_details << imaging_event.light_source.first + " light" if imaging_event.light_source.present?
-          @other_details << imaging_event.background_removal.first if imaging_event.background_removal.present?
+          @other_details << @imaging_event.focal_length_type.first + " focal length" if @imaging_event.focal_length_type.present?
+          @other_details << @imaging_event.light_source.first + " light" if @imaging_event.light_source.present?
+          @other_details << @imaging_event.background_removal.first if @imaging_event.background_removal.present?
           @other_details = @other_details.join(' / ')
         elsif @imaging_event_modality.upcase.include? "XRAY"
-          @exposure_time = imaging_event.exposure_time.first
-          @flux_normalization = imaging_event.flux_normalization.first
-          @geometric_calibration = imaging_event.geometric_calibration.first
-          @shading_correction = imaging_event.shading_correction.first
-          @filter = imaging_event.filter.first
-          @frame_averaging = imaging_event.frame_averaging.first
-          @projections = imaging_event.projections.first
-          @voltage = imaging_event.voltage.first
-          @power = imaging_event.power.first
-          @amperage = imaging_event.amperage.first
-          @surrounding_material = imaging_event.surrounding_material.first
-          @xray_tube_type = imaging_event.xray_tube_type.first
-          @target_type = imaging_event.target_type.first
-          @detector_type = imaging_event.detector_type.first
-          @detector_configuration = imaging_event.detector_configuration.first
-          @source_object_distance = imaging_event.source_object_distance.first
-          @source_detector_distance = imaging_event.source_detector_distance.first
-          @target_material = imaging_event.target_material.first
-          @rotation_number = imaging_event.rotation_number.first
-          @phase_contrast = imaging_event.phase_contrast.first
-          @optical_magnification = imaging_event.optical_magnification.first
+          @exposure_time = @imaging_event.exposure_time.first
+          @flux_normalization = @imaging_event.flux_normalization.first
+          @geometric_calibration = @imaging_event.geometric_calibration.first
+          @shading_correction = @imaging_event.shading_correction.first
+          @filter = @imaging_event.filter.first
+          @frame_averaging = @imaging_event.frame_averaging.first
+          @projections = @imaging_event.projections.first
+          @voltage = @imaging_event.voltage.first
+          @power = @imaging_event.power.first
+          @amperage = @imaging_event.amperage.first
+          @surrounding_material = @imaging_event.surrounding_material.first
+          @xray_tube_type = @imaging_event.xray_tube_type.first
+          @target_type = @imaging_event.target_type.first
+          @detector_type = @imaging_event.detector_type.first
+          @detector_configuration = @imaging_event.detector_configuration.first
+          @source_object_distance = @imaging_event.source_object_distance.first
+          @source_detector_distance = @imaging_event.source_detector_distance.first
+          @target_material = @imaging_event.target_material.first
+          @rotation_number = @imaging_event.rotation_number.first
+          @phase_contrast = @imaging_event.phase_contrast.first
+          @optical_magnification = @imaging_event.optical_magnification.first
 
         end
-        @imaging_event_creator = imaging_event.creator
-        @imaging_event_date_created = imaging_event.date_created
+        @imaging_event_creator = @imaging_event.creator
+        @imaging_event_date_created = @imaging_event.date_created
       else
         imaging_event_exist = false
       end # end if imaging_event present?
@@ -335,6 +349,15 @@ module Hyrax
     # and override the method in presenter_methods
     # to get a list of media images for MEDIA showpage
     def list_of_item_ids_to_display_for_showpage
+      media_ids = []
+      media_ids << @parent_media_id_list << @child_media_id_list << @sibling_media_id_list
+      media_ids.flatten
+    end
+
+    # this method is cloned from list_of_item_ids_to_display
+    # and override the method in presenter_methods
+    # to get a list of media images for the current media work only
+    def list_of_item_ids_to_display_for_current_media
       media_ids = []
       media_ids << @parent_media_id_list << @child_media_id_list << @sibling_media_id_list
       media_ids.flatten

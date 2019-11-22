@@ -1,6 +1,7 @@
-
-<%  array_of_ids = presenter.list_of_item_ids_to_display %>
-<%  members = presenter.member_presenters_for(array_of_ids) %>
+<%  
+# only need to show images in the file set of the current media
+members = presenter.member_presenters_for(@presenter.file_set_list) 
+%>
 <% if members.present? %>
   <table class="table table-striped related-files">
     <tbody>

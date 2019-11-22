@@ -8,16 +8,20 @@
             <i class="fas fa-frog"></i> Physical Object
           </a>
         </li>
-        <li role="presentation" id="tab-imaging-event" class="active">
-          <a href="#imaging-event" aria-controls="imaging-event" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fas fa-frog"></i> Imaging
-          </a>
-        </li>
-        <li role="presentation" id="tab-processing-event" class="">
-          <a href="#processing-event" aria-controls="processing-event" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fas fa-frog"></i> Processing
-          </a>
-        </li>
+        <% if @presenter.hasImagingEvents? %>
+          <li role="presentation" id="tab-imaging-event" class="active">
+            <a href="#imaging-event" aria-controls="imaging-event" role="tab" data-toggle="tab" aria-expanded="false">
+              <i class="fas fa-frog"></i> Imaging
+            </a>
+          </li>
+        <% end %>
+        <% if @presenter.hasProcessingEvents? %>
+          <li role="presentation" id="tab-processing-event" class="">
+            <a href="#processing-event" aria-controls="processing-event" role="tab" data-toggle="tab" aria-expanded="false">
+              <i class="fas fa-frog"></i> Processing
+            </a>
+          </li>
+        <% end %>
         <li role="presentation" id="tab-file-upload" class="">
           <a href="#file-upload" aria-controls="file-upload" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fas fa-frog"></i> File Upload
@@ -40,21 +44,25 @@
           </div>
         </div>
 
-        <div role="tabpanel" class="tab-pane active" id="imaging-event">
-          <div class="form-tab-content">
+        <% if @presenter.hasImagingEvents? %>
+          <div role="tabpanel" class="tab-pane active" id="imaging-event">
+            <div class="form-tab-content">
 
-            <%# the form is in _form_media_edit %>
+              <%# the form is in _form_media_edit %>
 
+            </div>
           </div>
-        </div>
+        <% end %>
 
-        <div role="tabpanel" class="tab-pane" id="processing-event">
-          <div class="form-tab-content">
+        <% if @presenter.hasProcessingEvents? %>
+          <div role="tabpanel" class="tab-pane" id="processing-event">
+            <div class="form-tab-content">
 
-            <%# the form is in _form_media_edit %>
+              <%# the form is in _form_media_edit %>
 
+            </div>
           </div>
-        </div>
+        <% end %>
 
         <div role="tabpanel" class="tab-pane" id="file-upload">
           <div class="form-tab-content">

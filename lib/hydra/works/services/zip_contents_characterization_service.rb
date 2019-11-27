@@ -23,7 +23,6 @@ module Hydra::Works
     end
 
     def characterize
-      byebug
       @content, @file_name = source_to_content
       raise "Error characterizing #{source}: no representative file found" if file_name == nil
       @parser_class, @tools = blender_options if mesh_file_types.include? File.extname(file_name).downcase

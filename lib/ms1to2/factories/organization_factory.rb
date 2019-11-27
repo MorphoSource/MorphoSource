@@ -1,7 +1,7 @@
 module Ms1to2
   module Factories
     class OrganizationFactory < ObjectFactory
-      self.ms1_table_name = :ms_organizations
+      self.ms1_table_name = :ms_institutions
       self.ms2_model = :Organization
 
       def process_table
@@ -12,10 +12,12 @@ module Ms1to2
 
       def process_facility_table
         ms1_input_data.public_send(:ms_facilities).each do |k, v|
+          puts(k)
+          puts(v)
           id = derive_facility_id(k)
           if ms2_table.key?(id) || ms2_output_data.exists?(ms2_model_var, id)
             next
-          elsif matching_organization(v[:organization].first)
+          elsif matching_organization(v[:institution].first)
             add_organization_match(k, matching_organization(v[:organization].first))
           else
             process_facility_row(id, v)

@@ -1,7 +1,7 @@
 module Ms1to2
   class Ms1InputData
     def self.standard_tables
-      ['ca_users', 'ms_facilities', 'ms_organizations', 'ms_media_files', 
+      ['ca_users', 'ms_facilities', 'ms_institutions', 'ms_media_files', 
        'ms_media', 'ms_projects', 'ms_scanners', 'ms_specimens', 'ms_taxonomies']
     end
 

@@ -304,7 +304,10 @@ $(document).on('turbolinks:load', function() {
           IsImagingEventReady = true;
         else if (relatedFormId.indexOf('processing_event') != -1)
           IsProcessingEventReady = true;
-        callback();
+        /* set a delay for attempt to resolve the following error:
+        Your changes could not be saved because another user (or background job) updated this Media after you began editing. Please make sure all file attachments have completed successfully and try again. This form has refreshed with the most recent saved copy of the Media */
+        setTimeout(function(){ callback(); }, 9000);
+
       }, "json").fail(function(data) {
         console.log("getting a fail status ", data );
         var errors = data.responseJSON.errors;
@@ -325,9 +328,33 @@ $(document).on('turbolinks:load', function() {
   });
 
   if ($('form[id*="edit_media"]').length) { // if edit media form page
+
+    function updateMediaTitle() {
+      var id = $('form[id*="edit_media"]').attr('id').split('_media_')[1];
+      var parts = $('[name="media[part][]"]').map(function(){
+        if ($(this).val() != '')
+          return $(this).val();
+      }).get().join(', ');
+      parts = toTitleCase(parts);
+      var mediaType = $('[name="media[media_type]"]').val();
+      if ($('[name="imaging_event[ie_modality]"]').length)
+        var ie_modality = $('[name="imaging_event[ie_modality]"]').val(); 
+      else if ($('.showcase-value.imaging_event_modality').length)
+        var ie_modality = $('.showcase-value.imaging_event_modality').html();
+      else
+        var ie_modality = 'modality_undefined';
+      var title = [ id, parts, mediaType, ie_modality ];
+      title = $.map( title, function(v){ return v === "" ? null : v; });
+      $('#showcase-title').text(title.join(':'));     
+    }
+
     setupTooltip();
     removeLastRepeatable();
     adjust_form_media_type();
+
+    // Change title on the fly when corresponding fields are updated
+    // todo: input.media_part is a repeatable, but newly added media_part field does not trigger the event when it is updated
+    $('[name="media[media_type]"], input.media_part, [name="imaging_event[ie_modality]"]').change(updateMediaTitle);
 
     // when switching tab, show/hide content
     $('.nav-tabs > li').click(function() {
@@ -347,17 +374,30 @@ $(document).on('turbolinks:load', function() {
 
       prepareFieldsBeforeSubmit();
         
-      if ($('form[id*="processing_event"]').length) { // if PE form 
-        buildProcessingActivity(); // populate the PA field before saving PE
-      }
       // submit each related work form
-      $(".related_form form").each(function() {
-        $(this).submitRelatedWork(saveMediaIfReady);
-      }) 
+      //$(".related_form form").each(function() {
+      //  $(this).submitRelatedWork(saveMediaIfReady);
+      //}) 
+
+      if (!IsImagingEventReady) {  
+        $("#related_form_imaging_event form").submitRelatedWork(submitProcessingEvent);
+      } else {
+        submitProcessingEvent();
+      }
+
+      function submitProcessingEvent() {
+        if ($('form[id*="processing_event"]').length) { // if PE form 
+          buildProcessingActivity(); // populate the PA field before saving PE
+          $("#related_form_processing_event form").submitRelatedWork(saveMediaIfReady);
+        } else {
+          saveMediaIfReady();
+        }
+      }
 
       function saveMediaIfReady() {
         if (IsImagingEventReady && IsProcessingEventReady) {
           $(".btn-save-media").prop('disabled', true).val('Saving...');
+          //console.log('updating media work...');
           form.submit();
         } else {
           // re-enable save button
@@ -376,6 +416,8 @@ $(document).on('turbolinks:load', function() {
       $(".btn-save-media").prop('disabled', true).val('Saving...');
 
       prepareFieldsBeforeSubmit();
+
+      //console.log('about to add media work...');
       
     }); // /on submit
 

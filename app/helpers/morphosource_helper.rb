@@ -150,7 +150,8 @@ module MorphosourceHelper
   end
 
   def generated_media_title(id, part, media_type, ie_modality)
-    id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
+    #id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
+    id_prefix = id.presence ? id.to_s+': ' : ''
     parts = part.presence || ['Element unspecified']
     media_type = media_type&.first.presence || ''
     modality_abbrevs = ie_modality.map { |m| modality_abbrev(m) }

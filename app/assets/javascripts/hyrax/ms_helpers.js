@@ -1,5 +1,11 @@
 // shared helper functions 
 
+function toTitleCase(str) {
+  return str.replace(/(?:^|\s)\w/g, function(match) {
+    return match.toUpperCase();
+  });
+}
+
 // functions for show/edit fields
 function show_fields(field_array) {
   $(field_array.join(',')).removeClass('hide');

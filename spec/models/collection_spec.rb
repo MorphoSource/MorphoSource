@@ -85,4 +85,28 @@ RSpec.describe Collection, type: :model do
       end
     end
   end
+
+  describe '#destroy_default_groups' do
+    context 'the deleted collection is not a team or project' do
+      let(:another) { Collection.create(title: ['Another'], collection_type_gid: another_collection_type.gid, depositor: user.ms_id) }
+
+      it 'does not call #destroy_default_groups' do
+        expect(another).not_to receive(:destroy_default_groups)
+        another.destroy
+      end
+    end
+
+    context 'the deleted collection is a team or project' do
+      let!(:team) { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+
+      it 'calls #destroy_default_groups' do
+        expect(team).to receive(:destroy_default_groups)
+        team.destroy
+      end
+
+      it 'destroys all of the default user groups when a team or project is destroyed' do
+        expect { team.destroy }.to change { Role.count }.by(-3)
+      end
+    end
+  end
 end

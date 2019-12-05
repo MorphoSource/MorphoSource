@@ -60,6 +60,14 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	        state_province: data.work.state_province,
 	        country: data.work.country
 				};
+			} else if (work_name == 'device') {
+				var new_data = {
+					id: data.work.id, 
+					text: data.work.title,
+					creator: data.creator,
+					modality: data.modality,
+	        description: data.work.description
+				};
 			} else if (work_name == 'taxonomy') {
 				var new_data = {
 					id: data.work.id, 

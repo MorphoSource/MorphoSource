@@ -8,8 +8,13 @@
             <i class="fas fa-frog"></i> Physical Object
           </a>
         </li>
+        <li role="presentation" id="tab-device" class="active">
+          <a href="#device" aria-controls="device" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fas fa-frog"></i> Device
+          </a>
+        </li>
         <% if @presenter.hasImagingEvents? %>
-          <li role="presentation" id="tab-imaging-event" class="active">
+          <li role="presentation" id="tab-imaging-event" class="">
             <a href="#imaging-event" aria-controls="imaging-event" role="tab" data-toggle="tab" aria-expanded="false">
               <i class="fas fa-frog"></i> Imaging
             </a>
@@ -44,8 +49,16 @@
           </div>
         </div>
 
+        <div role="tabpanel" class="tab-pane active" id="device">
+          <div class="form-tab-content">
+
+            <%= render 'tab_device', f: f %>
+
+          </div>
+        </div>
+
         <% if @presenter.hasImagingEvents? %>
-          <div role="tabpanel" class="tab-pane active" id="imaging-event">
+          <div role="tabpanel" class="tab-pane" id="imaging-event">
             <div class="form-tab-content">
 
               <%# the form is in _form_media_edit %>

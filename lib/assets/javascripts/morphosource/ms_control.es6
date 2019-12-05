@@ -3,6 +3,7 @@ import Registry from './ms_registry'
 import Resource from 'hyrax/relationships/resource'
 import OrganizationResource from './ms_organization_resource'
 import TaxonomyResource from './ms_taxonomy_resource'
+import DeviceResource from './ms_device_resource'
 
 /**
  * This depends on the passed in element containing `data-autocomplete="work'"`
@@ -48,6 +49,10 @@ export default class RelationshipsControl {
     if (this.workType == 'organization') {
       this.members.forEach((elem) =>
         this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.institution_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
+      )      
+    } else if (this.workType == 'device') {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new DeviceResource(elem.id, elem.label, elem.creator, elem.modality, elem.description))
       )      
     } else if (this.workType == 'taxonomy') {
       this.members.forEach((elem) =>
@@ -121,8 +126,9 @@ export default class RelationshipsControl {
       })
     }
     if (this.workType == 'organization') {
-      //console.log("addRow data : ", data)
       this.registry.addResource(new OrganizationResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
+    } else if (this.workType == 'device') {
+      this.registry.addResource(new DeviceResource(data.id, data.label, data.creator, data.modality, data.description));
     } else if (this.workType == 'taxonomy') {
       this.registry.addResource(new TaxonomyResource(
         data.id, 

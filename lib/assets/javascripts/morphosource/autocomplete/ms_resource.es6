@@ -20,6 +20,10 @@ export default class MorphosourceResource extends Resource {
       results = data.map((obj) => {
                                return { id: obj.id, text: obj.label[0], institution_code: obj.institution_code, description: obj.description, address: obj.address, city: obj.city, state_province: obj.state_province, country: obj.country };
                             })
+    } else if (this.url.indexOf('devices') != -1) {
+      results = data.map((obj) => {
+                               return { id: obj.id, text: obj.label[0], creator: obj.creator, modality: obj.modality, description: obj.description };
+                            })
     } else if (this.url.indexOf('taxonomies') != -1) {
       results = data.map((obj) => {
                               return { 

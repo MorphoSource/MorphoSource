@@ -61,6 +61,7 @@ module Hyrax
       @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
       @countries_service = Morphosource::CountriesService.new
       render '/hyrax/media/edit', presenter: @presenter
+      #render '/hyrax/base/edit', presenter: @presenter
     end
 
     # GET /concern/media/zip?ids[]=filesetid1&ids[]=filesetid2

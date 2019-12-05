@@ -1,0 +1,19 @@
+<div id="parent-relationships-devices" class="form-group" data-behavior="parent-relationships-devices" data-param-key="<%= f.object.model_name.param_key %>" data-members="<%= f.object.member_of_devices_json(@presenter.imaging_event.id) %>" data-new-work-created="" data-repeatable="no" data-work-type="device">
+
+  <div class="row">
+
+    <div class="col-sm-6">
+      <div class="content-block">
+      <%= render 'device_details', presenter: @presenter %>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="content-block">
+        <%= render 'form_parent_work_relationships_device', f: f %>
+      </div>
+    </div>
+
+  </div>
+
+</div>

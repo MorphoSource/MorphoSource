@@ -6,6 +6,7 @@ class Collection < ActiveFedora::Base
   self.indexer = Hyrax::CollectionWithBasicMetadataIndexer
 
   after_create :create_collection_groups, if: :type_assigns_groups?
+  after_destroy :destroy_default_groups, if: :type_assigns_groups?
 
   DEFAULT_GROUP_ROLES = ["managers", "depositors", "viewers"]
 
@@ -36,7 +37,7 @@ class Collection < ActiveFedora::Base
   end
 
   def user_groups
-    [ managers_group, depositors_group, viewers_group ]
+    [managers_group, depositors_group, viewers_group]
   end
 
   def group_members
@@ -57,5 +58,9 @@ class Collection < ActiveFedora::Base
       user = User.find_by(ms_id: depositor)
       managers_group.users << user
       managers_group.save
+    end
+
+    def destroy_default_groups
+      user_groups.compact.each(&:destroy)
     end
 end

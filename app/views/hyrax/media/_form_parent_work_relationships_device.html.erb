@@ -1,7 +1,5 @@
-<div id="organization_details">
-  <h2>ORGANIZATION</h2>
-
-  <p>If this object is managed by an organization, either select it from the list or create a new organization record if it is not currently present in the list. If the object is not managed by an organization, select No Organization.</p>
+<div id="select_device">
+  <h2>SELECT DEVICE</h2>
 
   <div class="form-inline">
     <%= f.input_field :find_parent_work,
@@ -9,14 +7,13 @@
                       autocomplete: 'off',
                       data: {
                         autocomplete: 'work',
-                        'autocomplete-url' => find_organization_autocomplete_url()
+                        'autocomplete-url' => find_device_autocomplete_url()
                       } %>
   </div>
 
   <div class="text-center button-wrapper">
-    <a class="btn btn-md btn-primary" id="btn-add-organization" data-behavior="add-relationship">Select organization</a>
-    <a class="btn btn-md btn-primary" id="btn_new_organization">Create new organization</a>
-    <a class="btn btn-md btn-primary" id="btn_no_organization">No organization</a>    
+    <a class="btn btn-md btn-primary" id="btn-add-device" data-behavior="add-relationship">Select device</a>
+    <a class="btn btn-md btn-primary" id="btn_new_device">Create new device</a>
   </div>
 </div>
 

@@ -118,7 +118,7 @@ export default class RelationshipsControl {
   addRow() {
     this.hideWarningMessage()
     let data = this.searchData()
-    //console.log('select2 data : ',data)
+    console.log('select2 data : ',data)
     if (this.repeatable == 'no') {
       // if the attribute is not repeatable, remove the rest of the items before adding
       this.registry.items.forEach((item, index) => {
@@ -128,7 +128,7 @@ export default class RelationshipsControl {
     if (this.workType == 'organization') {
       this.registry.addResource(new OrganizationResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
     } else if (this.workType == 'device') {
-      this.registry.addResource(new DeviceResource(data.id, data.label, data.creator, data.modality, data.description));
+      this.registry.addResource(new DeviceResource(data.id, data.text, data.creator, data.modality, data.description));
     } else if (this.workType == 'taxonomy') {
       this.registry.addResource(new TaxonomyResource(
         data.id, 

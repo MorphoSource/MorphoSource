@@ -195,6 +195,12 @@ class User < ApplicationRecord
     end
   end
 
+  # finds collections for which user belongs to "_managers" role
+  def collections_managed
+    ids = roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
+    Collection.where(id: ids)
+  end
+
   private
 
   # Assigns a random string to be used as the user_key

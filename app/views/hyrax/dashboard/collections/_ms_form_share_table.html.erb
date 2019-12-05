@@ -1,0 +1,33 @@
+<% group_name = access.dup.concat("_group") %>
+<% group = @collection.send(group_name) %>
+<h3><%= t("hyrax.dashboard.collections.form_share_table.#{access}.title") %></h3>
+<p><%= t("hyrax.dashboard.collections.form_share_table.#{access}.help") %></p>
+<p><%= t("hyrax.dashboard.collections.form_share_table.#{access}.help_with_works", type_title: @collection.collection_type.title) if @collection.share_applies_to_new_works? && access != 'depositors' %></p>
+<% if group.users.count > 0 %>
+  <table class="table table-striped share-status">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Name</th>
+        <th><%= t("hyrax.dashboard.collections.form_share_table.#{access}.action") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% group.users.each do |user| %>
+      <tr>
+        <td><%= user.email %></td>
+        <td><%= user.display_name %></td>
+        <td>
+          <% if access == 'managers' && group.users.count < 2 %>
+            <%= link_to "Remove", main_app.update_collection_groups_path(@collection), class: 'btn btn-sm btn-danger', disabled: true %>
+          <% else %>
+            <%= link_to "Remove", main_app.update_collection_groups_path(@collection, :collection_roles => {:access => access, :remove => true, :collection_id => @collection.id, :agent_id => user.ms_id, :agent_type => 'user'}), method: :post, class: 'btn btn-sm btn-danger' %>
+          <% end %>
+        </td>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p><em><%= t("hyrax.dashboard.collections.form_share_table.#{access}.empty") %></em></p>
+<% end %>

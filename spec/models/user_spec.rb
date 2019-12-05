@@ -186,5 +186,25 @@ RSpec.describe User, type: :model do
         expect(new_user2.ms_id).to eq(old_ms_id)
       end
     end
+
+    describe '#collections_managed' do
+      let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+      let(:team_a)                { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      let(:team_b)                { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      let(:team_c)                { Collection.create(title: ['Team_C'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      let(:role1)                 { team_a.managers_group }
+      let(:role2)                 { team_b.managers_group }
+      let(:role3)                 { team_c.managers_group }
+      let(:manager_roles)         { [role1, role2, role3] }
+
+      before do
+        allow(user).to receive(:roles).and_return(manager_roles)
+        allow(Collection).to receive(:where).with(id: [team_a.id, team_b.id, team_c.id]).and_return([team_a, team_b, team_c])
+      end
+
+      it 'returns all collections where user belongs to default _manager role' do
+        expect(user.collections_managed).to match_array([team_a, team_b, team_c])
+      end
+    end
   end
 end

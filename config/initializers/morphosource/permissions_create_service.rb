@@ -2,11 +2,10 @@ Hyrax::Collections::PermissionsCreateService.module_eval do
 
   # Assign new groups to manager/depositor/viewer access if collection is a Team or Project
   def self.create_default(collection:, creating_user:, grants: [])
-    collection_type = Hyrax::CollectionType.find_by_gid!(collection.collection_type_gid)
     if collection.type_assigns_groups?
       access_grants = ms_access_grants_attributes(collection: collection, creating_user: creating_user, grants: grants)
     else
-      access_grants = access_grants_attributes(collection_type: collection_type, creating_user: creating_user, grants: grants)
+      access_grants = access_grants_attributes(collection_type: collection.collection_type, creating_user: creating_user, grants: grants)
     end
     Hyrax::PermissionTemplate.create!(source_id: collection.id, access_grants_attributes: access_grants.uniq)
     collection.reset_access_controls!

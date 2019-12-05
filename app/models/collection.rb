@@ -20,12 +20,27 @@ class Collection < ActiveFedora::Base
     end
   end
 
+  # managers, depositors, viewers methods
+  DEFAULT_GROUP_ROLES.each do |role|
+    define_method(role) do
+      Role.find_by(name: id.concat("_#{role}")).users
+    end
+  end
+
   def team?
     collection_type.title == "Team"
   end
 
   def project?
     collection_type.title == "Project"
+  end
+
+  def user_groups
+    [ managers_group, depositors_group, viewers_group ]
+  end
+
+  def group_members
+    managers + depositors + viewers
   end
 
   private

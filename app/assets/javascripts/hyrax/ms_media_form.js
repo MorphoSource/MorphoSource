@@ -12,6 +12,10 @@ $(document).on('turbolinks:load', function() {
     else
       IsProcessingEventReady = true;
 
+    setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
+    setupTooltip();
+    removeLastRepeatable();
+
     form = $('form[id*="media"]')[0];
 
     // Hidden Default Scale Bar Field

@@ -333,13 +333,20 @@ class SubmissionsController < ApplicationController
 
   def create_device(params)
     parent_attributes = {}
-    if @submission.device_organization_id.present?
-      if @submission.device_organization_id == 'new_organization_id_to_be_created'
-        # user has selected the new organization which is waiting to be created
-        # at this point this new organization has been created.  set the id to the new organization id
-        @submission.device_organization_id = @submission.organization_id
+    if @submission.present?
+      if @submission.device_organization_id.present?
+        if @submission.device_organization_id == 'new_organization_id_to_be_created'
+          # user has selected the new organization which is waiting to be created
+          # at this point this new organization has been created.  set the id to the new organization id
+          @submission.device_organization_id = @submission.organization_id
+        end
+        parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
       end
-      parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
+    else
+      # need to get device org id if passed in
+
+        # parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
+
     end
     unless parent_attributes.empty?
       params.merge!('work_parents_attributes' => parent_attributes)
@@ -502,6 +509,46 @@ class SubmissionsController < ApplicationController
     else
       status = 'FAIL'
       message = 'There is a problem creating the taxonomy.'
+      new_work = {}
+    end
+    response_object = { 
+      :work => new_work,
+      :status => status,
+      :message => message
+    }
+    render :json => response_object 
+  end
+
+  def new_device_submit
+    # this method is expected to be called from a form in modal, or an ajax post
+    begin
+      device_model_params = Hyrax::DeviceForm.model_attributes(params[:device])
+      
+
+
+      # todo: will need to get device org later and add it to device_model_params?
+      
+
+      new_device_id = create_device(device_model_params)
+    rescue Exception => ex
+      new_device_id = nil 
+      exception_message = "Exception: #{ex.class}, #{ex.message}"   
+    end
+
+    if new_device_id.present?
+      status = 'OK'
+      message = 'New device created'
+      new_device = Device.where('id' => new_device_id).first
+      new_work = {
+        :id => new_device_id,
+        :title => new_device.title.first,
+        :creator => new_device.creator.first,
+        :modality => new_device.modality.first, 
+        :description => new_device.description.first
+      }
+    else
+      status = 'FAIL'
+      message = 'There is a problem creating the device. ' + exception_message
       new_work = {}
     end
     response_object = { 

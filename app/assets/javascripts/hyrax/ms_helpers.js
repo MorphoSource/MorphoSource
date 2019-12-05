@@ -45,7 +45,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 		$.post($(this_form).attr('action'),
 	  $(this_form).serialize(), function(data, status){
 	    // got the data back after the new work has been created
-	    //console.log(data.message, data);
+	    console.log("ms_helper, after post: ", data.message, data);
 			var relationship_element = $(this_div).data("relationship-control");
 	  	var relationship_input = $(relationship_element).find('input[name*="[find_parent_work]"]');
 			$(relationship_input).val(data.work.id);
@@ -64,8 +64,8 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 				var new_data = {
 					id: data.work.id, 
 					text: data.work.title,
-					creator: data.creator,
-					modality: data.modality,
+					creator: data.work.creator,
+					modality: data.work.modality,
 	        description: data.work.description
 				};
 			} else if (work_name == 'taxonomy') {

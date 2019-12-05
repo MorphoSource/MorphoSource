@@ -61,6 +61,18 @@
 
 <div class="col-sm-12">
   <div class="content-block">
+    <div id="embedded_div_new_device" class="embedded_div" data-relationship-control="#parent-relationships-devices" data-add-button="#btn-add-device" style="display: block;">
+        <%= simple_form_for @new_device_form, 
+                            wrapper: :showcase_default,
+                            url: @new_device_submit_submissions_url do |i| %>
+            <%= render 'form_new_device', f: i %>
+        <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="col-sm-12">
+  <div class="content-block">
     <div id="embedded_div_new_organization" class="embedded_div" data-relationship-control="#parent-relationships-organizations" data-add-button="#btn-add-organization" style="display: none;">
         <%= simple_form_for @new_organization_form, 
                             wrapper: :showcase_default,
@@ -70,7 +82,6 @@
     </div>
   </div>
 </div>
-
 
 <script type="text/javascript">
   Blacklight.onLoad(function() {

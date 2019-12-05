@@ -76,7 +76,7 @@ RSpec.describe CollectionRolesController, type: :controller do
     end
 
     context 'removing an individual user' do
-      let(:params) { { collection_roles: { agent_type: 'user', remove: 'true', access: '', agent_id: another_user.ms_id }, id: team.id } }
+      let(:params) { { collection_roles: { agent_type: 'user', new_access: 'remove', access: '', agent_id: another_user.ms_id }, id: team.id } }
       before do
         team.user_groups.each do |group|
           group.users << another_user
@@ -116,8 +116,93 @@ RSpec.describe CollectionRolesController, type: :controller do
       end
     end
 
+    context 'moving users to different roles' do
+      let(:params) { { collection_roles: { agent_type: 'user', new_access: '', access: '', agent_id: another_user.ms_id }, id: team.id } }
+      before do
+        allow(subject).to receive(:can?).with(:manage, team).and_return(true)
+      end
+      context 'manager moves a user from manager to depositor' do
+        before do
+          params[:collection_roles][:access] = 'managers'
+          params[:collection_roles][:new_access] = 'depositors'
+          team.managers_group.users << another_user
+          team.save
+        end
+        it 'moves the user to the correct group' do
+          post :update_collection_groups, params: params
+          expect(team.managers).not_to include(another_user)
+          expect(team.depositors).to include(another_user)
+        end
+      end
+      context 'manager moves a user from manager to viewer' do
+        before do
+          params[:collection_roles][:access] = 'managers'
+          params[:collection_roles][:new_access] = 'viewers'
+          team.managers_group.users << another_user
+          team.save
+        end
+        it 'moves the user to the correct group' do
+          post :update_collection_groups, params: params
+          expect(team.managers).not_to include(another_user)
+          expect(team.viewers).to include(another_user)
+        end
+      end
+      context 'manager moves a user from depositor to manager' do
+        before do
+          params[:collection_roles][:access] = 'depositors'
+          params[:collection_roles][:new_access] = 'managers'
+          team.depositors_group.users << another_user
+          team.save
+        end
+        it 'moves the user to the correct group' do
+          post :update_collection_groups, params: params
+          expect(team.depositors).not_to include(another_user)
+          expect(team.managers).to include(another_user)
+        end
+      end
+      context 'manager moves a user from depositor to viewer' do
+        before do
+          params[:collection_roles][:access] = 'depositors'
+          params[:collection_roles][:new_access] = 'viewers'
+          team.depositors_group.users << another_user
+          team.save
+        end
+        it 'moves the user to the correct group' do
+          post :update_collection_groups, params: params
+          expect(team.depositors).not_to include(another_user)
+          expect(team.viewers).to include(another_user)
+        end
+      end
+      context 'manager moves a user from viewer to manager' do
+        before do
+          params[:collection_roles][:access] = 'viewers'
+          params[:collection_roles][:new_access] = 'managers'
+          team.viewers_group.users << another_user
+          team.save
+        end
+        it 'moves the user to the correct group' do
+          post :update_collection_groups, params: params
+          expect(team.viewers).not_to include(another_user)
+          expect(team.managers).to include(another_user)
+        end
+      end
+      context 'manager moves a user from viewer to depositor' do
+        before do
+          params[:collection_roles][:access] = 'viewers'
+          params[:collection_roles][:new_access] = 'depositors'
+          team.viewers_group.users << another_user
+          team.save
+        end
+        it 'moves the user to the correct group' do
+          post :update_collection_groups, params: params
+          expect(team.viewers).not_to include(another_user)
+          expect(team.depositors).to include(another_user)
+        end
+      end
+    end
+
     context 'adding annother team' do
-      let(:params)  { { collection_roles: { agent_type: 'group', remove: 'false', access: '', team_collection_id: team2.id }, id: team.id } }
+      let(:params)  { { collection_roles: { agent_type: 'group', access: '', team_collection_id: team2.id }, id: team.id } }
       let(:user3)   { User.create(email: 'blah@blah.com', password: 'password') }
 
       before do

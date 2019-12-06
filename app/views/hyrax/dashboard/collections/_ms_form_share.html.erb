@@ -14,7 +14,6 @@
         <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'group-participants-form'}) do |f| %>
 
           <div class="form-inline sharing-row-form add-groups">
-            <%= f.hidden_field_tag('collection_roles[remove]', false) %>
             <div class="form-group">
               <label><%= t('.add_group') %>:</label>
               <%= f.hidden_field_tag('collection_roles[agent_type]', 'group') %>
@@ -24,7 +23,6 @@
               <label>as</label>
               <%= f.select 'collection_roles[access]', ms_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
             </div>
-
             <%= submit_tag 'Add', class: 'btn btn-info edit-collection-add-group-sharing-button', :disabled => true %>
             <% end %>
           </div><!-- /.form-inline -->
@@ -34,7 +32,6 @@
       <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'user-participants-form' }) do |f| %>
 
         <div class="form-inline sharing-row-form add-users">
-          <%= f.hidden_field_tag('collection_roles[remove]', false) %>
           <div class="form-group">
             <label><%= t('.add_user') %>:</label>
             <%= f.hidden_field_tag('collection_roles[agent_type]', 'user') %>
@@ -60,5 +57,28 @@
 </div>
 
 <script>
+// disable update user role button if no selection made
+$(document).ready(function() {
+  function updateAccessEnabled(el){
+    let saveButton = $(el).closest('tr').find(".btn");
+    if (verifyAccess(el)) {
+      saveButton.prop('disabled', false);
+    } else {
+      saveButton.prop('disabled', true);
+    }
+  }
+
+  function verifyAccess(el) {
+    if ($(el).val() != '') {
+      return true;
+    } else {
+      return false
+    }
+  }
+
+  $('.select-edit-access').change(function(){
+    updateAccessEnabled(this);
+  });
+});
 
 </script>

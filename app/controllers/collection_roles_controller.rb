@@ -24,13 +24,25 @@ class CollectionRolesController < ApplicationController
   end
 
   def update_user_access
-    @remove ? @group.users.delete(user) : add_user_to_group(user)
+    if @new_group
+      change_groups(user)
+    elsif @remove
+      @group.users.delete(user)
+    else
+      add_user_to_group(user, @group)
+    end
     update_notice('success') if @group.save
   end
 
   # Add user to appropriate role if user does not already have another collection role.
-  def add_user_to_group(user)
-    @group.users << user unless collection.group_members.include? user
+  def add_user_to_group(user, group)
+    group.users << user unless collection.group_members.include? user
+  end
+
+  def change_groups(user)
+    @group.users.delete(user)
+    add_user_to_group(user, @new_group)
+    @new_group.save
   end
 
   # Add all team members to chosen role unless member already has a collection role.
@@ -38,7 +50,7 @@ class CollectionRolesController < ApplicationController
     return unless can? :manage, team
 
     team.group_members.each do |member|
-      add_user_to_group(member)
+      add_user_to_group(member, @group)
     end
     update_notice('success') if @group.save
   end
@@ -53,8 +65,9 @@ class CollectionRolesController < ApplicationController
 
   def get_collection_role_values(params)
     @agent_type = params[:agent_type]
-    @remove = params[:remove] == 'true'
-    @group = collection.send("#{params[:access]}_group")
+    @remove = params[:new_access] == 'remove'
+    @group = group(params[:access])
+    @new_group = group(params[:new_access])
     update_notice('fail')
   end
 
@@ -78,5 +91,9 @@ class CollectionRolesController < ApplicationController
     when 'fail'
       flash[:alert] = translate('hyrax.dashboard.collections.form.permission_update_errors')
     end
+  end
+
+  def group(access)
+    collection.try("#{access}_group")
   end
 end

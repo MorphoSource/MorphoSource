@@ -348,6 +348,7 @@ class SubmissionsController < ApplicationController
         # parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
 
     end
+    byebug
     unless parent_attributes.empty?
       params.merge!('work_parents_attributes' => parent_attributes)
     end
@@ -526,6 +527,8 @@ class SubmissionsController < ApplicationController
       
 
 
+
+      
       # todo: will need to get device org later and add it to device_model_params?
       
 

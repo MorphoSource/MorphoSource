@@ -46,6 +46,27 @@ module Morphosource
       end.to_json
     end
 
+    def member_of_devices_json(work_type=nil)
+      parent_works = model.in_works
+      # If a work is deposited as a child of another work, it will have a parent_id
+      if @controller.params[:parent_id]
+        parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
+      end
+      # filter by work type      
+      if work_type.present?
+        parent_works = parent_works.select{ |item| item.class.to_s == work_type } 
+      end
+      parent_works.map do |parent|
+        {
+          id: parent.id,
+          label: parent.to_s,
+          creator: parent.creator.first.to_s,
+          modality: parent.modality.first.to_s,
+          description: parent.description.first.to_s
+        }
+      end.to_json
+    end
+
     def member_of_organizations_json(work_type=nil)
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id
@@ -108,22 +129,23 @@ module Morphosource
       end.to_json
     end
 
-    def member_of_devices_json(child_id)
-      # imaging_event < device
-      imaging_event = ImagingEvent.where('id' => child_id).first
-      parent_works = imaging_event.in_works
-      # filter by work type      
-      parent_works = parent_works.select{ |item| item.class.to_s == "Device" } 
-      parent_works.map do |parent|
-        {
-          id: parent.id,
-          label: parent.to_s,
-          creator: parent.creator.first.to_s,
-          modality: parent.modality.first.to_s,
-          description: parent.description.first.to_s
-        }
-      end.to_json
-    end
+
+#    def member_of_devices_json(child_id)
+#      # imaging_event < device
+#      imaging_event = ImagingEvent.where('id' => child_id).first
+#      parent_works = imaging_event.in_works
+#      # filter by work type      
+#      parent_works = parent_works.select{ |item| item.class.to_s == "Device" } 
+#      parent_works.map do |parent|
+#        {
+#          id: parent.id,
+#          label: parent.to_s,
+#          creator: parent.creator.first.to_s,
+#          modality: parent.modality.first.to_s,
+#          description: parent.description.first.to_s
+#        }
+#      end.to_json
+#    end
 
   end
 end

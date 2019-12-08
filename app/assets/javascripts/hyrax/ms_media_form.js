@@ -57,8 +57,8 @@ $(document).on('turbolinks:load', function() {
       if ($('form[id*="processing_event"]').length) { // if PE form 
         buildProcessingActivity(); // populate the PA field before saving PE
       }
+      //      targetForm.submit();
       targetForm.submitRelatedWork();
-      return false;
     }) 
 
     function prepareFieldsBeforeSubmit() {
@@ -302,16 +302,25 @@ $(document).on('turbolinks:load', function() {
       var relatedFormId = $(this).attr('id');
       console.log('submitting '+ relatedFormId );
       // replace with ajax form post to trigger other actions
-      $.post($(this).attr('action'), $(this).serialize(), function(data){
+
+      var postdata = $(this).serializeArray(); // convert form to array
+      //postdata.push({name: "NonFormValue", value: 'foo'});
+
+//        console.log("postdata: " + postdata );
+
+//$.ajax({
+//    type: 'POST',
+//    url: this.action,
+//    data: $.param(postdata),
+//});
+
+      $.post($(this).attr('action'), $.param(postdata), function(data){
         console.log("submitted work ID: " + data.id );
         if (relatedFormId.indexOf('imaging_event') != -1)
           IsImagingEventReady = true;
         else if (relatedFormId.indexOf('processing_event') != -1)
-          IsProcessingEventReady = true;
-        /* set a delay for attempt to resolve the following error:
-        Your changes could not be saved because another user (or background job) updated this Media after you began editing. Please make sure all file attachments have completed successfully and try again. This form has refreshed with the most recent saved copy of the Media */
-        setTimeout(function(){ callback(); }, 9000);
-
+          IsProcessingEventReady = true;        
+        callback();
       }, "json").fail(function(data) {
         console.log("getting a fail status ", data );
         var errors = data.responseJSON.errors;

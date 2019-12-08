@@ -35,8 +35,8 @@
                                     'param-key' => @imaging_event_form.model_name.param_key },
                             multipart: true
                           } do |i| %>
-
           <%= render 'form_imaging_event', i: i, presenter: @presenter %>
+          <%= render 'tab_device', i: i %>
       <% end %>
   <% else %>
     <%= render 'form_imaging_event_parent', presenter: @presenter %>
@@ -58,6 +58,7 @@
     <% end %>
   </div>
 <% end %>
+
 
 <div class="col-sm-12">
   <div class="content-block">

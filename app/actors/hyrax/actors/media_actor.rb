@@ -11,20 +11,6 @@ module Hyrax
       end
 
       def update(env)
-
-
-
-        # todo: 
-        # save the device id as work_parents_attributes in imaging event 
-        # remove any existing device from thie IE
-        # try using AddToWorkActor methods?
-
-        
-        imaging_event = ImagingEvent.where('member_ids_ssim' => env.attributes['id']).first
-        byebug
-
-
-
         env.attributes['title'] = [ generated_title(env) ]
         super
       end

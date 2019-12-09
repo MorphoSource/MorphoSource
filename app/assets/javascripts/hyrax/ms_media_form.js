@@ -302,18 +302,9 @@ $(document).on('turbolinks:load', function() {
       var relatedFormId = $(this).attr('id');
       console.log('submitting '+ relatedFormId );
       // replace with ajax form post to trigger other actions
-
       var postdata = $(this).serializeArray(); // convert form to array
       //postdata.push({name: "NonFormValue", value: 'foo'});
-
-//        console.log("postdata: " + postdata );
-
-//$.ajax({
-//    type: 'POST',
-//    url: this.action,
-//    data: $.param(postdata),
-//});
-
+      //        console.log("postdata: " + postdata );
       $.post($(this).attr('action'), $.param(postdata), function(data){
         console.log("submitted work ID: " + data.id );
         if (relatedFormId.indexOf('imaging_event') != -1)
@@ -393,7 +384,7 @@ $(document).on('turbolinks:load', function() {
       //}) 
 
       if (!IsImagingEventReady) {  
-        $("#related_form_imaging_event form").submitRelatedWork(submitProcessingEvent);
+        $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
       } else {
         submitProcessingEvent();
       }

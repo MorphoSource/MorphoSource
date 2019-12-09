@@ -124,14 +124,11 @@ export default class RelationshipsControl {
       this.registry.items.forEach((item, index) => {
         item.removeResource();
       })
-      this.registry.serializeToForm();
     }
     if (this.workType == 'organization') {
       this.registry.addResource(new OrganizationResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
-      this.registry.serializeToForm();
     } else if (this.workType == 'device') {
       this.registry.addResource(new DeviceResource(data.id, data.text, data.creator, data.modality, data.description));
-      this.registry.serializeToForm();
     } else if (this.workType == 'taxonomy') {
       this.registry.addResource(new TaxonomyResource(
         data.id, 
@@ -159,6 +156,9 @@ export default class RelationshipsControl {
     } else {
       this.registry.addResource(new Resource(data.id, data.text))
     }
+    // prepare form data (e.g. add hidden fields for work_parents_attributes) for ajax post
+    // (e.g. adding parents for imaging event)
+    this.registry.serializeToForm();
     // finally, empty the "add" row input value
     this.clearSearch();
   }

@@ -26,22 +26,25 @@
 <%# the following forms are placed here so that the forms will not be nested inside the media form %>
 
 <% if @presenter.hasImagingEvents? %>
-  <div class="row related_form imaging-event" id="related_form_imaging_event" style="display:none">
   <% if @presenter.imaging_event_editable? %>
       <%= simple_form_for [main_app, @imaging_event_form],
                           wrapper: :showcase_default,
                           html: {
+                            id: 'related_form_imaging_event',
                             data: { behavior: 'work-form',
                                     'param-key' => @imaging_event_form.model_name.param_key },
                             multipart: true
                           } do |i| %>
+        <div class="row related_form imaging-event" style="display:none">
           <%= render 'form_imaging_event', i: i, presenter: @presenter %>
+        </div>
+        <div class="row related_form device" style="display:none">
           <%= render 'tab_device', i: i %>
+        </div>
       <% end %>
   <% else %>
     <%= render 'form_imaging_event_parent', presenter: @presenter %>
   <% end %>
-  </div>
 <% end %>
 
 <% if @presenter.hasProcessingEvents? %>
@@ -62,7 +65,7 @@
 
 <div class="col-sm-12">
   <div class="content-block">
-    <div id="embedded_div_new_device" class="embedded_div" data-relationship-control="#parent-relationships-devices" data-add-button="#btn-add-device" style="display: block;">
+    <div id="embedded_div_new_device" class="embedded_div" data-relationship-control="#parent-relationships-devices" data-add-button="#btn-add-device" style="display: none">
         <%= simple_form_for @new_device_form, 
                             wrapper: :showcase_default,
                             url: @new_device_submit_submissions_url do |i| %>

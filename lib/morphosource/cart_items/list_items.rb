@@ -85,7 +85,7 @@ module Morphosource
 
       def get_requesters(page)
         ids = get_value(page,:user_ids).uniq
-        User.where(id: ids).page params[:page]
+        User.where(ms_id: ids).page params[:page]
       end
 
       def get_value(page,key)

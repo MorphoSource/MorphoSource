@@ -2,7 +2,10 @@ class User < ApplicationRecord
   # used for creating ms_id
   require 'securerandom'
 
-  has_many :cart_items
+  has_many :cart_items, primary_key: :ms_id, foreign_key: :user_id
+
+  has_many :requests, class_name: 'CartItem', primary_key: :ms_id, foreign_key: :approver_id
+
   paginates_per 10
 
   # assign user a ms_id to use as user_key
@@ -128,13 +131,27 @@ class User < ApplicationRecord
     my_cleared_requests.map{|item| item.work_id }
   end
 
+  def downloaded_items
+    cart_items.select{ |i| i.date_downloaded.present? }
+  end
+
+  def downloaded_item_ids
+    downloaded_items.map{ |i| i.id }
+  end
+
+  def downloaded_work_ids
+    downloaded_items.map{ |i| i.work_id }
+  end
+
   # items requested from user (items where user is data manager)
+
   def requested_items
-    CartItem.where(approver: self.email).where(restricted: true).where.not(date_requested: nil).or(CartItem.where(approver: self.email).where(restricted: true).where.not(date_cleared: nil))
+    r = requests.select{ |item| item.restricted? }
+    r.select{|item| (!item.date_requested.nil? || !item.date_cleared.nil?)}
   end
 
   def newly_requested_items
-    requested_items.select{|item| item.request_status == "Requested"}
+    requested_items.select{ |item| item.request_status == "Requested" }
   end
 
   def previously_requested_items
@@ -171,18 +188,6 @@ class User < ApplicationRecord
 
   def previously_requested_items_user_ids
     previously_requested_items.map{ |item| item.user_id }
-  end
-
-  def downloaded_items
-    cart_items.select{ |i| i.date_downloaded.present? }
-  end
-
-  def downloaded_item_ids
-    downloaded_items.map{ |i| i.id }
-  end
-
-  def downloaded_work_ids
-    downloaded_items.map{ |i| i.work_id }
   end
 
   # profile methods

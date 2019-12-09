@@ -57,7 +57,7 @@ module Morphosource
 
     def create_cart_item(work_id)
       work = Media.find(work_id)
-      item = CartItem.create({user_id: current_user.id, work_id: work.id})
+      item = CartItem.create({user_id: current_user.ms_id, work_id: work.id})
       if user_is_approver?(item) && item.restricted?
         unrestrict(item)
       end
@@ -65,7 +65,7 @@ module Morphosource
     end
 
     def user_is_depositor?(work)
-      current_user.email == work.depositor
+      current_user.ms_id == work.depositor
     end
 
     def mark_as(action,items=@items,value: nil)
@@ -137,7 +137,7 @@ module Morphosource
     end
 
     def user_is_approver?(item)
-      current_user.email == item.approver
+      current_user.ms_id == item.approver_id
     end
 
     def unrestrict(item)

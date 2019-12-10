@@ -66,10 +66,33 @@
 <div class="col-sm-12">
   <div class="content-block">
     <div id="embedded_div_new_device" class="embedded_div" data-relationship-control="#parent-relationships-devices" data-add-button="#btn-add-device" style="display: none">
-        <%= simple_form_for @new_device_form, 
+        <%= simple_form_for [main_app, @new_device_form], 
                             wrapper: :showcase_default,
-                            url: @new_device_submit_submissions_url do |i| %>
-            <%= render 'form_new_device', f: i %>
+                            url: @new_device_submit_submissions_url,
+                            html: {
+                              data: { behavior: 'work-form' }
+                            } do |d| %>
+
+            <%= render 'form_new_device', f: d %>
+
+<%# todo:  layout change for 2 columns needed %>
+
+            <div id="parent-relationships-organizations" class="form-group" data-behavior="parent-relationships-organizations" data-param-key="<%= d.object.model_name.param_key %>" data-members="<%= d.object.member_of_organizations_json('Organization') %>" data-new-work-created="" data-repeatable="no" data-work-type="organization">
+
+                <div class="col-sm-6">
+                  <div class="content-block">
+                    <%= render 'form_parent_work_relationships_organization', f: d %>
+                  </div>
+                </div>
+
+               <div class="col-sm-6">
+                  <div class="content-block">
+                  <%= render 'organization_details', presenter: @presenter %>
+                  </div>
+                </div> 
+
+            </div>
+
         <% end %>
     </div>
   </div>
@@ -78,9 +101,12 @@
 <div class="col-sm-12">
   <div class="content-block">
     <div id="embedded_div_new_organization" class="embedded_div" data-relationship-control="#parent-relationships-organizations" data-add-button="#btn-add-organization" style="display: none;">
-        <%= simple_form_for @new_organization_form, 
+        <%= simple_form_for [main_app, @new_organization_form], 
                             wrapper: :showcase_default,
-                            url: @new_organization_submit_submissions_url do |i| %>
+                            url: @new_organization_submit_submissions_url,
+                            html: {
+                              data: { behavior: 'work-form' }
+                            } do |i| %>
             <%= render 'form_new_organization', i: i %>
         <% end %>
     </div>

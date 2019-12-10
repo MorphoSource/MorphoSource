@@ -13,6 +13,7 @@ $(document).on('turbolinks:load', function() {
       IsProcessingEventReady = true;
 
     setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
+    setupEmbeddedWorkForm('organization', 'new');
     setupTooltip();
     removeLastRepeatable();
 

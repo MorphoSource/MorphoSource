@@ -342,13 +342,7 @@ class SubmissionsController < ApplicationController
         end
         parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
       end
-    else
-      # need to get device org id if passed in
-
-        # parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
-
     end
-    byebug
     unless parent_attributes.empty?
       params.merge!('work_parents_attributes' => parent_attributes)
     end
@@ -448,6 +442,8 @@ class SubmissionsController < ApplicationController
         :id => new_organization_id,
         :title => new_organization.title.first,
         :institution_code => new_organization.institution_code.first,
+        :institution_name => new_organization.institution_name.first,
+        :collection_code => new_organization.collection_code.first,
         :description => new_organization.description.first, 
         :address => new_organization.address.first, 
         :city => new_organization.city.first, 

@@ -9,7 +9,11 @@
   <script type="text/x-tmpl" id="tmpl-parent-work-devices">
   <tr>
     <td>
-
+        <div id="device-id" style="display:block">{%= o.id %}</div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization</div>
+            <div class="col-xs-6 showcase-value" id="device-organization-institution-value"></div>
+        </div>
         <div class="row">
             <div class="col-xs-6 showcase-label">Model</div>
             <div class="col-xs-6 showcase-value">{%= o.title %}</div>

@@ -54,6 +54,8 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 					id: data.work.id, 
 					text: data.work.title,
 					institution_code: data.work.institution_code,
+					institution_name: data.work.institution_name,
+					collection_code: data.work.collection_code,
 	        description: data.work.description,
 	        address: data.work.address, 
 	        city: data.work.city, 

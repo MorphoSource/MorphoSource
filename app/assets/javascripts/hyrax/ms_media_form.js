@@ -13,7 +13,7 @@ $(document).on('turbolinks:load', function() {
       IsProcessingEventReady = true;
 
     setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
-    setupEmbeddedWorkForm('organization', 'new');
+    setupEmbeddedWorkForm('organization', 'new', updateDevice);
     setupTooltip();
     removeLastRepeatable();
 
@@ -353,9 +353,32 @@ $(document).on('turbolinks:load', function() {
       $('#showcase-title').text(title.join(':'));     
     }
 
+    function updateDevice(organization, instutition) {
+      var organization_institution = $('#organization-title-value').text();
+      console.log('organization_institution ', organization_institution);
+      var organization_institution = organization + ' (' + instutition + ')';
+      $('#device-organization-institution-value').text(organization_institution);
+    }
+
     setupTooltip();
     removeLastRepeatable();
     adjust_form_media_type();
+
+    //
+    $('#select_device [data-behavior="add-relationship"]').click(function() {
+      var device_id = $('#device-id').text();
+
+      
+      updateDevice('aaa', 'bb');
+
+
+
+      // will make another request to get device org
+
+      //       org = Organization.where('member_ids_ssim' => id)
+
+
+    })
 
     // Change title on the fly when corresponding fields are updated
     // todo: input.media_part is a repeatable, but newly added media_part field does not trigger the event when it is updated

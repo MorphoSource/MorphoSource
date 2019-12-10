@@ -48,7 +48,7 @@ export default class RelationshipsControl {
   displayMembers() {
     if (this.workType == 'organization') {
       this.members.forEach((elem) =>
-        this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.institution_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
+        this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.institution_code, elem.institution_name, elem.collection_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
       )      
     } else if (this.workType == 'device') {
       this.members.forEach((elem) =>
@@ -126,7 +126,7 @@ export default class RelationshipsControl {
       })
     }
     if (this.workType == 'organization') {
-      this.registry.addResource(new OrganizationResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
+      this.registry.addResource(new OrganizationResource(data.id, data.text, data.institution_code, data.institution_name, data.collection_code, data.description, data.address, data.city, data.state_province, data.country));
     } else if (this.workType == 'device') {
       this.registry.addResource(new DeviceResource(data.id, data.text, data.creator, data.modality, data.description));
     } else if (this.workType == 'taxonomy') {

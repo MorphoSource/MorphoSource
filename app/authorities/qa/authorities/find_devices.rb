@@ -14,13 +14,22 @@ module Qa::Authorities
         creator = doc.creator
         modality = doc.modality
         description = doc.description
+        # also get the device organization title and institution name for display
+        organization_institution = ''
+        organizations = Organization.where('member_ids_ssim' => id)
+        if organizations.present?
+          organization = organizations.first
+          organization_institution = organization.title.first
+          organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
+        end
         { 
           id: id, 
           label: title, 
           value: id,
           creator: creator,
           modality: modality,
-          description: description
+          description: description,
+          organization_institution: organization_institution
         }
       end
     end

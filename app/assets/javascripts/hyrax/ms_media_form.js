@@ -365,11 +365,11 @@ $(document).on('turbolinks:load', function() {
     adjust_form_media_type();
 
     //
-    $('#select_device [data-behavior="add-relationship"]').click(function() {
-      var device_id = $('#device-id').text();
+    //$('#select_device [data-behavior="add-relationship"]').click(function() {
+    //  var device_id = $('#device-id').text();
 
       
-      updateDevice('aaa', 'bb');
+    //  updateDevice('aaa', 'bb');
 
 
 
@@ -378,7 +378,9 @@ $(document).on('turbolinks:load', function() {
       //       org = Organization.where('member_ids_ssim' => id)
 
 
-    })
+//    })
+
+
 
     // Change title on the fly when corresponding fields are updated
     // todo: input.media_part is a repeatable, but newly added media_part field does not trigger the event when it is updated

@@ -22,7 +22,7 @@ export default class MorphosourceResource extends Resource {
                             })
     } else if (this.url.indexOf('devices') != -1) {
       results = data.map((obj) => {
-                               return { id: obj.id, text: obj.label[0], creator: obj.creator, modality: obj.modality, description: obj.description };
+                               return { id: obj.id, text: obj.label[0], creator: obj.creator, modality: obj.modality, description: obj.description, organization_institution: obj.organization_institution };
                             })
     } else if (this.url.indexOf('taxonomies') != -1) {
       results = data.map((obj) => {

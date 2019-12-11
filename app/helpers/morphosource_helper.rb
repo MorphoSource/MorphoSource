@@ -196,4 +196,16 @@ module MorphosourceHelper
     end
   end
 
+  def organization_institution(id)
+      # get the device organization title and institution name for a device
+      organization_institution = ''
+      organizations = Organization.where('member_ids_ssim' => id)
+      if organizations.present?
+        organization = organizations.first
+        organization_institution = organization.title.first
+        organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
+      end
+      organization_institution
+  end
+
 end

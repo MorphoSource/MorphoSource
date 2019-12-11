@@ -1,7 +1,8 @@
 module Morphosource
   # Adds methods to add work to parent work
   module FormMethods
-
+    include MorphosourceHelper
+    
     delegate :work_parents_attributes=, :fileset_visibility, to: :model
 
     def self.included(base)
@@ -15,6 +16,7 @@ module Morphosource
        :on_behalf_of,
        :version,
        :add_works_to_collection,
+       :organization_institution,
        {
          based_near_attributes: [:id, :_destroy],
          member_of_collections_attributes: [:id, :_destroy],
@@ -62,9 +64,22 @@ module Morphosource
           label: parent.to_s,
           creator: parent.creator.first.to_s,
           modality: parent.modality.first.to_s,
-          description: parent.description.first.to_s
+          description: parent.description.first.to_s,
+          organization_institution: organization_institution(parent.id)
         }
       end.to_json
+    end
+
+    def organization_institution(id)
+        # get the device organization title and institution name for display
+        organization_institution = ''
+        organizations = Organization.where('member_ids_ssim' => id)
+        if organizations.present?
+          organization = organizations.first
+          organization_institution = organization.title.first
+          organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
+        end
+        organization_institution
     end
 
     def member_of_organizations_json(work_type=nil)
@@ -82,6 +97,8 @@ module Morphosource
           id: parent.id,
           label: parent.to_s,
           institution_code: parent.institution_code.first.to_s,
+          institution_name: parent.institution_name.first.to_s,
+          collection_code: parent.collection_code.first.to_s,
           description: parent.description.first.to_s,
           address: parent.address.first.to_s,
           city: parent.city.first.to_s,

@@ -68,7 +68,8 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 					text: data.work.title,
 					creator: data.work.creator,
 					modality: data.work.modality,
-	        description: data.work.description
+	        description: data.work.description,
+	        organization_institution: data.work.organization_institution
 				};
 			} else if (work_name == 'taxonomy') {
 				var new_data = {
@@ -100,6 +101,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 					text: data.work.title
 				};
 			}
+			//console.log('populating new_data into new-work-created ', new_data)
 	    $(relationship_element).data('new-work-created', new_data);
 			var relationship_add_btn = $(this_div).data("add-button");
 			$(relationship_add_btn).trigger("click");

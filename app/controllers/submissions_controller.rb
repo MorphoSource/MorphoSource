@@ -1,6 +1,7 @@
 class SubmissionsController < ApplicationController
   # Adds Hyrax behaviors to the controller.
   include Hyrax::WorksControllerBehavior
+  include MorphosourceHelper
 
   load_and_authorize_resource
 
@@ -520,20 +521,11 @@ class SubmissionsController < ApplicationController
     # this method is expected to be called from a form in modal, or an ajax post
     begin
       device_model_params = Hyrax::DeviceForm.model_attributes(params[:device])
-      
-
-
-
-      
-      # todo: will need to get device org later and add it to device_model_params?
-      
-
       new_device_id = create_device(device_model_params)
     rescue Exception => ex
       new_device_id = nil 
       exception_message = "Exception: #{ex.class}, #{ex.message}"   
     end
-
     if new_device_id.present?
       status = 'OK'
       message = 'New device created'
@@ -543,7 +535,8 @@ class SubmissionsController < ApplicationController
         :title => new_device.title.first,
         :creator => new_device.creator.first,
         :modality => new_device.modality.first, 
-        :description => new_device.description.first
+        :description => new_device.description.first,
+        :organization_institution => organization_institution(new_device_id)
       }
     else
       status = 'FAIL'
@@ -557,6 +550,7 @@ class SubmissionsController < ApplicationController
     }
     render :json => response_object 
   end
+
 
   private
 

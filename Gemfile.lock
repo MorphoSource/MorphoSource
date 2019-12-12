@@ -577,7 +577,7 @@ GEM
     posix-spawn (0.3.13)
     power_converter (0.1.2)
     public_suffix (3.0.3)
-    puma (3.12.0)
+    puma (3.12.2)
     qa (2.2.0)
       activerecord-import
       deprecation
@@ -913,7 +913,7 @@ DEPENDENCIES
   passenger
   pg
   pul_uv_rails!
-  puma (~> 3.7)
+  puma (~> 3.12)
   rails (~> 5.1.4)
   rails-controller-testing
   redis

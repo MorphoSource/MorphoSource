@@ -21,7 +21,8 @@ input.disabled {
   margin: inherit;
 }
 
-form[id^='edit_biological_specimen'] .select2-container {
+/* form[id^='edit_biological_specimen'] .select2-container { */
+.select2-container {
   width:100% !important;
 }
 
@@ -191,10 +192,10 @@ div.showcase-edit {
     }
   }
 
-
+  /*
   .listing li:not(.processing_activity_items) {
     width: 200px !important; 
-  }
+  } */
 
   .processing_activity_items {
     .field-controls {

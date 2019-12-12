@@ -384,11 +384,21 @@ $(document).on('turbolinks:load', function() {
         $('.embedded_div').hide();
     })
 
+    // remove organization when clicking no organization button  
+    $('#btn_no_organization').click(function() {
+      var removeOrganizationButton = $('#parent-relationships-organizations').find('[data-behavior="remove-relationship"]');
+      if (removeOrganizationButton.length) {
+        removeOrganizationButton.trigger('click');
+      }
+      $('#embedded_div_new_organization').hide();
+    })
+
     // when selecting an organization or device, hide the new work form if any
     $('[data-behavior="add-relationship"]').click(function() {
       var addButtonId = $(this).attr('id');
       var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
       $(newWorkDiv).hide();
+      closeLinkedContent(newWorkDiv);
     })
 
     // when page is loaded, show/hide content based on which tab is active

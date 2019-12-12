@@ -115,11 +115,24 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	  });
 	  
 		return false;
-  });
+  }); // end submit
+
   $(this_div).on("click", ".cancel", function() {
+  	// might need to loop and reset each form
 		$(this_div).find('form')[0].reset();
 		$(this_div).hide();
+		closeLinkedContent(this_div);
   });
+}
+
+function closeLinkedContent(thisDiv) {
+	var linkedContentBlocks = $(thisDiv).data("linked-content-blocks");
+	if (linkedContentBlocks) {
+		linkedContentBlocks = linkedContentBlocks.split(',');
+		$.each( linkedContentBlocks, function( key, blockSelector ) {
+			$(blockSelector).hide();
+		})
+	}
 }
 
 function setupTooltip() {

@@ -40,3 +40,4 @@ en:
         cho_search_ms_specimen_id: 'MS Specimen ID'
         cho_search_occurrence_id: 'Occurrence ID'
         cho_search_species: 'Species'
+        idigbio_id: 'Biological Specimens in IDigBio'

@@ -38,6 +38,7 @@ class SubmissionsController < ApplicationController
         # certain pages require getting back the search result before rendering
         if last_render == 'biospec'
           @docs = search_biospec
+          @idigbio = search_idigbio
         elsif last_render == 'cho'
           @docs = search_cho
         end
@@ -55,6 +56,7 @@ class SubmissionsController < ApplicationController
     # todo: is there a need to separate raw and derived flow in two if and else?
     if params['biospec_search'].present?
       @docs = search_biospec
+      @idigbio = search_idigbio
       if @docs.nil? || @docs.empty?
         # if no search result, user might need to go back to initial step
         @submission.saved_step = ""
@@ -613,6 +615,15 @@ class SubmissionsController < ApplicationController
       search_params[k.sub('biospec_search_', '')] = v
     end
     Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, search_params)
+  end
+
+  def search_idigbio
+    search_params = {}
+    biospec_search_params = submission_params.select{ |k,v| k.match(/^biospec_search_/) }.select{ |k,v| v.present? }
+    biospec_search_params.each do |k,v|
+      search_params[k.sub('biospec_search_', '')] = v
+    end
+    Morphosource::IDigBioSearchService.call(search_params)
   end
 
   def search_cho

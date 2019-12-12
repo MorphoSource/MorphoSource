@@ -2,24 +2,23 @@ require 'rails_helper'
 
 RSpec.describe CartItem, type: :model do
 
-  let(:current_user)  { User.create(id: 1, email: "example@email.com", password: "password") }
+  let(:current_user)  { User.create(email: "example@email.com", password: "password") }
 
-  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
-  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: [''])}
+  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: "abc123", fileset_accessibility: ['restricted_download'])}
 
-  let(:cartItem1)     { CartItem.create( user_id: current_user.id, work_id: work1.id, restricted: true) }
-  let(:cartItem2)     { CartItem.create( user_id: current_user.id, work_id: work2.id, restricted: false) }
+  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: "abc123", fileset_accessibility: [''])}
+
+  let(:cartItem1)     { CartItem.create( user: current_user, work_id: work1.id, restricted: true) }
+  let(:cartItem2)     { CartItem.create( user: current_user, work_id: work2.id, restricted: false) }
 
   before do
-    cartItem1.touch
-    cartItem2.touch
-    allow(Media).to receive(:find).with(cartItem1.work_id).and_return(work1)
-    allow(Media).to receive(:find).with(cartItem2.work_id).and_return(work2)
+    allow(Media).to receive(:find).with(work1.id).and_return(work1)
+    allow(Media).to receive(:find).with(work2.id).and_return(work2)
   end
 
   describe '#set_approver' do
      it 'assigns the work depositor as approver' do
-       expect(cartItem1.approver).to eq(work1.depositor)
+       expect(cartItem1.approver_id).to eq(work1.depositor)
      end
   end
 

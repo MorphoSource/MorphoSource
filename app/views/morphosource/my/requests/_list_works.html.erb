@@ -26,7 +26,7 @@
   </td>
   <td><%= item_status_label(item) %></td>
   <td><%= item.approver %></td>
-  <td><%= item.approving_user.affiliation %></td>
+  <td><%= item.approver.affiliation %></td>
   <td><%= date(item,'requested') %></td>
   <td><%= date(item,'approved') %></td>
   <td><%= date(item,'denied') %></td>

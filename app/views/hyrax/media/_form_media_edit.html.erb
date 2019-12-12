@@ -43,7 +43,12 @@
         </div>
       <% end %>
   <% else %>
-    <%= render 'form_imaging_event_parent', presenter: @presenter %>
+    <div class="row related_form imaging-event" style="display:none">
+      <%= render 'parent_imaging_event', presenter: @presenter %>
+    </div>
+    <div class="row related_form device" style="display:none">
+      <%= render 'parent_device', presenter: @presenter %>
+    </div>
   <% end %>
 <% end %>
 

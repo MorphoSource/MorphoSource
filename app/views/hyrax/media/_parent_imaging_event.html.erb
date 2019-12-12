@@ -1,10 +1,6 @@
-<% 
-members = @presenter.direct_parent_members
-parent_member =  members.first
-%>
 <div class="col-sm-12 not-editable">
     <p>Imaging settings can not be edited here. These fields describe the imaging of parent 
-<%= link_to(parent_member.link_name, contextual_path(parent_member, @presenter)) %>. <br />
+<%= link_to(@presenter.direct_parent_first_member.link_name, contextual_path(@presenter.direct_parent_first_member, @presenter)) %>. <br />
 To change these setting, edit parent media</p>
 </div>
 <div class="col-sm-6">

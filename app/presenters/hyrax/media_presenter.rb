@@ -10,14 +10,15 @@ module Hyrax
 
     attr_accessor :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
-      :device_and_facility, :device_facility, :device_link, :device,
+      :device_and_facility, :device_facility, :device_link, :device, :device_manufacturer, :device_description,
+      :device_organization_institution,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
       :processing_events, :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
       :processing_activity_count, :processing_activity_items,
       :raw_or_derived, :is_absentee_parent,
-      :imaging_event, :imaging_event_exist, :imaging_event_editable,
+      :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
       :file_size, :mime_type, :this_media_type, :file_set_list,
       # mesh specific
@@ -88,14 +89,6 @@ module Hyrax
 
     def get_showcase_data
       media = Media.where('id' => solr_document.id).first
-      # should not need parent titles any more.  remove later
-      #@direct_parent_title_list = []
-      #@direct_parent_id_list.each do |parent_id|
-      #  parent_media = Media.where('id' => parent_id).first
-      #  @direct_parent_title_list << parent_media.title.first
-      #end
-      #@direct_parent_title_list = @direct_parent_title_list.join(', ')
-
       # todo: need to get the user name (and a link to user) from the email address
       @data_managed_by = solr_document.depositor
 
@@ -236,11 +229,12 @@ module Hyrax
         # (whether parent, grandparent, etc) should be connected to an IE from which metadata should be derived.
         @direct_parent_members = member_presenters_for(direct_parent_id_list)
         target_media = Media.where('id' => direct_parent_id).first
-        @imaging_event_editable = false;
+        @imaging_event_editable = false
+        @direct_parent_first_member = @direct_parent_members.first
         @raw_or_derived = "Derived"
         @direct_parent_members_raw_or_derived = "Raw"
       else
-        @imaging_event_editable = true;
+        @imaging_event_editable = true
         # check if this is a Derived media with "absentee parent" by checking if PE exists
         if @processing_event_count > 0
           @is_absentee_parent = true
@@ -295,10 +289,12 @@ module Hyrax
         device = Device.where('member_ids_ssim' => @imaging_event.id).first
         if device.present?
           @device = device.title.first
-          @device_facility = device.facility.first
+          @device_organization_institution = organization_institution(device.id)
           @device_and_facility = @device
-          @device_and_facility += " (" + @device_facility + ")" if @device_facility.present?
+          @device_and_facility += ", " + @device_organization_institution if @device_organization_institution.present?
           @device_link = "/concern/devices/" + device.id
+          @device_manufacturer = device.creator
+          @device_description = device.description
         end
 
         # get imaging event details

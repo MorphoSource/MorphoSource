@@ -379,6 +379,16 @@ $(document).on('turbolinks:load', function() {
       $(".related_form").hide();
       var clickedTab = $(this).find("a").attr("aria-controls");
       $(".related_form." + clickedTab).show();
+      // hide the new work form from other tab if any
+      if ($(this).find('a[aria-expanded="false"]').length)
+        $('.embedded_div').hide();
+    })
+
+    // when selecting an organization or device, hide the new work form if any
+    $('[data-behavior="add-relationship"]').click(function() {
+      var addButtonId = $(this).attr('id');
+      var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
+      $(newWorkDiv).hide();
     })
 
     // when page is loaded, show/hide content based on which tab is active

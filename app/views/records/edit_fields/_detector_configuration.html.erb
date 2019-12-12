@@ -1,0 +1,9 @@
+<%= f.input :detector_configuration, as: :select,
+    collection: [
+            'Area (single or tiled detector)', 
+            'Slot (scanned slot, slit, or spot)'
+        ],
+    include_blank: true,
+    input_html: { class: 'form-control' },
+    wrapper_html: { class: 'ie_xray_ct' }
+%>

@@ -1,0 +1,10 @@
+zh:
+  hyrax:
+    icons:
+      attachment:     'fa fa-file-text-o'
+    select_type:
+      attachment:
+        # TODO: translate `human_name` into Chinese
+        description:        "Attachment 作品"
+        name:               "Attachment"
+        # TODO: translate `human_name` into Chinese

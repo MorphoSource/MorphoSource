@@ -1,0 +1,4 @@
+on_behalf_of,visibility,title,contributor,resource_type,license
+abc@inst.edu,open,Test 1,"Smith, Sue",Dataset,"http://creativecommons.org/publicdomain/zero/1.0/"
+abc@inst.edu,,Test 2,"Jones, Bill",Dataset,"http://creativecommons.org/publicdomain/zero/1.0/"
+abc@inst.edu,authenticated,Test 3,"Allen, Jane",Dataset,"http://creativecommons.org/publicdomain/zero/1.0/"

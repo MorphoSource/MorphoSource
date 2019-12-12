@@ -1,0 +1,53 @@
+// Disable Clear Cart and Download All if cart is empty
+// Disable Batch Buttons if no items are checked
+function toggleBatchButtons () {
+  var checked = $(".batch_document_selector:checked").length;
+  var downloadable_items = $(".downloadable_items").length;
+  if ((checked>0)) {
+    $('#download-selected').prop('disabled', false);
+    $('#delete-selected').prop('disabled', false);
+    $('#copy-selected').prop('disabled', false);
+  }
+  else {
+    $('#download-selected').prop('disabled', true);
+    $('#delete-selected').prop('disabled', true);
+    $('#copy-selected').prop('disabled', true);
+  }
+}
+
+function toggleCartButtons() {
+  var items = $(".batch_document_selector").length;
+  var downloadable_items = $(".downloadable_items").length;
+  if ((downloadable_items>0)) {
+    $('#clear-cart').prop('disabled', false);
+    $('#download-all').prop('disabled', false);
+  }
+  else if ((items>0)) {
+    $('#clear-cart').prop('disabled', false);
+    $('#download-all').prop('disabled', true);
+  }
+  else {
+    $('#clear-cart').prop('disabled', true);
+    $('#download-all').prop('disabled', true);
+  }
+}
+
+Blacklight.onLoad(function() {
+  toggleBatchButtons();
+  toggleCartButtons();
+  // toggle button on or off based on boxes being clicked
+  $(".batch_document_selector").bind('click', function(e) {
+     toggleBatchButtons();
+  });
+  $('#check_all').bind('click', function(e) {
+    toggleBatchButtons();
+  });
+});
+
+$(document).on('turbolinks:load', function(){
+  toggleCartButtons();
+  // re-enable the download all button after being clicked
+  $('#download-all').bind('click', function(e) {
+     setTimeout(function(){ toggleCartButtons(); }, 500);
+  });
+});

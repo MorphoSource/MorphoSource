@@ -1,0 +1,11 @@
+<%= f.input :detector_type, as: :select,
+    collection: [
+        'Direct (X-Ray photoconductor)', 
+        'Scintillator (Phosphor used)', 
+        'Storage (Storage Phosphor)', 
+        'Film (Scanned film/screen)'
+        ],
+    include_blank: true,
+    input_html: { class: 'form-control' },
+    wrapper_html: { class: 'ie_xray_ct' }
+%>

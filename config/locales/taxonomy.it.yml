@@ -1,0 +1,8 @@
+it:
+  hyrax:
+    icons:
+      taxonomy:     'fa fa-file-text-o'
+    select_type:
+      taxonomy:
+        description:        "Taxonomy opere"
+        name:               "Taxonomy"

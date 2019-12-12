@@ -1,0 +1,156 @@
+<div class="row image-acq-detail">
+	<div class="col-sm-12">
+
+		<h2>IMAGE ACQUISITION AND PROCESSING IN DETAIL 
+			<a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-image-acquisition-in-detail" class="btn collapse-block-image-acquisition-in-detail"><span class="glyphicon glyphicon-triangle-top collapse-block-image-acquisition-in-detail"></span></a>
+		</h2>
+
+		<div id="collapse-block-image-acquisition-in-detail" class="panel-collapse collapse-block glyphicon-only row table collapse in" aria-expanded="true">
+
+			<div class="row">
+
+				<% if @presenter.raw_or_derived == "Derived" %>
+					<div class="indicators line table-cell">
+						<span class="glyphicon glyphicon-camera"></span>
+						<p><span class="circle first"></span></p>
+						<p><span class="circle last"></span></p>
+					</div>
+				<% else %>
+					<div class="indicators table-cell">
+						<span class="glyphicon glyphicon-camera"></span>
+					</div>
+				<% end %>
+
+				<div class="content-block-lg row table-cell">
+					
+					<h3>Image Acquisition</h3>
+
+					<div class="col-sm-6">
+						<%= render partial: "showcase_direct_parents_physical_objects", collection: @presenter.direct_parent_members, as: :member %>
+						<div class="content-block">
+							<!--div id="collapse-block-image-acquisition-attributes" class="panel-collapse collapse collapse-block" -->
+							<%= presenter.attribute_to_html(:imaging_event_modality, label: 'Modality', render_as: :showcase_default, css_classes: 'break-all', include_empty: true, html_dl: false) %>
+							<%= presenter.attribute_to_html(:device, label: 'Device', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+
+							<%= presenter.attribute_to_html(:device_facility, label: 'Device facility', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+							<%= presenter.attribute_to_html(:imaging_event_creator, label: 'Creator', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+							<%= presenter.attribute_to_html(:imaging_event_date_created, label: 'Date', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+              <% if presenter.imaging_event_modality.presence %>
+    		        <% if presenter.imaging_event_modality == "Photogrammetry" || 
+    		        	 	 presenter.imaging_event_modality == "Photography" %>
+    							<%= render "showcase_modality_photogrammetry_attributes", presenter: @presenter %>
+    		        <% elsif presenter.imaging_event_modality.upcase.include? "XRAY" %>
+    							<%= render "showcase_modality_xray_attributes", presenter: @presenter %>
+    		        <% end %>
+              <% end %>
+							<!--/div -->
+							<%#= collapse_expand_panel("collapse-block-image-acquisition-attributes") %>
+						</div>
+
+					</div>
+
+					<div class="col-sm-6">
+						<% if @presenter.is_absentee_parent == false %>
+							<div class="content-block-intro media">
+								Media produced by this event on MophoSource
+							</div>
+							<div class="content-block">
+								<% 
+								members = presenter.direct_parent_members
+								parent_member =  members.first
+								%>
+								<% if parent_member.present? %>
+									<div class="row media-block">
+
+										 	<div class="thumbnail col-xs-4">
+										    <%= render_thumbnail_tag parent_member %><br>
+										    <%= link_to(parent_member.link_name, contextual_path(parent_member, @presenter)) %><br>
+										    <%= parent_member.file_format %><br>
+										  </div>
+
+									</div>							
+								<% end %>
+							</div>
+						<% end %>
+					</div>
+
+				</div><!-- /content-block-lg -->
+
+			</div><!-- /row -->
+
+			<% if @presenter.raw_or_derived == "Derived" %>
+				<div class="row">
+
+					<div class="indicators table-cell">
+						<span class="glyphicon glyphicon-flash"></span>
+					</div>
+
+					<div class="content-block-lg row table-cell">
+
+						<h3>Image Processing</h3>
+
+						<div class="col-sm-6">
+							<div class="content-block-intro">
+								<%
+								this_media_member =  presenter.this_media_member
+								%>
+								<%= presenter.raw_or_derived %> media 
+						    <%= link_to(this_media_member.link_name, contextual_path(this_media_member, @presenter)) %> 
+							 	(this media) was created by processing raw media 
+								<% if @presenter.is_absentee_parent == true %>
+								 	(unavailable)
+								<% else %>
+								 	<%= link_to(parent_member.link_name, contextual_path(parent_member, @presenter)) %>
+							 	<% end %>
+								<% if presenter.processing_activity_items.present?  %>
+									in <%= pluralize(presenter.processing_activity_count, 'step') %>
+							 	<% end %>
+							</div>
+							<div class="content-block">
+								<% if presenter.processing_activity_items.present? %>
+									<!--div id="collapse-block-image-acquisition-processing-activities" class="panel-collapse collapse collapse-block" -->		
+									<% presenter.processing_activity_items.map do |item| %>
+										<h4>Step <%= item["Step"] %>: </b><%= item["Type"] %> </h4>
+										<div class="row indent">
+											<div class="col-xs-6 showcase-label">Software</div>
+											<div class="col-xs-6 showcase-value"><%= item["Software"] %></div>
+										</div>
+										<div class="row indent">
+											<div class="col-xs-6 showcase-label">Description</div>
+											<div class="col-xs-6 showcase-value"><%= item["Description"] %></div>
+										</div>
+									<% end %>
+									<!--/div -->
+									<%#= collapse_expand_panel("collapse-block-image-acquisition-processing-activities") %>
+								<% end %>
+							</div>
+						</div>
+
+						<div class="col-sm-6">
+							<div class="content-block-intro media">
+								Media produced by this event on MophoSource
+							</div>
+							<div class="content-block">
+								<% if this_media_member.present? %>
+									<div class="row media-block">
+
+										 	<div class="thumbnail col-xs-4">
+										    <%= render_thumbnail_tag this_media_member %><br>
+										    <%= link_to(this_media_member.link_name, contextual_path(this_media_member, @presenter)) %><br>
+										    <%= this_media_member.file_format %><br>
+										  </div>
+
+									</div>							
+								<% end %>
+							</div>
+						</div>
+
+					</div><!-- /content-block-lg -->
+
+				</div><!-- /row -->
+			<% end %>
+		
+		</div><!-- /collapse-block-image-acquisition-in-detail -->
+
+	</div>
+</div>

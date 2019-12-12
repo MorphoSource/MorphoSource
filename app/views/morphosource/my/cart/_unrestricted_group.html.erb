@@ -1,0 +1,19 @@
+<table class="table table-striped works-list">
+  <caption class="sr-only"><%= t("hyrax.dashboard.my.sr.listing") %> <%= application_name %></caption>
+  <thead>
+  <tr>
+    <th class="check-all" style="width: 5%;"><label for="check_all" class="sr-only"><%= t("hyrax.dashboard.my.sr.check_all_label") %></label><%= render 'morphosource/batch_edits/check_all_unrestricted' %></th>
+    <th style="width: 20%;"><%= t("hyrax.dashboard.my.heading.title") %></th>
+    <th><%= t("hyrax.dashboard.my.heading.date_uploaded") %></th>
+    <th>Approved</th>
+    <th>Expires</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+  <tbody>
+    <% @unrestricted_items.each_with_index do |item, counter| %>
+      <% document = @solr_docs.select{|doc| doc.id == item.work_id}[0] %>
+      <%= render 'morphosource/my/cart/list_works', document: document, counter: counter, item: item, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
+    <% end %>
+  </tbody>
+</table>

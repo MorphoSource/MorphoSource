@@ -1,0 +1,11 @@
+<div >
+  <button id= 'batch-approval-button' class='btn btn-success batch-all-button' data-toggle="modal" data-target="#pageModal">Approve Selected</button>
+
+  <%= form_tag(main_app.clear_request_path, method: :put, class: "button_to-inline", "data-behavior" => 'batch-select-all') do -%>
+    <%= submit_tag("Clear Selected", class: 'batch-all-button btn btn-info submits-batches', id:'request-selected') %>
+  <% end %>
+
+  <%= form_tag(main_app.deny_download_path, method: :put, class: "button_to-inline", "data-behavior" => 'batch-select-all') do -%>
+    <%= submit_tag("Deny Selected", class: 'batch-all-button btn btn-danger submits-batches', id:'request-selected') %>
+  <% end %>
+</div>

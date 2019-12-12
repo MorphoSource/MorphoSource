@@ -1,0 +1,8 @@
+<% # app/views/records/edit_fields/_series_type.html.erb %>
+<% series_types_service = Morphosource::SeriesTypesService.new %>
+<%= f.input :series_type, as: :select,
+    collection: series_types_service.select_all_options,
+    include_blank: true,
+    item_helper: series_types_service.method(:include_current_value),
+    input_html: { class: 'form-control' }
+%>

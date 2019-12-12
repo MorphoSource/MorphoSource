@@ -1,0 +1,10 @@
+<% provide :page_title, t('morphosource.submission.page_title') %>
+<% provide :page_header do %>
+  <h1><%= t('morphosource.submission.page_header') %></h1>
+<% end %>
+
+<div class="submission_flow">
+<%= render(partial: 'media_create') %>
+</div>
+
+<%= render(partial: 'footer') %>

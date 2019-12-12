@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      physical_object:     'fa fa-file-text-o'
+    select_type:
+      physical_object:
+        # TODO: translate `human_name` into Spanish
+        description:        "Physical object trabajos"
+        name:               "Physical Object"
+        # TODO: translate `human_name` into Spanish

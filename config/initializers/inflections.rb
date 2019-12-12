@@ -17,4 +17,5 @@
 
 ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.irregular 'media', 'media'
+  inflect.irregular 'specimen', 'specimens'
 end

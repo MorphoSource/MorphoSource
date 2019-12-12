@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      processing_event:     'fa fa-file-text-o'
+    select_type:
+      processing_event:
+        # TODO: translate `human_name` into Spanish
+        description:        "Processing event trabajos"
+        name:               "Processing Event"
+        # TODO: translate `human_name` into Spanish

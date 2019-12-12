@@ -1,0 +1,6 @@
+<% # app/views/records/edit_fields/_trusted.html.erb %>
+<%= f.input :trusted, as: :select,
+    collection: ['No','Yes'],
+    include_blank: false,
+    # item_helper: method(:include_current_value),
+    input_html: { class: 'form-control' } %>

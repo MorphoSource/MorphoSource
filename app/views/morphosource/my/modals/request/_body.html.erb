@@ -1,0 +1,10 @@
+<div class="modal-body">
+  <%= form_tag(main_app.request_item_path, method: :put, id: 'modal-form', "data-behavior" => 'batch-select-all', :class => "form-horizontal") do %>
+    <%= label_tag 'intended use', 'Intended Use', :class => 'control-label' %>
+    <%= text_field :intended_use, params[:use], :class => "form-control", required: true, minlength: 50 %>
+</div>
+<div class="modal-footer">
+  <button type="button" id="modal-cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+    <%= submit_tag "Submit", name: nil, class: "btn btn-success" %>
+  <% end %>
+</div>

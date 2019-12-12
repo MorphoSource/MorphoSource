@@ -1,0 +1,16 @@
+
+<div id="submission_taxonomy_select">
+    <h5><%= t('morphosource.submission.taxonomy_select') %></h5>
+    <div class="form-group">
+      <div class="form-inline">
+        <%= render 'taxonomy_form', f: f %>
+      </div>
+      <div>
+        <%= f.submit 'Continue with selected taxonomy', name: 'taxonomy_select', class: 'btn btn-primary', role: 'button', onclick: 'return isTextValid("submission[taxonomy_id]")' %>
+      </div>
+    </div>
+
+    <div id="submission_choose_create_taxonomy">
+      <a href="#" id="submission_show_create_taxonomy" class="btn btn-primary">Create New Taxonomy</a>
+    </div>
+</div>

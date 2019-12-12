@@ -1,0 +1,13 @@
+<% if presenter.representative_id.present? && presenter.representative_presenter.present? %>
+  <% if defined?(viewer) && viewer %>
+    <div class="viewer-wrapper">
+      <div class="viewer">
+  		  <iframe height="100%" width="100%" src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= main_app.polymorphic_path [main_app, :manifest, presenter], { locale: nil } %>&config=<%= PulUvRails::UniversalViewer.config_src %>" allowfullscreen frameborder="0"></iframe>
+  	  </div>
+  	</div>
+  <% else %>
+    <%= media_display presenter.representative_presenter %>
+  <% end %>
+<% else %>
+  <%= image_tag 'default.png', class: "canonical-image" %>
+<% end %>

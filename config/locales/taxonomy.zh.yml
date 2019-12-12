@@ -1,0 +1,10 @@
+zh:
+  hyrax:
+    icons:
+      taxonomy:     'fa fa-file-text-o'
+    select_type:
+      taxonomy:
+        # TODO: translate `human_name` into Chinese
+        description:        "Taxonomy 作品"
+        name:               "Taxonomy"
+        # TODO: translate `human_name` into Chinese

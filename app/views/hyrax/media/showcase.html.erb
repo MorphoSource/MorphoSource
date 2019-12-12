@@ -1,0 +1,48 @@
+<%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
+
+<div class="row media-showcase">
+
+  <div class="col-sm-6 col-sm-push-6">
+    <div class="content-block preview">
+      <%= render @presenter.showcase_viewer_partial, presenter: @presenter %>
+    </div>
+    <div class="content-block">
+      <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
+    </div>
+
+    <div class="content-block">
+      <%= render @presenter.showcase_collections_partial, presenter: @presenter %>
+    </div>
+    <div class="content-block">
+      <%= render @presenter.showcase_tags_partial, presenter: @presenter %>
+    </div>
+    <div class="content-block">
+      <%= render @presenter.showcase_citation_and_download_partial, presenter: @presenter %>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-sm-pull-6">
+    <div class="content-block">
+      <%= render @presenter.showcase_file_object_details_partial, presenter: @presenter %>
+    </div>
+    <div class="content-block">
+      <%= render @presenter.showcase_image_acquisition_partial, presenter: @presenter %>
+    </div>
+    <div class="content-block">
+      <%= render @presenter.showcase_ownership_and_permissions_partial, presenter: @presenter %>
+    </div>
+
+
+    <div class="content-block">
+      <%= render @presenter.showcase_identifiers_and_external_links_partial, presenter: @presenter %>
+    </div>
+  </div>
+
+</div>
+
+<%= render @presenter.showcase_image_acquisition_details_partial, presenter: @presenter %>
+
+<%= render partial: '/morphosource/my/modals/page_modal' %>
+<script>
+  <%= render partial: '/morphosource/my/scripts/modal_scripts', formats: [:js] %>
+</script>

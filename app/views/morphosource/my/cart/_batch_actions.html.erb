@@ -1,0 +1,7 @@
+<div>
+  <div>
+    <% session[:batch_edit_state] = "on" %>
+    <%= render 'morphosource/batch_edits/download_selected' %>
+    <%= render 'morphosource/batch_edits/remove_selected' %>
+  </div>
+</div>

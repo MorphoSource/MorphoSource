@@ -1,0 +1,7 @@
+<!-- app/views/records/edit_fields/_is_type_specimen.html.erb -->
+<%= f.input :is_type_specimen, as: :select,
+    collection: ['Yes','No'],
+    include_blank: true,
+    # item_helper: method(:include_current_value),
+    input_html: { class: 'form-control' }
+%>

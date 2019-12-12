@@ -1,0 +1,9 @@
+# config/authorities/map_types.yml
+# Todo: Create a URI resource for this subtype list
+terms:
+  - id: Color
+    term: Color Map
+    active: true
+  - id: Normal
+    term: Normal Map
+    active: true

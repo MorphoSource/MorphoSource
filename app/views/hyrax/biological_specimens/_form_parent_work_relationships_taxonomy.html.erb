@@ -1,0 +1,22 @@
+<div id="taxonomy_details">
+  <h2>TAXONOMY</h2>
+
+  <p>Select a taxonomy to associate with this biological specimen by searching below. Or select Create New Taxonomy.</p>
+
+  <div class="form-inline">
+
+    <%= f.input_field :find_parent_work,
+                      prompt: :translate,
+                      autocomplete: 'off',
+                      data: {
+                        autocomplete: 'work',
+                        'autocomplete-url' => find_taxonomy_autocomplete_url()
+                      } %>
+  </div>
+
+  <div class="text-center button-wrapper">
+    <a class="btn btn-sm btn-primary" id="btn-add-taxonomy" data-behavior="add-relationship">Add taxonomy</a>
+    <a class="btn btn-sm btn-primary" id="btn_new_taxonomy">Create new taxonomy</a>
+  </div>
+
+</div>

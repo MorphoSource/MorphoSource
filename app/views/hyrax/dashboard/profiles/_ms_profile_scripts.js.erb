@@ -1,0 +1,39 @@
+// Change state select options based on country
+function updateStates() {
+  let country = $('#user_country').val();
+  let states = $('#state-select');
+  let provinces = $('#province-select');
+  let statesSelect = $('#state-select select');
+  let provincesSelect = $('#province-select select');
+  if (country == "US") {
+    // disable provinces
+    provinces.hide();
+    provincesSelect.prop("disabled",true);
+    // enable states
+    statesSelect.prop("disabled", false);
+    states.show();
+  } else if (country == "CA") {
+    // disable states
+    states.hide();
+    statesSelect.prop("disabled",true);
+    // enable provinces
+    provincesSelect.prop("disabled", false);
+    provinces.show();
+  } else {
+    // disable everything
+    statesSelect.prop("disabled",true);
+    provincesSelect.prop("disabled",true);
+    // hide provinces
+    provinces.hide();
+    states.show();
+    // clear everything
+    provincesSelect.val('');
+    statesSelect.val('');
+  }
+}
+
+$(document).ready(function() {
+  updateStates();
+  // TBD: consider this more carefully - Devise wraps fields with a special class when validation fails, which so far is only messing up the layout of the elements. Below removes for now. 
+  $(".field_with_errors").contents().unwrap();
+});

@@ -1,0 +1,4 @@
+visibility,title,contributor,resource_type,license,file,file,file
+open,Test 1,"Smith, Sue",Dataset,"http://creativecommons.org/publicdomain/zero/1.0/",data/data1.csv,data/data2.csv,docs/doc1.txt
+,Test 2,"Jones, Bill",Dataset,"http://creativecommons.org/publicdomain/zero/1.0/",data/data3.csv,docs/doc2.txt
+authenticated,Test 3,"Allen, Jane",Dataset,"http://creativecommons.org/publicdomain/zero/1.0/",data/data1.csv

@@ -1,0 +1,45 @@
+<% provide :page_title, t("morphosource.admin.sidebar.media_cart") %>
+
+<nav class="breadcrumb" role="region" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/?locale=en">Home</a></li>
+    <li><a href="/dashboard?locale=en">Dashboard</a></li>
+    <li class="active">Media Cart</li>
+  </ol>
+</nav>
+
+<div class="row">
+  <div class="col-xs-12 main-header">
+    <h1>
+      <span class="fa fa-shopping-cart" aria-hidden="true"></span>
+      Media Cart ( <%= @item_count %> )
+      <%= render 'morphosource/batch_edits/download_all' %>
+    </h1>
+  </div>
+</div>
+
+<div class="panel-body">
+  <h2 class="sr-only">Works listing</h2>
+  <%= render 'morphosource/my/cart/batch_actions' %>
+  <%= render 'morphosource/my/cart/downloadable_list' %>
+  <%= render 'morphosource/my/cart/results_pagination' %>
+</div>
+
+<h2>
+    <span class="fa fa-minus-circle" aria-hidden="true"></span>
+    Restricted Items ( <%= @restricted_count %> )
+</h2>
+<div class="panel-body">
+  <h2 class="sr-only">Works listing</h2>
+  <%= render 'morphosource/my/cart/batch_request_actions' %>
+  <%= render 'morphosource/my/cart/requestable_list' %>
+  <%= render 'morphosource/my/cart/results_pagination' %>
+</div>
+
+<%= render 'morphosource/my/modals/page_modal' %>
+
+<script>
+  <%= render partial: 'morphosource/my/scripts/scripts', formats: [:js] %>
+  <%= render partial: 'morphosource/my/cart_scripts', formats: [:js] %>
+  <%= render partial: 'morphosource/my/scripts/modal_scripts', formats: [:js] %>
+</script>

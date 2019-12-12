@@ -1,0 +1,8 @@
+<% # app/views/records/edit_fields/_country.html.erb %>
+<% countries_service = Morphosource::CountriesService.new %>
+<%= f.input :country, as: :select,
+    collection: countries_service.select_all_options,
+    include_blank: true,
+    item_helper: countries_service.method(:include_current_value),
+    input_html: { class: 'form-control' }
+%>

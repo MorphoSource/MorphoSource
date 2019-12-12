@@ -1,0 +1,48 @@
+en:
+  hyrax:
+    icons:
+      imaging_event:     'fa fa-file-text-o'
+    select_type:
+      imaging_event:
+        description:        "Imaging event works"
+        name:               "Imaging Event"
+  simple_form:
+    labels:
+      imaging_event:
+        # X-ray CT metadata
+    hints:
+      imaging_event:
+        software: Software used to operate scanner, if any.
+        # X-ray CT metadata
+        exposure_time: Exposure time of a volume shall be the time of the X-Ray radiation in position with this volume. It depends on the travel speed and the total collimation width.
+        flux_normalization: Flux Normalization Calibration
+        geometric_calibration:
+        shading_correction: Shading Correction Calibration
+        filter: Filter (material that xrays must pass through before encounter object and detector and its thickness in millimeters)
+        frame_averaging: Frame Averaging. The number of images acquired at each projection angle and their average.
+        projections: The number of images at distinct angles used to create a 3D image.
+        voltage: Voltage, units in kilovolts
+        power:  = kV*Amps, units in kilowatts
+        amperage: Amperage, units in microAmps
+        surrounding_material: Wedge (material surrounding/enveloping the focal object of the scan)
+        xray_tube_type: brand/model, reflection vs. transmission target (a little like 'lens type' for photogrammetry)
+        target_type:
+        detector_type: The type of detector used to acquire this image.
+        detector_pixels_x: The number of pixels in the X direction of the detector (number of columns).
+        detector_pixel_size_x: Length in mmm of each pixel in the X direction.
+        detector_pixels_y: The number of pixels in the Y direction of the detector (number of rows).
+        detector_pixel_size_y: Length in mmm of each pixel in the Y direction.
+        detector_configuration: The physical configuration of the detector.
+        source_object_distance: Distance between x-ray source and target object.
+        source_detector_distance: Distance between x-ray source and x-ray detector.
+        target_material: Tungsten, molybdenum, copper, etc.
+        rotation_number: For systems with vertical translation capabilities.
+        phase_contrast: In phase contrast, the xray beam energy is modulated between higher and lower energies and this helps increase contrast between materials (need to look into implications for reporting voltage and amps)
+        optical_magnification: All microCT scanners use geometric magnification.  Only a few also use optical magnification (Ziess/Xradia machines do - which makes them more flexible and powerful in some ways - but more systems may in the future)
+        # Photogrammetry properties
+        focal_length_type: Focal length variable or fixed
+        background_removal: Free text description of background removal methods
+        # Photogrammetry properties and Photography properties
+        lens_make: The DSLR body would be the 'capture device' while the lens  make/model is designated here.  Not sure if we need to consider whether multiple lens might be used for the same image series.
+        lens_model: The DSLR body would be the 'capture device' while the lens  make/model is designated here.  Not sure if we need to consider whether multiple lens might be used for the same image series.
+        light_source: Strobe light vs static light vs cross-polarized light vs patterned light

@@ -14,5 +14,15 @@ module MorphoSourceSf
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
+    config.autoload_paths += %W(#{config.root}/lib)
+
+    config.to_prepare do
+      Qa::Authorities::FindWorks.class_eval do
+        self.search_builder_class = ::FindWorksSearchBuilder
+      end
+    end
+
+    middleware.use ::ActionDispatch::Static, File.join(Hyrax.config.derivatives_path, '..'), index: 'index', headers: config.public_file_server.headers
+
   end
 end

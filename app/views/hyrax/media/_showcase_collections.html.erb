@@ -1,0 +1,14 @@
+<h2>COLLECTIONS MEDIA BELONGS TO</h2>
+<div class="row">
+	<div class="col-xs-12">
+	  <% presenter.grouped_presenters(filtered_by: 'collection').each_pair do |_, items| %>
+      <ul>
+        <% items.each do |item| %>
+          <li class='attribute attribute-title'>
+            <%= link_to item.title.first, url_for_document(item) %>
+          </li>
+        <% end %>
+      </ul>
+	  <% end %>
+	</div>
+</div>

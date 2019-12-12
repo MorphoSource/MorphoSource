@@ -1,0 +1,13 @@
+<%# This is a temporary final landing page for the submission process during development.  It will likely be removed. %>
+<% provide :page_title, t('morphosource.submission.page_title') %>
+<% provide :page_header do %>
+  <h1><%= t('morphosource.submission.page_header') %></h1>
+<% end %>
+
+<%= render(partial: 'debug_attributes') %>
+
+<div><a href='/concern/media/<%= @submission.media_id %>'>go to media page</a></div>
+
+<div class='submission_footer'>
+  <div class='start_over'><a id="start_over" href="#">Start over</a></div>
+</div>

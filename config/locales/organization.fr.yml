@@ -1,0 +1,8 @@
+fr:
+  hyrax:
+    icons:
+      organization:     'fa fa-file-text-o'
+    select_type:
+      organization:
+        description:        "Organization œuvres"
+        name:               "Organization"

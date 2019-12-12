@@ -1,0 +1,94 @@
+const CHECKBOX = {
+  batch_document_selector: {
+    wrapper: '.request-wrapper',
+    class: '.check_all_use'
+  },
+  check_all_use: {
+    wrapper: '.requests-wrapper',
+    class: '.check_all_user',
+    div: '.request-wrapper'
+  },
+  check_all_user: {
+    wrapper: '.users-wrapper',
+    class: '.check_all',
+    div: '.user-wrapper'
+  },
+  check_all: {
+    div: '.users-wrapper'
+  }
+}
+
+function parentWrapper(checkbox){
+  let checkbox_class = checkbox.attr('class')
+  return checkbox.closest(CHECKBOX[checkbox_class].wrapper)
+}
+
+function parentCheckbox(checkbox,parent_wrapper){
+  let checkbox_class = checkbox.attr('class')
+  return parent_wrapper.find(CHECKBOX[checkbox_class].class).first();
+}
+
+function toggleBatchButtons() {
+  let batch_buttons = $('.batch-all-button');
+
+  if ( checkedItemsCount() > 0 ) {
+    enable(batch_buttons);
+  } else {
+    disable(batch_buttons);
+  }
+}
+
+// When Select All User, Select All Intended Use, or Select ALl Page boxes are checked, selects/deselects all child checkboxes
+function checkAllChildren(el) {
+  let checkbox = $(el);
+  let value = getValue(checkbox);
+  let div_class = CHECKBOX[checkbox.attr('class')].div
+  let parent = checkbox.closest(div_class);
+  let checkboxes = childCheckboxes(parent)
+
+  toggleCheckbox(checkboxes,value)
+
+  if (!checkbox.hasClass('check_all')) {
+    checkParentStatus(el);
+  } else {
+    toggleBatchButtons();
+  }
+}
+
+function checkParentStatus(el) {
+  let checkbox = $(el);
+  let parent_wrapper = parentWrapper(checkbox);
+  let parent_checkbox = parentCheckbox(checkbox,parent_wrapper);
+
+  if (childItemCount(parent_wrapper) == childCheckedItemCount(parent_wrapper)) {
+    check(parent_checkbox);
+  } else {
+    uncheck(parent_checkbox);
+  }
+
+  if (!checkbox.hasClass("check_all_user")) {
+    checkParentStatus(parent_checkbox[0]);
+  }
+  toggleBatchButtons();
+}
+
+// submit item id for individual download approvals
+$('body').on('shown.bs.modal', '#editExpiration, #approvalModal', function (e) {
+  var item_id = $(e.relatedTarget).data('item-id');
+  $('#item_id_').val(item_id);
+});
+
+Blacklight.onLoad(function() {
+  // make sure batch buttons are disabled
+  toggleBatchButtons();
+
+  // When cart items are checked/unchecked
+  $('.batch_document_selector').bind('click', function(e){
+    checkParentStatus(this);
+  });
+
+  // When intended use, this user, or this page box is checked/unchecked
+  $('.check_all_use, .check_all_user, .check_all').bind('click', function(e){
+    checkAllChildren(this);
+  });
+});

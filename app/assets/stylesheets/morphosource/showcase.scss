@@ -1,0 +1,475 @@
+@import 'shared';
+
+/* set box sizing for the circles and line in between */
+html {
+  box-sizing: border-box !important;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit !important;
+}
+
+
+/* utility classes below.  Some will be available in Boostrap 4.0+ */
+.m-0 {
+  margin: 0 !important;
+}
+.ml-0 {
+  margin-left: 0 !important;
+}
+.mr-0 {
+  margin-right: 0 !important;
+}
+.mt-0 {
+  margin-top: 0 !important;
+}
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+.p-0 {
+  padding: 0 !important;
+}
+.pl-0 {
+  padding-left: 0 !important;
+}
+.pr-0 {
+  padding-right: 0 !important;
+}
+.pt-0 {
+  padding-top: 0 !important;
+}
+.pb-0 {
+  padding-bottom: 0 !important;
+}
+.no-gutter > [class*='col-'] {
+  padding-right:0 !important;
+  padding-left:0 !important;
+}
+
+
+div.showcase {
+
+  max-width: 1200px;
+  border: 2px solid #efefef;
+  margin-top: 18px;
+
+  .btn {
+    border-radius: 0;
+  }
+
+  .btn-primary, .btn-default {
+    background-color: $button-color;
+    color: $button-font-color;
+    border-color: $button-border-color;
+  }
+
+  .input-group-btn.field-controls .btn {
+    /* mainly applies to button wrapper around add and remove glyphicons */
+    background-color: transparent;
+    color: $font-color;
+    border-color: transparent;  
+  }
+
+  .show-actions {
+     padding: 3.5vw 1vw 0 0;
+    @media (min-width: 768px) {
+      padding: 1.9vw 1vw 0 0;
+    }
+  }
+
+  .badge-wrapper {
+    display: block;
+
+    div {
+      display: inline-block;
+    }
+
+    .label {
+      color: $font-color;
+      border: 1px solid $font-color;
+      border-radius: .75em;
+      background-color: transparent;
+      font-size: 1.6vw;
+      @media (min-width: 768px) {
+        font-size: 1.3vw;
+      }
+      @media (min-width: 1200px) {
+        font-size: 16px;
+      }
+
+    }
+  }
+
+  #showcase-title-wrapper {
+    background-color: #efefef;
+  }
+
+  #showcase-title {
+    overflow-wrap: break-word;
+    margin-bottom: 0.5vw;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #337ab7;
+    font-size: 4vw;
+    @media (min-width: 768px) {
+      font-size: 3vw;
+    }
+    @media (min-width: 1200px) {
+      font-size: 36px;
+    }
+  }
+
+  h1 {
+    margin-top: 10px;
+  }
+  h2 {
+    background-color: #efefef;
+    padding: 12px 20px;
+    font-size:13px;
+    @media (min-width: 414px) {
+      font-size: 2.6vw;
+    }
+    @media (min-width: 768px) {
+      font-size: 1.2vw;
+    }
+    @media (min-width: 1200px) {
+      font-size: 17px;
+    }
+    a.btn {
+      float: right;
+      color: $font-color;
+      .glyphicon {
+        font-size: 2vw;
+        top: -10px;
+      }
+    }
+  }
+  h3 {
+    padding: 0 14px;
+    font-size:13px;
+    font-weight: normal;
+    @media (min-width: 414px) {
+      font-size: 2.6vw;
+    }
+    @media (min-width: 768px) {
+      font-size: 1.2vw;
+    }
+    @media (min-width: 1200px) {
+      font-size: 17px;
+    }
+  }
+  h4, .content-block-intro {
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: normal;
+    @media (min-width: 414px) {
+      font-size: 2.5vw;
+    }
+    @media (min-width: 768px) {
+      font-size: 1.1vw;
+    }
+    @media (min-width: 1200px) {
+      font-size: 16px;
+    }
+  }
+  .content-block-intro {
+    margin-bottom: 30px;
+  }
+  .content-block-intro.media {
+    margin-bottom: 8px;
+  }
+  .panel-title {
+    background-color: #efefef;
+    padding: 0;
+    text-align: center;
+
+    a.btn {
+      font-size:12px;
+      /* font-size: 1.4vw;  */
+      @media (min-width: 414px) {
+        font-size: 2.4vw;
+      }
+      @media (min-width: 768px) {
+        font-size: 1.3vw;
+      }
+      @media (min-width: 1200px) {
+        font-size: 16px;
+      }
+      padding: 2px 0;
+    }
+
+    .glyphicon {
+      top: 3px;
+      margin: 0 5px;
+    }
+  }
+
+  .panel-group {
+    .glyphicon {
+      float:right;
+      top: 4px;
+    }
+    .panel-collapse {
+      .showcase-label, .showcase-value {
+        padding-left: 30px;
+      }
+    }
+  }
+
+  .row {
+    padding:4px 10px;
+  }
+
+  .row.collapse-button {
+    padding:4px 15px;
+  }
+
+  #taxonomy-accordion-group { 
+    div {
+      color: #000;
+    }
+    .collapse-accordion {
+      background-color: #fafafa;
+    }
+  }
+
+  .row.taxonomy-rank .showcase-label {
+    padding-left: 8%;
+  }
+
+  .row.taxonomy-rank .showcase-value {
+    padding-left: 8%;
+  }
+
+  .row .taxonomy-label {
+    color: black;
+  }
+
+  .row .taxonomy-title {
+    font-style: italic;
+    color: black;
+  }
+
+  a.contributing-user {
+    font-style: normal;
+  }
+
+
+  .image-acq-detail {
+    .indicators {
+      position: relative;
+      float: left;
+      width: 48px;
+      height: 100%;
+      text-align: center;
+      .glyphicon {
+        font-size: 30px;
+        top: 6px;
+        z-index: 3;
+      }
+    }
+    @media (max-width: 460px) { /* hide the column around this breakpoint since the layout is not working well */
+      .indicators {display: none !important}
+    }
+    /* this is breaking the collapse functionality. remove later if not needed
+    .row.table{
+      display: table; 
+    } */
+    /* set the columns to same height */
+    .table-cell {
+        float: none;
+        display: table-cell;
+        vertical-align: top;
+    }
+  }
+
+  .line {
+    position:relative;
+    width:80%;
+    margin:auto;
+    overflow:hidden;
+  }
+  .line:after {
+    content:" ";
+    width:2px;
+    position:absolute;
+    z-index:1;
+    top:0;
+    bottom:0;
+    left:50%;
+    background: linear-gradient(
+      to bottom,
+      #fff,
+      #fff 20%,
+      #ddd 20%,
+      #ddd
+    );
+    background-size: 100% 10px;
+  }
+  .circle {
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:#fff;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    float:right;
+    margin-right:17px;
+    margin-top:8px;
+    position:relative;
+    z-index:2;
+  }
+  .circle.first:before,
+  .circle.last:before {
+    content:" ";
+    position:absolute;
+    width:4px;
+    left:50%;
+    margin:2px 0 2px -2px;
+    background:#fff;
+    bottom:100%;
+    height:50px;
+    z-index:3;
+    background:#fff;
+  }
+  .circle.last:before{
+    bottom:auto;
+    top:100%; 
+  }
+  .circle.last {
+      position: absolute;
+      bottom: 0;
+      margin-right:0;
+      right:17px;
+  }
+
+  .showcase-label, .showcase-value,
+  .content-block-lg .row > div,
+  .content-block .row > div {
+    font-size: 12px; 
+    @media (min-width: 414px) {
+      font-size: 2.4vw; 
+    }
+    @media (min-width: 768px) {
+      font-size: 1.3vw; 
+    }
+    @media (min-width: 1200px) {
+      font-size: 16px;
+    }
+  }
+
+  .content-block-lg .media-block .row > div,
+  .content-block .media-block .row > div,
+  .content-block-lg .row.media-block > div,
+  .content-block .row.media-block > div {
+    font-size: 11px; 
+    @media (min-width: 414px) {
+      font-size: 2.2vw; 
+    }
+    @media (min-width: 768px) {
+      font-size: 1.1vw; 
+    }
+    @media (min-width: 1200px) {
+      font-size: 12px;
+    }
+  }
+
+  .content-block-lg {
+    border: 2px solid #efefef; 
+  }
+  .content-block-lg.row {
+    padding-right: 0;
+  }
+  .panel-collapse.row {
+    padding: 4px 0 4px 8px;    
+  }
+
+  .showcase-link, .break-all {
+    word-break: break-all;
+  }
+
+  .dropdown-menu {
+    background-color: $button-color;
+    min-width: 82px;
+    right: 0;
+    left: unset;
+    top: 80%;
+    .btn-default:hover {
+      color : $button-font-color;
+      background-color: $button-color;
+    }
+  }
+
+  div.preview {
+    margin-top: 20px;
+    background-color: #efefef;
+    border: 1px solid transparent;
+  }
+
+  .preview-image {
+    width:50%;
+    margin: 10vw auto;
+    display: block;
+
+    @media (min-width: 768px) {
+      width:35%;
+    }
+  }
+
+  .media-block {
+    .thumbnail {
+      display:inline-block;
+      border: none;
+      margin-bottom: 4px;
+      img {
+        max-width: 90%;
+      }
+    }
+  }
+
+  .row.indent {padding-left: 32px}   
+
+  /* media showcase specific styles */
+  .media-showcase {
+    small.badge-wrapper div {
+      font-size: 1.4vw;
+      line-height: 2vw;
+      color: #4A4A4A;
+      a, a:link, a:visited {
+        color: #20527E;
+      }
+    }
+    .show-actions {
+      padding: 0.6vw 0;
+      @media (min-width: 991px) { /* show 1 button on each line when smaller than this width */
+        padding: 2.7vw 0;
+      }
+      .btn {
+        margin-left: 0.5vw;
+        margin-bottom: 4px;
+        /* min-width: 86px; */
+        @media (max-width: 990px) { /* show 1 button on each line when smaller than this width */
+          float: none;
+          display: block;
+          min-width: 100px;
+        }
+      }
+      .dropdown-menu {
+        right: 0;
+        left: auto;
+      }
+    }
+    div.preview {
+      margin-top: 0;
+      background-color: transparent;
+      border: 1px solid transparent;
+    
+      .viewer-wrapper {
+        margin-top: 10px;
+        background-color: transparent;
+      }
+    }
+  }
+  /* /media showcase specific styles */
+
+}

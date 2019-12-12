@@ -1,0 +1,23 @@
+# config/authorities/units.yml
+# Todo: Create a URI resource for this subtype list
+terms:
+  - id: Cm
+    term: Centimeters
+    active: true
+  - id: Mm
+    term: Millimeters
+    active: true
+  - id: M
+    term: Meters
+    active: true
+  - id: Km
+    term: Kilometers
+  - id: In
+    term: Inches
+    active: true
+  - id: Ft
+    term: Feet
+    active: true
+  - id: Mi
+    term: Miles
+    active: true

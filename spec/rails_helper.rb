@@ -7,6 +7,21 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+require 'shoulda/matchers'
+require 'shoulda/callback/matchers'
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
+
+require 'active_fedora/cleaner'
+
+# Requires supporting ruby files with custom matchers and macros, etc,
+# in spec/support/ and its subdirectories.
+Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -53,5 +68,17 @@ RSpec.configure do |config|
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
+
   # config.filter_gems_from_backtrace("gem name")
+
+  config.include FactoryBot::Syntax::Methods
+  config.include Devise::Test::ControllerHelpers, :type => :controller
+
+  config.before(:suite) do
+    ActiveFedora::Cleaner.clean!
+  end
+
+  config.after(:each) do
+    ActiveFedora::Cleaner.clean!
+  end
 end

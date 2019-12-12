@@ -1,0 +1,8 @@
+<% # app/views/records/edit_fields/_media_type.html.erb %>
+<% media_types_service = Morphosource::MediaTypesService.new %>
+<%= f.input :media_type, as: :select,
+    collection: media_types_service.select_all_options,
+    include_blank: true,
+    item_helper: media_types_service.method(:include_current_value),
+    input_html: { class: 'form-control' }
+%>

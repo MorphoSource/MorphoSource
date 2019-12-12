@@ -1,0 +1,8 @@
+it:
+  hyrax:
+    icons:
+      physical_object:     'fa fa-file-text-o'
+    select_type:
+      physical_object:
+        description:        "Physical object opere"
+        name:               "Physical Object"

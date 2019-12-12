@@ -1,0 +1,28 @@
+<!-- When media cart, requests, or showcase page, modal is used for requests and displays intended use field. -->
+<!-- When new requests page, modal is used for approvals -->
+<!-- When previous requests page, modal is used to edit an expiration date -->
+<div class="modal fade" id="pageModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span id="close-modal" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <% if (page == "cart" || page == "requests" || page == "showcase") %>
+          <%= render 'morphosource/my/modals/request/title' %>
+        <% elsif (@tab == 'new') %>
+          <%= render 'morphosource/my/modals/approve/title' %>
+        <% elsif (@tab == 'previous') %>
+          <%= render 'morphosource/my/modals/expiration/title' %>
+        <% end %>
+      </div>
+      <% if (page == "cart" || page == "requests") %>
+        <%= render 'morphosource/my/modals/request/body' %>
+      <% elsif (page == "showcase") %>
+        <%= render 'morphosource/my/modals/request/showcase_body' %>
+      <% elsif (@tab == 'new') %>
+        <%= render 'morphosource/my/modals/approve/body' %>
+      <% elsif (@tab == 'previous') %>
+        <%= render 'morphosource/my/modals/expiration/body' %>
+      <% end %>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

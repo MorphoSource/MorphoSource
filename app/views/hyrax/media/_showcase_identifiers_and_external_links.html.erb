@@ -1,0 +1,11 @@
+<h2>IDENTIFIERS AND EXTERNAL LINKS</h2>
+
+<%= presenter.attribute_to_html(:ark, label: 'MorphoSource ARK', render_as: :showcase_ark_link, include_empty: true, text_if_empty: 'Not assigned', html_dl: false) %>
+<%= presenter.attribute_to_html(:doi, label: 'MorphoSource DOI', render_as: :showcase_doi_link, include_empty: true, text_if_empty: 'Not assigned', html_dl: false) %>
+<%= presenter.attribute_to_html(:identifier, label: 'Core external identifier', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+
+<!--div id="collapse-block-id-and-ext-links" class="panel-collapse collapse collapse-block">
+put more fields here, if any 
+</div -->
+
+<%#= collapse_expand_panel("collapse-block-id-and-ext-links") %>

@@ -1,0 +1,23 @@
+<%= f.input :rights_holder, as: :multi_value
+%>
+
+<div id="media_rights_holder_wrapper" class="form-group multi_value optional managed ie_xray_ct" style="margin-right:7em;">
+
+  <label class="control-label multi_value optional" for="media_rights_holder">Rights holder</label>
+
+  <ul class="listing" aria-live="polite" style=" border:solid 1px lightgray; border-radius: 5px;">
+    <div id="rights_holder_labels" style="display:flex; flex-direction:row; justify-content:space-evenly; margin-top:.5em;">
+      <div style="width:50%;margin-left:8px"><label for="media_rights_holder_name">Name</label></div>
+      <div style="width:50%;margin-left:8px"><label for="media_rights_holder_type">Type</label></div>
+    </div>
+    <li class="field-wrapper input-group input-append" style="display:flex; flex-direction:row; justify-content:space-evenly;">
+      <input class="string multi_value optional form-control media_rights_holder_name form-control multi-text-field" name="media[rights_holder_name][]" value="" id="media_rights_holder_name" type="text" style="margin:5px; width:50%; border-radius:5px;">
+      <select class="form-control select optional form-control" name="media[rights_holder_type][]" id="media_rights_holder_type" style="margin:5px; width:50%;">
+        <option value=""></option>
+        <option value="Copyright and License">Copyright and License</option>
+        <option value="Copyright">Copyright</option>
+        <option value="License">License</option>
+      </select>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,18 @@
+# config/authorities/modalities.yml
+# URI for terms list: https://www.idigbio.org/wiki/index.php/3D_Scan_Modality_Subtypes
+terms:
+  - id: Left
+    term: Left
+    active: true
+  - id: Right
+    term: Right
+    active: true
+  - id: Midline
+    term: Midline
+    active: true
+  - id: NotApplicable
+    term: Not Applicable
+    active: true
+  - id: Unknown
+    term: Unknown
+    active: true

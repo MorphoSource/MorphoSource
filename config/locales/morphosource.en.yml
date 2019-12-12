@@ -1,0 +1,109 @@
+en:
+  morphosource:
+    homepage:
+      about_html: 'Welcome to MorphoSource 2.0, alpha! We hope you enjoy the new look and functionality.  Please be patient as this version is only meant to showcase specimen record pages, media file pages, and new improved 3D previews with measurement and annotation support. Even this home page is just a place holder. Only a small subset of the media available on MorphoSource 1.0 is currently available here and the only way to explore it is by visiting the collections page. That is, search and browse utilities are not yet available. Finally, file uploading and editing is not yet enabled. We look forward to your feedback on the features we have implemented so far! We are aiming for a more fully featured beta version by October 2019.'
+    admin:
+      sidebar:
+        downloads: 'Downloads'
+        media_cart: 'Media Cart'
+        previous_downloads: 'Previous Downloads'
+        requests: 'Requests'
+        manage_requests: 'Manage Requests'
+    base:
+      form_progress:
+        required_format: 'File formats match selected media type'
+    dashboard:
+      my:
+        heading:
+          file_visibility: 'File Visibility'
+          date_downloaded: 'Date Downloaded'
+          publication_status: 'Publication Status'
+      profiles:
+        edit_primary:
+          address: "Address"
+          affiliation: "Organization"
+          change_picture: "<i class='glyphicon glyphicon-camera'></i> Change picture"
+          country: "Country"
+          delete_picture: "Delete picture"
+          delete_picture_data_content: "If you would like to remove your picture entirely, check the box and save your profile."
+          delete_picture_data_original_title: "Delete Picture"
+          demographics: "Please Describe Your Profession<br>(You May Choose More Than One)"
+          department: "Department"
+          display_name: "Display Name"
+          email: "Email Address"
+          facebook_handle: "Facebook Handle"
+          help_change_picture_type: "JPG, GIF, or PNG (less than 2MB)"
+          intent: "Please Describe Your Intended<br>Use For MorphoSource<br>(You May Choose More Than One)"
+          mesh_file_type: "What File Type (If Any) Do You<br>Prefer To Use For 3D Mesh Files?"
+          printer_file: "If You Are Involved In 3D Printing,<br>What File Type Does Your Printer<br>Or Its Software Require?<br>(You May Choose More Than One)"
+          printer_model: "If You Are Involved In 3D Printing,<br>What Make and Model Of<br>3D Printer Do You Use?<br>(You May Choose More Than One)"
+          software: "What Software (If Any) Do You<br>Prefer To Use To View 3D Media?"
+          state: "State or Province"
+          status: "Status"
+          telephone: "Telephone"
+          terms_read: "Terms and Conditions"
+          twitter_handle: "Twitter Handle"
+          volume_file_type: "What File Type (If Any) Do You<br>Prefer To Use For 3D Volume Files?"
+          website: "Website"
+    validation:
+      missing:
+        title: 'Your work must have a title.'
+        vouchered: 'Missing value in vouchered? field. Does the object you are adding still physically exist?'
+    fallback_object_title: "%{voucher} object contributed by %{user}"
+    media:
+      format_labels:
+        image: 'Image'
+        video: 'Video'
+        ct_mri: 'CT/MRI Image Series'
+        photogrammetry: 'Photogrammetry Image Series'
+        mesh: 'Mesh or Point Cloud'
+        other: 'Other'
+    modal:
+      approve:
+        title: "Set Download Expiration Date"
+      expiration:
+        title: "Edit Expiration Date"
+      request:
+        title: "Intended Use"
+        subtitle: "Please let the data owner know how you intend to use their data"
+    publication_status:
+      open:
+        text: "Open"
+      restricted:
+        text: "Restricted"
+      preview:
+        text: "Preview"
+      hidden:
+        text: "Hidden"
+      private:
+        text: "Private"
+      embargo:
+        text: "Embargo"
+      lease:
+        text: "Lease"
+    upload:
+      change_access_message_html: "<p>You have changed the access level on work <i>%{curation_concern}</i>, making it accessible to other users or groups to view or edit.</p><p>All attached files are now being updated with the same access level.</p>"
+      change_access_yes_message: Yes please.
+      change_access_no_message: No. I want to go back.
+    taxonomy:
+      labels:
+        canonical: "Organizational"
+        trusted_canonical: "Organizational / MorphoSource Inferred"
+        trusted: "MorphoSource Inferred"
+        user: "User Supplied"
+    visibility:
+      open:
+        note_html: "<p>Anyone can view the page and download the associated file(s)</p>"
+        warning_html: "<p>Here's extra information for open things</p>"
+      restricted:
+        note_html: "<p>Anyone can view the page, but must get permission before downloading the associated file(s)</p>"
+        warning_html: "<p>Here's extra information for restricted things</p>"
+      preview:
+        note_html: "<p>Anyone can view the page and preview files in the viewer, but files are not available for download</p>"
+        warning_html: "<p>Here's extra information for preview-only things</p>"
+      hidden:
+        note_html: "<p>Anyone can view the page. Associated files are invisible and cannot be previewed or downloaded.</p>"
+        warning_html: "<p>Here's extra information for hidden things</p>"
+      private:
+        note_html: "<p>Page and files are hidden from the public.</p>"
+        warning_html: "<p>Here's extra information for private things</p>"

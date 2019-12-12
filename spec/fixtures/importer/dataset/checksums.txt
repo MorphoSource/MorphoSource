@@ -1,0 +1,5 @@
+37a0502601ed54f31d119d5355ade2c29ea530ea  FIXTURE_PATH/importer/dataset/files/data/data3.csv
+8376ba1d652cee933cc7cff95d8c049fb7a9a855  FIXTURE_PATH/importer/dataset/files/docs/doc2.txt
+ab84c8b1187123c4d627bea511714dd723b56dbe  FIXTURE_PATH/importer/dataset/files/data/data2.csv
+94631dfa806987fa6c01880d59303519f23c5609  FIXTURE_PATH/importer/dataset/files/docs/doc1.txt
+4c4665b408134d8f6995d1640a7f2d4eeee5c010  FIXTURE_PATH/importer/dataset/files/data/data1.csv

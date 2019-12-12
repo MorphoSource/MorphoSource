@@ -1,0 +1,99 @@
+function hide(button) {
+  $(button).hide();
+}
+
+function hideButtons() {
+  let downloadable = $(".downloadable_items").length;
+  let restricted = $(".restricted_items").length;
+  let select_downloadable = $('#unrestricted_documents > table > thead > tr > th.check-all');
+  let select_restricted = $('#documents > table > thead > tr > th.check-all');
+
+  if (downloadable < 1) {
+    hide('#download-all');
+    hide('#delete-selected');
+    hide('#download-selected');
+    select_downloadable.hide();
+  }
+  if (restricted < 1) {
+    hide('#request-selected');
+    hide('#delete-selected-restricted');
+    select_restricted.hide();
+  }
+  if (restricted < 1 && downloadable < 1) {
+    hide('#clear-cart');
+  }
+}
+
+function disable(button){
+  $(button).prop('disabled',true);
+}
+
+function enable(button){
+  $(button).prop('disabled',false);
+}
+
+function togglePageButtons() {
+  let items = $(".batch_document_selector").length;
+  let downloadable = $(".downloadable_items").length;
+
+  if ( downloadable > 0 ) {
+    enable('#download-all');
+    enable('#clear-cart');
+  } else if ( items > 0 ) {
+    disable('#download-all');
+    enable('#clear-cart');
+  } else {
+    disable('#download-all');
+    disable('#clear-cart');
+  }
+}
+
+function toggleDownloadableButtons() {
+  let downloadable = $(".downloadable_items:checked").length;
+  if ( downloadable > 0 ) {
+    enable('#delete-selected');
+    enable('#download-selected');
+  } else {
+    disable('#delete-selected');
+    disable('#download-selected');
+  }
+}
+
+function toggleRestrictedButtons() {
+  let restricted = $(".restricted_items:checked").length;
+  if ( restricted > 0 ) {
+    enable('#request-selected');
+    enable('#delete-selected-restricted');
+  } else {
+    disable('#request-selected');
+    disable('#delete-selected-restricted');
+  }
+}
+
+Blacklight.onLoad(function() {
+  togglePageButtons();
+  toggleRestrictedButtons();
+  toggleDownloadableButtons();
+  hideButtons();
+  // toggle button on or off based on boxes being clicked
+  $(".restricted_items").bind('click', function(e) {
+    toggleRestrictedButtons();
+  });
+  $(".downloadable_items").bind('click', function(e) {
+    toggleDownloadableButtons();
+  });
+  $('#check_all_unrestricted').bind('click', function(e) {
+    toggleDownloadableButtons();
+  });
+  $('#check_all_restricted').bind('click', function(e) {
+    toggleRestrictedButtons();
+  });
+});
+
+$(document).on('turbolinks:load', function(){
+  togglePageButtons();
+  // re-enable the download all button after being clicked
+  $('#download-all').bind('click', function(e) {
+     setTimeout(function(){ togglePageButtons(); }, 500);
+  });
+});

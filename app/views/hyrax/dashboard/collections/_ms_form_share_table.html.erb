@@ -1,0 +1,46 @@
+<% group_name = access.dup.concat("_group") %>
+<% group = @collection.send(group_name) %>
+<h3><%= t("hyrax.dashboard.collections.form_share_table.#{access}.title") %></h3>
+<p><%= t("hyrax.dashboard.collections.form_share_table.#{access}.help") %></p>
+<p><%= t("hyrax.dashboard.collections.form_share_table.#{access}.help_with_works", type_title: @collection.collection_type.title) if @collection.share_applies_to_new_works? && access != 'depositors' %></p>
+<% if group.users.count > 0 %>
+  <table class="table table-striped share-status">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Name</th>
+        <th>Edit or Remove Access</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% group.users.each do |user| %>
+        <tr>
+          <td><%= user.email %></td>
+          <td><%= user.display_name %></td>
+          <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'user-participants-form' }) do |f| %>
+            <% if access == 'managers' && group.users.count < 2 %>
+              <td>
+                <%= f.select 'collection_roles[new_access]', {}, { prompt: t('.select_a_role') }, disabled: true, class: 'form-control' %>
+              </td>
+              <td>
+                <%= submit_tag 'Update', class: 'btn btn-info edit-collection-add-user-sharing-button', disabled: true %>
+              </td>
+            <% else %>
+              <td>
+                <%= f.select 'collection_roles[new_access]', ms_edit_access_options(access), { prompt: t('.select_a_role') }, class: 'form-control select-edit-access' %>
+                <%= f.hidden_field_tag('collection_roles[agent_type]', 'user') %>
+                <%= f.hidden_field_tag('collection_roles[agent_id]', user.ms_id) %>
+                <%= f.hidden_field_tag('collection_roles[access]', access) %>
+              </td>
+              <td>
+                <%= submit_tag 'Update', class: 'btn btn-info edit-collection-add-user-sharing-button', disabled: true %>
+              </td>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p><em><%= t("hyrax.dashboard.collections.form_share_table.#{access}.empty") %></em></p>
+<% end %>

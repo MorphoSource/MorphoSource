@@ -6,3 +6,15 @@ en:
       media:
         description:        "Media works"
         name:               "Media"
+  simple_form:
+    labels:    
+      media:
+        media_type: Media Type
+        part: Element or Part
+        funding: Funding Attribution
+        description: Notes
+        rights_statement: Copyright Statement
+        agreement_uri: Additional Usage Agreement URL
+        rights_holder: Rights Holder
+        cite_as: Cite As
+

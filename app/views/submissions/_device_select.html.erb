@@ -1,0 +1,16 @@
+<div id="submission_device_select">
+  <% if devices.present? %>
+    <h5><%= t('morphosource.submission.device_select') %></h5>
+    <div class="form-group">
+      <div class="form-inline">
+        <%= f.input :device_id, collection: device_selector, prompt: 'Select device', label: false %>
+      </div>
+      <div>
+        <%= f.submit 'Continue with selected device', name: 'device_select', class: 'btn btn-primary', role: 'button', onclick: 'return isDropdownSelected("submission[device_id]")' %>
+      </div>
+    </div>
+  <% end %>
+  <div id="submission_choose_create_device">
+    <%= f.submit 'Create New Device', name: 'device_will_create', class: 'btn btn-primary' %>
+  </div>
+</div>

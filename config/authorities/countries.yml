@@ -1,0 +1,596 @@
+# config/authorities/countries.yml
+# Getty Thesaurus of Geographic Names Country List
+# Derived from http://baskauf.blogspot.com/2016/04/controlled-values-for-country-from.html
+# and specifically https://gist.github.com/baskaufs/799aace5cbc36a323919a569416e9c4a
+terms:
+  - id: Afghanistan
+    term: Afghanistan
+    active: true
+  - id: Albania
+    term: Albania
+    active: true
+  - id: Algeria
+    term: Algeria
+    active: true
+  - id: Andorra
+    term: Andorra
+    active: true
+  - id: Angola
+    term: Angola
+    active: true
+  - id: Antigua and Barbuda
+    term: Antigua and Barbuda
+    active: true
+  - id: Argentina
+    term: Argentina
+    active: true
+  - id: Armenia
+    term: Armenia
+    active: true
+  - id: Armenia
+    term: Armenia
+    active: true
+  - id: Australia
+    term: Australia
+    active: true
+  - id: Austria
+    term: Austria
+    active: true
+  - id: Azerbaijan
+    term: Azerbaijan
+    active: true
+  - id: Bahamas
+    term: Bahamas
+    active: true
+  - id: Bahrain
+    term: Bahrain
+    active: true
+  - id: Bangladesh
+    term: Bangladesh
+    active: true
+  - id: Barbados
+    term: Barbados
+    active: true
+  - id: Belarus
+    term: Belarus
+    active: true
+  - id: Belgium
+    term: Belgium
+    active: true
+  - id: Belize
+    term: Belize
+    active: true
+  - id: Benin
+    term: Benin
+    active: true
+  - id: Bhutan
+    term: Bhutan
+    active: true
+  - id: Bolivia
+    term: Bolivia
+    active: true
+  - id: Bosnia and Herzegovina
+    term: Bosnia and Herzegovina
+    active: true
+  - id: Botswana
+    term: Botswana
+    active: true
+  - id: Brazil
+    term: Brazil
+    active: true
+  - id: Brunei Darussalam
+    term: Brunei Darussalam
+    active: true
+  - id: Bulgaria
+    term: Bulgaria
+    active: true
+  - id: Burkina Faso
+    term: Burkina Faso
+    active: true
+  - id: Burundi
+    term: Burundi
+    active: true
+  - id: Cambodia
+    term: Cambodia
+    active: true
+  - id: Cameroon
+    term: Cameroon
+    active: true
+  - id: Canada
+    term: Canada
+    active: true
+  - id: Cape Verde
+    term: Cape Verde
+    active: true
+  - id: Central African Republic
+    term: Central African Republic
+    active: true
+  - id: Chad
+    term: Chad
+    active: true
+  - id: Chile
+    term: Chile
+    active: true
+  - id: Colombia
+    term: Colombia
+    active: true
+  - id: Comoros
+    term: Comoros
+    active: true
+  - id: Congo (Republic of)
+    term: Congo (Republic of)
+    active: true
+  - id: Costa Rica
+    term: Costa Rica
+    active: true
+  - id: Croatia
+    term: Croatia
+    active: true
+  - id: Cuba
+    term: Cuba
+    active: true
+  - id: Cyprus
+    term: Cyprus
+    active: true
+  - id: Czech Republic
+    term: Czech Republic
+    active: true
+  - id: Czechoslovakia
+    term: Czechoslovakia
+    active: true
+  - id: Côte d'Ivoire
+    term: Côte d'Ivoire
+    active: true
+  - id: Denmark
+    term: Denmark
+    active: true
+  - id: Djibouti
+    term: Djibouti
+    active: true
+  - id: Dominica
+    term: Dominica
+    active: true
+  - id: Dominican Republic
+    term: Dominican Republic
+    active: true
+  - id: Ecuador
+    term: Ecuador
+    active: true
+  - id: Egypt
+    term: Egypt
+    active: true
+  - id: El Salvador
+    term: El Salvador
+    active: true
+  - id: Equatorial Guinea
+    term: Equatorial Guinea
+    active: true
+  - id: Eritrea
+    term: Eritrea
+    active: true
+  - id: Estonia
+    term: Estonia
+    active: true
+  - id: Ethiopia
+    term: Ethiopia
+    active: true
+  - id: Federated States of Micronesia
+    term: Federated States of Micronesia
+    active: true
+  - id: Fiji
+    term: Fiji
+    active: true
+  - id: Finland
+    term: Finland
+    active: true
+  - id: France
+    term: France
+    active: true
+  - id: Gabon
+    term: Gabon
+    active: true
+  - id: Georgia
+    term: Georgia
+    active: true
+  - id: Germany
+    term: Germany
+    active: true
+  - id: Ghana
+    term: Ghana
+    active: true
+  - id: Greece
+    term: Greece
+    active: true
+  - id: Grenada
+    term: Grenada
+    active: true
+  - id: Guatemala
+    term: Guatemala
+    active: true
+  - id: Guinea
+    term: Guinea
+    active: true
+  - id: Guinea-Bissau
+    term: Guinea-Bissau
+    active: true
+  - id: Guyana
+    term: Guyana
+    active: true
+  - id: Haiti
+    term: Haiti
+    active: true
+  - id: Holy See
+    term: Holy See
+    active: true
+  - id: Honduras
+    term: Honduras
+    active: true
+  - id: Hungary
+    term: Hungary
+    active: true
+  - id: Iceland
+    term: Iceland
+    active: true
+  - id: India
+    term: India
+    active: true
+  - id: Indonesia
+    term: Indonesia
+    active: true
+  - id: Iran
+    term: Iran
+    active: true
+  - id: Iraq
+    term: Iraq
+    active: true
+  - id: Ireland
+    term: Ireland
+    active: true
+  - id: Israel
+    term: Israel
+    active: true
+  - id: Italy
+    term: Italy
+    active: true
+  - id: Jamaica
+    term: Jamaica
+    active: true
+  - id: Japan
+    term: Japan
+    active: true
+  - id: Jordan
+    term: Jordan
+    active: true
+  - id: Kazakhstan
+    term: Kazakhstan
+    active: true
+  - id: Kenya
+    term: Kenya
+    active: true
+  - id: Kiribati
+    term: Kiribati
+    active: true
+  - id: Kuwait
+    term: Kuwait
+    active: true
+  - id: Kyrgyzstan
+    term: Kyrgyzstan
+    active: true
+  - id: Laos
+    term: Laos
+    active: true
+  - id: Latvia
+    term: Latvia
+    active: true
+  - id: Lebanon
+    term: Lebanon
+    active: true
+  - id: Lesotho
+    term: Lesotho
+    active: true
+  - id: Liberia
+    term: Liberia
+    active: true
+  - id: Libya
+    term: Libya
+    active: true
+  - id: Liechtenstein
+    term: Liechtenstein
+    active: true
+  - id: Lithuania
+    term: Lithuania
+    active: true
+  - id: Luxembourg
+    term: Luxembourg
+    active: true
+  - id: Madagascar
+    term: Madagascar
+    active: true
+  - id: Malawi
+    term: Malawi
+    active: true
+  - id: Malaysia
+    term: Malaysia
+    active: true
+  - id: Maldives
+    term: Maldives
+    active: true
+  - id: Mali
+    term: Mali
+    active: true
+  - id: Malta
+    term: Malta
+    active: true
+  - id: Marshall Islands
+    term: Marshall Islands
+    active: true
+  - id: Mauritania
+    term: Mauritania
+    active: true
+  - id: Mauritius
+    term: Mauritius
+    active: true
+  - id: Mexico
+    term: Mexico
+    active: true
+  - id: Moldova
+    term: Moldova
+    active: true
+  - id: Monaco
+    term: Monaco
+    active: true
+  - id: Mongolia
+    term: Mongolia
+    active: true
+  - id: Montenegro
+    term: Montenegro
+    active: true
+  - id: Montserrat
+    term: Montserrat
+    active: true
+  - id: Morocco
+    term: Morocco
+    active: true
+  - id: Mozambique
+    term: Mozambique
+    active: true
+  - id: Myanmar
+    term: Myanmar
+    active: true
+  - id: Namibia
+    term: Namibia
+    active: true
+  - id: Nauru
+    term: Nauru
+    active: true
+  - id: Nepal
+    term: Nepal
+    active: true
+  - id: Netherlands
+    term: Netherlands
+    active: true
+  - id: New Zealand
+    term: New Zealand
+    active: true
+  - id: Nicaragua
+    term: Nicaragua
+    active: true
+  - id: Niger
+    term: Niger
+    active: true
+  - id: Nigeria
+    term: Nigeria
+    active: true
+  - id: North Korea
+    term: North Korea
+    active: true
+  - id: North Yemen
+    term: North Yemen
+    active: true
+  - id: Norway
+    term: Norway
+    active: true
+  - id: Oman
+    term: Oman
+    active: true
+  - id: Pakistan
+    term: Pakistan
+    active: true
+  - id: Palau
+    term: Palau
+    active: true
+  - id: Palestine
+    term: Palestine
+    active: true
+  - id: Panama
+    term: Panama
+    active: true
+  - id: Papua New Guinea
+    term: Papua New Guinea
+    active: true
+  - id: Paraguay
+    term: Paraguay
+    active: true
+  - id: Peru
+    term: Peru
+    active: true
+  - id: Philippines
+    term: Philippines
+    active: true
+  - id: Poland
+    term: Poland
+    active: true
+  - id: Portugal
+    term: Portugal
+    active: true
+  - id: Qatar
+    term: Qatar
+    active: true
+  - id: Romania
+    term: Romania
+    active: true
+  - id: Russia
+    term: Russia
+    active: true
+  - id: Rwanda
+    term: Rwanda
+    active: true
+  - id: Saint Kitts and Nevis
+    term: Saint Kitts and Nevis
+    active: true
+  - id: Saint Lucia
+    term: Saint Lucia
+    active: true
+  - id: Saint Vincent and the Grenadines
+    term: Saint Vincent and the Grenadines
+    active: true
+  - id: Samoa
+    term: Samoa
+    active: true
+  - id: San Marino
+    term: San Marino
+    active: true
+  - id: Sao Tome and Principe
+    term: Sao Tome and Principe
+    active: true
+  - id: Saudi Arabia
+    term: Saudi Arabia
+    active: true
+  - id: Senegal
+    term: Senegal
+    active: true
+  - id: Serbia
+    term: Serbia
+    active: true
+  - id: Serbia and Montenegro
+    term: Serbia and Montenegro
+    active: true
+  - id: Seychelles
+    term: Seychelles
+    active: true
+  - id: Sierra Leone
+    term: Sierra Leone
+    active: true
+  - id: Singapore
+    term: Singapore
+    active: true
+  - id: Slovakia
+    term: Slovakia
+    active: true
+  - id: Slovenia
+    term: Slovenia
+    active: true
+  - id: Solomon Islands
+    term: Solomon Islands
+    active: true
+  - id: Somalia
+    term: Somalia
+    active: true
+  - id: South Africa
+    term: South Africa
+    active: true
+  - id: South Korea
+    term: South Korea
+    active: true
+  - id: South Sudan
+    term: South Sudan
+    active: true
+  - id: South Yemen
+    term: South Yemen
+    active: true
+  - id: Spain
+    term: Spain
+    active: true
+  - id: Sri Lanka
+    term: Sri Lanka
+    active: true
+  - id: Sudan
+    term: Sudan
+    active: true
+  - id: Suriname
+    term: Suriname
+    active: true
+  - id: Swaziland
+    term: Swaziland
+    active: true
+  - id: Sweden
+    term: Sweden
+    active: true
+  - id: Switzerland
+    term: Switzerland
+    active: true
+  - id: Syria
+    term: Syria
+    active: true
+  - id: Taiwan
+    term: Taiwan
+    active: true
+  - id: Tajikistan
+    term: Tajikistan
+    active: true
+  - id: Tanzania
+    term: Tanzania
+    active: true
+  - id: Thailand
+    term: Thailand
+    active: true
+  - id: Timor-Leste
+    term: Timor-Leste
+    active: true
+  - id: Togo
+    term: Togo
+    active: true
+  - id: Tonga
+    term: Tonga
+    active: true
+  - id: Trinidad and Tobago
+    term: Trinidad and Tobago
+    active: true
+  - id: Tunisia
+    term: Tunisia
+    active: true
+  - id: Turkey
+    term: Turkey
+    active: true
+  - id: Tuvalu
+    term: Tuvalu
+    active: true
+  - id: Uganda
+    term: Uganda
+    active: true
+  - id: Ukraine
+    term: Ukraine
+    active: true
+  - id: United Arab Emirates
+    term: United Arab Emirates
+    active: true
+  - id: United Kingdom
+    term: United Kingdom
+    active: true
+  - id: United States
+    term: United States
+    active: true
+  - id: Uruguay
+    term: Uruguay
+    active: true
+  - id: Uzbekistan
+    term: Uzbekistan
+    active: true
+  - id: Vanuatu
+    term: Vanuatu
+    active: true
+  - id: Venezuela
+    term: Venezuela
+    active: true
+  - id: Vietnam
+    term: Vietnam
+    active: true
+  - id: Yemen
+    term: Yemen
+    active: true
+  - id: Zambia
+    term: Zambia
+    active: true
+  - id: Zimbabwe
+    term: Zimbabwe
+    active: true

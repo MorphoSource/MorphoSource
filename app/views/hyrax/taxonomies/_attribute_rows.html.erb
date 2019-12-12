@@ -1,0 +1,27 @@
+<%# Taxonomy Fields %>
+<%= presenter.attribute_to_html(:taxonomy_domain, label: 'Domain', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_kingdom, label: 'Kingdom', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_phylum, label: 'Phylum', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_superclass, label: 'Superclass', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_class, label: 'Class', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_subclass, label: 'Subclass', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_superorder, label: 'Superorder', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_order, label: 'Order', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_suborder, label: 'Suborder', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_superfamily, label: 'Superfamily', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_family, label: 'Family', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_subfamily, label: 'Subfamily', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_tribe, label: 'Tribe', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_genus, label: 'Genus', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_subgenus, label: 'Subgenus', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_species, label: 'Species', html_dl: true) %>
+<%= presenter.attribute_to_html(:taxonomy_subspecies, label: 'Subspecies', html_dl: true) %>
+<%= presenter.attribute_to_html(:source, label: 'Source', html_dl: true) %>
+<%= presenter.attribute_to_html(:trusted, html_dl: true) %>
+
+<% related_taxonomies =  presenter.attribute_to_html(:biological_specimens, render_as: :related_taxonomies, html_dl: true, locale: locale, id: params[:id]) %>
+
+<% unless related_taxonomies.blank? %>
+  <h4>Related Taxonomies</h4>
+  <%= related_taxonomies %>
+<% end %>

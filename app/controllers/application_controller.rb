@@ -9,6 +9,9 @@ class ApplicationController < ActionController::Base
   include Hyrax::ThemedLayoutController
   with_themed_layout '1_column'
 
-
   protect_from_forgery with: :exception
+
+  # Blacklight discarding flash messages - see https://github.com/samvera/hyrax/issues/1596
+  skip_after_action :discard_flash_if_xhr
+
 end

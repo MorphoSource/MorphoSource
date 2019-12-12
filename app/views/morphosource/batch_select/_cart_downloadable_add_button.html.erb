@@ -1,0 +1,4 @@
+<!-- for Media Cart and Previous Downloads, 'batch_document_ids' are item ids -->
+<div data-behavior="batch-add-button" id="batch-add-button">
+  <%= check_box_tag "batch_download_ids[]", item.id, false, class:"batch_document_selector downloadable_items", id: "batch_download_#{item.id}" %>
+</div>

@@ -1,0 +1,20 @@
+# config/authorities/media_types.yml
+# Todo: Create a URI resource for this subtype list
+terms:
+  - id: Image
+    term: Image (*.tiff, *.png, *.dcm, etc.)
+    active: true
+  - id: Video
+    term: Video (*.avi, *.mp4, *.mov, .etc.)
+    active: true
+  - id: CTImageSeries
+    term: CT/MRI image series (multiple files of type *.tiff, *.png, *.dcm, *.zip, etc.)
+    active: true
+  - id: PhotogrammetryImageSeries
+    term: Photogrammetry image series (multiple files of type *.tiff, *.png, etc.) 
+  - id: Mesh
+    term: Mesh or point cloud (*.stl, *.ply, .etc, with optional associated texture or color file)
+    active: true
+  - id: Other
+    term: Other
+    active: true

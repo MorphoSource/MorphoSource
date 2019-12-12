@@ -1,0 +1,25 @@
+<% provide :page_title, application_name %>
+<div id="homepage-about-text" style="padding-bottom:15px;">
+  <span><%= t('morphosource.homepage.about_html') %></span>
+</div>
+<% if @presenter.display_share_button? %>
+<div class="home-share-work text-center">
+  <% if signed_in? %>
+    <%= link_to '/submissions/new', class: "btn btn-primary btn-lg" do %>
+      <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('hyrax.share_button') %>
+    <% end %>
+  <% else %>
+    <%= link_to hyrax.my_works_path,
+      class: "btn btn-primary btn-lg" do %>
+      <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('hyrax.share_button') %>
+    <% end %>
+  <% end %>
+  <p class="terms-of-use"><%= link_to t(:'hyrax.pages.tabs.terms_page'), hyrax.terms_path %></p>
+</div>
+<% end %>
+
+<div class="row home-content">
+  <%= render 'home_content' %>
+</div>
+
+<%= render '/shared/select_work_type_modal', create_work_presenter: @presenter.create_work_presenter if @presenter.draw_select_work_modal? %>

@@ -1,0 +1,16 @@
+function togglePageButtons() {
+  let items = $(".batch_document_selector:checked").length;
+  if ( items > 0 ) {
+    $('.batch-all-button').prop('disabled', false);
+  } else {
+    $('.batch-all-button').prop('disabled', true);
+  }
+}
+
+Blacklight.onLoad(function() {
+  togglePageButtons();
+  // toggle button on or off based on boxes being clicked
+  $(".batch_document_selector, #check_all").bind('click', function(e) {
+    togglePageButtons();
+  });
+});

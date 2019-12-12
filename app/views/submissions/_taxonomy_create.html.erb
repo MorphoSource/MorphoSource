@@ -1,0 +1,10 @@
+<div id="submission_create_taxonomy" class="hide">
+  <%= simple_form_for @taxonomy_form, url: stage_taxonomy_submissions_url do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+      <div>
+        <%= f.submit 'Create New Taxonomy', class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>

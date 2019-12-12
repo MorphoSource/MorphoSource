@@ -1,0 +1,11 @@
+<div id="submission_parents_in_ms" class="derived_media hide">  
+  
+  <div class="submission_flow" id="submission_select_parent_media">
+    <%= simple_form_for @submission do |f| %>
+      <%= render(partial: 'parent_media_select', locals: { f: f }) %>
+    <% end %>
+  </div>
+
+  <a id="btn_parents_not_in_morphosource" class="btn btn-primary"><%= t('morphosource.submission.parents_not_in_morphosource') %></a>
+
+</div>

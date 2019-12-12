@@ -1,0 +1,6 @@
+<h2>BIOLOGICAL SPECIMEN TAXONOMY </h2>
+<div class="panel-group" id="taxonomy-accordion-group">
+    <%= presenter.attribute_to_html(:canonical_taxonomy_object, render_as: :showcase_taxonomy, include_empty: false, html_dl: false, data_parent: "taxonomy-accordion-group", label: presenter.canonical_taxonomy_label, is_collapsed: true) %>
+    <%= presenter.attribute_to_html(:trusted_taxonomies, label: I18n.t('morphosource.taxonomy.labels.trusted'), render_as: :showcase_taxonomy, include_empty: false, html_dl: false, data_parent: "taxonomy-accordion-group", is_collapsed: true) %>
+    <%= presenter.attribute_to_html(:user_taxonomies, label: I18n.t('morphosource.taxonomy.labels.user'), render_as: :showcase_taxonomy, include_empty: false, html_dl: false, data_parent: "taxonomy-accordion-group", is_collapsed: true) %>
+</div>

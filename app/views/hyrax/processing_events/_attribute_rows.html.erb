@@ -1,0 +1,9 @@
+<!-- Fields on the show page are in the order below -->
+
+<!-- Hyrax Basic Metadata -->
+<%= presenter.attribute_to_html(:creator, render_as: :faceted, html_dl: true) %>
+<%= presenter.attribute_to_html(:date_created, render_as: :linked, search_field: 'date_created_tesim', html_dl: true) %>
+
+<!-- Processing Event Custom Fields -->
+<%= presenter.attribute_to_html(:software, search_field: 'software_sim', html_dl: true) %>
+<%= presenter.attribute_to_html(:processing_activity, html_dl: true) %>

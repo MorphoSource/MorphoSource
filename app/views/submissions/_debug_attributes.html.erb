@@ -1,0 +1,142 @@
+
+
+<style>
+  .debug_info h4 {background-color:#ccc}
+</style>
+
+<div class="debug_info">
+  <dl class="row">
+    <dt class="col-sm-3">raw_or_derived_media</dt>
+    <dd class="col-sm-9"><%= @submission.raw_or_derived_media %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">biospec_or_cho</dt>
+    <dd class="col-sm-9"><%= @submission.biospec_or_cho %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">biospec_id</dt>
+    <dd class="col-sm-9"><%= @submission.biospec_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">cho_id</dt>
+    <dd class="col-sm-9"><%= @submission.cho_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">organization_id</dt>
+    <dd class="col-sm-9"><%= @submission.organization_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">taxonomy_id</dt>
+    <dd class="col-sm-9"><%= @submission.taxonomy_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">device_id</dt>
+    <dd class="col-sm-9"><%= @submission.device_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">device_organization_id</dt>
+    <dd class="col-sm-9"><%= @submission.device_organization_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">imaging_event_id</dt>
+    <dd class="col-sm-9"><%= @submission.imaging_event_id %></dd>
+  </dl>
+  <dl class="row">
+    <dt class="col-sm-3">media_id</dt>
+    <dd class="col-sm-9"><%= @submission.media_id %></dd>
+  </dl>
+
+  <dl class="row">
+    <dt class="col-sm-3">processing_event_id</dt>
+    <dd class="col-sm-9"><%= @submission.processing_event_id %></dd>
+  </dl>
+
+  <h4>Biological Specimen Create Params</h4>
+    <% if @biospec_create_params.present? %>
+    <% @biospec_create_params.each do |k,v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+    <% end %>
+  <h4>CHO Create Params</h4>
+    <% if @cho_create_params.present? %>
+    <% @cho_create_params.each do |k,v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+    <% end %>
+  <h4>Organization Create Params</h4>
+  <% if @organization_create_params.present? %>
+    <% @organization_create_params.each do |k,v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+  <h4>Device Organization Create Params</h4>
+  <% if @device_organization_create_params.present? %>
+    <% @device_organization_create_params.each do |k,v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+  <h4>Taxonomy Create Params</h4>
+  <% if @taxonomy_create_params.present? %>
+    <% @taxonomy_create_params.each do |k,v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+  <h4>Device Create Params</h4>
+  <% if @device_create_params.present? %>
+    <% @device_create_params.each do |k, v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+  <h4>Imaging Event Create Params</h4>
+  <% if @imaging_event_create_params.present? %>
+    <% @imaging_event_create_params.each do |k, v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+  <h4>Media Create Params</h4>
+  <% if @media_create_params.present? %>
+    <% @media_create_params.each do |k, v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+
+  <h4>Processing event create Params</h4>
+  <% if @processing_event_create_params.present? %>
+    <% @processing_event_create_params.each do |k, v| %>
+      <dl class="row">
+        <dt class="col-sm-3"><%= k %></dt>
+        <dd class="col-sm-9"><%= v %></dd>
+      </dl>
+    <% end %>
+  <% end %>
+
+<h4>Cookies</h4>
+Modality: 
+<%= cookies[:modality_to_set] %>
+
+</div>
+

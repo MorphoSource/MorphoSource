@@ -1,0 +1,239 @@
+// Takes an array of jquery objects and returns an array of file names.
+function fileNames(files) {
+  let fileList = [];
+  for (let i = 0; i < files.length; i++) {
+    fileList.push(files[i].innerText);
+  }
+  return fileList;
+}
+
+// Returns an array of file names from the file upload form.
+function newFiles(){
+  return fileNames($('#fileupload > table > tbody > tr > td > p > span'));
+}
+
+// Returns an array of file names of previously uploaded files.
+function oldFiles(){
+  return fileNames($('#media_representative_id > option'));
+}
+
+function regularExpressionize(list) {
+  return new RegExp('(\\' + list.replace(/, /g,'|\\') + ')$','i');
+}
+
+const mediaFormatLabels = {
+  'Image': "<%= Morphosource::MEDIA_FORMATS['Image'][:label] %>",
+  'Video': "<%= Morphosource::MEDIA_FORMATS['Video'][:label] %>",
+  'CTImageSeries': "<%= Morphosource::MEDIA_FORMATS['CTImageSeries'][:label] %>",
+  'PhotogrammetryImageSeries': "<%= Morphosource::MEDIA_FORMATS['PhotogrammetryImageSeries'][:label] %>",
+  'Mesh': "<%= Morphosource::MEDIA_FORMATS['Mesh'][:label] %>",
+  'Other': "<%= Morphosource::MEDIA_FORMATS['Other'][:label] %>"
+}
+
+// Set allowed formats for each Media Type in lib/morphosource/configurable.
+// Returns a formats object.
+function mediaTypeFormats() {
+  let mediaType = $('#media_media_type').val();
+  let mediaTitle = mediaFormatLabels[mediaType];
+  let acceptedFormatsMessage = "Accepted formats for " + mediaTitle + " files are: ";
+  let allFormats = (<%= Morphosource.all_formats %>).join(', ');
+  let formats = {};
+
+  switch (mediaType) {
+    case 'Image':
+      var list = (<%= Morphosource.image_formats %>).join(', ');
+      break;
+    case 'Video':
+      var list = (<%= Morphosource.video_formats %>).join(', ');
+      break;
+    case 'CTImageSeries':
+      var list = (<%= Morphosource.ct_formats %>).join(', ');
+      break;
+    case 'PhotogrammetryImageSeries':
+      var list = (<%= Morphosource.photogrammetry_formats %>).join(', ');
+      break;
+    case 'Mesh':
+      var list = (<%= Morphosource.mesh_formats %>).join(', ')
+      break;
+    case 'Other':
+      var list = (<%= Morphosource.other_formats %>).join(', ');
+      break;
+    case '':
+      var list = allFormats;
+      break;
+  }
+
+  if (mediaType == 'Other') {
+    formats.message = '';
+  }
+  else if (mediaType == '') {
+    formats.message = 'Please choose a Media Type under the descriptions tab.';
+  }
+  else {
+    formats.message = acceptedFormatsMessage + list;
+  }
+
+  formats.list = list;
+  formats.regex = regularExpressionize(list);
+  formats.title = mediaTitle;
+
+  return formats;
+}
+
+function setupMatchingFormatRequirement() {
+  // Create placeholder for message in the file upload form listing allowed file formats.
+  let uploadForm = $('#fileupload');
+  let acceptedFormatsMessage = document.createElement('p');
+  $(acceptedFormatsMessage).attr('id','formats-message');
+  $(acceptedFormatsMessage).text("Uploaded file formats must match the selected media type.");
+  // Create placeholder for message in the file upload form listing unallowed files to be removed.
+  let unallowedFilesMessage = document.createElement('p');
+  $(unallowedFilesMessage).attr('id','files-message');
+
+  let unallowedOldFilesMessage = document.createElement('p');
+  $(unallowedOldFilesMessage).attr('id','old-files-message');
+
+  uploadForm.prepend(unallowedOldFilesMessage);
+  uploadForm.prepend(unallowedFilesMessage);
+  uploadForm.prepend(acceptedFormatsMessage);
+}
+
+// Updates message in upload form to display accepted file formats.
+function updateAcceptedFormatsMessage() {
+  let formats = mediaTypeFormats();
+  let acceptedFormatsMessage = $('#formats-message');
+  acceptedFormatsMessage.text(formats.message);
+}
+
+// Updates the file inputs with allowed file extensions, which grays out files with the wrong extension in the popup of user's file system.
+// Unfortunately still allows user to drag and drop wrong extensions, or select a folder that contains files with the wrong extensions.
+function updateAcceptedFormatsInput() {
+  let formats = mediaTypeFormats();
+  let fileInput = $('#addfiles > input[type="file"]');
+  fileInput.attr("accept", formats.list);
+}
+
+// fulfilling or unfulfilling the format requirement triggers Hyrax to check whether the form is valid.
+function fulfillRequirement() {
+  let requiredFormat = $('#required-format');
+  requiredFormat.addClass("complete");
+  requiredFormat.removeClass("incomplete");
+}
+
+function unfulfillRequirement() {
+  let requiredFormat = $('#required-format');
+  requiredFormat.addClass("incomplete");
+  requiredFormat.removeClass("complete");
+}
+
+function checkExtensions(files) {
+  let formats = mediaTypeFormats();
+  let allowedExtensions = formats.regex
+  let unallowedFiles = []
+
+  if (!files.length == 0) {
+    for (let i = 0; i < files.length; i++) {
+      if(!allowedExtensions.exec(files[i])) {
+        unallowedFiles.push(files[i])
+      }
+    }
+  }
+  return unallowedFiles
+}
+
+function mediaFiles() {
+  let files = {};
+
+  files.new = newFiles();
+  files.old = oldFiles();
+  files.all = files.new.concat(files.old)
+  files.unallowedNew = checkExtensions(newFiles());
+  files.unallowedOld = checkExtensions(oldFiles());
+  files.unallowedAll = files.unallowedNew.concat(files.unallowedOld);
+
+  return files;
+}
+
+// Fulfill the formats requirement only if Media Type has been selected, at least one file has been uploaded, and the uploaded files are the correct formats for the selected Media type.
+function checkFormatsRequirement() {
+  let files = mediaFiles();
+  let mediaType = $('#media_media_type').val();
+
+  if (mediaType == '') {
+    unfulfillRequirement();
+  }
+  else if (!files.unallowedAll.length == 0) {
+    unfulfillRequirement();
+  }
+  else if (files.all.length == 0) {
+    unfulfillRequirement();
+  }
+  else {
+    fulfillRequirement();
+  }
+}
+
+// Updates message in the upload form to display accepted file formats.
+function updateUnallowedFilesMessage() {
+  let files = mediaFiles();
+  let unallowedFilesMessage = $('#files-message');
+  let unallowedOldFilesMessage = $('#old-files-message');
+  if (files.unallowedNew.length == 0) {
+    unallowedFilesMessage.text('');
+  }
+  if (!files.unallowedNew.length == 0) {
+    unallowedFilesMessage.text('Please remove: '+ files.unallowedNew.join(', '));
+  }
+  if (files.unallowedOld.length == 0) {
+    unallowedOldFilesMessage.text('');
+  }
+  if (!files.unallowedOld.length == 0) {
+    unallowedOldFilesMessage.text('The following files were previously uploaded. Please remove them from the Media page before changing the Media type: ' + files.unallowedOld.join(', '));
+  }
+}
+
+// If a user has uploaded files and then changes the media type, an alert box appears listing the files that are not the right format.
+function unallowedFilesAlert() {
+  let files = mediaFiles();
+  let formats = mediaTypeFormats();
+  if (!files.unallowedAll.length == 0) {
+    alert('Allowed formats for the selected media type are: \n'+formats.list+'\n\n'+'Please remove:\n'+ files.unallowedAll.join(', '));
+  }
+}
+
+$(document).on('turbolinks:load', function() {
+  if ($('form[id*="media"]').length) { // if media form page
+    // Adds file formats requirement to the Requirements list
+    // Inserts placeholders for allowed formats and uploaded files with the wrong format.
+    setupMatchingFormatRequirement();
+    // In case on edit form or reloading after a failed validation, check formats requirement and update the accepted formats message.
+    updateAcceptedFormatsMessage();
+    checkFormatsRequirement();
+
+    // Whenever a file is uploaded, check to see if it fulfills the formats requirement, and update the unallowed files message if the file is the wrong extension.
+    $('#fileupload').bind('fileuploadcompleted', function() {
+      checkFormatsRequirement();
+      updateUnallowedFilesMessage();
+    });
+
+    // Whenever a file is deleted, check to see if it fulfills the formats requirement, and update the unallowed files message if the file is the wrong extension.
+    $('#fileupload').bind('fileuploaddestroyed', function() {
+      checkFormatsRequirement();
+      updateUnallowedFilesMessage();
+    });
+  }
+});
+
+// Whenever the Media Type is changed:
+  // Update the accepted formats message on the upload form
+  // Update the accepted formats attribute on the file input
+  // Check whether the file formats match requirement should be fulfilled
+  // Update the upload form with a message listing any unallowed files based on the new media type
+  // If there are already files uploaded, and they are incorrect based on the new media type, show an alert listing the allowed formats and any files that are not allowed.
+$(document).on('change', '#media_media_type', function() {
+  updateAcceptedFormatsMessage();
+  updateAcceptedFormatsInput();
+  checkFormatsRequirement();
+  updateUnallowedFilesMessage();
+  unallowedFilesAlert();
+});

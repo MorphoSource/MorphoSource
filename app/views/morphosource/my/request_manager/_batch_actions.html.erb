@@ -1,0 +1,10 @@
+<div>
+  <div>
+    <% session[:batch_edit_state] = "on" %>
+    <% if @tab == 'new' %>
+      <%= render 'morphosource/batch_edits/request_manager/new/buttons' %>
+    <% elsif @tab == 'previous' %>
+      <%= render 'morphosource/batch_edits/request_manager/previous/buttons' %>
+    <% end %>
+  </div>
+</div>

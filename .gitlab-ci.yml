@@ -1,0 +1,91 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  # RAKE_COMMAND is for deploy jobs
+  RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+
+build_job:
+  stage: build
+  before_script:
+    - ruby -v
+    - gem install bundler -N
+    - bundle version
+  script:
+    - cp $RAILS_DEPLOY_PATH/etc/database.yml config/
+    - cp $RAILS_DEPLOY_PATH/etc/analytics.yml config/
+    - bundle install --path=vendor/bundle --without=development --binstubs=bin --no-cache
+    - bundle binstubs bundler --force
+    - bundle exec rake assets:precompile
+  artifacts:
+    paths:
+      - .bundle/
+      - bin/
+      - config/database.yml
+      - config/analytics.yml
+      - public/assets/
+      - vendor/bundle/
+  tags:
+    - build
+
+.test_job_template: &test_job_def
+  stage: test
+  variables:
+    RAILS_ENV: test
+  before_script:
+    - source $RAILS_DEPLOY_PATH/etc/export-test.env
+    - ruby -v
+    - bundle version
+    - node -v
+    - psql --version
+    - $FITS_PATH -v
+    - $BLENDER_PATH/blender -v
+    - img2dcm --version
+    - dcmdjpeg --version
+    - gltf-pipeline --version
+    - bin/rake db:reset
+  tags:
+    - test
+
+test_job:
+  <<: *test_job_def
+  script:
+    - bin/rake ci:wrapped_spec[~accessibility]
+
+accessibility_job:
+  <<: *test_job_def
+  allow_failure: true
+  script:
+    - bin/rake ci:wrapped_spec[accessibility]
+
+deploy_dev:
+  environment:
+    name: development
+    url: https://morphosource-dev.lib.duke.edu/
+  stage: deploy
+  script: &deploy_script
+    - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
+    - '$RAKE_COMMAND db:setup || true'
+    - $RAKE_COMMAND db:migrate
+    - $RAKE_COMMAND tmp:cache:clear
+    - $RAKE_COMMAND hyrax:workflow:load
+  after_script: &after_deploy
+    - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
+  only:
+    - dev
+  tags:
+    - development
+
+deploy_demo:
+  stage: deploy
+  environment:
+    name: demo
+    url: https://morphosource-demo.lib.duke.edu/
+  script: *deploy_script
+  after_script: *after_deploy
+  only:
+    - dev
+  tags:
+    - demo

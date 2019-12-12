@@ -1,0 +1,32 @@
+<div class="request-wrapper">
+
+  <div class="intended-use-wrapper">
+    <h4><%= use %></h4>
+  </div>
+
+  <div class="check-all-div select-all-use">
+    <%= check_box_tag 'check_all_div', 'no', false, class: 'check_all_use' %>
+    <span>Select All Media for This Intended Use</span>
+  </div>
+
+  <div class="requested-items-wrapper">
+    <table class="table table-striped works-list">
+      <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th>Date Requested</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% use_requests(items,use).each_with_index do |item, counter| %>
+          <% document = @solr_docs.select{|doc| doc.id == item.work_id}[0] %>
+          <%= render 'morphosource/my/request_manager/new/list_works', document: document, counter: counter, item: item, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

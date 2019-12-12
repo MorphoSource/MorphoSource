@@ -1,0 +1,63 @@
+.submission_flow {
+
+  h1 {
+    font-size: 26px;
+  }
+  div {
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+  input[type='text'].ui-autocomplete-loading {
+    background: image-url('loading.gif') right center no-repeat;
+    background-size: 20px;
+  }
+  #submission_parent_media_search {
+    width:250px;
+  }
+  .submission_parent_media_search {
+    label {
+      display: none;
+    }
+  }
+  .parent_row {
+    clear:both;
+  }
+  .btn_remove_parent {
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+  .parent_title {
+    vertical-align: text-bottom;
+  }
+  select {
+    min-width: 220px;
+    max-width: 360px;
+    height: 30px;
+  }
+  .checkbox_group {
+    label{
+      width: 90%;
+      font-weight: normal;
+      display: inline-block; 
+      vertical-align: top;
+    }    
+  }
+}
+
+.submission_footer {
+  margin-top:20px;
+}
+
+.submission_taxonomy_search {
+  width: 80%;
+}
+
+.taxonomy-search {
+  min-width: 85%;
+}
+
+.embedded_div.ui-loading {
+  background: image-url('loading.gif') center center no-repeat;
+  background-size: 30px;
+  min-height: 60px; 
+}

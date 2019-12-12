@@ -1,0 +1,47 @@
+<div>
+  <h2>CURRENT ORGANIZATION</h2>
+
+  <div class="message has-warning hidden"></div>
+  <table>
+    <tbody></tbody>
+  </table>
+
+  <script type="text/x-tmpl" id="tmpl-parent-work-organizations">
+  <tr>
+    <td>
+
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Institution code</div>
+            <div class="col-xs-6 showcase-value" id="organization-code">{%= o.institution_code %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization title</div>
+            <div class="col-xs-6 showcase-value">{%= o.title %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization description</div>
+            <div class="col-xs-6 showcase-value">{%= o.description %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization address</div>
+            <div class="col-xs-6 showcase-value">{%= o.address %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization city</div>
+            <div class="col-xs-6 showcase-value">{%= o.city %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization state/province</div>
+            <div class="col-xs-6 showcase-value">{%= o.state_province %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization country</div>
+            <div class="col-xs-6 showcase-value">{%= o.country %}</div>
+        </div>
+
+    </td>
+    <td><button style="display:none" class="btn btn-sm btn-danger" data-behavior="remove-relationship"><%= t('.actions.remove') %></button></td>
+  </tr>
+  </script>
+
+</div>

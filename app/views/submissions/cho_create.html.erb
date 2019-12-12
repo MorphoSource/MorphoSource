@@ -1,0 +1,17 @@
+<% provide :page_title, t('morphosource.submission.page_title') %>
+<% provide :page_header do %>
+  <h1><%= t('morphosource.submission.page_header') %></h1>
+<% end %>
+
+<div class="submission_flow" id="submission_create_cho">
+  <%= simple_form_for @cho_form, url: stage_cho_submissions_url do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+      <div>
+        <%= f.submit 'Create New Cultural Heritage Object', class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%= render(partial: 'footer') %>

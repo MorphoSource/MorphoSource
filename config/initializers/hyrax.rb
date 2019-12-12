@@ -1,8 +1,23 @@
 Hyrax.config do |config|
-  # Injected via `rails g hyrax:work Work`
-  config.register_curation_concern :work
   # Injected via `rails g hyrax:work Media`
   config.register_curation_concern :media
+  # Injected via `rails g hyrax:work Organization`
+  config.register_curation_concern :organization
+  # Injected via `rails g hyrax:work Device`
+  config.register_curation_concern :device
+  # Injected via `rails g hyrax:work ProcessingEvent`
+  config.register_curation_concern :processing_event
+  # Injected via `rails g hyrax:work BiologicalSpecimen`
+  config.register_curation_concern :biological_specimen
+  # Injected via `rails g hyrax:work CulturalHeritageObject`
+  config.register_curation_concern :cultural_heritage_object
+  # Injected via `rails g hyrax:work Attachment`
+  config.register_curation_concern :attachment
+  # Injected via `rails g hyrax:work ImagingEvent`
+  config.register_curation_concern :imaging_event
+  # Injected via `rails g hyrax:work Taxonomy`
+  config.register_curation_concern :taxonomy
+
   # Register roles that are expected by your implementation.
   # @see Hyrax::RoleRegistry for additional details.
   # @note there are magical roles as defined in Hyrax::RoleRegistry::MAGIC_ROLES
@@ -38,19 +53,21 @@ Hyrax.config do |config|
   # config.max_days_between_fixity_checks = 7
 
   # Options to control the file uploader
-  # config.uploader = {
-  #   limitConcurrentUploads: 6,
-  #   maxNumberOfFiles: 100,
-  #   maxFileSize: 500.megabytes
-  # }
+  config.uploader = {
+    limitConcurrentUploads: 6,
+    maxNumberOfFiles: 10000,
+    maxFileSize: 50.gigabytes
+  }
 
   # Enable displaying usage statistics in the UI
   # Defaults to false
   # Requires a Google Analytics id and OAuth2 keyfile.  See README for more info
   # config.analytics = false
+  config.analytics = ENV['TRACK_GOOGLE_ANALYTICS'] == 'true'
 
   # Google Analytics tracking ID to gather usage statistics
   # config.google_analytics_id = 'UA-99999999-1'
+  config.google_analytics_id = ENV['GOOGLE_ANALYTICS_TRACKING_ID']
 
   # Date you wish to start collecting Google Analytic statistics for
   # Leaving it blank will set the start date to when ever the file was uploaded by
@@ -87,7 +104,30 @@ Hyrax.config do |config|
   # config.redis_namespace = "hyrax"
 
   # Path to the file characterization tool
-  # config.fits_path = "fits.sh"
+  config.fits_path = ENV.fetch("FITS_PATH", "fits.sh")
+
+  # find blender in PATH variable.  If exists, set config.blender_path to it
+  # if blender is not in PATH, get the path from BLENDER_PATH variable
+  # note that tool_path (e.g. used in blender.rb) is by default set to config.blender_path, but can
+  # be overridden by an argument
+  begin
+    blender_in_path = ENV.fetch("PATH").split(':').select{|path| path.include?('blender')}
+    if blender_in_path.present?
+      config.blender_path = blender_in_path.first
+    else
+      config.blender_path = ENV.fetch("BLENDER_PATH")
+    end
+  rescue
+    puts 'Error: unable to get Blender path from PATH or BLENDER_PATH'
+    exit
+  end
+
+  config.fiji_path = ENV.fetch("FIJI_PATH", "fiji")
+
+  config.python_path = ENV.fetch("MORPHOSOURCE_PYTHON", "python3")
+
+  # Path to where derivative generation tmp files should be placed (temporary method)
+  config.derivatives_tmp_path = Rails.env.production? ? '/nas/morphosource_demo/tmp/' : ENV.fetch("DERIVATIVES_TMP_PATH", Rails.root.join("tmp"))
 
   # Path to the file derivatives creation tool
   # config.libreoffice_path = "soffice"
@@ -108,7 +148,7 @@ Hyrax.config do |config|
 
   # Location autocomplete uses geonames to search for named regions
   # Username for connecting to geonames
-  # config.geonames_username = ''
+  config.geonames_username = Morphosource.geonames_user
 
   # Should the acceptance of the licence agreement be active (checkbox), or
   # implied when the save button is pressed? Set to true for active
@@ -118,7 +158,7 @@ Hyrax.config do |config|
   # Should work creation require file upload, or can a work be created first
   # and a file added at a later time?
   # The default is true.
-  # config.work_requires_files = true
+  config.work_requires_files = false
 
   # Enable IIIF image service. This is required to use the
   # UniversalViewer-ified show page
@@ -134,7 +174,7 @@ Hyrax.config do |config|
   #   * iiif_image_size_default
   #
   # Default is false
-  # config.iiif_image_server = false
+  config.iiif_image_server = true
 
   # Returns a URL that resolves to an image provided by a IIIF image server
   config.iiif_image_url_builder = lambda do |file_id, base_url, size|
@@ -172,7 +212,7 @@ Hyrax.config do |config|
   # config.audit_user_key = 'audituser@example.com'
   #
   # The banner image. Should be 5000px wide by 1000px tall
-  # config.banner_image = 'https://cloud.githubusercontent.com/assets/92044/18370978/88ecac20-75f6-11e6-8399-6536640ef695.jpg'
+  config.banner_image = 'banner_image.png'
 
   # Temporary paths to hold uploads before they are ingested into FCrepo
   # These must be lambdas that return a Pathname. Can be configured separately
@@ -181,7 +221,7 @@ Hyrax.config do |config|
 
   # Location on local file system where derivatives will be stored
   # If you use a multi-server architecture, this MUST be a shared volume
-  # config.derivatives_path = Rails.root.join('tmp', 'derivatives')
+  config.derivatives_path = ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives"))
 
   # Should schema.org microdata be displayed?
   # config.display_microdata = true
@@ -196,7 +236,7 @@ Hyrax.config do |config|
   # config.working_path = Rails.root.join( 'tmp', 'uploads')
 
   # Should the media display partial render a download link?
-  # config.display_media_download_link = true
+  config.display_media_download_link = false
 
   # A configuration point for changing the behavior of the license service
   #   @see Hyrax::LicenseService for implementation details
@@ -272,7 +312,7 @@ Hyrax.config do |config|
   # ingest files from the file system that are not part of the BrowseEverything
   # mount point.
   #
-  # config.whitelisted_ingest_dirs = []
+  config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_ms1/']
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

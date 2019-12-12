@@ -45,13 +45,76 @@ en:
           subject_tesim: Subject
           title_tesim: Title
   hyrax:
-    account_name:           "My Institution Account Id"
+    account_name:           "My Organization Account Id"
     directory:
       suffix:               "@example.org"
     footer:
-      copyright_html: "<strong>Copyright &copy; 2017 Samvera</strong> Licensed under the Apache License, Version 2.0"
-      service_html: A service of <a href="http://samvera.org/" class="navbar-link" target="_blank">Samvera</a>.
-    institution_name:       "Institution"
-    institution_name_full:  "The Institution Name"
-    product_name:           "Hyrax"
-    product_twitter_handle: "@SamveraRepo"
+      copyright_html: "<strong>Copyright &copy; 2019 MorphoSource</strong>"
+      service_html: A <a href="https://hyrax.samvera.org/" class="navbar-link" target="_blank">Hyrax</a> Digital Repository.
+    institution_name:       "Duke University"
+    institution_name_full:  "Duke University"
+    product_name:           "MorphoSource"
+    product_twitter_handle: "@MorphoSource"
+    base:
+      parents:
+        actions: Actions
+        date_uploaded: Date Uploaded
+        empty: This %{type} has no files associated with it. Click "edit" to add more files.
+        header: Parents
+        thumbnail: Thumbnail
+        title: Title
+        unauthorized: There are no publicly available items in this %{type}.
+        visibility: Visibility
+      form_parent_work_relationships:
+        actions:
+          remove: Remove from work
+        attach_new_work: Deposit new work as parent of this work
+        caption: This work is currently in these works
+        confirm:
+          cancel: Cancel
+          remove: Remove
+          text: Removing this work will not remove it from the repository, only its relationship to the work you are editing. Are you sure you want to remove this work?
+        header:
+          actions: Action
+          title: Work title
+      form_parent_work_relationships_organization:
+        actions:
+          remove: Remove
+        attach_new_work: Deposit new organization as parent of this work
+        caption: Current organization
+        confirm:
+          cancel: Cancel
+          remove: Remove
+          text: Removing this organization will not remove it from the repository, only its relationship to the biological specimen you are editing. Are you sure you want to remove this organization?
+        header:
+          actions: Action
+          title: Organization
+      form_parent_work_relationships_taxonomy:
+        actions:
+          remove: Remove
+        attach_new_work: Deposit new taxonomy as parent of this work
+        caption: Current taxonomies
+        confirm:
+          cancel: Cancel
+          remove: Remove
+          text: Removing this taxonomy will not remove it from the repository, only its relationship to the biological specimen you are editing. Are you sure you want to remove this taxonomy?
+        header:
+          actions: Action
+          title: Taxonomy
+    dashboard:
+      collections:
+        form_share:
+          manager: 'Manager'
+          depositor: 'Depositor'
+          viewer: 'Viewer'
+    works:
+      form:
+        find_parent_work: Parent Works
+      valid_work_types: Valid Types
+  simple_form:
+    labels:
+      defaults:
+        find_parent_work: Add to work
+    placeholders:
+      defaults:
+        find_parent_work: Search...

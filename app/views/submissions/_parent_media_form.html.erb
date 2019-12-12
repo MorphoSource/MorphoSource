@@ -1,0 +1,56 @@
+<div class="form-inline">
+  <%= f.input :parent_media_search,
+  placeholder: "Enter parent media title here",
+  input_html: {
+    class: 'form-control',
+    data: { 
+      'autocomplete-url' => find_media_autocomplete_url,
+      'autocomplete' => :parent_media_search
+      }
+  } %>
+
+  <a id="btn_add_parent" class="btn btn-primary">Add</a>
+</div>
+<div id="parents" class="container-fluid" style="margin:10px">
+  <input class="parent_title" type="hidden" name="parent_title" value="" />
+  <input class="parent_id" type="hidden" name="parent_id" value="" />
+  <div class="parent_row">
+  </div>
+</div>
+<% 
+# the value: '' below will clear the parent list every time the form is loaded.
+# Remove this option if the value needs to be retained later (e.g. reloading the page)
+%>
+<%= f.input :parent_media_list, 
+  wrapper_html: { class: 'hide' },
+  input_html: { style: 'width:300px', value: '' }
+%>
+
+
+<script>
+$(function(){
+  $('#submission_parent_media_search').autocomplete({
+    select: function(event, ui) {
+        event.preventDefault();
+        $("input.parent_id").val(ui.item.value);
+        $("input.parent_title").val(ui.item.label);
+    },
+    focus: function(event, ui) {
+        event.preventDefault();
+        $("#submission_parent_media_search").val(ui.item.label);
+    },
+    source: function (request, response) {
+      $.ajax({
+        url: "<%= find_media_autocomplete_url %>" + request.term,
+        type: 'GET',
+        dataType: 'json',
+        complete: function (xhr, status) {
+          var results = $.parseJSON(xhr.responseText);
+          response(results);
+        }
+      });
+    },
+    autoFocus: true
+  });
+});    
+</script>

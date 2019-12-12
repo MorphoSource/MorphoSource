@@ -1,0 +1,8 @@
+it:
+  hyrax:
+    icons:
+      imaging_event:     'fa fa-file-text-o'
+    select_type:
+      imaging_event:
+        description:        "Imaging event opere"
+        name:               "Imaging Event"

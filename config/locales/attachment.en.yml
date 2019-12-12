@@ -1,0 +1,8 @@
+en:
+  hyrax:
+    icons:
+      attachment:     'fa fa-file-text-o'
+    select_type:
+      attachment:
+        description:        "Attachment works"
+        name:               "Attachment"

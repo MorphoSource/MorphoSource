@@ -106,6 +106,54 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name("format", :stored_searchable)
     config.add_show_field solr_name("identifier", :stored_searchable)
 
+    # Media Custom Fields
+
+    config.add_show_field solr_name('agreement_uri', :stored_searchable)
+    config.add_show_field solr_name('cite_as', :stored_searchable)
+    config.add_show_field solr_name('funding', :stored_searchable)
+    config.add_show_field solr_name('map_type', :stored_searchable)
+    config.add_show_field solr_name('media_type', :stored_searchable)
+    config.add_show_field solr_name('orientation', :stored_searchable)
+    config.add_show_field solr_name('part', :stored_searchable)
+    config.add_show_field solr_name('rights_holder', :stored_searchable)
+    config.add_show_field solr_name('scale_bar', :stored_searchable)
+    config.add_show_field solr_name('series_type', :stored_searchable)
+    config.add_show_field solr_name('short_description', :stored_searchable)
+    config.add_show_field solr_name('side', :stored_searchable)
+    config.add_show_field solr_name('slice_thickness', :stored_searchable)
+    config.add_show_field solr_name('unit', :stored_searchable)
+    config.add_show_field solr_name('x_spacing', :stored_searchable)
+    config.add_show_field solr_name('y_spacing', :stored_searchable)
+    config.add_show_field solr_name('z_spacing', :stored_searchable)
+
+    # Physical Object Fields
+
+    config.add_show_field solr_name('physical_object_type', :stored_searchable)
+    config.add_show_field solr_name('bibliographic_citation', :stored_searchable)
+    config.add_show_field solr_name('catalog_number', :stored_searchable)
+    config.add_show_field solr_name('collection_code', :stored_searchable)
+    config.add_show_field solr_name('institution_code', :stored_searchable)
+    config.add_show_field solr_name('current_location', :stored_searchable)
+    config.add_show_field solr_name('numeric_time', :stored_searchable)
+    config.add_show_field solr_name('original_location', :stored_searchable)
+    config.add_show_field solr_name('periodic_time', :stored_searchable)
+    config.add_show_field solr_name('vouchered', :stored_searchable)
+
+    # Biological Specimens
+    config.add_show_field solr_name('idigbio_recordset_id', :stored_searchable)
+    config.add_show_field solr_name('idigbio_uuid', :stored_searchable)
+    config.add_show_field solr_name('is_type_specimen', :stored_searchable)
+    config.add_show_field solr_name('occurrence_id', :stored_searchable)
+    config.add_show_field solr_name('sex', :stored_searchable)
+
+    # CHOs
+    config.add_show_field solr_name('cho_type', :stored_searchable)
+    config.add_show_field solr_name('material', :stored_searchable)
+    config.add_show_field solr_name('short_title', :stored_searchable)
+    
+    # Processing Events
+    config.add_show_field solr_name('processing_activity', :stored_searchable)
+
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
     #

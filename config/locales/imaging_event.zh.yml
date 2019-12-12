@@ -1,0 +1,10 @@
+zh:
+  hyrax:
+    icons:
+      imaging_event:     'fa fa-file-text-o'
+    select_type:
+      imaging_event:
+        # TODO: translate `human_name` into Chinese
+        description:        "Imaging event 作品"
+        name:               "Imaging Event"
+        # TODO: translate `human_name` into Chinese

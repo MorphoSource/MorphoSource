@@ -1,0 +1,32 @@
+function set_initial_value() {
+  let selected_visibility = $('#selected_visibility').attr('class');
+  let open = $('#media_visibility_open');
+  let restricted_download = $('#media_visibility_restricted_download');
+  let preview = $('#media_visibility_preview');
+  let hidden = $('#media_visibility_hidden');
+
+   switch (selected_visibility) {
+  case 'new':
+    select_visibility(open)
+    break;
+  case 'restricted_download':
+    select_visibility(restricted_download)
+    break;
+  case 'preview_only':
+    select_visibility(preview)
+    break;
+  case 'hidden':
+    select_visibility(hidden)
+    break;
+  }
+}
+
+function select_visibility(visibility) {
+  visibility.prop("checked", true);
+}
+
+$(document).on('turbolinks:load', function() {
+  if ($('form[id*="media"]').length) {
+    set_initial_value();
+  }
+});

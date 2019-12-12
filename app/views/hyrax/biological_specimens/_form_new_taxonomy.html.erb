@@ -1,0 +1,26 @@
+<h2>NEW TAXONOMY</h2>
+
+<p>Create a new taxonomy by filling in fields below and selecting Create New Taxonomy. You can also go back and <a class="cancel">select taxonomy</a> instead. </p>
+
+<%= t.input :taxonomy_domain %>
+<%= t.input :taxonomy_kingdom %>
+<%= t.input :taxonomy_phylum %>
+<%= t.input :taxonomy_superclass %>
+<%= t.input :taxonomy_class %>
+<%= t.input :taxonomy_subclass %>
+<%= t.input :taxonomy_superorder %>
+<%= t.input :taxonomy_order %>
+<%= t.input :taxonomy_suborder %>
+<%= t.input :taxonomy_superfamily %>
+<%= t.input :taxonomy_family %>
+<%= t.input :taxonomy_subfamily %>
+<%= t.input :taxonomy_tribe %>
+<%= t.input :taxonomy_genus %>
+<%= t.input :taxonomy_subgenus %>
+<%= t.input :taxonomy_species %>
+<%= t.input :taxonomy_subspecies %>
+
+<div>
+  <%= t.submit 'Create new taxonomy', class: "btn btn-primary" %>
+  <button type="button" class="btn btn-secondary cancel">Cancel</button>
+</div>

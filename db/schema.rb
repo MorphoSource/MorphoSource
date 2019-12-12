@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180620001203) do
+ActiveRecord::Schema.define(version: 20191023144640) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,25 @@ ActiveRecord::Schema.define(version: 20180620001203) do
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_bookmarks_on_document_id"
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
+  end
+
+  create_table "cart_items", force: :cascade do |t|
+    t.string "work_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "date_downloaded"
+    t.boolean "in_cart", default: true
+    t.boolean "restricted", default: true
+    t.string "approver", null: false
+    t.datetime "date_requested"
+    t.datetime "date_approved"
+    t.datetime "date_denied"
+    t.datetime "date_canceled"
+    t.datetime "date_expired"
+    t.text "use"
+    t.datetime "date_cleared"
+    t.integer "user_id"
+    t.index ["work_id"], name: "index_cart_items_on_work_id"
   end
 
   create_table "checksum_audit_logs", force: :cascade do |t|
@@ -91,6 +110,11 @@ ActiveRecord::Schema.define(version: 20180620001203) do
     t.index ["user_id"], name: "index_curation_concerns_operations_on_user_id"
   end
 
+  create_table "events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "featured_works", force: :cascade do |t|
     t.integer "order", default: 5
     t.string "work_id"
@@ -135,6 +159,7 @@ ActiveRecord::Schema.define(version: 20180620001203) do
     t.boolean "assigns_visibility", default: false, null: false
     t.boolean "share_applies_to_new_works", default: true, null: false
     t.boolean "brandable", default: true, null: false
+    t.string "badge_color", default: "#663333"
     t.index ["machine_id"], name: "index_hyrax_collection_types_on_machine_id", unique: true
   end
 
@@ -245,6 +270,26 @@ ActiveRecord::Schema.define(version: 20180620001203) do
     t.index ["source_id"], name: "index_permission_templates_on_source_id", unique: true
   end
 
+  create_table "physical_objects", force: :cascade do |t|
+    t.text "description"
+    t.text "current_location"
+    t.text "original_location"
+    t.date "date_created"
+    t.string "identifier"
+    t.text "url"
+    t.text "bibliographic_citation"
+    t.string "publisher"
+    t.boolean "vouchered", default: false, null: false
+    t.string "institution"
+    t.string "numeric_time"
+    t.string "periodic_time"
+    t.string "catalog_number"
+    t.string "collection_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution"], name: "index_physical_objects_on_institution"
+  end
+
   create_table "proxy_deposit_requests", force: :cascade do |t|
     t.string "work_id", null: false
     t.integer "sending_user_id", null: false
@@ -305,6 +350,15 @@ ActiveRecord::Schema.define(version: 20180620001203) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_searches_on_user_id"
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.string "session_id", null: false
+    t.text "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
+    t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
   create_table "single_use_links", force: :cascade do |t|
@@ -523,14 +577,9 @@ ActiveRecord::Schema.define(version: 20180620001203) do
     t.boolean "guest", default: false
     t.string "facebook_handle"
     t.string "twitter_handle"
-    t.string "googleplus_handle"
     t.string "display_name"
     t.string "address"
-    t.string "admin_area"
     t.string "department"
-    t.string "title"
-    t.string "office"
-    t.string "chat_id"
     t.string "website"
     t.string "affiliation"
     t.string "telephone"
@@ -538,14 +587,27 @@ ActiveRecord::Schema.define(version: 20180620001203) do
     t.string "avatar_content_type"
     t.integer "avatar_file_size"
     t.datetime "avatar_updated_at"
-    t.string "linkedin_handle"
     t.string "orcid"
     t.string "arkivo_token"
     t.string "arkivo_subscription"
     t.binary "zotero_token"
     t.string "zotero_userid"
     t.string "preferred_locale"
+    t.string "state"
+    t.string "country"
+    t.string "postal_code"
+    t.boolean "terms_read", default: false
+    t.string "demographics"
+    t.text "intent"
+    t.string "status"
+    t.string "software"
+    t.string "mesh_file_type"
+    t.string "volume_file_type"
+    t.string "printer_model"
+    t.string "printer_file"
+    t.string "ms_id", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["ms_id"], name: "index_users_on_ms_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 

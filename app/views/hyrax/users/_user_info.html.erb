@@ -1,0 +1,71 @@
+<dl id="user_info">
+  <!--- If a user is viewing their own profile in the dashboard, show address, state, postal code, and telephone --->
+  <% @dashboard = @_request.fullpath.include?("/dashboard/profiles/") %>
+
+  <dt><i class="fa fa-envelope"></i> Email</dt>
+  <dd><%= mail_to user.email %></dd>
+
+  <% if user.display_name %>
+    <dt>Display Name</dt>
+    <dd><%= user.display_name %></dd>
+  <% end %>
+
+  <% if user.affiliation %>
+    <dt>Organization</dt>
+    <dd><%= user.affiliation %></dd>
+  <% end %>
+
+  <% if user.department %>
+    <dt>Department</dt>
+    <dd><%= user.department %></dd>
+  <% end %>
+
+  <% if @dashboard %>
+    <% if user.address %>
+      <dt><i class="glyphicon glyphicon-map-marker"></i> Address</dt>
+      <dd><%= user.address %></dd>
+    <% end %>
+
+    <% if user.state %>
+      <dt>State/Province</dt>
+      <dd><%= Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) %></dd>
+    <% end %>
+  <% end %>
+
+  <% if user.country %>
+    <dt>Country</dt>
+    <dd><%= Morphosource::UserProfile::LocationHelper::COUNTRY.key(user.country) %></dd>
+  <% end %>
+
+  <% if @dashboard %>
+    <% if user.postal_code %>
+      <dt>Postal Code</dt>
+      <dd><%= user.postal_code %></dd>
+    <% end %>
+
+    <% if user.telephone %>
+      <dt><i class="glyphicon glyphicon-earphone"></i> Telephone</dt>
+      <dd><%= link_to_telephone(user) %></dd>
+    <% end %>
+  <% end %>
+
+  <% if user.orcid.present? %>
+    <dt><%= orcid_label('profile') %></dt>
+    <dd><%= link_to user.orcid, user.orcid, { target: '_blank' } %></dd>
+  <% end %>
+
+  <% if user.twitter_handle.present? %>
+    <dt><i class="fab fa-twitter" aria-hidden="true"></i> Twitter Handle</dt>
+    <dd><%= link_to user.twitter_handle, "http://twitter.com/#{user.twitter_handle}", {target:'_blank'} %></dd>
+  <% end %>
+
+  <% if user.facebook_handle.present? %>
+    <dt><i class="fab fa-facebook"></i> Facebook Handle</dt>
+    <dd><%= link_to user.facebook_handle, "http://facebook.com/#{user.facebook_handle}", {target:'_blank'} %></dd>
+  <% end %>
+
+  <% if user.website %>
+    <dt><i class="glyphicon glyphicon-globe"></i> Website(s)</dt>
+    <dd><%= iconify_auto_link(user.website) %></dd>
+  <% end %>
+</dl>

@@ -1,0 +1,3 @@
+<%= form_tag(main_app.batch_create_items_path, method: :post, class: "button_to-inline", "data-behavior" => 'batch-select-all') do -%>
+  <%= submit_tag("Add Selected to Cart", class: 'batch-all-button btn btn-primary submits-batches', id:'copy-selected') %>
+<% end %>

@@ -22,15 +22,18 @@
 
 .byebug_history
 
+# Ignore application configuration
+/config/application.yml
+
+# Google Analytics config
+/config/analytics.yml
+
 # ---------------------------------------------------
-# Below are copied from RDR. Might need them later 
+# Below are copied from RDR. Might need them later
 # ---------------------------------------------------
 
 # Ignore role_map.yml
 /config/role_map.yml
-
-# Ignore application configuration
-/config/application.yml
 
 # Pre-compiled assets
 /public/assets
@@ -49,3 +52,21 @@
 
 # FITS log file
 /fits.log
+
+.DS_Store
+
+# ---------------------------------------------------
+# MorphoSource specific changes
+# ---------------------------------------------------
+
+/derivatives
+
+#ignore banners and logos added to collections 
+/public/branding
+
+# ---------------------------------------------------
+# MorphoSource Python module changes
+# ---------------------------------------------------
+
+vendor/alembic/__pycache__/*
+*.pyc

@@ -1,0 +1,9 @@
+<%= f.input :focal_length_type, as: :select,
+    collection: [
+            'Variable', 
+            'Fixed'
+        ],
+    include_blank: true,
+    input_html: { class: 'form-control' },
+    wrapper_html: { class: 'ie_photogrammetry' }
+%>

@@ -1,0 +1,18 @@
+example_id                                             | status  | run_time        |
+------------------------------------------------------ | ------- | --------------- |
+./spec/actors/hyrax/actors/media_actor_spec.rb[1:1]    | pending | 0.00107 seconds |
+./spec/actors/hyrax/actors/work_actor_spec.rb[1:1]     | pending | 0.0017 seconds  |
+./spec/controllers/hyrax/media_controller_spec.rb[1:1] | pending | 0.00256 seconds |
+./spec/controllers/hyrax/works_controller_spec.rb[1:1] | pending | 0.02617 seconds |
+./spec/features/create_media_spec.rb[1:1:1]            | failed  | 0.08051 seconds |
+./spec/features/create_work_spec.rb[1:1:1]             | failed  | 1.01 seconds    |
+./spec/forms/hyrax/media_form_spec.rb[1:1]             | pending | 0.00212 seconds |
+./spec/forms/hyrax/work_form_spec.rb[1:1]              | pending | 0.0028 seconds  |
+./spec/models/collection_spec.rb[1:1]                  | pending | 0.00128 seconds |
+./spec/models/file_set_spec.rb[1:1]                    | pending | 0.00307 seconds |
+./spec/models/media_spec.rb[1:1]                       | passed  | 0.02071 seconds |
+./spec/models/qa/local_authority_entry_spec.rb[1:1]    | pending | 0.00001 seconds |
+./spec/models/qa/local_authority_spec.rb[1:1]          | pending | 0.00001 seconds |
+./spec/models/work_spec.rb[1:1]                        | pending | 0.00168 seconds |
+./spec/presenters/hyrax/media_presenter_spec.rb[1:1]   | pending | 0.00109 seconds |
+./spec/presenters/hyrax/work_presenter_spec.rb[1:1]    | pending | 0.00196 seconds |

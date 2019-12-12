@@ -1,0 +1,20 @@
+<% member = showcase_media_items_member %>
+
+<% if showcase_media_items_member_counter == items_to_show_initially %>
+	<div id="collapse-block-media-items-member" class="panel-collapse collapse collapse-block row">
+<% end %>
+
+	<% if showcase_media_items_member_counter % items_per_row == 0 %>
+		<div class="row"><!-- starting a row div -->
+	<% end %>
+
+	 	<div class="thumbnail col-xs-4">
+			<%  # todo: need to display "Parent / Child / Sibling Media" %>  
+	    <%= render_thumbnail_tag member %><br>
+	    <%= link_to(member.link_name, contextual_path(member, @presenter)) %><br>
+	    <%= member.file_format %><br>
+	  </div>
+
+	<% if showcase_media_items_member_counter % items_per_row == items_per_row-1 or showcase_media_items_member_counter == media_count-1 %>
+		</div><!-- closing a row div, since this is either the last item of each row, or the last item on the list -->
+	<% end %>

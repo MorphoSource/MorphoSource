@@ -1,0 +1,31 @@
+<!-- Fields on the show page are in the order below -->
+<%= link_to t('hyrax.file_sets.actions.download'), main_app.zip_hyrax_media_index_path(ids: [presenter.id]) , class: 'btn btn-lg btn-primary', role: 'button', download: true, target: '_blank' %>
+<br/><br/>
+<!-- Hyrax Basic Metadata -->
+<%= presenter.attribute_to_html(:date_modified, label: t('hyrax.base.show.last_modified'), html_dl: true) %>
+<%= presenter.attribute_to_html(:creator, render_as: :faceted, html_dl: true) %>
+<%= presenter.attribute_to_html(:publisher, render_as: :faceted, html_dl: true) %>
+<%= presenter.attribute_to_html(:identifier, render_as: :linked, search_field: 'identifier_tesim', html_dl: true) %>
+<%= presenter.attribute_to_html(:keyword, render_as: :faceted, html_dl: true) %>
+<%= presenter.attribute_to_html(:date_created, render_as: :linked, search_field: 'date_created_tesim', html_dl: true) %>
+<%= presenter.attribute_to_html(:related_url, render_as: :external_link, html_dl: true) %>
+<%= presenter.attribute_to_html(:rights_statement, render_as: :rights_statement, html_dl: true) %>
+
+<!-- Media Custom Fields -->
+<%= presenter.attribute_to_html(:agreement_uri, html_dl: true) %>
+<%= presenter.attribute_to_html(:cite_as, html_dl: true) %>
+<%= presenter.attribute_to_html(:funding, html_dl: true) %>
+<%= presenter.attribute_to_html(:map_type, html_dl: true) %>
+<%= presenter.attribute_to_html(:media_type, html_dl: true) %>
+<%= presenter.attribute_to_html(:orientation, html_dl: true) %>
+<%= presenter.attribute_to_html(:part, html_dl: true) %>
+<%= presenter.attribute_to_html(:rights_holder, html_dl: true) %>
+<%= presenter.attribute_to_html(:scale_bar, html_dl: true) %>
+<%= presenter.attribute_to_html(:series_type, html_dl: true) %>
+<%= presenter.attribute_to_html(:short_description, html_dl: true) %>
+<%= presenter.attribute_to_html(:side, html_dl: true) %>
+<%= presenter.attribute_to_html(:unit, html_dl: true) %>
+<%= presenter.attribute_to_html(:x_spacing, html_dl: true) %>
+<%= presenter.attribute_to_html(:y_spacing, html_dl: true) %>
+<%= presenter.attribute_to_html(:z_spacing, html_dl: true) %>
+<%= presenter.attribute_to_html(:slice_thickness, html_dl: true) %>

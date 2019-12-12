@@ -1,0 +1,8 @@
+<%= form_tag(main_app.hyrax_custom_thumbnail_path(curation_concern), method: 'post', multipart: true) do %>
+  <%= label_tag :image, 'Upload Custom Thumbnail' %>
+  <%= file_field_tag :image %>
+  <%= submit_tag 'Submit' %>
+<% end %>
+<% if has_custom_thumbnail?(curation_concern) %>
+  <%= button_to 'Delete Custom Thumbnail', main_app.hyrax_custom_thumbnail_path(curation_concern), method: :delete %>
+<% end %>

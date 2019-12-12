@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      biological_specimen:     'fa fa-file-text-o'
+    select_type:
+      biological_specimen:
+        # TODO: translate `human_name` into Spanish
+        description:        "Biological specimen trabajos"
+        name:               "Biological Specimen"
+        # TODO: translate `human_name` into Spanish

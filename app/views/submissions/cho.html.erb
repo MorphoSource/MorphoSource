@@ -1,0 +1,13 @@
+<% provide :page_title, t('morphosource.submission.page_title') %>
+<% provide :page_header do %>
+  <h1><%= t('morphosource.submission.page_header') %></h1>
+<% end %>
+
+<div class="submission_flow" id="submission_cho_search">
+  <%= simple_form_for @submission do |f| %>
+    <%= render(partial: 'cho_search', locals: { f: f }) %>
+    <%= render(partial: 'cho_search_results', locals: { f: f }) %>
+  <% end %>
+</div>
+
+<%= render(partial: 'footer') %>

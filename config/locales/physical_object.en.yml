@@ -1,0 +1,68 @@
+en:
+  hyrax:
+    icons:
+      physical_object:     'fa fa-file-text-o'
+    select_type:
+      physical_object:
+        description:        "Biological Specimen or Cultural Heritage Object"
+        name:               "Physical Object"
+  simple_form:
+    labels:
+      physical_object:
+        physical_object_type: Resource Type
+        description: Description
+        # current_location: Current Location
+        based_near: Current Location
+        original_location: Original Location
+        date_created: Date Created
+        identifier: Identifier
+        related_url: URL
+        bibliographic_citation: Citation
+        publisher: Publisher
+        vouchered: Vouchered?
+        organization: Organization
+        numeric_time: Numeric Time
+        periodic_time: Periodic Time
+        catalog_number: Catalog Number
+        collection_code: Collection Code
+        institution_code: Institution Code
+        # Biological Specimens
+        idigbio_uuid: iDigBio UUID
+        idigbio_recordset_id: iDigBio Recordset ID
+        sex: Sex
+        is_type_specimen: Holotype?
+        occurrence_id: Occurrence ID
+        # Cultural Heritage Objects
+        creator: Creator
+        material: Material
+        cho_type: Type of object
+        contributor: Contributor
+        title: Title
+    hints:
+      physical_object:
+        physical_object_type: Biological Specimen or Cultural Heritage Object
+        description: Free text description or notes about the object.
+        current_location: Information about the current physical location of the object.
+        original_location: Information about the original location of the object.
+        date_created: Date the object or record representing the object was created.
+        identifier: Organizational or other identifier for the object.
+        related_url: URL pointing to authoritative metadata about the object.
+        bibliographic_citation: Citation information for the object.
+        publisher: The person or entity making the object available.
+        vouchered: Does the physical object still exist?
+        organization: The organization holding the object.
+        numeric_time: The absolute age of the object.
+        periodic_time: Artistic, cultural, historical, archaeological, geological or cosmological eras or periods.
+        catalog_number: Unique identifier for an object within a repository.
+        collection_code: Code identifying a collection containing the object.
+        # Biological Specimens
+        idigbio_uuid:
+        idigbio_recordset_id:
+        sex: Sex of the specimen.
+        is_type_specimen: Is the description and name of a new species based on this specimen?
+        occurrence_id:
+        # Cultural Heritage Objects
+        creator: The person or group responsible for creating the object.
+        material: The material of the object.
+        cho_type: Nature or genre of the object.
+        contributor: A person or entity responsible for making contributions to the object.

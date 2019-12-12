@@ -1,0 +1,14 @@
+<div class="content-block-intro">
+	<%= @presenter.direct_parent_members_raw_or_derived %> media 
+ 	<%= link_to(member.link_name, contextual_path(member, @presenter)) %> 
+ 	<% if @presenter.raw_or_derived == "Raw" %>
+ 		(this media) 
+	<% end %>
+	was created by imaging physical object 
+	<!-- <%= member_counter %> 
+      # todo: later on we will need to handle more than 1 parent
+	-->
+	<% if @presenter.physical_object_link.present? %>
+		<%= link_to(@presenter.physical_object_title, @presenter.physical_object_link) %>
+	<% end %>
+</div>

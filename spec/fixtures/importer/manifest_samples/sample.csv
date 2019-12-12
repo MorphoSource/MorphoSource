@@ -1,0 +1,4 @@
+ark,parent_ark,visibility,title,contributor,resource_type,license,file,file,file
+ark:/99999/fk4n02c87h,,open,Test 1,"Smith, Sue|Jones, Bill|Allen, Jane",Dataset,"http://creativecommons.org/publicdomain/zero/1.0/",data/data1.csv,data/data2.csv,docs/doc1.txt
+,ark:/99999/fk4n02c87h,,Test 2,"Jones, Bill",Dataset,"http://creativecommons.org/publicdomain/zero/1.0/",data/data3.csv,docs/doc2.txt
+ark:/99999/fk4h71ng3s,ark:/99999/fk4n02c87h,authenticated,Test 3,"Allen, Jane",Dataset,"http://creativecommons.org/publicdomain/zero/1.0/",data/data1.csv

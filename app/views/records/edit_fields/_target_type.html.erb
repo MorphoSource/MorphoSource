@@ -1,0 +1,6 @@
+<%= f.input :target_type, as: :select,
+    collection: ['Reflection', 'Transmission'],
+    include_blank: true,
+    input_html: { class: 'form-control' },
+    wrapper_html: { class: 'ie_xray_ct' }
+%>

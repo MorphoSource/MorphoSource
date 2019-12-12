@@ -1,0 +1,10 @@
+es:
+  hyrax:
+    icons:
+      taxonomy:     'fa fa-file-text-o'
+    select_type:
+      taxonomy:
+        # TODO: translate `human_name` into Spanish
+        description:        "Taxonomy trabajos"
+        name:               "Taxonomy"
+        # TODO: translate `human_name` into Spanish

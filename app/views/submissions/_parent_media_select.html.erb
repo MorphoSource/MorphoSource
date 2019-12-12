@@ -1,0 +1,13 @@
+<div id="submission_media_select">
+  <% if media.present? %>
+    <h5><%= t('morphosource.submission.media_select') %></h5>
+    <div class="form-group">
+      <div class="form-inline">
+        <%= render 'parent_media_form', f: f %>
+      </div>
+      <div>
+        <%= f.submit 'Continue with selected parent media', name: 'parent_media_select', class: 'btn btn-primary', role: 'button', onclick: 'return isTextValid("submission[parent_media_list]")' %>  
+      </div>
+    </div>
+  <% end %>
+</div>

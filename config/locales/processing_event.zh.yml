@@ -1,0 +1,10 @@
+zh:
+  hyrax:
+    icons:
+      processing_event:     'fa fa-file-text-o'
+    select_type:
+      processing_event:
+        # TODO: translate `human_name` into Chinese
+        description:        "Processing event 作品"
+        name:               "Processing Event"
+        # TODO: translate `human_name` into Chinese

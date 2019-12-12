@@ -1,0 +1,19 @@
+<% # app/views/records/edit_fields/_latitude.html.erb %>
+
+<div id="geographic_coordinates_wrapper" class="form-group physical_object_geographic_coordinates" style="display:flex; flex-direction:column;">
+  <label class="control-label" for="physical_object_geographic_coordinates">Geographic Coordinates</label>
+  <p class="help-block">Please enter decimal degrees between -90 and 90 for latitude, -180 and 180 for longitude.</p>
+  <p class="help-block">Ex: 35.994034, -78.898621</p>
+  <div id="physical_object_geographic_coordinates" style="display:flex; flex-direction:row; justify-content:space-evenly; border:solid 1px lightgray; border-radius: 5px;">
+    <%= f.input :latitude, as: :string, :pattern => '-?(90|[0-8]?[0-9]\.[0-9]{0,6})',
+        wrapper_html: { style: 'width: 45%; margin-top: 10px; margin-bottom: 20px;' } %>
+    <%= f.input :longitude, as: :string, :pattern =>  '-?(180|(1[0-7][0-9]|[0-9]{0,2})\.[0-9]{0,6})',
+        wrapper_html: { style: 'width: 45%; margin-top: 10px; margin-bottom: 20px;' } %>
+  </div>
+</div>
+
+<style>
+#physical_object_geographic_coordinates input:invalid {
+  border: 3px solid #d99a36;
+}
+</style>

@@ -26,13 +26,21 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
-  # ActiveJob adapter as inline
-  config.active_job.queue_adapter = :inline
+  # ActiveJob adapter as inline - disabled (using async as default) for now due to file characterization issue
+  # config.active_job.queue_adapter = :inline
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
-
+  config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_caching = false
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.duke.edu',
+    port: '587',
+    enable_starttls_auto: true
+  }
+  # todo: pull the host from env variable later (see http://samvera.github.io/email_notifications.html)
+  config.action_mailer.default_url_options = { host: "morphosource-dev.lib.duke.edu" }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -53,5 +61,10 @@ Rails.application.configure do
 
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
-  config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+  config.file_watcher = ActiveSupport::FileUpdateChecker
+
+  config.reload_classes_only_on_change = true
+
+  config.session_store :active_record_store, :key => '_morpho_source_sf_session' 
+
 end

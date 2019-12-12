@@ -1,0 +1,9 @@
+<% # app/views/records/edit_fields/_map_type.html.erb %>
+<% map_types_service = Morphosource::MapTypesService.new %>
+<%= f.input :map_type, as: :multi_value_select,
+    collection: map_types_service.select_all_options,
+    include_blank: true,
+    item_helper: map_types_service.method(:include_current_value),
+    input_html: { class: 'form-control', multiple: true },
+    wrapper_html: { class: 'hide' }
+%>

@@ -1,0 +1,10 @@
+zh:
+  hyrax:
+    icons:
+      biological_specimen:     'fa fa-file-text-o'
+    select_type:
+      biological_specimen:
+        # TODO: translate `human_name` into Chinese
+        description:        "Biological specimen 作品"
+        name:               "Biological Specimen"
+        # TODO: translate `human_name` into Chinese

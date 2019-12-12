@@ -1,0 +1,24 @@
+<div id="submission_cho_search_results">
+  <div class="h4">
+    <%= "Search Results" %>
+  </div>
+  <% if @docs.nil? || @docs.empty? %>
+    <div id="empty_search_results">
+      No Cultural Heritage Object found in MorphoSource that match the search criteria.  Search again or create a new Cultural Heritage Object.
+    </div>
+  <% else %>
+    <div id="submission_select_cho">
+      <%= f.input :cho_id,
+                  as: :select,
+                  :input_html => { :size => 1 },
+                  collection: @docs.map{ |doc| [ doc.sortable_title, doc.id ]} %>
+    </div>
+    <div>
+      <%= f.submit 'Continue with selected Cultural Heritage Object', name: 'cho_select', class: 'btn btn-primary', onclick: 'return isDropdownSelected("submission[cho_id]")'  %>
+    </div>
+  <% end %>
+  <div>
+    <%= f.submit 'Search again', onclick: "gotoStep('new', '#submission_raw_or_derived_media_raw,#submission_choose_raw_or_derived_media_continue,#submission_biospec_or_cho_cho,#submission_choose_biospec_or_cho_continue')", class: 'btn btn-primary' %>    
+    <%= f.submit 'Create New Cultural Heritage Object', name: 'cho_will_create', class: 'btn btn-primary' %>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<% provide :page_title, t('morphosource.submission.page_title') %>
+<% provide :page_header do %>
+  <h1><%= t('morphosource.submission.page_header') %></h1>
+<% end %>
+
+<div class="submission_flow" id="submission_new">
+  <%= simple_form_for @submission do |f| %>
+    <%= render(partial: 'raw_derived_media', locals: { f: f }) %>
+    <% # Raw media flow %>
+    <%= render(partial: 'physical_object', locals: { f: f }) %>
+    <%= render(partial: 'biospec_search', locals: {f: f }) %>
+    <%= render(partial: 'cho_search', locals: {f: f }) %>
+    <% # Derived media flow %>
+    <%= render(partial: 'parents_in_ms', locals: { f: f }) %>
+    <%= render(partial: 'parents_not_in_ms', locals: { f: f }) %>
+    <% # Child media in MS %>
+    <%= render(partial: 'child_media_in_ms', locals: { f: f }) %>
+  <% end %>
+</div>
+
+<%= render(partial: 'footer') %>

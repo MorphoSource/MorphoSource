@@ -1,0 +1,10 @@
+<div class="modal-body">
+  <%= form_tag main_app.approve_download_path, method: :put, id: 'modal-form', :class => "form-horizontal" do %>
+    <%= label_tag 'expiration date', 'New Expiration Date', :class => 'control-label' %>
+    <%= date_field :expiration_date, params[:date], :class => "form-control" %>
+</div>
+<div class="modal-footer">
+  <button type="button" id="modal-cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+    <%= submit_tag "Submit", name: nil, class: "btn btn-success" %>
+  <% end %>
+</div>

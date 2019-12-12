@@ -1,0 +1,8 @@
+de:
+  hyrax:
+    icons:
+      biological_specimen:     'fa fa-file-text-o'
+    select_type:
+      biological_specimen:
+        description:        "Biological specimen Werke"
+        name:               "Biological Specimen"

@@ -1,0 +1,20 @@
+<% presenter.title.each_with_index do |title, index| %>
+  <div class="row media-showcase" id="showcase-title-wrapper">
+    <div class="col-xs-8">
+        <h1><div id="showcase-title"><%= title %></div>
+          <% if presenter.physical_object_type.present? %>
+            <small class="text-muted badge-wrapper">
+              <div>Represents:</div>
+              <div><span class="label label-primary"><%= presenter.physical_object_type %></span></div>
+              <div><%= presenter.in_collection_badge %></div>
+
+              <div><%= link_to(presenter.physical_object_title, presenter.physical_object_link) %></div>
+            </small>
+          <% end %>
+        </h1>
+    </div>
+    <div class="col-xs-4 text-right">
+        <%= render @presenter.showcase_show_actions_partial, presenter: presenter %>
+    </div>
+  </div>
+<% end %>

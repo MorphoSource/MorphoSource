@@ -1,0 +1,47 @@
+function check(checkbox){
+  checkbox.prop('checked',true);
+}
+
+function uncheck(checkbox){
+  checkbox.prop('checked',false);
+}
+
+function toggleCheckbox(checkbox,value){
+  checkbox.prop('checked',value);
+}
+
+function getValue(checkbox){
+  return checkbox.prop('checked');
+}
+
+function disable(button){
+  button.prop('disabled', true);
+}
+
+function enable(button){
+  button.prop('disabled', false);
+}
+
+function checkedItems(){
+  return $(".batch_document_selector:checked");
+}
+
+function checkedItemsCount(){
+  return $(".batch_document_selector:checked").length;
+}
+
+function childCheckboxes(parent){
+  return parent.find('input[type=checkbox]');
+}
+
+function childItemCount(parent){
+  return parent.find('.batch_document_selector').length
+}
+
+function childCheckedItemCount(parent){
+  return parent.find(".batch_document_selector:checked").length
+}
+
+Blacklight.onLoad(function() {
+  uncheck($('input[type=checkbox]'));
+})

@@ -1,0 +1,148 @@
+<% # app/views/records/edit_fields/_scale_bar.html.erb %>
+<%= f.input :scale_bar, as: :multi_value %>
+
+<div id="media_scale_bar_wrapper" class="form-group multi_value optional managed" style="margin-right:7em;">
+
+  <label class="control-label multi_value optional" for="media_scale_bar">Scale Bar</label>
+
+  <ul class="listing" aria-live="polite" style=" border:solid 1px lightgray; border-radius: 5px;">
+    <div id="scale_bar_labels" style="display:flex; flex-direction:row; justify-content:space-evenly; margin-top:.5em;">
+      <div style="width:30%;"><label for="media_scale_bar_target_type">Target Type</label></div>
+      <div style="width:30%;"><label>Distance</label></div>
+      <div style="width:30%;"><label>Units</label></div>
+    </div>
+    <li class="field-wrapper input-group input-append" style="display:flex; flex-direction:row; justify-content:space-evenly;">
+      <input class="string multi_value optional form-control media_scale_bar_target_type form-control multi-text-field" name="media[scale_bar_target_type][]" value="" id="media_scale_bar_target_type" type="text" style="margin:5px; width:30%; border-radius:5px;">
+      <input class="string multi_value optional form-control media_scale_bar_distance form-control multi-text-field" name="media[scale_bar_distance][]" value="" id="media_scale_bar_distance" type="text" style="margin:5px; width:30%; border-radius:5px;">
+      <input class="string multi_value optional form-control media_scale_bar_units form-control multi-text-field" name="media[scale_bar_units][]" value="" id="media_scale_bar_units" type="text" style="margin:5px; width:30%; border-radius:5px;">
+    </li>
+  </ul>
+</div>
+
+<script>
+
+var form = $('form[id*="media"]')[0];
+
+// Hidden Default Scale Bar Field
+var scaleBarGroup = document.querySelector('.form_group, .media_scale_bar');
+var scaleBarGroupUl = scaleBarGroup.querySelector("ul");
+var concatScaleBars = scaleBarGroup.querySelectorAll("input");
+var concatScaleBarCount = (scaleBarGroup.querySelectorAll("input").length) - 1;
+
+// Three part scale bar entry
+var scaleBarWrapper = document.getElementById("media_scale_bar_wrapper");
+var scaleBarWrapperUl = scaleBarWrapper.querySelector('ul');
+var scaleBarWrapperLi = scaleBarWrapper.querySelector('li');
+
+// Puts concatenated values into scale bar on submit.
+function buildScaleBar(scaleBar) {
+  var li = document.createElement('li');
+
+  var input = document.createElement('input');
+  input.className = 'string multi_value optional media_scale_bar form-control multi-text-field';
+  input.setAttribute("id", "media_scale_bar");
+  input.setAttribute("name", "media[scale_bar][]");
+  input.value = scaleBar
+
+  li.appendChild(input);
+  scaleBarGroupUl.appendChild(li);
+}
+
+$(document).on('turbolinks:load', function(){
+
+  // When editing a record, this populates the three-part scale bar fields with previously saved metadata.
+  for (i = 0; i < concatScaleBarCount; i++) {
+    var concatScaleBarValue = concatScaleBars[i].value
+    var type = concatScaleBarValue.match(/Type: (.*?), Distance: /)[1];
+    var distance = concatScaleBarValue.match(/, Distance: (.*?), Units: /)[1];
+    var units = concatScaleBarValue.match(/Units: (.*)/)[1];
+
+    // Fill in values for first line
+    if (i == 0) {
+      scaleBarWrapperLi.querySelectorAll('input')[0].value = type;
+      scaleBarWrapperLi.querySelectorAll('input')[1].value = distance;
+      scaleBarWrapperLi.querySelectorAll('input')[2].value = units;
+    }
+    // Add a new line for each additional scalebar
+    else {
+    // Assemble new type, distance, and units inputs
+    var li = document.createElement('li');
+    li.className = 'field-wrapper input-group input-append';
+    li.setAttribute('style', "display:flex; flex-direction:row; justify-content:space-evenly;");
+
+    var typeInput = document.createElement('input');
+    typeInput.className = "string multi_value optional form-control media_scale_bar_target_type form-control multi-text-field";
+    typeInput.setAttribute("id", "media_scale_bar_target_type");
+    typeInput.setAttribute("name", "media[scale_bar_target_type][]");
+    typeInput.setAttribute("style", "margin:5px; width:30%; border-radius:5px;");
+    typeInput.value = type;
+    li.appendChild(typeInput);
+
+    var distanceInput = document.createElement('input');
+    distanceInput.className = "string multi_value optional form-control media_scale_bar_distance form-control multi-text-field";
+    distanceInput.setAttribute("id", "media_scale_bar_distance");
+    distanceInput.setAttribute("name", "media[scale_bar_distance][]");
+    distanceInput.setAttribute("style", "margin:5px; width:30%; border-radius:5px;");
+
+    distanceInput.value = distance;
+    li.appendChild(distanceInput);
+
+    var unitsInput = document.createElement('input');
+    unitsInput.className = "string multi_value optional form-control media_scale_bar_units form-control multi-text-field";
+    unitsInput.setAttribute("id", "media_scale_bar_units");
+    unitsInput.setAttribute("name", "media[scale_bar_units][]");
+    unitsInput.setAttribute("style", "margin:5px; width:30%; border-radius:5px;");
+
+    unitsInput.value = units;
+    li.appendChild(unitsInput);
+
+    var span = document.createElement('span');
+    span.className = "input-group-btn field-controls";
+    span.innerHTML = `<button type="button" class="btn btn-link remove">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        <span class="controls-remove-text">Remove</span>
+                        <span class="sr-only"> previous
+                          <span class="controls-field-name-text"> Scale Bar</span>
+                        </span>
+                      </button>`
+
+    li.appendChild(span);
+
+    scaleBarWrapperUl.appendChild(li);
+
+    }
+  }
+
+  // Clear default scale bar fields when done.
+  scaleBarGroupUl.innerHTML = '';
+
+  // On submit, type/distance/units fields are concatenated and inserted into hidden default scale bar field.
+  form.addEventListener("submit", function() {
+
+    // If media type = photogrammetry, submit scale bar fields. Otherwise, submit an empty scale bar.
+    if($('#media_media_type').val() == 'PhotogrammetryImageSeries') {
+
+      var scaleBarCount = document.getElementsByClassName("media_scale_bar_target_type").length;
+
+      for (i = 0; i < scaleBarCount; i++) {
+
+        var targetType = document.getElementsByClassName("media_scale_bar_target_type")[i].value || '';
+        var scaleBarDistance = document.getElementsByClassName("media_scale_bar_distance")[i].value || '';
+        var scaleBarUnits = document.getElementsByClassName("media_scale_bar_units")[i].value || '';
+
+        // As long as at least one input is filled out, proceed with creating a scale bar string. Otherwise, create an empty string, which will not result in a new scale bar triple.
+        if ((targetType != '') || (scaleBarDistance != '') || (scaleBarUnits != '')) {
+          var scaleBar = "Type: " + targetType + ", Distance: " + scaleBarDistance + ", Units: " +  scaleBarUnits;
+        }
+        else {
+          var scaleBar = ''
+        }
+        buildScaleBar(scaleBar);
+      }
+    }
+    else {
+      buildScaleBar('');
+    }
+  });
+});
+</script>

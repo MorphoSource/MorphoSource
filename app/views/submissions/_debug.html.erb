@@ -1,0 +1,12 @@
+<%
+@biospec_create_params = session[:submission_biospec_create_params]
+@cho_create_params = session[:submission_cho_create_params]
+@imaging_event_create_params = session[:submission_imaging_event_create_params]
+@organization_create_params = session[:submission_organization_create_params]
+@device_organization_create_params = session[:submission_device_organization_create_params]
+@device_create_params = session[:submission_device_create_params]
+@media_create_params = session[:submission_media_create_params]
+@processing_event_create_params = session[:submission_processing_event_create_params]
+@taxonomy_create_params = session[:submission_taxonomy_create_params]
+%>
+<%= render(partial: 'debug_attributes') %>

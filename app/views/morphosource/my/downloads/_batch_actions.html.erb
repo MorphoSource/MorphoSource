@@ -1,0 +1,11 @@
+<div>
+  <div>
+    <% session[:batch_edit_state] = "on" %>
+    <% if @cart %>
+      <%= render 'morphosource/batch_edits/download_selected' %>
+      <%= render 'morphosource/batch_edits/remove_selected' %>
+    <% else %>
+      <%= render 'morphosource/batch_edits/copy_selected' %>
+    <% end %>
+  </div>
+</div>

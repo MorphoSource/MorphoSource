@@ -1,0 +1,5 @@
+<% # app/views/records/edit_fields/_source.html.erb %>
+<%= f.input :source, as: :select,
+    collection: ['iDigBio','GBIF'],
+    include_blank: true,
+    input_html: { class: 'form-control' } %>

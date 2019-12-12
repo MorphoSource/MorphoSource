@@ -1,0 +1,3 @@
+<%= form_tag(main_app.download_items_path, method: :get, class: "button_to-inline", "data-behavior" => 'batch-select-all') do -%>
+  <%= submit_tag("Download Selected", class: 'batch-all-button btn btn-info submits-batches', id: 'download-selected') %>
+<% end %>

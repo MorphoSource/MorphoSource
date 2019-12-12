@@ -1,0 +1,34 @@
+en:
+  hyrax:
+    icons:
+      taxonomy:     'fa fa-file-text-o'
+    select_type:
+      taxonomy:
+        description:        "Taxonomy works"
+        name:               "Taxonomy"
+  simple_form:
+    labels:
+      taxonomy:
+        taxonomy_domain: "Domain"
+        taxonomy_kingdom: "Kingdom"
+        taxonomy_phylum: "Phylum"
+        taxonomy_superclass: "Superclass"
+        taxonomy_class: "Class"
+        taxonomy_subclass: "Subclass"
+        taxonomy_superorder: "Superorder"
+        taxonomy_order: "Order"
+        taxonomy_suborder: "Suborder"
+        taxonomy_superfamily: "Superfamily"
+        taxonomy_family: "Family"
+        taxonomy_subfamily: "Subfamily"
+        taxonomy_tribe: "Tribe"
+        taxonomy_genus: "Genus"
+        taxonomy_subgenus: "Subgenus"
+        taxonomy_species: "Species"
+        taxonomy_subspecies: "Subspecies"
+        source: "Source"
+        trusted: "Trusted"
+    hints:
+      taxonomy:
+        source: "Is this record from iDigBio or GBIF?"
+        trusted: "Is this record considered scientifically trustworthy?"

@@ -1,0 +1,11 @@
+<div id="submission_image_capture_details">
+  <h5><%= t('morphosource.submission.image_capture_details') %></h5>
+  <%= simple_form_for @imaging_event_form, url: stage_imaging_event_submissions_url do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: { f: f } %>
+      <div>
+        <%= f.submit 'Submit Image Capture Details', class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>

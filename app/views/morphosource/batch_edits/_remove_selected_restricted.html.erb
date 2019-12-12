@@ -1,0 +1,3 @@
+<%= form_tag(main_app.remove_items_path, method: :delete, class: "button_to-inline", "data-behavior" => 'batch-select-all') do -%>
+  <%= submit_tag("Remove Selected", class: 'batch-all-button btn btn-danger submits-batches', id: 'delete-selected-restricted') %>
+<% end %>

@@ -1,0 +1,8 @@
+de:
+  hyrax:
+    icons:
+      taxonomy:     'fa fa-file-text-o'
+    select_type:
+      taxonomy:
+        description:        "Taxonomy Werke"
+        name:               "Taxonomy"

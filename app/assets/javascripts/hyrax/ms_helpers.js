@@ -95,6 +95,27 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
           depositor: data.work.depositor,
           depositor_link: depositorLink(data.work.depositor)
 				}
+			} else if (work_name == 'biological_specimen') {
+				var new_data = {
+					id: data.work.id, 
+					text: data.work.title,
+					bibliographic_citation: data.bibliographic_citation,
+					catalog_number: data.catalog_number,
+					collection_code: data.collection_code,
+					canonical_taxonomy: data.canonical_taxonomy,
+					institution_code: data.institution_code,
+					latitude: data.latitude,
+					longitude: data.longitude,
+					numeric_time: data.numeric_time,
+					original_location: data.original_location,
+					periodic_time: data.periodic_time,
+					vouchered: data.vouchered,
+					idigbio_recordset_id: data.idigbio_recordset_id,
+					idigbio_uuid: data.idigbio_uuid,
+					is_type_specimen: data.is_type_specimen,
+					occurrence_id: data.occurrence_id,
+					sex: data.sex
+				}
 			} else {
 				var new_data = {
 					id: data.work.id, 

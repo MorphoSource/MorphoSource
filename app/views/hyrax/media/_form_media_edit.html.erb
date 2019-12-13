@@ -41,6 +41,9 @@
         <div class="row related_form device" style="display:none">
           <%= render 'tab_device', i: i %>
         </div>
+        <div class="row related_form biological-specimen" style="display:block;">
+          <%= render 'tab_biological_specimen', i: i %>
+        </div>
       <% end %>
   <% else %>
     <div class="row related_form imaging-event" style="display:none">

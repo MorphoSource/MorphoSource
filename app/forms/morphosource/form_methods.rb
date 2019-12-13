@@ -109,6 +109,40 @@ module Morphosource
       end.to_json
     end
 
+    def member_of_biological_specimens_json(work_type=nil)
+      parent_works = model.in_works
+      # If a work is deposited as a child of another work, it will have a parent_id
+      if @controller.params[:parent_id]
+        parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
+      end
+      # filter by work type      
+      if work_type.present?
+        parent_works = parent_works.select{ |item| item.class.to_s == work_type } 
+      end
+      parent_works.map do |parent|
+        {
+          id: parent.id,
+          label: parent.to_s,
+          bibliographic_citation: parent.bibliographic_citation.first.to_s,
+          catalog_number: parent.catalog_number.first.to_s,
+          collection_code: parent.collection_code.first.to_s,
+          canonical_taxonomy: parent.canonical_taxonomy.first.to_s,
+          institution_code: parent.institution_code.first.to_s,
+          latitude: parent.latitude.first.to_s,
+          longitude: parent.longitude.first.to_s,
+          numeric_time: parent.numeric_time.first.to_s,
+          original_location: parent.original_location.first.to_s,
+          periodic_time: parent.periodic_time.first.to_s,
+          vouchered: parent.vouchered.first.to_s,
+          idigbio_recordset_id: parent.idigbio_recordset_id.first.to_s,
+          idigbio_uuid: parent.idigbio_uuid.first.to_s,
+          is_type_specimen: parent.is_type_specimen.first.to_s,
+          occurrence_id: parent.occurrence_id.first.to_s,
+          sex: parent.sex.first.to_s
+        }
+      end.to_json
+    end
+
     def member_of_taxonomies_json(work_type=nil)
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id

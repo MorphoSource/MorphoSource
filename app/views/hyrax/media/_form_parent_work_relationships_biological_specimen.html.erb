@@ -1,0 +1,19 @@
+<div id="biological_specimen_details">
+  <h2>SELECT PHYSICAL OBJECT</h2>
+
+  <div class="form-inline">
+    <%= i.input_field :find_parent_work,
+                      prompt: :translate,
+                      autocomplete: 'off',
+                      data: {
+                        autocomplete: 'work',
+                        'autocomplete-url' => find_biological_specimen_autocomplete_url()
+                      } %>
+  </div>
+
+  <div class="text-center button-wrapper">
+    <a class="btn btn-md btn-primary" id="btn-add-biological specimen" data-behavior="add-relationship">Select physical object</a>
+    <a class="btn btn-md btn-primary" id="btn_new_biological specimen">Create new physical object</a>
+  </div>
+</div>
+

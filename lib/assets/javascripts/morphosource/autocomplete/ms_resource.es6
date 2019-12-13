@@ -50,6 +50,29 @@ export default class MorphosourceResource extends Resource {
                                 depositor_link: obj.depositor_link
                               };
                             })
+    } else if (this.url.indexOf('biological_specimens') != -1) {
+      results = data.map((obj) => {
+                              return { 
+                                id: obj.id, 
+                                text: obj.label[0], 
+                                bibliographic_citation: obj.bibliographic_citation,
+                                catalog_number: obj.catalog_number,
+                                collection_code: obj.collection_code,
+                                canonical_taxonomy: obj.canonical_taxonomy,
+                                institution_code: obj.institution_code,
+                                latitude: obj.latitude,
+                                longitude: obj.longitude,
+                                numeric_time: obj.numeric_time,
+                                original_location: obj.original_location,
+                                periodic_time: obj.periodic_time,
+                                vouchered: obj.vouchered,
+                                idigbio_recordset_id: obj.idigbio_recordset_id,
+                                idigbio_uuid: obj.idigbio_uuid,
+                                is_type_specimen: obj.is_type_specimen,
+                                occurrence_id: obj.occurrence_id,
+                                sex: obj.sex
+                              };
+                            })
     } else {
       results = data.map((obj) => {
                                return { id: obj.id, text: obj.label[0] };

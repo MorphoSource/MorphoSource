@@ -3,12 +3,12 @@
     <div class="panel panel-default tabs" role="main">
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" id="tab-physical-object-details" class="">
+        <li role="presentation" id="tab-physical-object-details" class="active">
           <a href="#physical-object-details" aria-controls="physical-object-details" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fas fa-frog"></i> Physical Object
           </a>
         </li>
-        <li role="presentation" id="tab-device" class="active">
+        <li role="presentation" id="tab-device" class="">
           <a href="#device" aria-controls="device" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fas fa-frog"></i> Device
           </a>
@@ -41,15 +41,16 @@
 
       <!-- Tab panes -->
       <div class="tab-content">
-        <div role="tabpanel" class="tab-pane" id="physical-object-details">
+
+        <div role="tabpanel" class="tab-pane active" id="physical-object-details">
           <div class="form-tab-content">
 
-            <%#= render 'tab_object_details', f: f %>
+              <%# the form is in _form_media_edit %>
 
           </div>
         </div>
 
-        <div role="tabpanel" class="tab-pane active" id="device">
+        <div role="tabpanel" class="tab-pane" id="device">
           <div class="form-tab-content">
 
               <%# the form is in _form_media_edit %>

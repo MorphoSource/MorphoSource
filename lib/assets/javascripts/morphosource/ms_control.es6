@@ -4,6 +4,7 @@ import Resource from 'hyrax/relationships/resource'
 import OrganizationResource from './ms_organization_resource'
 import TaxonomyResource from './ms_taxonomy_resource'
 import DeviceResource from './ms_device_resource'
+import BiologicalSpecimenResource from './ms_biological_specimen_resource'
 
 /**
  * This depends on the passed in element containing `data-autocomplete="work'"`
@@ -80,6 +81,29 @@ export default class RelationshipsControl {
           this.depositorLink(elem.depositor)
          ))
       )      
+    } else if (this.workType == 'biological_specimen') {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new BiologicSpecimenResource(
+          elem.id, 
+          elem.label, 
+          elem.bibliographic_citation,
+          elem.catalog_number,
+          elem.collection_code,
+          elem.canonical_taxonomy,
+          elem.institution_code,
+          elem.latitude,
+          elem.longitude,
+          elem.numeric_time,
+          elem.original_location,
+          elem.periodic_time,
+          elem.vouchered,
+          elem.idigbio_recordset_id,
+          elem.idigbio_uuid,
+          elem.is_type_specimen,
+          elem.occurrence_id,
+          elem.sex
+         ))
+      )      
     } else {
       this.members.forEach((elem) =>
         this.registry.addResource(new Resource(elem.id, elem.label))
@@ -152,6 +176,27 @@ export default class RelationshipsControl {
         data.taxonomy_subspecies,
         data.depositor,
         data.depositor_link
+        ))
+    } else if (this.workType == 'biological_specimen') {
+      this.registry.addResource(new BiologicalSpecimenResource(
+        data.id, 
+        data.text, 
+        data.bibliographic_citation,
+        data.catalog_number,
+        data.collection_code,
+        data.canonical_taxonomy,
+        data.institution_code,
+        data.latitude,
+        data.longitude,
+        data.numeric_time,
+        data.original_location,
+        data.periodic_time,
+        data.vouchered,
+        data.idigbio_recordset_id,
+        data.idigbio_uuid,
+        data.is_type_specimen,
+        data.occurrence_id,
+        data.sex
         ))
     } else {
       this.registry.addResource(new Resource(data.id, data.text))

@@ -3,16 +3,44 @@
 # Adds/removes users to default collection managers/depositors/viewers roles.
 # Used by Collection/edit#sharing for Teams and Projects
 class CollectionRolesController < ApplicationController
-  before_action { get_collection_role_values(params[:collection_roles]) }
+  include Hyrax::CollectionsControllerBehavior
+
+  before_action { collection_role_values(params[:collection_roles]) }
 
   def update_collection_groups
-    return unless can? :manage, collection
+    return unless can? :edit, collection
 
+    update_subcollections
     update_agent_access
     reload_collection_share
   end
 
   private
+
+  def update_subcollections
+    find_subcollections
+    update_child_groups unless @subcollection_docs.empty?
+    reset_collection_role_values
+  end
+
+  def update_child_groups
+    @parent = @collection
+    child_ids = @subcollection_docs.map(&:id)
+    child_ids.each do |id|
+      update_child_collection(id)
+    end
+  end
+
+  def update_child_collection(id)
+    @collection = Collection.find(id)
+    collection_role_values(params[:collection_roles])
+    update_agent_access
+  end
+
+  def reset_collection_role_values
+    @collection = @parent
+    collection_role_values(params[:collection_roles])
+  end
 
   def update_agent_access
     update_user_access if user?
@@ -29,14 +57,10 @@ class CollectionRolesController < ApplicationController
     elsif @remove
       @group.users.delete(user)
     else
+      check_subcollection_for_user(user) if @parent
       add_user_to_group(user, @group)
     end
     update_notice('success') if @group.save
-  end
-
-  # Add user to appropriate role if user does not already have another collection role.
-  def add_user_to_group(user, group)
-    group.users << user unless collection.group_members.include? user
   end
 
   def change_groups(user)
@@ -45,14 +69,52 @@ class CollectionRolesController < ApplicationController
     @new_group.save
   end
 
+  # Add user to appropriate role if user does not already have another collection role.
+  def add_user_to_group(user, group)
+    group.users << user unless collection.group_members.include? user
+  end
+
+  # If a user is added to a team, and the team's subcollection already has that user in a role, remove the user.
+  def check_subcollection_for_user(user)
+    return unless @collection.group_members.include? user
+
+    @collection.user_groups.each do |group|
+      group.users.delete(user)
+      group.save
+    end
+  end
+
   # Add all team members to chosen role unless member already has a collection role.
   def add_group_access
-    return unless can? :manage, team
+    return unless can? :edit, team
 
+    update_subcollections_membership if @parent
     team.group_members.each do |member|
       add_user_to_group(member, @group)
     end
     update_notice('success') if @group.save
+  end
+
+  def update_subcollections_membership
+    ids = @subcollection_docs.map(&:id)
+    copy_team_members_to_subcollections(ids)
+    reset_collection_role_values
+  end
+
+  def copy_team_members_to_subcollections(collection_ids)
+    collection_ids.each do |id|
+      @collection = Collection.find(id)
+      collection_role_values(params[:collection_roles])
+      copy_team_members
+      @group.save
+    end
+  end
+
+  def copy_team_members
+    team.group_members.each do |member|
+      check_subcollection_for_user(member)
+      add_user_to_group(member, @group)
+    end
   end
 
   def user?
@@ -63,7 +125,7 @@ class CollectionRolesController < ApplicationController
     @agent_type == 'group'
   end
 
-  def get_collection_role_values(params)
+  def collection_role_values(params)
     @agent_type = params[:agent_type]
     @remove = params[:new_access] == 'remove'
     @group = group(params[:access])
@@ -95,5 +157,11 @@ class CollectionRolesController < ApplicationController
 
   def group(access)
     collection.try("#{access}_group")
+  end
+
+  # CollectionsControllerBehavior methods
+  def find_subcollections
+    presenter
+    member_subcollections
   end
 end

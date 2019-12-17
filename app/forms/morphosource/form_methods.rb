@@ -138,6 +138,7 @@ module Morphosource
           idigbio_uuid: parent.idigbio_uuid.first.to_s,
           is_type_specimen: parent.is_type_specimen.first.to_s,
           occurrence_id: parent.occurrence_id.first.to_s,
+          source_of_record: source_of_record(parent.idigbio_uuid, parent.idigbio_recordset_id),
           sex: parent.sex.first.to_s
         }
       end.to_json

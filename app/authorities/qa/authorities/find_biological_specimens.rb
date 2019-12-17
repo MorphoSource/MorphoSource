@@ -1,6 +1,8 @@
 module Qa::Authorities
   class FindBiologicalSpecimens < Qa::Authorities::FindWorks
 
+    include MorphosourceHelper
+
     def search(_q, controller)
       # The My::FindWorksSearchBuilder expects a current_user
       return [] unless controller.current_user
@@ -27,6 +29,7 @@ module Qa::Authorities
         is_type_specimen = doc.is_type_specimen
         occurrence_id = doc.occurrence_id
         sex = doc.sex
+        source_of_record = source_of_record(idigbio_uuid, idigbio_recordset_id) 
         {
           id: id,
           label: title,
@@ -46,7 +49,8 @@ module Qa::Authorities
           idigbio_uuid: idigbio_uuid,
           is_type_specimen: is_type_specimen,
           occurrence_id: occurrence_id,
-          sex: sex
+          sex: sex,
+          source_of_record: source_of_record
         }
       end
     end

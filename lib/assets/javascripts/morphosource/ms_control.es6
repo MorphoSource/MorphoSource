@@ -83,7 +83,7 @@ export default class RelationshipsControl {
       )      
     } else if (this.workType == 'biological_specimen') {
       this.members.forEach((elem) =>
-        this.registry.addResource(new BiologicSpecimenResource(
+        this.registry.addResource(new BiologicalSpecimenResource(
           elem.id, 
           elem.label, 
           elem.bibliographic_citation,
@@ -101,6 +101,7 @@ export default class RelationshipsControl {
           elem.idigbio_uuid,
           elem.is_type_specimen,
           elem.occurrence_id,
+          elem.source_of_record,
           elem.sex
          ))
       )      
@@ -196,6 +197,7 @@ export default class RelationshipsControl {
         data.idigbio_uuid,
         data.is_type_specimen,
         data.occurrence_id,
+        data.source_of_record,
         data.sex
         ))
     } else {

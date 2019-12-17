@@ -70,6 +70,7 @@ export default class MorphosourceResource extends Resource {
                                 idigbio_uuid: obj.idigbio_uuid,
                                 is_type_specimen: obj.is_type_specimen,
                                 occurrence_id: obj.occurrence_id,
+                                source_of_record: obj.source_of_record,
                                 sex: obj.sex
                               };
                             })

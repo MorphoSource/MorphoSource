@@ -20,6 +20,7 @@ export default class BiologicalSpecimenResource {
             idigbio_uuid,
             is_type_specimen,
             occurrence_id,
+            source_of_record,
             sex
         ) {
         this.id = id
@@ -40,6 +41,7 @@ export default class BiologicalSpecimenResource {
         this.is_type_specimen = is_type_specimen
         this.occurrence_id = occurrence_id
         this.sex = sex
+        this.source_of_record = source_of_record
         this.index = 0
     }
 }

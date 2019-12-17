@@ -1,4 +1,7 @@
 module MorphosourceHelper
+  
+  include ActionView::Helpers::UrlHelper
+
   def current_controller
     current_uri = request.env['PATH_INFO']
     # to-do: might need to catch exception here for route not found
@@ -210,6 +213,27 @@ module MorphosourceHelper
         organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
       end
       organization_institution
+  end
+
+  def source_of_record(idigbio_uuid, idigbio_recordset_id)
+    markup = ''
+    return markup unless idigbio_uuid.present?
+    # For now we just handle idigbio.  Later will probably handle uuid and recordset links, and other providers
+    #
+    # if label.include? 'UUID'
+    #   url = 'https://www.idigbio.org/portal/records/'
+    # elsif label.include? 'recordset ID'
+    #   url = 'https://www.idigbio.org/portal/recordsets/'
+    # else
+    #   url = 'https://www.idigbio.org'
+    # end
+    value = ''
+    url = 'https://www.idigbio.org/'
+    #link = link_to(value, "#{url}#{value}")
+    #markup << "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link}</span>"
+    #markup << link
+    #markup
+    url
   end
 
 end

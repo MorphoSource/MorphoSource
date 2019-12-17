@@ -1,6 +1,8 @@
 module Qa::Authorities
   class FindDevices < Qa::Authorities::FindWorks
 
+    include MorphosourceHelper
+
     def search(_q, controller)
       # The My::FindWorksSearchBuilder expects a current_user
       return [] unless controller.current_user
@@ -15,13 +17,7 @@ module Qa::Authorities
         modality = doc.modality
         description = doc.description
         # also get the device organization title and institution name for display
-        organization_institution = ''
-        organizations = Organization.where('member_ids_ssim' => id)
-        if organizations.present?
-          organization = organizations.first
-          organization_institution = organization.title.first
-          organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
-        end
+        organization_institution = organization_institution(id)
         { 
           id: id, 
           label: title, 

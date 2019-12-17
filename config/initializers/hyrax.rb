@@ -85,7 +85,7 @@ Hyrax.config do |config|
   # config.persistent_hostpath = 'http://localhost/files/'
 
   # If you have ffmpeg installed and want to transcode audio and video set to true
-  # config.enable_ffmpeg = false
+  config.enable_ffmpeg = true
 
   # Hyrax uses NOIDs for files and collections instead of Fedora UUIDs
   # where NOID = 10-character string and UUID = 32-character string w/ hyphens
@@ -252,7 +252,7 @@ Hyrax.config do |config|
   # config.owner_permission_levels = { "Edit Access" => "edit" }
 
   # Path to the ffmpeg tool
-  # config.ffmpeg_path = 'ffmpeg'
+  config.ffmpeg_path = 'ffmpeg'
 
   # Max length of FITS messages to display in UI
   # config.fits_message_length = 5

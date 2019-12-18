@@ -58,7 +58,7 @@ div.showcase {
     border-radius: 0;
   }
 
-  .btn-primary, .btn-default {
+  .btn-primary, .btn-default, .btn-sm, .btn-big {
     background-color: $button-color;
     color: $button-font-color;
     border-color: $button-border-color;
@@ -447,7 +447,7 @@ div.showcase {
       .btn {
         margin-left: 0.5vw;
         margin-bottom: 4px;
-        /* min-width: 86px; */
+        min-width: 86px;
         @media (max-width: 990px) { /* show 1 button on each line when smaller than this width */
           float: none;
           display: block;

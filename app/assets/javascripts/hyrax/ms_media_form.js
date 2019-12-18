@@ -14,6 +14,7 @@ $(document).on('turbolinks:load', function() {
 
     setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
     setupEmbeddedWorkForm('organization', 'new', updateDevice);
+    setupEmbeddedWorkForm('biological_specimen', 'new');
     setupTooltip();
     removeLastRepeatable();
 

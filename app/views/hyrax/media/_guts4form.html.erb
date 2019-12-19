@@ -3,9 +3,14 @@
     <div class="panel panel-default tabs" role="main">
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" id="tab-physical-object-details" class="active">
+        <li role="presentation" id="tab-physical-object-details" class="">
           <a href="#physical-object-details" aria-controls="physical-object-details" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fas fa-frog"></i> Physical Object
+          </a>
+        </li>
+        <li role="presentation" id="tab-parent-media" class="active">
+          <a href="#parent-media" aria-controls="parent-media" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fas fa-frog"></i> Parent Media
           </a>
         </li>
         <li role="presentation" id="tab-device" class="">
@@ -42,10 +47,18 @@
       <!-- Tab panes -->
       <div class="tab-content">
 
-        <div role="tabpanel" class="tab-pane active" id="physical-object-details">
+        <div role="tabpanel" class="tab-pane" id="physical-object-details">
           <div class="form-tab-content">
 
               <%# the form is in _form_media_edit %>
+
+          </div>
+        </div>
+
+        <div role="tabpanel" class="tab-pane active" id="parent-media">
+          <div class="form-tab-content">
+
+            <%= render 'tab_parent_media', f: f %>
 
           </div>
         </div>

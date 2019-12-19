@@ -41,7 +41,7 @@
         <div class="row related_form device" style="display:none">
           <%= render 'tab_device', i: i %>
         </div>
-        <div class="row related_form physical-object-details" style="display:block;">
+        <div class="row related_form physical-object-details" style="display:none;">
           <%= render 'tab_biological_specimen', i: i %>
         </div>
       <% end %>
@@ -52,6 +52,13 @@
     <div class="row related_form device" style="display:none">
       <%= render 'parent_device', presenter: @presenter %>
     </div>
+
+
+        <div class="row related_form physical-object-details" style="display:none;">
+          <%= render 'parent_biological_specimen', presenter: @presenter %>
+        </div>
+
+
   <% end %>
 <% end %>
 

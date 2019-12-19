@@ -13,7 +13,7 @@ module Hyrax
       :device_and_facility, :device_facility, :device_link, :device, :device_manufacturer, :device_description,
       :device_organization_institution,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_modality,
-      :parent_media_id_list, :child_media_id_list,
+      :parent_media_id_list, :child_media_id_list, :parent_media_members,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
       :processing_events, :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
       :processing_activity_count, :processing_activity_items,
@@ -210,6 +210,7 @@ module Hyrax
       @parent_media_count = @parent_media_id_list.length.to_s
       @child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
       @sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
+      @parent_media_members = member_presenters_for(@parent_media_id_list.reverse())
 
       # get the top parent
       direct_parent_id = top_parent_media_id(media)

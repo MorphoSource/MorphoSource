@@ -11,4 +11,9 @@ module IDigBio
     response = RestClient.post "#{API_ENDPOINT}/search/records/", {rq: search_query, limit: limit}.to_json, {content_type: :json, accept: :json}
     JSON.parse(response.body)['items'] if response
   end
+
+  def self.view(uuid)
+    response = RestClient.get "#{API_ENDPOINT}/view/records/#{uuid}"
+    JSON.parse(response.body) if response
+  end
 end

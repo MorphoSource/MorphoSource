@@ -21,6 +21,9 @@ module Hyrax
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
       :file_size, :mime_type, :this_media_type, :file_set_list,
+      # BSO fields
+      :collection_code, :institution_code, :catalog_number, :occurrence_id, :idigbio_uuid,
+      :user_taxonomies, :canonical_taxonomy_object, :trusted_taxonomies,
       # mesh specific
       :point_count,
       :face_count,
@@ -65,6 +68,14 @@ module Hyrax
         ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.volume? ) &&
         Hyrax.config.iiif_image_server? &&
         ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_volume? )
+    end
+
+    def source_of_record
+      if @idigbio_uuid.present?
+        'iDigBio'
+      else
+        ''
+      end
     end
 
     def hasProcessingEvents?
@@ -276,6 +287,14 @@ module Hyrax
           @idigbio_uuid = biological_specimen.idigbio_uuid
           @vouchered = biological_specimen.vouchered
           @physical_object_type = biological_specimen.human_readable_type
+          @institution_code = biological_specimen.institution_code
+          @collection_code = biological_specimen.collection_code
+          @catalog_number = biological_specimen.catalog_number
+          @occurrence_id = biological_specimen.occurrence_id
+          @user_taxonomies = biological_specimen.user_taxonomies
+          @canonical_taxonomy_object = biological_specimen.canonical_taxonomy_object
+          @trusted_taxonomies = biological_specimen.trusted_taxonomies
+          @idigbio_uuid = biological_specimen.idigbio_uuid
         elsif cultural_heritage_object.present?
           @physical_object_title = cultural_heritage_object.title.first
           @physical_object_id = cultural_heritage_object.id

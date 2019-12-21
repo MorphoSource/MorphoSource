@@ -182,6 +182,17 @@ div.showcase-edit {
     margin-right: -15px;
   }
 
+  .panel-full-width .panel {
+    border: none;
+    margin-left: 0;
+    margin-right: 0;
+
+    .glyphicon {
+      margin-left: 0;
+      top: 9px;
+    }
+  }
+
   .nav-tabs {
     background-color: #efefef;
     padding-top: 20px;

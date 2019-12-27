@@ -1,1 +1,20 @@
-<%= member_counter %> <%= link_to(member.link_name, contextual_path(member, @presenter)) %> <br/>
+<% 
+if member_counter == 0 
+	raw_or_derived = 'Raw'
+	class_name = 'circle first'
+else
+	raw_or_derived = 'Derived'
+	class_name = 'circle'
+end
+%> 
+<div class="row p-0">
+  <div class="indicators line solid table-cell">
+    <p><span class="<%= class_name %>"></span></p>
+  </div>
+  <div class="table-cell">
+    <p>
+   	<%= raw_or_derived %> parent media 
+	  <%= link_to(member.link_name, contextual_path(member, @presenter)) %>
+		</p>
+  </div>
+</div>

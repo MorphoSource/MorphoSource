@@ -1,0 +1,14 @@
+
+  <div class="form-inline">
+    <%= p.input_field :find_parent_work,
+                      prompt: :translate,
+                      autocomplete: 'off',
+                      data: {
+                        autocomplete: 'work',
+                        'autocomplete-url' => find_media_autocomplete_url()
+                      } %>
+  </div>
+
+  <div class="text-center button-wrapper">
+    <a class="btn btn-md btn-primary" id="btn-add-parent-media" data-behavior="add-relationship">Select media</a>
+  </div>

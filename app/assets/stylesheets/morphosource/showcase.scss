@@ -254,8 +254,11 @@ div.showcase {
     font-style: normal;
   }
 
+  .indicators-wrapper .row {
+    margin-left: 0;
+  }
 
-  .image-acq-detail, .tab-pane {
+  .image-acq-detail, .indicators-wrapper {
     .indicators {
       position: relative;
       float: left;
@@ -318,6 +321,7 @@ div.showcase {
     margin-top:8px;
     position:relative;
     z-index:2;
+      bottom:5px;
   }
   .circle.first:before,
   .circle.last:before {

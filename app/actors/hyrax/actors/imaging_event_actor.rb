@@ -10,7 +10,7 @@ module Hyrax
 
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
-
+byebug
         # skipping media update for now (for handling showcase media edit page)
 
         # look for media associated with this IE (child works)

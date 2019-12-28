@@ -361,6 +361,10 @@ $(document).on('turbolinks:load', function() {
       $('#device-organization-institution-value').text(organization_institution);
     }
 
+    function reloadPage() {
+      alert('reload')
+    }
+
     setupTooltip();
     removeLastRepeatable();
     adjust_form_media_type();
@@ -397,9 +401,15 @@ $(document).on('turbolinks:load', function() {
     // when selecting an organization or device, hide the new work form if any
     $('[data-behavior="add-relationship"]').click(function() {
       var addButtonId = $(this).attr('id');
-      var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
-      $(newWorkDiv).hide();
-      closeLinkedContent(newWorkDiv);
+      console.log(addButtonId + ' clicked...')
+      if (addButtonId == 'btn-add-parent-media') {
+        // prompt and immediately save the processing event form, then refresh the page
+        $("form#related_form_processing_event").submitRelatedWork(reloadPage);
+      } else {
+        var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
+        $(newWorkDiv).hide();
+        closeLinkedContent(newWorkDiv);        
+      }
     })
 
     // when page is loaded, show/hide content based on which tab is active
@@ -427,7 +437,7 @@ $(document).on('turbolinks:load', function() {
       function submitProcessingEvent() {
         if ($('form[id*="processing_event"]').length) { // if PE form 
           buildProcessingActivity(); // populate the PA field before saving PE
-          $("#related_form_processing_event form").submitRelatedWork(saveMediaIfReady);
+          $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
         } else {
           saveMediaIfReady();
         }

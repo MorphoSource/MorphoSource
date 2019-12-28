@@ -52,29 +52,30 @@
     <div class="row related_form device" style="display:none">
       <%= render 'parent_device', presenter: @presenter %>
     </div>
-
-
-        <div class="row related_form physical-object-details" style="display:none;">
-          <%= render 'parent_biological_specimen', presenter: @presenter %>
-        </div>
-
-
+    <div class="row related_form physical-object-details" style="display:none;">
+      <%= render 'parent_biological_specimen', presenter: @presenter %>
+    </div>
   <% end %>
 <% end %>
 
 <% if @presenter.hasProcessingEvents? %>
-  <div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
     <%= simple_form_for [main_app, @processing_event_form],
                         wrapper: :showcase_default,
                         html: {
+                          id: 'related_form_processing_event',
                           data: { behavior: 'work-form',
                                   'param-key' => @processing_event_form.model_name.param_key },
                           multipart: true
                         } do |p| %>
 
-        <%= render 'form_processing_event', p: p, presenter: @presenter %>
+        <div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
+          <%= render 'form_processing_event', p: p, presenter: @presenter %>
+        </div>
+        <div class="row related_form parent-media" style="display:none;">
+          <%= render 'tab_parent_media', p: p %>
+        </div>
+
     <% end %>
-  </div>
 <% end %>
 
 

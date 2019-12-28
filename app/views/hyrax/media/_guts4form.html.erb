@@ -8,11 +8,13 @@
             <i class="fas fa-frog"></i> Physical Object
           </a>
         </li>
-        <li role="presentation" id="tab-parent-media" class="active">
-          <a href="#parent-media" aria-controls="parent-media" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fas fa-frog"></i> Parent Media
-          </a>
-        </li>
+        <% if @presenter.hasProcessingEvents? %>
+          <li role="presentation" id="tab-parent-media" class="active">
+            <a href="#parent-media" aria-controls="parent-media" role="tab" data-toggle="tab" aria-expanded="false">
+              <i class="fas fa-frog"></i> Parent Media
+            </a>
+          </li>
+        <% end %>
         <li role="presentation" id="tab-device" class="">
           <a href="#device" aria-controls="device" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fas fa-frog"></i> Device
@@ -58,7 +60,7 @@
         <div role="tabpanel" class="tab-pane active" id="parent-media">
           <div class="form-tab-content">
 
-            <%= render 'tab_parent_media', f: f %>
+              <%# the form is in _form_media_edit %>
 
           </div>
         </div>

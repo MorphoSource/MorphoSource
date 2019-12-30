@@ -68,6 +68,14 @@ export default class MorphosourceEditor extends Editor {
                                  'work_parents_attributes',
                                  'tmpl-parent-work-biological-specimens',
                                  0).init())
+     let works_parents_media = this.element.find('[data-behavior="parent-relationships-media"]')
+    works_parents_media.each((_idx, element) =>
+        new RelationshipsControl(element,
+                                 works_parents_media.data('members'),
+                                 works_parents_media.data('paramKey'),
+                                 'work_parents_attributes',
+                                 'tmpl-parent-work-media',
+                                 0).init())
   }
 
   // Autocomplete fields for the work edit form (based_near, subject, language, child works)

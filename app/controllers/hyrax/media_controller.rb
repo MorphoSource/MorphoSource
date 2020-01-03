@@ -62,6 +62,8 @@ module Hyrax
       @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
       @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
       @countries_service = Morphosource::CountriesService.new
+      @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
+      @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
       render '/hyrax/media/edit', presenter: @presenter
       #render '/hyrax/base/edit', presenter: @presenter
     end
@@ -136,6 +138,8 @@ module Hyrax
             @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
             @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
             @countries_service = Morphosource::CountriesService.new
+            @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
+            @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
             render '/hyrax/media/edit', presenter: @presenter, status: :unprocessable_entity
           end
           wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }

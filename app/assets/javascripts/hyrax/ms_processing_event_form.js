@@ -15,9 +15,17 @@ $(document).on('turbolinks:load', function() {
     var targetWrapperUl = targetWrapper.querySelector('ul');
     var targetWrapperLi = targetWrapper.querySelector('li');
 
+    // if not in media edit page (standalone PE form), or in media edit page with a new PE form, it has an additional empty field
     if ($('form[id*="edit_media"]').length) { // if edit media form page
-    
-    } else { // if not in media edit page, it is the standalone PE form with additional empty field
+      if ($('form[id*="new_processing_event"]').length)
+        var hasAdditionalEmptyField = true;
+      else
+        var hasAdditionalEmptyField = false;
+    } else { // standalone PE form
+        var hasAdditionalEmptyField = true;
+    }
+
+    if (hasAdditionalEmptyField) { 
       concatFieldCount--;
       // also, build the Processing Activity fields before submit (only in the standalone PE form )
       form.addEventListener("submit", function() {

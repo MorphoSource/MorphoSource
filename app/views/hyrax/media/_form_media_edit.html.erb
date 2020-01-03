@@ -76,6 +76,23 @@
         </div>
 
     <% end %>
+<% else %>
+    <%# display a new PO form, and place the parent media form inside %>
+    <div id="embedded_div_new_processing_event" class="embedded_div processing-event" data-relationship-control="#parent-relationships-processing-events" data-add-button="#btn-add-processing-event" style="">
+      <div class="col-sm-12">
+        <div class="content-block">
+          <%= simple_form_for [main_app, @new_processing_event_form], 
+                              wrapper: :showcase_default,
+                              url: @new_processing_event_submit_submissions_url,
+                              html: {
+                                data: { behavior: 'work-form' }
+                              } do |p| %>
+              <%= render 'tab_parent_media_new_processing_event', p: p %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
 <% end %>
 
 
@@ -128,28 +145,8 @@
 </div>
 
 
-<!-- Modal for clicking new PO.  todo: varying modal content (e.g. used for displaying errors) 
-https://getbootstrap.com/docs/4.0/components/modal/ -->
-<div class="modal fade" id="showcase-modal" tabindex="-1" role="dialog" aria-labelledby="modal-label" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modal-label">Create new physical object
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        </h5>
-      </div>
-      <div class="modal-body">
-        You will be leaving the current page for the creation of a new physical object that is linked to current media.  Click OK to continue, or Cancel to go back.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onClick="window.open('/', '_blank');">OK</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+<%= render 'modal_new_physical_object' %>
+<%= render 'modal_select_parent_media' %>
 
 <script type="text/javascript">
   Blacklight.onLoad(function() {

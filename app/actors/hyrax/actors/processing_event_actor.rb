@@ -10,7 +10,6 @@ module Hyrax
 
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
-byebug
         super
       end
 

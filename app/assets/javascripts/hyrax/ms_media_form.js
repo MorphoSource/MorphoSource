@@ -15,6 +15,7 @@ $(document).on('turbolinks:load', function() {
     setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
     setupEmbeddedWorkForm('organization', 'new', updateDevice);
     setupEmbeddedWorkForm('biological_specimen', 'new');
+    setupEmbeddedWorkForm('processing_event', 'new');
     setupTooltip();
     removeLastRepeatable();
 
@@ -362,7 +363,7 @@ $(document).on('turbolinks:load', function() {
     }
 
     function reloadPage() {
-      alert('reload')
+      window.location.reload();
     }
 
     setupTooltip();
@@ -398,13 +399,27 @@ $(document).on('turbolinks:load', function() {
       $('#embedded_div_new_organization').hide();
     })
 
+    $('#btn-select-media').click(function() {
+      // display a modal to prompt the user to confirm
+      // when user clicks OK, trigger the add parent button,
+      // immediately save the processing event form, then refresh the page
+      $('#modal-select-parent-media').modal();
+    })
+
     // when selecting an organization or device, hide the new work form if any
     $('[data-behavior="add-relationship"]').click(function() {
       var addButtonId = $(this).attr('id');
-      console.log(addButtonId + ' clicked...')
+      //console.log(addButtonId + ' clicked...')
       if (addButtonId == 'btn-add-parent-media') {
-        // prompt and immediately save the processing event form, then refresh the page
-        $("form#related_form_processing_event").submitRelatedWork(reloadPage);
+        // close the modal, immediately save the processing event form, then refresh the page
+        $('#modal-select-parent-media').modal('hide');        
+
+
+        // todo: disable the whole page with a spinner
+
+        
+        $(".btn-save-media").prop('disabled', true).val('Saving...');
+        $("form#related_form_processing_event").submitRelatedWork(reloadPage);        
       } else {
         var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
         $(newWorkDiv).hide();

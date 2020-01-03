@@ -12,10 +12,13 @@
   </div>
 
   <div class="text-center button-wrapper">
-    <a class="btn btn-md btn-primary" id="btn-add-parent-media" data-behavior="add-relationship">Select media</a>
+    <!-- this button will bring up the modal to prompt the user before adding -->
+    <a class="btn btn-md btn-primary" id="btn-select-media">Select media</a>
+    <!-- a hidden button to actually add the media -->
+    <a class="hidden" id="btn-add-parent-media" data-behavior="add-relationship">add media</a>
   </div>
 
-  <div style="visibility: hidden">
+  <div style="visibility: hidden;">
     <div class="message has-warning hidden"></div>
     <table>
       <tbody></tbody>

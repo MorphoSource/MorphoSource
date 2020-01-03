@@ -399,11 +399,20 @@ $(document).on('turbolinks:load', function() {
       $('#embedded_div_new_organization').hide();
     })
 
-    $('#btn-select-media').click(function() {
+
+    $('#btn-select-media.has-processing-event-true').click(function() {
       // display a modal to prompt the user to confirm
       // when user clicks OK, trigger the add parent button,
       // immediately save the processing event form, then refresh the page
       $('#modal-select-parent-media').modal();
+    })
+    $('#btn-select-media.has-processing-event-false').click(function() {
+      // display a modal to prompt the user to confirm
+      // when user clicks OK, trigger the add parent button,
+      // immediately save the processing event form, then refresh the page
+
+      $('.new-processing-event-wrapper').show();
+      $('#modal-select-parent-media-new-processing-event').modal();
     })
 
     // when selecting an organization or device, hide the new work form if any

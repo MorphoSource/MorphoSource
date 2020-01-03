@@ -2,7 +2,6 @@
 
 <p>Create a new processing event by filling in fields below and selecting Create new processing event. </p>
 
-
     <%= p.input :creator, as: :multi_value %>
     <%= p.input :date_created %>
     <%= p.input :software, as: :multi_value %>
@@ -11,8 +10,6 @@
   	<h2>INDIVIDUAL PROCESSING STEPS</h2>
 
 	  <%= render_edit_field_partial('processing_activity', f: p) %>
-
-
 
 <div>
   <%= p.submit 'Create new processing event', class: "btn btn-primary" %>

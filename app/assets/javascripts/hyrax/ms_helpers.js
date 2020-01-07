@@ -38,6 +38,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 
   $(this_div).on("submit", this_form, function() {
   	// the new work form's save button has been clicked
+ 		console.log(this_div + ' submitted form ... ' + $(this_form).attr('action') );
 		$(this_div).addClass('ui-loading');
 		$('.btn').addClass('disabled');
 

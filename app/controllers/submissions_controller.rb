@@ -555,12 +555,24 @@ class SubmissionsController < ApplicationController
     # this method is expected to be called from a form in modal, or an ajax post
     begin
       processing_event_model_params = Hyrax::ProcessingEventForm.model_attributes(params[:processing_event])
-      new_processing_event_id = create_processing_event(processing_event_model_params)
+byebug
+      new_processing_event_id = create_work(ProcessingEvent, processing_event_model_params)
     rescue Exception => ex
       new_processing_event_id = nil 
       exception_message = "Exception: #{ex.class}, #{ex.message}"   
     end
     if new_processing_event_id.present?
+
+      if params['child_media_id'].present? 
+        # update the child media (by setting this PE as a parent)
+        # child < PE < parent
+        child_media_id = params['child_media_id']
+        child_media = ::ActiveFedora::Base.find(child_media_id)
+        processing_event = ::ActiveFedora::Base.find(new_processing_event_id)
+        processing_event.ordered_members << child_media
+        processing_event.save!
+      end
+
       status = 'OK'
       message = 'New processing_event created'
       new_processing_event = ProcessingEvent.where('id' => new_processing_event_id).first

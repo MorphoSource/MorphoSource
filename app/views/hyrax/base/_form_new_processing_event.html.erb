@@ -10,6 +10,9 @@
   	<h2>INDIVIDUAL PROCESSING STEPS</h2>
 
 	  <%= render_edit_field_partial('processing_activity', f: p) %>
+	  <%# passing the current media id to be set as the child of this PE 
+	    # child < PE < parent %>
+	  <input name="child_media_id" type="hidden" value="<%= curation_concern.id %>">
 
 <div>
   <%= p.submit 'Create new processing event', class: "btn btn-primary" %>

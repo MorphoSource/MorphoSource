@@ -420,15 +420,22 @@ $(document).on('turbolinks:load', function() {
       var addButtonId = $(this).attr('id');
       //console.log(addButtonId + ' clicked...')
       if (addButtonId == 'btn-add-parent-media') {
-        // close the modal, immediately save the processing event form, then refresh the page
-        $('#modal-select-parent-media').modal('hide');        
+console.log($(this).data('hasProcessingEvent'));
+        if ($(this).data('hasProcessingEvent') == 'true') {
+          // close the modal, immediately save the processing event form, then refresh the page
+          $('#modal-select-parent-media').modal('hide');        
 
 
-        // todo: disable the whole page with a spinner
+          // todo: disable the whole page with a spinner
 
-        
-        $(".btn-save-media").prop('disabled', true).val('Saving...');
-        $("form#related_form_processing_event").submitRelatedWork(reloadPage);        
+          
+          $(".btn-save-media").prop('disabled', true).val('Saving...');
+          $("form#related_form_processing_event").submitRelatedWork(reloadPage);        
+
+        } else if ($(this).data('hasProcessingEvent') == 'false') {
+            alert('falas')
+          $('#modal-select-parent-media-new-processing-event').modal('hide');
+        }
       } else {
         var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
         $(newWorkDiv).hide();

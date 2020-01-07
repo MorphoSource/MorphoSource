@@ -46,36 +46,18 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
       let(:collection) { project_a }
       let(:nest_direction) { :as_parent }
 
-      it 'should build a query for projects and teams' do
+      it 'should build a query for teams' do
         subject
-        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "(_query_:\"{!field f=collection_type_gid_ssim}#{project_collection_type.gid}\" OR _query_:\"{!field f=collection_type_gid_ssim}#{team_collection_type.gid}\")", "-_query_:\"{!lucene df=nesting_collection__pathnames_ssim}*#{collection.id}*\""])
+        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{team_collection_type.gid}\"", "-_query_:\"{!lucene df=nesting_collection__pathnames_ssim}*#{collection.id}*\""])
       end
     end
 
     describe 'adding a team as a parent collection' do
       let(:collection) { team_a }
       let(:nest_direction) { :as_child }
-      it 'should build a query for projects and teams' do
+      it 'should build a query for projects' do
         subject
-        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "(_query_:\"{!field f=collection_type_gid_ssim}#{project_collection_type.gid}\" OR _query_:\"{!field f=collection_type_gid_ssim}#{team_collection_type.gid}\")", "-_query_:\"{!lucene q.op=OR df=nesting_collection__pathnames_ssim}#{collection.id}\"", "-_query_:\"{!field f=nesting_collection__parent_ids_ssim}#{collection.id}\""])
-      end
-    end
-
-    describe 'adding team as subcollection' do
-      let(:collection) { team_a }
-      let(:nest_direction) { :as_parent }
-      it 'should build a query for teams only' do
-        subject
-        expect(solr_params.fetch(:fq)).to match_array(single_type_as_parent)
-      end
-    end
-
-    describe 'adding project as a parent collection' do
-      let(:collection) { project_a }
-      let(:nest_direction) { :as_child }
-      it 'should build a query for projects only' do
-        subject
-        expect(solr_params.fetch(:fq)).to match_array(single_type_as_child)
+        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{project_collection_type.gid}\"", "-_query_:\"{!lucene q.op=OR df=nesting_collection__pathnames_ssim}#{collection.id}\"", "-_query_:\"{!field f=nesting_collection__parent_ids_ssim}#{collection.id}\""])
       end
     end
 
@@ -88,7 +70,7 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
       end
     end
 
-    describe 'addiing another collection type as a parent collection' do
+    describe 'adding another collection type as a parent collection' do
       let(:collection) { another }
       let(:nest_direction) { :as_child }
       it 'should bulid a query for that collection type only' do

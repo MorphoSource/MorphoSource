@@ -15,7 +15,7 @@ $(document).on('turbolinks:load', function() {
     setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
     setupEmbeddedWorkForm('organization', 'new', updateDevice);
     setupEmbeddedWorkForm('biological_specimen', 'new');
-    setupEmbeddedWorkForm('processing_event', 'new');
+    setupEmbeddedWorkForm('processing_event', 'new', reloadPage);
     setupTooltip();
     removeLastRepeatable();
 
@@ -303,13 +303,13 @@ $(document).on('turbolinks:load', function() {
   jQuery.fn.extend({
     submitRelatedWork: function (callback) {
       var relatedFormId = $(this).attr('id');
-      console.log('submitting '+ relatedFormId );
+      //console.log('submitting '+ relatedFormId );
       // replace with ajax form post to trigger other actions
       var postdata = $(this).serializeArray(); // convert form to array
       //postdata.push({name: "NonFormValue", value: 'foo'});
       //        console.log("postdata: " + postdata );
       $.post($(this).attr('action'), $.param(postdata), function(data){
-        console.log("submitted work ID: " + data.id );
+        //console.log("submitted work ID: " + data.id );
         if (relatedFormId.indexOf('imaging_event') != -1)
           IsImagingEventReady = true;
         else if (relatedFormId.indexOf('processing_event') != -1)
@@ -357,7 +357,7 @@ $(document).on('turbolinks:load', function() {
 
     function updateDevice(organization, instutition) {
       var organization_institution = $('#organization-title-value').text();
-      console.log('in updateDevice, organization_institution ', organization_institution);
+      //console.log('in updateDevice, organization_institution ', organization_institution);
       var organization_institution = organization + ' (' + instutition + ')';
       $('#device-organization-institution-value').text(organization_institution);
     }
@@ -384,10 +384,11 @@ $(document).on('turbolinks:load', function() {
     $('.nav-tabs > li').click(function() {
       $(".related_form").hide();
       var clickedTab = $(this).find("a").attr("aria-controls");
-      $(".related_form." + clickedTab).show();
       // hide the new work form from other tab if any
-      if ($(this).find('a[aria-expanded="false"]').length)
+      if ($(this).find('a[aria-expanded="false"]').length) {
         $('.embedded_div').hide();
+      }
+      $(".related_form." + clickedTab).show();
     })
 
     // remove organization when clicking no organization button  
@@ -398,7 +399,6 @@ $(document).on('turbolinks:load', function() {
       }
       $('#embedded_div_new_organization').hide();
     })
-
 
     $('#btn-select-media.has-processing-event-true').click(function() {
       // display a modal to prompt the user to confirm
@@ -420,8 +420,7 @@ $(document).on('turbolinks:load', function() {
       var addButtonId = $(this).attr('id');
       //console.log(addButtonId + ' clicked...')
       if (addButtonId == 'btn-add-parent-media') {
-console.log($(this).data('hasProcessingEvent'));
-        if ($(this).data('hasProcessingEvent') == 'true') {
+        if ($(this).data('hasProcessingEvent') == true) {
           // close the modal, immediately save the processing event form, then refresh the page
           $('#modal-select-parent-media').modal('hide');        
 
@@ -432,7 +431,7 @@ console.log($(this).data('hasProcessingEvent'));
           $(".btn-save-media").prop('disabled', true).val('Saving...');
           $("form#related_form_processing_event").submitRelatedWork(reloadPage);        
 
-        } else if ($(this).data('hasProcessingEvent') == 'false') {
+        } else if ($(this).data('hasProcessingEvent') == false) {
             alert('falas')
           $('#modal-select-parent-media-new-processing-event').modal('hide');
         }

@@ -78,7 +78,7 @@
     <% end %>
 <% else %>
     <%# display a new PO form, and place the parent media form inside %>
-    <div id="embedded_div_new_processing_event" class="embedded_div processing-event" data-relationship-control="#parent-relationships-processing-events" data-add-button="#btn-add-processing-event" style="">
+    <div id="embedded_div_new_processing_event" class="embedded_div related_form parent-media" data-relationship-control="#parent-relationships-processing-events" data-add-button="#btn-add-processing-event" style="display: none">
       <div class="col-sm-12">
         <div class="content-block">
           <%= simple_form_for [main_app, @new_processing_event_form], 

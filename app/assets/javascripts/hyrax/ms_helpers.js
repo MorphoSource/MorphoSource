@@ -38,7 +38,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 
   $(this_div).on("submit", this_form, function() {
   	// the new work form's save button has been clicked
- 		console.log(this_div + ' submitted form ... ' + $(this_form).attr('action') );
+ 		//console.log(this_div + ' submitted form ... ' + $(this_form).attr('action') );
 		$(this_div).addClass('ui-loading');
 		$('.btn').addClass('disabled');
 
@@ -46,7 +46,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 		$.post($(this_form).attr('action'),
 	  $(this_form).serialize(), function(data, status){
 	    // got the data back after the new work has been created
-	    console.log("ms_helper, after post: ", data.message, data);
+	    //console.log("ms_helper, after post: ", data.message, data);
 			var relationship_element = $(this_div).data("relationship-control");
 	  	var relationship_input = $(relationship_element).find('input[name*="[find_parent_work]"]');
 			$(relationship_input).val(data.work.id);

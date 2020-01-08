@@ -42,14 +42,14 @@ $(document).on('turbolinks:load', function() {
     for (i = 0; i < concatFieldCount; i++) {
       var concatFieldValue = concatFields[i].value;
       //console.log('concatFieldValue: '+concatFieldValue);
-
-      var step = concatFieldValue.match(/^Step: ([0-9]+), Type: /)[1];
-      var type = concatFieldValue.match(/, Type: (.*), Software: /)[1];
-      var software = concatFieldValue.match(/, Software: (.*), Description: /)[1];
-      var description = concatFieldValue.match(/, Description: (.*)/)[1];
-
-
-
+      var step = concatFieldValue.match(/^Step: ([0-9]+), Type: /)
+      step = (step) ? step[1] : '';
+      var type = concatFieldValue.match(/, Type: (.*), Software: /);
+      type = (type) ? type[1] : '';
+      var software = concatFieldValue.match(/, Software: (.*), Description: /);
+      software = (software) ? software[1] : '';
+      var description = concatFieldValue.match(/, Description: (.*)/);
+      description = (description) ? description[1] : '';
       // Assemble new triple fields
       var li = document.createElement('li');
       li.className =  'field-wrapper input-group input-append processing_activity_items';

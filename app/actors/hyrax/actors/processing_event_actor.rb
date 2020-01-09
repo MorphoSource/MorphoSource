@@ -4,11 +4,13 @@ module Hyrax
   module Actors
     class ProcessingEventActor < Hyrax::Actors::BaseActor
       def create(env)
+byebug
         env.attributes['title'] = [ generated_title(env) ]
         super
       end
 
       def update(env)
+byebug
         env.attributes['title'] = [ generated_title(env) ]
         super
       end

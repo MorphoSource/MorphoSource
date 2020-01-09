@@ -2,15 +2,18 @@ $(document).on('turbolinks:load', function() {
 
   if ($('form[id*="media"]').length) { // if media form page (add/edit)
 
-    if ($('form[id*="imaging_event"]').length)
-      IsImagingEventReady = false;
+    IsImagingEventOK = false;
+    IsProcessingEventOK = false;
+    
+    if ($('form[id*="related_form_imaging_event"]').length)
+      HasEditImagingEventForm = true;
     else
-      IsImagingEventReady = true;  // this means no IE form or IE is not editable
+      HasEditImagingEventForm = false; // this means no edit IE form or IE is not editable
 
-    if ($('form[id*="processing_event"]').length)
-      IsProcessingEventReady = false;
+    if ($('form[id*="related_form_processing_event"]').length)
+      HasEditProcessingEventForm = true;
     else
-      IsProcessingEventReady = true;
+      HasEditProcessingEventForm = false;
 
     setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
     setupEmbeddedWorkForm('organization', 'new', updateDevice);
@@ -303,18 +306,18 @@ $(document).on('turbolinks:load', function() {
   jQuery.fn.extend({
     submitRelatedWork: function (callback) {
       var relatedFormId = $(this).attr('id');
-      //console.log('submitting '+ relatedFormId );
+      console.log('submitting '+ relatedFormId );
       // replace with ajax form post to trigger other actions
       var postdata = $(this).serializeArray(); // convert form to array
       //postdata.push({name: "NonFormValue", value: 'foo'});
-      //        console.log("postdata: " + postdata );
+      //console.log("postdata: " + postdata );
       $.post($(this).attr('action'), $.param(postdata), function(data){
         //console.log("submitted work ID: " + data.id );
         if (relatedFormId.indexOf('imaging_event') != -1)
-          IsImagingEventReady = true;
+          IsImagingEventOK = true;
         else if (relatedFormId.indexOf('processing_event') != -1)
-          IsProcessingEventReady = true;        
-        callback();
+          IsProcessingEventOK = true;        
+        if (callback) callback();
       }, "json").fail(function(data) {
         console.log("getting a fail status ", data );
         var errors = data.responseJSON.errors;
@@ -327,7 +330,7 @@ $(document).on('turbolinks:load', function() {
           });
         }
         if (msg) alert(msg);
-        callback();
+        if (callback) callback();
       }).always(function(data) {
         
       });
@@ -444,40 +447,39 @@ $(document).on('turbolinks:load', function() {
     form.addEventListener("submit", function(mediaSubmitEvent) {
 
       mediaSubmitEvent.preventDefault();
-      disablePageAndSave();
-
       prepareFieldsBeforeSubmit();
-        
-      // submit each related work form
-      //$(".related_form form").each(function() {
-      //  $(this).submitRelatedWork(saveMediaIfReady);
-      //}) 
+      disablePageAndSave(".btn-save-media");
 
-      if (!IsImagingEventReady) {  
+      if (HasEditImagingEventForm) {
         $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
       } else {
+        IsImagingEventOK = true;
         submitProcessingEvent();
       }
 
       function submitProcessingEvent() {
-        if ($('form[id*="processing_event"]').length) { // if PE form 
+        console.log('submitProcessingEvent')
+        // only needs to save PE edit form. Note that for cases like raw media,
+        // which has no PE, the page will have a new PE form, which does not need
+        // to be submitted when saving the Media 
+        if (HasEditProcessingEventForm) {
           var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
           if (isFormValid) {
             $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
-          } else {
-            enablePageAndSave(".btn-save-media");
           }
         } else {
+          IsProcessingEventOK = true;
           saveMediaIfReady();
         }
       }
 
       function saveMediaIfReady() {
-        if (IsImagingEventReady && IsProcessingEventReady) {
-          disablePageAndSave(".btn-save-media");
+        console.log('saveMediaIfReady')
+        if (IsImagingEventOK && IsProcessingEventOK) {
           //console.log('updating media work...');
           form.submit();
         } else {
+          alert('imaging_event or processing_event not saved properly.');
           enablePageAndSave(".btn-save-media");
         }
       }

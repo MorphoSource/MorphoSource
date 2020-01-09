@@ -12,7 +12,9 @@ function enablePageAndSave(btn) {
 
 function disablePage() {
   // Create overlay and append to body:
-	if ($('#overlay-whole-page').length == 0) {
+	if ($('#overlay-whole-page').length) {
+
+	} else {
 	  $('<div id="overlay-whole-page" class="ui-loading-whole-page"/>').css({
 	      position: 'fixed',
 	      top: 0,
@@ -25,6 +27,7 @@ function disablePage() {
 }
 
 function enablePage() {
+alert('enablePage');
 	if ($('#overlay-whole-page').length)
 	  $('#overlay-whole-page').hide();
 }

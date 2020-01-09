@@ -15,7 +15,7 @@ $(document).on('turbolinks:load', function() {
     setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
     setupEmbeddedWorkForm('organization', 'new', updateDevice);
     setupEmbeddedWorkForm('biological_specimen', 'new');
-    setupEmbeddedWorkForm('processing_event', 'new', reloadPage);
+    setupEmbeddedWorkForm('processing_event', 'new');
     setupTooltip();
     removeLastRepeatable();
 
@@ -420,20 +420,15 @@ $(document).on('turbolinks:load', function() {
       var addButtonId = $(this).attr('id');
       //console.log(addButtonId + ' clicked...')
       if (addButtonId == 'btn-add-parent-media') {
+        // close the modal, immediately save the processing event form, then refresh the page
         if ($(this).data('hasProcessingEvent') == true) {
-          // close the modal, immediately save the processing event form, then refresh the page
           $('#modal-select-parent-media').modal('hide');        
-
-
-          // todo: disable the whole page with a spinner
-
-          
-          $(".btn-save-media").prop('disabled', true).val('Saving...');
+          disablePageAndSave(".btn-save-media");
           $("form#related_form_processing_event").submitRelatedWork(reloadPage);        
-
         } else if ($(this).data('hasProcessingEvent') == false) {
-            alert('falas')
           $('#modal-select-parent-media-new-processing-event').modal('hide');
+          disablePageAndSave(".btn-save-media");
+          $("form#new_processing_event").submitRelatedWork(reloadPage);        
         }
       } else {
         var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
@@ -449,7 +444,7 @@ $(document).on('turbolinks:load', function() {
     form.addEventListener("submit", function(mediaSubmitEvent) {
 
       mediaSubmitEvent.preventDefault();
-      $(".btn-save-media").prop('disabled', true).val('Saving...');
+      disablePageAndSave();
 
       prepareFieldsBeforeSubmit();
         
@@ -466,8 +461,12 @@ $(document).on('turbolinks:load', function() {
 
       function submitProcessingEvent() {
         if ($('form[id*="processing_event"]').length) { // if PE form 
-          buildProcessingActivity(); // populate the PA field before saving PE
-          $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
+          var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
+          if (isFormValid) {
+            $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
+          } else {
+            enablePageAndSave(".btn-save-media");
+          }
         } else {
           saveMediaIfReady();
         }
@@ -475,12 +474,11 @@ $(document).on('turbolinks:load', function() {
 
       function saveMediaIfReady() {
         if (IsImagingEventReady && IsProcessingEventReady) {
-          $(".btn-save-media").prop('disabled', true).val('Saving...');
+          disablePageAndSave(".btn-save-media");
           //console.log('updating media work...');
           form.submit();
         } else {
-          // re-enable save button
-          $(".btn-save-media").prop('disabled', false).val('Save');
+          enablePageAndSave(".btn-save-media");
         }
       }
 
@@ -492,7 +490,8 @@ $(document).on('turbolinks:load', function() {
 
     form.addEventListener("submit", function(mediaSubmitEvent) {
 
-      $(".btn-save-media").prop('disabled', true).val('Saving...');
+      //$(".btn-save-media").prop('disabled', true).val('Saving...');
+      disablePageAndSave(".btn-save-media");
 
       prepareFieldsBeforeSubmit();
 

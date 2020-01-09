@@ -28,8 +28,12 @@ $(document).on('turbolinks:load', function() {
     if (hasAdditionalEmptyField) { 
       concatFieldCount--;
       // also, build the Processing Activity fields before submit (only in the standalone PE form )
-      form.addEventListener("submit", function() {
-        buildProcessingActivity();
+      form.addEventListener("submit", function(peSubmitEvent) {
+        var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
+        if (!isFormValid) {
+          peSubmitEvent.preventDefault();
+          enablePage();
+        }
       });
     }
 
@@ -152,11 +156,17 @@ function buildProcessingActivity() {
     $('input[name="processing_event[processing_activity_software][]"]')[i].value = '';
     $('input[name="processing_event[processing_activity_description][]"]')[i].value = '';
   }
+
   // validate the step values
-  if (!stepsValid(steps.sort())) {
+  if (processingActivity.length == 0) {
+    // no need to validate if there is no processingActivity 
+    return true;
+  } else if (!stepsValid(steps.sort())) {
     alert('Please select the steps in sequence.');
-    event.preventDefault();
-  } 
+    return false;
+  } else {
+    return true;
+  }
 
 }
 

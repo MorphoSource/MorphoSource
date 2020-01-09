@@ -1,5 +1,34 @@
 // shared helper functions 
 
+function disablePageAndSave(btn) {
+  $(btn).prop('disabled', true).val('Saving...');
+  disablePage();
+}
+
+function enablePageAndSave(btn) {
+  $(btn).prop('disabled', false).val('Save');
+  enablePage();
+}
+
+function disablePage() {
+  // Create overlay and append to body:
+	if ($('#overlay-whole-page').length == 0) {
+	  $('<div id="overlay-whole-page" class="ui-loading-whole-page"/>').css({
+	      position: 'fixed',
+	      top: 0,
+	      left: 0,
+	      width: '100%',
+	      height: $(window).height() + 'px'
+	  }).hide().appendTo('body'); 
+	}
+  $('#overlay-whole-page').show();
+}
+
+function enablePage() {
+	if ($('#overlay-whole-page').length)
+	  $('#overlay-whole-page').hide();
+}
+
 function toTitleCase(str) {
   return str.replace(/(?:^|\s)\w/g, function(match) {
     return match.toUpperCase();
@@ -38,7 +67,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 
   $(this_div).on("submit", this_form, function() {
   	// the new work form's save button has been clicked
- 		//console.log(this_div + ' submitted form ... ' + $(this_form).attr('action') );
+ 		console.log(this_div + ' submitting new work form: ' + $(this_form).attr('action') );
 		$(this_div).addClass('ui-loading');
 		$('.btn').addClass('disabled');
 
@@ -142,7 +171,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
   $(this_div).on("click", ".cancel", function() {
   	// might need to loop and reset each form
 		$(this_div).find('form')[0].reset();
-		$(this_div).hide();
+		$(this_div).not('.persist_with_tab').hide();
 		closeLinkedContent(this_div);
   });
 }
@@ -193,10 +222,3 @@ function removeLastRepeatable() {
   })
 	window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle	
 }
-
-
-
-
-
-
-

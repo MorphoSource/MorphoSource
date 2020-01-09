@@ -555,7 +555,6 @@ class SubmissionsController < ApplicationController
     # this method is expected to be called from a form in modal, or an ajax post
     begin
       processing_event_model_params = Hyrax::ProcessingEventForm.model_attributes(params[:processing_event])
-byebug
       new_processing_event_id = create_work(ProcessingEvent, processing_event_model_params)
     rescue Exception => ex
       new_processing_event_id = nil 

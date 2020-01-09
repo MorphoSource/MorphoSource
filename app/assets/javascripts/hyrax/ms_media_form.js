@@ -458,7 +458,6 @@ $(document).on('turbolinks:load', function() {
       }
 
       function submitProcessingEvent() {
-        console.log('submitProcessingEvent')
         // only needs to save PE edit form. Note that for cases like raw media,
         // which has no PE, the page will have a new PE form, which does not need
         // to be submitted when saving the Media 
@@ -474,7 +473,6 @@ $(document).on('turbolinks:load', function() {
       }
 
       function saveMediaIfReady() {
-        console.log('saveMediaIfReady')
         if (IsImagingEventOK && IsProcessingEventOK) {
           //console.log('updating media work...');
           form.submit();

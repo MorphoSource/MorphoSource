@@ -7,7 +7,8 @@
                       autocomplete: 'off',
                       data: {
                         autocomplete: 'work',
-                        'autocomplete-url' => find_media_autocomplete_url()
+                          'autocomplete-url' => find_parent_media_to_add_autocomplete_url(@curation_concern.id),
+                          'exclude-work': @curation_concern.id || "NewRecord" # exclude this item from the result set.
                       } %>
   </div>
 

@@ -53,6 +53,10 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_works?' + type_params.join('&')
   end
 
+  def find_parent_media_to_add_autocomplete_url(current_media_id)
+    Rails.application.routes.url_helpers.qa_path + '/search/find_parent_media_to_add?type[]=Media&current_media_id=' + current_media_id + '&id=NA&q='
+  end
+
   def organization_selector
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
     hits = organizations

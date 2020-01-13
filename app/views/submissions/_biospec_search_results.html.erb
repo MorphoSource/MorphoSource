@@ -23,10 +23,10 @@
         No Biological Specimens found in IDigBio that match the search criteria.
       </div>
     <% else %>
-      <div id="submission_select_idigbio">
-        <%= f.input :idigbio_id,
-                    as: :radio_buttons,
-                    collection: @idigbio.map{ |idb| [ idb['data']['dwc:scientificName'], idb['uuid'] ]} %>
+      <div id="submission_link_idigbio">
+        <% @idigbio.each do |idb| %>
+          <%= link_to idb['data']['dwc:scientificName'], stage_biological_specimen_from_idigbio_submissions_path(@submission, idigbio_id: idb['uuid']), method: :post %><br/>
+        <% end %>
       </div>
     <% end %>
     <div>

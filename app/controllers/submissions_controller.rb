@@ -57,7 +57,7 @@ class SubmissionsController < ApplicationController
     if params['biospec_search'].present?
       @docs = search_biospec
       @idigbio = search_idigbio
-      if @docs.nil? || @docs.empty?
+      if (@docs.nil? || @docs.empty?) && (@idigbio.nil? || @idigbio.empty?)
         # if no search result, user might need to go back to initial step
         @submission.saved_step = ""
       else
@@ -163,6 +163,22 @@ class SubmissionsController < ApplicationController
     @submission.biospec_id = 'new'
     store_submission
     biospec_model_params = Hyrax::BiologicalSpecimenForm.model_attributes(params[:biological_specimen])
+    session[:submission_biospec_create_params] = biospec_model_params
+    render_and_save 'device'
+  end
+
+  def stage_biological_specimen_from_idigbio
+    reinstantiate_submission
+    @submission.biospec_id = 'new'
+    @submission.taxonomy_id = 'new'
+    store_submission
+    # we should also search for/create the Taxonomy work here, since for IDigBio creation we don't have separate steps
+    # TODO: search for existing Taxonomy
+    Rails.logger.info(Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id]).inspect)
+    taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id]))
+    session[:submission_taxonomy_create_params] = taxonomy_model_params
+    Rails.logger.info(session[:submission_taxonomy_create_params].inspect)
+    biospec_model_params = Hyrax::BiologicalSpecimenForm.model_attributes(Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(params[:idigbio_id]))
     session[:submission_biospec_create_params] = biospec_model_params
     render_and_save 'device'
   end
@@ -284,6 +300,7 @@ class SubmissionsController < ApplicationController
     end
     if @taxonomy_create_params.present?
       @submission.taxonomy_id = create_taxonomy(@taxonomy_create_params)
+      Rails.logger.info("Created taxonomy ID: #{@submission.taxonomy_id}")
     end
     if @biospec_create_params.present?
       @submission.biospec_id = create_biological_specimen(@biospec_create_params)
@@ -472,7 +489,7 @@ class SubmissionsController < ApplicationController
       taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(params[:taxonomy])
       new_taxonomy_id = create_taxonomy(taxonomy_model_params)
     rescue
-      new_taxonomy_id = nil    
+      new_taxonomy_id = nil
     end
 
     if new_taxonomy_id.present?
@@ -499,7 +516,7 @@ class SubmissionsController < ApplicationController
         :taxonomy_subgenus => new_taxonomy.taxonomy_subgenus.first,
         :taxonomy_species => new_taxonomy.taxonomy_species.first,
         :taxonomy_subspecies => new_taxonomy.taxonomy_subspecies.first,
-        :depositor => new_taxonomy.depositor        
+        :depositor => new_taxonomy.depositor
       }
     else
       status = 'FAIL'

@@ -12,8 +12,69 @@ module Morphosource
       'institution_code' => 'institutioncode'
     }
 
+    # see: https://docs.google.com/spreadsheets/d/1LJRtcC9cjRNehThsOpnZGLvTny3Zt05aKPIxSlkBzSg/
+    IDIGBIO_DATA_BSO_MAPPING = {
+      'dwc:institutionCode' => 'institution_code',
+      'dwc:collectionCode' => 'collection_code',
+      'dwc:catalogNumber' => 'catalog_number',
+      'dwc:occurrenceID' => 'occurence_id',
+      'dcterms:references' => 'related_url',
+      'dwc:recordedBy' => 'creator',
+      'dwc:sex' => 'sex',
+      'dwc:decimalLatitude' => 'latitude',
+      'dwc:decimalLongitude' => 'longitude',
+      'dwc:earliestEpochOrLowestSeries' => 'periodic_time',
+      'dwc:locality' => 'original_location',
+      'dwc:verbatimLocality' => 'original_location',
+      'dwc:country' => 'original_location'
+    }
+
+    IDIGBIO_TAXONOMY_MAPPING = {
+      'dwc:genus' => 'taxonomy_genus',
+      'dwc:specificEpithet' => 'taxonomy_species',
+      'dwc:infraspecificEpithet' => 'taxonomy_subspecies'
+    }
+
     def self.call(params={})
       new(params).call
+    end
+
+    # Given an IDigBio UUID, search for the UUID
+    # and create MorphoSource BiologicalSpecimen params
+    # using the resulting mapped metadata
+    def self.biological_specimen_params_from_idigbio(idigbio_uuid)
+      # set vouchered to true
+      # set description to: "Imported from iDigBio. UUID: {#uuid} Occurrence ID: {#data.occurrence_id}"
+      # set idigbio_recordset_id to indexTerms['recordset']
+      # set idigbio_uuid to uuid
+      # set original_location to whichever of dwc:locality, dwc:verbatimLocality, dwc:country occurs first
+      idb = IDigBio.view(idigbio_uuid)
+      bso_params = {
+        'idigbio_uuid' => idigbio_uuid,
+        'description' => "Imported from iDigBio. UUID: #{idigbio_uuid} Occurrence ID: #{idb['data']['dwc:occurrenceId']}",
+        'idigbio_recordset_id' => idb['indexTerms']['recordset'],
+        'vouchered' => true
+      }
+      IDIGBIO_DATA_BSO_MAPPING.each do |key, value|
+        if idb['data'].has_key?(key)
+          bso_params[value] ||= idb['data'][key]
+        end
+      end
+      return ActionController::Parameters.new(bso_params)
+    end
+
+    # Given an IDigBio UUID, search for the UUID
+    # and create MorphoSource Taxonomy params
+    # using the resulting mapped metadata
+    def self.taxonomy_params_from_idigbio(idigbio_uuid)
+      idb = IDigBio.view(idigbio_uuid)
+      taxonomy_params = {}
+      IDIGBIO_TAXONOMY_MAPPING.each do |key, value|
+        if idb['data'].has_key?(key)
+          taxonomy_params[value] ||= idb['data'][key]
+        end
+      end
+      return ActionController::Parameters.new(taxonomy_params)
     end
 
     def initialize(params={})

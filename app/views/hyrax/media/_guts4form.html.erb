@@ -8,7 +8,7 @@
             <i class="fas fa-frog"></i> Physical Object
           </a>
         </li>
-        <li role="presentation" id="tab-parent-media" class="active">
+        <li role="presentation" id="tab-parent-media" class="">
           <a href="#parent-media" aria-controls="parent-media" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fas fa-frog"></i> Parent Media
           </a>
@@ -37,7 +37,7 @@
             <i class="fas fa-frog"></i> File Upload
           </a>
         </li>
-        <li role="presentation" id="tab-media-details" class="">
+        <li role="presentation" id="tab-media-details" class="active">
           <a href="#media-details" aria-controls="media-details" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fas fa-frog"></i> Media Details
           </a>
@@ -55,7 +55,7 @@
           </div>
         </div>
 
-        <div role="tabpanel" class="tab-pane active" id="parent-media">
+        <div role="tabpanel" class="tab-pane" id="parent-media">
           <div class="form-tab-content">
 
               <%# the form is in _form_media_edit %>
@@ -99,7 +99,7 @@
           </div>
         </div>
 
-        <div role="tabpanel" class="tab-pane " id="media-details">
+        <div role="tabpanel" class="tab-pane active" id="media-details">
           <div class="form-tab-content">
 
             <%= render 'tab_media_details', f: f %>

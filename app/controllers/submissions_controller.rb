@@ -174,10 +174,8 @@ class SubmissionsController < ApplicationController
     store_submission
     # we should also search for/create the Taxonomy work here, since for IDigBio creation we don't have separate steps
     # TODO: search for existing Taxonomy
-    Rails.logger.info(Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id]).inspect)
     taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id]))
     session[:submission_taxonomy_create_params] = taxonomy_model_params
-    Rails.logger.info(session[:submission_taxonomy_create_params].inspect)
     biospec_model_params = Hyrax::BiologicalSpecimenForm.model_attributes(Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(params[:idigbio_id]))
     session[:submission_biospec_create_params] = biospec_model_params
     render_and_save 'device'
@@ -300,7 +298,6 @@ class SubmissionsController < ApplicationController
     end
     if @taxonomy_create_params.present?
       @submission.taxonomy_id = create_taxonomy(@taxonomy_create_params)
-      Rails.logger.info("Created taxonomy ID: #{@submission.taxonomy_id}")
     end
     if @biospec_create_params.present?
       @submission.biospec_id = create_biological_specimen(@biospec_create_params)

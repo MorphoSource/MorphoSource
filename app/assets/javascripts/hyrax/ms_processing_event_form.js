@@ -27,20 +27,22 @@ $(document).on('turbolinks:load', function() {
 
     if (hasAdditionalEmptyField) { 
       concatFieldCount--;
-      // also, build the Processing Activity fields before submit (only in the standalone PE form )
-      form.addEventListener("submit", function(peSubmitEvent) {
-        var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
-        if (!isFormValid) {
-          peSubmitEvent.preventDefault();
-          enablePage();
-        }
-      });
     }
 
     // remove the first set of fields if in editing (not adding) mode
     if (concatFieldCount > 0) {
       $(targetWrapperUl).children("li").remove();
     }
+
+    // build and validate the Processing Activity fields before submit 
+    // note: this has been moved out of "    if (hasAdditionalEmptyField) {  " condition block
+    form.addEventListener("submit", function(peSubmitEvent) {
+      var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
+      if (!isFormValid) {
+        peSubmitEvent.preventDefault();
+        enablePage();
+      }
+    });
 
     // When editing a record, this populates the individual fields with previously saved metadata.
     for (i = 0; i < concatFieldCount; i++) {

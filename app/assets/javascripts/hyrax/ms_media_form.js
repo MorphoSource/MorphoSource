@@ -430,8 +430,11 @@ $(document).on('turbolinks:load', function() {
           $("form#related_form_processing_event").submitRelatedWork(reloadPage);        
         } else if ($(this).data('hasProcessingEvent') == false) {
           $('#modal-select-parent-media-new-processing-event').modal('hide');
-          disablePageAndSave(".btn-save-media");
-          $("form#new_processing_event").submitRelatedWork(reloadPage);        
+          var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
+          if (isFormValid) {
+            disablePageAndSave(".btn-save-media");
+            $("form#new_processing_event").submitRelatedWork(reloadPage);        
+          }
         }
       } else {
         var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];

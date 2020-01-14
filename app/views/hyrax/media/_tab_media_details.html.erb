@@ -20,7 +20,15 @@
 
       <%= @presenter.attribute_to_html(:data_managed_by, render_as: :showcase_user_link, include_empty: true, html_dl: false) %>
 
-      --- permission here ---
+      <div class="row">
+        <div class="col-xs-12 showcase-label">Download permission
+          <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-permissions" class="btn collapse-block-permissions"><span class="glyphicon glyphicon-triangle-bottom collapse-block-permissions"></span></a>
+        </div>
+      </div>
+
+      <div id="collapse-block-permissions" class="panel-collapse collapse-block glyphicon-only col-xs-12 table collapse out" aria-expanded="false">
+        <%= render 'ms_form_visibility_component', f: f %>
+      </div>
 
       <%= @presenter.attribute_to_html(:download_permission, render_as: :showcase_default, include_empty: true, html_dl: false) %>
 

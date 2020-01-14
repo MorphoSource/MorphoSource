@@ -221,7 +221,7 @@ div.showcase-edit {
   }
 
   .input-group-btn.field-controls .btn {
-    padding: 0;
+    padding: 0 0 0 .2em;
   }
 
   .content-block {
@@ -315,6 +315,10 @@ div.showcase-edit {
 
   #parent-media .table-cell:not(.line) {
     padding-top:4px;
+  }
+
+  .collapse-block .visibility {
+    font-size: 11px;
   }
 
 } /* / div.showcase-edit */

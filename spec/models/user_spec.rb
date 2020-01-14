@@ -32,7 +32,7 @@ RSpec.describe User, type: :model do
     allow(Media).to receive(:find).with('ddd').and_return(work4)
     allow(Media).to receive(:find).with('eee').and_return(work5)
     allow(Media).to receive(:find).with('fff').and_return(work6)
-    
+
     allCartItems.each(&:touch)
   end
 
@@ -198,6 +198,9 @@ RSpec.describe User, type: :model do
       let(:manager_roles)         { [role1, role2, role3] }
 
       before do
+        team_a.create_collection_groups
+        team_b.create_collection_groups
+        team_c.create_collection_groups
         allow(user).to receive(:roles).and_return(manager_roles)
         allow(Collection).to receive(:where).with(id: [team_a.id, team_b.id, team_c.id]).and_return([team_a, team_b, team_c])
       end

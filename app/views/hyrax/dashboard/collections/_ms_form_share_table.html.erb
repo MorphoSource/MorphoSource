@@ -17,6 +17,10 @@
         <tr>
           <td><%= user.email %></td>
           <td><%= user.display_name %></td>
+          <% if @collection.parent? && @collection.first_parent.group_members.include?(user) %>
+           <td>Update Access From Parent</td>
+           <td></td>
+          <% else %>
           <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'user-participants-form' }) do |f| %>
             <% if access == 'managers' && group.users.count < 2 %>
               <td>
@@ -36,6 +40,7 @@
                 <%= submit_tag 'Update', class: 'btn btn-info edit-collection-add-user-sharing-button', disabled: true %>
               </td>
             <% end %>
+          <% end %>
           <% end %>
         </tr>
       <% end %>

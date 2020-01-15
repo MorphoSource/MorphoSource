@@ -115,6 +115,8 @@ Rails.application.routes.draw do
       post 'new_organization_submit'
       get 'new_taxonomy'
       post 'new_taxonomy_submit'
+      post 'new_device_submit'
+      post 'new_processing_event_submit'
     end
   end
 

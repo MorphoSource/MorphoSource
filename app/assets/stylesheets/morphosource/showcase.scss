@@ -46,7 +46,13 @@ html {
   padding-right:0 !important;
   padding-left:0 !important;
 }
-
+.ui-loading-whole-page {
+  background: image-url('loading.gif') center center no-repeat;
+  background-color: #fff;
+  background-size: 90px;
+  opacity: .5;
+  z-index: 9999;
+}
 
 div.showcase {
 
@@ -58,7 +64,7 @@ div.showcase {
     border-radius: 0;
   }
 
-  .btn-primary, .btn-default {
+  .btn-primary, .btn-default, .btn-sm, .btn-big {
     background-color: $button-color;
     color: $button-font-color;
     border-color: $button-border-color;
@@ -254,8 +260,11 @@ div.showcase {
     font-style: normal;
   }
 
+  .indicators-wrapper .row {
+    margin-left: 0;
+  }
 
-  .image-acq-detail {
+  .image-acq-detail, .indicators-wrapper {
     .indicators {
       position: relative;
       float: left;
@@ -318,6 +327,7 @@ div.showcase {
     margin-top:8px;
     position:relative;
     z-index:2;
+      bottom:5px;
   }
   .circle.first:before,
   .circle.last:before {
@@ -341,6 +351,24 @@ div.showcase {
       bottom: 0;
       margin-right:0;
       right:17px;
+  }
+  /* styles for parent media tab, solid vertical line */
+  .line.solid:after {
+    content:" ";
+    width:2px;
+    position:absolute;
+    z-index:1;
+    top:0;
+    bottom:0;
+    left:50%;
+    background: #ddd;
+    background-size: 100% 10px;
+  }
+  .line.solid.one-circle-only:after {
+    background: #fff;
+  }
+  .line.solid .circle.last {
+      bottom: 13px;
   }
 
   .showcase-label, .showcase-value,
@@ -447,7 +475,7 @@ div.showcase {
       .btn {
         margin-left: 0.5vw;
         margin-bottom: 4px;
-        /* min-width: 86px; */
+        min-width: 86px;
         @media (max-width: 990px) { /* show 1 button on each line when smaller than this width */
           float: none;
           display: block;

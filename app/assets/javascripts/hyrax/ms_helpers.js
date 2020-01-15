@@ -1,5 +1,43 @@
 // shared helper functions 
 
+function disablePageAndSave(btn) {
+  $(btn).prop('disabled', true).val('Saving...');
+  disablePage();
+}
+
+function enablePageAndSave(btn) {
+  $(btn).prop('disabled', false).val('Save');
+  enablePage();
+}
+
+function disablePage() {
+  // Create overlay and append to body:
+	if ($('#overlay-whole-page').length) {
+
+	} else {
+	  $('<div id="overlay-whole-page" class="ui-loading-whole-page"/>').css({
+	      position: 'fixed',
+	      top: 0,
+	      left: 0,
+	      width: '100%',
+	      height: $(window).height() + 'px'
+	  }).hide().appendTo('body'); 
+	}
+  $('#overlay-whole-page').show();
+}
+
+function enablePage() {
+alert('enablePage');
+	if ($('#overlay-whole-page').length)
+	  $('#overlay-whole-page').hide();
+}
+
+function toTitleCase(str) {
+  return str.replace(/(?:^|\s)\w/g, function(match) {
+    return match.toUpperCase();
+  });
+}
+
 // functions for show/edit fields
 function show_fields(field_array) {
   $(field_array.join(',')).removeClass('hide');
@@ -22,7 +60,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	var this_btn = "#btn_" + action + '_' + work_name;
 	var this_div = "#embedded_div_" + action + '_' + work_name;
 	var this_form = "form#" + action + '_' + work_name;
-	var this_path = "/submissions/" + action + '_' + work_name;
+	//var this_path = "/submissions/" + action + '_' + work_name;
 	var detail_div = '#' + work_name + '_details';
 
   $(document).on("click", this_btn, function() {		
@@ -32,6 +70,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 
   $(this_div).on("submit", this_form, function() {
   	// the new work form's save button has been clicked
+ 		console.log(this_div + ' submitting new work form: ' + $(this_form).attr('action') );
 		$(this_div).addClass('ui-loading');
 		$('.btn').addClass('disabled');
 
@@ -39,7 +78,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 		$.post($(this_form).attr('action'),
 	  $(this_form).serialize(), function(data, status){
 	    // got the data back after the new work has been created
-	    //console.log(data.message, data);
+	    //console.log("ms_helper, after post: ", data.message, data);
 			var relationship_element = $(this_div).data("relationship-control");
 	  	var relationship_input = $(relationship_element).find('input[name*="[find_parent_work]"]');
 			$(relationship_input).val(data.work.id);
@@ -48,11 +87,22 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 					id: data.work.id, 
 					text: data.work.title,
 					institution_code: data.work.institution_code,
+					institution_name: data.work.institution_name,
+					collection_code: data.work.collection_code,
 	        description: data.work.description,
 	        address: data.work.address, 
 	        city: data.work.city, 
 	        state_province: data.work.state_province,
 	        country: data.work.country
+				};
+			} else if (work_name == 'device') {
+				var new_data = {
+					id: data.work.id, 
+					text: data.work.title,
+					creator: data.work.creator,
+					modality: data.work.modality,
+	        description: data.work.description,
+	        organization_institution: data.work.organization_institution
 				};
 			} else if (work_name == 'taxonomy') {
 				var new_data = {
@@ -78,12 +128,34 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
           depositor: data.work.depositor,
           depositor_link: depositorLink(data.work.depositor)
 				}
+			} else if (work_name == 'biological_specimen') {
+				var new_data = {
+					id: data.work.id, 
+					text: data.work.title,
+					bibliographic_citation: data.bibliographic_citation,
+					catalog_number: data.catalog_number,
+					collection_code: data.collection_code,
+					canonical_taxonomy: data.canonical_taxonomy,
+					institution_code: data.institution_code,
+					latitude: data.latitude,
+					longitude: data.longitude,
+					numeric_time: data.numeric_time,
+					original_location: data.original_location,
+					periodic_time: data.periodic_time,
+					vouchered: data.vouchered,
+					idigbio_recordset_id: data.idigbio_recordset_id,
+					idigbio_uuid: data.idigbio_uuid,
+					is_type_specimen: data.is_type_specimen,
+					occurrence_id: data.occurrence_id,
+					sex: data.sex
+				}
 			} else {
 				var new_data = {
 					id: data.work.id, 
 					text: data.work.title
 				};
 			}
+			//console.log('populating new_data into new-work-created ', new_data)
 	    $(relationship_element).data('new-work-created', new_data);
 			var relationship_add_btn = $(this_div).data("add-button");
 			$(relationship_add_btn).trigger("click");
@@ -97,9 +169,59 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 	  });
 	  
 		return false;
-  });
+  }); // end submit
+
   $(this_div).on("click", ".cancel", function() {
+  	// might need to loop and reset each form
 		$(this_div).find('form')[0].reset();
-		$(this_div).hide();
+		$(this_div).not('.persist_with_tab').hide();
+		closeLinkedContent(this_div);
   });
+}
+
+function closeLinkedContent(thisDiv) {
+	var linkedContentBlocks = $(thisDiv).data("linked-content-blocks");
+	if (linkedContentBlocks) {
+		linkedContentBlocks = linkedContentBlocks.split(',');
+		$.each( linkedContentBlocks, function( key, blockSelector ) {
+			$(blockSelector).hide();
+		})
+	}
+}
+
+function setupTooltip() {
+  $('.tooltip-icon').tooltip({ 
+    title: function(){
+      return $(this).find('.hint').text() 
+    } 
+  })
+}
+
+function removeLastRepeatable() {
+  // remove the last repeatable field for each group
+  $('.form-group.multi_value').each(function(i) {
+  	// do not remove if there is only one field
+    if ($(this).find('.listing .input-group').length > 1) {
+	    var lastli = $(this).find('.listing .input-group:last-child');
+	    /* remove only:  
+	    	either input or select field exists
+	    	if input field exists, input must be empty
+	    	if select field exists, nothing is selected
+	    */
+	  	var isRemovable = true;
+			var lastInput = lastli.find('input');
+			var lastSelect = lastli.find('select');
+	    if (lastInput.length && lastInput.val() != '') {
+	    	isRemovable = false;
+  		}
+	    if (lastSelect.length && lastSelect.val() != '') {
+	    	isRemovable = false;
+  		}
+  		if ( (lastInput.length || lastSelect.length) && (isRemovable) ) {
+		    lastli.find('.remove').trigger('click');	    	
+  		}
+
+    }
+  })
+	window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle	
 }

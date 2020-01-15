@@ -28,7 +28,10 @@ module Hyrax
                  '1_column'
                when 'showcase'
                  'morphosource_2_columns'
-               # todo: later might need to add different layout for EDIT or other actions here
+               when 'edit'
+                 'morphosource_2_columns'
+               when 'update'
+                 'morphosource_2_columns'
                else
                  'dashboard'
                end
@@ -39,6 +42,30 @@ module Hyrax
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       @presenter.get_showcase_data
       render '/hyrax/media/showcase', presenter: @presenter
+    end
+
+    # overriding action methods from works_controller_behavior.rb
+    def edit
+      build_form
+      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter.get_showcase_data
+      if @presenter.hasImagingEvents?
+        ie_work = @presenter.imaging_event
+        @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
+      end
+      if @presenter.hasProcessingEvents?
+        pe_work = @presenter.processing_events.first
+        @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
+      end
+      @new_device_submit_submissions_url = '/submissions/new_device_submit'
+      @new_device_form = Hyrax::WorkFormService.build(::Device.new, current_ability, self)
+      @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
+      @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
+      @countries_service = Morphosource::CountriesService.new
+      @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
+      @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
+      render '/hyrax/media/edit', presenter: @presenter
+      #render '/hyrax/base/edit', presenter: @presenter
     end
 
     # GET /concern/media/zip?ids[]=filesetid1&ids[]=filesetid2
@@ -94,7 +121,26 @@ module Hyrax
         respond_to do |wants|
           wants.html do
             build_form
-            render 'edit', status: :unprocessable_entity
+            #render 'edit', status: :unprocessable_entity
+            # todo: make sure to handle error when changing media type
+            @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+            @presenter.get_showcase_data
+            if @presenter.hasImagingEvents?
+              ie_work = @presenter.imaging_event
+              @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
+            end
+            if @presenter.hasProcessingEvents?
+              pe_work = @presenter.processing_events.first
+              @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
+            end
+            @new_device_submit_submissions_url = '/submissions/new_device_submit'
+            @new_device_form = Hyrax::WorkFormService.build(::Device.new, current_ability, self)
+            @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
+            @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
+            @countries_service = Morphosource::CountriesService.new
+            @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
+            @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
+            render '/hyrax/media/edit', presenter: @presenter, status: :unprocessable_entity
           end
           wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
         end

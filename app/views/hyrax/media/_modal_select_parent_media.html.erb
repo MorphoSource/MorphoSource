@@ -1,0 +1,22 @@
+<!-- Modal for clicking selecting a parent media 
+https://getbootstrap.com/docs/4.0/components/modal/ -->
+<div class="modal fade" id="modal-select-parent-media" tabindex="-1" role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-label">Selecting a parent media
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        </h5>
+      </div>
+      <div class="modal-body">
+        You have selected a parent media.  This change will be saved immediately and the page will be refreshed.  Click OK to continue, or Cancel to go back.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onClick="        $('#btn-add-parent-media').trigger('click');">OK</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

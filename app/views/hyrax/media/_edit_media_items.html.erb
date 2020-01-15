@@ -1,0 +1,23 @@
+<% 
+array_of_ids = presenter.list_of_item_ids_to_display_for_showpage 
+media_count = array_of_ids.count
+items_per_row = 3
+items_to_show_initially = 6
+%>
+	<h2><%= media_count %> MEDIA RELATED TO SAME ACQUISITION EVENT </h2>
+	<%  members = presenter.member_presenters_for(array_of_ids) %>
+	<% if members.present? %>
+		<div class="media-block">
+			<%= render partial: @presenter.showcase_media_items_member_partial, collection: members, as: :showcase_media_items_member, :locals => {:media_count => media_count, :items_per_row => items_per_row, :items_to_show_initially => items_to_show_initially} %>
+			
+			<% if media_count > items_to_show_initially %>
+				</div><!-- closing the collapse-block-media-items-member div -->
+			<% end %>
+
+		</div>
+		
+		<% if media_count > items_to_show_initially %>
+			<%= collapse_expand_panel("collapse-block-media-items-member") %>
+		<% end %>
+
+	<% end %>

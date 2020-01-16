@@ -16,6 +16,8 @@ Rails.application.routes.draw do
     get 'concern/media/new', to: 'media#new'
     get 'concern/media/zip', to: 'media#zip'
     get 'concern/media/:id', to: 'media#showcase'
+    # in case we need to reference the old edit page. remove this hyraxedit route later
+    get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
     get 'concern/parent/:parent_id/media/:id', to: 'media#showcase'
     # setup temp routes for the default views (for debugging)
     # remove them later if no longer needed

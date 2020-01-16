@@ -463,16 +463,26 @@ module Hyrax
         file_set_presenters.any? { |presenter| presenter.volume? && current_ability.can?(:read, presenter.id) }
       end
 
-      #TODO: Update once publication statuses have been implemented fully
       def get_download_permission(media)
-        case media.fileset_accessibility.first
-        when "open"
-          "open"
-        when "restricted_download"
-          "restricted"
+        if media.embargo.present? && media.embargo.visibility_during_embargo.present?
+          display_value = "Embargo"
+        elsif media.lease.present? && media.lease.visibility_during_lease.present?
+          display_value = "Lease"
         else
-          "forbidden"
+          case media.fileset_accessibility.first
+          when 'open'
+            display_value = "Publish with Open Download"
+          when 'restricted_download'
+            display_value = "Publish with Restricted Download"
+          when 'preview_only'
+            display_value = "Publish with No Download"
+          when 'hidden'
+            display_value = "Publish with Hidden File"
+          when 'private'
+            display_value = "Private"
+          end
         end
+        display_value
       end
 
   end

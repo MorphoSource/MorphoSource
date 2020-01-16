@@ -1,62 +1,47 @@
 function set_initial_value() {
   let selected_visibility = $('#selected_visibility').attr('class');
-//  let selected_radio = $('input[name="media[visibility]"]:checked').val();
 
   let open = $('#media_visibility_open');
   let restricted_download = $('#media_visibility_restricted_download');
   let preview = $('#media_visibility_preview');
   let hidden = $('#media_visibility_hidden');
 
-//  let selected_radio_value = selected_radio.val();
-//  if ($('#selected_visibility').length) {
-//    console.log('select_visibility = ' + select_visibility);
-//  } else if ($('input[name="media[visibility]"]').length) {
-//    console.log(selected_radio_value + ' checked')    
-//  }
-
-
-//  let restricted = $('#media_visibility_restricted');
-//  let embargo = $('#media_visibility_embargo');
-//  let lease = $('#media_visibility_lease');
-
   let current_visibility_value = $('#current_visibility_value');
 
   switch (selected_visibility) {
     case 'new':
       select_visibility(open);
-      display_value = "Open";
+      display_value = "Publish with Open Download";
+      display_class = "label-success";
+      break;
+    case 'open':
+      select_visibility(open);
+      display_value = "Publish with Open Download";
+      display_class = "label-success";
       break;
     case 'restricted_download':
       select_visibility(restricted_download)
-      display_value = "Restricted download";
+      display_value = "Publish with Restricted Download";
+      display_class = "label-info";
       break;
     case 'preview_only':
       select_visibility(preview)
-      display_value = "Preview only";
+      display_value = "Publish with No Download";
+      display_class = "label-info";
       break;
     case 'hidden':
       select_visibility(hidden)
-      display_value = "Hidden";
+      display_value = "Publish with Hidden File";
+      display_class = "label-info";
       break;
-
-//    case 'private':
-//      select_visibility(restricted)
-//      display_value = "Private";
-//      break;
-//    case 'embargo':
-//      select_visibility(embargo)
-//      display_value = "Embargo";
-//      break;
-//    case 'lease':
-//      select_visibility(lease)
-//      display_value = "Lease";
-//      break;
     default:
-      display_value = "";
+      display_value = "Private";
+      display_class = "label-danger";
   }
 
-  if (current_visibility_value.length && display_value != "") {
-    current_visibility_value.text(display_value)
+  if (current_visibility_value.length) {
+    current_visibility_value.text(display_value);
+    current_visibility_value.addClass(display_class);
   }
 }
 

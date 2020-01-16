@@ -26,19 +26,15 @@
         </div>
         <div class="col-xs-6 showcase-value">
           <div class="m-0 p-0 text-nowrap">            
+          <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
           <% if f.object.embargo_release_date %>
-            <span>Embargo</span>
+            <span class="label label-warning">Embargo</span>
           <% elsif f.object.lease_expiration_date %>
-            <span>Lease</span>
-
-
--- need to handle private status --------
-
-
+            <span class="label label-warning">Lease</span>
           <% else %>
-            <span id="current_visibility_value"></span>
+            <span class="label" id="current_visibility_value"></span>
           <% end %>
-          <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility"><span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
+            <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
           <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
             <%= render 'ms_form_visibility_component', f: f %>
           </div>

@@ -30,6 +30,9 @@ module Hyrax
                  'morphosource_2_columns'
                when 'edit'
                  'morphosource_2_columns'
+               # in case we need to reference the old edit page. remove this action later
+               when 'hyraxedit' 
+                 '1_column'
                when 'update'
                  'morphosource_2_columns'
                else
@@ -65,7 +68,13 @@ module Hyrax
       @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
       @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
       render '/hyrax/media/edit', presenter: @presenter
-      #render '/hyrax/base/edit', presenter: @presenter
+    end
+
+    # in case we need to reference the old edit page. remove this action later
+    def hyraxedit
+      build_form
+      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      render '/hyrax/base/edit', presenter: @presenter
     end
 
     # GET /concern/media/zip?ids[]=filesetid1&ids[]=filesetid2

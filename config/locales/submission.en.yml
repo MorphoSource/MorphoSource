@@ -21,6 +21,7 @@ en:
       morphosource_search_results: 'Biological Specimens in MorphoSource'
       morphosource_empty_search_results: 'No Biological Specimens found in MorphoSource that match the search criteria.'
       biospec_empty_search_results: 'No Biological Specimens found in MorphoSource or IDigBio that match the search criteria.  Search again or create a new Biological Specimen.'
+      morphosource_result_from_idigbio: '(imported from IDigBio)'
 
   simple_form:
     labels:

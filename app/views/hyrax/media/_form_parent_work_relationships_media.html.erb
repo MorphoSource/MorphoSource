@@ -19,7 +19,7 @@
     <a class="hidden" id="btn-add-parent-media" data-behavior="add-relationship" data-has-processing-event="<%= has_processing_event %>">add media</a>
   </div>
 
-  <div style="visibility: hidden;">
+  <div style="visibility: visible;">
     <div class="message has-warning hidden"></div>
     <table>
       <tbody></tbody>
@@ -27,8 +27,8 @@
     <script type="text/x-tmpl" id="tmpl-parent-work-media">
     <tr>
       <td>
-          <div class="row">
-              <div class="col-xs-6 showcase-label">Title</div>
+          <div class="row selected_parent_media" style="display:none">
+              <div class="col-xs-6 showcase-label text-nowrap">Selected parent media</div>
               <div class="col-xs-6 showcase-value">{%= o.title %}</div>
           </div>
       </td>

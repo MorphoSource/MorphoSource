@@ -130,6 +130,7 @@ $(document).on('turbolinks:load', function() {
 })
 
 function buildProcessingActivity() {
+  console.log('buildProcessingActivity...');
   var targetGroup = document.querySelector('div.processing_event_processing_activity');
   var targetGroupUl = targetGroup.querySelector("ul");
   

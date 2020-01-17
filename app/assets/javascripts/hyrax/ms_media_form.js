@@ -410,11 +410,7 @@ $(document).on('turbolinks:load', function() {
       $('#modal-select-parent-media').modal();
     })
     $('#btn-select-media.has-processing-event-false').click(function() {
-      // display a modal to prompt the user to confirm
-      // when user clicks OK, trigger the add parent button,
-      // immediately save the processing event form, then refresh the page
-
-      $('.new-processing-event-wrapper').show();
+      // display a modal to prompt the user to fill in the processing event form
       $('#modal-select-parent-media-new-processing-event').modal();
     })
 
@@ -430,11 +426,15 @@ $(document).on('turbolinks:load', function() {
           $("form#related_form_processing_event").submitRelatedWork(reloadPage);        
         } else if ($(this).data('hasProcessingEvent') == false) {
           $('#modal-select-parent-media-new-processing-event').modal('hide');
+          $('.new-processing-event-wrapper').show();
+          $('.selected_parent_media').show();
+          /*
           var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
           if (isFormValid) {
             disablePageAndSave(".btn-save-media");
             $("form#new_processing_event").submitRelatedWork(reloadPage);        
-          }
+          } 
+          */
         }
       } else {
         var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
@@ -444,6 +444,7 @@ $(document).on('turbolinks:load', function() {
     })
 
     // when page is loaded, show/hide content based on which tab is active
+    $(".related_form").hide();
     var activeTab = $('.nav-tabs > li.active').find("a").attr("aria-controls");
     $(".related_form." + activeTab).show();
 

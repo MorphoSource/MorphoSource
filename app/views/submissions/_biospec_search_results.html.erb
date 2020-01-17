@@ -4,33 +4,34 @@
   </div>
   <% if (@docs.nil? || @docs.empty?) && (@idigbio.nil? || @idigbio.empty?) %>
     <div id="empty_search_results">
-      No Biological Specimens found in MorphoSource or IDigBio that match the search criteria.  Search again or create a new Biological Specimen.
+        <%= t('morphosource.submission.biospec_empty_search_results') %>
     </div>
   <% else %>
     <% if (@docs.nil? || @docs.empty?) %>
       <div id="empty_search_results">
-        No Biological Specimens found in MorphoSource that match the search criteria.
+        <%= t('morphosource.submission.morphosource_empty_search_results') %>
       </div>
     <% else %>
-      <div id="submission_select_biospec">
-        <%= f.input :biospec_id,
-                    as: :radio_buttons,
-                    collection: @docs.map{ |doc| [ doc.sortable_title, doc.id ]} %>
+      <div><p><strong><%= t('morphosource.submission.morphosource_search_results') %></strong></p></div>
+      <div id="submission_link_biospec">
+        <% @docs.each do |doc| %>
+          <%= link_to doc.sortable_title, submissions_path(@submission, submission: {biospec_id: doc.id}, biospec_select: "Continue with selected Biological Specimen"), method: :post %>
+        <% end %>
       </div>
     <% end %>
     <% if (@idigbio.nil? || @idigbio.empty?) %>
       <div id="empty_search_results">
-        No Biological Specimens found in IDigBio that match the search criteria.
+        <%= t('morphosource.submission.idigbio_empty_search_results') %>
       </div>
     <% else %>
+      <div><p><strong><%= t('morphosource.submission.idigbio_search_results') %></strong></p></div>
       <div id="submission_link_idigbio">
         <% @idigbio.each do |idb| %>
-          <%= link_to idb['data']['dwc:scientificName'], stage_biological_specimen_from_idigbio_submissions_path(@submission, idigbio_id: idb['uuid']), method: :post %><br/>
+          <%= link_to raw("#{idb['data']['dwc:institutionCode']}:#{idb['data']['dwc:collectionCode']}:#{idb['data']['dwc:catalogNumber']}, <em>#{idb['data']['dwc:genus']} #{idb['data']['dwc:specificEpithet']}</em>"), stage_biological_specimen_from_idigbio_submissions_path(@submission, idigbio_id: idb['uuid']), method: :post %><br/>
         <% end %>
       </div>
     <% end %>
     <div>
-      <%= f.submit 'Continue with selected Biological Specimen', name: 'biospec_select', class: 'btn btn-primary', onclick: 'return isRadioSelected("submission[biospec_id]")' %>
       <%= f.submit 'Start Search Over', onclick: "gotoStep('new', '#submission_raw_or_derived_media_raw,#submission_choose_raw_or_derived_media_continue,#submission_biospec_or_cho_biospec,#submission_choose_biospec_or_cho_continue')", class: 'btn btn-primary' %>
     </div>
   <% end %>

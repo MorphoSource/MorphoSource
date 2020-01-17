@@ -39,6 +39,7 @@ class SubmissionsController < ApplicationController
         if last_render == 'biospec'
           @docs = search_biospec
           @idigbio = search_idigbio
+          @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])}
         elsif last_render == 'cho'
           @docs = search_cho
         end
@@ -57,6 +58,7 @@ class SubmissionsController < ApplicationController
     if params['biospec_search'].present?
       @docs = search_biospec
       @idigbio = search_idigbio
+      @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])}
       if (@docs.nil? || @docs.empty?) && (@idigbio.nil? || @idigbio.empty?)
         # if no search result, user might need to go back to initial step
         @submission.saved_step = ""

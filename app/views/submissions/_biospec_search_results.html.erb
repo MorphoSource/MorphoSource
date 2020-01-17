@@ -15,7 +15,7 @@
       <div><p><strong><%= t('morphosource.submission.morphosource_search_results') %></strong></p></div>
       <div id="submission_link_biospec">
         <% @docs.each do |doc| %>
-          <%= link_to doc.sortable_title, submissions_path(@submission, submission: {biospec_id: doc.id}, biospec_select: "Continue with selected Biological Specimen"), method: :post %>
+          <%= link_to doc.sortable_title, submissions_path(@submission, submission: {biospec_id: doc.id}, biospec_select: "Continue with selected Biological Specimen"), method: :post %><br/>
         <% end %>
       </div>
     <% end %>

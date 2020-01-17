@@ -17,7 +17,7 @@ module Morphosource
       'dwc:institutionCode' => 'institution_code',
       'dwc:collectionCode' => 'collection_code',
       'dwc:catalogNumber' => 'catalog_number',
-      'dwc:occurrenceID' => 'occurence_id',
+      'dwc:occurrenceID' => 'occurrence_id',
       'dcterms:references' => 'related_url',
       'dwc:recordedBy' => 'creator',
       'dwc:sex' => 'sex',
@@ -28,6 +28,9 @@ module Morphosource
       'dwc:verbatimLocality' => 'original_location',
       'dwc:country' => 'original_location'
     }
+
+    # these BSO values expect an array (see: Hyrax::BiologicalSpecimenForm.build_permitted_params)
+    BSO_ARRAY_VALUES = ['creator','periodic_time','related_url']
 
     IDIGBIO_TAXONOMY_MAPPING = {
       'dwc:genus' => 'taxonomy_genus',
@@ -51,13 +54,17 @@ module Morphosource
       idb = IDigBio.view(idigbio_uuid)
       bso_params = {
         'idigbio_uuid' => idigbio_uuid,
-        'description' => "Imported from iDigBio. UUID: #{idigbio_uuid} Occurrence ID: #{idb['data']['dwc:occurrenceId']}",
+        'description' => "Imported from iDigBio. UUID: #{idigbio_uuid} Occurrence ID: #{idb['data']['dwc:occurrenceID']}",
         'idigbio_recordset_id' => idb['indexTerms']['recordset'],
         'vouchered' => true
       }
       IDIGBIO_DATA_BSO_MAPPING.each do |key, value|
         if idb['data'].has_key?(key)
-          bso_params[value] ||= idb['data'][key]
+          if BSO_ARRAY_VALUES.include?(value)
+            bso_params[value] ||= [idb['data'][key]]
+          else
+            bso_params[value] ||= idb['data'][key]
+          end
         end
       end
       return ActionController::Parameters.new(bso_params)

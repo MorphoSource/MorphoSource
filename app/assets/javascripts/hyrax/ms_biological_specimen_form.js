@@ -10,8 +10,8 @@ $(document).on('turbolinks:load', function() {
 			$('#showcase-title').text(title.join(':'));			
 		}
 
-    setupEmbeddedWorkForm('taxonomy', 'new');
-    setupEmbeddedWorkForm('organization', 'new', updateObjectTitle);
+    setupEmbeddedWorkForm('taxonomy', 'new', false);
+    setupEmbeddedWorkForm('organization', 'new', false, updateObjectTitle);
     setupTooltip();
 		removeLastRepeatable();
 					

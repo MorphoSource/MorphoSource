@@ -41,6 +41,9 @@ $(document).on('turbolinks:load', function() {
       if (!isFormValid) {
         peSubmitEvent.preventDefault();
         enablePage();
+      } else {
+        disablePage();
+        console.log('about to submit in ME pe.js')
       }
     });
 

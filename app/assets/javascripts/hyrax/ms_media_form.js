@@ -15,10 +15,10 @@ $(document).on('turbolinks:load', function() {
     else
       HasEditProcessingEventForm = false;
 
-    setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
-    setupEmbeddedWorkForm('organization', 'new', updateDevice);
-    setupEmbeddedWorkForm('biological_specimen', 'new');
-    setupEmbeddedWorkForm('processing_event', 'new');
+    setupEmbeddedWorkForm('device', 'new', false, updateMediaTitle);
+    setupEmbeddedWorkForm('organization', 'new', false, updateDevice);
+    setupEmbeddedWorkForm('biological_specimen', false, 'new');
+    setupEmbeddedWorkForm('processing_event', 'new', true, reloadPage);
     setupTooltip();
     removeLastRepeatable();
 
@@ -363,10 +363,6 @@ $(document).on('turbolinks:load', function() {
       //console.log('in updateDevice, organization_institution ', organization_institution);
       var organization_institution = organization + ' (' + instutition + ')';
       $('#device-organization-institution-value').text(organization_institution);
-    }
-
-    function reloadPage() {
-      window.location.reload();
     }
 
     setupTooltip();

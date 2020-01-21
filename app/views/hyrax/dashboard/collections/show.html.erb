@@ -1,7 +1,16 @@
 <% provide :page_title, construct_page_title(@presenter.title) %>
 
 <% provide :page_header do %>
-  <h1><span class="fa fa-file" aria-hidden="true"></span> <%= t('.header') %></h1>
+  <h1>
+    <span class="fa fa-file" aria-hidden="true"></span>
+    <% if @collection.team? %>
+      Team
+    <% elsif @collection.project? %> 
+      Project
+    <% else %>
+      <%= t('.header') %>
+    <% end %>
+  </h1>
 <% end %>
 
 <div class="collections-wrapper">
@@ -31,7 +40,13 @@
               <%= render 'hyrax/collections/collection_description', presenter: @presenter %>
             </section>
 
+            <!-- Linked Organization -->
+            <section>
+              <%= render 'ms_linked_organization', presenter: @presenter, collection: @collection %>
+            <section>
+
             <% unless has_collection_search_parameters? %>
+              <h3>Team: </h3>
               <%= render 'show_descriptions' %>
             <% end %>
           </div>

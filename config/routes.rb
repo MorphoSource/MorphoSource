@@ -169,4 +169,10 @@ Rails.application.routes.draw do
   # Add users to auto-generated collection groups
   post 'dashboard/collections/:id/update_collection_groups', action: :update_collection_groups, controller: :collection_roles, as: 'update_collection_groups'
 
+  # Link organization to team
+  scope module: :morphosource do
+    scope module: :dashboard do
+      post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'
+    end
+  end
 end

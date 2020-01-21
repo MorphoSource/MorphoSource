@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Generated via
-#  `rails generate hyrax:work Organization`
+# `rails generate hyrax:work Organization`
 require 'rails_helper'
 
 RSpec.describe Organization do
@@ -30,7 +32,8 @@ RSpec.describe Organization do
         address: ['Central Park West'],
         city: ['New York City'],
         state_province: ['New York'],
-        country: ['United States']
+        country: ['United States'],
+        team_id: ['123']
       })
     }
 
@@ -62,6 +65,10 @@ RSpec.describe Organization do
       expect(subject.country.first).to eq('United States')
     end
 
+    it "creates with correct team id" do
+      expect(subject.team_id.first).to eq('123')
+    end
+
     describe "valid work relationships" do
 
       it "has no valid parents" do
@@ -71,9 +78,84 @@ RSpec.describe Organization do
       it "has Device, BiologicalSpecimen, CulturalHeritageObject, and Attachment as valid children" do
         expect(subject.valid_child_concerns).to match_array([Device, BiologicalSpecimen, CulturalHeritageObject, Attachment])
       end
-
     end
 
-  end
+    describe 'team-related instance methods' do
+      let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+      let(:team)                  { Collection.create(id: 'teamid', title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: 'abcdef') }
 
+      let(:specimen1)             { BiologicalSpecimen.create(title: ['title'], vouchered: [true]) }
+      let(:specimen2)             { BiologicalSpecimen.create(title: ['title'], vouchered: [false]) }
+      let(:attachment)            { Attachment.create(title: ['title']) }
+
+      before do
+        subject.team_id = [team.id]
+        subject.save
+        allow(Collection).to receive(:find).with(team.id).and_return(team)
+      end
+
+      describe '#team' do
+        it 'returns the linked team' do
+          expect(subject.team).to eq(team)
+        end
+      end
+
+      describe '#specimens, #outside_specimens' do
+        before do
+          subject.ordered_members << specimen1 << specimen2 << attachment
+          subject.save
+          team.add_member_objects [specimen1.id]
+          team.save
+        end
+
+        it '#specimens returns child specimens' do
+          expect(subject.specimens).to match_array([specimen1, specimen2])
+        end
+
+        it '#outside_specimens returns specimens not owned by team' do
+          expect(subject.outside_specimens).to match_array([specimen2])
+        end
+      end
+
+      describe '#media, #outside_media' do
+        let(:media1)          { Media.create(title: ['title']) }
+        let(:media2)          { Media.create(title: ['title']) }
+        let(:media3)          { Media.create(title: ['title']) }
+        let(:imagingEvent)    { ImagingEvent.create(title: ['title']) }
+        let(:imagingEvent2)   { ImagingEvent.create(title: ['title']) }
+        let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
+        let(:attachment)      { Attachment.create(title: ['title']) }
+
+        before do
+          subject.ordered_members << specimen1 << specimen2 << attachment
+          subject.save
+          specimen1.ordered_members << imagingEvent
+          specimen1.save
+          imagingEvent.ordered_members << media1
+          imagingEvent.save
+          media1.ordered_members << processingEvent
+          media1.save
+          processingEvent.ordered_members << media2
+          processingEvent.save
+
+          specimen2.ordered_members << imagingEvent2
+          specimen2.save
+          imagingEvent2.ordered_members << media3
+          imagingEvent2.save
+
+          team.add_member_objects [media3.id]
+          team.save
+          [media1, media2, media3].each(&:reload)
+        end
+
+        it '#media returns all descendant media' do
+          expect(subject.media).to match_array([media1, media2, media3])
+        end
+
+        it '#outside_media returns specimens not owned by team' do
+          expect(subject.outside_media).to match_array([media1, media2])
+        end
+      end
+    end
+  end
 end

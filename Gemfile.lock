@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/MorphoSource/pul_uv_rails.git
-  revision: 25f1cb0679edb6d06eef19d7ecdf5b46edc1c989
+  revision: 46e84fc911a3b74a784afae8be1b8f1c568959ca
   branch: aleph
   specs:
     pul_uv_rails (2.9)
@@ -942,4 +942,4 @@ DEPENDENCIES
   zipline (~> 1.0)
 
 BUNDLED WITH
-   2.0.2
+   2.1.4

@@ -34,6 +34,10 @@ $(document).on('turbolinks:load', function() {
       $(targetWrapperUl).children("li").last().remove();
     }
 
+    $('#processing_event_processing_activity_wrapper').on('click', '.add', function(){
+        setNewProcessingActivityStep();
+    });
+
     // build and validate the Processing Activity fields before submit 
     // note: this has been moved out of "    if (hasAdditionalEmptyField) {  " condition block
     form.addEventListener("submit", function(peSubmitEvent) {
@@ -189,6 +193,18 @@ function buildTargetField(inputValue, targetGroupUl) {
   targetGroupUl.appendChild(li);
 }
 
+var setNewProcessingActivityStep = function() {
+  var processingActivityCount = $('select[name="processing_event[processing_activity_type][]"]').length;
+  var steps = [];
+  for (var i = 0; i < processingActivityCount-1; i++) {
+    var processingActivityStep = $('select[name="processing_event[processing_activity_step][]"]')[i].value || '';
+    processingActivityStep = parseInt(processingActivityStep);
+    steps.push(processingActivityStep);
+  }
+  var newStepValue = Math.max.apply(Math, steps) + 1; 
+  // set the last PA step number to the new value
+  $('#processing_event_processing_activity_wrapper li.processing_activity_items:last-child select.processing_event_processing_activity_step').val(newStepValue);
+}
 
 var processingActivityStepChanged = function() {
   var processingActivityCount = $('select[name="processing_event[processing_activity_type][]"]').length;

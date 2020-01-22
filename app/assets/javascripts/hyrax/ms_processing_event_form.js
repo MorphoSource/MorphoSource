@@ -29,9 +29,9 @@ $(document).on('turbolinks:load', function() {
       concatFieldCount--;
     }
 
-    // remove the first set of fields if in editing (not adding) mode
+    // remove the last set of fields if in editing (not adding) mode
     if (concatFieldCount > 0) {
-      $(targetWrapperUl).children("li").remove();
+      $(targetWrapperUl).children("li").last().remove();
     }
 
     // build and validate the Processing Activity fields before submit 
@@ -52,7 +52,7 @@ $(document).on('turbolinks:load', function() {
       var concatFieldValue = concatFields[i].value;
       //console.log('concatFieldValue: '+concatFieldValue);
       var step = concatFieldValue.match(/^Step: ([0-9]+), Type: /)
-      step = (step) ? step[1] : '';
+      step = (step) ? step[1] : '1'; // if step value cannot be parsed, assume there is no PA, and set the first step to 1 
       var type = concatFieldValue.match(/, Type: (.*), Software: /);
       type = (type) ? type[1] : '';
       var software = concatFieldValue.match(/, Software: (.*), Description: /);

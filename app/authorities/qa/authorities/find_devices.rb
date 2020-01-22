@@ -17,7 +17,11 @@ module Qa::Authorities
         description = doc.description
         # also get the device organization title and institution name for display
         organization_institution = organization_institution(id)
-        title = [ doc.title.first + ', ' + organization_institution ]
+        if organization_institution.present?
+          title = [ doc.title.first + ', ' + organization_institution ] 
+        else
+          title = doc.title
+        end
         { 
           id: id, 
           label: title, 

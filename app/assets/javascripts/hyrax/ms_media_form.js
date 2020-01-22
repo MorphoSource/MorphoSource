@@ -376,8 +376,9 @@ $(document).on('turbolinks:load', function() {
     //})
 
     // Change title on the fly when corresponding fields are updated
-    // todo: input.media_part is a repeatable, but newly added media_part field does not trigger the event when it is updated
-    $('[name="media[media_type]"], input.media_part, [name="imaging_event[ie_modality]"]').change(updateMediaTitle);
+    $('.form-group').on('change', '[name="media[media_type]"], input.media_part, [name="imaging_event[ie_modality]"]', function(){
+        updateMediaTitle();
+    });
 
     // when switching tab, show/hide content
     $('.nav-tabs > li').click(function() {

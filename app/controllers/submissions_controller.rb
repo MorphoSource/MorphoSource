@@ -172,13 +172,20 @@ class SubmissionsController < ApplicationController
   def stage_biological_specimen_from_idigbio
     reinstantiate_submission
     @submission.biospec_id = 'new'
-    @submission.taxonomy_id = 'new'
-    store_submission
     # we should also search for/create the Taxonomy work here, since for IDigBio creation we don't have separate steps
     # TODO: search for existing Taxonomy
-    taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id]))
-    session[:submission_taxonomy_create_params] = taxonomy_model_params
-    biospec_model_params = Hyrax::BiologicalSpecimenForm.model_attributes(Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(params[:idigbio_id]))
+    idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id])
+    existing_taxonomy = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params)
+    if (!existing_taxonomy.nil?) && existing_taxonomy.any?
+      @submission.taxonomy_id = existing_taxonomy.first.id
+      store_submission
+    else
+      @submission.taxonomy_id = 'new'
+      store_submission
+      taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(ActionController::Parameters.new(idb_taxonomy_params))
+      session[:submission_taxonomy_create_params] = taxonomy_model_params
+    end
+    biospec_model_params = Hyrax::BiologicalSpecimenForm.model_attributes(ActionController::Parameters.new(Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(params[:idigbio_id])))
     session[:submission_biospec_create_params] = biospec_model_params
     render_and_save 'device'
   end

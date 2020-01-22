@@ -67,7 +67,7 @@ module Morphosource
           end
         end
       end
-      return ActionController::Parameters.new(bso_params)
+      return bso_params
     end
 
     # Given an IDigBio UUID, search for the UUID
@@ -81,7 +81,7 @@ module Morphosource
           taxonomy_params[value] ||= idb['data'][key]
         end
       end
-      return ActionController::Parameters.new(taxonomy_params)
+      return taxonomy_params
     end
 
     def initialize(params={})

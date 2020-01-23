@@ -11,7 +11,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
   describe "POST #create" do
 
     context 'item is not in cart and has not been requested' do
-      let(:post_params) { {:work_id => work6.id} }
+      let(:post_params) { {:work_id => work6.id } }
 
       it "creates a new CartItem" do
         expect{
@@ -22,11 +22,11 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
       it "creates the correct metadata" do
         post :create, params: post_params
         item = CartItem.last
-        expect(item.user_id).to eq(current_user.id)
+        expect(item.user_id).to eq(current_user.ms_id)
         expect(item.work_id).to eq(work6.id)
         expect(item.in_cart).to be(true)
         expect(item.restricted).to be(work6.restricted?)
-        expect(item.approver).to eq(work6.depositor)
+        expect(item.approver_id).to eq(work6.depositor)
       end
 
       it "returns flash message 'Item Added to Cart'" do
@@ -49,7 +49,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
       context 'work is restricted but user is media manager' do
         before do
           allow(work6).to receive(:restricted?).and_return(true)
-          allow(work6).to receive(:depositor).and_return(current_user.email)
+          allow(work6).to receive(:depositor).and_return(current_user.ms_id)
           post :create, params: post_params
         end
 
@@ -92,12 +92,11 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
   end
 
   describe '#GET download' do
-    let(:testwork)         { Media.create(id: 'xxx', title: ["Test Media Work"], depositor: "test@test.com")}
-    let(:cart_item)     { CartItem.create( user_id: current_user.id, work_id: testwork.id) }
+    let(:testwork)         { Media.create(id: 'xxx', title: ["Test Media Work"], depositor: depositor.ms_id)}
+    let(:cart_item)     { CartItem.create( user_id: current_user.ms_id, work_id: testwork.id ) }
 
     before do
       allow(Media).to receive(:find).with(testwork.id).and_return(testwork)
-      cart_item.touch
     end
 
     context 'the work is restricted' do
@@ -148,7 +147,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
           end
           context 'the user is the approver for the item' do
             before do
-              cart_item.approver = current_user.email
+              cart_item.approver_id = current_user.ms_id
               cart_item.save
             end
             context 'the item has not been downloaded' do
@@ -223,7 +222,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
         end
       end
       context 'the user has an item in their cart and an inactive request' do
-        let(:cart_item2) { CartItem.create(user_id: current_user.id, work_id: testwork.id, in_cart: false, date_requested: Date.yesterday, date_canceled: Date.yesterday) }
+        let(:cart_item2) { CartItem.create(user_id: current_user.ms_id, work_id: testwork.id, in_cart: false, date_requested: Date.yesterday, date_canceled: Date.yesterday) }
         before do
           cart_item.in_cart = true
           cart_item.save

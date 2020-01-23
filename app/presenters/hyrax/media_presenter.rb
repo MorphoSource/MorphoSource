@@ -10,16 +10,20 @@ module Hyrax
 
     attr_accessor :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
-      :device_and_facility, :device_facility, :device_link, :device,
+      :device_and_facility, :device_facility, :device_link, :device, :device_manufacturer, :device_description,
+      :device_organization_institution,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_modality,
-      :parent_media_id_list, :child_media_id_list,
+      :parent_media_id_list, :child_media_id_list, :parent_media_members,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
-      :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
+      :processing_events, :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
       :processing_activity_count, :processing_activity_items,
       :raw_or_derived, :is_absentee_parent,
-      :imaging_event_exist,
+      :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
-      :file_size, :mime_type, :this_media_type,
+      :file_size, :mime_type, :this_media_type, :file_set_list,
+      # BSO fields
+      :collection_code, :institution_code, :catalog_number, :occurrence_id, :idigbio_uuid,
+      :user_taxonomies, :canonical_taxonomy_object, :trusted_taxonomies,
       # mesh specific
       :point_count,
       :face_count,
@@ -66,6 +70,26 @@ module Hyrax
         ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_volume? )
     end
 
+    def source_of_record
+      if @idigbio_uuid.present?
+        'iDigBio'
+      else
+        ''
+      end
+    end
+
+    def hasProcessingEvents?
+      @processing_events.present?
+    end
+
+    def hasImagingEvents?
+      @imaging_event.present?
+    end
+
+    def imaging_event_editable?
+      imaging_event_editable == true
+    end
+
     def round_it(string_value)
       if is_number_with_decimal?(string_value)
         string_value.to_f.round(3).to_s
@@ -76,14 +100,6 @@ module Hyrax
 
     def get_showcase_data
       media = Media.where('id' => solr_document.id).first
-      # should not need parent titles any more.  remove later
-      #@direct_parent_title_list = []
-      #@direct_parent_id_list.each do |parent_id|
-      #  parent_media = Media.where('id' => parent_id).first
-      #  @direct_parent_title_list << parent_media.title.first
-      #end
-      #@direct_parent_title_list = @direct_parent_title_list.join(', ')
-
       # todo: need to get the user name (and a link to user) from the email address
       @data_managed_by = solr_document.depositor
 
@@ -111,8 +127,8 @@ module Hyrax
       @color_depth = []
       temp = ""
       contents_mime_type = ""
-      file_set_list = media.file_set_ids
-      file_set_list.each do |id|
+      @file_set_list = media.file_set_ids
+      @file_set_list.each do |id|
         file_set = ::FileSet.find(id)
         # since mime type can me a zip, first try to get the actual content mime type if exists
         # if content mime type does not exist, use the mime type
@@ -175,12 +191,12 @@ module Hyrax
 
       # get processing event:  media < processing_event
       # then get processing activities
-      processing_events = ProcessingEvent.where('member_ids_ssim' => solr_document.id)
+      @processing_events = ProcessingEvent.where('member_ids_ssim' => solr_document.id)
       processing_event_ids = []
       @processing_activity_items = []
-      if processing_events.present?
-        @processing_event_count = processing_events.count
-        processing_events.each do |processing_event|
+      if @processing_events.present?
+        @processing_event_count = @processing_events.count
+        @processing_events.each do |processing_event|
           processing_event_ids << processing_event.id
           processing_event.processing_activity.each do |processing_activity|
             @processing_activity_items << Hash[processing_activity.split(/\s*,\s*/).map {|el| el.split ': '}]
@@ -205,6 +221,7 @@ module Hyrax
       @parent_media_count = @parent_media_id_list.length.to_s
       @child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
       @sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
+      @parent_media_members = member_presenters_for(@parent_media_id_list.reverse())
 
       # get the top parent
       direct_parent_id = top_parent_media_id(media)
@@ -224,9 +241,12 @@ module Hyrax
         # (whether parent, grandparent, etc) should be connected to an IE from which metadata should be derived.
         @direct_parent_members = member_presenters_for(direct_parent_id_list)
         target_media = Media.where('id' => direct_parent_id).first
+        @imaging_event_editable = false
+        @direct_parent_first_member = @direct_parent_members.first
         @raw_or_derived = "Derived"
         @direct_parent_members_raw_or_derived = "Raw"
       else
+        @imaging_event_editable = true
         # check if this is a Derived media with "absentee parent" by checking if PE exists
         if @processing_event_count > 0
           @is_absentee_parent = true
@@ -250,14 +270,15 @@ module Hyrax
       # or
       # media < PE < IE < PO (for media with absentee parent)
       if @is_absentee_parent == true
-        imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
+        @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
       else
-        imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
+        @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
       end
-      if imaging_event.present?
+
+      if @imaging_event.present?
         imaging_event_exist = true
-        biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => imaging_event.id).first
-        cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => imaging_event.id).first
+        biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
+        cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
 
         if biological_specimen.present?
           @physical_object_title = biological_specimen.title.first
@@ -266,6 +287,14 @@ module Hyrax
           @idigbio_uuid = biological_specimen.idigbio_uuid
           @vouchered = biological_specimen.vouchered
           @physical_object_type = biological_specimen.human_readable_type
+          @institution_code = biological_specimen.institution_code
+          @collection_code = biological_specimen.collection_code
+          @catalog_number = biological_specimen.catalog_number
+          @occurrence_id = biological_specimen.occurrence_id
+          @user_taxonomies = biological_specimen.user_taxonomies
+          @canonical_taxonomy_object = biological_specimen.canonical_taxonomy_object
+          @trusted_taxonomies = biological_specimen.trusted_taxonomies
+          @idigbio_uuid = biological_specimen.idigbio_uuid
         elsif cultural_heritage_object.present?
           @physical_object_title = cultural_heritage_object.title.first
           @physical_object_id = cultural_heritage_object.id
@@ -277,53 +306,55 @@ module Hyrax
         end
 
         # get device from imaging event
-        device = Device.where('member_ids_ssim' => imaging_event.id).first
+        device = Device.where('member_ids_ssim' => @imaging_event.id).first
         if device.present?
           @device = device.title.first
-          @device_facility = device.facility.first
+          @device_organization_institution = organization_institution(device.id)
           @device_and_facility = @device
-          @device_and_facility += " (" + @device_facility + ")" if @device_facility.present?
+          @device_and_facility += ", " + @device_organization_institution if @device_organization_institution.present?
           @device_link = "/concern/devices/" + device.id
+          @device_manufacturer = device.creator
+          @device_description = device.description
         end
 
         # get imaging event details
-        @imaging_event_modality = imaging_event.ie_modality.first
+        @imaging_event_modality = @imaging_event.ie_modality.first
         if @imaging_event_modality == "Photogrammetry" or
             @imaging_event_modality == "Photography"
           @lens = ""
-          @lens << imaging_event.lens_make.first if imaging_event.lens_make.present?
-          @lens << " " + imaging_event.lens_model.first if imaging_event.lens_model.present?
+          @lens << @imaging_event.lens_make.first if @imaging_event.lens_make.present?
+          @lens << " " + @imaging_event.lens_model.first if @imaging_event.lens_model.present?
           @other_details = []
-          @other_details << imaging_event.focal_length_type.first + " focal length" if imaging_event.focal_length_type.present?
-          @other_details << imaging_event.light_source.first + " light" if imaging_event.light_source.present?
-          @other_details << imaging_event.background_removal.first if imaging_event.background_removal.present?
+          @other_details << @imaging_event.focal_length_type.first + " focal length" if @imaging_event.focal_length_type.present?
+          @other_details << @imaging_event.light_source.first + " light" if @imaging_event.light_source.present?
+          @other_details << @imaging_event.background_removal.first if @imaging_event.background_removal.present?
           @other_details = @other_details.join(' / ')
         elsif @imaging_event_modality.upcase.include? "XRAY"
-          @exposure_time = imaging_event.exposure_time.first
-          @flux_normalization = imaging_event.flux_normalization.first
-          @geometric_calibration = imaging_event.geometric_calibration.first
-          @shading_correction = imaging_event.shading_correction.first
-          @filter = imaging_event.filter.first
-          @frame_averaging = imaging_event.frame_averaging.first
-          @projections = imaging_event.projections.first
-          @voltage = imaging_event.voltage.first
-          @power = imaging_event.power.first
-          @amperage = imaging_event.amperage.first
-          @surrounding_material = imaging_event.surrounding_material.first
-          @xray_tube_type = imaging_event.xray_tube_type.first
-          @target_type = imaging_event.target_type.first
-          @detector_type = imaging_event.detector_type.first
-          @detector_configuration = imaging_event.detector_configuration.first
-          @source_object_distance = imaging_event.source_object_distance.first
-          @source_detector_distance = imaging_event.source_detector_distance.first
-          @target_material = imaging_event.target_material.first
-          @rotation_number = imaging_event.rotation_number.first
-          @phase_contrast = imaging_event.phase_contrast.first
-          @optical_magnification = imaging_event.optical_magnification.first
+          @exposure_time = @imaging_event.exposure_time.first
+          @flux_normalization = @imaging_event.flux_normalization.first
+          @geometric_calibration = @imaging_event.geometric_calibration.first
+          @shading_correction = @imaging_event.shading_correction.first
+          @filter = @imaging_event.filter.first
+          @frame_averaging = @imaging_event.frame_averaging.first
+          @projections = @imaging_event.projections.first
+          @voltage = @imaging_event.voltage.first
+          @power = @imaging_event.power.first
+          @amperage = @imaging_event.amperage.first
+          @surrounding_material = @imaging_event.surrounding_material.first
+          @xray_tube_type = @imaging_event.xray_tube_type.first
+          @target_type = @imaging_event.target_type.first
+          @detector_type = @imaging_event.detector_type.first
+          @detector_configuration = @imaging_event.detector_configuration.first
+          @source_object_distance = @imaging_event.source_object_distance.first
+          @source_detector_distance = @imaging_event.source_detector_distance.first
+          @target_material = @imaging_event.target_material.first
+          @rotation_number = @imaging_event.rotation_number.first
+          @phase_contrast = @imaging_event.phase_contrast.first
+          @optical_magnification = @imaging_event.optical_magnification.first
 
         end
-        @imaging_event_creator = imaging_event.creator
-        @imaging_event_date_created = imaging_event.date_created
+        @imaging_event_creator = @imaging_event.creator
+        @imaging_event_date_created = @imaging_event.date_created
       else
         imaging_event_exist = false
       end # end if imaging_event present?
@@ -334,6 +365,15 @@ module Hyrax
     # and override the method in presenter_methods
     # to get a list of media images for MEDIA showpage
     def list_of_item_ids_to_display_for_showpage
+      media_ids = []
+      media_ids << @parent_media_id_list << @child_media_id_list << @sibling_media_id_list
+      media_ids.flatten
+    end
+
+    # this method is cloned from list_of_item_ids_to_display
+    # and override the method in presenter_methods
+    # to get a list of media images for the current media work only
+    def list_of_item_ids_to_display_for_current_media
       media_ids = []
       media_ids << @parent_media_id_list << @child_media_id_list << @sibling_media_id_list
       media_ids.flatten

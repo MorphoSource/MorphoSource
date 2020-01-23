@@ -1,4 +1,7 @@
 module MorphosourceHelper
+  
+  include ActionView::Helpers::UrlHelper
+
   def current_controller
     current_uri = request.env['PATH_INFO']
     # to-do: might need to catch exception here for route not found
@@ -48,6 +51,10 @@ module MorphosourceHelper
       type_params << "id=NA"
     end
     Rails.application.routes.url_helpers.qa_path + '/search/find_works?' + type_params.join('&')
+  end
+
+  def find_parent_media_to_add_autocomplete_url(current_media_id)
+    Rails.application.routes.url_helpers.qa_path + '/search/find_parent_media_to_add?type[]=Media&current_media_id=' + current_media_id + '&id=NA&q='
   end
 
   def organization_selector
@@ -101,6 +108,14 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_taxonomies?type[]=Taxonomy&id=NA&q='
   end
 
+  def find_device_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_devices?type[]=Device&id=NA&q='
+  end
+
+  def find_biological_specimen_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_biological_specimens?type[]=BiologicalSpecimen&id=NA&q='
+  end
+
   def collapse_expand_panel(block, state:"COLLAPSE", expand_button_text:"Show more", collapse_button_text:"Show less")
     content_tag :div, :class => "row collapse-button" do
       content_tag :div, :class => "panel-title" do
@@ -150,7 +165,8 @@ module MorphosourceHelper
   end
 
   def generated_media_title(id, part, media_type, ie_modality)
-    id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
+    #id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
+    id_prefix = id.presence ? id.to_s+': ' : ''
     parts = part.presence || ['Element unspecified']
     media_type = media_type&.first.presence || ''
     modality_abbrevs = ie_modality.map { |m| modality_abbrev(m) }
@@ -189,6 +205,39 @@ module MorphosourceHelper
     else
       'Etc' 
     end
+  end
+
+  def organization_institution(id)
+      # get the device organization title and institution name for a device
+      organization_institution = ''
+      organizations = Organization.where('member_ids_ssim' => id)
+      if organizations.present?
+        organization = organizations.first
+        organization_institution = organization.title.first
+        organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
+      end
+      organization_institution
+  end
+
+  def source_of_record(idigbio_uuid, idigbio_recordset_id)
+    markup = ''
+    return markup unless idigbio_uuid.present?
+    # For now we just handle idigbio.  Later will probably handle uuid and recordset links, and other providers
+    #
+    # if label.include? 'UUID'
+    #   url = 'https://www.idigbio.org/portal/records/'
+    # elsif label.include? 'recordset ID'
+    #   url = 'https://www.idigbio.org/portal/recordsets/'
+    # else
+    #   url = 'https://www.idigbio.org'
+    # end
+    value = ''
+    url = 'https://www.idigbio.org/'
+    #link = link_to(value, "#{url}#{value}")
+    #markup << "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link}</span>"
+    #markup << link
+    #markup
+    url
   end
 
 end

@@ -36,7 +36,7 @@ gem 'resque'
 gem 'resque-pool'
 gem 'resque-web', require: 'resque_web'
 
-gem 'puma', '~> 3.7'
+gem 'puma', '~> 3.12'
 
 gem 'rubyzip'
 gem 'zipline', '~> 1.0'

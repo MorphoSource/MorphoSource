@@ -3,6 +3,8 @@ import Registry from './ms_registry'
 import Resource from 'hyrax/relationships/resource'
 import OrganizationResource from './ms_organization_resource'
 import TaxonomyResource from './ms_taxonomy_resource'
+import DeviceResource from './ms_device_resource'
+import BiologicalSpecimenResource from './ms_biological_specimen_resource'
 
 /**
  * This depends on the passed in element containing `data-autocomplete="work'"`
@@ -47,7 +49,11 @@ export default class RelationshipsControl {
   displayMembers() {
     if (this.workType == 'organization') {
       this.members.forEach((elem) =>
-        this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.institution_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
+        this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.institution_code, elem.institution_name, elem.collection_code, elem.description, elem.address, elem.city, elem.state_province, elem.country))
+      )      
+    } else if (this.workType == 'device') {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new DeviceResource(elem.id, elem.label, elem.creator, elem.modality, elem.description, elem.organization_institution))
       )      
     } else if (this.workType == 'taxonomy') {
       this.members.forEach((elem) =>
@@ -73,6 +79,30 @@ export default class RelationshipsControl {
           elem.taxonomy_subspecies,
           elem.depositor,
           this.depositorLink(elem.depositor)
+         ))
+      )      
+    } else if (this.workType == 'biological_specimen') {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new BiologicalSpecimenResource(
+          elem.id, 
+          elem.label, 
+          elem.bibliographic_citation,
+          elem.catalog_number,
+          elem.collection_code,
+          elem.canonical_taxonomy,
+          elem.institution_code,
+          elem.latitude,
+          elem.longitude,
+          elem.numeric_time,
+          elem.original_location,
+          elem.periodic_time,
+          elem.vouchered,
+          elem.idigbio_recordset_id,
+          elem.idigbio_uuid,
+          elem.is_type_specimen,
+          elem.occurrence_id,
+          elem.source_of_record,
+          elem.sex
          ))
       )      
     } else {
@@ -113,7 +143,7 @@ export default class RelationshipsControl {
   addRow() {
     this.hideWarningMessage()
     let data = this.searchData()
-    //console.log('select2 data : ',data)
+    console.log('select2 data : ',data)
     if (this.repeatable == 'no') {
       // if the attribute is not repeatable, remove the rest of the items before adding
       this.registry.items.forEach((item, index) => {
@@ -121,8 +151,9 @@ export default class RelationshipsControl {
       })
     }
     if (this.workType == 'organization') {
-      //console.log("addRow data : ", data)
-      this.registry.addResource(new OrganizationResource(data.id, data.text, data.institution_code, data.description, data.address, data.city, data.state_province, data.country));
+      this.registry.addResource(new OrganizationResource(data.id, data.text, data.institution_code, data.institution_name, data.collection_code, data.description, data.address, data.city, data.state_province, data.country));
+    } else if (this.workType == 'device') {
+      this.registry.addResource(new DeviceResource(data.id, data.text, data.creator, data.modality, data.description, data.organization_institution));
     } else if (this.workType == 'taxonomy') {
       this.registry.addResource(new TaxonomyResource(
         data.id, 
@@ -147,9 +178,34 @@ export default class RelationshipsControl {
         data.depositor,
         data.depositor_link
         ))
+    } else if (this.workType == 'biological_specimen') {
+      this.registry.addResource(new BiologicalSpecimenResource(
+        data.id, 
+        data.text, 
+        data.bibliographic_citation,
+        data.catalog_number,
+        data.collection_code,
+        data.canonical_taxonomy,
+        data.institution_code,
+        data.latitude,
+        data.longitude,
+        data.numeric_time,
+        data.original_location,
+        data.periodic_time,
+        data.vouchered,
+        data.idigbio_recordset_id,
+        data.idigbio_uuid,
+        data.is_type_specimen,
+        data.occurrence_id,
+        data.source_of_record,
+        data.sex
+        ))
     } else {
       this.registry.addResource(new Resource(data.id, data.text))
     }
+    // prepare form data (e.g. add hidden fields for work_parents_attributes) for ajax post
+    // (e.g. adding parents for imaging event)
+    this.registry.serializeToForm();
     // finally, empty the "add" row input value
     this.clearSearch();
   }

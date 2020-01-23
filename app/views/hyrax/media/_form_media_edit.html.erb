@@ -1,0 +1,158 @@
+<% content_for :content_css_classes do %>showcase-edit<% end %> 
+
+<%= simple_form_for [main_app, @form],
+                    #builder: Hyrax::ShowcaseFormBuilder,
+                    wrapper: :showcase_default,
+                    html: {
+                      data: { behavior: 'work-form',
+                              'param-key' => @form.model_name.param_key },
+                      multipart: true
+                    } do |f| %>
+  <% if f.object.errors.any? %>
+    <div class="alert alert-danger alert-dismissable" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <%= f.object.errors.full_messages_for(:base).send(SimpleForm.error_method) %>
+      <%= render 'form_in_works_error', f: f %>
+      <%= render 'form_ordered_members_error', f: f %>
+      <%= render 'form_collections_error', f: f %>
+      <%= render 'form_visibility_error', f: f %>
+    </div>
+  <% end %>
+
+  <%= render 'guts4form', f: f %>
+<% end %>
+
+
+<%# the following forms are placed here so that the forms will not be nested inside the media form %>
+
+<% if @presenter.hasImagingEvents? %>
+  <% if @presenter.imaging_event_editable? %>
+      <%= simple_form_for [main_app, @imaging_event_form],
+                          wrapper: :showcase_default,
+                          html: {
+                            id: 'related_form_imaging_event',
+                            data: { behavior: 'work-form',
+                                    'param-key' => @imaging_event_form.model_name.param_key },
+                            multipart: true
+                          } do |i| %>
+        <div class="row related_form imaging-event" style="display:none">
+          <%= render 'form_imaging_event', i: i, presenter: @presenter %>
+        </div>
+        <div class="row related_form device" style="display:none">
+          <%= render 'tab_device', i: i %>
+        </div>
+        <div class="row related_form physical-object-details" style="display:none;">
+          <%= render 'tab_biological_specimen', i: i %>
+        </div>
+      <% end %>
+  <% else %>
+    <div class="row related_form imaging-event" style="display:none">
+      <%= render 'parent_imaging_event', presenter: @presenter %>
+    </div>
+    <div class="row related_form device" style="display:none">
+      <%= render 'parent_device', presenter: @presenter %>
+    </div>
+    <div class="row related_form physical-object-details" style="display:none;">
+      <%= render 'parent_biological_specimen', presenter: @presenter %>
+    </div>
+  <% end %>
+<% end %>
+
+<% if @presenter.hasProcessingEvents? %>
+    <%= simple_form_for [main_app, @processing_event_form],
+                        wrapper: :showcase_default,
+                        html: {
+                          id: 'related_form_processing_event',
+                          data: { behavior: 'work-form',
+                                  'param-key' => @processing_event_form.model_name.param_key },
+                          multipart: true
+                        } do |p| %>
+
+        <div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
+          <%= render 'form_processing_event', p: p, presenter: @presenter %>
+        </div>
+        <div class="row related_form parent-media" style="display:none;">
+          <%= render 'tab_parent_media', p: p %>
+        </div>
+
+    <% end %>
+<% else %>
+    <%# display a new PO form, and place the parent media form inside %>
+    <div id="embedded_div_new_processing_event" class="embedded_div persist_with_tab related_form parent-media" data-relationship-control="#parent-relationships-processing-events" data-add-button="#btn-add-processing-event">
+      <div class="col-sm-12">
+        <div class="content-block">
+          <%= simple_form_for [main_app, @new_processing_event_form], 
+                              wrapper: :showcase_default,
+                              url: @new_processing_event_submit_submissions_url,
+                              html: {
+                                data: { behavior: 'work-form' }
+                              } do |p| %>
+              <%= render 'tab_parent_media_new_processing_event', p: p %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+<% end %>
+
+
+<div id="embedded_div_new_device" class="embedded_div" data-relationship-control="#parent-relationships-devices" data-add-button="#btn-add-device" data-linked-content-blocks="#embedded_div_new_organization" style="display: none">
+    <%= simple_form_for [main_app, @new_device_form], 
+                        wrapper: :showcase_default,
+                        url: @new_device_submit_submissions_url,
+                        html: {
+                          data: { behavior: 'work-form' }
+                        } do |d| %>
+
+      <div class="col-sm-4">
+        <div class="content-block">
+        <%= render 'form_new_device', f: d %>
+        </div>
+      </div>
+
+      <div id="parent-relationships-organizations" class="form-group" data-behavior="parent-relationships-organizations" data-param-key="<%= d.object.model_name.param_key %>" data-members="<%= d.object.member_of_organizations_json('Organization') %>" data-new-work-created="" data-repeatable="no" data-work-type="organization">
+
+        <div class="col-sm-4">
+          <div class="content-block">
+            <%= render 'form_parent_work_relationships_organization', f: d %>
+          </div>
+        </div>
+
+        <div class="col-sm-4">
+          <div class="content-block">
+          <%= render 'organization_details', presenter: @presenter %>
+          </div>
+        </div> 
+
+      </div>
+
+    <% end %>
+</div>
+
+<div id="embedded_div_new_organization" class="embedded_div" data-relationship-control="#parent-relationships-organizations" data-add-button="#btn-add-organization" style="display: none;">
+  <div class="col-sm-12">
+    <div class="content-block">
+      <%= simple_form_for [main_app, @new_organization_form], 
+                          wrapper: :showcase_default,
+                          url: @new_organization_submit_submissions_url,
+                          html: {
+                            data: { behavior: 'work-form' }
+                          } do |i| %>
+          <%= render 'form_new_organization', i: i %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+
+<%= render 'modal_new_physical_object' %>
+<%= render 'modal_select_parent_media' %>
+<%= render 'modal_select_parent_media_new_processing_event' %>
+
+<script type="text/javascript">
+  Blacklight.onLoad(function() {
+    <%# This causes the page to switch back to the default template if they've
+        previously visited the batch download page in this Turbolinks session %>
+    $("#fileupload").fileupload('option', 'downloadTemplateId', 'template-download')
+  });
+</script>

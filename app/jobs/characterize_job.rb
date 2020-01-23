@@ -33,6 +33,7 @@ class CharacterizeJob < Hyrax::ApplicationJob
     file_set.characterization_proxy.save!
     file_set.update_index
     file_set.parent&.in_collections&.each(&:update_index)
+    Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end
 end

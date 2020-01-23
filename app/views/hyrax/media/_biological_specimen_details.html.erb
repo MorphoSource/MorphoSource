@@ -1,0 +1,100 @@
+<div>
+  <h2>CURRENT PHYSICAL OBJECT</h2>
+
+  <div class="message has-warning hidden"></div>
+  <table>
+    <tbody></tbody>
+  </table>
+
+  <script type="text/x-tmpl" id="tmpl-parent-work-biological-specimens">
+
+  <tr>
+    <td>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Object type</div>
+            <div class="col-xs-6 showcase-value">Biological specimen object</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Vouchered?</div>
+            <div class="col-xs-6 showcase-value">{%= o.vouchered %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Institution code</div>
+            <div class="col-xs-6 showcase-value">{%= o.institution_code %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Collection code</div>
+            <div class="col-xs-6 showcase-value">{%= o.collection_code %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Catalog number</div>
+            <div class="col-xs-6 showcase-value">{%= o.catalog_number %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Occurrence ID</div>
+            <div class="col-xs-6 showcase-value">{%= o.occurrence_id %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Source of record</div>
+            <div class="col-xs-6 showcase-value">
+                {% if (o.source_of_record != '') { %}
+                <a href='{%= o.source_of_record %}'>iDigbio</a>
+                {% } %}
+            </div>
+        </div>
+        <%# 
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Taxonomy</div>
+            <div class="col-xs-6 showcase-value"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">title</div>
+            <div class="col-xs-6 showcase-value">{%= o.title %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">bibliographic_citation</div>
+            <div class="col-xs-6 showcase-value">{%= o.bibliographic_citation %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">latitude</div>
+            <div class="col-xs-6 showcase-value">{%= o.latitude %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">longitude</div>
+            <div class="col-xs-6 showcase-value">{%= o.longitude %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">numeric_time</div>
+            <div class="col-xs-6 showcase-value">{%= o.numeric_time %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">original_location</div>
+            <div class="col-xs-6 showcase-value">{%= o.original_location %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">periodic_time</div>
+            <div class="col-xs-6 showcase-value">{%= o.periodic_time %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">idigbio_recordset_id</div>
+            <div class="col-xs-6 showcase-value">{%= o.idigbio_recordset_id %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">idigbio_uuid</div>
+            <div class="col-xs-6 showcase-value">{%= o.idigbio_uuid %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">is_type_specimen</div>
+            <div class="col-xs-6 showcase-value">{%= o.is_type_specimen %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">sex</div>
+            <div class="col-xs-6 showcase-value">{%= o.sex %}</div>
+        </div>
+        %>
+    </td>
+    <td><button style="display:none" class="btn btn-sm btn-danger" data-behavior="remove-relationship"><%= t('.actions.remove') %></button></td>
+  </tr>
+  </script>
+
+</div>

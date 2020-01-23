@@ -57,7 +57,7 @@ namespace :morphosource do
       elsif media_type == "CTImageSeries"
         derivatives.each do |d|
           if File.exists?(d)
-            if File.extname(d).downcase == '.aleph'
+            if File.extname(d).downcase == '.dcm'
               missing = []
               dcm_path = File.join(File.dirname(d), File.basename(d)[0])
               JSON.parse(File.read(d))["series"].each do |dcm|
@@ -129,4 +129,14 @@ namespace :morphosource do
 
     admin.save
   end
+
+  desc 'Set up Team and Project collection types'
+  task :create_collection_types => :environment do
+    team = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Teams::SETTINGS)
+    project = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
+    Hyrax::CollectionTypes::CreateService.add_default_participants(team.id)
+    Hyrax::CollectionTypes::CreateService.add_default_participants(project.id)
+    puts 'Team and Project collection types created'
+  end
+
 end

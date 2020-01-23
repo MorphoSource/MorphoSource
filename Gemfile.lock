@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/MorphoSource/pul_uv_rails.git
-  revision: d8e035c584164d1116e13f57df091b30a8e01d04
+  revision: 46e84fc911a3b74a784afae8be1b8f1c568959ca
   branch: aleph
   specs:
     pul_uv_rails (2.9)
@@ -192,7 +192,7 @@ GEM
     connection_pool (2.2.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
-    crass (1.0.4)
+    crass (1.0.5)
     curb (0.9.8)
     daemons (1.2.6)
     declarative (0.0.10)
@@ -524,7 +524,7 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
-    loofah (2.3.0)
+    loofah (2.3.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -556,7 +556,7 @@ GEM
     noid-rails (3.0.1)
       actionpack (>= 5.0.0, < 6)
       noid (~> 0.9)
-    nokogiri (1.10.4)
+    nokogiri (1.10.5)
       mini_portile2 (~> 2.4.0)
     nokogumbo (1.5.0)
       nokogiri
@@ -583,7 +583,7 @@ GEM
     posix-spawn (0.3.13)
     power_converter (0.1.2)
     public_suffix (3.0.3)
-    puma (3.12.0)
+    puma (3.12.2)
     qa (2.2.0)
       activerecord-import
       deprecation
@@ -591,7 +591,7 @@ GEM
       nokogiri (~> 1.6)
       rails (~> 5.0)
       rdf
-    rack (2.0.7)
+    rack (2.0.8)
     rack-protection (2.0.3)
       rack
     rack-test (1.1.0)
@@ -927,7 +927,7 @@ DEPENDENCIES
   passenger
   pg
   pul_uv_rails!
-  puma (~> 3.7)
+  puma (~> 3.12)
   rails (~> 5.1.4)
   rails-controller-testing
   redis

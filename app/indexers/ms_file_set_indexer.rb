@@ -28,6 +28,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['rows_tesim'] = object.rows
       solr_doc['columns_tesim'] = object.columns
       solr_doc['pixel_spacing_tesim'] = object.pixel_spacing
+      solr_doc['slice_thickness_tesim'] = object.slice_thickness
       solr_doc['bits_allocated_tesim'] = object.bits_allocated
       solr_doc['bits_stored_tesim'] = object.bits_stored
       solr_doc['high_bit_tesim'] = object.high_bit

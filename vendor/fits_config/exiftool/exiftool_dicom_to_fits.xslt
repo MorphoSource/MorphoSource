@@ -141,6 +141,9 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
           <pixelSpacing>
             <xsl:value-of select="exiftool/PixelSpacing"/>
           </pixelSpacing>
+          <sliceThickness>
+            <xsl:value-of select="exiftool/SliceThickness"/>
+          </sliceThickness>
           <bitsAllocated>
             <xsl:value-of select="exiftool/BitsAllocated"/>
           </bitsAllocated>

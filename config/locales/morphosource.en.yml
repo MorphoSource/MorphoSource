@@ -12,6 +12,14 @@ en:
     base:
       form_progress:
         required_format: 'File formats match selected media type'
+    collection:
+      actions:
+        add_new_nested_collection:
+          desc: 'Add a new project to this team'
+          label: 'Create a new team project'
+        nest_collections:
+          desc: 'Add a project to this team'
+          button_label: 'Add a Project'
     dashboard:
       my:
         heading:

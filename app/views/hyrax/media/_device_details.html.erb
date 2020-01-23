@@ -1,0 +1,38 @@
+<div>
+  <h2>CURRENT DEVICE</h2>
+
+  <div class="message has-warning hidden"></div>
+  <table>
+    <tbody></tbody>
+  </table>
+
+  <script type="text/x-tmpl" id="tmpl-parent-work-devices">
+  <tr>
+    <td>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization</div>
+            <div class="col-xs-6 showcase-value" id="device-organization-institution-value">{%= o.organization_institution %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Model</div>
+            <div class="col-xs-6 showcase-value">{%= o.title %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Manufacturer</div>
+            <div class="col-xs-6 showcase-value">{%= o.creator %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Modality</div>
+            <div class="col-xs-6 showcase-value break-all">{%= o.modality %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Description</div>
+            <div class="col-xs-6 showcase-value">{%= o.description %}</div>
+        </div>
+
+    </td>
+    <td><button style="display:none" class="btn btn-sm btn-danger" data-behavior="remove-relationship"><%= t('.actions.remove') %></button></td>
+  </tr>
+  </script>
+
+</div>

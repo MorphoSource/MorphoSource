@@ -99,10 +99,6 @@ class SolrDocument
     self[Solrizer.solr_name('side', :stored_searchable)]
   end
 
-  def slice_thickness
-      self[Solrizer.solr_name('slice_thickness', :stored_searchable)]
-  end
-
   def unit
     self[Solrizer.solr_name('unit', :stored_searchable)]
   end
@@ -328,6 +324,10 @@ class SolrDocument
 
   def pixel_spacing
     self[Solrizer.solr_name('pixel_spacing', :stored_searchable)]
+  end
+
+  def slice_thickness
+    self[Solrizer.solr_name('slice_thickness', :stored_searchable)]
   end
 
   def bits_allocated

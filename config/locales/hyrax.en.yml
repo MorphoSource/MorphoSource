@@ -101,6 +101,12 @@ en:
         header:
           actions: Action
           title: Taxonomy
+    dashboard:
+      collections:
+        form_share:
+          manager: 'Manager'
+          depositor: 'Depositor'
+          viewer: 'Viewer'
     works:
       form:
         find_parent_work: Parent Works

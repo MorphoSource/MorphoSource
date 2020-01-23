@@ -11,7 +11,7 @@ module Morphosource::Derivatives
 
     def call
       unless Dir.exists?(source_path)
-        raise Morphosource::Derivatives::Img2dcmError.new("Source directory: #{source_path} does not exist.")
+        raise Morphosource::Derivatives::DcmdjpegError.new("Source directory: #{source_path} does not exist.")
       end
 
       internal_call # to do add some output/post-process controls

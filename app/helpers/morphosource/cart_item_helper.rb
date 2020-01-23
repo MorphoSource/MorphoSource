@@ -112,7 +112,7 @@ module Morphosource::CartItemHelper
   end
 
   def get_requester_items(items,requester)
-    @requester_items = items.select{|item| item.user_id == requester.id}
+    @requester_items = items.select{|item| item.user_id == requester.ms_id}
   end
 
   def requester_uses

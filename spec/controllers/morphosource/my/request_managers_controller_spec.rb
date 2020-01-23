@@ -9,8 +9,9 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
 
   before do
     restricted_items = [cartItem1,cartItem3,cartItem5,cartItem7]
+    
     restricted_items.each do |item|
-      item.approver = current_user
+      item.approver_id = current_user.ms_id
       item.save
     end
   end
@@ -23,10 +24,10 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
     let(:user4) { User.create(email: "user4@test.com", password: "password")}
 
     before do
-      cartItem1.user_id = user1.id
-      cartItem3.user_id = user2.id
-      cartItem5.user_id = user3.id
-      cartItem7.user_id = user4.id
+      cartItem1.user_id = user1.ms_id
+      cartItem3.user_id = user2.ms_id
+      cartItem5.user_id = user3.ms_id
+      cartItem7.user_id = user4.ms_id
       [cartItem1,cartItem3,cartItem5,cartItem7].each(&:save)
     end
 

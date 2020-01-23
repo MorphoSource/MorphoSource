@@ -32,6 +32,12 @@ module Hyrax
             end
             ie_modality << "#{work_parent_string}"
           end
+        elsif id.present?
+          # todo: might need to handle if processing event exist?
+          imaging_event = ImagingEvent.where('member_ids_ssim' => id).first
+          if imaging_event.present?
+            ie_modality << imaging_event.ie_modality.first
+          end
         end
         # MorphosourceHelper's generated_media_title method is shared by different actors 
         # (e.g. media actor, IE actor)

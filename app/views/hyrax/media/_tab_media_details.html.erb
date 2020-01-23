@@ -1,0 +1,127 @@
+<div class="row">
+
+  <!-- left column  -->
+  <div class="col-sm-6">
+
+    <div class="content-block">
+      <h2>GENERAL DETAILS</h2>
+      <%= render_edit_field_partial('media_type', f: f) %>
+      <%= f.input :part, label: 'Element or part of the object', as: :multi_value %>
+      <%= render_edit_field_partial('side', f: f) %>
+      <%= f.input :orientation, as: :multi_value %>
+      <%= f.input :short_description, label: 'Short description' %>
+      <%= f.input :description, label: 'Full description', as: :multi_value %>
+
+      <input class="form-control hidden" type="hidden" value="foobar" name="ie_modality_for_title" id="ie_modality_for_title">
+    </div>
+
+    <div class="content-block">
+      <h2>OWNERSHIP AND PERMISSIONS</h2>
+
+      <%= @presenter.attribute_to_html(:data_managed_by, render_as: :showcase_user_link, include_empty: true, html_dl: false) %>
+
+      <div class="row">
+        <div class="col-xs-6 showcase-label">
+          Download permission
+        </div>
+        <div class="col-xs-6 showcase-value">
+          <div class="m-0 p-0 text-nowrap"><span id="current_visibility_value"></span><a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility"><span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
+          <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
+            <%= render 'ms_form_visibility_component', f: f %>
+          </div>
+        </div>
+      </div>
+
+
+      <%= render_edit_field_partial('license', f: f) %>
+      <%= render_edit_field_partial('rights_statement', f: f) %>
+
+      <div class="row"><div class="col-xs-6 showcase-label">Custom terms of use</div><div class="col-xs-6 showcase-value">Not yet implemented</div></div>
+
+      <%= render_edit_field_partial('agreement_uri', f: f) %>
+
+      <div class="row"><div class="col-xs-6 showcase-label">Commercial use permitted</div><div class="col-xs-6 showcase-value">No</div></div>
+      <div class="row"><div class="col-xs-6 showcase-label">3D printing permitted</div><div class="col-xs-6 showcase-value">Not yet implemented</div></div>
+
+      <%= f.input :rights_holder, as: :multi_value %>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">IP holder(s) (Name, Type)</div>
+        <div class="col-xs-6 showcase-value form-group multi_value optional managed ie_xray_ct wrapper_for_2" id="media_rights_holder_wrapper">
+          <ul class="listing rights_holder_listing" aria-live="polite">
+            <li class="field-wrapper input-group input-append">
+              <input class="string multi_value optional form-control media_rights_holder_name form-control multi-text-field" name="media[rights_holder_name][]" value="" id="media_rights_holder_name" type="text">
+              <select class="form-control select optional form-control" name="media[rights_holder_type][]" id="media_rights_holder_type">
+                <option value=""></option>
+                <option value="Copyright and License">Copyright and License</option>
+                <option value="Copyright">Copyright</option>
+                <option value="License">License</option>
+              </select>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <%= render_edit_field_partial('funding', f: f) %>
+      <%= render_edit_field_partial('publisher', f: f) %>
+      <%= render_edit_field_partial('cite_as', f: f) %>
+    </div>
+
+    <div class="content-block">
+      <h2>IDENTIFIERS AND EXTERNAL LINKS</h2>
+
+      <%= @presenter.attribute_to_html(:ark, label: 'MorphoSource ARK', render_as: :showcase_ark_link, include_empty: true, text_if_empty: 'Not assigned', html_dl: false) %>
+      <%= @presenter.attribute_to_html(:doi, label: 'MorphoSource DOI', render_as: :showcase_doi_link, include_empty: true, text_if_empty: 'Not assigned', html_dl: false) %>
+      <%= f.input :identifier, label: 'External identifier' %>
+      <%= f.input :related_url, label: 'External media URL' %>
+    </div>
+  
+    <div class="content-block">
+      <%= render 'edit_file_object_details', f: f %>
+    </div>
+
+  </div>
+  <!-- /left column  -->
+
+  <!-- right column  -->
+  <div class="col-sm-6">
+
+    <%#= render 'edit_media_items', presenter: @presenter, f: f %>
+
+    <div class="content-block preview">
+      <%= render @presenter.showcase_viewer_partial, presenter: @presenter %>
+    </div>
+    <div class="content-block">
+      <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
+    </div>
+
+    <div class="content-block">
+      <%= render 'form_member_of_collections', f: f %>
+    </div>
+
+    <div class="content-block">
+      <h2>MEDIA TAGS</h2>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">
+      Not yet implemented
+        </div>
+        <div class="col-xs-6 showcase-value">
+      Not yet implemented
+        </div>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h2> CITATION AND DOWNLOAD HISTORY OF PHYSICAL OBJECT MEDIA </h2>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">
+      Number of downloads
+        </div>
+        <div class="col-xs-6 showcase-value">
+      Not yet implemented
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- / right column -->
+
+</div>

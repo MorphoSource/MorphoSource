@@ -1,6 +1,7 @@
 class SubmissionsController < ApplicationController
   # Adds Hyrax behaviors to the controller.
   include Hyrax::WorksControllerBehavior
+  include MorphosourceHelper
 
   load_and_authorize_resource
 
@@ -358,13 +359,15 @@ class SubmissionsController < ApplicationController
 
   def create_device(params)
     parent_attributes = {}
-    if @submission.device_organization_id.present?
-      if @submission.device_organization_id == 'new_organization_id_to_be_created'
-        # user has selected the new organization which is waiting to be created
-        # at this point this new organization has been created.  set the id to the new organization id
-        @submission.device_organization_id = @submission.organization_id
+    if @submission.present?
+      if @submission.device_organization_id.present?
+        if @submission.device_organization_id == 'new_organization_id_to_be_created'
+          # user has selected the new organization which is waiting to be created
+          # at this point this new organization has been created.  set the id to the new organization id
+          @submission.device_organization_id = @submission.organization_id
+        end
+        parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
       end
-      parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
     end
     unless parent_attributes.empty?
       params.merge!('work_parents_attributes' => parent_attributes)
@@ -465,6 +468,8 @@ class SubmissionsController < ApplicationController
         :id => new_organization_id,
         :title => new_organization.title.first,
         :institution_code => new_organization.institution_code.first,
+        :institution_name => new_organization.institution_name.first,
+        :collection_code => new_organization.collection_code.first,
         :description => new_organization.description.first, 
         :address => new_organization.address.first, 
         :city => new_organization.city.first, 
@@ -527,6 +532,79 @@ class SubmissionsController < ApplicationController
     else
       status = 'FAIL'
       message = 'There is a problem creating the taxonomy.'
+      new_work = {}
+    end
+    response_object = { 
+      :work => new_work,
+      :status => status,
+      :message => message
+    }
+    render :json => response_object 
+  end
+
+  def new_device_submit
+    # this method is expected to be called from a form in modal, or an ajax post
+    begin
+      device_model_params = Hyrax::DeviceForm.model_attributes(params[:device])
+      new_device_id = create_device(device_model_params)
+    rescue Exception => ex
+      new_device_id = nil 
+      exception_message = "Exception: #{ex.class}, #{ex.message}"   
+    end
+    if new_device_id.present?
+      status = 'OK'
+      message = 'New device created'
+      new_device = Device.where('id' => new_device_id).first
+      new_work = {
+        :id => new_device_id,
+        :title => new_device.title.first,
+        :creator => new_device.creator.first,
+        :modality => new_device.modality.first, 
+        :description => new_device.description.first,
+        :organization_institution => organization_institution(new_device_id)
+      }
+    else
+      status = 'FAIL'
+      message = 'There is a problem creating the device. ' + exception_message
+      new_work = {}
+    end
+    response_object = { 
+      :work => new_work,
+      :status => status,
+      :message => message
+    }
+    render :json => response_object 
+  end
+
+  def new_processing_event_submit
+    # this method is expected to be called from a form in modal, or an ajax post
+    begin
+      processing_event_model_params = Hyrax::ProcessingEventForm.model_attributes(params[:processing_event])
+      new_processing_event_id = create_work(ProcessingEvent, processing_event_model_params)
+    rescue Exception => ex
+      new_processing_event_id = nil 
+      exception_message = "Exception: #{ex.class}, #{ex.message}"   
+    end
+    if new_processing_event_id.present?
+      if params['child_media_id'].present? 
+        # update the child media (by setting this PE as a parent)
+        # child < PE < parent
+        child_media_id = params['child_media_id']
+        child_media = ::ActiveFedora::Base.find(child_media_id)
+        processing_event = ::ActiveFedora::Base.find(new_processing_event_id)
+        processing_event.ordered_members << child_media
+        processing_event.save!
+      end
+      status = 'OK'
+      message = 'New processing_event created'
+      new_processing_event = ProcessingEvent.where('id' => new_processing_event_id).first
+      new_work = {
+        :id => new_processing_event_id,
+        :title => new_processing_event.title.first
+      }
+    else
+      status = 'FAIL'
+      message = 'There is a problem creating the processing_event. ' + exception_message
       new_work = {}
     end
     response_object = { 

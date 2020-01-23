@@ -144,7 +144,12 @@ module Hyrax
 
     attr_writer :fiji_path
     def fiji_path
-      @fiji_path ||= 'blender'
+      @fiji_path ||= 'fiji'
+    end
+
+    attr_writer :python_path
+    def python_path
+      @python_path ||= 'python3'
     end
     
     attr_writer :derivatives_tmp_path

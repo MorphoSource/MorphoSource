@@ -98,7 +98,7 @@ RSpec.describe Hyrax::MediaFileSetPresenter do
           end
 
           it { is_expected.to be_instance_of IIIFManifest::DisplayVolume }
-          its(:url) { is_expected.to eq "/downloads/#{id}?file=aleph" }
+          its(:url) { is_expected.to eq "/downloads/#{id}?file=dcm" }
         end
       end
     end

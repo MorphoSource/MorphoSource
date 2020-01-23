@@ -3,7 +3,7 @@ module Ms1to2
     class OrganizationFromFacility < BaseObject
       def mappings
         {
-          :organization => :title,
+          :institution => :title,
           :city => :city,
           :state_province => :stateprov,
           :country => :country,

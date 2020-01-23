@@ -1,0 +1,29 @@
+<% 
+if @presenter.parent_media_members.length == 0
+  added_class = 'one-circle-only'
+else
+  added_class = ''
+end
+%>
+<div class="col-sm-6 indicators-wrapper">
+  <h2>PARENT MEDIA HIERARCHY</h2>
+
+  <%= render partial: 'edit_parent_media_list', collection: @presenter.parent_media_members, as: :member %>
+  
+  <div class="row p-0">
+    <div class="indicators line solid <%= added_class %> table-cell">
+      <p><span class="circle last"></span></p>
+    </div>
+    <div class="table-cell">
+      <p>This media</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="col-sm-6">
+  <div class="content-block">
+    <h2>SELECT PARENT MEDIA</h2>
+    <%= render 'form_parent_work_relationships_media', p: p, has_processing_event: 'true' %>
+  </div>
+</div>

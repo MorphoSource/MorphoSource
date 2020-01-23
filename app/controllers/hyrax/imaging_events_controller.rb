@@ -51,7 +51,8 @@ module Hyrax
             parent_devices << Device.find(v['id'])
           end
         end
-      else
+      end
+      if parent_devices.empty?
         # if there is no parent device, no need to compare modalities.
         return true
       end

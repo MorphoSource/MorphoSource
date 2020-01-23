@@ -1,0 +1,58 @@
+<div class="col-sm-6">
+  <div class="content-block">
+  	<h2>IMAGING EVENT DETAILS</h2>
+
+    <%= render_edit_field_partial('ie_modality', f: i) %>
+    <%= render_edit_field_partial('creator', f: i) %>
+    <%= render_edit_field_partial('date_created', f: i) %>
+    <%= render_edit_field_partial('software', f: i) %>
+    <%= render_edit_field_partial('description', f: i) %>
+
+    <div class="ie_xray_ct">
+    <%= render_edit_field_partial('exposure_time', f: i) %>
+    <%= render_edit_field_partial('flux_normalization', f: i) %>
+    <%= render_edit_field_partial('geometric_calibration', f: i) %>
+    <%= render_edit_field_partial('shading_correction', f: i) %>
+    <%= render_edit_field_partial('filter', f: i) %>
+    <%= render_edit_field_partial('frame_averaging', f: i) %>
+    <%= render_edit_field_partial('projections', f: i) %>
+    <%= render_edit_field_partial('voltage', f: i) %>
+    <%= render_edit_field_partial('power', f: i) %>
+    <%= render_edit_field_partial('amperage', f: i) %>
+    <%= render_edit_field_partial('surrounding_material', f: i) %>
+    <%= render_edit_field_partial('xray_tube_type', f: i) %>
+    <%= render_edit_field_partial('target_type', f: i) %>
+    <%= render_edit_field_partial('detector_type', f: i) %>
+    <%= render_edit_field_partial('detector_configuration', f: i) %>
+    <%= render_edit_field_partial('source_object_distance', f: i) %>
+    <%= render_edit_field_partial('source_detector_distance', f: i) %>
+    <%= render_edit_field_partial('target_material', f: i) %>
+    <%= render_edit_field_partial('rotation_number', f: i) %>
+    <%= render_edit_field_partial('phase_contrast', f: i) %>
+    <%= render_edit_field_partial('optical_magnification', f: i) %>
+    </div>
+
+    <div class="ie_photogrammetry ie_photography">
+    <%= render_edit_field_partial('lens_model', f: i) %>
+    <%= render_edit_field_partial('light_source', f: i) %>
+    <%= render_edit_field_partial('lens_make', f: i) %>
+    </div>
+
+    <div class="ie_photogrammetry">
+    <%= render_edit_field_partial('focal_length_type', f: i) %>
+    <%= render_edit_field_partial('background_removal', f: i) %>
+    </div>
+
+
+	</div>
+</div>
+<div class="col-sm-6">
+  <div class="content-block">
+
+  </div>
+</div>
+
+<%#
+ this save button is for debugging in a standalone form
+<a href="javascript:void(0)" id="imaging_event" class="btn btn-save debug">save</a>
+%>

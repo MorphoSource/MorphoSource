@@ -53,8 +53,20 @@
 # FITS log file
 /fits.log
 
+.DS_Store
+
 # ---------------------------------------------------
 # MorphoSource specific changes
 # ---------------------------------------------------
 
 /derivatives
+
+#ignore banners and logos added to collections 
+/public/branding
+
+# ---------------------------------------------------
+# MorphoSource Python module changes
+# ---------------------------------------------------
+
+vendor/alembic/__pycache__/*
+*.pyc

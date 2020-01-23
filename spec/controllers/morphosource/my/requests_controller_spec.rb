@@ -15,7 +15,6 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
     include_examples '#index'
     include_examples '#get_items instance variables', 'requests'
-
   end
 
   describe "PUT #request_item" do
@@ -74,15 +73,18 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
 
       context 'the item is a previous request' do
-        let(:requested_work) { Media.create(id: "abc", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
-        let(:requested_item) { CartItem.create(user_id: current_user.id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday, restricted: true)}
+        let(:depositor)   { User.create(email: "test@test.com", password: "password")}
+
+        let(:requested_work) { Media.create(id: "abc", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'])}
+
+        let(:requested_item) { CartItem.create(user_id: current_user.ms_id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday, restricted: true)}
+
         let(:put_params) { {item_id: requested_item.id, intended_use: ["Intended Use"]} }
         let(:items_in_cart) { current_user.items_in_cart }
 
         before do
           request.env["HTTP_REFERER"] = "original_page"
           allow(Media).to receive(:find).with('abc').and_return(requested_work)
-          requested_item.touch
           allow(subject).to receive(:work_in_cart_or_requested?).with(requested_work.id).and_return(false)
         end
 
@@ -93,6 +95,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
 
         it 'creates a new cart item' do
+          requested_item.touch
           expect{
             process :request_item, method: :put, params: { item_id: requested_item.id, intended_use: ["Intended Use"] }
           }.to change{CartItem.count}.by(1)
@@ -102,9 +105,9 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           put :request_item, params: put_params
           item = CartItem.last
           work = requested_work
-          expect(item.user_id).to eq(current_user.id)
+          expect(item.user_id).to eq(current_user.ms_id)
           expect(item.work_id).to eq(work.id)
-          expect(item.approver).to eq(work.depositor)
+          expect(item.approver_id).to eq(work.depositor)
           expect(item.date_requested.to_date).to eq(Date.today)
           expect(item.restricted).to be(true)
           expect(item.in_cart).to be(true)
@@ -175,10 +178,10 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         it 'assigns the correct attribute values to the new cart item' do
           item = CartItem.last
           work = Media.find(cartItem1.work_id)
-          expect(item.user_id).to eq(current_user.id)
+          expect(item.user_id).to eq(current_user.ms_id)
           expect(item.work_id).to eq(work.id)
           expect(item.in_cart).to be(true)
-          expect(item.approver).to eq(work.depositor)
+          expect(item.approver_id).to eq(work.depositor)
           expect(item.date_requested.to_date).to eq(Date.today)
           expect(item.restricted).to be(work.restricted?)
           expect(item.date_cleared).to be(nil)
@@ -232,10 +235,10 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       it 'assigns the correct attribute values to the new cart item' do
         item = CartItem.last
         work = Media.find(cartItem1.work_id)
-        expect(item.user_id).to eq(current_user.id)
+        expect(item.user_id).to eq(current_user.ms_id)
         expect(item.work_id).to eq(work.id)
         expect(item.in_cart).to be(true)
-        expect(item.approver).to eq(work.depositor)
+        expect(item.approver_id).to eq(work.depositor)
         expect(item.date_requested.to_date).to eq(Date.today)
         expect(item.restricted).to be(work.restricted?)
         expect(item.date_cleared).to be(nil)
@@ -277,19 +280,19 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         item2 = items[1]
         work2 = Media.find(item2.work_id)
 
-        expect(item1.user_id).to eq(current_user.id)
+        expect(item1.user_id).to eq(current_user.ms_id)
         expect(item1.work_id).to eq(work1.id)
         expect(item1.in_cart).to be(true)
-        expect(item1.approver).to eq(work1.depositor)
+        expect(item1.approver_id).to eq(work1.depositor)
         expect(item1.date_requested.to_date).to eq(Date.today)
         expect(item1.restricted).to be(work1.restricted?)
         expect(item1.date_cleared).to be(nil)
         expect(item1.use).to eq("Intended Use")
 
-        expect(item2.user_id).to eq(current_user.id)
+        expect(item2.user_id).to eq(current_user.ms_id)
         expect(item2.work_id).to eq(work2.id)
         expect(item2.in_cart).to be(true)
-        expect(item2.approver).to eq(work2.depositor)
+        expect(item2.approver_id).to eq(work2.depositor)
         expect(item2.date_requested.to_date).to eq(Date.today)
         expect(item2.restricted).to be(work2.restricted?)
         expect(item2.date_cleared).to be(nil)
@@ -339,7 +342,8 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
   describe "POST #request_work" do
     context "work is not in the user's cart and hasn't been requested" do
-      let(:new_work)    { Media.create(id: 'zzz', fileset_accessibility: ["restricted_download"], depositor: 'test@test.com')}
+      let(:depositor) { User.create(email: "test@test.com", password: "password")}
+      let(:new_work)    { Media.create(id: 'zzz', fileset_accessibility: ["restricted_download"], depositor: depositor.ms_id)}
       let(:post_params) { { work_id: [new_work.id], intended_use: ["Intended Use"] } }
       before do
         request.env["HTTP_REFERER"] = "original_page"
@@ -355,11 +359,11 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       it "creates the correct metadata" do
         post :request_work, params: post_params
         item = CartItem.last
-        expect(item.user_id).to eq(current_user.id)
+        expect(item.user_id).to eq(current_user.ms_id)
         expect(item.work_id).to eq(new_work.id)
         expect(item.in_cart).to be(true)
         expect(item.restricted).to be(new_work.restricted?)
-        expect(item.approver).to eq(new_work.depositor)
+        expect(item.approver_id).to eq(new_work.depositor)
         expect(item.use).to eq("Intended Use")
       end
     end

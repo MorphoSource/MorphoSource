@@ -77,6 +77,7 @@ group :test do
   # Selenium::WebDriver::Error::JavascriptError:ReferenceError: __magic__ is not defined
   gem 'axe-matchers', '~> 2.3.0'
   gem 'rspec-json_expectations'
+  gem 'vcr'
 end
 
 group :production do

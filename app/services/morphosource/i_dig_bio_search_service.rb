@@ -9,7 +9,10 @@ module Morphosource
     SEARCH_MAPPING = {
       'taxonomy_genus' => 'genus',
       'taxonomy_species' => 'specificepithet',
-      'institution_code' => 'institutioncode'
+      'institution_code' => 'institutioncode',
+      'collection_code' => 'collectioncode',
+      'catalog_number' => 'catalognumber',
+      'occurence_id' => 'occurenceid'
     }
 
     # see: https://docs.google.com/spreadsheets/d/1LJRtcC9cjRNehThsOpnZGLvTny3Zt05aKPIxSlkBzSg/
@@ -90,7 +93,11 @@ module Morphosource
 
     def call
       query = assemble_query
-      hits = IDigBio.search(query)
+      if query.empty?
+        return []
+      else
+        return IDigBio.search(query)
+      end
     end
 
     private

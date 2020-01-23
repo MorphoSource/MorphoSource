@@ -22,12 +22,21 @@ function regularExpressionize(list) {
 }
 
 const mediaFormatLabels = {
+  /* for some reason: intermittantly the translation text are not loaded, returning missing translation error
+      for now the values are hardcoded
   'Image': "<%= Morphosource::MEDIA_FORMATS['Image'][:label] %>",
   'Video': "<%= Morphosource::MEDIA_FORMATS['Video'][:label] %>",
   'CTImageSeries': "<%= Morphosource::MEDIA_FORMATS['CTImageSeries'][:label] %>",
   'PhotogrammetryImageSeries': "<%= Morphosource::MEDIA_FORMATS['PhotogrammetryImageSeries'][:label] %>",
   'Mesh': "<%= Morphosource::MEDIA_FORMATS['Mesh'][:label] %>",
   'Other': "<%= Morphosource::MEDIA_FORMATS['Other'][:label] %>"
+  */
+  'Image': 'Image',
+  'Video': 'Video',
+  'CTImageSeries': 'CT/MRI Image Series',
+  'PhotogrammetryImageSeries': 'Photogrammetry Image Series',
+  'Mesh': 'Mesh or Point Cloud',
+  'Other': 'Other'
 }
 
 // Set allowed formats for each Media Type in lib/morphosource/configurable.
@@ -214,6 +223,8 @@ $(document).on('turbolinks:load', function() {
     $('#fileupload').bind('fileuploadcompleted', function() {
       checkFormatsRequirement();
       updateUnallowedFilesMessage();
+      if ($('#file-upload-cancel-btn').length)
+        $('#file-upload-cancel-btn').hide();
     });
 
     // Whenever a file is deleted, check to see if it fulfills the formats requirement, and update the unallowed files message if the file is the wrong extension.

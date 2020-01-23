@@ -449,13 +449,32 @@ $(document).on('turbolinks:load', function() {
 
       mediaSubmitEvent.preventDefault();
       prepareFieldsBeforeSubmit();
-      disablePageAndSave(".btn-save-media");
 
-      if (HasEditImagingEventForm) {
-        $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
-      } else {
-        IsImagingEventOK = true;
-        submitProcessingEvent();
+      if (isFormValid()) {
+        disablePageAndSave(".btn-save-media");
+        if (HasEditImagingEventForm) {
+          $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
+        } else {
+          IsImagingEventOK = true;
+          submitProcessingEvent();
+        }
+      }
+
+      function isFormValid() {
+        // check modality consistency
+        if ($('#device-modality-value').length)
+          var deviceModality = $('#device-modality-value').text();
+        if ($('#imaging_event_ie_modality').length)
+          var imagingEventModality = $('#imaging_event_ie_modality').val();
+        if (deviceModality && imagingEventModality) {
+          if (deviceModality === imagingEventModality) {
+            return true;
+          } else {
+            alert('Device modality does not match imaging event modality.');
+          }
+        } else {
+          return true;
+        }
       }
 
       function submitProcessingEvent() {
@@ -463,8 +482,8 @@ $(document).on('turbolinks:load', function() {
         // which has no PE, the page will have a new PE form, which does not need
         // to be submitted when saving the Media 
         if (HasEditProcessingEventForm) {
-          var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
-          if (isFormValid) {
+          var isProcessingActivityValid = buildProcessingActivity(); // populate the PA field before saving PE
+          if (isProcessingActivityValid) {
             $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
           }
         } else {

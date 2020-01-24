@@ -11,7 +11,8 @@ module Hyrax
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
         
-        # skipping media update for now (for handling showcase media edit page)
+        # skipping media update.  This should not be needed unless an IE is updated
+        # by itself.  Updating title will be handled in Media actor when media is saved.
 
         # look for media associated with this IE (child works)
         # for each media, update the media title with the IE modality

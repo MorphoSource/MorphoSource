@@ -68,6 +68,14 @@ export default class MorphosourceEditor extends Editor {
                                  'work_parents_attributes',
                                  'tmpl-parent-work-biological-specimens',
                                  0).init())
+     let works_parents_cultural_heritage_objects = this.element.find('[data-behavior="parent-relationships-cultural-heritage-objects"]')
+    works_parents_cultural_heritage_objects.each((_idx, element) =>
+        new RelationshipsControl(element,
+                                 works_parents_devices.data('members'),
+                                 works_parents_devices.data('paramKey'),
+                                 'work_parents_attributes',
+                                 'tmpl-parent-work-cultural-heritage-objects',
+                                 0).init())
      let works_parents_media = this.element.find('[data-behavior="parent-relationships-media"]')
     works_parents_media.each((_idx, element) =>
         new RelationshipsControl(element,

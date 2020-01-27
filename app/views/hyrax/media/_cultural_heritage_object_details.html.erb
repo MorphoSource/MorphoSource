@@ -1,0 +1,50 @@
+<div>
+  <h2>CURRENT PHYSICAL OBJECT</h2>
+
+  <div class="message has-warning hidden"></div>
+  <table>
+    <tbody></tbody>
+  </table>
+
+  <script type="text/x-tmpl" id="tmpl-parent-work-cultural-heritage-objects">
+
+  <tr>
+    <td>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Object type</div>
+            <div class="col-xs-6 showcase-value">Cultural heritage object</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Vouchered?</div>
+            <div class="col-xs-6 showcase-value">{%= o.vouchered %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Institution code</div>
+            <div class="col-xs-6 showcase-value">{%= o.institution_code %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Collection code</div>
+            <div class="col-xs-6 showcase-value">{%= o.collection_code %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Catalog number</div>
+            <div class="col-xs-6 showcase-value">{%= o.catalog_number %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">CHO type</div>
+            <div class="col-xs-6 showcase-value">{%= o.cho_type %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Material</div>
+            <div class="col-xs-6 showcase-value">{%= o.material %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Short title</div>
+            <div class="col-xs-6 showcase-value">{%= o.short_title %}</div>
+        </div>
+    </td>
+    <td><button style="display:none" class="btn btn-sm btn-danger" data-behavior="remove-relationship"><%= t('.actions.remove') %></button></td>
+  </tr>
+  </script>
+
+</div>

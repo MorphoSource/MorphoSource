@@ -74,6 +74,26 @@ export default class MorphosourceResource extends Resource {
                                 sex: obj.sex
                               };
                             })
+    } else if (this.url.indexOf('cultural_heritage_objects') != -1) {
+      results = data.map((obj) => {
+                              return { 
+                                id: obj.id, 
+                                text: obj.label[0], 
+                                bibliographic_citation: obj.bibliographic_citation,
+                                catalog_number: obj.catalog_number,
+                                collection_code: obj.collection_code,
+                                institution_code: obj.institution_code,
+                                latitude: obj.latitude,
+                                longitude: obj.longitude,
+                                numeric_time: obj.numeric_time,
+                                original_location: obj.original_location,
+                                periodic_time: obj.periodic_time,
+                                vouchered: obj.vouchered,
+                                cho_type: obj.cho_type,
+                                material: obj.material,
+                                short_title: obj.short_title
+                              };
+                            })
     } else {
       results = data.map((obj) => {
                                return { id: obj.id, text: obj.label[0] };

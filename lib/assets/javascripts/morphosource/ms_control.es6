@@ -5,6 +5,7 @@ import OrganizationResource from './ms_organization_resource'
 import TaxonomyResource from './ms_taxonomy_resource'
 import DeviceResource from './ms_device_resource'
 import BiologicalSpecimenResource from './ms_biological_specimen_resource'
+import CulturalHeritageObjectResource from './ms_cultural_heritage_object_resource'
 
 /**
  * This depends on the passed in element containing `data-autocomplete="work'"`
@@ -105,6 +106,26 @@ export default class RelationshipsControl {
           elem.sex
          ))
       )      
+    } else if (this.workType == 'cultural_heritage_object') {
+      this.members.forEach((elem) =>
+        this.registry.addResource(new CulturalHeritageObjectResource(
+          elem.id, 
+          elem.label, 
+          elem.bibliographic_citation,
+          elem.catalog_number,
+          elem.collection_code,
+          elem.institution_code,
+          elem.latitude,
+          elem.longitude,
+          elem.numeric_time,
+          elem.original_location,
+          elem.periodic_time,
+          elem.vouchered,
+          elem.cho_type,
+          elem.material,
+          elem.short_title
+         ))
+      )      
     } else {
       this.members.forEach((elem) =>
         this.registry.addResource(new Resource(elem.id, elem.label))
@@ -199,6 +220,24 @@ export default class RelationshipsControl {
         data.occurrence_id,
         data.source_of_record,
         data.sex
+        ))
+    } else if (this.workType == 'cultural_heritage_object') {
+      this.registry.addResource(new CulturalHeritageObjectResource(
+        data.id, 
+        data.text, 
+        data.bibliographic_citation,
+        data.catalog_number,
+        data.collection_code,
+        data.institution_code,
+        data.latitude,
+        data.longitude,
+        data.numeric_time,
+        data.original_location,
+        data.periodic_time,
+        data.vouchered,
+        data.cho_type,
+        data.material,
+        data.short_title
         ))
     } else {
       this.registry.addResource(new Resource(data.id, data.text))

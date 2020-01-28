@@ -18,7 +18,7 @@ module Morphosource
       end
 
       def descendants
-        @descendants = members
+        @descendants = ActiveFedora::Base.find(member_ids)
         get_all_children(@descendants)
         @descendants.flatten.uniq
       end
@@ -28,7 +28,7 @@ module Morphosource
       def get_all_children(objects)
         objects.flatten.each do |object|
           unless object.member_ids.blank?
-            children = object.members
+            children = ActiveFedora::Base.find(object.member_ids)
             @descendants << children
             get_all_children(children)
           end

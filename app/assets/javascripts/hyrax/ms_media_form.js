@@ -20,7 +20,7 @@ $(document).on('turbolinks:load', function() {
     setupEmbeddedWorkForm('biological_specimen', false, 'new');
     setupEmbeddedWorkForm('processing_event', 'new', true, reloadPage);
     setupTooltip();
-    removeLastRepeatable();
+    //removeLastRepeatable();  // this should not be needed since it's already called inside 'if edit media form page' block
 
     form = $('form[id*="media"]')[0];
 

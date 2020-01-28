@@ -5,7 +5,7 @@
     <span class="fa fa-file" aria-hidden="true"></span>
     <% if @collection.team? %>
       Team
-    <% elsif @collection.project? %> 
+    <% elsif @collection.project? %>
       Project
     <% else %>
       <%= t('.header') %>
@@ -40,13 +40,21 @@
               <%= render 'hyrax/collections/collection_description', presenter: @presenter %>
             </section>
 
-            <!-- Linked Organization -->
-            <section>
-              <%= render 'ms_linked_organization', presenter: @presenter, collection: @collection %>
-            <section>
+            <!-- Linked Organization if @collection is a team -->
+            <% if @collection.team? %>
+              <section>
+                <%= render 'ms_linked_organization', presenter: @presenter, collection: @collection %>
+              <section>
+            <% end %>
 
             <% unless has_collection_search_parameters? %>
-              <h3>Team: </h3>
+              <% if @collection.team? %>
+                <h3>Team: </h3>
+              <% elsif @collection.project? %>
+                <h4>Project: </h4>
+              <% else %>
+                <h4>Collection: </h4>
+              <% end %>
               <%= render 'show_descriptions' %>
             <% end %>
           </div>

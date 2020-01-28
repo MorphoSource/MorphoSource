@@ -1,31 +1,47 @@
 function set_initial_value() {
   let selected_visibility = $('#selected_visibility').attr('class');
+
   let open = $('#media_visibility_open');
   let restricted_download = $('#media_visibility_restricted_download');
   let preview = $('#media_visibility_preview');
   let hidden = $('#media_visibility_hidden');
+
   let current_visibility_value = $('#current_visibility_value');
 
-   switch (selected_visibility) {
-  case 'new':
-    select_visibility(open);
-    display_value = "Open";
-    break;
-  case 'restricted_download':
-    select_visibility(restricted_download)
-    display_value = "Restricted download";
-    break;
-  case 'preview_only':
-    select_visibility(preview)
-    display_value = "Preview only";
-    break;
-  case 'hidden':
-    select_visibility(hidden)
-    display_value = "Hidden";
-    break;
+  switch (selected_visibility) {
+    case 'new':
+      select_visibility(open);
+      display_value = "Publish with Open Download";
+      display_class = "label-success";
+      break;
+    case 'open':
+      select_visibility(open);
+      display_value = "Publish with Open Download";
+      display_class = "label-success";
+      break;
+    case 'restricted_download':
+      select_visibility(restricted_download)
+      display_value = "Publish with Restricted Download";
+      display_class = "label-info";
+      break;
+    case 'preview_only':
+      select_visibility(preview)
+      display_value = "Publish with No Download";
+      display_class = "label-info";
+      break;
+    case 'hidden':
+      select_visibility(hidden)
+      display_value = "Publish with Hidden File";
+      display_class = "label-info";
+      break;
+    default:
+      display_value = "Private";
+      display_class = "label-danger";
   }
+
   if (current_visibility_value.length) {
-    current_visibility_value.text(display_value)
+    current_visibility_value.text(display_value);
+    current_visibility_value.addClass(display_class);
   }
 }
 

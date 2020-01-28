@@ -399,4 +399,75 @@ RSpec.describe SubmissionsController, type: :controller do
     end
   end
 
+  describe '#new_device_submit' do
+    describe 'successfully created a new device' do
+      let(:form_attributes) do
+        { 'id' => 'abc', 
+          'title' => 'device', 
+          'description' => 'test'
+        }
+      end
+      let(:form_params) { { device: form_attributes } }
+      it 'return device data in json response' do
+        post :new_device_submit, params: form_params
+        expect(JSON.parse(response.body)).to include_json(
+          status: 'OK',
+          message: 'New device created',
+          work: {
+            title: 'device',
+            description: 'test'          
+          }
+        )
+      end
+    end
+
+    describe 'failed to create a new device' do
+      let(:form_params) { { device: {} } } # no form attribute will throw an exception
+      it 'return failure status in json response' do
+        post :new_device_submit, params: form_params
+        
+        expect(JSON.parse(response.body)).to include_json(
+          status: 'FAIL',
+          message: "There is a problem creating the device. Exception: NoMethodError, undefined method `[]' for nil:NilClass",
+          work: {}
+        )
+      end
+    end
+  end
+
+
+  describe '#new_processing_event_submit' do
+    describe 'successfully created a new processing_event' do
+      let(:form_attributes) do
+        { 'id' => 'abc', 
+          'title' => 'test processing event'
+        }
+      end
+      let(:form_params) { { processing_event: form_attributes } }
+      it 'return processing_event data in json response' do
+        post :new_processing_event_submit, params: form_params
+        expect(JSON.parse(response.body)).to include_json(
+          status: 'OK',
+          message: 'New processing_event created',
+          work: {
+            title: 'Processing Event (No Event Date)'
+          }
+        )
+      end
+    end
+
+    describe 'failed to create a new processing_event' do
+      let(:form_params) { { processing_event: {} } } # no form attribute will throw an exception
+      it 'return failure status in json response' do
+        post :new_processing_event_submit, params: form_params
+        
+        expect(JSON.parse(response.body)).to include_json(
+          status: 'FAIL',
+          message: "There is a problem creating the processing_event. Exception: NoMethodError, undefined method `[]' for nil:NilClass",
+          work: {}
+        )
+      end
+    end
+  end
+
 end

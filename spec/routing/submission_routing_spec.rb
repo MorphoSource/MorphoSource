@@ -18,4 +18,14 @@ RSpec.describe 'submission routing', type: :routing do
     expect(:post => '/submissions/new_taxonomy_submit').to route_to(route)
   end
 
+  it 'has a route for new device submit' do
+    route = { controller: 'submissions', action: 'new_device_submit' }
+    expect(:post => '/submissions/new_device_submit').to route_to(route)
+  end
+
+  it 'has a route for new processing_event submit' do
+    route = { controller: 'submissions', action: 'new_processing_event_submit' }
+    expect(:post => '/submissions/new_processing_event_submit').to route_to(route)
+  end
+
 end

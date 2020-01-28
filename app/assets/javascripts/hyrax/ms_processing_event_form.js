@@ -29,10 +29,14 @@ $(document).on('turbolinks:load', function() {
       concatFieldCount--;
     }
 
-    // remove the first set of fields if in editing (not adding) mode
+    // remove the last set of fields if in editing (not adding) mode
     if (concatFieldCount > 0) {
-      $(targetWrapperUl).children("li").remove();
+      $(targetWrapperUl).children("li").last().remove();
     }
+
+    $('#processing_event_processing_activity_wrapper').on('click', '.add', function(){
+        setNewProcessingActivityStep();
+    });
 
     // build and validate the Processing Activity fields before submit 
     // note: this has been moved out of "    if (hasAdditionalEmptyField) {  " condition block
@@ -41,6 +45,9 @@ $(document).on('turbolinks:load', function() {
       if (!isFormValid) {
         peSubmitEvent.preventDefault();
         enablePage();
+      } else {
+        disablePage();
+        console.log('about to submit in ME pe.js')
       }
     });
 
@@ -49,7 +56,7 @@ $(document).on('turbolinks:load', function() {
       var concatFieldValue = concatFields[i].value;
       //console.log('concatFieldValue: '+concatFieldValue);
       var step = concatFieldValue.match(/^Step: ([0-9]+), Type: /)
-      step = (step) ? step[1] : '';
+      step = (step) ? step[1] : '1'; // if step value cannot be parsed, assume there is no PA, and set the first step to 1 
       var type = concatFieldValue.match(/, Type: (.*), Software: /);
       type = (type) ? type[1] : '';
       var software = concatFieldValue.match(/, Software: (.*), Description: /);
@@ -130,6 +137,7 @@ $(document).on('turbolinks:load', function() {
 })
 
 function buildProcessingActivity() {
+  console.log('buildProcessingActivity...');
   var targetGroup = document.querySelector('div.processing_event_processing_activity');
   var targetGroupUl = targetGroup.querySelector("ul");
   
@@ -185,6 +193,18 @@ function buildTargetField(inputValue, targetGroupUl) {
   targetGroupUl.appendChild(li);
 }
 
+var setNewProcessingActivityStep = function() {
+  var processingActivityCount = $('select[name="processing_event[processing_activity_type][]"]').length;
+  var steps = [];
+  for (var i = 0; i < processingActivityCount-1; i++) {
+    var processingActivityStep = $('select[name="processing_event[processing_activity_step][]"]')[i].value || '';
+    processingActivityStep = parseInt(processingActivityStep);
+    steps.push(processingActivityStep);
+  }
+  var newStepValue = Math.max.apply(Math, steps) + 1; 
+  // set the last PA step number to the new value
+  $('#processing_event_processing_activity_wrapper li.processing_activity_items:last-child select.processing_event_processing_activity_step').val(newStepValue);
+}
 
 var processingActivityStepChanged = function() {
   var processingActivityCount = $('select[name="processing_event[processing_activity_type][]"]').length;

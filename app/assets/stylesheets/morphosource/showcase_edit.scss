@@ -317,8 +317,17 @@ div.showcase-edit {
     padding-top:4px;
   }
 
-  .collapse-block .visibility {
-    font-size: 11px;
+  .collapse-block {
+    .visibility {
+      font-size: 11px;
+    }
+    .set-access-controls .form-group {
+      padding: 0 .3em;
+      font-size: 11px;
+      input, select {
+        font-size: 11px;
+      }
+    }
   }
 
 } /* / div.showcase-edit */

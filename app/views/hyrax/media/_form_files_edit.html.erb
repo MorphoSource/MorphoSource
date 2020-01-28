@@ -17,14 +17,14 @@
                   <input id="addfiles" type="file" style="display:none;"  name="files[]" multiple />
                   <button type="button" class="btn btn-primary" onclick="document.getElementById('addfiles').click();">
                     <span class="glyphicon glyphicon-plus"></span>
-                    <span><%=  t(".add_files") %></span>
+                    <span>Add files...</span>
                   </button>
                 </div>
                 <div class="fileinput-button">
                   <input id="addfolder" type="file" style="display:none;"  name="files[]" multiple directory webkitdirectory />
                   <button type="button" class="btn btn-primary" onclick="document.getElementById('addfolder').click();">
                     <span class="glyphicon glyphicon-plus"></span>
-                    <span><%=  t(".add_folder") %></span>
+                    <span>Add folder...</span>
                   </button>
                 </div>
                 <% if Hyrax.config.browse_everything? %>
@@ -38,7 +38,7 @@
                 <button type="reset" id="file-upload-cancel-btn" class="btn btn-warning cancel hidden">
                     <span class="glyphicon glyphicon-ban-circle"></span>
                     <span><%= t('.cancel_upload') %></span>
-                </button>
+                </button %>
                 <!-- The global file processing state -->
                 <span class="fileupload-process"></span>
             </div>

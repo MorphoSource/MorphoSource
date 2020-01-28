@@ -15,10 +15,10 @@ $(document).on('turbolinks:load', function() {
     else
       HasEditProcessingEventForm = false;
 
-    setupEmbeddedWorkForm('device', 'new', updateMediaTitle);
-    setupEmbeddedWorkForm('organization', 'new', updateDevice);
-    setupEmbeddedWorkForm('biological_specimen', 'new');
-    setupEmbeddedWorkForm('processing_event', 'new');
+    setupEmbeddedWorkForm('device', 'new', false, updateMediaTitle);
+    setupEmbeddedWorkForm('organization', 'new', false, updateDevice);
+    setupEmbeddedWorkForm('biological_specimen', false, 'new');
+    setupEmbeddedWorkForm('processing_event', 'new', true, reloadPage);
     setupTooltip();
     removeLastRepeatable();
 
@@ -365,10 +365,6 @@ $(document).on('turbolinks:load', function() {
       $('#device-organization-institution-value').text(organization_institution);
     }
 
-    function reloadPage() {
-      window.location.reload();
-    }
-
     setupTooltip();
     removeLastRepeatable();
     adjust_form_media_type();
@@ -380,8 +376,9 @@ $(document).on('turbolinks:load', function() {
     //})
 
     // Change title on the fly when corresponding fields are updated
-    // todo: input.media_part is a repeatable, but newly added media_part field does not trigger the event when it is updated
-    $('[name="media[media_type]"], input.media_part, [name="imaging_event[ie_modality]"]').change(updateMediaTitle);
+    $('.form-group').on('change', '[name="media[media_type]"], input.media_part, [name="imaging_event[ie_modality]"]', function(){
+        updateMediaTitle();
+    });
 
     // when switching tab, show/hide content
     $('.nav-tabs > li').click(function() {
@@ -410,11 +407,7 @@ $(document).on('turbolinks:load', function() {
       $('#modal-select-parent-media').modal();
     })
     $('#btn-select-media.has-processing-event-false').click(function() {
-      // display a modal to prompt the user to confirm
-      // when user clicks OK, trigger the add parent button,
-      // immediately save the processing event form, then refresh the page
-
-      $('.new-processing-event-wrapper').show();
+      // display a modal to prompt the user to fill in the processing event form
       $('#modal-select-parent-media-new-processing-event').modal();
     })
 
@@ -430,11 +423,15 @@ $(document).on('turbolinks:load', function() {
           $("form#related_form_processing_event").submitRelatedWork(reloadPage);        
         } else if ($(this).data('hasProcessingEvent') == false) {
           $('#modal-select-parent-media-new-processing-event').modal('hide');
+          $('.new-processing-event-wrapper').show();
+          $('.selected_parent_media').show();
+          /*
           var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
           if (isFormValid) {
             disablePageAndSave(".btn-save-media");
             $("form#new_processing_event").submitRelatedWork(reloadPage);        
-          }
+          } 
+          */
         }
       } else {
         var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
@@ -444,6 +441,7 @@ $(document).on('turbolinks:load', function() {
     })
 
     // when page is loaded, show/hide content based on which tab is active
+    $(".related_form").hide();
     var activeTab = $('.nav-tabs > li.active').find("a").attr("aria-controls");
     $(".related_form." + activeTab).show();
 
@@ -451,13 +449,32 @@ $(document).on('turbolinks:load', function() {
 
       mediaSubmitEvent.preventDefault();
       prepareFieldsBeforeSubmit();
-      disablePageAndSave(".btn-save-media");
 
-      if (HasEditImagingEventForm) {
-        $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
-      } else {
-        IsImagingEventOK = true;
-        submitProcessingEvent();
+      if (isFormValid()) {
+        disablePageAndSave(".btn-save-media");
+        if (HasEditImagingEventForm) {
+          $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
+        } else {
+          IsImagingEventOK = true;
+          submitProcessingEvent();
+        }
+      }
+
+      function isFormValid() {
+        // check modality consistency
+        if ($('#device-modality-value').length)
+          var deviceModality = $('#device-modality-value').text();
+        if ($('#imaging_event_ie_modality').length)
+          var imagingEventModality = $('#imaging_event_ie_modality').val();
+        if (deviceModality && imagingEventModality) {
+          if (deviceModality === imagingEventModality) {
+            return true;
+          } else {
+            alert('Device modality does not match imaging event modality.');
+          }
+        } else {
+          return true;
+        }
       }
 
       function submitProcessingEvent() {
@@ -465,8 +482,8 @@ $(document).on('turbolinks:load', function() {
         // which has no PE, the page will have a new PE form, which does not need
         // to be submitted when saving the Media 
         if (HasEditProcessingEventForm) {
-          var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
-          if (isFormValid) {
+          var isProcessingActivityValid = buildProcessingActivity(); // populate the PA field before saving PE
+          if (isProcessingActivityValid) {
             $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
           }
         } else {

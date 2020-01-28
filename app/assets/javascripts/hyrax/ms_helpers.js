@@ -55,8 +55,12 @@ function depositorLink(email) {
   return "/users/" + email.replace(/(.+)@([^.]+)\.(.+)/, '$1@$2-dot-$3')
 }
 
+function reloadPage() {
+  window.location.reload();
+}
+
 // setup embedded work form, when to load the form, submit and close handling
-function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
+function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubmit) {
 	var this_btn = "#btn_" + action + '_' + work_name;
 	var this_div = "#embedded_div_" + action + '_' + work_name;
 	var this_form = "form#" + action + '_' + work_name;
@@ -70,7 +74,7 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 
   $(this_div).on("submit", this_form, function() {
   	// the new work form's save button has been clicked
- 		console.log(this_div + ' submitting new work form: ' + $(this_form).attr('action') );
+ 		console.log(this_div + ' submitting new work form : ' + $(this_form).attr('action') );
 		$(this_div).addClass('ui-loading');
 		$('.btn').addClass('disabled');
 
@@ -155,10 +159,13 @@ function setupEmbeddedWorkForm(work_name, action, callbackAfterSubmit) {
 					text: data.work.title
 				};
 			}
-			//console.log('populating new_data into new-work-created ', new_data)
-	    $(relationship_element).data('new-work-created', new_data);
-			var relationship_add_btn = $(this_div).data("add-button");
-			$(relationship_add_btn).trigger("click");
+
+			if (!submit_only) {
+				console.log('populating new_data into new-work-created ', new_data)
+		    $(relationship_element).data('new-work-created', new_data);
+				var relationship_add_btn = $(this_div).data("add-button");
+				$(relationship_add_btn).trigger("click");				
+			}
 
 			// perform any on-the-fly form update after new work has been created
 			if(callbackAfterSubmit) callbackAfterSubmit();

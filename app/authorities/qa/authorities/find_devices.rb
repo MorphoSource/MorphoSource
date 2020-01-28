@@ -12,12 +12,16 @@ module Qa::Authorities
       docs = response.documents
       docs.map do |doc|
         id = doc.id
-        title = doc.title
         creator = doc.creator
         modality = doc.modality
         description = doc.description
         # also get the device organization title and institution name for display
         organization_institution = organization_institution(id)
+        if organization_institution.present?
+          title = [ doc.title.first + ', ' + organization_institution ] 
+        else
+          title = doc.title
+        end
         { 
           id: id, 
           label: title, 

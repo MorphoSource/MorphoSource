@@ -57,7 +57,11 @@
       <%= render 'parent_device', presenter: @presenter %>
     </div>
     <div class="row related_form physical-object-details" style="display:none;">
-      <%= render 'parent_biological_specimen', presenter: @presenter %>
+      <% if @presenter.physical_object_type == "Biological Specimen" %>
+        <%= render 'parent_biological_specimen', presenter: @presenter %>
+      <% elsif @presenter.physical_object_type == "Cultural Heritage Object" %>
+        <%= render 'parent_cultural_heritage_object', presenter: @presenter %>
+      <% end %>
     </div>
   <% end %>
 <% end %>

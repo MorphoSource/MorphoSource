@@ -24,6 +24,8 @@ module Hyrax
       # BSO fields
       :collection_code, :institution_code, :catalog_number, :occurrence_id, :idigbio_uuid,
       :user_taxonomies, :canonical_taxonomy_object, :trusted_taxonomies,
+      # CHO fields
+      :cho_type, :material, :short_title,
       # mesh specific
       :point_count,
       :face_count,
@@ -299,10 +301,14 @@ module Hyrax
           @physical_object_title = cultural_heritage_object.title.first
           @physical_object_id = cultural_heritage_object.id
           @physical_object_link = "/concern/cultural_heritage_objects/" + @physical_object_id
-          # idigbio fields are not in CHO work type.  Remove below later if not needed
-          #@idigbio_uuid = cultural_heritage_object.idigbio_uuid
           @vouchered = cultural_heritage_object.vouchered
           @physical_object_type = cultural_heritage_object.human_readable_type
+          @institution_code = cultural_heritage_object.institution_code
+          @collection_code = cultural_heritage_object.collection_code
+          @catalog_number = cultural_heritage_object.catalog_number
+          @cho_type = cultural_heritage_object.cho_type
+          @material = cultural_heritage_object.material
+          @short_title = cultural_heritage_object.short_title
         end
 
         # get device from imaging event

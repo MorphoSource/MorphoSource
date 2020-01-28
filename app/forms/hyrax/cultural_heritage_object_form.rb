@@ -40,7 +40,6 @@ module Hyrax
         :original_location,
         :publisher,
         :vouchered,
-        :creator,
         :short_title
     ]
 

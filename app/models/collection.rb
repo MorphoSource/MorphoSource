@@ -7,6 +7,8 @@ class Collection < ActiveFedora::Base
   include Hyrax::BasicMetadata
   self.indexer = Hyrax::CollectionWithBasicMetadataIndexer
 
+  attr_accessor :organization_id
+
   after_destroy :destroy_default_groups, if: :type_assigns_groups?
 
   DEFAULT_GROUP_ROLES = %w[managers depositors viewers].freeze
@@ -52,6 +54,10 @@ class Collection < ActiveFedora::Base
 
   def parent?
     !member_of_collections.empty?
+  end
+
+  def organization
+    Organization.where(team_id: id).first
   end
 
   # Create manager/depositor/viewer roles for each Team/Project collection

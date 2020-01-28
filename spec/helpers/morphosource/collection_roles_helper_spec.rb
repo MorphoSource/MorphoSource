@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Morphosource::CartItemHelper, type: :helper do
+RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
 
   before do
     helper.instance_variable_set(:@virtual_path, 'hyrax.dashboard.collections.form_share')

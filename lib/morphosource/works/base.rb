@@ -9,15 +9,31 @@ module Morphosource
       self.work_requires_files = false
 
       def self.valid_parent_concerns
-        concerns = []
-        Morphosource::Works::Base.descendants.each do |model|
+        concerns = Morphosource::Works::Base.descendants
+        concerns.each_with_object([]) do |model, parents|
           if model.valid_child_concerns.include? self
-            concerns << model
+            parents << model
           end
         end
-        concerns
       end
 
+      def descendants
+        @descendants = members
+        get_all_children(@descendants)
+        @descendants.flatten.uniq
+      end
+
+      private
+
+      def get_all_children(objects)
+        objects.flatten.each do |object|
+          unless object.member_ids.blank?
+            children = object.members
+            @descendants << children
+            get_all_children(children)
+          end
+        end
+      end
     end
   end
 end

@@ -16,6 +16,16 @@ RSpec.describe Collection, type: :model do
     allow(User).to receive(:find_by).with(ms_id: user.ms_id).and_return(user)
   end
 
+  describe '#organization' do
+    let!(:org1)  { Organization.create(title: ['title'], team_id: [team.id]) }
+    let!(:org2)  { Organization.create(title: ['title'], team_id: []) }
+    let!(:org3)  { Organization.create(title: ['title'], team_id: []) }
+
+    it 'returns the organization linked to the team' do
+      expect(team.organization).to eq(org1)
+    end
+  end
+
   describe '#create_collection_groups' do
 
     it 'creates manager, depositor, and viewer groups' do

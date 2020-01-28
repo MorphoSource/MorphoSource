@@ -1,0 +1,45 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+
+RSpec.describe Morphosource::Works::Base do
+  let(:organization)    { Organization.new(title: ['organization title']) }
+  let(:specimen1)       { BiologicalSpecimen.new(title: ['title'], vouchered: [true]) }
+  let(:specimen2)       { BiologicalSpecimen.new(title: ['title'], vouchered: [false]) }
+  let(:media1)          { Media.new(title: ['title']) }
+  let(:media2)          { Media.new(title: ['title']) }
+  let(:media3)          { Media.new(title: ['title']) }
+  let(:file_set1)       { FileSet.new }
+  let(:file_set2)       { FileSet.new }
+  let(:file_set3)       { FileSet.new }
+  let(:imagingEvent)    { ImagingEvent.new(title: ['title']) }
+  let(:imagingEvent2)   { ImagingEvent.new(title: ['title']) }
+  let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
+  let(:attachment)      { Attachment.new(title: ['title']) }
+  let(:works)           { [organization, specimen1, specimen2, media1, media2, media3, imagingEvent, imagingEvent2, processingEvent, attachment, file_set1, file_set2, file_set3] }
+
+  describe '#descendants' do
+    let(:org_desc)      { works - [organization] }
+    let(:spec1_desc)    { [imagingEvent, media1, file_set1, processingEvent, media2, file_set2] }
+    let(:spec2_desc)    { [imagingEvent2, media3, file_set3] }
+
+    before do
+      organization.ordered_members << specimen1 << specimen2 << attachment
+      specimen1.ordered_members << imagingEvent
+      imagingEvent.ordered_members << media1
+      media1.ordered_members << processingEvent << file_set1
+      processingEvent.ordered_members << media2
+      media2.ordered_members << file_set2
+      specimen2.ordered_members << imagingEvent2
+      imagingEvent2.ordered_members << media3
+      media3.ordered_members << file_set3
+      works.each(&:save)
+    end
+
+    it 'finds all children (works and filesets) of a work' do
+      expect(organization.descendants).to match_array(org_desc)
+      expect(specimen1.descendants).to match_array(spec1_desc)
+      expect(specimen2.descendants).to match_array(spec2_desc)
+    end
+  end
+end

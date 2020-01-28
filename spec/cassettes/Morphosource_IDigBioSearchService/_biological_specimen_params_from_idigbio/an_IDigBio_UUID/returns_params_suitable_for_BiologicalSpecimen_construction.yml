@@ -1,0 +1,268 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://search.idigbio.org/v2/view/records/061594f4-69a3-41ff-9396-dac55cc8409b
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (linux-gnu x86_64) ruby/2.4.2p198
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - search.idigbio.org
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Vary:
+      - Accept-Encoding, Origin
+      Last-Modified:
+      - Fri, 13 Dec 2019 15:25:12 GMT
+      Cache-Control:
+      - public, max-age=300
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '10702'
+      Date:
+      - Thu, 23 Jan 2020 21:35:15 GMT
+    body:
+      encoding: UTF-8
+      string: '{"uuid":"061594f4-69a3-41ff-9396-dac55cc8409b","type":"records","etag":"1ec2d44f898f84f67517c85417ef0269222c4cf1","data":{"dwc:specificEpithet":"lewisiana","dwc:latestPeriodOrHighestSystem":"Paleogene","dwc:county":"Lewis","dwc:recordedBy":"David
+        Nunnallee","dwc:informationWithheld":"Precise coordinates and locality withheld
+        to protect sensitive information.","dwc:georeferencedDate":"2017-04-17 14:39:21","dwc:fieldNumber":"25,
+        28","dwc:order":"Neogastropoda","dcterms:references":"http://www.burkemuseum.org/collections/search/result.php?GUID=UWBM:InvertebratePaleontology:66079","dwc:individualCount":"3","dwc:occurrenceID":"urn:catalog:UWBM:InvertebratePaleontology:66079","dcterms:language":"en","dwc:highestBiostratigraphicZone":"Narizian","dwc:earliestEpochOrLowestSeries":"Eocene","id":"urn:catalog:UWBM:InvertebratePaleontology:66079","dwc:stateProvince":"Washington","dwc:eventDate":"1967-00-00","dwc:institutionCode":"UWBM","dwc:country":"United
+        States","dwc:earliestPeriodOrLowestSystem":"Paleogene","dwc:collectionCode":"Invertebrate
+        Paleontology","dcterms:rightsHolder":"University of Washington Burke Museum","dwc:decimalLatitude":"46.45","dwc:occurrenceRemarks":"2
+        complete one with bore hole, one apex missing, one siphon missing  Nunnallee
+        Locality 28 = A9522-2.","dwc:locationID":"A9522","dwc:basisOfRecord":"FossilSpecimen","dwc:genus":"Parvisipho","dwc:continent":"North
+        America","dwc:family":"Buccinidae","dwc:latestEpochOrHighestSeries":"Eocene","dwc:dynamicProperties":"{\"Elements\":\"conch;cone\",\"CollectingParty\":\"David
+        Nunnallee\"}","dwc:georeferenceSources":"GEOLocate","dwc:geologicalContextID":"A9522","dwc:higherClassification":"Mollusca;
+        Gastropoda; Neogastropoda; Buccinidae","dcterms:license":"https://creativecommons.org/publicdomain/zero/1.0/","dwc:lowestBiostratigraphicZone":"Narizian","dwc:ownerInstitutionCode":"UWBM","dwc:phylum":"Mollusca","dwc:locality":"[redacted]","dwc:institutionID":"http://biocol.org/urn:lsid:biocol.org:col:34878","dwc:geodeticDatum":"WGS
+        84","dwc:taxonRank":"species","dwc:formation":"Cowlitz","dwc:class":"Gastropoda","dwc:dataGeneralizations":"Latitude
+        and longitude reduced in precision by 0.1 degrees.","dwc:catalogNumber":"66079","dwc:nomenclaturalCode":"ICZN","dcterms:type":"PhysicalObject","dwc:Identification":[{"dwc:nomenclaturalCode":"ICZN","dwc:taxonRank":"species","dwc:specificEpithet":"lewisiana","dwc:order":"Neogastropoda","dwc:higherClassification":"Mollusca;
+        Gastropoda; Neogastropoda; Buccinidae","coreid":"urn:catalog:UWBM:InvertebratePaleontology:66079","dwc:scientificNameAuthorship":"(Weaver),
+        1912","dwc:phylum":"Mollusca","dwc:genus":"Parvisipho","dwc:scientificName":"Parvisipho
+        lewisiana (Weaver), 1912","dwc:class":"Gastropoda","dwc:family":"Buccinidae"}],"dwc:higherGeography":"North
+        America; United States; Washington; Lewis County","dwc:scientificNameAuthorship":"(Weaver),
+        1912","dwc:decimalLongitude":"-122.95","dwc:coordinateUncertaintyInMeters":"5566","dwc:datasetName":"EPICC","dwc:otherCatalogNumbers":"Accession:
+        1988-11, Other numbers: W659","dwc:georeferencedBy":"Hindle, Sawyer","dwc:verbatimEventDate":"1967-1970","dwc:latestEraOrHighestErathem":"Cenozoic","dwc:recordNumber":"586,
+        724","dwc:earliestEraOrLowestErathem":"Cenozoic","dcterms:modified":"2018-03-14
+        12:27:59","dwc:scientificName":"Parvisipho lewisiana (Weaver), 1912","dwc:year":"1967"},"indexTerms":{"individualcount":3,"geopoint":{"lat":46.45,"lon":-122.95000000000002},"geologicalcontextid":"a9522","family":"buccinidae","recordset":"ba77d411-4179-4dbd-b6c1-39b8a71ae795","dqs":0.5797101449275363,"stateprovince":"washington","earliestepochorlowestseries":"eocene","county":"lewis","earliestperiodorlowestsystem":"paleogene","phylum":"mollusca","catalognumber":"66079","startdayofyear":281,"latestperiodorhighestsystem":"paleogene","specificepithet":"lewisiana","continent":"north
+        america","latesteraorhighesterathem":"cenozoic","uuid":"061594f4-69a3-41ff-9396-dac55cc8409b","countrycode":"usa","basisofrecord":"fossilspecimen","collector":"david
+        nunnallee","institutioncode":"uwbm","class":"gastropoda","datecollected":"1967-10-08","etag":"1ec2d44f898f84f67517c85417ef0269222c4cf1","flags":["geopoint_low_precision","idigbio_isocountrycode_added"],"recordnumber":"586,
+        724","hasImage":false,"lowestbiostratigraphiczone":"narizian","highertaxon":"mollusca;
+        gastropoda; neogastropoda; buccinidae","taxonrank":"species","earliesteraorlowesterathem":"cenozoic","scientificname":"parvisipho
+        lewisiana (weaver), 1912","indexData":{"dwc:specificEpithet":"lewisiana","dwc:latestPeriodOrHighestSystem":"Paleogene","dwc:county":"Lewis","dwc:recordedBy":"David
+        Nunnallee","dwc:informationWithheld":"Precise coordinates and locality withheld
+        to protect sensitive information.","dwc:georeferencedDate":"2017-04-17 14:39:21","dwc:fieldNumber":"25,
+        28","dwc:order":"Neogastropoda","dcterms:references":"http://www.burkemuseum.org/collections/search/result.php?GUID=UWBM:InvertebratePaleontology:66079","dwc:individualCount":"3","dwc:locality":"[redacted]","idigbio:recordIds":["ba77d411-4179-4dbd-b6c1-39b8a71ae795\\urn:catalog:uwbm:invertebratepaleontology:66079"],"dwc:occurrenceID":"urn:catalog:UWBM:InvertebratePaleontology:66079","dcterms:language":"en","dwc:highestBiostratigraphicZone":"Narizian","dwc:verbatimEventDate":"1967-1970","dcterms:rightsHolder":"University
+        of Washington Burke Museum","idigbio:parent":"ba77d411-4179-4dbd-b6c1-39b8a71ae795","dwc:stateProvince":"Washington","dwc:eventDate":"1967-00-00","dwc:country":"United
+        States","dwc:earliestPeriodOrLowestSystem":"Paleogene","idigbio:etag":"1ec2d44f898f84f67517c85417ef0269222c4cf1","dwc:collectionCode":"Invertebrate
+        Paleontology","id":"urn:catalog:UWBM:InvertebratePaleontology:66079","dwc:decimalLatitude":"46.45","dwc:occurrenceRemarks":"2
+        complete one with bore hole, one apex missing, one siphon missing  Nunnallee
+        Locality 28 = A9522-2.","dwc:locationID":"A9522","idigbio:uuid":"061594f4-69a3-41ff-9396-dac55cc8409b","dwc:basisOfRecord":"FossilSpecimen","dwc:genus":"Parvisipho","dwc:continent":"North
+        America","dwc:family":"Buccinidae","dwc:latestEpochOrHighestSeries":"Eocene","dwc:dynamicProperties":"{\"Elements\":\"conch;cone\",\"CollectingParty\":\"David
+        Nunnallee\"}","dwc:class":"Gastropoda","dwc:geologicalContextID":"A9522","dcterms:license":"https://creativecommons.org/publicdomain/zero/1.0/","dwc:lowestBiostratigraphicZone":"Narizian","idigbio:siblings":{},"dwc:ownerInstitutionCode":"UWBM","flag_idigbio_isocountrycode_added":true,"dwc:earliestEraOrLowestErathem":"Cenozoic","dwc:phylum":"Mollusca","idigbio:dateModified":"2018-10-06T16:06:44.748151","dwc:georeferenceSources":"GEOLocate","dwc:institutionID":"http://biocol.org/urn:lsid:biocol.org:col:34878","dwc:institutionCode":"UWBM","dwc:taxonRank":"species","dwc:formation":"Cowlitz","dwc:higherClassification":"Mollusca;
+        Gastropoda; Neogastropoda; Buccinidae","dwc:dataGeneralizations":"Latitude
+        and longitude reduced in precision by 0.1 degrees.","dwc:catalogNumber":"66079","dwc:nomenclaturalCode":"ICZN","dcterms:type":"PhysicalObject","dwc:Identification":[{"dwc:nomenclaturalCode":"ICZN","dwc:genus":"Parvisipho","dwc:specificEpithet":"lewisiana","dwc:order":"Neogastropoda","dwc:class":"Gastropoda","coreid":"urn:catalog:UWBM:InvertebratePaleontology:66079","dwc:scientificNameAuthorship":"(Weaver),
+        1912","dwc:phylum":"Mollusca","dwc:taxonRank":"species","dwc:scientificName":"Parvisipho
+        lewisiana (Weaver), 1912","dwc:higherClassification":"Mollusca; Gastropoda;
+        Neogastropoda; Buccinidae","dwc:family":"Buccinidae"}],"dwc:higherGeography":"North
+        America; United States; Washington; Lewis County","dwc:scientificNameAuthorship":"(Weaver),
+        1912","dwc:decimalLongitude":"-122.95","dwc:scientificName":"Parvisipho lewisiana
+        (Weaver), 1912","dwc:datasetName":"EPICC","dwc:otherCatalogNumbers":"Accession:
+        1988-11, Other numbers: W659","dwc:georeferencedBy":"Hindle, Sawyer","dwc:earliestEpochOrLowestSeries":"Eocene","dwc:latestEraOrHighestErathem":"Cenozoic","dwc:recordNumber":"586,
+        724","idigbio:isocountrycode":"usa","dwc:geodeticDatum":"WGS 84","dcterms:modified":"2018-03-14
+        12:27:59","dwc:coordinateUncertaintyInMeters":"5566","dwc:year":"1967"},"hasMedia":false,"highestbiostratigraphiczone":"narizian","coordinateuncertainty":5566,"datemodified":"2018-10-06T16:06:44.748151+00:00","occurrenceid":"urn:catalog:uwbm:invertebratepaleontology:66079","institutionid":"http://biocol.org/urn:lsid:biocol.org:col:34878","country":"united
+        states","locality":"[redacted]","collectioncode":"invertebrate paleontology","eventdate":"1967-00-00","latestepochorhighestseries":"eocene","fieldnumber":"25,
+        28","verbatimeventdate":"1967-1970","formation":"cowlitz","recordids":["ba77d411-4179-4dbd-b6c1-39b8a71ae795\\urn:catalog:uwbm:invertebratepaleontology:66079"],"genus":"parvisipho","order":"neogastropoda"},"attribution":{"uuid":"ba77d411-4179-4dbd-b6c1-39b8a71ae795","name":"UWBM
+        Invertebrate Paleontology Collection","description":"The Burke Museum Invertebrate
+        Paleontology and Micropaleontology Collections include 3.6 million specimens
+        and include invertebrate, foraminifera and trace fossils, dating from the
+        Cambrian (around 530 million years ago) to the Quaternary (10,000 years ago).
+        The Burke Museum Invertebrate Paleontology Collection is a member of the NSF-funded
+        Thematic Collection Network (TCN), the Eastern Pacific Invertebrate Communities
+        of the Cenozoic era (EPICC), award number 1503678, and is currently working
+        to digitize its collection.","url":"http://www.burkemuseum.org/research-and-collections/invertebrate-paleontology-and-micropaleontology","emllink":"http://ipt.vertnet.org:8080/ipt/eml.do?r=uwbm_invertpaleo","archivelink":"http://ipt.vertnet.org:8080/ipt/archive.do?r=uwbm_invertpaleo","contacts":[{"first_name":"Ron","last_name":"Eng","role":"Geology
+        & Paleontology Collections Manager","email":"rceng@u.washington.edu"},{"first_name":"Ron","last_name":"Eng","role":"Geology
+        & Paleontology Collections Manager","email":"rceng@u.washington.edu"},{"first_name":"Laura","last_name":"Russell","role":"VertNet
+        Programmer","email":"larussell@vertnet.org"},{"first_name":"David","last_name":"Bloom","role":"VertNet
+        Coordinator","email":"dbloom@vertnet.org"},{"first_name":"John","last_name":"Wieczorek","role":"Information
+        Architect","email":"tuco@berkeley.edu"},{"first_name":"Ben","last_name":"Legler","email":"blegler@uw.edu"},{"first_name":"Sara","last_name":"Legler","role":"Burke
+        Museum EPICC Coordinator","email":"slegler@uw.edu"},{"first_name":"Ron","last_name":"Eng","role":"Geology
+        & Paleontology Collections Manager","email":"rceng@u.washington.edu"}],"data_rights":"CC0","publisher":"842a2bb5-d705-4d6c-8401-abf3ca28c05d","totalCount":23295}}'
+    http_version: 
+  recorded_at: Thu, 23 Jan 2020 21:35:15 GMT
+- request:
+    method: head
+    uri: http://127.0.0.1:8986/rest/test
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Basic ZmVkb3JhQWRtaW46ZmVkb3JhQWRtaW4=
+      User-Agent:
+      - Faraday v0.12.2
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      Date:
+      - Thu, 23 Jan 2020 21:35:16 GMT
+      Content-Type:
+      - text/html; charset=ISO-8859-1
+      Cache-Control:
+      - must-revalidate,no-cache,no-store
+      Content-Length:
+      - '293'
+      Server:
+      - Jetty(9.2.3.v20140905)
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 23 Jan 2020 21:35:16 GMT
+- request:
+    method: put
+    uri: http://127.0.0.1:8986/rest/test
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Authorization:
+      - Basic ZmVkb3JhQWRtaW46ZmVkb3JhQWRtaW4=
+      User-Agent:
+      - Faraday v0.12.2
+      Content-Type:
+      - text/turtle
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Thu, 23 Jan 2020 21:35:16 GMT
+      Etag:
+      - W/"efd2d80638207e3b3d1821ed7792636d9e865f21"
+      Last-Modified:
+      - Thu, 23 Jan 2020 21:35:16 GMT
+      Location:
+      - http://127.0.0.1:8986/rest/test
+      Content-Type:
+      - text/plain
+      Content-Length:
+      - '31'
+      Server:
+      - Jetty(9.2.3.v20140905)
+    body:
+      encoding: UTF-8
+      string: http://127.0.0.1:8986/rest/test
+    http_version: 
+  recorded_at: Thu, 23 Jan 2020 21:35:16 GMT
+- request:
+    method: delete
+    uri: http://127.0.0.1:8986/rest/test
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Basic ZmVkb3JhQWRtaW46ZmVkb3JhQWRtaW4=
+      User-Agent:
+      - Faraday v0.12.2
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Date:
+      - Thu, 23 Jan 2020 21:35:16 GMT
+      Server:
+      - Jetty(9.2.3.v20140905)
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 23 Jan 2020 21:35:16 GMT
+- request:
+    method: delete
+    uri: http://127.0.0.1:8986/rest/test/fcr:tombstone
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - Basic ZmVkb3JhQWRtaW46ZmVkb3JhQWRtaW4=
+      User-Agent:
+      - Faraday v0.12.2
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Date:
+      - Thu, 23 Jan 2020 21:35:16 GMT
+      Server:
+      - Jetty(9.2.3.v20140905)
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Thu, 23 Jan 2020 21:35:16 GMT
+- request:
+    method: post
+    uri: http://127.0.0.1:8985/solr/hydra-test/update?softCommit=true&wt=json
+    body:
+      encoding: UTF-8
+      string: '{"delete":{"query":"*:*"}}'
+    headers:
+      User-Agent:
+      - Faraday v0.12.2
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Content-Length:
+      - '55'
+    body:
+      encoding: UTF-8
+      string: |
+        {
+          "responseHeader":{
+            "status":0,
+            "QTime":6}}
+    http_version: 
+  recorded_at: Thu, 23 Jan 2020 21:35:16 GMT
+recorded_with: VCR 5.0.0

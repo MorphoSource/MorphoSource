@@ -10,6 +10,7 @@ class Submission
                 :biospec_search_taxonomy_genus,
                 :biospec_search_taxonomy_species,
                 :device_id,
+                :idigbio_id,
                 :imaging_event_id,
                 :organization_id,
                 :device_organization_id,

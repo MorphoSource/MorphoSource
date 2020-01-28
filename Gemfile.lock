@@ -210,6 +210,8 @@ GEM
     devise-guests (0.6.1)
       devise
     diff-lcs (1.3)
+    domain_name (0.5.20190701)
+      unf (>= 0.0.5, < 1.0.0)
     dropbox_api (0.1.12)
       faraday (~> 0.9, ~> 0.8)
       oauth2 (~> 1.1)
@@ -321,6 +323,9 @@ GEM
     hashdiff (0.3.7)
     hiredis (0.6.3)
     htmlentities (4.3.4)
+    http-accept (1.7.0)
+    http-cookie (1.0.3)
+      domain_name (~> 0.5)
     http_logger (0.5.1)
     httparty (0.16.3)
       mime-types (~> 3.0)
@@ -545,6 +550,7 @@ GEM
       redic
     net-http-persistent (3.0.0)
       connection_pool (~> 2.2)
+    netrc (0.11.0)
     nio4r (2.4.0)
     noid (0.9.0)
     noid-rails (3.0.1)
@@ -707,6 +713,11 @@ GEM
       resque
       sass-rails
       twitter-bootstrap-rails
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     retriable (3.1.2)
     riiif (1.7.1)
       deprecation (>= 1.0.0)
@@ -858,6 +869,10 @@ GEM
     uber (0.1.0)
     uglifier (4.1.18)
       execjs (>= 0.3.0, < 3)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.6)
+    vcr (5.0.0)
     vegas (0.1.11)
       rack (>= 1.0.0)
     virtus (1.0.5)
@@ -920,6 +935,7 @@ DEPENDENCIES
   resque
   resque-pool
   resque-web
+  rest-client (~> 2.0)
   riiif (~> 1.1)
   rsolr (>= 1.0)
   rspec-its
@@ -937,6 +953,7 @@ DEPENDENCIES
   turbolinks (~> 5)
   tzinfo-data
   uglifier (>= 1.3.0)
+  vcr
   web-console (>= 3.3.0)
   webmock
   zipline (~> 1.0)

@@ -39,6 +39,8 @@ class SubmissionsController < ApplicationController
         # certain pages require getting back the search result before rendering
         if last_render == 'biospec'
           @docs = search_biospec
+          @idigbio = search_idigbio
+          @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])} unless (@docs.nil? || @idigbio.nil?)
         elsif last_render == 'cho'
           @docs = search_cho
         end
@@ -56,7 +58,9 @@ class SubmissionsController < ApplicationController
     # todo: is there a need to separate raw and derived flow in two if and else?
     if params['biospec_search'].present?
       @docs = search_biospec
-      if @docs.nil? || @docs.empty?
+      @idigbio = search_idigbio
+      @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])} unless (@docs.nil? || @idigbio.nil?)
+      if (@docs.nil? || @docs.empty?) && (@idigbio.nil? || @idigbio.empty?)
         # if no search result, user might need to go back to initial step
         @submission.saved_step = ""
       else
@@ -162,6 +166,27 @@ class SubmissionsController < ApplicationController
     @submission.biospec_id = 'new'
     store_submission
     biospec_model_params = Hyrax::BiologicalSpecimenForm.model_attributes(params[:biological_specimen])
+    session[:submission_biospec_create_params] = biospec_model_params
+    render_and_save 'device'
+  end
+
+  def stage_biological_specimen_from_idigbio
+    reinstantiate_submission
+    @submission.biospec_id = 'new'
+    # we should also search for/create the Taxonomy work here, since for IDigBio creation we don't have separate steps
+    # TODO: search for existing Taxonomy
+    idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id])
+    existing_taxonomy = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params)
+    if (!existing_taxonomy.nil?) && existing_taxonomy.any?
+      @submission.taxonomy_id = existing_taxonomy.first.id
+      store_submission
+    else
+      @submission.taxonomy_id = 'new'
+      store_submission
+      taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(ActionController::Parameters.new(idb_taxonomy_params))
+      session[:submission_taxonomy_create_params] = taxonomy_model_params
+    end
+    biospec_model_params = Hyrax::BiologicalSpecimenForm.model_attributes(ActionController::Parameters.new(Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(params[:idigbio_id])))
     session[:submission_biospec_create_params] = biospec_model_params
     render_and_save 'device'
   end
@@ -475,7 +500,7 @@ class SubmissionsController < ApplicationController
       taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(params[:taxonomy])
       new_taxonomy_id = create_taxonomy(taxonomy_model_params)
     rescue
-      new_taxonomy_id = nil    
+      new_taxonomy_id = nil
     end
 
     if new_taxonomy_id.present?
@@ -502,7 +527,7 @@ class SubmissionsController < ApplicationController
         :taxonomy_subgenus => new_taxonomy.taxonomy_subgenus.first,
         :taxonomy_species => new_taxonomy.taxonomy_species.first,
         :taxonomy_subspecies => new_taxonomy.taxonomy_subspecies.first,
-        :depositor => new_taxonomy.depositor        
+        :depositor => new_taxonomy.depositor
       }
     else
       status = 'FAIL'
@@ -691,6 +716,15 @@ class SubmissionsController < ApplicationController
       search_params[k.sub('biospec_search_', '')] = v
     end
     Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, search_params)
+  end
+
+  def search_idigbio
+    search_params = {}
+    biospec_search_params = submission_params.select{ |k,v| k.match(/^biospec_search_/) }.select{ |k,v| v.present? }
+    biospec_search_params.each do |k,v|
+      search_params[k.sub('biospec_search_', '')] = v
+    end
+    Morphosource::IDigBioSearchService.call(search_params)
   end
 
   def search_cho

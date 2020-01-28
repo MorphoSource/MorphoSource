@@ -16,6 +16,12 @@ en:
       cho_search: 'Search for a Cultural Heritage Object already in MorphoSource, or create a new Cultural Heritage Object'
       parents_not_in_morphosource: 'Parents not in MorphoSource'
       taxonomy_select: 'Select a taxonomy to associate with this biological specimen, or enter a new taxonomy'
+      idigbio_search_results: 'Biological Specimens in IDigBio'
+      idigbio_empty_search_results: 'No Biological Specimens found in IDigBio that match the search criteria.'
+      morphosource_search_results: 'Biological Specimens in MorphoSource'
+      morphosource_empty_search_results: 'No Biological Specimens found in MorphoSource that match the search criteria.'
+      biospec_empty_search_results: 'No Biological Specimens found in MorphoSource or IDigBio that match the search criteria.  Search again or create a new Biological Specimen.'
+      morphosource_result_from_idigbio: '(imported from IDigBio)'
 
   simple_form:
     labels:
@@ -40,3 +46,4 @@ en:
         cho_search_ms_specimen_id: 'MS Specimen ID'
         cho_search_occurrence_id: 'Occurrence ID'
         cho_search_species: 'Species'
+        idigbio_id: 'Biological Specimens in IDigBio'

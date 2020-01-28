@@ -23,6 +23,14 @@ module Morphosource
       hits.map { |hit| SolrDocument.new(hit) }
     end
 
+    def taxonomy_doc
+      taxonomy_query_clauses = [ "#{Solrizer.solr_name('has_model', :symbol)}:Taxonomy" ]
+      taxonomy_query_clauses << "#{Solrizer.solr_name('taxonomy_genus', :stored_searchable)}:(#{taxonomy_genus})" if taxonomy_genus.present?
+      taxonomy_query_clauses << "#{Solrizer.solr_name('taxonomy_species', :stored_searchable)}:(#{taxonomy_species})" if taxonomy_species.present?
+      taxonomy_query = taxonomy_query_clauses.join(' AND ')
+      SolrDocument.new(ActiveFedora::SolrService.query(taxonomy_query, rows: 999999).first)
+    end
+
     private
 
     def assemble_query
@@ -38,14 +46,6 @@ module Morphosource
       else
         []
       end
-    end
-
-    def taxonomy_doc
-      taxonomy_query_clauses = [ "#{Solrizer.solr_name('has_model', :symbol)}:Taxonomy" ]
-      taxonomy_query_clauses << "#{Solrizer.solr_name('taxonomy_genus', :stored_searchable)}:(#{taxonomy_genus})" if taxonomy_genus.present?
-      taxonomy_query_clauses << "#{Solrizer.solr_name('taxonomy_species', :stored_searchable)}:(#{taxonomy_species})" if taxonomy_species.present?
-      taxonomy_query = taxonomy_query_clauses.join(' AND ')
-      SolrDocument.new(ActiveFedora::SolrService.query(taxonomy_query, rows: 999999).first)
     end
 
     def model_name

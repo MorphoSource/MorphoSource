@@ -26,7 +26,7 @@ module Morphosource
       end
 
       property :canonical_taxonomy, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/canonicalTaxonomy") do |index|
-        index.as :stored_searchable 
+        index.as :stored_searchable
       end
     end
 

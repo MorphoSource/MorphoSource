@@ -11,7 +11,9 @@ module Hyrax
     self.model_class = ::CulturalHeritageObject
 
     self.terms += [
+        :short_title,
         :bibliographic_citation,
+        :institution_code,
         :catalog_number,
         :collection_code,
         :latitude,
@@ -21,8 +23,7 @@ module Hyrax
         :periodic_time,
         :vouchered,
         :cho_type,
-        :material,
-        :short_title
+        :material
     ]
 
     self.terms -= [ :keyword, :license, :rights_statement, :subject, :title, :language, :source, :resource_type ]
@@ -40,7 +41,8 @@ module Hyrax
         :original_location,
         :publisher,
         :vouchered,
-        :short_title
+        :short_title,
+        :institution_code
     ]
 
     # These show above the fold

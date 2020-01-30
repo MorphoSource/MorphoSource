@@ -7,8 +7,12 @@ $(document).on('turbolinks:load', function() {
 													$('#cultural_heritage_object_collection_code').val(),
 													$('#cultural_heritage_object_catalog_number').val(),
 													$('#cultural_heritage_object_short_title').val() ]
-			title = $.map( title, function(v){ return v === "" ? null : v; });
-			$('#showcase-title').text(title.join(':'));			
+			title = $.map( title, function(v){ return v === "" ? null : v; }).join(':');
+			if (title == '') 
+				title = $('#cultural_heritage_object_identifier').val();
+			if (title == '') 
+				title = "Vouchered object contributed by " + $('[name="current-user"]').data('userKey');
+			$('#showcase-title').text(title);			
 		}
 
     setupEmbeddedWorkForm('organization', 'new', false, updateObjectTitle);
@@ -44,7 +48,7 @@ $(document).on('turbolinks:load', function() {
 		})
 
 		// Change title on the fly when corresponding fields are updated
-		$('#cultural_heritage_object_institution_code, #cultural_heritage_object_collection_code, #cultural_heritage_object_catalog_number, #cultural_heritage_object_short_title').change(updateObjectTitle);
+		$('#cultural_heritage_object_institution_code, #cultural_heritage_object_collection_code, #cultural_heritage_object_catalog_number, #cultural_heritage_object_short_title, #cultural_heritage_object_identifier').change(updateObjectTitle);
 
 		// change badges on the fly when corresponding fields are updated
 		$('#cultural_heritage_object_vouchered').change(function(){
@@ -55,7 +59,7 @@ $(document).on('turbolinks:load', function() {
 		})
 
 	  $(document).on("submit", 'form[data-param-key="cultural_heritage_object"]', function() {
-			$('.btn').addClass('disabled');
+			disablePage();
 		})
 
   }

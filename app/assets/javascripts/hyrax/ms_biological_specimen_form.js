@@ -55,7 +55,7 @@ $(document).on('turbolinks:load', function() {
 		})
 
 	  $(document).on("submit", 'form[data-param-key="biological_specimen"]', function() {
-			$('.btn').addClass('disabled');
+			disablePage();
 		})
 
   }

@@ -14,12 +14,11 @@ module Hyrax
 
       def generated_title(env)
         attrs = env.attributes
-        case
-        when attrs['institution_code'].present? || attrs['collection_code'].present? || attrs['catalog_number'].present? || attrs['short_title'].present?
-          institution_collection_catalog_short_title_generated_title(attrs['institution_code'], attrs['collection_code'], attrs['catalog_number'], attrs['short_title'])
-        when attrs['identifier'].present?
-          identifier_generated_title(attrs['identifier'])
-        when env.curation_concern.depositor.present?
+        title = preferred_generated_title(attrs['institution_code'], attrs['collection_code'], attrs['catalog_number'], attrs['short_title'])
+        return title unless title.empty?
+        title = identifier_generated_title(attrs['identifier'])
+        return title unless title.empty?
+        if env.curation_concern.depositor.present?
           fallback_generated_title(attrs['vouchered'], ::User.find_by_user_key(env.curation_concern.depositor))
         else
           fallback_generated_title(attrs['vouchered'], env.current_ability.current_user)
@@ -28,25 +27,8 @@ module Hyrax
 
       private
 
-      def institution_collection_catalog_short_title_generated_title(institution_code, collection_code, catalog_number, short_title)
-        case
-        when institution_code.present? && collection_code.present? && catalog_number.present? && short_title.present?
-          "#{institution_code.first}:#{collection_code.first}:#{catalog_number.first}:#{short_title.first}"
-        when collection_code.present? && catalog_number.present? && short_title.present?
-          "#{collection_code.first}:#{catalog_number.first}:#{short_title.first}"
-        when collection_code.present? && catalog_number.present?
-          "#{collection_code.first}:#{catalog_number.first}"
-        when collection_code.present? && short_title.present?
-          "#{collection_code.first}:#{short_title.first}"
-        when catalog_number.present? && short_title.present?
-          "#{catalog_number.first}:#{short_title.first}"
-        when collection_code.present?
-          collection_code.first
-        when catalog_number.present?
-          catalog_number.first
-        when short_title.present?
-          short_title.first
-        end
+      def preferred_generated_title(institution_code, collection_code, catalog_number, short_title)
+        [institution_code, collection_code, catalog_number, short_title].flatten.join(':')
       end
 
       def identifier_generated_title(identifier)

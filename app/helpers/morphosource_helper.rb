@@ -200,6 +200,8 @@ module MorphosourceHelper
       'Laser'
     when 'ConfocalImageStacking'
       'Confocal'
+    when 'Infrared'
+      'Infrared'
     when 'ReflectanceTransformationImaging'
       'RTI'
     when 'Photography'

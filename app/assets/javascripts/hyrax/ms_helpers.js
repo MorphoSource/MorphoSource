@@ -250,3 +250,53 @@ function removeLastRepeatable() {
   })
 	window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle	
 }
+
+function modalityAbbrev(m) {
+  switch(m) {
+    case 'MicroNanoXRayComputedTomography':
+      return 'μCT';
+      break;
+    case 'MedicalXRayComputedTomography':
+      return 'CT'
+      break;
+    case 'MagneticResonanceImaging':
+      return 'MRI'
+      break;
+    case 'PositronEmissionTomography':
+      return 'PET'
+      break;
+    case 'SynchrotronImaging':
+      return 'Synchro'
+      break;
+    case 'NeutrinoImaging':
+      return 'Neutrino'
+      break;
+    case 'Photogrammetry':
+      return 'Photogram'
+      break;
+    case 'StructuredLight':
+      return 'StrLight'
+      break;
+    case 'LaserScan':
+      return 'Laser'
+      break;
+    case 'ConfocalImageStacking':
+      return 'Confocal'
+      break;
+    case 'Infrared':
+    	return 'Infrared'
+    	break;
+    case 'ReflectanceTransformationImaging':
+      return 'RTI'
+      break;
+    case 'Photography':
+      return 'Photo'
+      break;
+    case 'ScanningElectronMicroscopy':
+      return 'SEM'
+      break;
+    default:
+      return 'Etc'; 
+ 	}
+ }  
+  

@@ -10,7 +10,7 @@ module Hyrax
 
     # Customizing field terms
 
-    self.terms = [:title, :creator, :modality, :facility, :description]
+    self.terms = [:title, :creator, :modality, :description]
 
     self.required_fields = [:title, :creator, :modality]
 

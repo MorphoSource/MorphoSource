@@ -396,11 +396,6 @@ class SolrDocument
     self[Solrizer.solr_name('institution_name', :stored_searchable)]
   end
 
-  # Device fields, also uses modality currently in media above
-  def facility
-    self[Solrizer.solr_name('facility', :stored_searchable)]
-  end
-
   # Processing Event & Image Capture Event
   def software
     self[Solrizer.solr_name('software', :stored_searchable)]

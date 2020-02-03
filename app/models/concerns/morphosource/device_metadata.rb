@@ -9,9 +9,6 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
-      property :facility, predicate: ::RDF::URI.new("http://iptc.org/std/Iptc4xmpExt/2008-02-29/LocationCreated") do |index|
-        index.as :stored_searchable
-      end
     end
   end
 end

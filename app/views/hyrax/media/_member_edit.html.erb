@@ -6,7 +6,10 @@ file_set = member_edit
   <td class="thumbnail">
     <%= render_thumbnail_tag member %>
   </td>
-  <td class="attribute attribute-filename ensure-wrapped"><%= link_to(member.link_name, contextual_path(member, @presenter)) %></td>
+  <td class="attribute attribute-filename ensure-wrapped">
+    <%#= link_to(member.link_name, contextual_path(member, @presenter)) %>
+    <%= member.link_name %>
+    </td>
   <td>
 		<% if file_set.user_can_perform_any_action? %>
 	    <% if can?(:destroy, file_set.id) %>

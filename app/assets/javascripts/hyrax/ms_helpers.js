@@ -153,6 +153,24 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
 					occurrence_id: data.occurrence_id,
 					sex: data.sex
 				}
+			} else if (work_name == 'cultural_heritage_object') {
+				var new_data = {
+					id: data.work.id, 
+					text: data.work.title,
+					bibliographic_citation: data.bibliographic_citation,
+					catalog_number: data.catalog_number,
+					collection_code: data.collection_code,
+					institution_code: data.institution_code,
+					latitude: data.latitude,
+					longitude: data.longitude,
+					numeric_time: data.numeric_time,
+					original_location: data.original_location,
+					periodic_time: data.periodic_time,
+					vouchered: data.vouchered,
+					cho_type: data.cho_type,
+					material: data.material,
+					short_title: data.short_title
+				}
 			} else {
 				var new_data = {
 					id: data.work.id, 
@@ -232,3 +250,53 @@ function removeLastRepeatable() {
   })
 	window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle	
 }
+
+function modalityAbbrev(m) {
+  switch(m) {
+    case 'MicroNanoXRayComputedTomography':
+      return 'μCT';
+      break;
+    case 'MedicalXRayComputedTomography':
+      return 'CT'
+      break;
+    case 'MagneticResonanceImaging':
+      return 'MRI'
+      break;
+    case 'PositronEmissionTomography':
+      return 'PET'
+      break;
+    case 'SynchrotronImaging':
+      return 'Synchro'
+      break;
+    case 'NeutrinoImaging':
+      return 'Neutrino'
+      break;
+    case 'Photogrammetry':
+      return 'Photogram'
+      break;
+    case 'StructuredLight':
+      return 'StrLight'
+      break;
+    case 'LaserScan':
+      return 'Laser'
+      break;
+    case 'ConfocalImageStacking':
+      return 'Confocal'
+      break;
+    case 'Infrared':
+    	return 'Infrared'
+    	break;
+    case 'ReflectanceTransformationImaging':
+      return 'RTI'
+      break;
+    case 'Photography':
+      return 'Photo'
+      break;
+    case 'ScanningElectronMicroscopy':
+      return 'SEM'
+      break;
+    default:
+      return 'Etc'; 
+ 	}
+ }  
+  

@@ -1,0 +1,19 @@
+<div id="cultural_heritage_object_details">
+  <h2>SELECT PHYSICAL OBJECT</h2>
+
+  <div class="form-inline">
+    <%= i.input_field :find_parent_work,
+                      prompt: :translate,
+                      autocomplete: 'off',
+                      data: {
+                        autocomplete: 'work',
+                        'autocomplete-url' => find_cultural_heritage_object_autocomplete_url()
+                      } %>
+  </div>
+
+  <div class="text-center button-wrapper">
+    <a class="btn btn-md btn-primary" id="btn-add-cultural-heritage-object" data-behavior="add-relationship">Select physical object</a>
+    <a class="btn btn-md btn-primary" id="btn_new_cultural_heritage_object" data-toggle="modal" data-target="#modal-new-physical-object">Create new physical object</a>
+  </div>
+</div>
+

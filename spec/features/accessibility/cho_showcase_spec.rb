@@ -33,17 +33,17 @@ RSpec.feature "Showcase pages accessibility check", :accessibility => true, :typ
     ie.members = [pe]
     ie.save!
 
- 	bso = BiologicalSpecimen.create(
- 		id: "bso123", 
- 		title: ["test biological specimen"], 
+ 	cho = CulturalHeritageObject.create(
+ 		id: "cho123", 
+ 		title: ["test Cultural Heritage Object"], 
  		vouchered: ['Yes'], 
  		institution_code: ['inst123'], 
  		collection_code: ['xyz'], 
  		catalog_number: ['xyz'],
  		visibility: public
  	) 
-    bso.members = [ie]
-    bso.save!
+    cho.members = [ie]
+    cho.save!
 
     inst = Organization.create({
         id: 'inst123',
@@ -51,7 +51,7 @@ RSpec.feature "Showcase pages accessibility check", :accessibility => true, :typ
 		institution_code: ['inst123'] ,
         visibility: public
     })
-    inst.members = [bso]
+    inst.members = [cho]
     inst.save!
 
     # todo: create a method to login later , e.g. login_as(@test_user)
@@ -63,9 +63,9 @@ RSpec.feature "Showcase pages accessibility check", :accessibility => true, :typ
 
   end
 
-  scenario "BSO show page should be accessible" do
-	visit "/concern/biological_specimens/#{BiologicalSpecimen.last.id}"
-    expect(page).to have_content 'Biological Specimen Object', wait: 7
+  scenario "CHO show page should be accessible" do
+	visit "/concern/cultural_heritage_objects/#{CulturalHeritageObject.last.id}"
+    expect(page).to have_content 'Cultural Heritage Object', wait: 7
     expect(page).to be_accessible
   end
 

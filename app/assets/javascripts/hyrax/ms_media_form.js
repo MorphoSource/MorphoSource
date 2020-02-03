@@ -20,7 +20,7 @@ $(document).on('turbolinks:load', function() {
     setupEmbeddedWorkForm('biological_specimen', false, 'new');
     setupEmbeddedWorkForm('processing_event', 'new', true, reloadPage);
     setupTooltip();
-    removeLastRepeatable();
+    //removeLastRepeatable();  // this should not be needed since it's already called inside 'if edit media form page' block
 
     form = $('form[id*="media"]')[0];
 
@@ -347,15 +347,16 @@ $(document).on('turbolinks:load', function() {
       }).get().join(', ');
       parts = toTitleCase(parts);
       var mediaType = $('[name="media[media_type]"]').val();
+      mediaType = '[' + mediaType + ']';
       if ($('[name="imaging_event[ie_modality]"]').length)
         var ie_modality = $('[name="imaging_event[ie_modality]"]').val(); 
       else if ($('.showcase-value.imaging_event_modality').length)
         var ie_modality = $('.showcase-value.imaging_event_modality').html();
       else
         var ie_modality = 'modality_undefined';
-      var title = [ id, parts, mediaType, ie_modality ];
-      title = $.map( title, function(v){ return v === "" ? null : v; });
-      $('#showcase-title').text(title.join(':'));     
+      ie_modality = '[' + modalityAbbrev(ie_modality) + ']';
+      var title = id + ': ' + parts + ' ' + mediaType + ' ' + ie_modality;
+      $('#showcase-title').text(title);     
     }
 
     function updateDevice(organization, instutition) {

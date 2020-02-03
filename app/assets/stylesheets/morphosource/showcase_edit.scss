@@ -166,10 +166,21 @@ div.showcase-edit {
     }
   }
 
-  .btn-save {
-    /* min-width: 86px; */
-    margin-right: 12px;
-    margin-bottom: 6px;
+  .media-showcase .show-actions, 
+  .show-actions {
+    padding: 3.5vw 0;
+    .btn, .btn-save {
+      @media (max-width: $tablet-max) {
+        min-width: 76px;
+        margin-right: 8px;
+        margin-bottom: 6px;
+      }
+      @media (min-width: $desktop-min) {
+        min-width: 100px;
+        margin-right: 0;
+        margin-bottom: 6px;
+      }
+    }
   }
 
   .dropdown-toggle {

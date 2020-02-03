@@ -1,0 +1,98 @@
+<div class="row">
+  <!-- left column  -->
+  <div class="col-sm-6">
+
+    <div class="content-block">
+      <h2>SPECIMEN IDENTIFIERS AND EXTERNAL LINKS</h2>
+      <%= f.input :vouchered, as: :select,
+          collection: ['Yes','No'],
+          include_blank: true,
+          # item_helper: method(:include_current_value),
+          input_html: { class: 'form-control' },
+          label_wrapper_html: { class: 'required-flag' } 
+      %>
+      <%= f.input :institution_code, label_wrapper_html: { class: 'recommended-flag' }  %>
+      <%= f.input :collection_code, label_wrapper_html: { class: 'recommended-flag' }  %>
+      <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
+      <%= f.input :identifier, as: :multi_value %>
+      <%= f.input :related_url, as: :multi_value %>
+    </div>
+
+    <div class="content-block">
+      <h2>GENERAL DETAILS</h2>
+      
+      <%= f.input :description, label: 'Description' %>
+      <%= f.input :short_title, label_wrapper_html: { class: 'recommended-flag' }  %>
+      <%= f.input :cho_type, as: :multi_value %>
+      <%= f.input :material, as: :multi_value %>
+      <%= f.input :date_created %>
+      <%= @presenter.attribute_to_html(:date_uploaded, render_as: :showcase_date, include_empty: true, html_dl: false) %>
+      <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_default, html_dl: false) %>
+      <%= f.input :creator, as: :multi_value %>
+      <%= f.input :contributor, as: :multi_value %>
+      <%= f.input :publisher %>
+    </div>
+
+    <div class="content-block">
+      <h2>TIME AND PLACE DETAILS</h2>
+      <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
+      <%= f.input :based_near, label: 'Current Location', as: :controlled_vocabulary %>
+      <%= f.input :original_location %>
+      <!--  todo: the html below can be removed if simpleform config wrapper can be used.  In that case, we need to figure out pass the content for the tooltip
+      <div class="form-group row">
+          <div class="col-xs-12 showcase-label">
+              <label class="control-label">Geographical coordinates</label><span class="glyphicon glyphicon-question-sign tooltip-icon" data-original-title="" title=""></span>
+          </div>
+      </div>
+      -->
+      <%= f.input 'Geographical coordinates', value_wrapper: false %>
+      <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
+      <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
+      <%= f.input :numeric_time, label: 'Absolute Age' %>
+    </div>
+
+    <div class="content-block">
+      <h2>BIBLIOGRAPHIC CITATIONS FOR THIS PHYSICAL OBJECT</h2>
+      <%= @presenter.attribute_to_html(:bibliographic_citation, render_as: :showcase_doi_link_with_citation, include_empty: true, html_dl: false) %>
+    </div>    
+  
+  </div>
+  <!-- /left column  -->
+
+  <!-- right column  -->
+  <div class="col-sm-6">
+
+    <%= render 'edit_media_items', presenter: @presenter, f: f %>
+
+    <div class="content-block">
+      <%= render 'form_member_of_collections', f: f %>
+    </div>
+
+    <div class="content-block">
+      <h2>PHYSICAL OBJECT TAGS</h2>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">
+      Not yet implemented
+        </div>
+        <div class="col-xs-6 showcase-value">
+      Not yet implemented
+        </div>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h2> CITATION AND DOWNLOAD HISTORY OF PHYSICAL OBJECT MEDIA </h2>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">
+      Number of downloads
+        </div>
+        <div class="col-xs-6 showcase-value">
+      Not yet implemented
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- / right column -->
+
+</div>

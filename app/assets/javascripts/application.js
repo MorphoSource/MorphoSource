@@ -37,6 +37,7 @@
 //= require morphosource/ms_taxonomy_resource
 //= require morphosource/ms_device_resource
 //= require morphosource/ms_biological_specimen_resource
+//= require morphosource/ms_cultural_heritage_object_resource
 //= require morphosource/field_manager
 //= require morphosource/ms_autocomplete
 //= require morphosource/autocomplete/ms_resource

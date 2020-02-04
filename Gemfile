@@ -29,7 +29,7 @@ gem 'pul_uv_rails', :git => 'https://github.com/MorphoSource/pul_uv_rails.git', 
 # pull iiif_manifest fork that can handle 3D manifests
 gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :branch => 'morphosource'
 
-gem 'hyrax', '2.4.1'
+gem 'hyrax', '2.7.0'
 gem 'hydra-role-management'
 
 gem 'resque'
@@ -73,7 +73,7 @@ group :development, :test do
 end
 
 group :test do
-  # note: the newer version of axe-matchers (2.4.1) throws the error below.  For now use 2.3.0 which is working 
+  # note: the newer version of axe-matchers (2.4.1) throws the error below.  For now use 2.3.0 which is working
   # Selenium::WebDriver::Error::JavascriptError:ReferenceError: __magic__ is not defined
   gem 'axe-matchers', '~> 2.3.0'
   gem 'rspec-json_expectations'

@@ -52,6 +52,10 @@ class BiologicalSpecimen < Morphosource::Works::Base
     member_of.select{|work| work.class == Organization}
   end
 
+  def media
+    descendants.select{ |d| d.class == Media }
+  end
+
   private
     def add_id_to_title # this is non-functional!!
       unless self.title && self.id && self.title.first.to_s.start_with?("S#{self.id.to_s}: ")

@@ -86,6 +86,22 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def specimens
+    ancestors.select(&:specimen?)
+  end
+
+  def organizations
+    specimens.each_with_object([]) do |s, org|
+      org += s.organizations
+    end
+  end
+
+  def organizations_teams
+    organizations.each_with_object([]) do |org, teams|
+      teams += Collection.find(org.team_id.first)
+    end
+  end
+
   private
     def add_id_to_title
       unless self.title && self.id && self.title.first.to_s.start_with?("M#{self.id.to_s}: ")

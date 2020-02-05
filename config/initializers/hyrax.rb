@@ -150,6 +150,11 @@ Hyrax.config do |config|
   # Username for connecting to geonames
   config.geonames_username = Morphosource.geonames_user
 
+  # for initial setup accounts
+  config.ms_test_usr = Morphosource.ms_test_usr
+  config.ms_test_pw = Morphosource.ms_test_pw
+  config.ms_init_pw = Morphosource.ms_init_pw
+
   # Should the acceptance of the licence agreement be active (checkbox), or
   # implied when the save button is pressed? Set to true for active
   # The default is true.

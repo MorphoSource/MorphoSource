@@ -9,6 +9,18 @@ module Morphosource
         ENV["GEONAMES_USER"] || "NOT_SET"
       end
 
+      mattr_accessor :ms_init_pw do
+        ENV["MS_INIT_PW"] || "NOT_SET"
+      end
+
+      mattr_accessor :ms_test_pw do
+        ENV["MS_TEST_PW"] || "NOT_SET"
+      end
+
+      mattr_accessor :ms_test_usr do
+        ENV["MS_TEST_USR"] || "NOT_SET"
+      end
+
       # Allowed formats for uploads based on selected Media type
       mattr_accessor :all_formats do
         [".avi", ".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".bin", ".jp2", ".jpeg", ".jpg", ".m4v", ".mov", ".mp4", ".mpg", ".mpeg", ".mtl", ".obj", ".pdf", ".ply", ".png", ".stl", ".tif", ".tiff", ".wmv", ".wrl", ".x3d", ".zip"]

@@ -9,6 +9,10 @@ module Morphosource
         ENV["GEONAMES_USER"] || "NOT_SET"
       end
 
+      mattr_accessor :ms_init_usr do
+        ENV["MS_INIT_USR"] || "NOT_SET"
+      end
+
       mattr_accessor :ms_init_pw do
         ENV["MS_INIT_PW"] || "NOT_SET"
       end

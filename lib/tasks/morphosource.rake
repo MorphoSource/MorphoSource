@@ -117,17 +117,24 @@ namespace :morphosource do
 
   desc 'Set up MS dev team user accounts'
   task :create_users => :environment do
-    emails = ['julia.m.winchester@gmail.com', 'jocelyn.triplett@duke.edu', 'simon.choy@duke.edu', 'douglasmb@gmail.com', 'ryan.baumann@duke.edu']
+    emails = Morphosource.ms_init_usr.split(',')
+    password = Morphosource.ms_init_pw
     admin = Role.where("name = 'admin'")[0] || Role.create(name: 'admin')
-
     emails.each do |email|
       if !User.find_by(email: email)
-        User.create(email: email, password: 'testpass')
+        User.create(email: email, password: password)
       end
       admin.users << User.find_by(email: email)
     end
-
     admin.save
+
+    # account for accessibility testing
+    test_usr = Morphosource.ms_test_usr
+    test_pw = Morphosource.ms_test_pw
+    if !User.find_by(email: test_usr)
+      User.create(email: test_usr, password: test_pw)
+    end
+
   end
 
   desc 'Set up Team and Project collection types'

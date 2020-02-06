@@ -336,6 +336,9 @@ module Hyrax
       Qa::Authorities::Geonames.username = username
     end
 
+    def ms_init_usr=(usr)
+    end
+
     def ms_init_pw=(pw)
     end
 

@@ -154,6 +154,7 @@ Hyrax.config do |config|
   config.ms_test_usr = Morphosource.ms_test_usr
   config.ms_test_pw = Morphosource.ms_test_pw
   config.ms_init_pw = Morphosource.ms_init_pw
+  config.ms_init_usr = Morphosource.ms_init_usr
 
   # Should the acceptance of the licence agreement be active (checkbox), or
   # implied when the save button is pressed? Set to true for active

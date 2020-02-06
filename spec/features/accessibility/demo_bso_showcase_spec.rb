@@ -21,19 +21,19 @@ RSpec.feature "MS-demo Accessibility check", :accessibility => true, :type => :f
 
   scenario "BSO page 1 should be accessible" do
     page.all(:css, 'a[href*="biological_specimens"]').first.click 
-    expect(page).to have_content 'Biological Specimen Object', wait: 7
+    expect(page).to have_content 'Biological Specimen Object', wait: 10
     expect(page).to be_accessible
   end
 
   scenario "BSO page 2 should be accessible" do
     page.all(:css, 'a[href*="biological_specimens"]')[1].click 
-    expect(page).to have_content 'Biological Specimen Object', wait: 7
+    expect(page).to have_content 'Biological Specimen Object', wait: 10
     expect(page).to be_accessible
   end
 
   scenario "BSO page 3 should be accessible" do
     page.all(:css, 'a[href*="biological_specimens"]')[2].click 
-    expect(page).to have_content 'Biological Specimen Object', wait: 7
+    expect(page).to have_content 'Biological Specimen Object', wait: 10
     expect(page).to be_accessible
   end
 end

@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'vcr_helper'
 
 RSpec.describe Morphosource::IDigBioSearchService, :vcr do
 

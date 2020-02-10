@@ -90,6 +90,10 @@ before_install:
   - dcmdjpeg # verify dcmtk dcmdjpeg is working property
   # end dcmtk setup --------
 
+  # accounts for testing accessibility
+  - export MS_TEST_PW=password12
+  - export MS_TEST_USR=a11ytest@duke.edu
+
   - cd $TRAVIS_BUILD_DIR
 before_script:
   - "cp .rspec.travis .rspec"

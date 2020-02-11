@@ -164,20 +164,25 @@ module Hyrax
         def unlink_from_work
           work = file_set.parent
           return unless work && (work.thumbnail_id == file_set.id || work.representative_id == file_set.id || work.rendering_ids.include?(file_set.id))
-          work.thumbnail = nil if work.thumbnail_id == file_set.id
-          work.representative = nil if work.representative_id == file_set.id
+
+          new_fileset = other_fileset(work) # is nil if no other fileset
+          work.thumbnail = new_fileset if work.thumbnail_id == file_set.id
+          work.representative = new_fileset if work.representative_id == file_set.id
           work.rendering_ids -= [file_set.id]
           work.save!
         end
-      # rubocop:enable Metrics/AbcSize
-      # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/CyclomaticComplexity
+
+        def other_fileset(work)
+          work.file_sets.find { |fs| fs.id != file_set.id }
+        end
 
       def restrict_fileset(file_set)
         file_set.embargo_id = nil
         file_set.lease_id = nil
         file_set.visibility = 'restricted'
       end
-
     end
   end
 end

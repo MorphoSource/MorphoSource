@@ -30,6 +30,9 @@ gem 'pul_uv_rails', :git => 'https://github.com/MorphoSource/pul_uv_rails.git', 
 gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :branch => 'morphosource'
 
 gem 'hyrax', '2.7.0'
+
+gem 'om'
+
 gem 'hydra-role-management'
 
 gem 'resque'
@@ -47,8 +50,6 @@ gem 'rest-client', '~> 2.0'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
-
-gem 'om'
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.

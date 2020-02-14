@@ -95,7 +95,6 @@ RSpec.describe SubmissionsController, type: :controller do
             title: ['XTekCT 100'],
             creator: ['Nikon'],
             modality: ['MedicalXRayComputedTomography'],
-            facility: ['Duke SMIF'],
             description: ['A sample description']
         })
         @request.session['submission'] = {}

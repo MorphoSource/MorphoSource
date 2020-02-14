@@ -31,7 +31,7 @@ module Ms1to2
       end
 
       def expected_special_fields
-        [:depositor, :parent_id, :title, :creator, :facility]
+        [:depositor, :parent_id, :title, :creator]
       end
     end
   end

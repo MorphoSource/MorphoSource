@@ -10,7 +10,7 @@ module Hyrax
 
     attr_accessor :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
-      :device_and_facility, :device_facility, :device_link, :device, :device_manufacturer, :device_description,
+      :device_and_facility, :device_link, :device, :device_manufacturer, :device_description,
       :device_organization_institution,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list, :parent_media_members,

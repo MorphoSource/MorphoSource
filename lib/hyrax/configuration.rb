@@ -336,6 +336,18 @@ module Hyrax
       Qa::Authorities::Geonames.username = username
     end
 
+    def ms_init_usr=(usr)
+    end
+
+    def ms_init_pw=(pw)
+    end
+
+    def ms_test_usr=(usr)
+    end
+
+    def ms_test_pw=(pw)
+    end
+
     attr_writer :active_deposit_agreement_acceptance
     def active_deposit_agreement_acceptance?
       return true if @active_deposit_agreement_acceptance.nil?

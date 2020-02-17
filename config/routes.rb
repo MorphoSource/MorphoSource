@@ -49,6 +49,8 @@ Rails.application.routes.draw do
 
   mount Qa::Engine => '/authorities'
 
+  mount BrowseEverything::Engine => '/browse' # this is needed after updating Hyrax to 2.7
+
   scope module: :morphosource do
     resources :downloads, only: :show
   end

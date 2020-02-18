@@ -41,7 +41,7 @@ module Hyrax
         end
         # MorphosourceHelper's generated_media_title method is shared by different actors 
         # (e.g. media actor, IE actor)
-        updated_title = generated_media_title(id, part, media_type, ie_modality)
+        updated_title = generated_media_title(part, media_type, ie_modality)
         updated_title
       end
 

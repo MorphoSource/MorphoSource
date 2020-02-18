@@ -168,13 +168,12 @@ module MorphosourceHelper
     )
   end
 
-  def generated_media_title(id, part, media_type, ie_modality)
-    #id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
-    id_prefix = id.presence ? id.to_s+': ' : ''
+  def generated_media_title(part, media_type, ie_modality)
+    # id will be added by add_id_to_title in Media model
     parts = part.presence || ['Element unspecified']
     media_type = media_type&.first.presence || ''
     modality_abbrevs = ie_modality.map { |m| modality_abbrev(m) }
-    title = id_prefix + parts.sort.join(', ').titleize + (media_type.presence ? ' [' + media_type.to_s + ']' : '') + (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : '')
+    title = parts.sort.join(', ').titleize + (media_type.presence ? ' [' + media_type.to_s + ']' : '') + (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : ' [Etc]')
     title
   end
 

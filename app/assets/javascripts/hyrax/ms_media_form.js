@@ -355,7 +355,7 @@ $(document).on('turbolinks:load', function() {
       else
         var ie_modality = 'modality_undefined';
       ie_modality = '[' + modalityAbbrev(ie_modality) + ']';
-      var title = id + ': ' + parts + ' ' + mediaType + ' ' + ie_modality;
+      var title = 'M' + id + ': ' + parts + ' ' + mediaType + ' ' + ie_modality;
       $('#showcase-title').text(title);     
     }
 

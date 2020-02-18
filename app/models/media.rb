@@ -89,7 +89,8 @@ class Media < Morphosource::Works::Base
   private
     def add_id_to_title
       unless self.title && self.id && self.title.first.to_s.start_with?("M#{self.id.to_s}: ")
-        self.title.set("M#{self.id.to_s}: #{self.title.first.to_s}")
+        self.title = ["M#{self.id.to_s}: #{self.title.first.to_s}"]
+        self.save
       end
     end
 end

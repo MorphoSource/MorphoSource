@@ -29,7 +29,7 @@ module Hyrax
 
     def showcase
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      render '/hyrax/physical_objects/showcase', presenter: @presenter
+      render 'showcase', presenter: @presenter
     end
 
     # overriding action methods from works_controller_behavior.rb
@@ -39,7 +39,7 @@ module Hyrax
       @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
       @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
       @countries_service = Morphosource::CountriesService.new
-      render '/hyrax/cultural_heritage_objects/edit', presenter: @presenter
+      render 'edit', presenter: @presenter
     end
 
     def new

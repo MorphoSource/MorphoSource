@@ -15,7 +15,7 @@
       <div><p><strong><%= t('morphosource.submission.morphosource_search_results') %></strong></p></div>
       <div id="submission_link_biospec">
         <% @docs.each do |doc| %>
-          <%= link_to raw("#{doc.sortable_title}, <em>#{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_genus.first} #{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_species.first}</em>"), submissions_path(@submission, submission: {biospec_id: doc.id}, biospec_select: "Continue with selected Biological Specimen"), method: :post %><% unless doc.idigbio_uuid.blank? %> <span><%= t('morphosource.submission.morphosource_result_from_idigbio') %></span><% end %><br/>
+          <%= link_to raw("#{doc.sortable_title}, <em>#{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_genus.first unless BiologicalSpecimen.find(doc.id).taxonomies.first.nil?} #{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_species.first unless BiologicalSpecimen.find(doc.id).taxonomies.first.nil?}</em>"), submissions_path(@submission, submission: {biospec_id: doc.id}, biospec_select: "Continue with selected Biological Specimen"), method: :post %><% unless doc.idigbio_uuid.blank? %> <span><%= t('morphosource.submission.morphosource_result_from_idigbio') %></span><% end %><br/>
         <% end %>
       </div>
     <% end %>

@@ -13,7 +13,19 @@ module Hyrax
             Date.parse(value).to_formatted_s(:long)
           rescue StandardError => e
             if e.message == 'invalid date'
-              value # just return the string as it is
+              
+              begin
+                # attempt to parse the date
+                parsed_date = Date.strptime(value, "%m/%d/%Y")
+                if parsed_date.present?
+                  parsed_date.to_formatted_s(:long)
+                else
+                  value # just return the string as it is
+                end
+              rescue StandardError => e
+                value # just return the string as it is              
+              end
+
             else
               # if landed here. check e.message for the exception message
               '(Error)'

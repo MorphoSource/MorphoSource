@@ -4,7 +4,14 @@
 
     <%= render_edit_field_partial('ie_modality', f: i) %>
     <%= render_edit_field_partial('creator', f: i) %>
-    <%= render_edit_field_partial('date_created', f: i) %>
+    <%# todo: render date_field in simple_form_bootstrap 
+    = render_edit_field_partial('date_created', f: i) %>
+    <div class="row">
+        <div class="col-xs-6 showcase-label">Date created</div>
+        <div class="col-xs-6 showcase-value">
+        <%= i.date_field :date_created, wrapper: :inline, value: i.object.date_created || Date.today, class: 'datepicker form-control' %>
+        </div>
+    </div>
     <%= render_edit_field_partial('software', f: i) %>
     <%= render_edit_field_partial('description', f: i) %>
 

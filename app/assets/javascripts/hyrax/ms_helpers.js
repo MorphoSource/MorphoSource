@@ -27,7 +27,6 @@ function disablePage() {
 }
 
 function enablePage() {
-alert('enablePage');
 	if ($('#overlay-whole-page').length)
 	  $('#overlay-whole-page').hide();
 }

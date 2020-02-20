@@ -80,6 +80,10 @@ module Hyrax
       end
     end
 
+    def hasChildMedia?
+      @child_media_id_list.any?
+    end
+
     def hasProcessingEvents?
       @processing_events.present?
     end

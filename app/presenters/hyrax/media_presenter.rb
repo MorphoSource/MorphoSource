@@ -80,6 +80,10 @@ module Hyrax
       end
     end
 
+    def isPublished?
+      @download_permission.include?('Publish')
+    end
+
     def hasChildMedia?
       @child_media_id_list.any?
     end

@@ -70,6 +70,16 @@ div.showcase {
     border-color: $button-border-color;
   }
 
+  .btn-disabled {
+    background-color: $button-disabled-color;
+    color: $button-disabled-font-color;
+    border-color: $button-disabled-border-color;
+  }
+
+  .link-disabled {
+    color: $link-disabled-font-color;
+  }
+  
   .input-group-btn.field-controls .btn {
     /* mainly applies to button wrapper around add and remove glyphicons */
     background-color: transparent;

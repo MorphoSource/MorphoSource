@@ -14,8 +14,8 @@
       </div>
       </div>
       %>
-      <% unless @presenter.hasChildMedia? %>
-        <% unless @presenter.isPublished? %>
+      <% unless @presenter.has_child_media? %>
+        <% unless @presenter.is_published? %>
           <%= link_to "Delete", [main_app, @presenter],
             class: 'btn btn-danger', data: { confirm: "Delete this media?" },
             method: :delete %>

@@ -52,11 +52,11 @@ module Hyrax
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       @presenter.get_showcase_data
-      if @presenter.hasImagingEvents?
+      if @presenter.has_imaging_events?
         ie_work = @presenter.imaging_event
         @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
       end
-      if @presenter.hasProcessingEvents?
+      if @presenter.has_processing_events?
         pe_work = @presenter.processing_events.first
         @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
       end
@@ -134,11 +134,11 @@ module Hyrax
             # todo: make sure to handle error when changing media type
             @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
             @presenter.get_showcase_data
-            if @presenter.hasImagingEvents?
+            if @presenter.has_imaging_events?
               ie_work = @presenter.imaging_event
               @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
             end
-            if @presenter.hasProcessingEvents?
+            if @presenter.has_processing_events?
               pe_work = @presenter.processing_events.first
               @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
             end

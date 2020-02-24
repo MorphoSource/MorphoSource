@@ -14,7 +14,7 @@ file_set = member_edit
   <td>
 		<% if file_set.user_can_perform_any_action? %>
 	    <% if can?(:destroy, file_set.id) %>
-        <% unless @presenter.hasChildMedia? %>
+        <% unless @presenter.has_child_media? %>
           <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
               method: :delete, title: t('.delete_title', file_set: file_set),
               data: { confirm: t('.delete_confirm', file_set: file_set, application_name: application_name) } %>

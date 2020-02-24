@@ -17,7 +17,8 @@ RSpec.describe Hyrax::MediaPresenter do
   let(:ability) { double Ability }
   let(:presenter) { described_class.new(solr_document, ability, request) }
 
-	describe '#universal_viewer?' do
+
+  describe '#universal_viewer?' do
     let(:id_present) { false }
     let(:representative_presenter) { double('representative', present?: false) }
     let(:image_boolean) { false }
@@ -106,11 +107,11 @@ RSpec.describe Hyrax::MediaPresenter do
   end
 
   describe "media member presenter" do
-  	subject { presenter }
+    subject { presenter }
 
-  	it "is a Hyrax::MediaMemberPresenterFactory object" do
-  		expect(presenter.send(:member_presenter_factory)).to be_a Hyrax::MediaMemberPresenterFactory
-  	end
+    it "is a Hyrax::MediaMemberPresenterFactory object" do
+      expect(presenter.send(:member_presenter_factory)).to be_a Hyrax::MediaMemberPresenterFactory
+    end
   end
 
   describe "sample Media work" do
@@ -140,6 +141,7 @@ RSpec.describe Hyrax::MediaPresenter do
     let(:z_spacing)         {['9']}
     let(:visibility)        { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
     let(:user)              { 'test@example.com' }
+    let(:fileset_accessibility) {['open']}
 
     let :work do
       Media.create(id:               id,
@@ -165,10 +167,45 @@ RSpec.describe Hyrax::MediaPresenter do
                    y_spacing:        y_spacing,
                    z_spacing:        z_spacing,
                    visibility:       visibility,
+                   fileset_accessibility: fileset_accessibility,
                    depositor:        user)
     end
 
-    it { is_expected.to have_attributes(title: ["M#{id}: #{title.first}"], publisher: publisher, identifier: identifier, keyword: keyword, date_created: date_created, related_url: related_url, rights_statement: rights_statement, agreement_uri: agreement_uri, cite_as: cite_as, funding: funding, map_type: map_type, media_type:  media_type, orientation: orientation, part: part, rights_holder: rights_holder,
-    scale_bar: scale_bar, side: side, unit: unit, x_spacing: x_spacing, y_spacing: y_spacing, z_spacing: z_spacing) }
+    
+    it { 
+      is_expected.to have_attributes(title: ["M#{id}: #{title.first}"], publisher: publisher, identifier: identifier, keyword: keyword, date_created: date_created, related_url: related_url, rights_statement: rights_statement, agreement_uri: agreement_uri, cite_as: cite_as, funding: funding, map_type: map_type, media_type:  media_type, orientation: orientation, part: part, rights_holder: rights_holder,
+    scale_bar: scale_bar, side: side, unit: unit, x_spacing: x_spacing, y_spacing: y_spacing, z_spacing: z_spacing) 
+    }
+    
+    context '#is_published?' do
+      subject { presenter.is_published? }
+      it { 
+        presenter.get_showcase_data
+        is_expected.to be true 
+      }
+    end
+
   end
+
+  describe '#has_child_media?' do
+    let(:empty_list) { [] }
+    let(:media_list) { ['1','2'] }
+
+    subject { presenter.has_child_media? }
+
+    context 'with no child media' do
+      before do
+        presenter.instance_variable_set(:@child_media_id_list, empty_list)
+      end
+      it { is_expected.to be false }
+    end
+
+    context 'with child media' do
+      before do
+        presenter.instance_variable_set(:@child_media_id_list, media_list)
+      end
+      it { is_expected.to be true }
+    end
+  end
+
 end

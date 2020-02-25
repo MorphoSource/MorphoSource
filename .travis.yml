@@ -22,15 +22,16 @@ before_install:
 
   # begin installing Alembic python dependencies --------
   #- sudo apt-get install python-pip
+  - sudo apt-get update
   - sudo apt-get install python3-pip
   - pip3 -V
   - sudo pip3 install numpy
-  - python -c 'import numpy; print(numpy.__version__)'
+  - python3 -c 'import numpy; print(numpy.__version__)'
   - sudo pip3 install Pillow
-  - python -c 'import PIL; print(PIL.__version__)'
+  - python3 -c 'import PIL; print(PIL.__version__)'
   - sudo pip3 install pydicom
-  - python -c 'import pydicom; print(pydicom.__version__)'
-  - export MORPHOSOURCE_PYTHON="python"
+  - python3 -c 'import pydicom; print(pydicom.__version__)'
+  - export MORPHOSOURCE_PYTHON="python3"
   # end installing Alembic python dependencies --------
 
 script: "bundle exec rake ci:wrapped_spec[~accessibility]"

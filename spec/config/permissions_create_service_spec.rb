@@ -42,9 +42,10 @@ RSpec.describe Hyrax::Collections::PermissionsCreateService do
       let(:collection) { team_a }
 
       it 'assigns admins and collection groups to appropriate access levels' do
-        expect(access_grants.count).to be(4)
+        expect(access_grants.count).to be(5)
         expect(admin[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
         expect(managers[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
+        expect(editors[:access]).to eq(Hyrax::PermissionTemplateAccess::EDIT_WORKS)
         expect(depositors[:access]).to eq(Hyrax::PermissionTemplateAccess::DEPOSIT)
         expect(viewers[:access]).to eq(Hyrax::PermissionTemplateAccess::VIEW)
       end
@@ -53,9 +54,10 @@ RSpec.describe Hyrax::Collections::PermissionsCreateService do
       let(:collection) { project_a }
 
       it 'assigns admins and collection groups to appropriate access levels' do
-        expect(access_grants.count).to be(4)
+        expect(access_grants.count).to be(5)
         expect(admin[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
         expect(managers[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
+        expect(editors[:access]).to eq(Hyrax::PermissionTemplateAccess::EDIT_WORKS)
         expect(depositors[:access]).to eq(Hyrax::PermissionTemplateAccess::DEPOSIT)
         expect(viewers[:access]).to eq(Hyrax::PermissionTemplateAccess::VIEW)
       end

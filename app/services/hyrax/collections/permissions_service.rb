@@ -69,7 +69,7 @@ module Hyrax
       # @return [Array<String>] IDs of collections and/or admin_sets into which the user can deposit
       # @note Several checks get the user's groups from the user's ability.  The same values can be retrieved directly from a passed in ability.
       def self.source_ids_for_deposit(ability:, source_type: nil, exclude_groups: [])
-        access = [Hyrax::PermissionTemplateAccess::MANAGE, Hyrax::PermissionTemplateAccess::DEPOSIT]
+        access = [Hyrax::PermissionTemplateAccess::MANAGE, Hyrax::PermissionTemplateAccess::EDIT_WORKS, Hyrax::PermissionTemplateAccess::DEPOSIT]
         source_ids_for_user(access: access, ability: ability, source_type: source_type, exclude_groups: exclude_groups)
       end
 
@@ -84,6 +84,10 @@ module Hyrax
       def self.source_ids_for_manage(ability:, source_type: nil)
         access = [Hyrax::PermissionTemplateAccess::MANAGE, Hyrax::PermissionTemplateAccess::MANAGE]
         source_ids_for_user(access: access, ability: ability, source_type: source_type)
+      end
+
+      def self.collection_ids_for_edit_works(ability:)
+        collection_ids_for_user(ability: ability, access: [Hyrax::PermissionTemplateAccess::MANAGE, Hyrax::PermissionTemplateAccess::EDIT_WORKS])
       end
 
       # @api public
@@ -105,7 +109,7 @@ module Hyrax
       # @return [Array<String>] IDs of collections into which the user can view
       # @note Several checks get the user's groups from the user's ability.  The same values can be retrieved directly from a passed in ability.
       def self.collection_ids_for_view(ability:)
-        collection_ids_for_user(ability: ability, access: [Hyrax::PermissionTemplateAccess::MANAGE,
+        collection_ids_for_user(ability: ability, access: [Hyrax::PermissionTemplateAccess::MANAGE, Hyrax::PermissionTemplateAccess::EDIT_WORKS,
                                                            Hyrax::PermissionTemplateAccess::DEPOSIT,
                                                            Hyrax::PermissionTemplateAccess::VIEW])
       end
@@ -118,7 +122,7 @@ module Hyrax
       # @return [Boolean] true if the user has permission to view the admin show page for at least one collection
       # @note Several checks get the user's groups from the user's ability.  The same values can be retrieved directly from a passed in ability.
       def self.can_view_admin_show_for_any_collection?(ability:)
-        collection_ids_for_user(ability: ability, access: [Hyrax::PermissionTemplateAccess::MANAGE,
+        collection_ids_for_user(ability: ability, access: [Hyrax::PermissionTemplateAccess::MANAGE, Hyrax::PermissionTemplateAccess::EDIT_WORKS,
                                                            Hyrax::PermissionTemplateAccess::DEPOSIT,
                                                            Hyrax::PermissionTemplateAccess::VIEW]).present?
       end
@@ -170,7 +174,7 @@ module Hyrax
       # @return [Boolean] true if the user has permission to deposit into the collection
       # @note Several checks get the user's groups from the user's ability.  The same values can be retrieved directly from a passed in ability.
       def self.can_deposit_in_collection?(collection_id:, ability:)
-        deposit_access_to_collection?(collection_id: collection_id, ability: ability) ||
+        deposit_access_to_collection?(collection_id: collection_id, ability: ability) || edit_works_access_to_collection?(collection_id: collection_id, ability: ability) ||
           manage_access_to_collection?(collection_id: collection_id, ability: ability)
       end
 
@@ -186,6 +190,7 @@ module Hyrax
         exclude_groups = [::Ability.registered_group_name,
                           ::Ability.public_group_name]
         manage_access_to_collection?(collection_id: collection_id, ability: ability) ||
+          edit_works_access_to_collection?(collection_id: collection_id, ability: ability, exclude_groups: exclude_groups) ||
           deposit_access_to_collection?(collection_id: collection_id, ability: ability, exclude_groups: exclude_groups) ||
           view_access_to_collection?(collection_id: collection_id, ability: ability, exclude_groups: exclude_groups)
       end
@@ -231,6 +236,28 @@ module Hyrax
         access_to_collection?(collection_id: collection_id, access: 'view', ability: ability, exclude_groups: exclude_groups)
       end
       private_class_method :view_access_to_collection?
+
+      # @api public
+      #
+      # Determine if the given user has permissions to edit all works created through the given collection
+      def self.can_edit_collection_works?(collection_id:, ability:)
+        edit_works_access_to_collection?(collection_id: collection_id, ability: ability) ||
+          manage_access_to_collection?(collection_id: collection_id, ability: ability)
+      end
+
+      # @api private
+      #
+      # Determine if the given user has :deposit access for the given collection
+      #
+      # @param collection_id [String] id of the collection we are checking permissions on
+      # @param ability [Ability] the ability coming from cancan ability check
+      # @param exclude_groups [Array<String>] name of groups to exclude from the results
+      # @return [Boolean] true if the user has :deposit access to the collection
+      # @note Several checks get the user's groups from the user's ability.  The same values can be retrieved directly from a passed in ability.
+      def self.edit_works_access_to_collection?(collection_id:, ability: nil, exclude_groups: [])
+        access_to_collection?(collection_id: collection_id, access: 'edit_works', ability: ability, exclude_groups: exclude_groups)
+      end
+      private_class_method :edit_works_access_to_collection?
 
       # @api private
       #

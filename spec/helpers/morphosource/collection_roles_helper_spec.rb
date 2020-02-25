@@ -1,27 +1,30 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
-
   before do
     helper.instance_variable_set(:@virtual_path, 'hyrax.dashboard.collections.form_share')
   end
 
   describe '#ms_access_options' do
-
-    it 'returns options for manager, depositor, and viewer' do
-      expect(helper.ms_access_options).to eq("<option value=\"managers\">Manager</option>\n<option value=\"depositors\">Depositor</option>\n<option value=\"viewers\">Viewer</option>")
+    it 'returns options for manager, editor, depositor, and viewer' do
+      expect(helper.ms_access_options).to eq("<option value=\"managers\">Manager</option>\n<option value=\"editors\">Editor</option>\n<option value=\"depositors\">Depositor</option>\n<option value=\"viewers\">Viewer</option>")
     end
   end
 
   describe 'ms_edit_access_options' do
     context 'current managers' do
-      it { expect(helper.ms_edit_access_options('managers')).to eq("<option value=\"depositors\">Depositor</option>\n<option value=\"viewers\">Viewer</option>\n<option value=\"remove\">Remove</option>") }
+      it { expect(helper.ms_edit_access_options('managers')).to eq("<option value=\"editors\">Editor</option>\n<option value=\"depositors\">Depositor</option>\n<option value=\"viewers\">Viewer</option>\n<option value=\"remove\">Remove</option>") }
+    end
+    context 'current editors' do
+      it { expect(helper.ms_edit_access_options('editors')).to eq("<option value=\"managers\">Manager</option>\n<option value=\"depositors\">Depositor</option>\n<option value=\"viewers\">Viewer</option>\n<option value=\"remove\">Remove</option>") }
     end
     context 'current depositors' do
-      it { expect(helper.ms_edit_access_options('depositors')).to eq("<option value=\"managers\">Manager</option>\n<option value=\"viewers\">Viewer</option>\n<option value=\"remove\">Remove</option>") }
+      it { expect(helper.ms_edit_access_options('depositors')).to eq("<option value=\"managers\">Manager</option>\n<option value=\"editors\">Editor</option>\n<option value=\"viewers\">Viewer</option>\n<option value=\"remove\">Remove</option>") }
     end
     context 'current viewers' do
-      it { expect(helper.ms_edit_access_options('viewers')).to eq("<option value=\"managers\">Manager</option>\n<option value=\"depositors\">Depositor</option>\n<option value=\"remove\">Remove</option>") }
+      it { expect(helper.ms_edit_access_options('viewers')).to eq("<option value=\"managers\">Manager</option>\n<option value=\"editors\">Editor</option>\n<option value=\"depositors\">Depositor</option>\n<option value=\"remove\">Remove</option>") }
     end
   end
 

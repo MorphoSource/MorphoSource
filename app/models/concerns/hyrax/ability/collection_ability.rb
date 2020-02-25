@@ -16,6 +16,11 @@ module Hyrax
             test_edit(collection.id)
           end
 
+          # users can edit all works in a collection, but can't edit collection metadata or permissions
+          can :edit_works, ::Collection do |collection|
+            Hyrax::Collections::PermissionsService.can_edit_collection_works?(ability: self, collection_id: collection.id)
+          end
+
           can :deposit, ::Collection do |collection|
             Hyrax::Collections::PermissionsService.can_deposit_in_collection?(ability: self, collection_id: collection.id)
           end

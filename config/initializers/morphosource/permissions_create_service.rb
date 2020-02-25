@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Hyrax::Collections::PermissionsCreateService.module_eval do
-  # Assign new groups to manager/depositor/viewer access if collection is a Team or Project
+  # Assign new groups to manager/editor/depositor/viewer access if collection is a Team or Project
   def self.create_ms_template(collection:)
     access_grants = ms_access_grants_attributes(collection: collection)
     Hyrax::PermissionTemplate.create!(source_id: collection.id, access_grants_attributes: access_grants.uniq)
@@ -11,10 +11,10 @@ Hyrax::Collections::PermissionsCreateService.module_eval do
   # Add auto-generated groups.
   # Don't give creating_user individual manager status since they are already added to the manager group.
   def self.ms_access_grants_attributes(collection:)
-    puts '     ms_access_grants_attributes called     '
     [
       { agent_type: 'group', agent_id: admin_group_name, access: Hyrax::PermissionTemplateAccess::MANAGE },
       { agent_type: 'group', agent_id: collection.managers_group.name, access: Hyrax::PermissionTemplateAccess::MANAGE },
+      { agent_type: 'group', agent_id: collection.editors_group.name, access: Hyrax::PermissionTemplateAccess::EDIT_WORKS },
       { agent_type: 'group', agent_id: collection.depositors_group.name, access: Hyrax::PermissionTemplateAccess::DEPOSIT },
       { agent_type: 'group', agent_id: collection.viewers_group.name, access: Hyrax::PermissionTemplateAccess::VIEW }
     ] + managers_of_collection_type(collection_type: collection.collection_type)

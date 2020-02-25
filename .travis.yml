@@ -21,8 +21,8 @@ before_install:
   - export PATH=$PATH:$PWD/geckodriver
 
   # begin installing Alembic python dependencies --------
-  - python -version
-  
+  - python -V
+
   - cd $TRAVIS_BUILD_DIR
 before_script:
   - "cp .rspec.travis .rspec"

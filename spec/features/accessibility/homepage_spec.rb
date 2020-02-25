@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Accessibility check on homepage", :accessibility => true, :type => :feature, :driver => :firefox_headless do
+RSpec.feature "Accessibility check on homepage", :skiptravis => true, :accessibility => true, :type => :feature, :driver => :firefox_headless do
 
   before do
     visit "/"

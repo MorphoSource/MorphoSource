@@ -7,6 +7,10 @@ module Morphosource
       ::ActiveFedora::Base.find(solr_document.id)
     end
 
+    def work_id
+      solr_document.id
+    end
+    
     # Methods below copied from rdr/dataset_presenter.rb
     # Adds "In Media, In Physical object," etc. to Relationships section of a work's show page.
 

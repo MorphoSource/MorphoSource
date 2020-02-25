@@ -5,6 +5,7 @@
 
     <div class="content-block">
       <h2>SPECIMEN IDENTIFIERS AND EXTERNAL LINKS</h2>
+      <%= @presenter.attribute_to_html(:work_id, label: "Specimen ID", render_as: :showcase_default, include_empty: true, html_dl: false) %>
       <%= f.input :vouchered, as: :select,
           collection: ['Yes','No'],
           include_blank: true,

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "MS-demo Accessibility check", :accessibility => true, :type => :feature, :driver => :firefox_headless do
+RSpec.feature "MS-demo Accessibility check", :skiptravis => true, :accessibility => true, :type => :feature, :driver => :firefox_headless do
 
   before do
     visit "https://morphosource-demo.lib.duke.edu/users/sign_in?locale=en"  

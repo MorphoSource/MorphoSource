@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Showcase pages accessibility check", :accessibility => true, :type => :feature, :driver => :firefox_headless do
+RSpec.feature "Showcase pages accessibility check", :skiptravis => true, :accessibility => true, :type => :feature, :driver => :firefox_headless do
 
   let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
 

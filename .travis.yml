@@ -100,7 +100,7 @@ before_script:
   - "cp config/database.yml.travis config/database.yml"
   - "psql -c 'create database travis_ci_test;' -U postgres"
 
-script: "bundle exec rake ci:wrapped_spec[~accessibility]"
+script: "bundle exec rake ci:wrapped_spec[~skiptravis]"
 jdk:
   - oraclejdk8
 dist: trusty

@@ -1,39 +1,21 @@
 # Based on https://github.com/duke-libraries/rdr/blob/develop/.travis.yml
 
-language: ruby
-cache:
-  bundler: true
-  directories:
-  - downloads
-rvm:
-  - 2.4.2
-services:
-  - postgresql
-  # Use redis for background jobs
-  - redis-server
-addons:
-  firefox: '61.0'
-before_install:
-  # from http://www.columbia.edu/~njn2118/journal/2016/10/28.html
-  - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
-  - mkdir geckodriver
-  - tar -xzf geckodriver-v0.21.0-linux64.tar.gz -C geckodriver
-  - export PATH=$PATH:$PWD/geckodriver
+matrix:
+  include:
+    - language: python
+      python: 
+        - 3.5
 
-  # begin installing Alembic python dependencies --------
-  - python -V
+      before_install:
 
-  - cd $TRAVIS_BUILD_DIR
-before_script:
-  - "cp .rspec.travis .rspec"
-  # Don't need to use role_map if using hydra-role-manager
-  # - "cp config/role_map.yml.sample config/role_map.yml"
-  - "cp spec/travis_spec_helper.rb spec/spec_helper.rb"
-  # Sets up test db name to be travis_ci_test
-  - "cp config/database.yml.travis config/database.yml"
-  - "psql -c 'create database travis_ci_test;' -U postgres"
+        # begin installing Alembic python dependencies --------
+        - python -V
 
-script: "bundle exec rake ci:wrapped_spec[~accessibility]"
-jdk:
-  - oraclejdk8
-dist: trusty
+
+
+        - cd $TRAVIS_BUILD_DIR
+      before_script:
+
+
+      script: 
+        - python -V

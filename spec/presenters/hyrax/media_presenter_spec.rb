@@ -173,7 +173,7 @@ RSpec.describe Hyrax::MediaPresenter do
 
     
     it { 
-      is_expected.to have_attributes(title: ["M#{id}: #{title.first}"], publisher: publisher, identifier: identifier, keyword: keyword, date_created: date_created, related_url: related_url, rights_statement: rights_statement, agreement_uri: agreement_uri, cite_as: cite_as, funding: funding, map_type: map_type, media_type:  media_type, orientation: orientation, part: part, rights_holder: rights_holder,
+      is_expected.to have_attributes(title: ["#{title.first}"], publisher: publisher, identifier: identifier, keyword: keyword, date_created: date_created, related_url: related_url, rights_statement: rights_statement, agreement_uri: agreement_uri, cite_as: cite_as, funding: funding, map_type: map_type, media_type:  media_type, orientation: orientation, part: part, rights_holder: rights_holder,
     scale_bar: scale_bar, side: side, unit: unit, x_spacing: x_spacing, y_spacing: y_spacing, z_spacing: z_spacing) 
     }
     

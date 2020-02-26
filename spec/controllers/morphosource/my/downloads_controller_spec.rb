@@ -67,7 +67,7 @@ RSpec.describe Morphosource::My::DownloadsController, :type => :controller  do
 
         it 'has the correct flash message' do
           get :batch_create, params: {:batch_document_ids => [cartItem4.id,cartItem10.id,cartItem11.id]}
-          expect(response.flash[:notice]).to eq("1 Item Added to Cart; 2 Items: Mddd: Test Media Work, Mddd: Test Media Work Already in Your Cart.")
+          expect(response.flash[:notice]).to eq("1 Item Added to Cart; 2 Items: Test Media Work, Test Media Work Already in Your Cart.")
         end
       end
     end

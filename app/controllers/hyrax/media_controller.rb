@@ -184,7 +184,7 @@ module Hyrax
         end
 
         files.each do |file|
-          invalid_files << file unless Morphosource::MEDIA_FORMATS[media_type][:extensions].include? File.extname(file)
+          invalid_files << file unless Morphosource::MEDIA_FORMATS[media_type][:extensions].include? File.extname(file).downcase
         end
 
         if invalid_files.length != 0

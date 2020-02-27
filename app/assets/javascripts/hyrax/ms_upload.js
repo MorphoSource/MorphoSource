@@ -9,7 +9,7 @@ $( document ).ready(function() {
       var options = {
           maxNumberOfFiles:10,
           maxFileSize: 50000000000,
-          acceptFileTypes: /(\.|\/)(zip|ply|stl|obj|x3d|glb|gltf|bin|wrl|png|gif|bmp|dcm|dicom|jpe?g|jpeg2000|tif?f|mtl|pdf|wmv|mov|avi|mpe?g|m4v)$/i
+          acceptFileTypes: /(\.|\/)(zip|ply|stl|obj|x3d|glb|gltf|bin|wrl|png|gif|bmp|dcm|dicom|jpe?g|jpeg2000|tif?f|mtl|pdf|wmv|mov|avi|mpe?g|m4v|dng|nef|crw|cr2|cr3|iiq|arw|raw|rw2)$/i
       };
       $('#fileupload').hyraxUploader(options);
       $('#fileuploadlogo').hyraxUploader({downloadTemplateId: 'logo-template-download'});

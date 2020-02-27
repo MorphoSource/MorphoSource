@@ -26,6 +26,7 @@ class Submission
                 :cho_search_institution_code,
                 :cho_search_occurrence_id,
                 :taxonomy_id,
+                :canonical_taxonomy_id,
                 :taxonomy_search,
                 :is_start_over,
                 :saved_step,

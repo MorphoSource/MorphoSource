@@ -175,7 +175,7 @@ class SubmissionsController < ApplicationController
     @submission.biospec_id = 'new'
     # we also search for/stage the Taxonomy work here, since for IDigBio specimen creation we don't have separate steps
     idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id])
-    existing_taxonomy = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params)
+    existing_taxonomy = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params.clone)
     if (!existing_taxonomy.nil?) && existing_taxonomy.any?
       @submission.taxonomy_id = existing_taxonomy.first.id
       store_submission

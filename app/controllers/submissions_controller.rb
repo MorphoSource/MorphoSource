@@ -178,7 +178,7 @@ class SubmissionsController < ApplicationController
     existing_bso = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params.clone)
     if (!existing_bso.nil?) && existing_bso.any?
       @submission.taxonomy_id = existing_bso.first.canonical_taxonomy.present? ? existing_bso.first.canonical_taxonomy.first : existing_bso.first.taxonomies.first.id
-      @submission.canonical_taxonomy_id = @submission.taxonomy_id
+      @submission.canonical_taxonomy_id = @submission.taxonomy_id if existing_bso.first.canonical_taxonomy.present?
       store_submission
     else
       @submission.taxonomy_id = 'new'

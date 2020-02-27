@@ -173,8 +173,7 @@ class SubmissionsController < ApplicationController
   def stage_biological_specimen_from_idigbio
     reinstantiate_submission
     @submission.biospec_id = 'new'
-    # we should also search for/create the Taxonomy work here, since for IDigBio creation we don't have separate steps
-    # TODO: search for existing Taxonomy
+    # we also search for/stage the Taxonomy work here, since for IDigBio specimen creation we don't have separate steps
     idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id])
     existing_taxonomy = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params)
     if (!existing_taxonomy.nil?) && existing_taxonomy.any?

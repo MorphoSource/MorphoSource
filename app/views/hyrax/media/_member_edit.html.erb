@@ -4,7 +4,7 @@ file_set = member_edit
 %>
 <tr class="<%= dom_class(member) %> attributes">
   <td class="thumbnail">
-    <%= render_thumbnail_tag member %>
+    <%= render_thumbnail_tag(member, {}, {suppress_link:true}) %> 
   </td>
   <td class="attribute attribute-filename ensure-wrapped">
     <%#= link_to(member.link_name, contextual_path(member, @presenter)) %>
@@ -13,10 +13,14 @@ file_set = member_edit
   <td>
 		<% if file_set.user_can_perform_any_action? %>
 	    <% if can?(:destroy, file_set.id) %>
-        <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
-          method: :delete, title: t('.delete_title', file_set: file_set),
-          data: { confirm: t('.delete_confirm', file_set: file_set, application_name: application_name) } %>
-	    <% end %>
-		<% end %>
+        <% unless @presenter.has_child_media? %>
+          <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
+              method: :delete, title: t('.delete_title', file_set: file_set),
+              data: { confirm: t('.delete_confirm', file_set: file_set, application_name: application_name) } %>
+        <% else %>
+          <a class="link-disabled tooltip-icon" data-original-title="" title="The files of this media cannot be deleted because the media has child media.">Delete</a>
+  	    <% end %>
+  		<% end %>
+    <% end %>
   </td>
 </tr>

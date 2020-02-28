@@ -647,11 +647,10 @@ class SubmissionsController < ApplicationController
   def create_work(model, form_params)
     curation_concern = model.new
     attributes_for_actor = form_params
-    unless model == Media
-      attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-    end
     if model == Media
       set_visibilities(attributes_for_actor)
+    else
+      attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
     end
     env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
     Hyrax::CurationConcern.actor.create(env)

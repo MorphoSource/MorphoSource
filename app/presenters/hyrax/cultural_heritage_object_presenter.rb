@@ -24,10 +24,6 @@ module Hyrax
       'showcase_general_details'
     end
 
-    def showcase_taxonomy_partial
-      'showcase_taxonomy'
-    end
-
     def showcase_identifiers_and_external_links_partial
       'showcase_identifiers_and_external_links'
     end

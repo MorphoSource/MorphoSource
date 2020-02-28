@@ -4,14 +4,7 @@ file_set = member_edit
 %>
 <tr class="<%= dom_class(member) %> attributes">
   <td class="thumbnail">
-    <%= render_thumbnail_tag member %>
-    <%# 
-
-- write a method to display the default preview image if it is not available.
-http://localhost:3000/assets/work-ff055336041c3f7d310ad69109eda4a887b16ec501f35afc0a547c4adb97ee72.png
-
-
-    = image_tag member.display_image.url %>
+    <%= render_thumbnail_tag(member, {}, {suppress_link:true}) %> 
   </td>
   <td class="attribute attribute-filename ensure-wrapped">
     <%#= link_to(member.link_name, contextual_path(member, @presenter)) %>

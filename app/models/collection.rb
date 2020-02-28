@@ -43,6 +43,10 @@ class Collection < ActiveFedora::Base
     [managers_group, depositors_group, viewers_group]
   end
 
+  def user_groups_names
+    user_groups.map(&:name)
+  end
+
   def group_members
     managers + depositors + viewers
   end

@@ -5,11 +5,15 @@ module Hyrax
   class BiologicalSpecimensController < ApplicationController
     # Adds Hyrax behaviors to the controller.
     include Hyrax::WorksControllerBehavior
+    include Morphosource::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
+    include Morphosource::LinkedTeams::LinkedTeamsManagement
     self.curation_concern_type = ::BiologicalSpecimen
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::BiologicalSpecimenPresenter
+
+    before_action :record_original_parents, only: :update
 
     # override the layout from WorksControllerBehavior
     def decide_layout
@@ -55,6 +59,29 @@ module Hyrax
       render '/hyrax/base/new' #, presenter: @presenter
     end
 
-  end
+    def update
+      if actor.update(actor_environment)
+        update_media_team_access
+        after_update_response
+      else
+        respond_to do |wants|
+          wants.html do
+            build_form
+            render 'edit', status: :unprocessable_entity
+          end
+          wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
+        end
+      end
+    end
 
+    private
+
+    def old_orgs
+      select_organizations(@original_parents)
+    end
+
+    def new_orgs
+      select_organizations(@curation_concern.member_of)
+    end
+  end
 end

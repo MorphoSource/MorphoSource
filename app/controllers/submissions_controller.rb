@@ -2,6 +2,7 @@ class SubmissionsController < ApplicationController
   # Adds Hyrax behaviors to the controller.
   include Hyrax::WorksControllerBehavior
   include MorphosourceHelper
+  include Morphosource::LinkedTeams::LinkedTeamsManagement
 
   load_and_authorize_resource
 
@@ -464,7 +465,7 @@ class SubmissionsController < ApplicationController
       organization_model_params = Hyrax::OrganizationForm.model_attributes(params[:organization])
       new_organization_id = create_organization(organization_model_params)
     rescue
-      new_organization_id = nil    
+      new_organization_id = nil
     end
 
     if new_organization_id.present?
@@ -477,10 +478,10 @@ class SubmissionsController < ApplicationController
         :institution_code => new_organization.institution_code.first,
         :institution_name => new_organization.institution_name.first,
         :collection_code => new_organization.collection_code.first,
-        :description => new_organization.description.first, 
-        :address => new_organization.address.first, 
-        :city => new_organization.city.first, 
-        :state_province => new_organization.state_province.first, 
+        :description => new_organization.description.first,
+        :address => new_organization.address.first,
+        :city => new_organization.city.first,
+        :state_province => new_organization.state_province.first,
         :country => new_organization.country.first
       }
     else
@@ -488,12 +489,12 @@ class SubmissionsController < ApplicationController
       message = 'There is a problem creating the organization.'
       new_work = {}
     end
-    response_object = { 
+    response_object = {
       :work => new_work,
       :status => status,
       :message => message
     }
-    render :json => response_object 
+    render :json => response_object
   end
 
   def new_taxonomy
@@ -541,12 +542,12 @@ class SubmissionsController < ApplicationController
       message = 'There is a problem creating the taxonomy.'
       new_work = {}
     end
-    response_object = { 
+    response_object = {
       :work => new_work,
       :status => status,
       :message => message
     }
-    render :json => response_object 
+    render :json => response_object
   end
 
   def new_device_submit
@@ -555,8 +556,8 @@ class SubmissionsController < ApplicationController
       device_model_params = Hyrax::DeviceForm.model_attributes(params[:device])
       new_device_id = create_device(device_model_params)
     rescue Exception => ex
-      new_device_id = nil 
-      exception_message = "Exception: #{ex.class}, #{ex.message}"   
+      new_device_id = nil
+      exception_message = "Exception: #{ex.class}, #{ex.message}"
     end
     if new_device_id.present?
       status = 'OK'
@@ -566,7 +567,7 @@ class SubmissionsController < ApplicationController
         :id => new_device_id,
         :title => new_device.title.first,
         :creator => new_device.creator.first,
-        :modality => new_device.modality.first, 
+        :modality => new_device.modality.first,
         :description => new_device.description.first,
         :organization_institution => organization_institution(new_device_id)
       }
@@ -575,12 +576,12 @@ class SubmissionsController < ApplicationController
       message = 'There is a problem creating the device. ' + exception_message
       new_work = {}
     end
-    response_object = { 
+    response_object = {
       :work => new_work,
       :status => status,
       :message => message
     }
-    render :json => response_object 
+    render :json => response_object
   end
 
   def new_processing_event_submit
@@ -589,18 +590,20 @@ class SubmissionsController < ApplicationController
       processing_event_model_params = Hyrax::ProcessingEventForm.model_attributes(params[:processing_event])
       new_processing_event_id = create_work(ProcessingEvent, processing_event_model_params)
     rescue Exception => ex
-      new_processing_event_id = nil 
-      exception_message = "Exception: #{ex.class}, #{ex.message}"   
+      new_processing_event_id = nil
+      exception_message = "Exception: #{ex.class}, #{ex.message}"
     end
     if new_processing_event_id.present?
-      if params['child_media_id'].present? 
+      if params['child_media_id'].present?
         # update the child media (by setting this PE as a parent)
         # child < PE < parent
         child_media_id = params['child_media_id']
-        child_media = ::ActiveFedora::Base.find(child_media_id)
+        child_media = Media.find(child_media_id)
         processing_event = ::ActiveFedora::Base.find(new_processing_event_id)
         processing_event.ordered_members << child_media
         processing_event.save!
+        child_media.save!
+        new_processing_event_updates(child_media)
       end
       status = 'OK'
       message = 'New processing_event created'
@@ -614,12 +617,12 @@ class SubmissionsController < ApplicationController
       message = 'There is a problem creating the processing_event. ' + exception_message
       new_work = {}
     end
-    response_object = { 
+    response_object = {
       :work => new_work,
       :status => status,
       :message => message
     }
-    render :json => response_object 
+    render :json => response_object
   end
 
   private

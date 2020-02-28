@@ -1,0 +1,117 @@
+# frozen_string_literal: true
+
+module Morphosource
+  module LinkedTeams
+    module LinkedTeamsManagement
+      include Morphosource::WorksControllerBehavior
+
+      # called from imaging event and processing event controllers
+      def update_media_team_access
+        return if parents_attributes.nil?
+
+        return if organizations_unchanged?
+
+        update_linked_team_access
+      end
+
+      # called from media actor
+      def add_organization_team_access(works)
+        team_ids = linked_team_ids(new_orgs)
+        return if team_ids.blank?
+
+        get_groups(team_ids)
+        works.each { |w| add_read_access(w) }
+      end
+
+      # called from submissions controller
+      def new_processing_event_updates(media)
+        get_processing_event_values(media)
+        add_organization_team_access(@media)
+      end
+
+      def get_processing_event_values(media)
+        @curation_concern = media
+        new_specimens = select_specimens(media.ancestors)
+        @new_orgs = specimen_organizations(new_specimens)
+        find_all_media
+      end
+
+      def record_original_parents
+        @original_parents = @curation_concern.member_of
+      end
+
+      private
+
+      def parents_attributes
+        params[work_type][:work_parents_attributes]
+      end
+
+      def work_type
+        @curation_concern.model_name.param_key
+      end
+
+      def organizations_unchanged?
+        old_orgs.sort == new_orgs.sort
+      end
+
+      def old_orgs
+        @old_orgs ||= specimen_organizations(old_specimens)
+      end
+
+      def new_orgs
+        @new_orgs ||= specimen_organizations(new_specimens)
+      end
+
+      def specimen_organizations(specimens)
+        specimens.each_with_object([]) do |s, orgs|
+          s.member_of.each do |parent|
+            orgs << parent if parent.organization?
+          end
+        end
+      end
+
+      def update_linked_team_access
+        find_all_media
+        remove_organization_team_access unless old_orgs.blank?
+        add_organization_team_access(@media)
+      end
+
+      def find_all_media
+        works = @curation_concern.descendants << @curation_concern
+        @media = select_media(works)
+      end
+
+      def remove_organization_team_access
+        team_ids = linked_team_ids(old_orgs)
+        return if team_ids.blank?
+
+        get_groups(team_ids)
+        @media.each { |m| remove_read_access(m) }
+      end
+
+      def linked_team_ids(organizations)
+        organizations.map { |o| o.team_id.first }.compact
+      end
+
+      def get_groups(team_ids)
+        roles = Collection::DEFAULT_GROUP_ROLES
+        @groups = []
+        team_ids.each do |id|
+          roles.each do |role|
+            @groups.push(id + '_' + role)
+          end
+        end
+      end
+
+      def remove_read_access(work)
+        work.read_groups -= @groups
+        work.save
+      end
+
+      def add_read_access(work)
+        work.read_groups += @groups
+        work.save
+      end
+    end
+  end
+end

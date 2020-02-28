@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Morphosource
   module Works
     class Base < ActiveFedora::Base
-
       class_attribute :work_parents_attributes
       class_attribute :work_requires_files
       class_attribute :valid_parent_concerns
@@ -23,15 +24,43 @@ module Morphosource
         @descendants.flatten.uniq
       end
 
+      def ancestors
+        @ancestors = member_of
+        get_all_parents(@ancestors)
+        @ancestors.flatten.uniq
+      end
+
+      def specimen?
+        self.class == BiologicalSpecimen
+      end
+
+      def organization?
+        self.class == Organization
+      end
+
+      def media?
+        self.class == Media
+      end
+
       private
 
       def get_all_children(objects)
         objects.flatten.each do |object|
-          unless object.member_ids.blank?
-            children = ActiveFedora::Base.find(object.member_ids)
-            @descendants << children
-            get_all_children(children)
-          end
+          next if object.member_ids.blank?
+
+          children = ActiveFedora::Base.find(object.member_ids)
+          @descendants << children
+          get_all_children(children)
+        end
+      end
+
+      def get_all_parents(objects)
+        objects.flatten.each do |object|
+          next if object.member_of.blank?
+          
+          parents = object.member_of
+          @ancestors << parents
+          get_all_parents(parents)
         end
       end
     end

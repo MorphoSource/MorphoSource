@@ -1,0 +1,105 @@
+require 'rails_helper'
+RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
+
+  describe '#new_processing_event_media_updates' do
+    let(:subject)   { SubmissionsController.new() }
+    let(:user)                  { User.create(email: 'email@email.com', password: 'password') }
+    let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+    let(:team)                  { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:organization)          { Organization.new(title: ['new organization']) }
+    let(:old_organization)      { Organization.new(title: ['old organization'], team_id: [old_team.id]) }
+    let(:specimen)              { BiologicalSpecimen.new(title: ['new specimen'], vouchered: [true]) }
+    let(:old_specimen)          { BiologicalSpecimen.new(title: ['old_specimen'], vouchered: [true]) }
+    let(:imaging_event)         { ImagingEvent.new(title: ['new imaging event']) }
+    let(:old_imaging_event)     { ImagingEvent.new(title: ['old imaging event']) }
+    let(:processing_event)      { ProcessingEvent.new(title: ['new processing event']) }
+    let(:child_processing_event){ ProcessingEvent.new(title: ['child processing event']) }
+    let(:media)                 { Media.new(title: ['media']) }
+    let(:child_media)           { Media.new(title: ['child media']) }
+
+    before do
+      # set up work relationships
+      organization.ordered_members << specimen
+      specimen.ordered_members << imaging_event
+      imaging_event.ordered_members << processing_event
+      processing_event.ordered_members << media
+      media.ordered_members << child_processing_event
+      child_processing_event.ordered_members << child_media
+      # save all works
+      works = [organization, specimen, imaging_event, processing_event, media, child_processing_event, child_media]
+      works.each(&:save)
+      works.each(&:reload)
+    end
+
+    context 'new organization does not have a linked team' do
+      context 'child media does not have a linked team' do
+        before do
+          subject.new_processing_event_updates(media)
+        end
+        it "does not change the media's permissions" do
+          expect(media.read_groups).to match_array([])
+          expect(child_media.read_groups).to match_array([])
+        end
+      end
+      context 'child media has a linked team' do
+        before do
+          old_team.create_collection_groups
+          media.read_groups += old_team.user_groups_names
+          child_media.read_groups += old_team.user_groups_names
+
+          old_organization.ordered_members << old_specimen
+          old_specimen.ordered_members << old_imaging_event
+          old_imaging_event.ordered_members << media
+
+          works = [old_organization, old_specimen, old_imaging_event, media, child_media]
+          works.each(&:save)
+          works.each(&:reload)
+
+          subject.new_processing_event_updates(media)
+        end
+        it "does not change the media's permissions" do
+          expect(media.read_groups).to match_array(old_team.user_groups_names)
+          expect(child_media.read_groups).to match_array(old_team.user_groups_names)
+        end
+      end
+    end
+    context 'new organization has a linked team' do
+      before do
+        team.create_collection_groups
+        organization.team_id = [team.id]
+        organization.save
+      end
+      context 'child media does not have a linked team' do
+        before do
+          subject.new_processing_event_updates(media)
+        end
+        it 'adds read access for the new team' do
+          expect(media.read_groups).to match_array(team.user_groups_names)
+          expect(child_media.read_groups).to match_array(team.user_groups_names)
+        end
+      end
+      context 'child media has a linked team' do
+        before do
+          old_team.create_collection_groups
+          media.read_groups += old_team.user_groups_names
+          child_media.read_groups += old_team.user_groups_names
+
+          old_organization.ordered_members << old_specimen
+          old_specimen.ordered_members << old_imaging_event
+          old_imaging_event.ordered_members << media
+
+          works = [old_organization, old_specimen, old_imaging_event, media, child_media]
+          works.each(&:save)
+          works.each(&:reload)
+
+          subject.new_processing_event_updates(media)
+        end
+        it 'keeps permissions for the previous team and adds read access for the new team' do
+          expect(media.read_groups).to match_array(team.user_groups_names + old_team.user_groups_names)
+          expect(child_media.read_groups).to match_array(team.user_groups_names + old_team.user_groups_names)
+        end
+      end
+    end
+  end
+end

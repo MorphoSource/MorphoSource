@@ -2,7 +2,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
-  after_save :add_id_to_title
 
   self.indexer = BiologicalSpecimenIndexer
   # Change this to restrict which works can be added as a child.
@@ -62,5 +61,4 @@ class BiologicalSpecimen < Morphosource::Works::Base
         self.title.set("S#{self.id.to_s}: #{self.title.first.to_s}")
       end
     end
-
 end

@@ -174,15 +174,16 @@ class SubmissionsController < ApplicationController
   def stage_biological_specimen_from_idigbio
     reinstantiate_submission
     @submission.biospec_id = 'new'
-    # we should also search for/create the Taxonomy work here, since for IDigBio creation we don't have separate steps
-    # TODO: search for existing Taxonomy
+    # we also search for/stage the Taxonomy work here, since for IDigBio specimen creation we don't have separate steps
     idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id])
-    existing_taxonomy = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params)
-    if (!existing_taxonomy.nil?) && existing_taxonomy.any?
-      @submission.taxonomy_id = existing_taxonomy.first.id
+    existing_bso = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params.clone)
+    if (!existing_bso.nil?) && existing_bso.any?
+      @submission.taxonomy_id = existing_bso.first.canonical_taxonomy.present? ? existing_bso.first.canonical_taxonomy.first : existing_bso.first.taxonomies.first.id
+      @submission.canonical_taxonomy_id = @submission.taxonomy_id if existing_bso.first.canonical_taxonomy.present?
       store_submission
     else
       @submission.taxonomy_id = 'new'
+      @submission.canonical_taxonomy_id = @submission.taxonomy_id
       store_submission
       taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(ActionController::Parameters.new(idb_taxonomy_params))
       session[:submission_taxonomy_create_params] = taxonomy_model_params
@@ -309,6 +310,9 @@ class SubmissionsController < ApplicationController
     end
     if @taxonomy_create_params.present?
       @submission.taxonomy_id = create_taxonomy(@taxonomy_create_params)
+      if @submission.canonical_taxonomy_id == 'new'
+        @submission.canonical_taxonomy_id = @submission.taxonomy_id
+      end
     end
     if @biospec_create_params.present?
       @submission.biospec_id = create_biological_specimen(@biospec_create_params)
@@ -340,6 +344,9 @@ class SubmissionsController < ApplicationController
     end
     if @submission.taxonomy_id.present?
       parent_attributes.merge!({ '1' => { "id" => @submission.taxonomy_id, "_destroy" => "false" } })
+    end
+    if @submission.canonical_taxonomy_id.present?
+      params.merge!('canonical_taxonomy' => [@submission.canonical_taxonomy_id])
     end
     unless parent_attributes.empty?
       params.merge!('work_parents_attributes' => parent_attributes)
@@ -643,11 +650,10 @@ class SubmissionsController < ApplicationController
   def create_work(model, form_params)
     curation_concern = model.new
     attributes_for_actor = form_params
-    unless model == Media
-      attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-    end
     if model == Media
       set_visibilities(attributes_for_actor)
+    else
+      attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
     end
     env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
     Hyrax::CurationConcern.actor.create(env)
@@ -750,6 +756,7 @@ class SubmissionsController < ApplicationController
                               parent_media_how_to_proceed: @submission.parent_media_how_to_proceed,
                               parent_media_list: @submission.parent_media_list,
                               taxonomy_id: @submission.taxonomy_id,
+                              canonical_taxonomy_id: @submission.canonical_taxonomy_id,
                               cho_search_collection_code: @submission.cho_search_collection_code,
                               saved_step: @submission.saved_step
       }
@@ -783,6 +790,7 @@ class SubmissionsController < ApplicationController
                                           :parent_media_search,
                                           :parent_media_list,
                                           :taxonomy_search,
+                                          :canonical_taxonomy_id,
                                           :taxonomy_id
       )
   end

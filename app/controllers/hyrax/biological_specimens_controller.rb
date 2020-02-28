@@ -34,7 +34,7 @@ module Hyrax
 
     def showcase
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      render '/hyrax/physical_objects/showcase', presenter: @presenter
+      render 'showcase', presenter: @presenter
     end
 
     # overriding action methods from works_controller_behavior.rb
@@ -47,7 +47,7 @@ module Hyrax
       @countries_service = Morphosource::CountriesService.new
       @new_taxonomy_submit_submissions_url = '/submissions/new_taxonomy_submit'
       @new_taxonomy_form = Hyrax::WorkFormService.build(::Taxonomy.new, current_ability, self)
-      render '/hyrax/biological_specimens/edit', presenter: @presenter
+      render 'edit', presenter: @presenter
     end
 
     def new

@@ -1,7 +1,6 @@
 class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
-  after_save :add_id_to_title
 
   self.work_requires_files = true
 

@@ -168,13 +168,12 @@ module MorphosourceHelper
     )
   end
 
-  def generated_media_title(id, part, media_type, ie_modality)
-    #id_prefix = id.presence ? id.to_s.split('x').first+': ' : ''
-    id_prefix = id.presence ? id.to_s+': ' : ''
+  def generated_media_title(part, media_type, ie_modality)
+    # id will be added by add_id_to_title in Media model
     parts = part.presence || ['Element unspecified']
     media_type = media_type&.first.presence || ''
     modality_abbrevs = ie_modality.map { |m| modality_abbrev(m) }
-    title = id_prefix + parts.sort.join(', ').titleize + (media_type.presence ? ' [' + media_type.to_s + ']' : '') + (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : '')
+    title = parts.sort.join(', ').titleize + (media_type.presence ? ' [' + media_type.to_s + ']' : '') + (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : ' [Etc]')
     title
   end
 
@@ -244,6 +243,35 @@ module MorphosourceHelper
     #markup << link
     #markup
     url
+  end
+
+  def display_date(value)
+    # first try to parse and format the date generated from datepicker (YYYY-MM-DD)
+    # for other format, e.g. "04/26/2019", it will throw invalid date exception
+    # in thac case, use DateTime.strptime instead
+    begin
+      Date.parse(value).to_formatted_s(:long)
+    rescue StandardError => e
+      if e.message == 'invalid date'
+        
+        begin
+          # attempt to parse the date
+          parsed_date = Date.strptime(value, "%m/%d/%Y")
+          if parsed_date.present?
+            parsed_date.to_formatted_s(:long)
+          else
+            value # just return the string as it is
+          end
+        rescue StandardError => e
+          value # just return the string as it is              
+        end
+
+      else
+        # if landed here. check e.message for the exception message
+        '(Error)'
+      end
+    end
+
   end
 
 end

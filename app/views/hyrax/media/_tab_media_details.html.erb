@@ -5,6 +5,7 @@
 
     <div class="content-block">
       <h2>GENERAL DETAILS</h2>
+      <%= @presenter.attribute_to_html(:work_id, label: "Media ID", render_as: :showcase_default, include_empty: true, html_dl: false) %>
       <%= render_edit_field_partial('media_type', f: f) %>
       <%= f.input :part, label: 'Element or part of the object', as: :multi_value %>
       <%= render_edit_field_partial('side', f: f) %>

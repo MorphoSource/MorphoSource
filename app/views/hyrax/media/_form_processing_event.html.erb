@@ -2,7 +2,13 @@
   <div class="content-block">
   	<h2>PROCESSING DETAILS</h2>
     <%= p.input :creator, as: :multi_value %>
-    <%= p.input :date_created %>
+    <%# todo: render date_field in simple_form_bootstrap %>
+    <div class="row">
+        <div class="col-xs-6 showcase-label">Date created</div>
+        <div class="col-xs-6 showcase-value">
+        <%= p.date_field :date_created, wrapper: :inline, value: p.object.date_created || Date.today, class: 'datepicker form-control' %>
+        </div>
+    </div>
     <%= p.input :software, as: :multi_value %>
     <%= p.input :description, label: 'Full description' %>
 	</div>

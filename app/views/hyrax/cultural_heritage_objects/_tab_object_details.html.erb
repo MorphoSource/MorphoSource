@@ -3,7 +3,8 @@
   <div class="col-sm-6">
 
     <div class="content-block">
-      <h2>SPECIMEN IDENTIFIERS AND EXTERNAL LINKS</h2>
+      <h2>OBJECT IDENTIFIERS AND EXTERNAL LINKS</h2>
+      <%= @presenter.attribute_to_html(:work_id, label: "Object ID", render_as: :showcase_default, include_empty: true, html_dl: false) %>
       <%= f.input :vouchered, as: :select,
           collection: ['Yes','No'],
           include_blank: true,
@@ -25,7 +26,13 @@
       <%= f.input :short_title, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :cho_type, as: :multi_value %>
       <%= f.input :material, as: :multi_value %>
-      <%= f.input :date_created %>
+      <%# todo: render date_field in simple_form_bootstrap %>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Date created</div>
+        <div class="col-xs-6 showcase-value">
+        <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created || Date.today, class: 'datepicker form-control' %>
+          </div>
+      </div>
       <%= @presenter.attribute_to_html(:date_uploaded, render_as: :showcase_date, include_empty: true, html_dl: false) %>
       <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_default, html_dl: false) %>
       <%= f.input :creator, as: :multi_value %>

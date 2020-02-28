@@ -43,7 +43,7 @@ module Morphosource
       end
 
       mattr_accessor :photogrammetry_formats do
-        [".zip"]
+        [".zip", ".tif", ".dng", ".nef", ".crw", ".cr2", ".cr3", ".iiq", ".arw", ".raw", ".rw2"]
       end
 
       mattr_accessor :mesh_formats do

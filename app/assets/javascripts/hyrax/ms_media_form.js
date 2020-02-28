@@ -340,7 +340,6 @@ $(document).on('turbolinks:load', function() {
   if ($('form[id*="edit_media"]').length) { // if edit media form page
 
     function updateMediaTitle() {
-      var id = $('form[id*="edit_media"]').attr('id').split('_media_')[1];
       var parts = $('[name="media[part][]"]').map(function(){
         if ($(this).val() != '')
           return $(this).val();
@@ -355,7 +354,7 @@ $(document).on('turbolinks:load', function() {
       else
         var ie_modality = 'modality_undefined';
       ie_modality = '[' + modalityAbbrev(ie_modality) + ']';
-      var title = id + ': ' + parts + ' ' + mediaType + ' ' + ie_modality;
+      var title = parts + ' ' + mediaType + ' ' + ie_modality;
       $('#showcase-title').text(title);     
     }
 

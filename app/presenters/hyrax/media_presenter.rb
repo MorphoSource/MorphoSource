@@ -80,11 +80,19 @@ module Hyrax
       end
     end
 
-    def hasProcessingEvents?
+    def is_published?
+      @download_permission.include?('Publish')
+    end
+
+    def has_child_media?
+      @child_media_id_list.any?
+    end
+
+    def has_processing_events?
       @processing_events.present?
     end
 
-    def hasImagingEvents?
+    def has_imaging_events?
       @imaging_event.present?
     end
 

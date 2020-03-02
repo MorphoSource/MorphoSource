@@ -59,7 +59,6 @@ if isMesh:
 else:
   mimetype = ''
 
-print('<?xml version="1.0" encoding="UTF-8"?>')
 blender = ET.Element('blender', attrib={})
 status = ET.SubElement(blender, 'status') # status can be displayed on UI
 error = ET.SubElement(blender, 'error') # error should be shown internally only
@@ -183,4 +182,5 @@ else:
 # end else (mimetype is not empty)
 status.text = statusMessage
 error.text = errorMessage
+print('<?xml version="1.0" encoding="UTF-8"?>')
 ET.dump(blender) 

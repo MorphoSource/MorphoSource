@@ -14,9 +14,8 @@ services:
 addons:
   firefox: '61.0'
 before_install:
-  - sudo apt-get install xz-utils
+  #- sudo apt-get install xz-utils
   - mkdir $TRAVIS_BUILD_DIR/download
-  - cd $TRAVIS_BUILD_DIR/download
 
   # from http://www.columbia.edu/~njn2118/journal/2016/10/28.html
   - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
@@ -41,8 +40,7 @@ before_install:
 
   # begin Blender setup --------
   - cd $TRAVIS_BUILD_DIR/download
-  - mkdir -p $TRAVIS_BUILD_DIR/downloads
-  - wget -nc -O $TRAVIS_BUILD_DIR/downloads/blender.tar.xz https://download.blender.org/release/Blender2.82/blender-2.82-linux64.tar.xz || echo "File already exists"
+  - wget -nc -O blender.tar.xz https://download.blender.org/release/Blender2.82/blender-2.82-linux64.tar.xz || echo "File already exists"
 
   - unxz blender.tar.xz
   - tar xvf blender.tar

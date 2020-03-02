@@ -87,8 +87,11 @@ if (args.input and args.output and args.unit and
                         #     mat.use_nodes = True
                         #     obj.data.materials.append(mat)
 
-                        bpy.context.scene.objects.active = obj
-
+                        #bpy.context.scene.objects.active = obj
+                        # the api has been changed in blender 2.8
+                        # https://b3d.interplanety.org/en/how-to-set-object-mesh-to-active-in-blender-2-8-python-api/
+                        bpy.context.view_layer.objects.active = obj
+                        
                         # Decimate mesh
                         if len(obj.data.polygons) > target_faces:
                             clean_decimate_modifiers(obj)

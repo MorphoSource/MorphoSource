@@ -6,7 +6,7 @@ RSpec.describe Hyrax::DeviceForm do
   subject { Hyrax::DeviceForm }
   
   it "has expected metadata terms" do
-    expect(subject.terms).to include(:title, :creator, :modality, :facility, :description)
+    expect(subject.terms).to include(:title, :creator, :modality, :description)
   end
 
   it "has expected required metadata terms" do

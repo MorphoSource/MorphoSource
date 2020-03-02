@@ -29,18 +29,22 @@ gem 'pul_uv_rails', :git => 'https://github.com/MorphoSource/pul_uv_rails.git', 
 # pull iiif_manifest fork that can handle 3D manifests
 gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :branch => 'morphosource'
 
-gem 'hyrax', '2.4.1'
+gem 'hyrax', '2.7.0'
+
+gem 'om'
+
 gem 'hydra-role-management'
 
 gem 'resque'
 gem 'resque-pool'
 gem 'resque-web', require: 'resque_web'
 
-gem 'puma', '~> 3.7'
+gem 'puma', '~> 3.12'
 
 gem 'rubyzip'
-
 gem 'zipline', '~> 1.0'
+
+gem 'rest-client', '~> 2.0'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
@@ -72,10 +76,11 @@ group :development, :test do
 end
 
 group :test do
-  # note: the newer version of axe-matchers (2.4.1) throws the error below.  For now use 2.3.0 which is working 
+  # note: the newer version of axe-matchers (2.4.1) throws the error below.  For now use 2.3.0 which is working
   # Selenium::WebDriver::Error::JavascriptError:ReferenceError: __magic__ is not defined
   gem 'axe-matchers', '~> 2.3.0'
   gem 'rspec-json_expectations'
+  gem 'vcr'
 end
 
 group :production do

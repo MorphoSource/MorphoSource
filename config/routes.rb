@@ -16,6 +16,8 @@ Rails.application.routes.draw do
     get 'concern/media/new', to: 'media#new'
     get 'concern/media/zip', to: 'media#zip'
     get 'concern/media/:id', to: 'media#showcase'
+    # in case we need to reference the old edit page. remove this hyraxedit route later
+    get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
     get 'concern/parent/:parent_id/media/:id', to: 'media#showcase'
     # setup temp routes for the default views (for debugging)
     # remove them later if no longer needed
@@ -46,6 +48,8 @@ Rails.application.routes.draw do
   mount Hydra::RoleManagement::Engine => '/'
 
   mount Qa::Engine => '/authorities'
+
+  mount BrowseEverything::Engine => '/browse' # this is needed after updating Hyrax to 2.7
 
   scope module: :morphosource do
     resources :downloads, only: :show
@@ -102,6 +106,7 @@ Rails.application.routes.draw do
   resources :submissions, only: [ :new, :create ] do
     collection do
       post 'stage_biological_specimen'
+      post 'stage_biological_specimen_from_idigbio'
       post 'stage_device'
       post 'stage_imaging_event'
       post 'stage_organization'
@@ -115,11 +120,14 @@ Rails.application.routes.draw do
       post 'new_organization_submit'
       get 'new_taxonomy'
       post 'new_taxonomy_submit'
+      post 'new_device_submit'
+      post 'new_processing_event_submit'
     end
   end
 
   # Route to flow initial page when using browser reload or back button
   get '/submissions/stage_biological_specimen', to: 'submissions#new'
+  get '/submissions/stage_biological_specimen_from_idigbio', to: 'submissions#new'
   get '/submissions/stage_device', to: 'submissions#new'
   get '/submissions/stage_imaging_event', to: 'submissions#new'
   get '/submissions/stage_organization', to: 'submissions#new'
@@ -167,4 +175,10 @@ Rails.application.routes.draw do
   # Add users to auto-generated collection groups
   post 'dashboard/collections/:id/update_collection_groups', action: :update_collection_groups, controller: :collection_roles, as: 'update_collection_groups'
 
+  # Link organization to team
+  scope module: :morphosource do
+    scope module: :dashboard do
+      post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'
+    end
+  end
 end

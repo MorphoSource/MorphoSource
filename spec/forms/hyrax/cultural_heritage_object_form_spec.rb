@@ -23,10 +23,10 @@ RSpec.describe Hyrax::CulturalHeritageObjectForm do
 
     it 'has expected single valued metadata terms' do
       expect(described_class.single_valued_fields).to match_array([ :catalog_number,
-                                                                    :collection_code, :date_created, :description,
+                                                                    :collection_code, :date_created, :description, :institution_code,
                                                                     :latitude, :longitude, :numeric_time,
                                                                     :original_location, :publisher, :vouchered,
-                                                                    :creator, :short_title ])
+                                                                    :short_title ])
     end
 
   end

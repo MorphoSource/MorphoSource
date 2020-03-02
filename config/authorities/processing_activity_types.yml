@@ -1,41 +1,58 @@
 terms:
-  - id: Reconstructed Tomography to Mesh
-    term: Reconstructed Tomography to Mesh
-  - id: Photos to Digital Elevation Model
-    term: Photos to Digital Elevation Model
-  - id: Photos to Sparse Point Cloud + Depth Map
-    term: Photos to Sparse Point Cloud + Depth Map
-  - id: Sparse Point Cloud + Depth Map to Dense Point Cloud
-    term: Sparse Point Cloud + Depth Map to Dense Point Cloud
-  - id: Photos to Sparse Mesh + Depth Map
-    term: Photos to Sparse Mesh + Depth Map
-  - id: Sparse Mesh + Depth Map to Mesh
-    term: Sparse Mesh + Depth Map to Mesh
-  - id: Photos to Dense Point Cloud
-    term: Photos to Dense Point Cloud
-  - id: Photos to Mesh
-    term: Photos to Mesh
-  - id: Mesh/Point Cloud Texturing
-    term: Mesh/Point Cloud Texturing
-  - id: Point Cloud to Mesh
-    term: Point Cloud to Mesh
-  - id: Mesh to Point Cloud
-    term: Mesh to Point Cloud
-  - id: Reconstruction
-    term: Reconstruction
-  - id: Smoothing/Noise Reduction
-    term: Smoothing/Noise Reduction
-  - id: Simplification
-    term: Simplification
-  - id: Histogram Editing
-    term: Histogram Editing
+  - id: Align Parts
+    term: Align Parts
+  - id: Background Removal and/or Masking
+    term: Background Removal and/or Masking
   - id: Bit Depth Change
     term: Bit Depth Change
-  - id: Image/Mesh Compression
-    term: Image/Mesh Compression
-  - id: Merge
-    term: Merge
   - id: Crop
     term: Crop
+  - id: Histogram Editing
+    term: Histogram Editing
+  - id: Image and/or Mesh Compression
+    term: Image and/or Mesh Compression
+  - id: Merge
+    term: Merge
+  - id: Mesh to Point Cloud
+    term: Mesh to Point Cloud
+  - id: Mesh and/or Point Cloud Texturing
+    term: Mesh and/or Point Cloud Texturing
   - id: Patch
     term: Patch
+  - id: Photos to Dense Point Cloud
+    term: Photos to Dense Point Cloud
+  - id: Photos to Digital Elevation Model
+    term: Photos to Digital Elevation Model
+  - id: Photos to Mesh
+    term: Photos to Mesh
+  - id: Photos to Sparse Mesh and Depth Map
+    term: Photos to Sparse Mesh and Depth Map
+  - id: Photos to Sparse Point Cloud and Depth Map
+    term: Photos to Sparse Point Cloud and Depth Map
+  - id: Point Cloud to Mesh
+    term: Point Cloud to Mesh
+  - id: Reconstructed Tomography to Mesh
+    term: Reconstructed Tomography to Mesh
+  - id: Reconstruction
+    term: Reconstruction
+  - id: Simplification
+    term: Simplification
+  - id: Smoothing and/or Noise Reduction
+    term: Smoothing/Noise Reduction
+  - id: Sparse Point Cloud and Depth Map to Dense Point Cloud
+    term: Sparse Point Cloud and Depth Map to Dense Point Cloud
+  - id: Sparse Mesh and Depth Map to Mesh
+    term: Sparse Mesh and Depth Map to Mesh
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+

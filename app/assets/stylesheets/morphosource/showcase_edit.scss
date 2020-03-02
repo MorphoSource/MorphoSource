@@ -1,5 +1,7 @@
 @import 'shared';
 
+/*    .hide {display: block !important} */
+
 /* NOTE: the styles below are shared between
    showcase edit page and hyrax edit page.  These styles will effect both pages 
    TODO: might need to move these to global style sheet later */
@@ -19,7 +21,8 @@ input.disabled {
   margin: inherit;
 }
 
-form[id^='edit_biological_specimen'] .select2-container {
+/* form[id^='edit_biological_specimen'] .select2-container { */
+.select2-container {
   width:100% !important;
 }
 
@@ -38,16 +41,17 @@ div.showcase-edit {
 
   h2 {
     font-size: 15px;
-    span {
-      padding:0;
-    }
     a.btn {
       float: right;
       margin: -5px -10px -7px 0;
       color: $button-font-color;
     }
   }
-
+  h2:not(.required-flag) {
+    span {
+      padding:0;
+    }    
+  }
   .tooltip-inner {
     text-align: left;
   }
@@ -91,7 +95,7 @@ div.showcase-edit {
   }
 
   .required-tag {
-    display: none;
+    display: none; /* hide the hyrax required tag (use required-flag instead) */
   }
 
   .required-flag, .recommended-flag {
@@ -126,8 +130,13 @@ div.showcase-edit {
   }
   
   .material-icons.tooltip-icon {
+    color: $font-color;
     font-size: 11px;
     margin-left: 3px;
+  }
+
+  .tooltip {
+    pointer-events: none; /* fix the boostrap tooltip flickering issue */
   }
 
   .glyphicon {
@@ -144,12 +153,34 @@ div.showcase-edit {
 
   .showcase-label {
     font-weight: bold;
+    i.parsed {
+      color: $font-color;
+      font-size: 11px;
+      margin-left: 3px;
+    }
   }
 
-  .btn-save {
-    min-width: 80px;
-    margin-right: 12px;
-    margin-bottom: 6px;
+  .showcase-label:not(.parsed) {
+    i.parsed {
+      display: none
+    }
+  }
+
+  .media-showcase .show-actions, 
+  .show-actions {
+    padding: 3.5vw 0;
+    .btn, .btn-save {
+      @media (max-width: $tablet-max) {
+        min-width: 76px;
+        margin-right: 8px;
+        margin-bottom: 6px;
+      }
+      @media (min-width: $desktop-min) {
+        min-width: 100px;
+        margin-right: 0;
+        margin-bottom: 6px;
+      }
+    }
   }
 
   .dropdown-toggle {
@@ -162,6 +193,17 @@ div.showcase-edit {
     margin-right: -15px;
   }
 
+  .panel-full-width .panel {
+    border: none;
+    margin-left: 0;
+    margin-right: 0;
+
+    .glyphicon {
+      margin-left: 0;
+      top: 9px;
+    }
+  }
+
   .nav-tabs {
     background-color: #efefef;
     padding-top: 20px;
@@ -172,13 +214,25 @@ div.showcase-edit {
     }
   }
 
+  /*
+  .listing li:not(.processing_activity_items) {
+    width: 200px !important; 
+  } */
 
-  .listing li {
-    width: 200px !important;
+  .processing_activity_items {
+    .field-controls {
+      vertical-align: top;
+      padding-top: 10px;
+    }
+    .row:not(:first-child) {
+      .showcase-label {
+        padding-left:30px;
+      }
+    }
   }
 
   .input-group-btn.field-controls .btn {
-    padding: 0;
+    padding: 0 0 0 .2em;
   }
 
   .content-block {
@@ -202,7 +256,7 @@ div.showcase-edit {
 
   .button-wrapper .btn {
     margin: 8px;
-    width: 170px;
+    min-width: 170px;
   }
 
   /* tab specific styles */
@@ -233,7 +287,58 @@ div.showcase-edit {
   } /* /object detail tab specific styles */
 
 
+  [class*="wrapper_for_"] {
+    li {
+      display:flex; 
+      flex-direction:row; 
+      justify-content:left;
+    }
+    input, select {
+      margin:1px;
+      border-radius: 5px;
+    }
+  }
 
-}
+  .wrapper_for_2 {
+    input, select {
+      width:45%;
+    }
+  }
 
+  .wrapper_for_3 {
+    input, select {
+      width:30%;
+    }
+  }
 
+  .not-editable {
+    text-align: center;
+    background-color: #edec9a;
+    padding:8px 80px;
+  }
+
+  /*
+  .editable {
+    text-align: center;
+    background-color: #9deba7;
+    padding:8px 80px;
+  } */
+
+  #parent-media .table-cell:not(.line) {
+    padding-top:4px;
+  }
+
+  .collapse-block {
+    .visibility {
+      font-size: 11px;
+    }
+    .set-access-controls .form-group {
+      padding: 0 .3em;
+      font-size: 11px;
+      input, select {
+        font-size: 11px;
+      }
+    }
+  }
+
+} /* / div.showcase-edit */

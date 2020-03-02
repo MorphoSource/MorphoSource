@@ -1,6 +1,8 @@
 class SubmissionsController < ApplicationController
   # Adds Hyrax behaviors to the controller.
   include Hyrax::WorksControllerBehavior
+  include MorphosourceHelper
+  include Morphosource::LinkedTeams::LinkedTeamsManagement
 
   load_and_authorize_resource
 
@@ -38,6 +40,8 @@ class SubmissionsController < ApplicationController
         # certain pages require getting back the search result before rendering
         if last_render == 'biospec'
           @docs = search_biospec
+          @idigbio = search_idigbio
+          @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])} unless (@docs.nil? || @idigbio.nil?)
         elsif last_render == 'cho'
           @docs = search_cho
         end
@@ -55,7 +59,9 @@ class SubmissionsController < ApplicationController
     # todo: is there a need to separate raw and derived flow in two if and else?
     if params['biospec_search'].present?
       @docs = search_biospec
-      if @docs.nil? || @docs.empty?
+      @idigbio = search_idigbio
+      @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])} unless (@docs.nil? || @idigbio.nil?)
+      if (@docs.nil? || @docs.empty?) && (@idigbio.nil? || @idigbio.empty?)
         # if no search result, user might need to go back to initial step
         @submission.saved_step = ""
       else
@@ -161,6 +167,28 @@ class SubmissionsController < ApplicationController
     @submission.biospec_id = 'new'
     store_submission
     biospec_model_params = Hyrax::BiologicalSpecimenForm.model_attributes(params[:biological_specimen])
+    session[:submission_biospec_create_params] = biospec_model_params
+    render_and_save 'device'
+  end
+
+  def stage_biological_specimen_from_idigbio
+    reinstantiate_submission
+    @submission.biospec_id = 'new'
+    # we also search for/stage the Taxonomy work here, since for IDigBio specimen creation we don't have separate steps
+    idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(params[:idigbio_id])
+    existing_bso = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params.clone)
+    if (!existing_bso.nil?) && existing_bso.any?
+      @submission.taxonomy_id = existing_bso.first.canonical_taxonomy.present? ? existing_bso.first.canonical_taxonomy.first : existing_bso.first.taxonomies.first.id
+      @submission.canonical_taxonomy_id = @submission.taxonomy_id if existing_bso.first.canonical_taxonomy.present?
+      store_submission
+    else
+      @submission.taxonomy_id = 'new'
+      @submission.canonical_taxonomy_id = @submission.taxonomy_id
+      store_submission
+      taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(ActionController::Parameters.new(idb_taxonomy_params))
+      session[:submission_taxonomy_create_params] = taxonomy_model_params
+    end
+    biospec_model_params = Hyrax::BiologicalSpecimenForm.model_attributes(ActionController::Parameters.new(Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(params[:idigbio_id])))
     session[:submission_biospec_create_params] = biospec_model_params
     render_and_save 'device'
   end
@@ -282,6 +310,9 @@ class SubmissionsController < ApplicationController
     end
     if @taxonomy_create_params.present?
       @submission.taxonomy_id = create_taxonomy(@taxonomy_create_params)
+      if @submission.canonical_taxonomy_id == 'new'
+        @submission.canonical_taxonomy_id = @submission.taxonomy_id
+      end
     end
     if @biospec_create_params.present?
       @submission.biospec_id = create_biological_specimen(@biospec_create_params)
@@ -314,6 +345,9 @@ class SubmissionsController < ApplicationController
     if @submission.taxonomy_id.present?
       parent_attributes.merge!({ '1' => { "id" => @submission.taxonomy_id, "_destroy" => "false" } })
     end
+    if @submission.canonical_taxonomy_id.present?
+      params.merge!('canonical_taxonomy' => [@submission.canonical_taxonomy_id])
+    end
     unless parent_attributes.empty?
       params.merge!('work_parents_attributes' => parent_attributes)
     end
@@ -333,13 +367,15 @@ class SubmissionsController < ApplicationController
 
   def create_device(params)
     parent_attributes = {}
-    if @submission.device_organization_id.present?
-      if @submission.device_organization_id == 'new_organization_id_to_be_created'
-        # user has selected the new organization which is waiting to be created
-        # at this point this new organization has been created.  set the id to the new organization id
-        @submission.device_organization_id = @submission.organization_id
+    if @submission.present?
+      if @submission.device_organization_id.present?
+        if @submission.device_organization_id == 'new_organization_id_to_be_created'
+          # user has selected the new organization which is waiting to be created
+          # at this point this new organization has been created.  set the id to the new organization id
+          @submission.device_organization_id = @submission.organization_id
+        end
+        parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
       end
-      parent_attributes.merge!({ '0' => { "id" => @submission.device_organization_id, "_destroy" => "false" } })
     end
     unless parent_attributes.empty?
       params.merge!('work_parents_attributes' => parent_attributes)
@@ -429,7 +465,7 @@ class SubmissionsController < ApplicationController
       organization_model_params = Hyrax::OrganizationForm.model_attributes(params[:organization])
       new_organization_id = create_organization(organization_model_params)
     rescue
-      new_organization_id = nil    
+      new_organization_id = nil
     end
 
     if new_organization_id.present?
@@ -440,10 +476,12 @@ class SubmissionsController < ApplicationController
         :id => new_organization_id,
         :title => new_organization.title.first,
         :institution_code => new_organization.institution_code.first,
-        :description => new_organization.description.first, 
-        :address => new_organization.address.first, 
-        :city => new_organization.city.first, 
-        :state_province => new_organization.state_province.first, 
+        :institution_name => new_organization.institution_name.first,
+        :collection_code => new_organization.collection_code.first,
+        :description => new_organization.description.first,
+        :address => new_organization.address.first,
+        :city => new_organization.city.first,
+        :state_province => new_organization.state_province.first,
         :country => new_organization.country.first
       }
     else
@@ -451,12 +489,12 @@ class SubmissionsController < ApplicationController
       message = 'There is a problem creating the organization.'
       new_work = {}
     end
-    response_object = { 
+    response_object = {
       :work => new_work,
       :status => status,
       :message => message
     }
-    render :json => response_object 
+    render :json => response_object
   end
 
   def new_taxonomy
@@ -470,7 +508,7 @@ class SubmissionsController < ApplicationController
       taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(params[:taxonomy])
       new_taxonomy_id = create_taxonomy(taxonomy_model_params)
     rescue
-      new_taxonomy_id = nil    
+      new_taxonomy_id = nil
     end
 
     if new_taxonomy_id.present?
@@ -497,19 +535,94 @@ class SubmissionsController < ApplicationController
         :taxonomy_subgenus => new_taxonomy.taxonomy_subgenus.first,
         :taxonomy_species => new_taxonomy.taxonomy_species.first,
         :taxonomy_subspecies => new_taxonomy.taxonomy_subspecies.first,
-        :depositor => new_taxonomy.depositor        
+        :depositor => new_taxonomy.depositor
       }
     else
       status = 'FAIL'
       message = 'There is a problem creating the taxonomy.'
       new_work = {}
     end
-    response_object = { 
+    response_object = {
       :work => new_work,
       :status => status,
       :message => message
     }
-    render :json => response_object 
+    render :json => response_object
+  end
+
+  def new_device_submit
+    # this method is expected to be called from a form in modal, or an ajax post
+    begin
+      device_model_params = Hyrax::DeviceForm.model_attributes(params[:device])
+      new_device_id = create_device(device_model_params)
+    rescue Exception => ex
+      new_device_id = nil
+      exception_message = "Exception: #{ex.class}, #{ex.message}"
+    end
+    if new_device_id.present?
+      status = 'OK'
+      message = 'New device created'
+      new_device = Device.where('id' => new_device_id).first
+      new_work = {
+        :id => new_device_id,
+        :title => new_device.title.first,
+        :creator => new_device.creator.first,
+        :modality => new_device.modality.first,
+        :description => new_device.description.first,
+        :organization_institution => organization_institution(new_device_id)
+      }
+    else
+      status = 'FAIL'
+      message = 'There is a problem creating the device. ' + exception_message
+      new_work = {}
+    end
+    response_object = {
+      :work => new_work,
+      :status => status,
+      :message => message
+    }
+    render :json => response_object
+  end
+
+  def new_processing_event_submit
+    # this method is expected to be called from a form in modal, or an ajax post
+    begin
+      processing_event_model_params = Hyrax::ProcessingEventForm.model_attributes(params[:processing_event])
+      new_processing_event_id = create_work(ProcessingEvent, processing_event_model_params)
+    rescue Exception => ex
+      new_processing_event_id = nil
+      exception_message = "Exception: #{ex.class}, #{ex.message}"
+    end
+    if new_processing_event_id.present?
+      if params['child_media_id'].present?
+        # update the child media (by setting this PE as a parent)
+        # child < PE < parent
+        child_media_id = params['child_media_id']
+        child_media = Media.find(child_media_id)
+        processing_event = ::ActiveFedora::Base.find(new_processing_event_id)
+        processing_event.ordered_members << child_media
+        processing_event.save!
+        child_media.save!
+        new_processing_event_updates(child_media)
+      end
+      status = 'OK'
+      message = 'New processing_event created'
+      new_processing_event = ProcessingEvent.where('id' => new_processing_event_id).first
+      new_work = {
+        :id => new_processing_event_id,
+        :title => new_processing_event.title.first
+      }
+    else
+      status = 'FAIL'
+      message = 'There is a problem creating the processing_event. ' + exception_message
+      new_work = {}
+    end
+    response_object = {
+      :work => new_work,
+      :status => status,
+      :message => message
+    }
+    render :json => response_object
   end
 
   private
@@ -537,11 +650,10 @@ class SubmissionsController < ApplicationController
   def create_work(model, form_params)
     curation_concern = model.new
     attributes_for_actor = form_params
-    unless model == Media
-      attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-    end
     if model == Media
       set_visibilities(attributes_for_actor)
+    else
+      attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
     end
     env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
     Hyrax::CurationConcern.actor.create(env)
@@ -615,6 +727,15 @@ class SubmissionsController < ApplicationController
     Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, search_params)
   end
 
+  def search_idigbio
+    search_params = {}
+    biospec_search_params = submission_params.select{ |k,v| k.match(/^biospec_search_/) }.select{ |k,v| v.present? }
+    biospec_search_params.each do |k,v|
+      search_params[k.sub('biospec_search_', '')] = v
+    end
+    Morphosource::IDigBioSearchService.call(search_params)
+  end
+
   def search_cho
     search_params = {}
     cho_search_params = submission_params.select{ |k,v| k.match(/^cho_search_/) }.select{ |k,v| v.present? }
@@ -635,6 +756,7 @@ class SubmissionsController < ApplicationController
                               parent_media_how_to_proceed: @submission.parent_media_how_to_proceed,
                               parent_media_list: @submission.parent_media_list,
                               taxonomy_id: @submission.taxonomy_id,
+                              canonical_taxonomy_id: @submission.canonical_taxonomy_id,
                               cho_search_collection_code: @submission.cho_search_collection_code,
                               saved_step: @submission.saved_step
       }
@@ -668,6 +790,7 @@ class SubmissionsController < ApplicationController
                                           :parent_media_search,
                                           :parent_media_list,
                                           :taxonomy_search,
+                                          :canonical_taxonomy_id,
                                           :taxonomy_id
       )
   end

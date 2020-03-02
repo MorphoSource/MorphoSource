@@ -95,7 +95,6 @@ RSpec.describe SubmissionsController, type: :controller do
             title: ['XTekCT 100'],
             creator: ['Nikon'],
             modality: ['MedicalXRayComputedTomography'],
-            facility: ['Duke SMIF'],
             description: ['A sample description']
         })
         @request.session['submission'] = {}
@@ -320,10 +319,10 @@ RSpec.describe SubmissionsController, type: :controller do
   describe '#new_organization_submit' do
     describe 'successfully created a new organization' do
       let(:form_attributes) do
-        { 'id' => 'abc', 
-          'title' => 'Organization', 
+        { 'id' => 'abc',
+          'title' => 'Organization',
           'institution_code' => 'inst',
-          'description' => 'test', 
+          'description' => 'test',
           'address' => 'test',
           'city' => 'test',
           'state_province' => 'test',
@@ -333,14 +332,14 @@ RSpec.describe SubmissionsController, type: :controller do
       let(:form_params) { { organization: form_attributes } }
       it 'return organization data in json response' do
         post :new_organization_submit, params: form_params
-        
+
         expect(JSON.parse(response.body)).to include_json(
           status: 'OK',
           message: 'New organization created',
           work: {
             title: 'Organization',
             institution_code: 'inst',
-            description: 'test', 
+            description: 'test',
             address: 'test',
             city: 'test',
             state_province: 'test',
@@ -354,7 +353,7 @@ RSpec.describe SubmissionsController, type: :controller do
       let(:form_params) { { organization: {} } } # no form attribute will throw an exception
       it 'return failure status in json response' do
         post :new_organization_submit, params: form_params
-        
+
         expect(JSON.parse(response.body)).to include_json(
           status: 'FAIL',
           message: 'There is a problem creating the organization.',
@@ -373,7 +372,7 @@ RSpec.describe SubmissionsController, type: :controller do
       let(:form_params) { { taxonomy: form_attributes } }
       it 'return taxonomy data in json response' do
         post :new_taxonomy_submit, params: form_params
-        
+
         expect(JSON.parse(response.body)).to include_json(
           status: 'OK',
           message: 'New Taxonomy created',
@@ -389,10 +388,94 @@ RSpec.describe SubmissionsController, type: :controller do
       let(:form_params) { { taxonomy: {} } } # no form attribute will throw an exception
       it 'return failure status in json response' do
         post :new_taxonomy_submit, params: form_params
-        
+
         expect(JSON.parse(response.body)).to include_json(
           status: 'FAIL',
           message: 'There is a problem creating the taxonomy.',
+          work: {}
+        )
+      end
+    end
+  end
+
+  describe '#new_device_submit' do
+    describe 'successfully created a new device' do
+      let(:form_attributes) do
+        { 'id' => 'abc',
+          'title' => 'device',
+          'description' => 'test'
+        }
+      end
+      let(:form_params) { { device: form_attributes } }
+      it 'return device data in json response' do
+        post :new_device_submit, params: form_params
+        expect(JSON.parse(response.body)).to include_json(
+          status: 'OK',
+          message: 'New device created',
+          work: {
+            title: 'device',
+            description: 'test'
+          }
+        )
+      end
+    end
+
+    describe 'failed to create a new device' do
+      let(:form_params) { { device: {} } } # no form attribute will throw an exception
+      it 'return failure status in json response' do
+        post :new_device_submit, params: form_params
+
+        expect(JSON.parse(response.body)).to include_json(
+          status: 'FAIL',
+          message: "There is a problem creating the device. Exception: NoMethodError, undefined method `[]' for nil:NilClass",
+          work: {}
+        )
+      end
+    end
+  end
+
+
+  describe '#new_processing_event_submit' do
+    describe 'successfully created a new processing_event' do
+      let(:form_attributes) do
+        { 'id' => 'abc',
+          'title' => 'test processing event'
+        }
+      end
+      let(:form_params) { { processing_event: form_attributes } }
+      it 'return processing_event data in json response' do
+        post :new_processing_event_submit, params: form_params
+        expect(JSON.parse(response.body)).to include_json(
+          status: 'OK',
+          message: 'New processing_event created',
+          work: {
+            title: 'Processing Event (No Event Date)'
+          }
+        )
+      end
+      context 'with a child media' do
+        let(:media) { Media.new(id: 'child_media', title: ['child media']) }
+        let(:form_params) { { processing_event: form_attributes, child_media_id: media.id} }
+
+        before do
+          allow(Media).to receive(:find).with('child_media').and_return(media)
+        end
+
+        it 'calls #new_processing_event_media_updates' do
+          expect(subject).to receive(:new_processing_event_updates).with(media)
+          post :new_processing_event_submit, params: form_params
+        end
+      end
+    end
+
+    describe 'failed to create a new processing_event' do
+      let(:form_params) { { processing_event: {} } } # no form attribute will throw an exception
+      it 'return failure status in json response' do
+        post :new_processing_event_submit, params: form_params
+
+        expect(JSON.parse(response.body)).to include_json(
+          status: 'FAIL',
+          message: "There is a problem creating the processing_event. Exception: NoMethodError, undefined method `[]' for nil:NilClass",
           work: {}
         )
       end

@@ -1,0 +1,19 @@
+<div id="select_device">
+  <h2>SELECT DEVICE</h2>
+
+  <div class="form-inline">
+    <%= i.input_field :find_parent_work,
+                      prompt: :translate,
+                      autocomplete: 'off',
+                      data: {
+                        autocomplete: 'work',
+                        'autocomplete-url' => find_device_autocomplete_url()
+                      } %>
+  </div>
+
+  <div class="text-center button-wrapper">
+    <a class="btn btn-md btn-primary" id="btn-add-device" data-behavior="add-relationship">Select device</a>
+    <a class="btn btn-md btn-primary" id="btn_new_device">Create new device</a>
+  </div>
+</div>
+

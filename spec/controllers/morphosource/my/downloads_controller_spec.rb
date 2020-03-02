@@ -43,10 +43,10 @@ RSpec.describe Morphosource::My::DownloadsController, :type => :controller  do
         get :batch_create, params: {:batch_document_ids => [cartItem4.id]}
         item = CartItem.last
         expect(item.work_id).to eq(work4.id)
-        expect(item.user_id).to eq(current_user.id)
+        expect(item.user_id).to eq(current_user.ms_id)
         expect(item.in_cart).to be(true)
         expect(item.restricted).to be(work4.restricted?)
-        expect(item.approver).to eq(work4.depositor)
+        expect(item.approver_id).to eq(work4.depositor)
       end
 
       context 'the user selects duplicate works' do
@@ -67,7 +67,7 @@ RSpec.describe Morphosource::My::DownloadsController, :type => :controller  do
 
         it 'has the correct flash message' do
           get :batch_create, params: {:batch_document_ids => [cartItem4.id,cartItem10.id,cartItem11.id]}
-          expect(response.flash[:notice]).to eq("1 Item Added to Cart; 2 Items: Mddd: Test Media Work, Mddd: Test Media Work Already in Your Cart.")
+          expect(response.flash[:notice]).to eq("1 Item Added to Cart; 2 Items: Test Media Work, Test Media Work Already in Your Cart.")
         end
       end
     end

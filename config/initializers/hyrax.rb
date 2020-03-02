@@ -85,7 +85,7 @@ Hyrax.config do |config|
   # config.persistent_hostpath = 'http://localhost/files/'
 
   # If you have ffmpeg installed and want to transcode audio and video set to true
-  # config.enable_ffmpeg = false
+  config.enable_ffmpeg = true
 
   # Hyrax uses NOIDs for files and collections instead of Fedora UUIDs
   # where NOID = 10-character string and UUID = 32-character string w/ hyphens
@@ -149,6 +149,12 @@ Hyrax.config do |config|
   # Location autocomplete uses geonames to search for named regions
   # Username for connecting to geonames
   config.geonames_username = Morphosource.geonames_user
+
+  # for initial setup accounts
+  config.ms_test_usr = Morphosource.ms_test_usr
+  config.ms_test_pw = Morphosource.ms_test_pw
+  config.ms_init_pw = Morphosource.ms_init_pw
+  config.ms_init_usr = Morphosource.ms_init_usr
 
   # Should the acceptance of the licence agreement be active (checkbox), or
   # implied when the save button is pressed? Set to true for active
@@ -252,7 +258,7 @@ Hyrax.config do |config|
   # config.owner_permission_levels = { "Edit Access" => "edit" }
 
   # Path to the ffmpeg tool
-  # config.ffmpeg_path = 'ffmpeg'
+  config.ffmpeg_path = 'ffmpeg'
 
   # Max length of FITS messages to display in UI
   # config.fits_message_length = 5
@@ -288,15 +294,17 @@ Hyrax.config do |config|
   # config.bagit_dir = "tmp/descriptions"
 
   # If browse-everything has been configured, load the configs.  Otherwise, set to nil.
-  begin
-    if defined? BrowseEverything
-      config.browse_everything = BrowseEverything.config
-    else
-      Rails.logger.warn "BrowseEverything is not installed"
-    end
-  rescue Errno::ENOENT
-    config.browse_everything = nil
-  end
+  #begin
+  #  if defined? BrowseEverything
+  #    config.browse_everything = BrowseEverything.config
+  #  else
+  #    Rails.logger.warn "BrowseEverything is not installed"
+  #  end
+  #rescue Errno::ENOENT
+  #  config.browse_everything = nil
+  #end
+
+  config.browse_everything = nil
 
   ## Whitelist all directories which can be used to ingest from the local file
   # system.

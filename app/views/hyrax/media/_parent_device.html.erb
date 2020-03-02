@@ -1,0 +1,25 @@
+<div class="col-sm-12 not-editable">
+    <p>Device settings can not be edited. This device was used to image parent 
+<%= link_to(@presenter.direct_parent_first_member.link_name, contextual_path(@presenter.direct_parent_first_member, @presenter)) %>. <br />
+To change these setting, edit parent media</p>
+</div>
+<div class="col-sm-6">
+  <div class="content-block">
+  	<h2>CURRENT DEVICE</h2>
+
+      <div class="content-block">
+        <%= @presenter.attribute_to_html(:device_organization_institution, label: 'Organization', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(:device, label: 'Model', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(:device_manufacturer, label: 'Manufacturer', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(:imaging_event_modality, label: 'Modality', render_as: :showcase_default, css_classes: 'break-all', include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(:device_description, label: 'Description', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+      </div>
+
+  </div>
+</div>
+<div class="col-sm-6">
+  <div class="content-block">
+
+
+  </div>
+</div>

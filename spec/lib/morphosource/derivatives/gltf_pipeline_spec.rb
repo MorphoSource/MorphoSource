@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Morphosource::Derivatives::GltfPipeline do
+RSpec.describe Morphosource::Derivatives::GltfPipeline, :skiptravis => true do
 	let(:source_path) { File.join(fixture_path, 'bunny/bunny.glb') }
 	let(:out_path) { Rails.root.join('tmp', 'd45da83d-3a6c-46ac-9888-5b9cefb032b6.glb') }
 

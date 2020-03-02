@@ -1,7 +1,6 @@
 class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
-  after_save :add_id_to_title
 
   self.work_requires_files = true
 
@@ -83,6 +82,22 @@ class Media < Morphosource::Works::Base
       #TODO: remove after migrated media have fileset_accessibility values
     when accessibility == "" || accessibility == nil
       "open"
+    end
+  end
+
+  def specimens
+    ancestors.select(&:specimen?)
+  end
+
+  def organizations
+    specimens.each_with_object([]) do |s, org|
+      org += s.organizations
+    end
+  end
+
+  def organizations_teams
+    organizations.each_with_object([]) do |org, teams|
+      teams += Collection.find(org.team_id.first)
     end
   end
 

@@ -8,7 +8,6 @@ RSpec.describe 'hyrax/devices/_attribute_rows.html.erb', type: :view do
         title: ['XTekCT 100'],
         creator: ['Nikon'],
         modality: ['MedicalXRayComputedTomography'],
-        facility: ['Duke SMIF'],
         description: ['A sample description']
     })
 	end
@@ -25,8 +24,4 @@ RSpec.describe 'hyrax/devices/_attribute_rows.html.erb', type: :view do
   	expect(page).to have_content("MedicalXRayComputedTomography")
   end
 
-  it "shows facility info" do
-  	expect(page).to have_content("Facility")
-  	expect(page).to have_content("Duke SMIF")
-  end
 end

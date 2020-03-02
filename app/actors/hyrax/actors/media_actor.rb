@@ -4,9 +4,11 @@ module Hyrax
   module Actors
     class MediaActor < Hyrax::Actors::BaseActor
       include MorphosourceHelper
+      include Morphosource::LinkedTeams::LinkedTeamsManagement
 
       def create(env)
         env.attributes['title'] = [ generated_title(env) ]
+        add_team_access(env)
         super
       end
 
@@ -32,10 +34,16 @@ module Hyrax
             end
             ie_modality << "#{work_parent_string}"
           end
+        elsif id.present?
+          # todo: might need to handle if processing event exist?
+          imaging_event = ImagingEvent.where('member_ids_ssim' => id).first
+          if imaging_event.present?
+            ie_modality << imaging_event.ie_modality.first
+          end
         end
-        # MorphosourceHelper's generated_media_title method is shared by different actors 
+        # MorphosourceHelper's generated_media_title method is shared by different actors
         # (e.g. media actor, IE actor)
-        updated_title = generated_media_title(id, part, media_type, ie_modality)
+        updated_title = generated_media_title(part, media_type, ie_modality)
         updated_title
       end
 
@@ -49,6 +57,24 @@ module Hyrax
         @modalities_service ||= Morphosource::ModalitiesService.new
       end
 
+      def add_team_access(env)
+        return unless env.attributes[:work_parents_attributes]
+
+        find_parent(env)
+        return if new_orgs.empty?
+
+        add_organization_team_access([env.curation_concern])
+      end
+
+      def new_specimens
+        ancestors = @parent.ancestors
+        select_specimens(ancestors)
+      end
+
+      def find_parent(env)
+        parent_id = env.attributes[:work_parents_attributes].values.first['id']
+        @parent = ActiveFedora::Base.find(parent_id)
+      end
     end
   end
 end

@@ -1,14 +1,4 @@
-<%# Form UI behavior code and details;
-Code:
-  app/assets/javascripts/hyrax/relationships
-CSS:
-  [data-behavior="remove-relationship"] : Button to remove its parent TR from the table
-  [data-behavior="add-relationship"] : Button to clone its parent TR and inject a new row into the table
-  .message.has-warning : Used to display UI errors related to input values and server errors
-HTML Properties:
-  table:
-    [data-behavior="child-relationships"] : allows the javascript to be initialized
-    data-param-key : the parameter key value for this model type %>
+
 <h2>COLLECTIONS PHYSICAL OBJECT BELONGS TO</h2>
 
 <div class="form-group" data-behavior="collection-relationships" data-param-key="<%= f.object.model_name.param_key %>" data-members="<%= f.object.member_of_collections_json %>">

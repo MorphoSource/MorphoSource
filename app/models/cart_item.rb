@@ -1,20 +1,11 @@
 class CartItem < ApplicationRecord
-  belongs_to :user
 
-  before_create :set_approver
+  belongs_to :user, foreign_key: :user_id, primary_key: :ms_id
+
+  belongs_to :approver, class_name: 'User', foreign_key: :approver_id, primary_key: :ms_id
+
+  before_validation :set_approver
   before_create :set_restriction
-
-  def requester
-    media_cart.user
-  end
-
-  def requester_email
-    requester.email
-  end
-
-  def requester_affiliation
-    requester.affiliation
-  end
 
   def unrestricted?
     !restricted?
@@ -68,10 +59,6 @@ class CartItem < ApplicationRecord
     date_cleared != nil
   end
 
-  def approving_user
-    User.find_by email: approver
-  end
-
   def work
     Media.find(work_id)
   end
@@ -87,7 +74,7 @@ class CartItem < ApplicationRecord
 
   # for now, approver = depositor
   def set_approver
-    self.approver = work.depositor
+    self.approver_id = approver_id || work.depositor
   end
 
   def set_restriction

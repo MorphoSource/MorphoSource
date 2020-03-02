@@ -66,7 +66,6 @@ RSpec.describe ::SolrDocument, type: :model do
 				title: ['XTekCT 100'],
 				creator: ['Nikon'],
 				modality: ['MedicalXRayComputedTomography'],
-				facility: ['Duke SMIF'],
 				description: ['A sample description']
 			})
 		end
@@ -77,8 +76,5 @@ RSpec.describe ::SolrDocument, type: :model do
 			expect(subject.modality.first).to eq('MedicalXRayComputedTomography')
 		end
 
-		it "return facility" do
-			expect(subject.facility.first).to eq('Duke SMIF')
-		end
   end
 end

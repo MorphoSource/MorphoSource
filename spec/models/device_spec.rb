@@ -8,7 +8,7 @@ RSpec.describe Device do
 
   describe "metadata attributes" do
     it "include the appropriate terms" do
-      expect(subject.attributes).to include('title', 'creator', 'modality', 'facility', 'description')
+      expect(subject.attributes).to include('title', 'creator', 'modality', 'description')
     end
   end
 
@@ -29,7 +29,6 @@ RSpec.describe Device do
         title: ['XTekCT 100'],
         creator: ['Nikon'],
         modality: ['MedicalXRayComputedTomography'],
-        facility: ['Duke SMIF'],
         description: ['A sample description']
       })
     }
@@ -41,9 +40,6 @@ RSpec.describe Device do
     end
     it "creates with correct modality" do
       expect(subject.modality.first).to eq('MedicalXRayComputedTomography')
-    end
-    it "creates with correct facility" do
-      expect(subject.facility.first).to eq('Duke SMIF')
     end
     it "creates with correct description" do
       expect(subject.description.first).to eq('A sample description')

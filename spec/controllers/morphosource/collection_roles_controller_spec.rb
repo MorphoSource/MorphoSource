@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe CollectionRolesController, type: :controller do
@@ -17,9 +19,12 @@ RSpec.describe CollectionRolesController, type: :controller do
   end
 
   describe '#update_collection_groups' do
+    before do
+      team.create_collection_groups
+    end
     context 'current_user is not a collection manager' do
       before do
-        allow(subject).to receive(:can?).with(:manage, team).and_return(false)
+        allow(subject).to receive(:can?).with(:edit, team).and_return(false)
       end
       let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: team.id } }
 
@@ -27,10 +32,12 @@ RSpec.describe CollectionRolesController, type: :controller do
         expect { process :update_collection_groups, method: :post, params: params }.not_to change { team.group_members.count }
       end
     end
+
     context 'adding an individual user' do
       let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: '', agent_id: another_user.ms_id }, id: team.id } }
       before do
-        allow(subject).to receive(:can?).with(:manage, team).and_return(true)
+        allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+        allow(subject).to receive(:update_subcollections).and_return(true)
       end
 
       context 'manager adds another user as a manager' do
@@ -82,7 +89,8 @@ RSpec.describe CollectionRolesController, type: :controller do
           group.users << another_user
           group.save
         end
-        allow(subject).to receive(:can?).with(:manage, team).and_return(true)
+        allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+        allow(subject).to receive(:update_subcollections).and_return(true)
       end
 
       context 'manager removes another user as a manager' do
@@ -119,7 +127,8 @@ RSpec.describe CollectionRolesController, type: :controller do
     context 'moving users to different roles' do
       let(:params) { { collection_roles: { agent_type: 'user', new_access: '', access: '', agent_id: another_user.ms_id }, id: team.id } }
       before do
-        allow(subject).to receive(:can?).with(:manage, team).and_return(true)
+        allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+        allow(subject).to receive(:update_subcollections).and_return(true)
       end
       context 'manager moves a user from manager to depositor' do
         before do
@@ -206,14 +215,16 @@ RSpec.describe CollectionRolesController, type: :controller do
       let(:user3)   { User.create(email: 'blah@blah.com', password: 'password') }
 
       before do
-        allow(subject).to receive(:can?).with(:manage, team).and_return(true)
-        allow(subject).to receive(:can?).with(:manage, team2).and_return(true)
+        allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+        allow(subject).to receive(:can?).with(:edit, team2).and_return(true)
         allow(team2).to receive(:group_members).and_return([another_user, user3])
+        allow(subject).to receive(:update_subcollections).and_return(true)
+        team2.create_collection_groups
       end
 
       context 'collection manager does not manage the other team' do
         before do
-          allow(subject).to receive(:can?).with(:manage, team2).and_return(false)
+          allow(subject).to receive(:can?).with(:edit, team2).and_return(false)
           params[:collection_roles][:access] = 'viewers'
         end
         it "does not add the other team's members to the collection" do
@@ -261,6 +272,220 @@ RSpec.describe CollectionRolesController, type: :controller do
           post :update_collection_groups, params: params
           expect(team.viewers).to include(user3)
           expect(team.viewers).not_to include(another_user)
+        end
+      end
+    end
+
+    context 'team has subcollections' do
+      let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 99) }
+      let(:project_a) { Collection.create(title: ['Project_A'], collection_type_gid: project_collection_type.gid, depositor: manager.ms_id) }
+      let(:project_b) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: manager.ms_id) }
+
+      let(:projects_solr) { [SolrDocument.new(project_a.to_solr), SolrDocument.new(project_b.to_solr)] }
+
+      let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: '', agent_id: another_user.ms_id }, id: team.id } }
+
+      before do
+        project_a.create_collection_groups
+        project_b.create_collection_groups
+        allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+        allow(subject).to receive(:find_subcollections).and_return(true)
+        subject.instance_variable_set(:@subcollection_docs, projects_solr)
+        allow(Collection).to receive(:find).with(project_a.id).and_return(project_a)
+        allow(Collection).to receive(:find).with(project_b.id).and_return(project_b)
+      end
+
+      context 'manager adds another user as a manager' do
+        before do
+          params[:collection_roles][:access] = 'managers'
+        end
+        it "adds the user to the subcollections' manager role" do
+          post :update_collection_groups, params: params
+          expect(project_a.managers).to include(another_user)
+          expect(project_b.managers).to include(another_user)
+        end
+      end
+
+      context 'manager adds another user as a depositor' do
+        before do
+          params[:collection_roles][:access] = 'depositors'
+        end
+        it "adds the user to the subcollections' depositor role" do
+          post :update_collection_groups, params: params
+          expect(project_a.depositors).to include(another_user)
+          expect(project_b.depositors).to include(another_user)
+        end
+      end
+
+      context 'manager adds another user as a viewer' do
+        before do
+          params[:collection_roles][:access] = 'viewers'
+        end
+        it "adds the user to the subcollections' viewer role" do
+          post :update_collection_groups, params: params
+          expect(project_a.viewers).to include(another_user)
+          expect(project_b.viewers).to include(another_user)
+        end
+      end
+
+      context 'manager removes a user from the manager role' do
+        before do
+          params[:collection_roles][:access] = 'managers'
+          params[:collection_roles][:new_access] = 'remove'
+          [team, project_a, project_b].each do |collection|
+            collection.managers << another_user
+            collection.managers_group.save
+          end
+        end
+        it "removes the user to the subcollections' manager role" do
+          post :update_collection_groups, params: params
+          expect(project_a.managers).not_to include(another_user)
+          expect(project_b.managers).not_to include(another_user)
+        end
+      end
+
+      context 'manager removes a user from the depositor role' do
+        before do
+          params[:collection_roles][:access] = 'depositors'
+          params[:collection_roles][:new_access] = 'remove'
+          [team, project_a, project_b].each do |collection|
+            collection.depositors << another_user
+            collection.depositors_group.save
+          end
+        end
+        it "removes the user to the subcollections' depositor role" do
+          post :update_collection_groups, params: params
+          expect(project_a.depositors).not_to include(another_user)
+          expect(project_b.depositors).not_to include(another_user)
+        end
+      end
+
+      context 'manager removes a user from the viewer role' do
+        before do
+          params[:collection_roles][:access] = 'viewers'
+          params[:collection_roles][:new_access] = 'remove'
+          [team, project_a, project_b].each do |collection|
+            collection.viewers << another_user
+            collection.viewers_group.save
+          end
+        end
+        it "removes the user to the subcollections' viewer role" do
+          post :update_collection_groups, params: params
+          expect(project_a.viewers).not_to include(another_user)
+          expect(project_b.viewers).not_to include(another_user)
+        end
+      end
+
+      context 'manager adds a user to the depositor role, one subcollection has the user already as a manager, the other has the user already as a viewer' do
+        before do
+          params[:collection_roles][:access] = 'depositors'
+          project_a.managers << another_user
+          project_a.managers_group.save
+          project_b.viewers << another_user
+          project_b.viewers_group.save
+        end
+
+        it 'adds the user to the team, and moves the user to depositor access for each subcollection' do
+          post :update_collection_groups, params: params
+          expect(team.depositors).to include(another_user)
+          expect(project_a.depositors).to include(another_user)
+          expect(project_a.managers).not_to include(another_user)
+          expect(project_b.depositors).to include(another_user)
+          expect(project_b.viewers).not_to include(another_user)
+        end
+      end
+
+      context 'manager adds another team to managers access' do
+        let(:params)  { { collection_roles: { agent_type: 'group', access: '', team_collection_id: team2.id }, id: team.id } }
+        let(:user3)   { User.create(email: 'blah@blah.com', password: 'password') }
+        let(:user4)   { User.create(email: 'user4@email.com', password: 'password') }
+        let(:team_2_members) { [another_user, user3, user4] }
+        let(:all_users) { [manager, another_user, user3, user4] }
+
+        before do
+          params[:collection_roles][:access] = 'managers'
+          allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+          allow(subject).to receive(:can?).with(:edit, team2).and_return(true)
+          allow(team2).to receive(:group_members).and_return(team_2_members)
+        end
+
+        it 'adds the other team members to subcollection managers' do
+          post :update_collection_groups, params: params
+          expect(team.managers).to match_array(all_users)
+          expect(project_a.managers).to match_array(all_users)
+          expect(project_b.managers).to match_array(all_users)
+        end
+      end
+
+      context 'manager adds another team to depositors access' do
+        let(:params)  { { collection_roles: { agent_type: 'group', access: '', team_collection_id: team2.id }, id: team.id } }
+        let(:user3)   { User.create(email: 'blah@blah.com', password: 'password') }
+        let(:user4)   { User.create(email: 'user4@email.com', password: 'password') }
+        let(:team_2_members) { [another_user, user3, user4] }
+        let(:all_users) { [manager, another_user, user3, user4] }
+
+        before do
+          params[:collection_roles][:access] = 'depositors'
+          allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+          allow(subject).to receive(:can?).with(:edit, team2).and_return(true)
+          allow(team2).to receive(:group_members).and_return(team_2_members)
+        end
+
+        it 'adds the other team members to subcollection managers' do
+          post :update_collection_groups, params: params
+          expect(team.depositors).to match_array(team_2_members)
+          expect(project_a.depositors).to match_array(team_2_members)
+          expect(project_b.depositors).to match_array(team_2_members)
+        end
+      end
+
+      context 'manager adds another team to viewers access' do
+        let(:params)  { { collection_roles: { agent_type: 'group', access: '', team_collection_id: team2.id }, id: team.id } }
+        let(:user3)   { User.create(email: 'blah@blah.com', password: 'password') }
+        let(:user4)   { User.create(email: 'user4@email.com', password: 'password') }
+        let(:team_2_members) { [another_user, user3, user4] }
+        let(:all_users) { [manager, another_user, user3, user4] }
+
+        before do
+          params[:collection_roles][:access] = 'viewers'
+          allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+          allow(subject).to receive(:can?).with(:edit, team2).and_return(true)
+          allow(team2).to receive(:group_members).and_return(team_2_members)
+        end
+
+        it 'adds the other team members to subcollection managers' do
+          post :update_collection_groups, params: params
+          expect(team.viewers).to match_array(team_2_members)
+          expect(project_a.viewers).to match_array(team_2_members)
+          expect(project_b.viewers).to match_array(team_2_members)
+        end
+      end
+
+      context 'manager adds another team to depositors access, the subcollections already have users from the other team in access roles' do
+        let(:params)  { { collection_roles: { agent_type: 'group', access: '', team_collection_id: team2.id }, id: team.id } }
+        let(:user3)   { User.create(email: 'blah@blah.com', password: 'password') }
+        let(:user4)   { User.create(email: 'user4@email.com', password: 'password') }
+        let(:team_2_members) { [another_user, user3, user4] }
+        let(:all_users) { [manager, another_user, user3, user4] }
+
+        before do
+          params[:collection_roles][:access] = 'depositors'
+          allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+          allow(subject).to receive(:can?).with(:edit, team2).and_return(true)
+          allow(team2).to receive(:group_members).and_return(team_2_members)
+          project_a.managers << user3 << user4
+          project_a.managers_group.save
+          project_b.viewers << user3 << user4
+          project_b.viewers_group.save
+        end
+
+        it 'adds the other team members to subcollection depositors, and removes their previous access roles' do
+          post :update_collection_groups, params: params
+          expect(team.depositors).to include(user3, user4)
+          expect(project_a.depositors).to include(user3, user4)
+          expect(project_a.managers).not_to include(user3, user4)
+          expect(project_b.depositors).to include(user3, user4)
+          expect(project_b.viewers).not_to include(user3, user4)
         end
       end
     end

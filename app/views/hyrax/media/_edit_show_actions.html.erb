@@ -1,0 +1,44 @@
+<div class="show-actions">
+  <div class="btn-group">
+    <% if presenter.editor? %>
+
+      <%= f.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if f.object.persisted? %>
+      <%= f.submit class: 'btn btn-primary btn-save btn-save-media', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_with_files", value: "Save", data: { :disable_with => false } %>
+      <%# Provide immediate feedback after the form is submitted while the subsequent page is loading 
+          todo: remove later if not needed
+      <div class="panel-footer hidden">
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-complete active">
+          <span id="form-feedback" aria-live="assertive">Saving your work. This may take a few moments</span>
+        </div>
+      </div>
+      </div>
+      %>
+      <% unless @presenter.has_child_media? %>
+        <% unless @presenter.is_published? %>
+          <%= link_to "Delete", [main_app, @presenter],
+            class: 'btn btn-danger', data: { confirm: "Delete this media?" },
+            method: :delete %>
+        <% else %> 
+          <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media is published.">Delete</a>
+        <% end %>
+      <% else %> 
+        <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media has child media.">Delete</a>
+      <% end %>
+
+    <% end %>
+ 
+    <%# if signed_in? %>
+      <%# if presenter.editor? || @curation_concern.open? %>
+        <%#= download_button(presenter.id) %>
+        <%#= choose_cart_button(presenter) %>
+      <%# elsif @curation_concern.restricted? %>
+        <%#= choose_download_button(presenter.id) %>
+        <%#= choose_cart_button(presenter) %>
+      <%# else %>
+        <%#= unavailable_for_download_button %>
+      <%# end %>
+
+    <%# end %>
+  </div>
+</div>

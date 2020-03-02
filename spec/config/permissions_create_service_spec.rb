@@ -1,25 +1,27 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Hyrax::Collections::PermissionsCreateService do
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: "Team", machine_id: 88) }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: "Project", machine_id: 77) }
-  let(:another_collection_type) { Hyrax::CollectionType.create(title: "Another", machine_id: 99)}
+  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
+  let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
 
-  let(:team_a)    { Collection.new(id: 'Team_A', title: ["Team A"], collection_type_gid: team_collection_type.gid )}
-  let(:project_a) { Collection.new(id: 'Project_A', title: ["Project A"], collection_type_gid: project_collection_type.gid )}
-  let(:another)   { Collection.new(id: 'Another', title: ["Another"], collection_type_gid: another_collection_type.gid )}
+  let(:team_a)    { Collection.new(id: 'Team_A', title: ['Team A'], collection_type_gid: team_collection_type.gid) }
+  let(:project_a) { Collection.new(id: 'Project_A', title: ['Project A'], collection_type_gid: project_collection_type.gid) }
+  let(:another)   { Collection.new(id: 'Another', title: ['Another'], collection_type_gid: another_collection_type.gid) }
 
-  let(:user) { User.create(email: "email@email.com", password: "password", ms_id: "abc123") }
+  let(:user) { User.create(email: 'email@email.com', password: 'password', ms_id: 'abc123') }
 
   let(:collections)       { [team_a, project_a, another] }
-  let(:collection_types)  { [team_collection_type, project_collection_type, another_collection_type]}
+  let(:collection_types)  { [team_collection_type, project_collection_type, another_collection_type] }
 
   describe '#create_default' do
     let(:access_grants)   { collection.permission_template.access_grants }
-    let(:admin)           { access_grants.find_by(agent_id: "admin") }
+    let(:admin)           { access_grants.find_by(agent_id: 'admin') }
 
     Collection::DEFAULT_GROUP_ROLES.each do |role|
-      let(role.to_sym) { access_grants.find_by(agent_id: "#{collection.id}_#{role}")}
+      let(role.to_sym) { access_grants.find_by(agent_id: "#{collection.id}_#{role}") }
     end
 
     before do
@@ -32,7 +34,8 @@ RSpec.describe Hyrax::Collections::PermissionsCreateService do
         end
       end
       allow_any_instance_of(Collection).to receive(:add_depositor_to_managers).and_return(true)
-      described_class.create_default(collection: collection, creating_user: user)
+
+      described_class.create_ms_template(collection: collection)
     end
 
     context 'user creates a new team' do
@@ -55,17 +58,6 @@ RSpec.describe Hyrax::Collections::PermissionsCreateService do
         expect(managers[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
         expect(depositors[:access]).to eq(Hyrax::PermissionTemplateAccess::DEPOSIT)
         expect(viewers[:access]).to eq(Hyrax::PermissionTemplateAccess::VIEW)
-      end
-
-    end
-    context 'user creates a new collection that is neither a team or a project' do
-      let(:collection)  { another }
-      let(:user_grant) { access_grants.find_by(agent_id: user.ms_id) }
-
-      it 'creates access grants for the admin group and the collection creator' do
-        expect(access_grants.count).to be(2)
-        expect(admin[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
-        expect(user_grant[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
       end
     end
   end

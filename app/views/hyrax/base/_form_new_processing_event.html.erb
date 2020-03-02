@@ -1,0 +1,26 @@
+<div class="col-sm-6">
+  <h2>NEW PROCESSING DETAILS FOR CURRENT MEDIA</h2>
+
+  <p>To select a parent media, please enter the processing event details, then search and click "Select media".</p>
+
+  <%= p.input :creator, as: :multi_value %>
+    <%# todo: render date_field in simple_form_bootstrap %>
+    <div class="row">
+        <div class="col-xs-6 showcase-label">Date created</div>
+        <div class="col-xs-6 showcase-value">
+        <%= p.date_field :date_created, wrapper: :inline, value: p.object.date_created || Date.today, class: 'datepicker form-control' %>
+        </div>
+    </div>
+  <%= p.input :software, as: :multi_value %>
+  <%= p.input :description, label: 'Full description' %>
+</div>
+
+<div class="col-sm-6">
+	<h2>INDIVIDUAL PROCESSING STEPS</h2>
+
+  <%= render_edit_field_partial('processing_activity', f: p) %>
+  <%# passing the current media id to be set as the child of this PE 
+    # child < PE < parent %>
+  <input name="child_media_id" type="hidden" value="<%= curation_concern.id %>">
+
+</div>

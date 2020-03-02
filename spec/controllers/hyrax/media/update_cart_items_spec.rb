@@ -12,18 +12,18 @@ RSpec.describe Hyrax::MediaController, type: :controller do
   describe 'updating publication status updates all cart items' do
     let (:depositor)         { User.create(email: "test@test.com", password: "password")}
     let (:item_owner) { User.create(email: "test2@test.com", password: "password")}
-    let (:open_work)        { Media.create(title: ["Example title"], depositor: depositor.email, fileset_accessibility: ["open"])}
-    let (:restricted_work)        { Media.create(title: ["Example title"], depositor: depositor.email, fileset_accessibility: ["restricted_download"])}
+    let (:open_work)        { Media.create(title: ["Example title"], depositor: depositor.ms_id, fileset_accessibility: ["open"])}
+    let (:restricted_work)        { Media.create(title: ["Example title"], depositor: depositor.ms_id, fileset_accessibility: ["restricted_download"])}
 
     # unrestricted items
-    let (:cartItem1)  { CartItem.create(user_id: item_owner.id, work_id: open_work.id, restricted: false)}
-    let (:cartItem2)  { CartItem.create(user_id: item_owner.id, work_id: open_work.id, restricted: false)}
-    let (:cartItem3)  { CartItem.create(user_id: item_owner.id, work_id: open_work.id, restricted: false)}
+    let (:cartItem1)  { CartItem.create(user_id: item_owner.ms_id, work_id: open_work.id, restricted: false)}
+    let (:cartItem2)  { CartItem.create(user_id: item_owner.ms_id, work_id: open_work.id, restricted: false)}
+    let (:cartItem3)  { CartItem.create(user_id: item_owner.ms_id, work_id: open_work.id, restricted: false)}
     let (:unrestrictedItems) {[cartItem1,cartItem2,cartItem3]}
     # restricted items
-    let (:cartItem4)  { CartItem.create(user_id: item_owner.id, work_id: restricted_work.id, restricted: true)}
-    let (:cartItem5)  { CartItem.create(user_id: item_owner.id, work_id: restricted_work.id, restricted: true)}
-    let (:cartItem6)  { CartItem.create(user_id: item_owner.id, work_id: restricted_work.id, restricted: true)}
+    let (:cartItem4)  { CartItem.create(user_id: item_owner.ms_id, work_id: restricted_work.id, restricted: true)}
+    let (:cartItem5)  { CartItem.create(user_id: item_owner.ms_id, work_id: restricted_work.id, restricted: true)}
+    let (:cartItem6)  { CartItem.create(user_id: item_owner.ms_id, work_id: restricted_work.id, restricted: true)}
     let (:restrictedItems) {[cartItem4,cartItem5,cartItem6]}
 
     before do

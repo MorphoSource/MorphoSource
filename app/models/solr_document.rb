@@ -99,10 +99,6 @@ class SolrDocument
     self[Solrizer.solr_name('side', :stored_searchable)]
   end
 
-  def slice_thickness
-      self[Solrizer.solr_name('slice_thickness', :stored_searchable)]
-  end
-
   def unit
     self[Solrizer.solr_name('unit', :stored_searchable)]
   end
@@ -398,11 +394,6 @@ class SolrDocument
 
   def institution_name
     self[Solrizer.solr_name('institution_name', :stored_searchable)]
-  end
-
-  # Device fields, also uses modality currently in media above
-  def facility
-    self[Solrizer.solr_name('facility', :stored_searchable)]
   end
 
   # Processing Event & Image Capture Event

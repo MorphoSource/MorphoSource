@@ -42,6 +42,7 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
     let(:user_display_name) { 'Suzy Smith' }
     let(:depositor_display_name) { 'Bobby Jones' }
     let(:work) { CulturalHeritageObject.new }
+    let(:institution_code_attr) { [ 'INST' ] }
     let(:collection_code_attr) { [ 'ABC' ] }
     let(:catalog_number_attr) { [ '123' ] }
     let(:short_title_attr) { [ 'My Short Title' ] }
@@ -52,17 +53,29 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
     before do
       allow(User).to receive(:find_by_user_key).with(depositor.user_key) { depositor }
     end
-    describe 'collection code, catalog number, and short title' do
-      let(:attrs) { { 'collection_code' => collection_code_attr,
+    describe 'institution code, collection code, catalog number, and short title' do
+      let(:attrs) { { 'institution_code' => institution_code_attr,
+                      'collection_code' => collection_code_attr,
                       'catalog_number' => catalog_number_attr,
                       'short_title' => short_title_attr,
                       'identifier' => identifier_attr,
                       'vouchered' => vouchered_attr } }
-      let(:expected_title) { "#{collection_code_attr.first}:#{catalog_number_attr.first} #{short_title_attr.first}" }
+      let(:expected_title) { "#{institution_code_attr.first}:#{collection_code_attr.first}:#{catalog_number_attr.first}:#{short_title_attr.first}" }
       specify { expect(subject.generated_title(env)).to eq(expected_title) }
     end
-    describe 'collection code and catalog number but no short title' do
-      let(:attrs) { { 'collection_code' => collection_code_attr,
+    describe 'collection code, catalog number, and short title, no institution_code' do
+      let(:attrs) { { 'institution_code' => [],
+                      'collection_code' => collection_code_attr,
+                      'catalog_number' => catalog_number_attr,
+                      'short_title' => short_title_attr,
+                      'identifier' => identifier_attr,
+                      'vouchered' => vouchered_attr } }
+      let(:expected_title) { "#{collection_code_attr.first}:#{catalog_number_attr.first}:#{short_title_attr.first}" }
+      specify { expect(subject.generated_title(env)).to eq(expected_title) }
+    end
+    describe 'collection code and catalog number but no short title, no institution_code' do
+      let(:attrs) { { 'institution_code' => [],
+                      'collection_code' => collection_code_attr,
                       'catalog_number' => catalog_number_attr,
                       'short_title' => [],
                       'identifier' => identifier_attr,
@@ -70,26 +83,29 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
       let(:expected_title) { "#{collection_code_attr.first}:#{catalog_number_attr.first}" }
       specify { expect(subject.generated_title(env)).to eq(expected_title) }
     end
-    describe 'collection code and short title but no catalog number ' do
-      let(:attrs) { { 'collection_code' => collection_code_attr,
+    describe 'collection code and short title but no catalog number, no institution_code ' do
+      let(:attrs) { { 'institution_code' => [],
+                      'collection_code' => collection_code_attr,
                       'catalog_number' => [],
                       'short_title' => short_title_attr,
                       'identifier' => identifier_attr,
                       'vouchered' => vouchered_attr } }
-      let(:expected_title) { "#{collection_code_attr.first} #{short_title_attr.first}" }
+      let(:expected_title) { "#{collection_code_attr.first}:#{short_title_attr.first}" }
       specify { expect(subject.generated_title(env)).to eq(expected_title) }
     end
-    describe 'catalog number and short title but no collection code' do
-      let(:attrs) { { 'collection_code' => [],
+    describe 'institution_code and catalog number and short title but no collection code' do
+      let(:attrs) { { 'institution_code' => institution_code_attr,
+                      'collection_code' => [],
                       'catalog_number' => catalog_number_attr,
                       'short_title' => short_title_attr,
                       'identifier' => identifier_attr,
                       'vouchered' => vouchered_attr } }
-      let(:expected_title) { "#{catalog_number_attr.first} #{short_title_attr.first}" }
+      let(:expected_title) { "#{institution_code_attr.first}:#{catalog_number_attr.first}:#{short_title_attr.first}" }
       specify { expect(subject.generated_title(env)).to eq(expected_title) }
     end
     describe 'collection code but no catalog number or short title' do
-      let(:attrs) { { 'collection_code' => collection_code_attr,
+      let(:attrs) { { 'institution_code' => [],
+                      'collection_code' => collection_code_attr,
                       'catalog_number' => [],
                       'short_title' => [],
                       'identifier' => identifier_attr,
@@ -98,7 +114,8 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
       specify { expect(subject.generated_title(env)).to eq(expected_title) }
     end
     describe 'catalog number but no collection code or short title' do
-      let(:attrs) { { 'collection_code' => [],
+      let(:attrs) { { 'institution_code' => [],
+                      'collection_code' => [],
                       'catalog_number' => catalog_number_attr,
                       'short_title' => [],
                       'identifier' => identifier_attr,
@@ -107,7 +124,8 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
       specify { expect(subject.generated_title(env)).to eq(expected_title) }
     end
     describe 'short title but no collection code or catalog number' do
-      let(:attrs) { { 'collection_code' => [],
+      let(:attrs) { { 'institution_code' => [],
+                      'collection_code' => [],
                       'catalog_number' => [],
                       'short_title' => short_title_attr,
                       'identifier' => identifier_attr,
@@ -117,7 +135,8 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
     end
     describe 'neither collection nor catalog number nor short title' do
       describe 'one identifier' do
-        let(:attrs) { { 'collection_code' => [],
+        let(:attrs) { { 'institution_code' => [],
+                        'collection_code' => [],
                         'catalog_number' => [],
                         'identifier' => [ identifier_attr.first ],
                         'vouchered' => vouchered_attr } }
@@ -125,7 +144,8 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
         specify { expect(subject.generated_title(env)).to eq(expected_title) }
       end
       describe 'more than one identifier' do
-        let(:attrs) { { 'collection_code' => [],
+        let(:attrs) { { 'institution_code' => [],
+                        'collection_code' => [],
                         'catalog_number' => [],
                         'identifier' => identifier_attr,
                         'vouchered' => vouchered_attr } }
@@ -134,7 +154,8 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
       end
       describe 'no identifier' do
         describe 'vouchered' do
-          let(:attrs) { { 'collection_code' => [],
+          let(:attrs) { { 'institution_code' => [],
+                          'collection_code' => [],
                           'catalog_number' => [],
                           'identifier' => [],
                           'vouchered' => vouchered_attr } }
@@ -171,7 +192,8 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
           end
         end
         describe 'not vouchered' do
-          let(:attrs) { { 'collection_code' => [],
+          let(:attrs) { { 'institution_code' => [],
+                          'collection_code' => [],
                           'catalog_number' => [],
                           'identifier' => [],
                           'vouchered' => unvouchered_attr } }

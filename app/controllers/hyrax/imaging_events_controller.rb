@@ -5,13 +5,17 @@ module Hyrax
   class ImagingEventsController < ApplicationController
     # Adds Hyrax behaviors to the controller.
     include Hyrax::WorksControllerBehavior
+    include Morphosource::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
+    include Morphosource::LinkedTeams::LinkedTeamsManagement
     self.curation_concern_type = ::ImagingEvent
 
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::ImagingEventPresenter
-    
+
+    before_action :record_original_parents, only: :update
+
     # Overriding WorksControllerBehavior to add modality validation
     # Could not do this as an ActiveModel validation because parents are not added until after create
     def create
@@ -30,6 +34,7 @@ module Hyrax
 
     def update
       if imaging_event_modality_valid? && actor.update(actor_environment)
+        update_media_team_access
         after_update_response
       else
         respond_to do |wants|
@@ -43,15 +48,17 @@ module Hyrax
     end
 
     private
+
     def imaging_event_modality_valid?
       parent_devices = []
       if params['imaging_event']['work_parents_attributes'].present?
-        params['imaging_event']['work_parents_attributes'].values.map do |v| 
+        params['imaging_event']['work_parents_attributes'].values.map do |v|
           if Device.where('id' => v['id']).present?
             parent_devices << Device.find(v['id'])
           end
         end
-      else
+      end
+      if parent_devices.empty?
         # if there is no parent device, no need to compare modalities.
         return true
       end
@@ -64,5 +71,12 @@ module Hyrax
       end
     end
 
+    def old_specimens
+      select_specimens(@original_parents)
+    end
+
+    def new_specimens
+      select_specimens(@curation_concern.member_of)
+    end
   end
 end

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Morphosource::Derivatives::Blender do
+RSpec.describe Morphosource::Derivatives::Blender, :skiptravis => true do
 	let(:source_path) { File.join(fixture_path, 'bunny/bunny.ply') }
 	let(:out_path) { Rails.root.join('tmp', '8aa5d5f5-8cd3-4c3e-9dec-6dbbdff48a2b.glb') }
 	let(:units) { nil }

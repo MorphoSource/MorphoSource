@@ -19,6 +19,8 @@ module Hyrax
                when 'showcase'
                  'morphosource_2_columns'
                # todo: later might need to add different layout for EDIT or other actions here
+               when 'edit'
+                 'morphosource_2_columns'
                else
                  'dashboard'
                end
@@ -27,7 +29,24 @@ module Hyrax
 
     def showcase
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      render '/hyrax/physical_objects/showcase', presenter: @presenter
+      render 'showcase', presenter: @presenter
+    end
+
+    # overriding action methods from works_controller_behavior.rb
+    def edit
+      build_form
+      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
+      @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
+      @countries_service = Morphosource::CountriesService.new
+      render 'edit', presenter: @presenter
+    end
+
+    def new
+      curation_concern.depositor = current_user.user_key
+      curation_concern.admin_set_id = admin_set_id_for_new
+      build_form
+      render '/hyrax/base/new' 
     end
 
   end

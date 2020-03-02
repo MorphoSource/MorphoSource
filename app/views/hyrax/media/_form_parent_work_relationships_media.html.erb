@@ -1,0 +1,39 @@
+
+<div id="parent-relationships-media" class="form-group" data-behavior="parent-relationships-media" data-param-key="<%= p.object.model_name.param_key %>" data-members="<%= p.object.member_of_works_json('Media') %>" data-new-work-created="" data-repeatable="no" data-work-type="media">
+
+  <div class="form-inline">
+    <%= p.input_field :find_parent_work,
+                      prompt: :translate,
+                      autocomplete: 'off',
+                      data: {
+                        autocomplete: 'work',
+                          'autocomplete-url' => find_parent_media_to_add_autocomplete_url(@curation_concern.id),
+                          'exclude-work': @curation_concern.id || "NewRecord" # exclude this item from the result set.
+                      } %>
+  </div>
+
+  <div class="text-center button-wrapper">
+    <!-- this button will bring up the modal to prompt the user before adding -->
+    <a class="btn btn-md btn-primary has-processing-event-<%= has_processing_event %>" id="btn-select-media">Select media</a>
+    <!-- a hidden button to actually add the media -->
+    <a class="hidden" id="btn-add-parent-media" data-behavior="add-relationship" data-has-processing-event="<%= has_processing_event %>">add media</a>
+  </div>
+
+  <div style="visibility: visible;">
+    <div class="message has-warning hidden"></div>
+    <table>
+      <tbody></tbody>
+    </table>
+    <script type="text/x-tmpl" id="tmpl-parent-work-media">
+    <tr>
+      <td>
+          <div class="row selected_parent_media" style="display:none">
+              <div class="col-xs-6 showcase-label text-nowrap">Selected parent media</div>
+              <div class="col-xs-6 showcase-value">{%= o.title %}</div>
+          </div>
+      </td>
+      <td><button style="display:none" class="btn btn-sm btn-danger" data-behavior="remove-relationship"><%= t('.actions.remove') %></button></td>
+    </tr>
+    </script>
+  </div>
+</div>

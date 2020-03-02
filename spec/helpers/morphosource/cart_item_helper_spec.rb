@@ -3,14 +3,13 @@ require 'rails_helper'
 RSpec.describe Morphosource::CartItemHelper, type: :helper do
   include Rails.application.routes.url_helpers
 
-
   describe '#item_status_label and #item_action_button' do
-
-    let(:work)  { double('work', id: 'www', depositor: 'test@test.com')}
+    let(:depositor) { User.create(email: "test@test.com", password: "password")}
+    let(:work)  { double('work', id: 'www', depositor: depositor.ms_id)}
     let(:item)  { CartItem.create( id: 'aaa', user_id: '555', work_id: work.id)}
 
     before do
-      allow(Media).to receive(:find).with(item.work_id).and_return(work)
+      allow(Media).to receive(:find).with(work.id).and_return(work)
     end
 
     context 'the item is canceled' do

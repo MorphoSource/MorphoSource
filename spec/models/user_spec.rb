@@ -5,23 +5,23 @@ RSpec.describe User, type: :model do
   let(:user)          { User.create(email: "example@email.com", password: "password") }
   let(:data_owner)    { User.create(email: "test@test.com", password: "password") }
 
-  let(:work)          { Media.create(id: "aaa", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['open'])}
+  let(:work)          { Media.create(id: "aaa", title: ["Test Media Work"], depositor: data_owner.user_key, fileset_accessibility: ['open'])}
 
-  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
+  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: data_owner.user_key, fileset_accessibility: ['restricted_download'])}
 
-  let(:work3)          { Media.create(id: "ccc", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['open'])}
+  let(:work3)          { Media.create(id: "ccc", title: ["Test Media Work"], depositor: data_owner.user_key, fileset_accessibility: ['open'])}
 
-  let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
+  let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: data_owner.user_key, fileset_accessibility: ['restricted_download'])}
 
-  let(:work5)          { Media.create(id: "eee", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['open'])}
+  let(:work5)          { Media.create(id: "eee", title: ["Test Media Work"], depositor: data_owner.user_key, fileset_accessibility: ['open'])}
 
-  let(:work6)         { Media.create(id: "fff", title: ["Test Media Work"], depositor: "test@test.com", fileset_accessibility: ['restricted_download'])}
+  let(:work6)         { Media.create(id: "fff", title: ["Test Media Work"], depositor: data_owner.user_key, fileset_accessibility: ['restricted_download'])}
 
-  let(:cartItem1)     { CartItem.create(id: 1, user_id: user.id, work_id: "bbb", date_cleared: Time.current) }
-  let(:cartItem2)     { CartItem.create(id: 2, user_id: user.id, work_id: "ccc") }
-  let(:cartItem3)     { CartItem.create(id: 3, user_id: user.id, work_id: "ddd", date_requested: Date.yesterday) }
-  let(:cartItem4)     { CartItem.create(id: 4, user_id: user.id, work_id: "eee", in_cart: false, date_downloaded: Time.current) }
-  let(:cartItem5)     { CartItem.create(id: 5, user_id: user.id, work_id: "fff", in_cart: false, date_downloaded: Time.current, date_requested: Date.yesterday) }
+  let(:cartItem1)     { CartItem.create(user: user, work_id: "bbb", date_cleared: Time.current) }
+  let(:cartItem2)     { CartItem.create(user: user, work_id: "ccc") }
+  let(:cartItem3)     { CartItem.create(user: user, work_id: "ddd", date_requested: Date.yesterday) }
+  let(:cartItem4)     { CartItem.create(user: user, work_id: "eee", in_cart: false, date_downloaded: Time.current) }
+  let(:cartItem5)     { CartItem.create(user: user, work_id: "fff", in_cart: false, date_downloaded: Time.current, date_requested: Date.yesterday) }
 
   let(:allCartItems)  { [cartItem1, cartItem2, cartItem3, cartItem4, cartItem5] }
 
@@ -32,7 +32,7 @@ RSpec.describe User, type: :model do
     allow(Media).to receive(:find).with('ddd').and_return(work4)
     allow(Media).to receive(:find).with('eee').and_return(work5)
     allow(Media).to receive(:find).with('fff').and_return(work6)
-    # Makes user aware of its cart_items
+
     allCartItems.each(&:touch)
   end
 
@@ -83,11 +83,11 @@ RSpec.describe User, type: :model do
   end
 
   describe '#newly_requested_items_user_ids' do
-    it { expect(data_owner.newly_requested_items_user_ids.uniq).to match_array([user.id]) }
+    it { expect(data_owner.newly_requested_items_user_ids.uniq).to match_array([user.ms_id]) }
   end
 
   describe '#previously_requested_items_user_ids' do
-    it { expect(data_owner.previously_requested_items_user_ids.uniq).to match_array([user.id]) }
+    it { expect(data_owner.previously_requested_items_user_ids.uniq).to match_array([user.ms_id]) }
   end
 
   describe '#downloaded_items' do
@@ -198,6 +198,9 @@ RSpec.describe User, type: :model do
       let(:manager_roles)         { [role1, role2, role3] }
 
       before do
+        team_a.create_collection_groups
+        team_b.create_collection_groups
+        team_c.create_collection_groups
         allow(user).to receive(:roles).and_return(manager_roles)
         allow(Collection).to receive(:where).with(id: [team_a.id, team_b.id, team_c.id]).and_return([team_a, team_b, team_c])
       end

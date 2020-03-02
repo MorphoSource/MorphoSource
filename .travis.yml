@@ -14,7 +14,6 @@ services:
 addons:
   firefox: '61.0'
 before_install:
-  #- sudo apt-get install xz-utils
   - mkdir $TRAVIS_BUILD_DIR/download
 
   # from http://www.columbia.edu/~njn2118/journal/2016/10/28.html
@@ -41,7 +40,6 @@ before_install:
   # begin Blender setup --------
   - cd $TRAVIS_BUILD_DIR/download
   - wget -nc -O blender.tar.xz https://download.blender.org/release/Blender2.82/blender-2.82-linux64.tar.xz || echo "File already exists"
-
   - unxz blender.tar.xz
   - tar xvf blender.tar
   - mv blender-2.82-linux64 blender
@@ -56,10 +54,8 @@ before_install:
   - export PATH=$PATH:$TRAVIS_BUILD_DIR/download/blender
   - blender -v
 
+  - nvm install 10.16.3
   - node --version
-  
-
-
 
   # verify blender is configured properly
   - $TRAVIS_BUILD_DIR/download/blender/blender --background --python $TRAVIS_BUILD_DIR/download/blender/scripts/blender_characterize_mesh.py  -- $TRAVIS_BUILD_DIR/spec/fixtures/bunny/bunny.x3d

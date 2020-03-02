@@ -14,6 +14,9 @@ services:
 addons:
   firefox: '61.0'
 before_install:
+  - mkdir $TRAVIS_BUILD_DIR/download
+  - cd $TRAVIS_BUILD_DIR/download
+
   # from http://www.columbia.edu/~njn2118/journal/2016/10/28.html
   - wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
   - mkdir geckodriver

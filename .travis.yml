@@ -14,6 +14,7 @@ services:
 addons:
   firefox: '61.0'
 before_install:
+  - sudo apt-get install xz-utils
   - mkdir $TRAVIS_BUILD_DIR/download
   - cd $TRAVIS_BUILD_DIR/download
 
@@ -63,7 +64,8 @@ before_install:
 
 
   # verify blender is configured properly
-  #- $TRAVIS_BUILD_DIR/download/blender/blender --background --python $TRAVIS_BUILD_DIR/download/blender/scripts/blender_characterize_mesh.py  -- $TRAVIS_BUILD_DIR/spec/fixtures/bunny/bunny.x3d
+  - $TRAVIS_BUILD_DIR/download/blender/blender --background --python $TRAVIS_BUILD_DIR/download/blender/scripts/blender_characterize_mesh.py  -- $TRAVIS_BUILD_DIR/spec/fixtures/bunny/bunny.x3d
+  - $TRAVIS_BUILD_DIR/download/blender/blender --background --factory-startup --addons io_scene_gltf2 --python $TRAVIS_BUILD_DIR/vendor/blender_config/scripts/blender_derive_mesh.py -- -i $TRAVIS_BUILD_DIR/spec/fixtures/bunny/bunny.ply -o $TRAVIS_BUILD_DIR/tmp/e68c283d-8683-4f2e-a137-6a58de9f57d3/bunny.glb -u m
   # end Blender setup --------
 
   # begin gltf-pipeline setup --------

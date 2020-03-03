@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Morphosource::Derivatives::Processors::CTImageSeries, :skiptravis => true do
+describe Morphosource::Derivatives::Processors::CTImageSeries do
 	subject { described_class.new(file_name, directives) }
 
 	# let(:file_name) { File.join(fixture_path, 'bunny/bunny.ply') }

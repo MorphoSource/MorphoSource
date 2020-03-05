@@ -86,6 +86,6 @@ deploy_demo:
   script: *deploy_script
   after_script: *after_deploy
   only:
-    - dev
+    - master
   tags:
     - demo

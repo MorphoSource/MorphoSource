@@ -10,10 +10,13 @@ module Morphosource
       def initialize(file_set)
         @file_set = file_set
         @parents = file_set.member_of
+        @imaging_events = []
       end
 
       def update_parents
         parents.each do |work|
+          byebug
+          #if work.class 
           update_parent(work)
         end
       end

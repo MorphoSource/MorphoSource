@@ -51,7 +51,11 @@ module Hyrax
         # Photogrammetry properties and Photography properties
         :lens_make,
         :lens_model,
-        :light_source
+        :light_source,
+        :focal_length,
+        :aperture_value,
+        :iso_speed_ratings,
+        :shutter_speed
     ]
 
     #self.terms += [:software, :scanner_modality]

@@ -137,6 +137,24 @@ module Morphosource
       property :light_source, predicate: ::RDF::URI.new("http://www.w3.org/2003/12/exif/ns#lightSource") do |index|
           index.as :stored_searchable, :facetable
       end
+
+
+      property :focal_length, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/focalLength") do |index|
+          index.as :stored_searchable, :facetable
+      end
+
+      property :aperture_value, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/apertureValue") do |index|
+          index.as :stored_searchable, :facetable
+      end
+
+      property :iso_speed_ratings, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/isoSpeedRatings") do |index|
+          index.as :stored_searchable, :facetable
+      end
+
+      property :shutter_speed, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/shutterSpeed") do |index|
+          index.as :stored_searchable, :facetable
+      end
+
     end
   end
 end

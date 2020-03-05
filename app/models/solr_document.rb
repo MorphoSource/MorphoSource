@@ -526,6 +526,22 @@ class SolrDocument
       self[Solrizer.solr_name('light_source', :stored_searchable)]
   end
 
+  def focal_length
+      self[Solrizer.solr_name('focal_length', :stored_searchable)]
+  end
+
+  def aperture_value
+      self[Solrizer.solr_name('aperture_value', :stored_searchable)]
+  end
+
+  def iso_speed_ratings
+      self[Solrizer.solr_name('iso_speed_ratings', :stored_searchable)]
+  end
+
+  def shutter_speed
+      self[Solrizer.solr_name('shutter_speed', :stored_searchable)]
+  end
+
   # mesh
   def point_count
     self[Solrizer.solr_name('point_count', :stored_searchable)]

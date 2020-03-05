@@ -11,6 +11,7 @@ class Organization < Morphosource::Works::Base
   validates :title, presence: { message: 'Your work must have a title.' }
 
   include Morphosource::OrganizationMetadata
+  include Morphosource::PermissionsDefaultsMetadata
 
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)

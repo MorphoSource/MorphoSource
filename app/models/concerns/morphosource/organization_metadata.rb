@@ -36,6 +36,15 @@ module Morphosource
       property :team_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/team") do |index|
         index.as :stored_searchable
       end
+
+      # -- default media permissions settings --
+
+      # Download permission
+      # default publication settings
+      # determins media visibility, fileset_visibility, fileset_accessibility settings
+      property :download_permission, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/downloadPermission") do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

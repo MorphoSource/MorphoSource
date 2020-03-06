@@ -12,10 +12,6 @@ RSpec.describe Collection, type: :model do
 
   let(:project) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
 
-  before do
-    allow(User).to receive(:find_by).with(ms_id: user.ms_id).and_return(user)
-  end
-
   describe '#organization' do
     let!(:org1)  { Organization.create(title: ['title'], team_id: [team.id]) }
     let!(:org2)  { Organization.create(title: ['title'], team_id: []) }
@@ -26,10 +22,23 @@ RSpec.describe Collection, type: :model do
     end
   end
 
+  # override Hyrax::CollectionBehavior to add editors to read_groups
+  describe '#permission_template_read_groups' do
+    before do
+      team.create_collection_groups
+      Hyrax::Collections::PermissionsCreateService.create_ms_template(collection: team)
+    end
+
+    it 'returns collection editors, depositors, and viewers' do
+      expect(team.permission_template_read_groups).to match_array([team.editors_group, team.depositors_group, team.viewers_group].map(&:name))
+    end
+
+  end
+
   describe '#create_collection_groups' do
 
-    it 'creates manager, depositor, and viewer groups' do
-      expect { team.create_collection_groups }.to change { Role.count }.by(3)
+    it 'creates manager, depositor, editor, and viewer groups' do
+      expect { team.create_collection_groups }.to change { Role.count }.by(4)
     end
 
     it 'assigns them names with the collection id' do
@@ -49,6 +58,7 @@ RSpec.describe Collection, type: :model do
   describe '#copy_parent_membership' do
     let(:parent) { Collection.create(title: ['Parent'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
     let(:parent_manager) { User.create(email: 'manager@email.com', password: 'password') }
+    let(:parent_editor) { User.create(email: 'editor@email.com', password: 'password') }
     let(:parent_depositor) { User.create(email: 'depositor@email.com', password: 'password') }
     let(:parent_viewer) { User.create(email: 'viewer@email.com', password: 'password') }
 
@@ -65,6 +75,7 @@ RSpec.describe Collection, type: :model do
       end
 
       parent.managers << parent_manager
+      parent.editors << parent_editor
       parent.depositors << parent_depositor
       parent.viewers << parent_viewer
       parent.user_groups.each(&:save)
@@ -74,6 +85,7 @@ RSpec.describe Collection, type: :model do
 
     it 'copies the parent members to the child collection' do
       expect(project.managers).to include(parent_manager)
+      expect(project.editors).to include(parent_editor)
       expect(project.depositors).to include(parent_depositor)
       expect(project.viewers).to include(parent_viewer)
     end
@@ -92,15 +104,17 @@ RSpec.describe Collection, type: :model do
     before do
       collection.create_collection_groups
       collection.managers_group.users << user1 << user2
-      collection.depositors_group.users << user3 << user4
+      collection.editors_group.users << user3
+      collection.depositors_group.users << user4
       collection.viewers_group.users << user5 << user6
       collection.user_groups.each(&:save)
     end
 
-    describe '#managers, #depositors, #viewers' do
+    describe '#managers, #editors, #depositors, #viewers' do
       it 'returns users for each of the different roles' do
         expect(collection.managers).to match_array([user, user1, user2])
-        expect(collection.depositors).to match_array([user3, user4])
+        expect(collection.editors).to match_array([user3])
+        expect(collection.depositors).to match_array([user4])
         expect(collection.viewers).to match_array([user5, user6])
       end
     end
@@ -132,7 +146,7 @@ RSpec.describe Collection, type: :model do
 
       it 'destroys all of the default user groups when a team or project is destroyed' do
         team.create_collection_groups
-        expect { team.destroy }.to change { Role.count }.by(-3)
+        expect { team.destroy }.to change { Role.count }.by(-4)
       end
     end
   end

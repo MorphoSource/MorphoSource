@@ -4,9 +4,6 @@ Hyrax::Dashboard::CollectionsController.class_eval do
   helper Morphosource::CollectionRolesHelper
 
   def after_create
-    # TODO: Experiencing occasional bug where this code is not called when expected. Puts statements below to assist in debugging
-    puts 'Custom CollectionsController after_create called'
-    puts "@collection.type_assigns_groups?:   #{@collection.type_assigns_groups?}"
     form
     choose_permissions
     # if we are creating the new collection as a subcollection (via the nested collections controller),
@@ -28,8 +25,6 @@ Hyrax::Dashboard::CollectionsController.class_eval do
   end
 
   def set_morphosource_permissions
-    # TODO: Experiencing occasional bug where this code is not called when expected. Puts statements below to assist in debugging
-    puts 'set_morphosource_permissions called'
     @collection.create_collection_groups
     @collection.copy_parent_membership(params[:parent_id]) unless params[:parent_id].nil?
     Hyrax::Collections::PermissionsCreateService.create_ms_template(collection: @collection)

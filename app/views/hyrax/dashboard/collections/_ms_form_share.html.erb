@@ -50,6 +50,7 @@
     <section class="section-collection-sharing">
       <legend><%= t(".current_shared") %></legend>
       <%= render 'ms_form_share_table', access: 'managers', filter: :manage? %>
+      <%= render 'ms_form_share_table', access: 'editors', filter: :edit_works? %>
       <%= render 'ms_form_share_table', access: 'depositors', filter: :deposit? %>
       <%= render 'ms_form_share_table', access: 'viewers', filter: :view? %>
     </section>

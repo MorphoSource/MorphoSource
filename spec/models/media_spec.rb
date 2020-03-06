@@ -27,10 +27,6 @@ RSpec.describe Media do
         subject.side = nil
         subject.part = nil
         subject.orientation = nil
-        subject.funding = nil
-        subject.cite_as = nil
-        subject.rights_holder = ["foo"]
-        subject.agreement_uri = ["foo"]
         subject.legacy_media_file_id = ["123"]
         subject.uuid = ["foo"]
         subject.ark = ["foo"]
@@ -43,6 +39,18 @@ RSpec.describe Media do
         subject.scale_bar = ["foo"]
         subject.unit = ["foo"]
         subject.map_type = ["foo"]
+        # permissions defaults metadata
+        subject.download_reviewer = ['foo']
+        subject.agreement_uri = ['foo']
+        subject.rights_statement = ['foo']
+        subject.terms_of_use = ['foo']
+        subject.usage_agreement = ['foo']
+        subject.permits_commercial_use = ['foo']
+        subject.permits_3d_use = ['foo']
+        subject.rights_holder = ['foo']
+        subject.funding = ['foo']
+        subject.publisher = ['foo']
+        subject.cite_as = ['foo']
         expect(subject).to be_valid
     end
 

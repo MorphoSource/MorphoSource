@@ -4,6 +4,11 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
     super.tap do |solr_doc|
       # images
       solr_doc['bits_per_sample_tesim'] = object.bits_per_sample
+      solr_doc['focal_length_tesim'] = object.focal_length
+      solr_doc['iso_speed_ratings_tesim'] = object.iso_speed_ratings
+      solr_doc['aperture_value_tesim'] = object.aperture_value
+      solr_doc['shutter_speed_tesim'] = object.shutter_speed
+
       solr_doc['color_space_tesim'] = object.color_space
       solr_doc['compression_tesim'] = object.compression
       # dicom

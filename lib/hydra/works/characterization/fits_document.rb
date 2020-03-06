@@ -97,6 +97,11 @@ module Hydra::Works::Characterization
           t.latitude(path: 'gpsDestLatitude')
           t.longitude(path: 'gpsDestLongitude')
           t.bits_per_sample(path: 'bitsPerSample')
+
+          t.focal_length(path: 'focalLength')
+          t.iso_speed_ratings(path: 'isoSpeedRating')
+          t.aperture_value(path: 'maxApertureValue')
+          t.shutter_speed(path: 'shutterSpeed')
         end
         t.text do
           t.character_set(path: 'charset')
@@ -157,6 +162,12 @@ module Hydra::Works::Characterization
       t.graphics_count(proxy: [:metadata, :document, :graphics_count])
       t.byte_order(proxy: [:metadata, :image, :byte_order])
       t.bits_per_sample(proxy: [:metadata, :image, :bits_per_sample])
+
+      t.focal_length(proxy: [:metadata, :image, :focal_length])
+      t.iso_speed_ratings(proxy: [:metadata, :image, :iso_speed_ratings])
+      t.aperture_value(proxy: [:metadata, :image, :aperture_value])
+      t.shutter_speed(proxy: [:metadata, :image, :shutter_speed])
+
       t.compression(proxy: [:metadata, :image, :compression])
       t.width(proxy: [:metadata, :image, :width])
       t.video_width(proxy: [:metadata, :video, :width])

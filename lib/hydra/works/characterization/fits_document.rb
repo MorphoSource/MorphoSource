@@ -100,8 +100,8 @@ module Hydra::Works::Characterization
 
           t.focal_length(path: 'focalLength')
           t.iso_speed_ratings(path: 'isoSpeedRating')
-          t.aperture_value(path: 'maxApertureValue')
-          t.shutter_speed(path: 'shutterSpeed')
+          t.aperture_value(path: 'apertureValue')
+          t.shutter_speed(path: 'shutterSpeedValue')
         end
         t.text do
           t.character_set(path: 'charset')

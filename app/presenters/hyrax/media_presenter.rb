@@ -144,8 +144,21 @@ module Hyrax
         # if content mime type does not exist, use the mime type
         if file_set.contents_mime_type.first.present?
           contents_mime_type = file_set.contents_mime_type.first
-        else
+        elsif file_set.mime_type.present?
           contents_mime_type = file_set.mime_type
+        else
+          contents_mime_type = 'unknown'
+          # todo: might need to check why some image format (e.g. ARW) is not returning a mime type
+          # could be related to the conflict in the FITS output xml:
+          #  <identification status="CONFLICT">
+          #    <identity format="ARW EXIF" mimetype="image/x-sony-arw" toolname="FITS" toolversion="1.5.0">
+          #      <tool toolname="Exiftool" toolversion="11.54" />
+          #    </identity>
+          #    <identity format="Tagged Image File Format" mimetype="image/tiff" toolname="FITS" toolversion="1.5.0">
+          #      <tool toolname="ffident" toolversion="0.2" />
+          #      <tool toolname="Tika" toolversion="1.21" />
+          #    </identity>
+          #  </identification>
         end
         @mime_type << contents_mime_type
         @file_size += file_set.file_size.first.to_i if file_set.file_size.present?

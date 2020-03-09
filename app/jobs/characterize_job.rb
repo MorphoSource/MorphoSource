@@ -14,7 +14,8 @@ class CharacterizeJob < Hyrax::ApplicationJob
     # Run FITS , then blender (if it is a mesh file type).  
     # For mesh files:
     # - we want blender to overwrite the mime type output from FITS
-    # - we still want to run FITS to get basic file info (e.g. checksum) 
+    # - we still want to run FITS to get basic file info (e.g. checksum)
+    Rails.logger.debug "Running FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
     Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath)
     Rails.logger.debug "Ran FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
 
@@ -24,9 +25,11 @@ class CharacterizeJob < Hyrax::ApplicationJob
         "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
         "tool_class" => :blender
       }
+      Rails.logger.debug "Running Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
       Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath, blender_options)
       Rails.logger.debug "Ran Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
     elsif (ext =~ /\.(zip)$/)
+      Rails.logger.debug "Running zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
       Hydra::Works::ZipContentsCharacterizationService.run(file_set.characterization_proxy, filepath)
       Rails.logger.debug "Ran zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
     end

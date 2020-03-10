@@ -18,7 +18,6 @@ module Morphosource
             imaging_event = ImagingEvent.where('member_ids_ssim' => work.id).first
           end
           update_parent(work)
-byebug
           update_imaging_event(imaging_event) if imaging_event.present?
         end
       end
@@ -53,7 +52,6 @@ byebug
       end
 
       def update_imaging_event(work)
-byebug
         field_map_for_imaging_event.each do |work_field, file_set_field|
           if file_set.send(file_set_field)&.first
 byebug
@@ -100,19 +98,21 @@ byebug
           :shutter_speed => [file_set.shutter_speed&.first],
 
           :exposure_time =>  [file_set.exposure_time&.first],
-          :geometric_calibration =>  [file_set.geometric_calibration&.first],
-          :frame_averaging =>  [file_set.frame_averaging&.first],
-          :projections =>  [file_set.projections&.first],
-          :voltage =>  [file_set.voltage&.first],
-          :power =>  [file_set.power&.first],
-          :amperage =>  [file_set.amperage&.first],
-          :surrounding_material =>  [file_set.surrounding_material&.first],
-          :xray_tube_type =>  [file_set.xray_tube_type&.first],
-          :detector_type =>  [file_set.detector_type&.first],
-          :source_object_distance =>  [file_set.source_object_distance&.first],
-          :source_detector_distance =>  [file_set.source_detector_distance&.first],
-          :target_material =>  [file_set.target_material&.first],
-          :rotation_number =>  [file_set.rotation_number&.first]
+          :geometric_calibration =>  [file_set.pixel_spacing_calibration_description&.first],
+
+          :frame_averaging =>  [file_set.contrast_frame_averaging&.first],
+          :projections =>  [file_set.images_in_acquisition&.first],
+          :voltage =>  [file_set.KVP&.first],
+          :power =>  [file_set.generator_power&.first],
+          :amperage =>  [file_set.x_ray_tube_current&.first],
+          :surrounding_material =>  [file_set.container_component_id&.first],
+
+          :xray_tube_type =>  [file_set.generator_id&.first],
+          :detector_type =>  [file_set.detector_description&.first],
+          :source_object_distance =>  [file_set.distance_source_to_patient&.first],
+          :source_detector_distance =>  [file_set.distance_source_to_detector&.first],
+          :target_material =>  [file_set.anode_target_material&.first],
+          :rotation_number =>  [file_set.spiral_pitch_factor&.first]
         }
       end
 

@@ -31,5 +31,22 @@ module Hydra::Works::Characterization
     property :rescale_intercept, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#RescaleIntercept')
     property :rescale_slope, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#RescaleSlope')
     property :window_center_and_width_explanation, predicate: RDF::URI('https://www.morphosource.org/terms/dicomWindowCenterAndWidthExplanation')
+
+    property :exposure_time, predicate: RDF::URI('https://www.morphosource.org/terms/ExposureTime')
+    property :pixel_spacing_calibration_description, predicate: RDF::URI('https://www.morphosource.org/terms/PixelSpacingCalibrationDescription')
+    property :pixel_spacing_calibration_type, predicate: RDF::URI('https://www.morphosource.org/terms/PixelSpacingCalibrationType')
+    property :contrast_frame_averaging, predicate: RDF::URI('https://www.morphosource.org/terms/ContrastFrameAveraging')
+    property :images_in_acquisition, predicate: RDF::URI('https://www.morphosource.org/terms/ImagesInAcquisition')
+    property :KVP, predicate: RDF::URI('https://www.morphosource.org/terms/KVP')
+    property :generator_power, predicate: RDF::URI('https://www.morphosource.org/terms/GeneratorPower')
+    property :x_ray_tube_current, predicate: RDF::URI('https://www.morphosource.org/terms/XRayTubeCurrent')
+    property :container_component_id, predicate: RDF::URI('https://www.morphosource.org/terms/ContainerComponentID')
+    property :container_component_width, predicate: RDF::URI('https://www.morphosource.org/terms/ContainerComponentWidth')
+    property :generator_id, predicate: RDF::URI('https://www.morphosource.org/terms/GeneratorID')
+    property :detector_description, predicate: RDF::URI('https://www.morphosource.org/terms/DetectorDescription')
+    property :distance_source_to_patient, predicate: RDF::URI('https://www.morphosource.org/terms/DistanceSourceToPatient')
+    property :distance_source_to_detector, predicate: RDF::URI('https://www.morphosource.org/terms/DistanceSourceToDetector')
+    property :anode_target_material, predicate: RDF::URI('https://www.morphosource.org/terms/AnodeTargetMaterial')
+    property :spiral_pitch_factor, predicate: RDF::URI('https://www.morphosource.org/terms/SpiralPitchFactor')
   end
 end

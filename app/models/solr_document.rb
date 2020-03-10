@@ -367,6 +367,72 @@ class SolrDocument
   end
 
 
+  def exposure_time
+    self[Solrizer.solr_name('exposure_time', :stored_searchable)]
+  end
+
+  def pixel_spacing_calibration_description
+    self[Solrizer.solr_name('pixel_spacing_calibration_description', :stored_searchable)]
+  end
+
+  def pixel_spacing_calibration_type
+    self[Solrizer.solr_name('pixel_spacing_calibration_type', :stored_searchable)]
+  end
+
+  def contrast_frame_averaging
+    self[Solrizer.solr_name('contrast_frame_averaging', :stored_searchable)]
+  end
+
+  def images_in_acquisition
+    self[Solrizer.solr_name('images_in_acquisition', :stored_searchable)]
+  end
+
+  def KVP
+    self[Solrizer.solr_name('KVP', :stored_searchable)]
+  end
+
+  def generator_power
+    self[Solrizer.solr_name('generator_power', :stored_searchable)]
+  end
+
+  def x_ray_tube_current
+    self[Solrizer.solr_name('x_ray_tube_current', :stored_searchable)]
+  end
+
+  def container_component_id
+    self[Solrizer.solr_name('container_component_id', :stored_searchable)]
+  end
+
+  def container_component_width
+    self[Solrizer.solr_name('container_component_width', :stored_searchable)]
+  end
+
+  def generator_id
+    self[Solrizer.solr_name('generator_id', :stored_searchable)]
+  end
+
+  def detector_description
+    self[Solrizer.solr_name('detector_description', :stored_searchable)]
+  end
+
+  def distance_source_to_patient
+    self[Solrizer.solr_name('distance_source_to_patient', :stored_searchable)]
+  end
+
+  def distance_source_to_detector
+    self[Solrizer.solr_name('distance_source_to_detector', :stored_searchable)]
+  end
+
+  def anode_target_material
+    self[Solrizer.solr_name('anode_target_material', :stored_searchable)]
+  end
+
+  def spiral_pitch_factor
+    self[Solrizer.solr_name('spiral_pitch_factor', :stored_searchable)]
+  end
+
+
+
   def short_title
     self[Solrizer.solr_name('short_title', :stored_searchable)]
   end

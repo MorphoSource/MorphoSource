@@ -78,6 +78,24 @@ module Hydra::Works::Characterization
           t.rescale_intercept(path: 'rescaleIntercept')
           t.rescale_slope(path: 'rescaleSlope')
           t.window_center_and_width_explanation(path: 'windowCenterAndWidthExplanation')
+
+          t.exposure_time(path: 'exposureTime')
+          t.pixel_spacing_calibration_description(path: 'pixelSpacingCalibrationDescription')
+          t.pixel_spacing_calibration_type(path: 'pixelSpacingCalibrationType')
+          t.contrast_frame_averaging(path: 'contrastFrameAveraging')
+          t.images_in_acquisition(path: 'imagesInAcquisition')
+          t.KVP(path: 'KVP')
+          t.generator_power(path: 'generatorPower')
+          t.x_ray_tube_current(path: 'XRayTubeCurrent')
+          t.container_component_id(path: 'containerComponentID')
+          t.container_component_width(path: 'containerComponentWidth')
+          t.generator_id(path: 'generatorID')
+          t.detector_description(path: 'detectorDescription')
+          t.distance_source_to_patient(path: 'distanceSourceToPatient')
+          t.distance_source_to_detector(path: 'distanceSourceToDetector')
+          t.anode_target_material(path: 'anodeTargetMaterial')
+          t.spiral_pitch_factor(path: 'spiralPitchFactor')
+
         end
         t.image do
           t.byte_order(path: 'byteOrder')
@@ -236,6 +254,23 @@ module Hydra::Works::Characterization
       t.rescale_intercept(proxy: [:metadata, :dicom, :rescale_intercept])
       t.rescale_slope(proxy: [:metadata, :dicom, :rescale_slope])
       t.window_center_and_width_explanation(proxy: [:metadata, :dicom, :window_center_and_width_explanation])
+
+      t.exposure_time(proxy: [:metadata, :dicom, :exposure_time])
+      t.pixel_spacing_calibration_description(proxy: [:metadata, :dicom, :pixel_spacing_calibration_description])
+      t.pixel_spacing_calibration_type(proxy: [:metadata, :dicom, :pixel_spacing_calibration_type])
+      t.contrast_frame_averaging(proxy: [:metadata, :dicom, :contrast_frame_averaging])
+      t.images_in_acquisition(proxy: [:metadata, :dicom, :images_in_acquisition])
+      t.KVP(proxy: [:metadata, :dicom, :KVP])
+      t.generator_power(proxy: [:metadata, :dicom, :generator_power])
+      t.x_ray_tube_current(proxy: [:metadata, :dicom, :x_ray_tube_current])
+      t.container_component_id(proxy: [:metadata, :dicom, :container_component_id])
+      t.container_component_width(proxy: [:metadata, :dicom, :container_component_width])
+      t.generator_id(proxy: [:metadata, :dicom, :generator_id])
+      t.detector_description(proxy: [:metadata, :dicom, :detector_description])
+      t.distance_source_to_patient(proxy: [:metadata, :dicom, :distance_source_to_patient])
+      t.distance_source_to_detector(proxy: [:metadata, :dicom, :distance_source_to_detector])
+      t.anode_target_material(proxy: [:metadata, :dicom, :anode_target_material])
+      t.spiral_pitch_factor(proxy: [:metadata, :dicom, :spiral_pitch_factor])
     end
 
     # Cleanup phase; ugly name to avoid collisions.

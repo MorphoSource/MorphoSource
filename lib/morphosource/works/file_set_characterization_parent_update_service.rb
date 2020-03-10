@@ -18,6 +18,7 @@ module Morphosource
             imaging_event = ImagingEvent.where('member_ids_ssim' => work.id).first
           end
           update_parent(work)
+byebug
           update_imaging_event(imaging_event) if imaging_event.present?
         end
       end
@@ -52,8 +53,10 @@ module Morphosource
       end
 
       def update_imaging_event(work)
+byebug
         field_map_for_imaging_event.each do |work_field, file_set_field|
           if file_set.send(file_set_field)&.first
+byebug
             work.send(work_field.to_s + "=", field_transform_for_imaging_event[work_field])
           end
         end
@@ -65,7 +68,27 @@ module Morphosource
           :focal_length => :focal_length,
           :aperture_value => :aperture_value,
           :iso_speed_ratings => :iso_speed_ratings,
-          :shutter_speed => :shutter_speed
+          :shutter_speed => :shutter_speed,
+
+          :exposure_time => :exposure_time,
+          # todo: need to determine which field(s) to map
+          :geometric_calibration => :pixel_spacing_calibration_description,
+          # : => :pixel_spacing_calibration_type,
+          :frame_averaging => :contrast_frame_averaging,
+          :projections => :images_in_acquisition,
+          :voltage => :KVP,
+          :power => :generator_power,
+          :amperage => :x_ray_tube_current,
+          # todo: need to determine which field(s) to map
+          :surrounding_material => :container_component_id,
+          # : => :container_component_width,
+          :xray_tube_type => :generator_id,
+          :detector_type => :detector_description,
+          :source_object_distance => :distance_source_to_patient,
+          :source_detector_distance => :distance_source_to_detector,
+          :target_material => :anode_target_material,
+          :rotation_number => :spiral_pitch_factor
+    
         }
       end
 
@@ -74,7 +97,22 @@ module Morphosource
           :focal_length =>  [file_set.focal_length&.first],
           :aperture_value => [file_set.aperture_value&.first],
           :iso_speed_ratings => [file_set.iso_speed_ratings&.first],
-          :shutter_speed => [file_set.shutter_speed&.first]
+          :shutter_speed => [file_set.shutter_speed&.first],
+
+          :exposure_time =>  [file_set.exposure_time&.first],
+          :geometric_calibration =>  [file_set.geometric_calibration&.first],
+          :frame_averaging =>  [file_set.frame_averaging&.first],
+          :projections =>  [file_set.projections&.first],
+          :voltage =>  [file_set.voltage&.first],
+          :power =>  [file_set.power&.first],
+          :amperage =>  [file_set.amperage&.first],
+          :surrounding_material =>  [file_set.surrounding_material&.first],
+          :xray_tube_type =>  [file_set.xray_tube_type&.first],
+          :detector_type =>  [file_set.detector_type&.first],
+          :source_object_distance =>  [file_set.source_object_distance&.first],
+          :source_detector_distance =>  [file_set.source_detector_distance&.first],
+          :target_material =>  [file_set.target_material&.first],
+          :rotation_number =>  [file_set.rotation_number&.first]
         }
       end
 

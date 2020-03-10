@@ -105,6 +105,7 @@ en:
       collections:
         form_share:
           manager: 'Manager'
+          editor: 'Editor'
           depositor: 'Depositor'
           viewer: 'Viewer'
     works:

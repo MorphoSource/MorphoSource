@@ -8,10 +8,54 @@ RSpec.describe Organization do
 
   it_behaves_like 'a Morphosource work'
 
-  describe "metadata attributes" do
-    it "include the appropriate terms" do
-      expect(subject.attributes).to include('title', 'institution_code', 'description', 'address', 'city', 'state_province', 'country')
-    end
+  it "is valid with valid attributes" do
+      subject.title = ['foo']
+      subject.institution_code = ['foo']
+      subject.address = ['foo']
+      subject.city = ['foo']
+      subject.state_province = ['foo']
+      subject.country = ['foo']
+      subject.institution_name = ['foo']
+      subject.collection_code = ['foo']
+      subject.team_id = ['foo']
+      # permissions defaults metadata
+      subject.download_permission = ['foo']
+      subject.download_reviewer = ['foo']
+      subject.agreement_uri = ['foo']
+      subject.rights_statement = ['foo']
+      subject.terms_of_use = ['foo']
+      subject.usage_agreement = ['foo']
+      subject.permits_commercial_use = ['foo']
+      subject.permits_3d_use = ['foo']
+      subject.rights_holder = ['foo']
+      subject.funding = ['foo']
+      subject.publisher = ['foo']
+      subject.cite_as = ['foo']
+      expect(subject).to be_valid
+  end
+
+  it "is not valid without required field - title" do
+    subject.title = nil
+    subject.institution_code = ['foo']
+    subject.description = ['foo']
+    subject.address = ['foo']
+    subject.city = ['foo']
+    subject.state_province = ['foo']
+    subject.country = ['foo']
+    subject.download_permission = ['foo']
+    # permissions defaults metadata
+    subject.download_reviewer = ['foo']
+    subject.agreement_uri = ['foo']
+    subject.rights_statement = ['foo']
+    subject.terms_of_use = ['foo']
+    subject.usage_agreement = ['foo']
+    subject.permits_commercial_use = ['foo']
+    subject.permits_3d_use = ['foo']
+    subject.rights_holder = ['foo']
+    subject.funding = ['foo']
+    subject.publisher = ['foo']
+    subject.cite_as = ['foo']
+    expect(subject).to_not be_valid
   end
 
   describe "valid work relationships" do

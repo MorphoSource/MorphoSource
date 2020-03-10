@@ -61,6 +61,7 @@ module Morphosource::Derivatives::Processors
     def extract_mesh_archive
       Zip::File.open(source_path) do |zip_file|
         zip_file.each do |f|
+          next if File.basename(f.name).start_with?('.')
           fpath = File.join(tmp_dir_path, f.name)
           zip_file.extract(f, fpath) unless File.exist?(fpath)
           @source_path = fpath if acceptable_archive_mesh_formats.include? File.extname(f.name).downcase 

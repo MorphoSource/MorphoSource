@@ -69,17 +69,13 @@ byebug
           :shutter_speed => :shutter_speed,
 
           :exposure_time => :exposure_time,
-          # todo: need to determine which field(s) to map
-          :pixel_spacing_calibration => :pixel_spacing_calibration_description,
-          # : => :pixel_spacing_calibration_type,
+          :pixel_spacing_calibration => :pixel_spacing_calibration_type,
           :frame_averaging => :contrast_frame_averaging,
           :projections => :images_in_acquisition,
           :voltage => :KVP,
           :power => :generator_power,
           :amperage => :x_ray_tube_current,
-          # todo: need to determine which field(s) to map
-          :surrounding_material => :container_component_id,
-          # : => :container_component_width,
+          :surrounding_material => :container_description,
           :xray_tube_type => :generator_id,
           :detector_type => :detector_description,
           :source_object_distance => :distance_source_to_patient,
@@ -98,15 +94,13 @@ byebug
           :shutter_speed => [file_set.shutter_speed&.first],
 
           :exposure_time =>  [file_set.exposure_time&.first],
-          :pixel_spacing_calibration =>  [file_set.pixel_spacing_calibration_description&.first],
-
+          :pixel_spacing_calibration =>  [file_set.pixel_spacing_calibration_type&.first],
           :frame_averaging =>  [file_set.contrast_frame_averaging&.first],
           :projections =>  [file_set.images_in_acquisition&.first],
           :voltage =>  [file_set.KVP&.first],
           :power =>  [file_set.generator_power&.first],
           :amperage =>  [file_set.x_ray_tube_current&.first],
-          :surrounding_material =>  [file_set.container_component_id&.first],
-
+          :surrounding_material =>  [file_set.container_description&.first],
           :xray_tube_type =>  [file_set.generator_id&.first],
           :detector_type =>  [file_set.detector_description&.first],
           :source_object_distance =>  [file_set.distance_source_to_patient&.first],

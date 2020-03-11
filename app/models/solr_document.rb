@@ -399,12 +399,8 @@ class SolrDocument
     self[Solrizer.solr_name('x_ray_tube_current', :stored_searchable)]
   end
 
-  def container_component_id
-    self[Solrizer.solr_name('container_component_id', :stored_searchable)]
-  end
-
-  def container_component_width
-    self[Solrizer.solr_name('container_component_width', :stored_searchable)]
+  def container_description
+    self[Solrizer.solr_name('container_description', :stored_searchable)]
   end
 
   def generator_id

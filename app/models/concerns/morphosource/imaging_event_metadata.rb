@@ -55,7 +55,7 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
-      property :surrounding_material, predicate: ::RDF::URI.new("http://purl.org/healthcarevocab/v1#ContainerComponentDescription") do |index|
+      property :surrounding_material, predicate: ::RDF::URI.new("http://purl.org/healthcarevocab/v1#ContainerDescription") do |index|
           index.as :stored_searchable, :facetable
       end
 

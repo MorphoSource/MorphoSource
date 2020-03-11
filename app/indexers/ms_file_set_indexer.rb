@@ -45,15 +45,13 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['window_center_and_width_explanation_tesim'] = object.window_center_and_width_explanation
 
       solr_doc['exposure_time_tesim'] = object.exposure_time
-      solr_doc['pixel_spacing_calibration_description_tesim'] = object.pixel_spacing_calibration_description
       solr_doc['pixel_spacing_calibration_type_tesim'] = object.pixel_spacing_calibration_type
       solr_doc['contrast_frame_averaging_tesim'] = object.contrast_frame_averaging
       solr_doc['images_in_acquisition_tesim'] = object.images_in_acquisition
       solr_doc['KVP_tesim'] = object.KVP
       solr_doc['generator_power_tesim'] = object.generator_power
       solr_doc['x_ray_tube_current_tesim'] = object.x_ray_tube_current
-      solr_doc['container_component_id_tesim'] = object.container_component_id
-      solr_doc['container_component_width_tesim'] = object.container_component_width
+      solr_doc['container_description_tesim'] = object.container_description
       solr_doc['generator_id_tesim'] = object.generator_id
       solr_doc['detector_description_tesim'] = object.detector_description
       solr_doc['distance_source_to_patient_tesim'] = object.distance_source_to_patient

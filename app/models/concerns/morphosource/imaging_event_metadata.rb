@@ -143,15 +143,15 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
-      property :aperture_value, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/apertureValue") do |index|
+      property :aperture_value, predicate: ::RDF::URI.new("http://www.w3.org/2003/12/exif/ns#apertureValue") do |index|
           index.as :stored_searchable, :facetable
       end
 
-      property :iso_speed_ratings, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/isoSpeedRatings") do |index|
+      property :iso_speed_ratings, predicate: ::RDF::URI.new("http://www.w3.org/2003/12/exif/ns#isoSpeedRatings") do |index|
           index.as :stored_searchable, :facetable
       end
 
-      property :shutter_speed, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/shutterSpeed") do |index|
+      property :shutter_speed, predicate: ::RDF::URI.new("http://www.w3.org/2003/12/exif/ns#shutterSpeedValue") do |index|
           index.as :stored_searchable, :facetable
       end
 

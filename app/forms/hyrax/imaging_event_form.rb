@@ -22,7 +22,7 @@ module Hyrax
         # X-ray CT metadata
         :exposure_time,
         :flux_normalization,
-        :geometric_calibration,
+        :pixel_spacing_calibration,
         :shading_correction,
         :filter,
         :frame_averaging,
@@ -73,7 +73,7 @@ module Hyrax
         # X-ray CT metadata
         :exposure_time,
         :flux_normalization,
-        :geometric_calibration,
+        :pixel_spacing_calibration,
         :shading_correction,
         :frame_averaging,
         :projections,
@@ -114,7 +114,7 @@ module Hyrax
             # X-ray CT metadata
             :exposure_time,
             :flux_normalization,
-            :geometric_calibration,
+            :pixel_spacing_calibration,
             :shading_correction,
             :filter,
             :frame_averaging,

@@ -70,7 +70,7 @@ byebug
 
           :exposure_time => :exposure_time,
           # todo: need to determine which field(s) to map
-          :geometric_calibration => :pixel_spacing_calibration_description,
+          :pixel_spacing_calibration => :pixel_spacing_calibration_description,
           # : => :pixel_spacing_calibration_type,
           :frame_averaging => :contrast_frame_averaging,
           :projections => :images_in_acquisition,
@@ -98,7 +98,7 @@ byebug
           :shutter_speed => [file_set.shutter_speed&.first],
 
           :exposure_time =>  [file_set.exposure_time&.first],
-          :geometric_calibration =>  [file_set.pixel_spacing_calibration_description&.first],
+          :pixel_spacing_calibration =>  [file_set.pixel_spacing_calibration_description&.first],
 
           :frame_averaging =>  [file_set.contrast_frame_averaging&.first],
           :projections =>  [file_set.images_in_acquisition&.first],

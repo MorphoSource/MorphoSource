@@ -38,7 +38,7 @@ module Hyrax
       # XRAY modality fields
       :exposure_time,
       :flux_normalization,
-      :geometric_calibration,
+      :pixel_spacing_calibration,
       :shading_correction,
       :filter,
       :frame_averaging,
@@ -359,7 +359,7 @@ module Hyrax
         elsif @imaging_event_modality.upcase.include? "XRAY"
           @exposure_time = @imaging_event.exposure_time.first
           @flux_normalization = @imaging_event.flux_normalization.first
-          @geometric_calibration = @imaging_event.geometric_calibration.first
+          @pixel_spacing_calibration = @imaging_event.pixel_spacing_calibration.first
           @shading_correction = @imaging_event.shading_correction.first
           @filter = @imaging_event.filter.first
           @frame_averaging = @imaging_event.frame_averaging.first

@@ -480,8 +480,8 @@ class SolrDocument
       self[Solrizer.solr_name('flux_normalization', :stored_searchable)]
   end
 
-  def geometric_calibration
-      self[Solrizer.solr_name('geometric_calibration', :stored_searchable)]
+  def pixel_spacing_calibration
+      self[Solrizer.solr_name('pixel_spacing_calibration', :stored_searchable)]
   end
 
   def shading_correction

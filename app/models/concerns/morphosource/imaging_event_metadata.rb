@@ -23,7 +23,7 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
-      property :geometric_calibration, predicate: ::RDF::URI.new("http://purl.org/healthcarevocab/v1#PixelSpacingCalibrationType") do |index|
+      property :pixel_spacing_calibration, predicate: ::RDF::URI.new("http://purl.org/healthcarevocab/v1#PixelSpacingCalibrationType") do |index|
           index.as :stored_searchable, :facetable
       end
 

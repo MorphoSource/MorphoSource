@@ -427,6 +427,9 @@ class SolrDocument
     self[Solrizer.solr_name('spiral_pitch_factor', :stored_searchable)]
   end
 
+  def number_of_series_related_instances
+    self[Solrizer.solr_name('number_of_series_related_instances', :stored_searchable)]
+  end
 
 
   def short_title

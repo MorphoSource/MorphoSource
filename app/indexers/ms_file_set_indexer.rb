@@ -58,6 +58,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['distance_source_to_detector_tesim'] = object.distance_source_to_detector
       solr_doc['anode_target_material_tesim'] = object.anode_target_material
       solr_doc['spiral_pitch_factor_tesim'] = object.spiral_pitch_factor
+      solr_doc['number_of_series_related_instances_tesim'] = object.number_of_series_related_instances
       
       # mesh
       solr_doc['point_count_tesim'] = object.point_count

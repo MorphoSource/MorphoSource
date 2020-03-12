@@ -70,7 +70,7 @@ class FileSet < ActiveFedora::Base
     :distance_source_to_detector,
     :anode_target_material,
     :spiral_pitch_factor,
-    
+    :number_of_series_related_instances,    
     to: :characterization_proxy
   )
 

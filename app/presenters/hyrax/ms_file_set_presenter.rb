@@ -54,6 +54,7 @@ module Hyrax
         :distance_source_to_detector,
         :anode_target_material,
         :spiral_pitch_factor,
+        :number_of_series_related_instances,
         # mesh
         :point_count,
         :face_count,

@@ -46,5 +46,6 @@ module Hydra::Works::Characterization
     property :distance_source_to_detector, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#DistanceSourceToDetector')
     property :anode_target_material, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#AnodeTargetMaterial')
     property :spiral_pitch_factor, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#SpiralPitchFactor')
+    property :number_of_series_related_instances, predicate: RDF::URI('https://www.morphosource.org/terms/dicomNumberOfSeriesRelatedInstances')
   end
 end

@@ -24,8 +24,10 @@ module Morphosource
 
       def update_parent(work)
         field_map.each do |work_field, file_set_field|
-          if file_set.send(file_set_field)&.first
-            work.send(work_field.to_s + "=", field_transform[work_field])
+          field_value_found = file_set.send(file_set_field)&.first
+          if field_value_found
+            transformed_value = field_transform[work_field]
+            work.send(work_field.to_s + "=", transformed_value)
           end
         end
         work.save!
@@ -37,7 +39,8 @@ module Morphosource
           :y_spacing => :pixel_spacing,
           :z_spacing => :spacing_between_slices, # slice thickness and number of images in set
           :unit => :pixel_spacing,
-          :slice_thickness => :slice_thickness
+          :slice_thickness => :slice_thickness,
+          :number_of_images_in_set => :number_of_series_related_instances
         }
       end
 
@@ -47,15 +50,21 @@ module Morphosource
           :y_spacing => [file_set.pixel_spacing&.first.split("\\").first],
           :z_spacing => [file_set.spacing_between_slices&.first],
           :unit => ["Mm"],
-          :slice_thickness => [file_set.slice_thickness&.first]
+          :slice_thickness => [file_set.slice_thickness&.first],
+          :number_of_images_in_set => [file_set.number_of_series_related_instances&.first]
         }
       end
 
       def update_imaging_event(work)
         field_map_for_imaging_event.each do |work_field, file_set_field|
-          if file_set.send(file_set_field)&.first
-byebug
-            work.send(work_field.to_s + "=", field_transform_for_imaging_event[work_field])
+          field_value_found = file_set.send(file_set_field)&.first
+          #if file_set_field == :pixel_spacing_calibration_type
+          #  field_value_found = "geometry"
+          #  byebug
+          #end
+          if field_value_found
+            transformed_value = field_transform_for_imaging_event[work_field]
+            work.send(work_field.to_s + "=", transformed_value)
           end
         end
         work.save!
@@ -94,7 +103,7 @@ byebug
           :shutter_speed => [file_set.shutter_speed&.first],
 
           :exposure_time =>  [file_set.exposure_time&.first],
-          :pixel_spacing_calibration =>  [file_set.pixel_spacing_calibration_type&.first],
+          :pixel_spacing_calibration =>  [title_case(file_set.pixel_spacing_calibration_type&.first)],
           :frame_averaging =>  [file_set.contrast_frame_averaging&.first],
           :projections =>  [file_set.images_in_acquisition&.first],
           :voltage =>  [file_set.KVP&.first],
@@ -108,6 +117,14 @@ byebug
           :target_material =>  [file_set.anode_target_material&.first],
           :rotation_number =>  [file_set.spiral_pitch_factor&.first]
         }
+      end
+
+      def title_case(value)
+        if value.present?
+          return value.titleize
+        else
+          return nil
+        end
       end
 
     end

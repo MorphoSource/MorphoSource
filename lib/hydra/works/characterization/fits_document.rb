@@ -94,7 +94,7 @@ module Hydra::Works::Characterization
           t.distance_source_to_detector(path: 'distanceSourceToDetector')
           t.anode_target_material(path: 'anodeTargetMaterial')
           t.spiral_pitch_factor(path: 'spiralPitchFactor')
-
+          t.number_of_series_related_instances(path: 'numberOfSeriesRelatedInstances')
         end
         t.image do
           t.byte_order(path: 'byteOrder')
@@ -268,6 +268,7 @@ module Hydra::Works::Characterization
       t.distance_source_to_detector(proxy: [:metadata, :dicom, :distance_source_to_detector])
       t.anode_target_material(proxy: [:metadata, :dicom, :anode_target_material])
       t.spiral_pitch_factor(proxy: [:metadata, :dicom, :spiral_pitch_factor])
+      t.number_of_series_related_instances(proxy: [:metadata, :dicom, :number_of_series_related_instances])
     end
 
     # Cleanup phase; ugly name to avoid collisions.

@@ -15,8 +15,9 @@ module Hyrax
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list, :parent_media_members,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
-      :processing_events, :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
-      :processing_activity_count, :processing_activity_items,
+      :this_media_and_parents_id_list, :this_media_and_parents_members,
+      :processing_events, :processing_events_data, :processing_event_count, :this_media_processing_event,
+      :processing_activity_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
       :raw_or_derived, :is_absentee_parent,
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
@@ -199,30 +200,6 @@ module Hyrax
         @face_count = @face_count.to_s(:delimited)
       end
 
-      # get processing event:  media < processing_event
-      # then get processing activities
-      @processing_events = ProcessingEvent.where('member_ids_ssim' => solr_document.id)
-      processing_event_ids = []
-      @processing_activity_items = []
-      if @processing_events.present?
-        @processing_event_count = @processing_events.count
-        @processing_events.each do |processing_event|
-          processing_event_ids << processing_event.id
-          processing_event.processing_activity.each do |processing_activity|
-            @processing_activity_items << Hash[processing_activity.split(/\s*,\s*/).map {|el| el.split ': '}]
-          end
-        end
-        # sort the activity items by the key Step
-        @processing_activity_items.sort_by! { |hsh| hsh["Step"] }
-        if @processing_activity_items.present?
-          @processing_activity_count = processing_activity_items.length
-        else
-          @processing_activity_count = 0
-        end
-      else
-        @processing_event_count = 0
-      end
-
       # Get parent medias (all)
       # add current media id, then add child media ids.
       # currently add up to 5 levels in the tree.  Later we should store the child medias in the work
@@ -245,6 +222,44 @@ module Hyrax
 
       this_media_list = [] << solr_document.id
       @this_media_member = member_presenters_for(this_media_list).first
+
+      # get members for this media combined with parents, ordered in reverse
+      @this_media_and_parents_id_list = parent_media_id_list << solr_document.id
+      @this_media_and_parents_members = parent_media_members << this_media_member
+
+      # get processing event:  media < processing_event
+      # then get processing event data: activity items, child/parent IDs and member presenters
+      @processing_events = ProcessingEvent.where('member_ids_ssim' => this_media_and_parents_id_list)
+      processing_event_ids = []
+      @processing_events_data = []
+      processing_events.each do |pe|
+        processing_event_ids << pe.id
+
+        processing_activity_items = []
+        pe.processing_activity.each do |processing_activity|
+          processing_activity_items << Hash[processing_activity.split(/\s*,\s*/).map {|el| el.split ': '}]
+        end
+        processing_activity_items.sort_by! { |hsh| hsh["Step"] }
+
+        parent_ids = []
+        parent_ids = pe.in_work_ids.select { |m_id| parent_media_id_list.include? m_id }
+
+        @processing_events_data << {
+          :id => pe.id,
+          :processing_activity_items => processing_activity_items,
+          :child_ids => pe.member_ids,
+          :child_members => this_media_and_parents_members.select { |m| pe.member_ids.include? m.id },
+          :parent_ids => parent_ids,
+          :parent_members => this_media_and_parents_members.select { |m| parent_ids.include? m.id }
+        }
+      end
+
+      @processing_event_count = processing_events.count
+      @processing_activity_count = processing_events_data
+        .map { |pe| pe[:processing_activity_items].length}
+        .inject(0) { |sum, x| sum + x }
+      @this_media_processing_event = processing_events
+        .find { |pe| pe.member_ids.include? solr_document.id }
 
       if direct_parent_id_list.length > 0
         # If a media has a parent work and is derived, then that media’s raw ancestor media work
@@ -422,6 +437,10 @@ module Hyrax
 
     def showcase_image_acquisition_details_partial
       'showcase_image_acquisition_details'
+    end
+
+    def showcase_image_acquisition_details_processing_partial
+      'showcase_image_acquisition_details_processing'
     end
 
     def showcase_direct_parents_member_partial

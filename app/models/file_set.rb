@@ -97,6 +97,7 @@ class FileSet < ActiveFedora::Base
     :contents_mime_type,
     :contents_file_name,
     :contents_file_size,
+    :contents_accepted_file_count,
     to: :characterization_proxy
   )
 end

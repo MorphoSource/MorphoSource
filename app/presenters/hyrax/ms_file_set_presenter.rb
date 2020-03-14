@@ -4,6 +4,7 @@ module Hyrax
     def self.characterization_terms
       super + [
         # image
+        :number_of_images_in_set,
         :bits_per_sample,
         :color_space,
         :compression,
@@ -72,7 +73,8 @@ module Hyrax
         # zip archive contents
         :contents_mime_type,
         :contents_file_name,
-        :contents_file_size
+        :contents_file_size,
+        :contents_accepted_file_count
       ]
     end
 

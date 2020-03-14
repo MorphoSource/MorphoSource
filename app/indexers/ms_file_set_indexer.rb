@@ -78,6 +78,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['contents_mime_type_tesim'] = object.contents_mime_type
       solr_doc['contents_file_name_tesim'] = object.contents_file_name
       solr_doc['contents_file_size_tesim'] = object.contents_file_size
+      solr_doc['contents_accepted_file_count_tesim'] = object.contents_accepted_file_count
     end
   end
 end

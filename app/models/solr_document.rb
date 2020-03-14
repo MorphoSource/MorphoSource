@@ -330,6 +330,10 @@ class SolrDocument
     self[Solrizer.solr_name('slice_thickness', :stored_searchable)]
   end
 
+  def number_of_images_in_set
+    self[Solrizer.solr_name('number_of_images_in_set', :stored_searchable)]
+  end
+
   def bits_allocated
     self[Solrizer.solr_name('bits_allocated', :stored_searchable)]
   end
@@ -672,6 +676,10 @@ class SolrDocument
 
   def contents_file_size
     self[Solrizer.solr_name('contents_file_size', :stored_searchable)]
+  end
+
+  def contents_accepted_file_count
+    self[Solrizer.solr_name('contents_accepted_file_count', :stored_searchable)]
   end
 
   # Taxonomy fields

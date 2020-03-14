@@ -5,11 +5,20 @@ module Morphosource
         new(file_set).update_parents
       end
 
-      attr_accessor :file_set, :parents
+      attr_accessor :file_set, :parents, :field_for_number_of_images, :value_for_number_of_images
 
       def initialize(file_set)
         @file_set = file_set
         @parents = file_set.member_of
+      end
+
+      def isDicom?(fs) 
+        extension = fs.file_type_extension&.first
+        if extension.present?
+          return extension.downcase == 'dcm'
+        else
+          return false
+        end
       end
 
       def update_parents
@@ -23,6 +32,13 @@ module Morphosource
       end
 
       def update_parent(work)
+        if isDicom?(file_set)
+          @field_for_number_of_images = :contents_accepted_file_count
+          @value_for_number_of_images = file_set.contents_accepted_file_count&.first
+        else
+          @field_for_number_of_images = :number_of_series_related_instances
+          @value_for_number_of_images = file_set.number_of_series_related_instances&.first
+        end
         field_map.each do |work_field, file_set_field|
           field_value_found = file_set.send(file_set_field)&.first
           if field_value_found
@@ -40,7 +56,7 @@ module Morphosource
           :z_spacing => :spacing_between_slices, # slice thickness and number of images in set
           :unit => :pixel_spacing,
           :slice_thickness => :slice_thickness,
-          :number_of_images_in_set => :number_of_series_related_instances
+          :number_of_images_in_set => @field_for_number_of_images
         }
       end
 
@@ -51,7 +67,7 @@ module Morphosource
           :z_spacing => [file_set.spacing_between_slices&.first],
           :unit => ["Mm"],
           :slice_thickness => [file_set.slice_thickness&.first],
-          :number_of_images_in_set => [file_set.number_of_series_related_instances&.first]
+          :number_of_images_in_set => @value_for_number_of_images.to_s
         }
       end
 

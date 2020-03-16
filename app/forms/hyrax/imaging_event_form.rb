@@ -22,7 +22,7 @@ module Hyrax
         # X-ray CT metadata
         :exposure_time,
         :flux_normalization,
-        :geometric_calibration,
+        :pixel_spacing_calibration,
         :shading_correction,
         :filter,
         :frame_averaging,
@@ -51,7 +51,11 @@ module Hyrax
         # Photogrammetry properties and Photography properties
         :lens_make,
         :lens_model,
-        :light_source
+        :light_source,
+        :focal_length,
+        :aperture_value,
+        :iso_speed_ratings,
+        :shutter_speed
     ]
 
     #self.terms += [:software, :scanner_modality]
@@ -69,7 +73,7 @@ module Hyrax
         # X-ray CT metadata
         :exposure_time,
         :flux_normalization,
-        :geometric_calibration,
+        :pixel_spacing_calibration,
         :shading_correction,
         :frame_averaging,
         :projections,
@@ -110,7 +114,7 @@ module Hyrax
             # X-ray CT metadata
             :exposure_time,
             :flux_normalization,
-            :geometric_calibration,
+            :pixel_spacing_calibration,
             :shading_correction,
             :filter,
             :frame_averaging,

@@ -28,7 +28,7 @@ RSpec.describe ImagingEvent do
           # X-ray CT metadata
           subject.exposure_time = ["foo"]
           subject.flux_normalization = ["foo"]
-          subject.geometric_calibration = ["foo"]
+          subject.pixel_spacing_calibration = ["foo"]
           subject.shading_correction = ["foo"]
           subject.filter = ["foo"]
           subject.frame_averaging = ["foo"]
@@ -70,7 +70,7 @@ RSpec.describe ImagingEvent do
           # X-ray CT metadata
           subject.exposure_time = ["foo"]
           subject.flux_normalization = ["foo"]
-          subject.geometric_calibration = ["foo"]
+          subject.pixel_spacing_calibration = ["foo"]
           subject.shading_correction = ["foo"]
           subject.filter = ["foo"]
           subject.frame_averaging = ["foo"]

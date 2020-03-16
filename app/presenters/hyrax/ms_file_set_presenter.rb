@@ -4,6 +4,7 @@ module Hyrax
     def self.characterization_terms
       super + [
         # image
+        :number_of_images_in_set,
         :bits_per_sample,
         :color_space,
         :compression,
@@ -29,7 +30,7 @@ module Hyrax
         :rows,
         :columns,
         :pixel_spacing,
-        :slice_thickness,
+        #:slice_thickness,
         :bits_allocated,
         :bits_stored,
         :high_bit,
@@ -39,6 +40,22 @@ module Hyrax
         :rescale_intercept,
         :rescale_slope,
         :window_center_and_width_explanation,
+
+        :exposure_time,
+        :pixel_spacing_calibration_type,
+        :contrast_frame_averaging,
+        :images_in_acquisition,
+        :KVP,
+        :generator_power,
+        :x_ray_tube_current,
+        :container_description,
+        :generator_id,
+        :detector_description,
+        :distance_source_to_patient,
+        :distance_source_to_detector,
+        :anode_target_material,
+        :spiral_pitch_factor,
+        :number_of_series_related_instances,
         # mesh
         :point_count,
         :face_count,
@@ -56,7 +73,8 @@ module Hyrax
         # zip archive contents
         :contents_mime_type,
         :contents_file_name,
-        :contents_file_size
+        :contents_file_size,
+        :contents_accepted_file_count
       ]
     end
 

@@ -11,7 +11,16 @@ class FileSet < ActiveFedora::Base
   self.indexer = ::MsFileSetIndexer
 
   # for images
-  delegate(:bits_per_sample, :color_space, :compression, to: :characterization_proxy)
+  delegate(
+    :bits_per_sample, 
+    :color_space, 
+    :compression, 
+    :focal_length,
+    :aperture_value,
+    :iso_speed_ratings,
+    :shutter_speed,
+    to: :characterization_proxy
+    )
 
   # for dicom
   delegate(
@@ -46,6 +55,22 @@ class FileSet < ActiveFedora::Base
     :rescale_intercept,
     :rescale_slope,
     :window_center_and_width_explanation,
+
+    :exposure_time,
+    :pixel_spacing_calibration_type,
+    :contrast_frame_averaging,
+    :images_in_acquisition,
+    :KVP,
+    :generator_power,
+    :x_ray_tube_current,
+    :container_description,
+    :generator_id,
+    :detector_description,
+    :distance_source_to_patient,
+    :distance_source_to_detector,
+    :anode_target_material,
+    :spiral_pitch_factor,
+    :number_of_series_related_instances,    
     to: :characterization_proxy
   )
 
@@ -72,6 +97,7 @@ class FileSet < ActiveFedora::Base
     :contents_mime_type,
     :contents_file_name,
     :contents_file_size,
+    :contents_accepted_file_count,
     to: :characterization_proxy
   )
 end

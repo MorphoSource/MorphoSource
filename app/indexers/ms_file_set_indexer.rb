@@ -4,6 +4,11 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
     super.tap do |solr_doc|
       # images
       solr_doc['bits_per_sample_tesim'] = object.bits_per_sample
+      solr_doc['focal_length_tesim'] = object.focal_length
+      solr_doc['iso_speed_ratings_tesim'] = object.iso_speed_ratings
+      solr_doc['aperture_value_tesim'] = object.aperture_value
+      solr_doc['shutter_speed_tesim'] = object.shutter_speed
+
       solr_doc['color_space_tesim'] = object.color_space
       solr_doc['compression_tesim'] = object.compression
       # dicom
@@ -38,6 +43,23 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['rescale_intercept_tesim'] = object.rescale_intercept
       solr_doc['rescale_slope_tesim'] = object.rescale_slope
       solr_doc['window_center_and_width_explanation_tesim'] = object.window_center_and_width_explanation
+
+      solr_doc['exposure_time_tesim'] = object.exposure_time
+      solr_doc['pixel_spacing_calibration_type_tesim'] = object.pixel_spacing_calibration_type
+      solr_doc['contrast_frame_averaging_tesim'] = object.contrast_frame_averaging
+      solr_doc['images_in_acquisition_tesim'] = object.images_in_acquisition
+      solr_doc['KVP_tesim'] = object.KVP
+      solr_doc['generator_power_tesim'] = object.generator_power
+      solr_doc['x_ray_tube_current_tesim'] = object.x_ray_tube_current
+      solr_doc['container_description_tesim'] = object.container_description
+      solr_doc['generator_id_tesim'] = object.generator_id
+      solr_doc['detector_description_tesim'] = object.detector_description
+      solr_doc['distance_source_to_patient_tesim'] = object.distance_source_to_patient
+      solr_doc['distance_source_to_detector_tesim'] = object.distance_source_to_detector
+      solr_doc['anode_target_material_tesim'] = object.anode_target_material
+      solr_doc['spiral_pitch_factor_tesim'] = object.spiral_pitch_factor
+      solr_doc['number_of_series_related_instances_tesim'] = object.number_of_series_related_instances
+      
       # mesh
       solr_doc['point_count_tesim'] = object.point_count
       solr_doc['face_count_tesim'] = object.face_count
@@ -56,6 +78,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['contents_mime_type_tesim'] = object.contents_mime_type
       solr_doc['contents_file_name_tesim'] = object.contents_file_name
       solr_doc['contents_file_size_tesim'] = object.contents_file_size
+      solr_doc['contents_accepted_file_count_tesim'] = object.contents_accepted_file_count
     end
   end
 end

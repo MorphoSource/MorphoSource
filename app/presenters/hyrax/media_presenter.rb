@@ -6,7 +6,7 @@ module Hyrax
     include Morphosource::PresenterMethods
     include MorphosourceHelper
 
-    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, to: :solr_document
+    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, to: :solr_document
 
     attr_accessor :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
@@ -39,7 +39,7 @@ module Hyrax
       # XRAY modality fields
       :exposure_time,
       :flux_normalization,
-      :geometric_calibration,
+      :pixel_spacing_calibration,
       :shading_correction,
       :filter,
       :frame_averaging,
@@ -145,8 +145,21 @@ module Hyrax
         # if content mime type does not exist, use the mime type
         if file_set.contents_mime_type.first.present?
           contents_mime_type = file_set.contents_mime_type.first
-        else
+        elsif file_set.mime_type.present?
           contents_mime_type = file_set.mime_type
+        else
+          contents_mime_type = 'unknown'
+          # todo: might need to check why some image format (e.g. ARW) is not returning a mime type
+          # could be related to the conflict in the FITS output xml:
+          #  <identification status="CONFLICT">
+          #    <identity format="ARW EXIF" mimetype="image/x-sony-arw" toolname="FITS" toolversion="1.5.0">
+          #      <tool toolname="Exiftool" toolversion="11.54" />
+          #    </identity>
+          #    <identity format="Tagged Image File Format" mimetype="image/tiff" toolname="FITS" toolversion="1.5.0">
+          #      <tool toolname="ffident" toolversion="0.2" />
+          #      <tool toolname="Tika" toolversion="1.21" />
+          #    </identity>
+          #  </identification>
         end
         @mime_type << contents_mime_type
         @file_size += file_set.file_size.first.to_i if file_set.file_size.present?
@@ -361,7 +374,7 @@ module Hyrax
         elsif @imaging_event_modality.upcase.include? "XRAY"
           @exposure_time = @imaging_event.exposure_time.first
           @flux_normalization = @imaging_event.flux_normalization.first
-          @geometric_calibration = @imaging_event.geometric_calibration.first
+          @pixel_spacing_calibration = @imaging_event.pixel_spacing_calibration.first
           @shading_correction = @imaging_event.shading_correction.first
           @filter = @imaging_event.filter.first
           @frame_averaging = @imaging_event.frame_averaging.first

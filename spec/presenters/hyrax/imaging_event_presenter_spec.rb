@@ -14,7 +14,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
     # X-ray CT metadata
     let(:exposure_time)  {['test']}
     let(:flux_normalization)  {['test']}
-    let(:geometric_calibration)  {['test']}
+    let(:pixel_spacing_calibration)  {['test']}
     let(:shading_correction)  {['test']}
     let(:filter)  {['test']}
     let(:frame_averaging)  {['test']}
@@ -60,7 +60,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
 
             exposure_time: exposure_time,
             flux_normalization: flux_normalization,
-            geometric_calibration: geometric_calibration,
+            pixel_spacing_calibration: pixel_spacing_calibration,
             shading_correction: shading_correction,
             filter: filter,
             frame_averaging: frame_averaging,
@@ -103,7 +103,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
 
             exposure_time: exposure_time,
             flux_normalization: flux_normalization,
-            geometric_calibration: geometric_calibration,
+            pixel_spacing_calibration: pixel_spacing_calibration,
             shading_correction: shading_correction,
             filter: filter,
             frame_averaging: frame_averaging,

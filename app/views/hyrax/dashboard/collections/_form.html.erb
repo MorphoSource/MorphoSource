@@ -19,6 +19,11 @@
         <a href="#sharing" role="tab" data-toggle="tab"><%= t('.tabs.sharing') %></a>
       </li>
       <% end %>
+      <% if @collection.team? && @current_user.can?(:edit, @collection) %>
+        <li>
+          <a href="#organization" role="tab" data-toggle="tab"><%= 'Organization' %></a>
+        </li>
+      <% end %>
     <% end %>
   </ul>
 
@@ -93,6 +98,16 @@
                 <%= render 'ms_form_share', f: f %>
               <% else %>
                 <%= render 'form_share', f: f %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div id="organization" class="tab-pane">
+          <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
+            <div class="panel-body">
+              <% if @collection.team? %>
+                <%= render 'ms_form_organization', f: f %>
               <% end %>
             </div>
           </div>

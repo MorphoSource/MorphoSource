@@ -57,7 +57,7 @@ module Hyrax
         @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
       end
       if @presenter.has_processing_events?
-        pe_work = @presenter.processing_events.first
+        pe_work = @presenter.this_media_processing_event
         @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
       end
       @new_device_submit_submissions_url = '/submissions/new_device_submit'
@@ -139,7 +139,7 @@ module Hyrax
               @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
             end
             if @presenter.has_processing_events?
-              pe_work = @presenter.processing_events.first
+              pe_work = @presenter.this_media_processing_event
               @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
             end
             @new_device_submit_submissions_url = '/submissions/new_device_submit'

@@ -23,7 +23,7 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
-      property :geometric_calibration, predicate: ::RDF::URI.new("http://purl.org/healthcarevocab/v1#PixelSpacingCalibrationType") do |index|
+      property :pixel_spacing_calibration, predicate: ::RDF::URI.new("http://purl.org/healthcarevocab/v1#PixelSpacingCalibrationType") do |index|
           index.as :stored_searchable, :facetable
       end
 
@@ -55,7 +55,7 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
-      property :surrounding_material, predicate: ::RDF::URI.new("http://purl.org/healthcarevocab/v1#ContainerComponentDescription") do |index|
+      property :surrounding_material, predicate: ::RDF::URI.new("http://purl.org/healthcarevocab/v1#ContainerDescription") do |index|
           index.as :stored_searchable, :facetable
       end
 
@@ -137,6 +137,24 @@ module Morphosource
       property :light_source, predicate: ::RDF::URI.new("http://www.w3.org/2003/12/exif/ns#lightSource") do |index|
           index.as :stored_searchable, :facetable
       end
+
+
+      property :focal_length, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/focalLength") do |index|
+          index.as :stored_searchable, :facetable
+      end
+
+      property :aperture_value, predicate: ::RDF::URI.new("http://www.w3.org/2003/12/exif/ns#apertureValue") do |index|
+          index.as :stored_searchable, :facetable
+      end
+
+      property :iso_speed_ratings, predicate: ::RDF::URI.new("http://www.w3.org/2003/12/exif/ns#isoSpeedRatings") do |index|
+          index.as :stored_searchable, :facetable
+      end
+
+      property :shutter_speed, predicate: ::RDF::URI.new("http://www.w3.org/2003/12/exif/ns#shutterSpeedValue") do |index|
+          index.as :stored_searchable, :facetable
+      end
+
     end
   end
 end

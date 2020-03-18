@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller do
   let(:org1)                  { Organization.create(title: ['new organization'], institution_code: ['ABC']) }
-  let(:org2)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
+  let!(:org2)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
   let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:admin)                 { User.create(email: 'email@email.com', password: 'password') }
   let(:team)                  { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: admin.ms_id) }
@@ -108,6 +108,75 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
         it 'redirects back to the collection dashboard page' do
           expect(response).to redirect_to('original_page')
         end
+      end
+    end
+  end
+
+  describe '#update_permissions' do
+    let(:download_permission)     { ['download_permission'] }
+    let(:download_reviewer)       { [admin.ms_id] }
+    let(:license)                 { ['license'] }
+    let(:rights_statement)        { ['rights statement'] }
+    let(:terms_of_use)            { ['terms of use'] }
+    let(:agreement_uri)           { ['agreement uri'] }
+    let(:permits_commercial_use)  { ['true'] }
+    let(:permits_3d_use)          { ['true'] }
+    let(:rights_holder_name)      { ['name1', 'name2', 'name3'] }
+    let(:rights_holder_type)      { ['type1', 'type2', 'type3'] }
+    let(:rights_holder)           { ['Name: name1, Type: type1', 'Name: name2, Type: type2', 'Name: name3, Type: type3'] }
+    let(:funding)                 { ['funding'] }
+    let(:publisher)               { ['publisher'] }
+    let(:cite_as)                 { ['cite as'] }
+    let(:params)                  { { organization:
+                                      { download_permission: download_permission.first,
+                                        download_reviewer: download_reviewer.first,
+                                        license: license,
+                                        rights_statement: rights_statement.first,
+                                        terms_of_use: terms_of_use.first,
+                                        agreement_uri: agreement_uri,
+                                        permits_commercial_use: permits_commercial_use.first,
+                                        permits_3d_use: permits_3d_use.first,
+                                        rights_holder_name: rights_holder_name,
+                                        rights_holder_type: rights_holder_type,
+                                        funding: funding,
+                                        publisher: publisher,
+                                        cite_as: cite_as.first },
+                                        id: team.id } }
+
+    context 'user is not a team admin' do
+      before do
+        allow(admin).to receive(:can?).with(:edit, team).and_return(false)
+        patch :update_permissions, params: params
+      end
+      it 'returns' do
+        expect(subject).to_not receive(:update_organization)
+        expect(subject).to_not receive(:redirect_back_organization)
+      end
+    end
+    context 'user is a team admin' do
+      before do
+        request.env['HTTP_REFERER'] = 'original_page'
+        allow(subject).to receive(:current_user).and_return(admin)
+        allow(admin).to receive(:can?).with(:edit, team).and_return(true)
+        patch :update_permissions, params: params
+      end
+      it 'updates the linked organization with the param values' do
+        org2.reload
+        expect(org2.download_permission).to eq(download_permission)
+        expect(org2.download_reviewer).to eq(download_reviewer)
+        expect(org2.license).to eq(license)
+        expect(org2.rights_statement).to eq(rights_statement)
+        expect(org2.terms_of_use).to eq(terms_of_use)
+        expect(org2.agreement_uri).to eq(agreement_uri)
+        expect(org2.permits_commercial_use).to eq(permits_commercial_use)
+        expect(org2.permits_3d_use).to eq(permits_3d_use)
+        expect(org2.rights_holder).to match_array(rights_holder)
+        expect(org2.funding).to eq(funding)
+        expect(org2.publisher).to eq(publisher)
+        expect(org2.cite_as).to eq(cite_as)
+      end
+      it 'redirects back' do
+        expect(response).to redirect_to('original_page')
       end
     end
   end

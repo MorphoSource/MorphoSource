@@ -31,7 +31,7 @@ RSpec.describe Hyrax::MediaForm do
                                                                     :legacy_media_group_id, :uuid, :ark, :doi,
                                                                     :available, :x_spacing, :y_spacing, :z_spacing,
                                                                     :series_type, :short_description, :slice_thickness, :unit,
-                                                                    :identifier, :related_url ])
+                                                                    :identifier, :related_url, :terms_of_use])
     end
 
   end

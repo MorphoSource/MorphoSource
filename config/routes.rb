@@ -24,6 +24,17 @@ Rails.application.routes.draw do
     get 'concern/media/show/:id', to: 'media#show'
     get 'concern/biological_specimens/show/:id', to: 'biological_specimens#show'
     get 'concern/cultural_heritage_objects/show/:id', to: 'cultural_heritage_objects#show'
+
+    #get '/teams/:id/page/:page(.:format)', to: 'collections#index'
+    get '/teams/:id(.:format)', to: 'teams#show'
+    get '/projects/:id(.:format)', to: 'projects#show'
+
+
+#                              GET      /collections/:id/page/:page(.:format)   hyrax/collections#index
+#   dashboard_facet_collection GET      /collections/:id/facet/:id(.:format)    hyrax/collections#facet
+#             files_collection GET      /collections/:id/files(.:format)        hyrax/collections#files
+#                   collection GET      /collections/:id(.:format)              hyrax/collections#show
+
   end
 
   # override ProfilesController

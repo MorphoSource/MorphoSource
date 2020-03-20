@@ -1,0 +1,20 @@
+<% if @organization %>
+<% byebug %>
+  <% if @organization.team_id %>
+    <%= f.input :download_reviewer, as: :select, collection: @organization.team.group_members, value_method: :user_key, value: @organization.download_reviewer, multiple: true, class: 'form-control' %>
+  <% end %>
+  <%= render_edit_field_partial('license', f: f) %>
+  <%= render_edit_field_partial('rights_statement', f: f) %>
+  <%= f.input :terms_of_use, as: :text, input_html: { rows: '4' }, class: 'form-control' %>
+  <%= render_edit_field_partial('agreement_uri', f: f) %>
+  <%= f.input :permits_commercial_use, as: :select, class: 'form-control' %>
+  <%= f.input :permits_3d_use, as: :select, class: 'form-control' %>
+  <%= render_edit_field_partial('rights_holder', f: f) %>
+  <%= render 'records/edit_fields/rights_holder_organization', f: f %>
+  <%= render_edit_field_partial('funding', f: f) %>
+  <%= render_edit_field_partial('publisher', f: f) %>
+  <%= render_edit_field_partial('cite_as', f: f) %>
+<% else %>
+<% byebug %>
+  <p> No Organization </p>
+<% end %>

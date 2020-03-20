@@ -227,11 +227,39 @@ class SubmissionsController < ApplicationController
       if cookies[:will_create].include? 'processing_event'
         render_and_save 'processing_event'
       else
-        render_and_save 'media'
+        set_up_media_permissions
       end
     else
-      render_and_save 'media'
+      set_up_media_permissions
     end
+  end
+
+  def set_up_media_permissions
+    byebug
+    if @submission.instance_variable_get(:@organization_id)
+      org_id = @submission.instance_variable_get(:@organization_id)
+    elsif @submission.instance_variable_get(:@biospec_id)
+      specimen = BiologicalSpecimen.find(@submission.instance_variable_get(:@biospec_id))
+      org_id = specimen.organizations.first.id
+    end
+    @organization = Organization.find(org_id)
+    byebug
+    media = @media_form.model
+    byebug
+    default_permissions = {
+      download_reviewer: @organization.download_reviewer,
+      agreement_uri: @organization.agreement_uri,
+      rights_statement: @organization.rights_statement,
+      terms_of_use: @organization.terms_of_use,
+      permits_commercial_use: @organization.permits_commercial_use,
+      permits_3d_use: @organization.permits_3d_use,
+      rights_holder: @organization.rights_holder,
+      funding: @organization.funding,
+      publisher: @organization.publisher,
+      cite_as: @organization.cite_as
+    }
+    media.assign_attributes(default_permissions)
+    render_and_save 'media'
   end
 
   def stage_organization
@@ -275,7 +303,7 @@ class SubmissionsController < ApplicationController
     store_submission
     processing_event_model_params = Hyrax::ProcessingEventForm.model_attributes(params[:processing_event])
     session[:submission_processing_event_create_params] = processing_event_model_params
-    render_and_save 'media'
+    set_up_media_permissions
   end
 
   def stage_taxonomy

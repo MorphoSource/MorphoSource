@@ -6,15 +6,13 @@ module Hyrax
     include ActionView::Helpers::NumberHelper
     include ActionView::Helpers::TagHelper
     attr_accessor :solr_document, :current_ability, :request
-    attr_reader :subcollection_count
+    attr_reader :subcollection_count, :search_form_url
     attr_accessor :parent_collections # This is expected to be a Blacklight::Solr::Response with all of the parent collections
     attr_writer :collection_type
 
-byebug
     class_attribute :create_work_presenter_class
     self.create_work_presenter_class = Hyrax::SelectTypeListPresenter
-byebug
-  # smc
+
 
     # @param [SolrDocument] solr_document
     # @param [Ability] current_ability
@@ -24,6 +22,7 @@ byebug
       @current_ability = current_ability
       @request = request
       @subcollection_count = 0
+      @search_form_url = '' 
     end
 
     # CurationConcern methods

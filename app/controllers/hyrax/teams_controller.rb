@@ -15,20 +15,21 @@ module Hyrax
 #      render json: result
 #    end
 #
-#    private
-#
-#      def form
-#        @form ||= form_class.new(@collection, current_ability, repository)
-#      end
-#
-#      def decide_layout
-#        layout = case action_name
-#                 when 'show'
-#                   '1_column'
-#                 else
-#                   'dashboard'
-#                 end
-#        File.join(theme, layout)
-#      end
+    private
+
+      def form
+        @form ||= form_class.new(@collection, current_ability, repository)
+      end
+
+      def decide_layout
+        layout = case action_name
+                 when 'show'
+                   '1_column'
+                   # 'morphosource_2_columns'
+                 else
+                   'dashboard'
+                 end
+        File.join(theme, layout)
+      end
   end
 end

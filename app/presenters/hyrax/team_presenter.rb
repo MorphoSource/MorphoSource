@@ -35,6 +35,12 @@ module Hyrax
       @collection_type ||= Hyrax::CollectionType.find_by_gid!(collection_type_gid)
     end
 
+    def organization_title
+      collection = Collection.find(id)
+      organization = collection.organization
+      organization.title.first
+    end
+
     # Metadata Methods
     delegate :title, :description, :creator, :contributor, :subject, :publisher, :keyword, :language, :embargo_release_date,
              :lease_expiration_date, :license, :date_created, :resource_type, :based_near, :related_url, :identifier, :thumbnail_path,

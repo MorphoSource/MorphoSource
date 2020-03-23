@@ -1,0 +1,13 @@
+<% byebug %>
+<%= f.input :download_reviewer, as: :select, collection: @organization.team.group_members, value_method: :user_key, multiple: true, selected: @organization.download_reviewer.first, class: 'form-control' %>
+<%= render_edit_field_partial('default_permissions_license', f: f) %>
+<%= render_edit_field_partial('default_permissions_rights_statement', f: f) %>
+<%= render_edit_field_partial('default_permissions_terms_of_use', f: f) %>
+<%= render_edit_field_partial('default_permissions_agreement_uri', f: f) %>
+<%= render_edit_field_partial('default_permissions_permits_commercial_use', f: f) %>
+<%= render_edit_field_partial('default_permissions_permits_3d_use', f: f) %>
+<%= render_edit_field_partial('rights_holder', f: f) %>
+<%= render 'records/edit_fields/rights_holder_organization', f: f %>
+<%= render_edit_field_partial('default_permissions_funding', f: f) %>
+<%= render_edit_field_partial('default_permissions_publisher', f: f) %>
+<%= render_edit_field_partial('default_permissions_cite_as', f: f) %>

@@ -17,6 +17,10 @@
     <% f.object.other_terms.each do |term| %>
       <%= render_edit_field_partial(term, f: f) %>
     <% end %>
-    <%= render 'media_permissions_fields', f: f %>
+    <% if @organization && @organization.team_id %>
+      <%= render 'media_organization_permissions_fields', f: f %>
+    <% else %>
+      <%= render 'media_permissions_fields', f: f %>
+    <% end %>
   </div>
 <% end %>

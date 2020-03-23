@@ -52,7 +52,6 @@ module Hydra::Works
     end
 
     def f_priority(f)
-      return nil if file_is_hidden?(f)
       file_type_priorities.find_index(File.extname(f.name).downcase)
     end
 

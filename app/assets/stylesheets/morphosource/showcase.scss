@@ -55,9 +55,10 @@ html {
 }
 
 .showcase.teams {
-  .row > [class^=col] {
+  .flex { /* setting column with same height */
     display: flex;
   }
+  
   .team-logo img {
     width: 80px;
     margin-right:16px;
@@ -104,11 +105,13 @@ html {
     list-style-type: square;
   }
   .represents-organization {
+    @media (max-width: 991px) {
+      margin-left: 1px;
+    }
     background-color: #eee;
     border: 1px solid #ddd;
-    padding-left: 5px;
+    padding-left: 1px;
     padding-right: 5px;
-    margin-left: 1px;
     .fa-university {
       font-size: 52px;
       line-height: 68px;

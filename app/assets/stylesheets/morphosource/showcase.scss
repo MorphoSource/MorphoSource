@@ -141,8 +141,13 @@ div.showcase {
       elsewhere, after deciding if the styles will be shared 
    */
   .nav-tabs {
-    border-bottom: 1px solid red;
+    border-bottom: 3px solid $line-color;
+    li.active {
+      border: 2px solid $line-color;
+      border-bottom: 1px solid $line-color;
+    }
   }
+  .panel-default {border: none;}
 
 
 
@@ -217,7 +222,7 @@ div.showcase {
     overflow-wrap: break-word;
     margin-bottom: 0.5vw;
     padding-bottom: 8px;
-    border-bottom: 2px solid #337ab7;
+    border-bottom: 2px solid $line-color;
     font-size: 4vw;
     @media (min-width: 768px) {
       font-size: 3vw;

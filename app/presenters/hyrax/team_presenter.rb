@@ -6,7 +6,18 @@ module Hyrax
     include ActionView::Helpers::NumberHelper
     include ActionView::Helpers::TagHelper
     attr_accessor :solr_document, :current_ability, :request
-    attr_reader :subcollection_count, :search_form_url
+    attr_reader :subcollection_count, :search_form_url, :collection, :collection_managers, 
+      :organization,
+      :organization_title,
+      :organization_institution_name,
+      :organization_institution_code,
+      :organization_collection_code,
+      :organization_description,
+      :organization_address,
+      :organization_city,
+      :organization_state_province,
+      :organization_country
+
     attr_accessor :parent_collections # This is expected to be a Blacklight::Solr::Response with all of the parent collections
     attr_writer :collection_type
 
@@ -23,6 +34,10 @@ module Hyrax
       @request = request
       @subcollection_count = 0
       @search_form_url = '' 
+      @collection = Collection.find(id)
+      @collection_managers = manager_list(@collection.managers)
+      #@organization = collection_organization
+      set_organization_data 
     end
 
     # CurationConcern methods
@@ -31,14 +46,41 @@ module Hyrax
 
     delegate(*Hyrax::CollectionType.collection_type_settings_methods, to: :collection_type, prefix: :collection_type_is)
 
+    def manager_list(managers)
+      ml = []
+      managers.each do |m|
+        if m.display_name.present?
+          ml << m.display_name
+        else
+          ml << m.email
+        end
+      end  
+      ml.join(', ')  
+    end
+
     def collection_type
       @collection_type ||= Hyrax::CollectionType.find_by_gid!(collection_type_gid)
     end
 
-    def organization_title
+    #def collection_organization
+    #  collection = Collection.find(id)
+    #  collection.organization
+    #end
+
+    def set_organization_data
       collection = Collection.find(id)
       organization = collection.organization
-      organization.title.first
+      if organization.present?
+        @organization_title = organization.title
+        @organization_institution_name = organization.institution_name
+        @organization_institution_code = organization.institution_code
+        @organization_collection_code = organization.collection_code
+        @organization_description = organization.description
+        @organization_address = organization.address
+        @organization_city = organization.city
+        @organization_state_province = organization.state_province
+        @organization_country = organization.country
+      end
     end
 
     # Metadata Methods

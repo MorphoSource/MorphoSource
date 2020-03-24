@@ -31,5 +31,21 @@ module Hydra::Works::Characterization
     property :rescale_intercept, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#RescaleIntercept')
     property :rescale_slope, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#RescaleSlope')
     property :window_center_and_width_explanation, predicate: RDF::URI('https://www.morphosource.org/terms/dicomWindowCenterAndWidthExplanation')
+
+    property :exposure_time, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#ExposureTime')
+    property :pixel_spacing_calibration_type, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#PixelSpacingCalibrationType')
+    property :contrast_frame_averaging, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#ContrastFrameAveraging')
+    property :images_in_acquisition, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#ImagesInAcquisition')
+    property :KVP, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#KVP')
+    property :generator_power, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#GeneratorPower')
+    property :x_ray_tube_current, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#XRayTubeCurrent')
+    property :container_description, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#ContainerDescription')
+    property :generator_id, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#GeneratorID')
+    property :detector_description, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#DetectorDescription')
+    property :distance_source_to_patient, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#DistanceSourceToPatient')
+    property :distance_source_to_detector, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#DistanceSourceToDetector')
+    property :anode_target_material, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#AnodeTargetMaterial')
+    property :spiral_pitch_factor, predicate: RDF::URI('http://purl.org/healthcarevocab/v1#SpiralPitchFactor')
+    property :number_of_series_related_instances, predicate: RDF::URI('https://www.morphosource.org/terms/dicomNumberOfSeriesRelatedInstances')
   end
 end

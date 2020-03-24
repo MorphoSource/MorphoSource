@@ -2,7 +2,7 @@ module Morphosource
   # Module to define core (non-modality specific) metadata properties for
   # media works
   module OrganizationMetadata
-  extend ActiveSupport::Concern
+    extend ActiveSupport::Concern
 
     included do
       property :institution_code, predicate: ::RDF::Vocab::DWC.organizationID do |index|
@@ -42,7 +42,7 @@ module Morphosource
       # Download permission
       # default publication settings
       # determins media visibility, fileset_visibility, fileset_accessibility settings
-      property :download_permission, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/downloadPermission") do |index|
+      property :download_permission, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/publicationStatus"), multiple: true do |index|
         index.as :stored_searchable
       end
     end

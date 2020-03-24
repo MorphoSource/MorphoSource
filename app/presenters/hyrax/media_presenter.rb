@@ -6,7 +6,7 @@ module Hyrax
     include Morphosource::PresenterMethods
     include MorphosourceHelper
 
-    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, to: :solr_document
+    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, to: :solr_document
 
     attr_accessor :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
@@ -15,8 +15,9 @@ module Hyrax
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list, :parent_media_members,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
-      :processing_events, :processing_event_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
-      :processing_activity_count, :processing_activity_items,
+      :this_media_and_parents_id_list, :this_media_and_parents_members,
+      :processing_events, :processing_events_data, :processing_event_count, :this_media_processing_event,
+      :processing_activity_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
       :raw_or_derived, :is_absentee_parent,
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
@@ -38,7 +39,7 @@ module Hyrax
       # XRAY modality fields
       :exposure_time,
       :flux_normalization,
-      :geometric_calibration,
+      :pixel_spacing_calibration,
       :shading_correction,
       :filter,
       :frame_averaging,
@@ -144,8 +145,21 @@ module Hyrax
         # if content mime type does not exist, use the mime type
         if file_set.contents_mime_type.first.present?
           contents_mime_type = file_set.contents_mime_type.first
-        else
+        elsif file_set.mime_type.present?
           contents_mime_type = file_set.mime_type
+        else
+          contents_mime_type = 'unknown'
+          # todo: might need to check why some image format (e.g. ARW) is not returning a mime type
+          # could be related to the conflict in the FITS output xml:
+          #  <identification status="CONFLICT">
+          #    <identity format="ARW EXIF" mimetype="image/x-sony-arw" toolname="FITS" toolversion="1.5.0">
+          #      <tool toolname="Exiftool" toolversion="11.54" />
+          #    </identity>
+          #    <identity format="Tagged Image File Format" mimetype="image/tiff" toolname="FITS" toolversion="1.5.0">
+          #      <tool toolname="ffident" toolversion="0.2" />
+          #      <tool toolname="Tika" toolversion="1.21" />
+          #    </identity>
+          #  </identification>
         end
         @mime_type << contents_mime_type
         @file_size += file_set.file_size.first.to_i if file_set.file_size.present?
@@ -199,30 +213,6 @@ module Hyrax
         @face_count = @face_count.to_s(:delimited)
       end
 
-      # get processing event:  media < processing_event
-      # then get processing activities
-      @processing_events = ProcessingEvent.where('member_ids_ssim' => solr_document.id)
-      processing_event_ids = []
-      @processing_activity_items = []
-      if @processing_events.present?
-        @processing_event_count = @processing_events.count
-        @processing_events.each do |processing_event|
-          processing_event_ids << processing_event.id
-          processing_event.processing_activity.each do |processing_activity|
-            @processing_activity_items << Hash[processing_activity.split(/\s*,\s*/).map {|el| el.split ': '}]
-          end
-        end
-        # sort the activity items by the key Step
-        @processing_activity_items.sort_by! { |hsh| hsh["Step"] }
-        if @processing_activity_items.present?
-          @processing_activity_count = processing_activity_items.length
-        else
-          @processing_activity_count = 0
-        end
-      else
-        @processing_event_count = 0
-      end
-
       # Get parent medias (all)
       # add current media id, then add child media ids.
       # currently add up to 5 levels in the tree.  Later we should store the child medias in the work
@@ -245,6 +235,44 @@ module Hyrax
 
       this_media_list = [] << solr_document.id
       @this_media_member = member_presenters_for(this_media_list).first
+
+      # get members for this media combined with parents, ordered in reverse
+      @this_media_and_parents_id_list = parent_media_id_list << solr_document.id
+      @this_media_and_parents_members = parent_media_members << this_media_member
+
+      # get processing event:  media < processing_event
+      # then get processing event data: activity items, child/parent IDs and member presenters
+      @processing_events = ProcessingEvent.where('member_ids_ssim' => this_media_and_parents_id_list)
+      processing_event_ids = []
+      @processing_events_data = []
+      processing_events.each do |pe|
+        processing_event_ids << pe.id
+
+        processing_activity_items = []
+        pe.processing_activity.each do |processing_activity|
+          processing_activity_items << Hash[processing_activity.split(/\s*,\s*/).map {|el| el.split ': '}]
+        end
+        processing_activity_items.sort_by! { |hsh| hsh["Step"] }
+
+        parent_ids = []
+        parent_ids = pe.in_work_ids.select { |m_id| parent_media_id_list.include? m_id }
+
+        @processing_events_data << {
+          :id => pe.id,
+          :processing_activity_items => processing_activity_items,
+          :child_ids => pe.member_ids,
+          :child_members => this_media_and_parents_members.select { |m| pe.member_ids.include? m.id },
+          :parent_ids => parent_ids,
+          :parent_members => this_media_and_parents_members.select { |m| parent_ids.include? m.id }
+        }
+      end
+
+      @processing_event_count = processing_events.count
+      @processing_activity_count = processing_events_data
+        .map { |pe| pe[:processing_activity_items].length}
+        .inject(0) { |sum, x| sum + x }
+      @this_media_processing_event = processing_events
+        .find { |pe| pe.member_ids.include? solr_document.id }
 
       if direct_parent_id_list.length > 0
         # If a media has a parent work and is derived, then that media’s raw ancestor media work
@@ -346,7 +374,7 @@ module Hyrax
         elsif @imaging_event_modality.upcase.include? "XRAY"
           @exposure_time = @imaging_event.exposure_time.first
           @flux_normalization = @imaging_event.flux_normalization.first
-          @geometric_calibration = @imaging_event.geometric_calibration.first
+          @pixel_spacing_calibration = @imaging_event.pixel_spacing_calibration.first
           @shading_correction = @imaging_event.shading_correction.first
           @filter = @imaging_event.filter.first
           @frame_averaging = @imaging_event.frame_averaging.first
@@ -422,6 +450,10 @@ module Hyrax
 
     def showcase_image_acquisition_details_partial
       'showcase_image_acquisition_details'
+    end
+
+    def showcase_image_acquisition_details_processing_partial
+      'showcase_image_acquisition_details_processing'
     end
 
     def showcase_direct_parents_member_partial

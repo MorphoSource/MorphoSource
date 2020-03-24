@@ -6,7 +6,7 @@
 	<div class="col-xs-6 showcase-label">Number of processing events</div>
 	<div class="col-xs-6 showcase-value">
 		<%= presenter.processing_event_count %>
-		<% if presenter.processing_activity_items.present?  %>
+		<% if presenter.processing_activity_count.present?  %>
 			(<%= pluralize(presenter.processing_activity_count, 'step') %>)
 	 	<% end %>
 		</div>

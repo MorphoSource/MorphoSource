@@ -78,6 +78,23 @@ module Hydra::Works::Characterization
           t.rescale_intercept(path: 'rescaleIntercept')
           t.rescale_slope(path: 'rescaleSlope')
           t.window_center_and_width_explanation(path: 'windowCenterAndWidthExplanation')
+
+          t.exposure_time(path: 'exposureTime')
+          t.pixel_spacing_calibration_description(path: 'pixelSpacingCalibrationDescription')
+          t.pixel_spacing_calibration_type(path: 'pixelSpacingCalibrationType')
+          t.contrast_frame_averaging(path: 'contrastFrameAveraging')
+          t.images_in_acquisition(path: 'imagesInAcquisition')
+          t.KVP(path: 'KVP')
+          t.generator_power(path: 'generatorPower')
+          t.x_ray_tube_current(path: 'XRayTubeCurrent')
+          t.container_description(path: 'containerDescription')
+          t.generator_id(path: 'generatorID')
+          t.detector_description(path: 'detectorDescription')
+          t.distance_source_to_patient(path: 'distanceSourceToPatient')
+          t.distance_source_to_detector(path: 'distanceSourceToDetector')
+          t.anode_target_material(path: 'anodeTargetMaterial')
+          t.spiral_pitch_factor(path: 'spiralPitchFactor')
+          t.number_of_series_related_instances(path: 'numberOfSeriesRelatedInstances')
         end
         t.image do
           t.byte_order(path: 'byteOrder')
@@ -97,6 +114,11 @@ module Hydra::Works::Characterization
           t.latitude(path: 'gpsDestLatitude')
           t.longitude(path: 'gpsDestLongitude')
           t.bits_per_sample(path: 'bitsPerSample')
+
+          t.focal_length(path: 'focalLength')
+          t.iso_speed_ratings(path: 'isoSpeedRating')
+          t.aperture_value(path: 'apertureValue')
+          t.shutter_speed(path: 'shutterSpeedValue')
         end
         t.text do
           t.character_set(path: 'charset')
@@ -157,6 +179,12 @@ module Hydra::Works::Characterization
       t.graphics_count(proxy: [:metadata, :document, :graphics_count])
       t.byte_order(proxy: [:metadata, :image, :byte_order])
       t.bits_per_sample(proxy: [:metadata, :image, :bits_per_sample])
+
+      t.focal_length(proxy: [:metadata, :image, :focal_length])
+      t.iso_speed_ratings(proxy: [:metadata, :image, :iso_speed_ratings])
+      t.aperture_value(proxy: [:metadata, :image, :aperture_value])
+      t.shutter_speed(proxy: [:metadata, :image, :shutter_speed])
+
       t.compression(proxy: [:metadata, :image, :compression])
       t.width(proxy: [:metadata, :image, :width])
       t.video_width(proxy: [:metadata, :video, :width])
@@ -225,6 +253,22 @@ module Hydra::Works::Characterization
       t.rescale_intercept(proxy: [:metadata, :dicom, :rescale_intercept])
       t.rescale_slope(proxy: [:metadata, :dicom, :rescale_slope])
       t.window_center_and_width_explanation(proxy: [:metadata, :dicom, :window_center_and_width_explanation])
+
+      t.exposure_time(proxy: [:metadata, :dicom, :exposure_time])
+      t.pixel_spacing_calibration_type(proxy: [:metadata, :dicom, :pixel_spacing_calibration_type])
+      t.contrast_frame_averaging(proxy: [:metadata, :dicom, :contrast_frame_averaging])
+      t.images_in_acquisition(proxy: [:metadata, :dicom, :images_in_acquisition])
+      t.KVP(proxy: [:metadata, :dicom, :KVP])
+      t.generator_power(proxy: [:metadata, :dicom, :generator_power])
+      t.x_ray_tube_current(proxy: [:metadata, :dicom, :x_ray_tube_current])
+      t.container_description(proxy: [:metadata, :dicom, :container_description])
+      t.generator_id(proxy: [:metadata, :dicom, :generator_id])
+      t.detector_description(proxy: [:metadata, :dicom, :detector_description])
+      t.distance_source_to_patient(proxy: [:metadata, :dicom, :distance_source_to_patient])
+      t.distance_source_to_detector(proxy: [:metadata, :dicom, :distance_source_to_detector])
+      t.anode_target_material(proxy: [:metadata, :dicom, :anode_target_material])
+      t.spiral_pitch_factor(proxy: [:metadata, :dicom, :spiral_pitch_factor])
+      t.number_of_series_related_instances(proxy: [:metadata, :dicom, :number_of_series_related_instances])
     end
 
     # Cleanup phase; ugly name to avoid collisions.

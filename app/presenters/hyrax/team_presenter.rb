@@ -6,7 +6,7 @@ module Hyrax
     include ActionView::Helpers::NumberHelper
     include ActionView::Helpers::TagHelper
     attr_accessor :solr_document, :current_ability, :request
-    attr_reader :subcollection_count, :search_form_url, :collection, :collection_managers, 
+    attr_reader :subcollection_count, :search_form_url, :collection, :collection_managers, :specimens,
       :organization,
       :organization_title,
       :organization_institution_name,
@@ -87,6 +87,7 @@ module Hyrax
     delegate :title, :description, :creator, :contributor, :subject, :publisher, :keyword, :language, :embargo_release_date,
              :lease_expiration_date, :license, :date_created, :resource_type, :based_near, :related_url, :identifier, :thumbnail_path,
              :title_or_label, :collection_type_gid, :create_date, :modified_date, :visibility, :edit_groups, :edit_people,
+             :part, :media_type,
              to: :solr_document
 
     # Terms is the list of fields displayed by

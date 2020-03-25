@@ -39,7 +39,8 @@ provide :page_title, construct_page_title(@presenter.title)
                 <%= 'Item'.pluralize(@presenter.total_viewable_items) %> · 
                   Managed by: <%= @presenter.collection_managers %>
 
-                 <%#= @presenter.attribute_to_html(:collection_managers, label: 'Managed by', render_as: :showcase_user_link, include_empty: false, html_dl: false) %>
+                 <%# todo: display user link 
+                 = @presenter.attribute_to_html(:collection_managers, label: 'Managed by', render_as: :showcase_user_link, include_empty: false, html_dl: false) %>
               </div>
           </h1>
         </div>
@@ -160,8 +161,7 @@ provide :page_title, construct_page_title(@presenter.title)
       <div role="tabpanel" class="tab-pane" id="objects">
         <div class="form-tab-content">
 
-  bbb
-
+  
         </div>
       </div>
 
@@ -169,7 +169,7 @@ provide :page_title, construct_page_title(@presenter.title)
         <div class="form-tab-content">
 
           <div class="row">
-            <div class="col-xs-6">
+            <div class="col-sm-6">
 
               <h2>DESCRIPTION</h2>
               <%= render 'collection_description', presenter: @presenter %>
@@ -185,7 +185,7 @@ provide :page_title, construct_page_title(@presenter.title)
 
             </div>
 
-            <div class="col-xs-6">
+            <div class="col-sm-6">
               <h2>STATISTICS</h2>
 
               <h2>ORGANIZATION</h2>
@@ -219,14 +219,14 @@ provide :page_title, construct_page_title(@presenter.title)
               <%# end %>
 
 
-              <% if @presenter.collection_type_is_nestable? && @presenter.total_parent_collections > 0 %>
+              <%# if @presenter.collection_type_is_nestable? && @presenter.total_parent_collections > 0 % >
                   <div class="hyc-blacklight hyc-bl-title">
                     <h2>
-                      <%= t('.parent_collection_header') %> (<%= @presenter.total_parent_collections %>)
+                      <% = t('.parent_collection_header') % > (<% = @presenter.total_parent_collections % >)
                     </h2>
                   </div>
                   <div class="hyc-blacklight hyc-bl-results">
   show_parent_collections
-                    <%= render 'show_parent_collections', presenter: @presenter %>
+                    <%= render 'show_parent_collections', presenter: @presenter % >
                   </div>
               <% end %>

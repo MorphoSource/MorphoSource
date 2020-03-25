@@ -1,2 +1,19 @@
-<% byebug %>
-<%= f.input :publisher, as: :multi_value %>
+<div class="form-group multi_value optional media_publisher managed">
+  <label class="control-label multi_value optional" for="media_publisher">Publisher</label>
+  <p class="help-block">The person or group making the work available. Generally this is the institution.</p>
+  <ul class="listing" aria-live="polite">
+    <% @organization.publisher.each do |p| %>
+    <li class="field-wrapper input-group input-append">
+      <input class="string multi_value optional form-control media_publisher form-control multi-text-field" name="media[publisher][]" value="<%= p %>" id="media_publisher" aria-labelledby="media_publisher_label" type="text">
+      <span class="input-group-btn field-controls">
+        <button type="button" class="btn btn-link remove">
+          <i class="fa fa-times-circle" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-link add">
+          <i class="fa fa-plus-circle" aria-hidden="true"></i>
+        </button>
+      </span>
+    </li>
+    <% end %>
+  <ul>
+</div>

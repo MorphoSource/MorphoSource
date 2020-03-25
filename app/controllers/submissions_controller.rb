@@ -737,6 +737,7 @@ class SubmissionsController < ApplicationController
     @imaging_event_form = Hyrax::WorkFormService.build(ImagingEvent.new, current_ability, self)
     @processing_event_form = Hyrax::WorkFormService.build(ProcessingEvent.new, current_ability, self)
     @organization_form = Hyrax::WorkFormService.build(Organization.new, current_ability, self)
+    byebug
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
     @taxonomy_form = Hyrax::WorkFormService.build(Taxonomy.new, current_ability, self)
   end

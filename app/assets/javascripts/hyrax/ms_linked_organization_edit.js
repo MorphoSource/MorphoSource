@@ -3,11 +3,17 @@ $(document).on('turbolinks:load', function() {
 
   if ($('form[id*="edit_organization"]').length) { // if team organization edit form tab
 
-    // TODO: investigate why extra media rights holder wrapper is showing up. Just delete for now.
-    mediaRightsHolder = document.getElementById('media_rights_holder_wrapper')
-    mediaRightsHolder.parentNode.removeChild(mediaRightsHolder);
+    if ($('form[id*="edit_organization"]').length ) {
+      form = $('form[id*="edit_organization"]')[0];
+      work = 'organization'
+      // TODO: investigate why extra media rights holder wrapper is showing up. Just delete for now.
+      mediaRightsHolder = document.getElementById('media_rights_holder_wrapper')
+      mediaRightsHolder.parentNode.removeChild(mediaRightsHolder);
+    } else if ($('form[id*="new_media"]').length) {
+      form = $('form[id*="new_media"]')[0];
+      work = 'media'
+    }
 
-    form = $('form[id*="edit_organization"]')[0];
 
     // concatenate rights holder name, type to rights holder
     // Check the rightsHolder Field (will be hidden)

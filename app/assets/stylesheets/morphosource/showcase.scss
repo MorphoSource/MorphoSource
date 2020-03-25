@@ -141,14 +141,16 @@ div.showcase {
       elsewhere, after deciding if the styles will be shared 
    */
   .nav-tabs {
-    border-bottom: 3px solid $line-color;
     li.active {
-      border: 2px solid $line-color;
-      border-bottom: 1px solid $line-color;
+      border-bottom: 3px solid $line-color;
     }
   }
   .panel-default {border: none;}
-
+  .teams-projects {
+    th, td {
+      text-align: center;
+    }
+  }
 
 
   /* ************************** */
@@ -222,7 +224,6 @@ div.showcase {
     overflow-wrap: break-word;
     margin-bottom: 0.5vw;
     padding-bottom: 8px;
-    border-bottom: 2px solid $line-color;
     font-size: 4vw;
     @media (min-width: 768px) {
       font-size: 3vw;
@@ -236,8 +237,8 @@ div.showcase {
     margin-top: 10px;
   }
   h2 {
-    background-color: #efefef;
-    padding: 12px 20px;
+    border-bottom: 3px solid $line-color;
+    padding: 6px 8px 6px 0;
     font-size:13px;
     @media (min-width: 414px) {
       font-size: 2.6vw;

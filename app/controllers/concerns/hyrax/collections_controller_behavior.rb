@@ -1,6 +1,5 @@
-# Cloned from CollectionsControllerBehavior to set TeamPresenter
 module Hyrax
-  module TeamsControllerBehavior
+  module CollectionsControllerBehavior
     extend ActiveSupport::Concern
     include Blacklight::AccessControls::Catalog
     include Blacklight::Base
@@ -17,7 +16,7 @@ module Hyrax
                       :single_item_search_builder_class,
                       :membership_service_class
 
-      self.presenter_class = Hyrax::TeamPresenter
+      self.presenter_class = Hyrax::CollectionPresenter
 
       # The search builder to find the collection
       self.single_item_search_builder_class = SingleCollectionSearchBuilder
@@ -68,12 +67,10 @@ module Hyrax
         member_works
         member_subcollections if collection.collection_type.nestable?
         parent_collections if collection.collection_type.nestable? && action_name == 'show'
-#byebug
       end
 
       # Instantiate the membership query service
       def collection_member_service
-#byebug
         @collection_member_service ||= membership_service_class.new(scope: self, collection: collection, params: params_for_query)
       end
 
@@ -81,7 +78,6 @@ module Hyrax
         @response = collection_member_service.available_member_works
         @member_docs = @response.documents
         @members_count = @response.total
-byebug
       end
 
       def parent_collections
@@ -106,12 +102,6 @@ byebug
       #   search_field: 'all_fields'
       # @return <Hash> the inputs required for the collection member query service
       def params_for_query
-byebug
-#type[]=Media
-#    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-#    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Media"
-#    ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
-
         params.merge(q: params[:cq])
       end
   end

@@ -1,15 +1,33 @@
 
-<table class="table table-striped">
-  <caption class="sr-only"> ******&&&&&&& TEAMS ************ List of items in this collection</caption>
+<table class="table table-striped teams-projects">
+  <caption class="sr-only">List of items in this team</caption>
   <thead>
   <tr>
     <th>&nbsp;</th>
-    <th><%= t("hyrax.dashboard.my.heading.title") %></th>
+    <th>&nbsp;</th>
+    <th>ID</th>
+    <th>Part</th>
+    <th>Type</th>
     <th><%= t("hyrax.dashboard.my.heading.date_uploaded") %></th>
     <th><%= t("hyrax.dashboard.my.heading.visibility") %></th>
   </tr>
   </thead>
   <tbody>
-    <%= render partial: 'show_document_list_row', collection: documents, as: :document %>
+<% 
+media_documents = []
+documents.each do |doc|
+  work = ::ActiveFedora::Base.find(doc.id)
+  if work.class == Media
+    media_documents << doc
+    # compile list of BSO and CHO
+
+  end
+end
+
+
+
+%>
+
+    <%= render partial: 'show_document_list_row', collection: media_documents, as: :document %>
   </tbody>
 </table>

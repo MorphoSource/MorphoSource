@@ -3,7 +3,26 @@
 <% if documents.empty? %>
   <div class="alert alert-warning" role="alert"><%= t('hyrax.collection.document_list.no_visible_works') %></div>
 <% else %>
-  <% @document_list = documents %>
+  <% 
+ 
+#	media_documents = []
+#	documents.each do |doc|
+#	  work = ::ActiveFedora::Base.find(doc.id)
+#	  if work.class == Media
+#	    media_documents << doc
+#	    # compile list of BSO and CHO
+#
+#			#byebug
+#
+#	  end
+#	end
+#	documents = media_documents
+
+	media_documents = documents
+ 	@document_list = documents 
+#byebug 
+
+	%>
   <% if params[:action] == "edit" %>
     <%= render 'default_group', documents: documents, docs: documents %>
   <% else %>

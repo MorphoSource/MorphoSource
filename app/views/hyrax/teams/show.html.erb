@@ -161,6 +161,16 @@ provide :page_title, construct_page_title(@presenter.title)
       <div role="tabpanel" class="tab-pane" id="objects">
         <div class="form-tab-content">
 
+          <!-- Objects -->
+          <% if @members_count > 0 %>
+
+
+
+              <div class="hyc-blacklight hyc-bl-results">
+                <%= render_document_index @object_member_docs %>
+              </div>
+
+          <% end # if @members_count > 0 %>
   
         </div>
       </div>

@@ -13,21 +13,6 @@
   </tr>
   </thead>
   <tbody>
-<% 
-media_documents = []
-documents.each do |doc|
-  work = ::ActiveFedora::Base.find(doc.id)
-  if work.class == Media
-    media_documents << doc
-    # compile list of BSO and CHO
-
-  end
-end
-
-
-
-%>
-
-    <%= render partial: 'show_document_list_row', collection: media_documents, as: :document %>
+    <%= render partial: 'show_document_list_row', collection: documents, as: :document %>
   </tbody>
 </table>

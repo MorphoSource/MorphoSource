@@ -69,6 +69,31 @@ module MorphosourceHelper
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
+  def physical_objects
+    pid ='q524jn76v'
+
+    work = ActiveFedora::Base.find(pid)
+
+    doc = SolrDocument.new(work.to_solr) 
+
+    [doc]
+byebug
+  end
+
+  #def render_test(solr_doc)
+  #  #collection_list = Hyrax::CollectionMemberService.run(solr_doc, controller.current_ability)
+  #  #return if collection_list.empty?
+  #  #links = collection_list.map { |collection| link_to collection.title_or_label, hyrax.collection_path(collection.id) }
+  #  #collection_links = []
+  #  #links.each_with_index do |link, n|
+  #  #  collection_links << link
+  #  #  collection_links << ', ' unless links[n + 1].nil?
+  #  #end
+  #  #content_tag :span, safe_join([t('hyrax.collection.is_part_of'), ': '] + collection_links)
+  #  "render_test!"
+  #end
+
+
   def ms_work_form_tabs(work)
     if files_required?(work)
       %w[metadata files relationships]

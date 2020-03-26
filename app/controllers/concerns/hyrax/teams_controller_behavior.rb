@@ -4,6 +4,7 @@ module Hyrax
     extend ActiveSupport::Concern
     include Blacklight::AccessControls::Catalog
     include Blacklight::Base
+    include MorphosourceHelper
 
     included do
       # include the display_trophy_link view helper method
@@ -82,6 +83,12 @@ module Hyrax
         @member_docs = @response.documents
         @members_count = @response.total
 byebug
+        @object_member_docs = physical_obj
+byebug
+      end
+
+      def physical_obj
+        "abc"
       end
 
       def parent_collections
@@ -106,11 +113,12 @@ byebug
       #   search_field: 'all_fields'
       # @return <Hash> the inputs required for the collection member query service
       def params_for_query
-byebug
-#type[]=Media
-#    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-#    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Media"
-#    ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
+#        byebug
+        # todo: figure out how to query for Media work only
+        #type[]=Media
+        #    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
+        #    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Media"
+        #    ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
 
         params.merge(q: params[:cq])
       end

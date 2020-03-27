@@ -69,12 +69,10 @@ module Hyrax
         member_works
         member_subcollections if collection.collection_type.nestable?
         parent_collections if collection.collection_type.nestable? && action_name == 'show'
-#byebug
       end
 
       # Instantiate the membership query service
       def collection_member_service
-#byebug
         @collection_member_service ||= membership_service_class.new(scope: self, collection: collection, params: params_for_query)
       end
 
@@ -82,13 +80,37 @@ module Hyrax
         @response = collection_member_service.available_member_works
         @member_docs = @response.documents
         @members_count = @response.total
-byebug
-        @object_member_docs = physical_obj
-byebug
+
+        @media_member_docs, @object_member_docs = get_medias_and_objects(@member_docs)
+        @object_member_docs = dedup(@object_member_docs) if @object_member_docs.present?
+        @media_member_count = @media_member_docs.length
+        @object_member_count = @object_member_docs.length
       end
 
-      def physical_obj
-        "abc"
+      def dedup(docs)
+        unique_docs = [] 
+        unique_ids = []
+        docs.each do |doc|
+          unless unique_ids.include? doc.id
+            unique_ids << doc.id
+            unique_docs << doc
+          end
+        end
+        return unique_docs
+      end
+
+      def get_medias_and_objects(docs)
+        media_documents = []
+        object_documents = []
+        docs.each do |doc|
+         work = ::ActiveFedora::Base.find(doc.id)
+         if work.class == Media
+           media_documents << doc
+           # get BSO and CHO
+           object_documents << physical_object_solr_from_media(doc.id)
+         end
+        end
+        return media_documents.compact, object_documents.compact
       end
 
       def parent_collections
@@ -113,13 +135,6 @@ byebug
       #   search_field: 'all_fields'
       # @return <Hash> the inputs required for the collection member query service
       def params_for_query
-#        byebug
-        # todo: figure out how to query for Media work only
-        #type[]=Media
-        #    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-        #    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Media"
-        #    ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
-
         params.merge(q: params[:cq])
       end
   end

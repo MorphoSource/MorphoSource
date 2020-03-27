@@ -69,17 +69,41 @@ module MorphosourceHelper
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
-  def physical_objects
-    pid ='q524jn76v'
+  def physical_object_solr_from_media(id)
+    #find BSO or CHO assigned to the media id
 
-    work = ActiveFedora::Base.find(pid)
+    # get processing event:  media < processing_event
+    # todo: might need to handle parent medias also.  See media_presenter
+    #@processing_events = ProcessingEvent.where('member_ids_ssim' => this_media_and_parents_id_list)
+    @processing_events = ProcessingEvent.where('member_ids_ssim' => id)
+    if @processing_events.count > 0
+      @is_absentee_parent = true
+    else
+      @is_absentee_parent = false
+    end
+    # Get the physical object type from:
+    # Media < IE < PO
+    # or
+    # media < PE < IE < PO (for media with absentee parent)
+    if @is_absentee_parent == true
+      @imaging_event = ImagingEvent.where('member_ids_ssim' => @processing_events.first).first
+    else
+      @imaging_event = ImagingEvent.where('member_ids_ssim' => id).first
+    end
 
-    doc = SolrDocument.new(work.to_solr) 
-
-    [doc]
-byebug
+    if @imaging_event.present?
+      biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
+      cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
+      if biological_specimen.present?
+        work = ActiveFedora::Base.find(biological_specimen.id)
+        doc = SolrDocument.new(work.to_solr) 
+      elsif cultural_heritage_object.present?
+        work = ActiveFedora::Base.find(cultural_heritage_object.id)
+        doc = SolrDocument.new(work.to_solr) 
+      end
+    end
+    return doc
   end
-
   #def render_test(solr_doc)
   #  #collection_list = Hyrax::CollectionMemberService.run(solr_doc, controller.current_ability)
   #  #return if collection_list.empty?

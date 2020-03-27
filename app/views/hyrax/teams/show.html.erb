@@ -35,8 +35,8 @@ provide :page_title, construct_page_title(@presenter.title)
                 <%= @presenter.permission_badge %>
               </div>
               <div class="text-muted">
-                <%= @presenter.total_viewable_items %> 
-                <%= 'Item'.pluralize(@presenter.total_viewable_items) %> · 
+                <%= @media_member_count %> <%= 'Media'.pluralize(@media_member_count) %> · 
+                <%= @object_member_count %> <%= 'Object'.pluralize(@object_member_count) %> · 
                   Managed by: <%= @presenter.collection_managers %>
 
                  <%# todo: display user link 
@@ -56,7 +56,7 @@ provide :page_title, construct_page_title(@presenter.title)
             <div class="clearfix">
               <b>REPRESENTS ORGANIZATION</b><br />
               <%= @presenter.organization_title.first %><br />
-              140 Media · 123 Specimens 
+              140Media · 123Specimens 
             </div>
           </div>
         </div>
@@ -137,9 +137,9 @@ provide :page_title, construct_page_title(@presenter.title)
           </div>
 
           <!-- Works -->
-          <% if @members_count > 0 %>
+          <% if @media_member_count > 0 %>
               <div class="hyc-blacklight hyc-bl-title">
-                <h4><%= t('.works_in_collection') %> (<%= @members_count %>)</h4>
+                <h4><%= t('.works_in_collection') %> (<%= @media_member_count %>)</h4>
               </div>
 
               <div class="hyc-blacklight hyc-bl-sort">
@@ -147,7 +147,7 @@ provide :page_title, construct_page_title(@presenter.title)
               </div>
 
               <div class="hyc-blacklight hyc-bl-results">
-                <%= render_document_index @member_docs %>
+                <%= render_document_index @media_member_docs %>
               </div>
 
               <div class="hyc-blacklight hyc-bl-pager">
@@ -163,8 +163,6 @@ provide :page_title, construct_page_title(@presenter.title)
 
           <!-- Objects -->
           <% if @members_count > 0 %>
-
-
 
               <div class="hyc-blacklight hyc-bl-results">
                 <%= render_document_index @object_member_docs %>

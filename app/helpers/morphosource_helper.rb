@@ -69,7 +69,13 @@ module MorphosourceHelper
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
-  def physical_object_solr_from_media(id)
+  def physical_object_solr_from_media(media_id)
+    physical_object_work = physical_object_from_media(media_id)
+    doc = SolrDocument.new(physical_object_work.to_solr) if physical_object_work.present?
+    return doc
+  end
+
+  def physical_object_from_media(id)
     #find BSO or CHO assigned to the media id
 
     # get processing event:  media < processing_event
@@ -95,27 +101,14 @@ module MorphosourceHelper
       biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
       cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
       if biological_specimen.present?
-        work = ActiveFedora::Base.find(biological_specimen.id)
-        doc = SolrDocument.new(work.to_solr) 
+        object = biological_specimen
       elsif cultural_heritage_object.present?
-        work = ActiveFedora::Base.find(cultural_heritage_object.id)
-        doc = SolrDocument.new(work.to_solr) 
+        object = cultural_heritage_object
       end
     end
-    return doc
+    return object
   end
-  #def render_test(solr_doc)
-  #  #collection_list = Hyrax::CollectionMemberService.run(solr_doc, controller.current_ability)
-  #  #return if collection_list.empty?
-  #  #links = collection_list.map { |collection| link_to collection.title_or_label, hyrax.collection_path(collection.id) }
-  #  #collection_links = []
-  #  #links.each_with_index do |link, n|
-  #  #  collection_links << link
-  #  #  collection_links << ', ' unless links[n + 1].nil?
-  #  #end
-  #  #content_tag :span, safe_join([t('hyrax.collection.is_part_of'), ': '] + collection_links)
-  #  "render_test!"
-  #end
+
 
 
   def ms_work_form_tabs(work)

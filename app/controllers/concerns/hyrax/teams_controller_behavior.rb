@@ -84,7 +84,7 @@ module Hyrax
         @media_member_docs, @object_member_docs = get_medias_and_objects(@member_docs)
         @object_member_docs = dedup(@object_member_docs) if @object_member_docs.present?
         @media_member_count = @media_member_docs.length
-        @object_member_count = @object_member_docs.length
+        @object_member_count = @object_member_docs&.length || 0
       end
 
       def dedup(docs)

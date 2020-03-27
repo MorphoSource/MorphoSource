@@ -162,13 +162,13 @@ provide :page_title, construct_page_title(@presenter.title)
         <div class="form-tab-content">
 
           <!-- Objects -->
-          <% if @members_count > 0 %>
+          <% if @object_member_count > 0 %>
 
               <div class="hyc-blacklight hyc-bl-results">
-                <%= render_document_index @object_member_docs %>
+                <%= render_document_index @object_member_docs %> 
               </div>
 
-          <% end # if @members_count > 0 %>
+          <% end # if @object_member_count > 0 %>
   
         </div>
       </div>

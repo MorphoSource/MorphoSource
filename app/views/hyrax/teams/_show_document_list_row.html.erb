@@ -1,4 +1,29 @@
-<% id = document.id %>
+<% 
+id = document.id 
+
+# if media, get BSO/CHO details
+  object = physical_object_from_media(id)
+
+
+
+# if BSO/CHO, just get the work details
+  #object = 
+
+
+
+
+object_title = ''
+object_taxonomy = ''
+if object.present?
+  if object.class == BiologicalSpecimen
+    object_title = object.title.first
+    object_taxonomy = object.taxonomies&.first&.title&.first
+  elsif object.class == CulturalHeritageObject
+    object_title = object.title.first
+  end
+end
+
+%>
 <tr id="document_<%= id %>">
   <td>&nbsp;
     <% if current_user and document.depositor != current_user.user_key %>
@@ -19,10 +44,10 @@
     </div -%>
   </td>
   <td><%= document.id %></td>  
-  <td><%= document.part %></td>  
-  <td><%= document.media_type %></td>  
+  <td><%= document.part&.first %></td>  
+  <td><%= object_title %></td>
+  <td><%= object_taxonomy %></td>
+  <td><%= document.media_type&.first %></td>  
   <td><%= document.date_uploaded %> </td>
-  <td>
-    <%= render_visibility_link(document) %>
-  </td>
+  <td><%= render_visibility_link(document) %></td>
 </tr>

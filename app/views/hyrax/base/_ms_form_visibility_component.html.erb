@@ -6,7 +6,11 @@
     <fieldset>
       <legend class="legend-save-work">Publication Status</legend>
       <ul id="publication-options" class="visibility">
-        <span id="selected_visibility" class=<%= (f.object.model.fileset_accessibility.first || 'new') %>></span>
+        <% if f.object.model.download_permission %>
+          <span id="selected_visibility" class=<%= f.object.model.download_permission %>></span>
+        <% else %>
+          <span id="selected_visibility" class=<%= (f.object.model.fileset_accessibility.first || 'new') %>></span>
+        <% end %>
         <li class="radio">
           <label>
             <%= f.radio_button :visibility, Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC, data: { 'target': '#collapsePublic', 'toggle':'collapse' } %>
@@ -93,4 +97,13 @@
         </li>
       </ul>
     </fieldset>
+
+    <script>
+      <!-- add alert if default permissions set -->
+      <% if @media_form.model.download_permission %>
+        $('#publication-options').one( "click", function() {
+          alert( "<%= alert(@organization) %>" );
+        });
+      <% end %>
+    </script>
 <% end %>

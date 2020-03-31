@@ -9,37 +9,6 @@ module Hyrax
 
     delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :user_taxonomies, to: :work
 
-# TODO: remove below block later if not needed any more.
-    #attr_accessor :institution_code, :organization_title, :organization_description, :organization_address, :#organization_city, :organization_state_province, :organization_country #
-#
-#    #def get_organization_data
-#    #  organization = parent_organization
-#    #  if organization.present?
-#    #    if organization.institution_code.present?
-#    #      @institution_code = organization.institution_code.first
-#    #    end
-#    #    if organization.title.present?
-#    #      @organization_title = organization.title.first
-#    #    end
-#    #    if organization.description.present?
-#    #      @organization_description = organization.description.first
-#    #    end
-#    #    if organization.address.present?
-#    #      @organization_address = organization.address.first
-#    #    end
-#    #    if organization.city.present?
-#    #      @organization_city = organization.city.first
-#    #    end
-#    #    if organization.state_province.present?
-#    #      @organization_state_province = organization.state_province.first
-#    #    end
-#    #    if organization.country.present?
-#    #      @organization_country = organization.country.first
-#    #    end
-#    #    
-    #  end
-    #end
-
     def canonical_taxonomy_label
       if canonical_taxonomy_object.present?
         if canonical_taxonomy_object.trusted == ["Yes"]

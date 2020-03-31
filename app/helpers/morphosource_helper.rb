@@ -1,6 +1,7 @@
 module MorphosourceHelper
   
   include ActionView::Helpers::UrlHelper
+  include MediaFinderHelper
 
   def current_controller
     current_uri = request.env['PATH_INFO']
@@ -78,24 +79,55 @@ module MorphosourceHelper
 
   def physical_object_from_media(id)
     #find BSO or CHO assigned to the media id
+    media = Media.find(id)
 
-    # get processing event:  media < processing_event
-    # todo: might need to handle parent medias also.  See media_presenter
-    #@processing_events = ProcessingEvent.where('member_ids_ssim' => this_media_and_parents_id_list)
-    @processing_events = ProcessingEvent.where('member_ids_ssim' => id)
-    if @processing_events.count > 0
-      @is_absentee_parent = true
-    else
-      @is_absentee_parent = false
+    # Get parent medias (all)
+    # add current media id, then add child media ids.
+    # currently add up to 5 levels in the tree.  Later we should store the child medias in the work
+    # so there is no need to traverse the tree
+    @parent_media_id_list = parent_media_ids(media, 5, []).flatten.uniq
+    #@parent_media_count = @parent_media_id_list.length.to_s
+    #@child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
+    #@sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
+
+    # get the top parent
+    direct_parent_id = top_parent_media_id(media)
+    #direct_parent_id_list = parent_media_ids(media, 1, []).flatten.uniq
+    direct_parent_id_list = []
+    if direct_parent_id.present?
+      direct_parent_id_list << direct_parent_id
     end
+
+    @is_absentee_parent = false
+
+    this_media_list = [] << id
+    # get members for this media combined with parents, ordered in reverse
+    @this_media_and_parents_id_list = @parent_media_id_list << id
+    # get processing event:  media < processing_event
+    # then get processing event data: activity items, child/parent IDs and member presenters
+    @processing_events = ProcessingEvent.where('member_ids_ssim' => @this_media_and_parents_id_list)
+    @processing_event_count = @processing_events.count
+
+    if direct_parent_id_list.length > 0
+      # If a media has a parent work and is derived, then that media’s raw ancestor media work
+      # (whether parent, grandparent, etc) should be connected to an IE from which metadata should be derived.
+      target_media = Media.where('id' => direct_parent_id).first
+    else
+      target_media = media
+      # check if this is a Derived media with "absentee parent" by checking if PE exists
+      if @processing_event_count > 0
+        @is_absentee_parent = true
+      end
+    end
+
     # Get the physical object type from:
     # Media < IE < PO
     # or
     # media < PE < IE < PO (for media with absentee parent)
     if @is_absentee_parent == true
-      @imaging_event = ImagingEvent.where('member_ids_ssim' => @processing_events.first).first
+      @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
     else
-      @imaging_event = ImagingEvent.where('member_ids_ssim' => id).first
+      @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
     end
 
     if @imaging_event.present?
@@ -103,20 +135,6 @@ module MorphosourceHelper
       cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
     end
     return biological_specimen, cultural_heritage_object
-  end
-
-  def display_object(object)
-    obj.title = ''
-    obj.taxonomy = ''    
-    if object.present?
-      if object.class == BiologicalSpecimen
-        obj.title = object.title.first
-        obj.taxonomy = object.taxonomies&.first&.title&.first
-      elsif object.class == CulturalHeritageObject
-        obj.title = object.title.first
-      end
-    end
-    return obj
   end
 
 

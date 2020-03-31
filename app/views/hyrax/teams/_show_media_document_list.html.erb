@@ -1,0 +1,25 @@
+<div>
+    Toggle column: <a class="toggle-vis" data-column="0">Name</a> - 
+    <a class="toggle-vis" data-column="1">Position</a> - 
+    <a class="toggle-vis" data-column="2">Office</a> - 
+    <a class="toggle-vis" data-column="3">Age</a> - <a class="toggle-vis" data-column="4">Start date</a> - <a class="toggle-vis" data-column="5">Salary</a>
+</div>
+<table id="teams-projects-listing" class="datatable table table-striped teams-projects">
+  <caption class="sr-only">List of items in this team</caption>
+  <thead>
+  <tr>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>ID</th>
+    <th>Part</th>
+    <th>Object</th>
+    <th>Taxonomy</th>
+    <th>Type</th>
+    <th><%= t("hyrax.dashboard.my.heading.date_uploaded") %></th>
+    <th><%= t("hyrax.dashboard.my.heading.visibility") %></th>
+  </tr>
+  </thead>
+  <tbody>
+    <%= render partial: 'show_media_document_list_row', collection: documents, as: :document %>
+  </tbody>
+</table>

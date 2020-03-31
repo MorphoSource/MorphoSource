@@ -147,7 +147,7 @@ provide :page_title, construct_page_title(@presenter.title)
               </div>
 
               <div class="hyc-blacklight hyc-bl-results">
-                <%= render_document_index @media_member_docs %>
+                <%= render_document_index @media_member_docs, work_type: 'media' %>
               </div>
 
               <div class="hyc-blacklight hyc-bl-pager">
@@ -162,13 +162,13 @@ provide :page_title, construct_page_title(@presenter.title)
         <div class="form-tab-content">
 
           <!-- Objects -->
-          <% if @object_member_count > 0 %>
+          <% if @bso_member_count > 0 %>
 
               <div class="hyc-blacklight hyc-bl-results">
-                <%= render_document_index @object_member_docs %> 
+                <%= render_document_index @bso_member_docs, work_type: 'biological_specimen' %> 
               </div>
 
-          <% end # if @object_member_count > 0 %>
+          <% end # if @bso_member_count > 0 %>
   
         </div>
       </div>

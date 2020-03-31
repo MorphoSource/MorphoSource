@@ -6,7 +6,11 @@
   <% @document_list = documents %>
   <% if params[:action] == "edit" %>
     <%= render 'default_group', documents: documents, docs: documents %>
+  <% elsif work_type == "media" %>
+    <%= render 'show_media_document_list', documents: documents %>
+  <% elsif work_type == "biological_specimen" %>
+    <%= render 'show_biological_specimen_document_list', documents: documents %>
   <% else %>
-    <%= render 'show_document_list', documents: documents %>
+    ERROR: no work_type
   <% end %>
 <% end %>

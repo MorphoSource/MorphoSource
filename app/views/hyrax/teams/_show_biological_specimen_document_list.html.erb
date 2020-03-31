@@ -1,0 +1,19 @@
+
+
+<table id="teams-projects-listing" class="datatable table table-striped teams-projects">
+  <caption class="sr-only">List of items in this team</caption>
+  <thead>
+  <tr>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>Identifier</th>
+    <th>Taxonomy</th>
+    <th>Total Media</th>
+    <th>Added</th>
+    <th>Source</th>
+  </tr>
+  </thead>
+  <tbody>
+    <%= render partial: 'show_biological_specimen_document_list_row', collection: documents, as: :document %>
+  </tbody>
+</table>

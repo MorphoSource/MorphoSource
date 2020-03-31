@@ -1,28 +1,6 @@
 <% 
 id = document.id 
-
-# if media, get BSO/CHO details
-  object = physical_object_from_media(id)
-
-
-
-# if BSO/CHO, just get the work details
-  #object = 
-
-
-
-
-object_title = ''
-object_taxonomy = ''
-if object.present?
-  if object.class == BiologicalSpecimen
-    object_title = object.title.first
-    object_taxonomy = object.taxonomies&.first&.title&.first
-  elsif object.class == CulturalHeritageObject
-    object_title = object.title.first
-  end
-end
-
+bso, cho = physical_object_from_media(id)
 %>
 <tr id="document_<%= id %>">
   <td>&nbsp;
@@ -45,8 +23,8 @@ end
   </td>
   <td><%= document.id %></td>  
   <td><%= document.part&.first %></td>  
-  <td><%= object_title %></td>
-  <td><%= object_taxonomy %></td>
+  <td><%= bso&.title&.first %><%= cho&.title&.first %></td>
+  <td><%= bso&.taxonomies&.first&.title&.first %></td>
   <td><%= document.media_type&.first %></td>  
   <td><%= document.date_uploaded %> </td>
   <td><%= render_visibility_link(document) %></td>

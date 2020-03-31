@@ -70,9 +70,10 @@ module MorphosourceHelper
   end
 
   def physical_object_solr_from_media(media_id)
-    physical_object_work = physical_object_from_media(media_id)
-    doc = SolrDocument.new(physical_object_work.to_solr) if physical_object_work.present?
-    return doc
+    bso_work, cho_work = physical_object_from_media(media_id)
+    bso_doc = SolrDocument.new(bso_work.to_solr) if bso_work.present?
+    cho_doc = SolrDocument.new(cho_work.to_solr) if cho_work.present?
+    return bso_doc, cho_doc
   end
 
   def physical_object_from_media(id)
@@ -100,15 +101,23 @@ module MorphosourceHelper
     if @imaging_event.present?
       biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
       cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
-      if biological_specimen.present?
-        object = biological_specimen
-      elsif cultural_heritage_object.present?
-        object = cultural_heritage_object
-      end
     end
-    return object
+    return biological_specimen, cultural_heritage_object
   end
 
+  def display_object(object)
+    obj.title = ''
+    obj.taxonomy = ''    
+    if object.present?
+      if object.class == BiologicalSpecimen
+        obj.title = object.title.first
+        obj.taxonomy = object.taxonomies&.first&.title&.first
+      elsif object.class == CulturalHeritageObject
+        obj.title = object.title.first
+      end
+    end
+    return obj
+  end
 
 
   def ms_work_form_tabs(work)

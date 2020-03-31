@@ -3,13 +3,19 @@ $(document).on('turbolinks:load', function() {
   if ($('div[class*="showcase"]').length) { // check if the page is showcase page
 
     // Toggle the visibility of table column
-    $('a.toggle-vis').on( 'click', function (e) {
-      e.preventDefault();
+    $('.toggle-vis').on( 'click', function (e) {
+      //e.preventDefault();
+
       var table = $('#teams-projects-listing').DataTable();
       var column = table.column( $(this).attr('data-column') );
       column.visible( ! column.visible() );
     });
 
+    // keep dropdown menu open 
+    $(document).on('click', '.choose-columns .dropdown-menu', function (e) {
+      e.stopPropagation();
+    });
+    
     // switching icons and button labels for expand / collapse
     $(".collapse-block").not(".glyphicon-only").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');

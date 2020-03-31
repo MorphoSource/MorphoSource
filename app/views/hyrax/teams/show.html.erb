@@ -61,10 +61,27 @@ provide :page_title, construct_page_title(@presenter.title)
           </div>
         </div>
       <% elsif @presenter.collection_type.machine_id == 'project' %>
-        EDIT  
+      
+        <div class="show-actions">
+          <% if can? :edit, @presenter.solr_document %>
+            <div class="btn-group">
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Actions <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <%= link_to t('hyrax.collection.actions.edit.label'),
+                              hyrax.edit_dashboard_collection_path(@presenter),
+                              title: t('hyrax.collection.actions.edit.desc'),
+                              class: 'btn btn-primary' %>
+                </li>
+              </ul>
+            </div>
+          <% end %>
+        </div>
+
       <% end %>
 
-    
     </div>
 
   </div><!-- /row -->

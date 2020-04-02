@@ -160,16 +160,16 @@ provide :page_title, construct_page_title(@presenter.title)
               </div>
 
               <div class="hyc-blacklight hyc-bl-sort">
-                <%= render 'sort_and_per_page', collection: @presenter %>
+                sort <%= render 'sort_and_per_page', collection: @presenter, work_type: 'media' %>
               </div>
 
               <div class="hyc-blacklight hyc-bl-results">
                 <%= render_document_index @media_member_docs, work_type: 'media' %>
               </div>
 
-              <div class="hyc-blacklight hyc-bl-pager">
-                <%= render 'paginate' %>
-              </div>
+              <%# div class="hyc-blacklight hyc-bl-pager">
+                <%= render 'paginate' % >
+              </div %>
           <% end # if @members_count > 0 %>
 
         </div>
@@ -182,7 +182,7 @@ provide :page_title, construct_page_title(@presenter.title)
           <% if @bso_member_count > 0 %>
 
               <div class="hyc-blacklight hyc-bl-results">
-                <%= render_document_index @bso_member_docs, work_type: 'biological_specimen' %> 
+                <%#= render_document_index @bso_member_docs, work_type: 'biological_specimen' %> 
               </div>
 
           <% end # if @bso_member_count > 0 %>

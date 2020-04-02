@@ -80,7 +80,8 @@ module Hyrax
         @response = collection_member_service.available_member_works
         @member_docs = @response.documents
         @members_count = @response.total
-
+byebug
+ 
         @media_member_docs, @bso_member_docs, @cho_member_docs = get_medias_and_objects(@member_docs)
         @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
         @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
@@ -102,19 +103,23 @@ module Hyrax
       end
 
       def get_medias_and_objects(docs)
+byebug
         media_documents = []
+        mcount = 0
         bso_documents = []
         cho_documents = []
         docs.each do |doc|
-         work = ::ActiveFedora::Base.find(doc.id)
-         if work.class == Media
-           media_documents << doc
-           # get BSO and CHO
-           bso_doc, cho_doc = physical_object_solr_from_media(doc.id)
-           bso_documents << bso_doc if bso_doc.present?
-           cho_documents << cho_doc if cho_doc.present?
-         end
+          work = ::ActiveFedora::Base.find(doc.id)
+          if work.class == Media
+            media_documents << doc
+            mcount = mcount + 1
+            # get BSO and CHO
+            bso_doc, cho_doc = physical_object_solr_from_media(doc.id)
+            bso_documents << bso_doc if bso_doc.present?
+            cho_documents << cho_doc if cho_doc.present?
+          end
         end
+        byebug
         return media_documents.compact, bso_documents.compact, cho_documents.compact
       end
 

@@ -243,5 +243,6 @@ module Hyrax
       return true if current_ability.can?(:edit, solr_document)
       false
     end
+  
   end
 end

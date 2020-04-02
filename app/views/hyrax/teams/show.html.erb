@@ -182,7 +182,7 @@ provide :page_title, construct_page_title(@presenter.title)
           <% if @bso_member_count > 0 %>
 
               <div class="hyc-blacklight hyc-bl-results">
-                <%#= render_document_index @bso_member_docs, work_type: 'biological_specimen' %> 
+                <%= render_document_index @bso_member_docs, work_type: 'biological_specimen' %> 
               </div>
 
           <% end # if @bso_member_count > 0 %>

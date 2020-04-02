@@ -24,10 +24,12 @@ Rails.application.routes.draw do
     get 'concern/media/show/:id', to: 'media#show'
     get 'concern/biological_specimens/show/:id', to: 'biological_specimens#show'
     get 'concern/cultural_heritage_objects/show/:id', to: 'cultural_heritage_objects#show'
+#
+#    get '/teams/:id/page/:page(.:format)', to: 'teams#index'
+#    get '/teams/:id(.:format)', to: 'teams#show'
+#    get '/projects/:id(.:format)', to: 'projects#show'
+#
 
-    #get '/teams/:id/page/:page(.:format)', to: 'collections#index'
-    get '/teams/:id(.:format)', to: 'teams#show'
-    get '/projects/:id(.:format)', to: 'projects#show'
 
 
 #                              GET      /collections/:id/page/:page(.:format)   hyrax/collections#index
@@ -192,4 +194,15 @@ Rails.application.routes.draw do
       post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'
     end
   end
+
+  scope module: :hyrax do
+    resources :teams, only: :show do # public landing team/project show page
+      member do
+        get 'page/:page', action: :index
+        get 'facet/:id', action: :facet, as: :dashboard_facet
+        get :files
+      end
+    end
+  end
+  
 end

@@ -2,6 +2,7 @@ module MorphosourceHelper
   
   include ActionView::Helpers::UrlHelper
   include MediaFinderHelper
+  include Hyrax::Renderers
 
   def current_controller
     current_uri = request.env['PATH_INFO']
@@ -291,6 +292,11 @@ module MorphosourceHelper
         organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
       end
       organization_institution
+  end
+
+  def render_source_of_record(bso)
+    renderer = Hyrax::Renderers::ShowcaseIdigbioLinkAttributeRenderer.new()
+    renderer.generated_link_from_bso(bso)
   end
 
   def source_of_record(idigbio_uuid, idigbio_recordset_id)

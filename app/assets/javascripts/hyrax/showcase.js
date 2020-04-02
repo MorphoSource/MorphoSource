@@ -2,12 +2,31 @@ $(document).on('turbolinks:load', function() {
 
   if ($('div[class*="showcase"]').length) { // check if the page is showcase page
 
-    // Toggle the visibility of table column
-    $('.toggle-vis').on( 'click', function (e) {
-      //e.preventDefault();
+    var mediaTable = $('#datatable-media-list').DataTable({
+      pageLength: 10
+    });
+    var bsoTable = $('#datatable-bso-list').DataTable({
+      pageLength: 10
+    });
 
-      var table = $('#teams-projects-listing').DataTable();
-      var column = table.column( $(this).attr('data-column') );
+      //$('.datatable.teams-projects').DataTable({
+      //  // ajax: ...,
+      //  // autoWidth: false,
+      //  // pagingType: 'full_numbers',
+      //  // processing: true,
+      //  // serverSide: true,
+      //"pageLength": 10
+    //
+    //  //  // Optional, if you want full pagination controls.
+    //  //  // Check dataTables documentation to learn more about available options.
+    //  //  // http://datatables.net/reference/option/pagingType
+      //});
+
+    // Toggle the visibility of table column
+    $('.choose-columns-media .toggle-vis').on( 'click', function (e) {
+      //e.preventDefault();
+      console.log('click')
+      var column = mediaTable.column( $(this).attr('data-column') );
       column.visible( ! column.visible() );
     });
 

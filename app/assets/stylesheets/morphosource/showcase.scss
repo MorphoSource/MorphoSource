@@ -536,7 +536,7 @@ div.showcase {
     }
   }
 
-  .choose-columns .dropdown-menu {
+  [class*="choose-columns"] .dropdown-menu {
     color: $button-color;
     background-color: #fff;
     list-style-type: none;

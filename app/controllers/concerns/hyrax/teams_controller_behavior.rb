@@ -81,7 +81,8 @@ module Hyrax
         @member_docs = @response.documents
         @members_count = @response.total
  
-        @media_member_docs, @bso_member_docs, @cho_member_docs = get_medias_and_objects(@member_docs)
+        @media_member_docs, @bso_member_docs, @bso_extras, 
+          @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs)
         @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
         @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
         @media_member_count = @media_member_docs.length
@@ -89,7 +90,7 @@ module Hyrax
         @cho_member_count = @cho_member_docs&.length || 0
       end
 
-      def dedup(docs)
+      def dedup(docs) 
         unique_docs = [] 
         unique_ids = []
         docs.each do |doc|
@@ -105,17 +106,32 @@ module Hyrax
         media_documents = []
         bso_documents = []
         cho_documents = []
+        bso_extras = []
+        cho_extras = []
+
         docs.each do |doc|
           work = ::ActiveFedora::Base.find(doc.id)
           if work.class == Media
             media_documents << doc
             # get BSO and CHO
-            bso_doc, cho_doc = physical_object_solr_from_media(doc.id)
-            bso_documents << bso_doc if bso_doc.present?
-            cho_documents << cho_doc if cho_doc.present?
+            bso_doc, bso_extra, cho_doc, cho_extra = physical_object_solr_from_media(doc.id)
+            if bso_doc.present?
+              unless bso_documents.any? {|h| h['id'] == bso_doc.id}
+                # check if the ID already exists before adding
+                bso_documents << bso_doc
+                bso_extras << bso_extra
+              end
+            end
+            if cho_doc.present?
+              unless cho_documents.any? {|h| h['id'] == cho_doc.id}
+                cho_documents << cho_doc 
+                cho_extras << cho_extra
+              end
+            end
           end
-        end
-        return media_documents.compact, bso_documents.compact, cho_documents.compact
+        end 
+        return media_documents.compact, bso_documents.compact, bso_extras,
+          cho_documents.compact, cho_extras
       end
 
       def parent_collections

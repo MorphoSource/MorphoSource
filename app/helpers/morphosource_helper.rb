@@ -72,10 +72,11 @@ module MorphosourceHelper
   end
 
   def physical_object_solr_from_media(media_id)
-    bso_work, cho_work = physical_object_from_media(media_id)
+    # this method returns the solr doc (and other details) of a PO associated with the media ID
+    bso_work, bso_extra, cho_work, cho_extra = physical_object_from_media(media_id)
     bso_doc = SolrDocument.new(bso_work.to_solr) if bso_work.present?
     cho_doc = SolrDocument.new(cho_work.to_solr) if cho_work.present?
-    return bso_doc, cho_doc
+    return bso_doc, bso_extra, cho_doc, cho_extra
   end
 
   def physical_object_from_media(id)
@@ -87,9 +88,11 @@ module MorphosourceHelper
     # currently add up to 5 levels in the tree.  Later we should store the child medias in the work
     # so there is no need to traverse the tree
     @parent_media_id_list = parent_media_ids(media, 5, []).flatten.uniq
-    #@parent_media_count = @parent_media_id_list.length.to_s
-    #@child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
-    #@sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
+    @child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
+    @sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
+    total_media_count = 1 + @parent_media_id_list.length +
+                        @child_media_id_list.length + 
+                        @sibling_media_id_list.length
 
     # get the top parent
     direct_parent_id = top_parent_media_id(media)
@@ -132,10 +135,17 @@ module MorphosourceHelper
     end
 
     if @imaging_event.present?
-      biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
-      cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
+      bso = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
+      cho = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
     end
-    return biological_specimen, cultural_heritage_object
+    bso_extra = {}
+    cho_extra = {}
+    if bso.present?
+      bso_extra = { 'id' => bso.id, 'media_count' => total_media_count.to_s}
+    elsif cho.present?
+      cho_extra = { 'id' => cho.id, 'media_count' => total_media_count.to_s}
+    end
+    return bso, bso_extra, cho, cho_extra
   end
 
 
@@ -294,8 +304,12 @@ module MorphosourceHelper
       organization_institution
   end
 
+  def render_extra(extras, id, variable)
+    extras.find { |h| h['id'] == id }[variable]
+  end
+
   def render_source_of_record(bso)
-    renderer = Hyrax::Renderers::ShowcaseIdigbioLinkAttributeRenderer.new()
+    renderer = Hyrax::Renderers::ShowcaseIdigbioLinkAttributeRenderer.new(nil,nil)
     renderer.generated_link_from_bso(bso)
   end
 
@@ -343,6 +357,7 @@ module MorphosourceHelper
 
       else
         # if landed here. check e.message for the exception message
+        Rails.logger.info("Error in display_date: #{e.message} ")
         '(Error)'
       end
     end

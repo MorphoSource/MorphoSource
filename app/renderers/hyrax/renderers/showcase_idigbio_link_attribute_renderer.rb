@@ -2,9 +2,6 @@ module Hyrax
   module Renderers
     class ShowcaseIdigbioLinkAttributeRenderer < ShowcaseDefaultAttributeRenderer
 
-      def initialize
-      end
-
       def generated_link_from_bso(bso)
         label = ''
         if bso.idigbio_uuid.present?

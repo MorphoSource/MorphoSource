@@ -571,6 +571,10 @@ div.showcase {
 
   .row.indent {padding-left: 32px}   
 
+  .visibility-link .label, .visibility-link td.status span, td.status .visibility-link span {
+    font-size: .65em;
+  }
+
   /* media showcase specific styles */
   .media-showcase {
     small.badge-wrapper div {

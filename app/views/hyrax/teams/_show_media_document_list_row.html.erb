@@ -23,5 +23,5 @@ bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
   <td><%= bso&.taxonomies&.first&.title&.first %></td>
   <td><%= document.media_type&.first %></td>  
   <td><%= document.date_uploaded %> </td>
-  <td><%= render_visibility_link(document) %></td>
+  <td><%= render_publication_status_badge(document) %></td>
 </tr>

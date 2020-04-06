@@ -540,6 +540,8 @@ div.showcase {
     color: $button-color;
     background-color: #fff;
     list-style-type: none;
+    padding: 2px 8px;
+    white-space: nowrap;    
   }
 
   div.preview {

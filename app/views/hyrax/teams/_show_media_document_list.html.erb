@@ -6,10 +6,15 @@
     <th>&nbsp;<!-- thumbnail column --></th>
     <th>ID</th>
     <th>Part</th>
-    <th>Object</th>
-    <th>Taxonomy</th>
+    <% if @bso_member_count > 0 %>
+      <th>Specimen</th>
+      <th>Taxonomy</th>
+    <% end %>
+    <% if @cho_member_count > 0 %>
+      <th>Object</th>
+    <% end %>
     <th>Type</th>
-    <th>Added</th>
+    <th>Date Added</th>
     <th>Access Level</th>
   </tr>
   </thead>

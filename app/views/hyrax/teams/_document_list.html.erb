@@ -10,6 +10,8 @@
     <%= render 'show_media_document_list', documents: documents %>
   <% elsif work_type == "biological_specimen" %>
     <%= render 'show_biological_specimen_document_list', documents: documents %>
+  <% elsif work_type == "cultural_heritage_object" %>
+    <%= render 'show_cultural_heritage_object_document_list', documents: documents %>
   <% else %>
     ERROR: no work_type
   <% end %>

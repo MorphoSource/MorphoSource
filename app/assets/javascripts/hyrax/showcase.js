@@ -3,30 +3,36 @@ $(document).on('turbolinks:load', function() {
   if ($('div[class*="showcase"]').length) { // check if the page is showcase page
 
     var mediaTable = $('#datatable-media-list').DataTable({
-      pageLength: 10
+      pageLength: 10,
+      bPaginate: true,
+      bLengthChange: false, // hide the show number of entries dropdown
+      bFilter: false // hide search box
     });
     var bsoTable = $('#datatable-bso-list').DataTable({
-      pageLength: 10
+      pageLength: 10,
+      bPaginate: true,
+      bLengthChange: false, // hide the show number of entries dropdown
+      bFilter: false // hide search box
     });
-
-      //$('.datatable.teams-projects').DataTable({
-      //  // ajax: ...,
-      //  // autoWidth: false,
-      //  // pagingType: 'full_numbers',
-      //  // processing: true,
-      //  // serverSide: true,
-      //"pageLength": 10
-    //
-    //  //  // Optional, if you want full pagination controls.
-    //  //  // Check dataTables documentation to learn more about available options.
-    //  //  // http://datatables.net/reference/option/pagingType
-      //});
+    var choTable = $('#datatable-cho-list').DataTable({
+      pageLength: 10,
+      bPaginate: true,
+      bLengthChange: false, // hide the show number of entries dropdown
+      bFilter: false // hide search box
+    });
 
     // Toggle the visibility of table column
     $('.choose-columns-media .toggle-vis').on( 'click', function (e) {
       //e.preventDefault();
-      console.log('click')
       var column = mediaTable.column( $(this).attr('data-column') );
+      column.visible( ! column.visible() );
+    });
+    $('.choose-columns-bso .toggle-vis').on( 'click', function (e) {
+      var column = bsoTable.column( $(this).attr('data-column') );
+      column.visible( ! column.visible() );
+    });
+    $('.choose-columns-cho .toggle-vis').on( 'click', function (e) {
+      var column = choTable.column( $(this).attr('data-column') );
       column.visible( ! column.visible() );
     });
 

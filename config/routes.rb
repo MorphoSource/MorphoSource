@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
   # Physical Object show case pages
+  # todo: clean up and rewrite the rules 
   scope module: :hyrax do
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
@@ -24,19 +25,16 @@ Rails.application.routes.draw do
     get 'concern/media/show/:id', to: 'media#show'
     get 'concern/biological_specimens/show/:id', to: 'biological_specimens#show'
     get 'concern/cultural_heritage_objects/show/:id', to: 'cultural_heritage_objects#show'
-#
-#    get '/teams/:id/page/:page(.:format)', to: 'teams#index'
-#    get '/teams/:id(.:format)', to: 'teams#show'
-#    get '/projects/:id(.:format)', to: 'projects#show'
-#
+  end
 
-
-
-#                              GET      /collections/:id/page/:page(.:format)   hyrax/collections#index
-#   dashboard_facet_collection GET      /collections/:id/facet/:id(.:format)    hyrax/collections#facet
-#             files_collection GET      /collections/:id/files(.:format)        hyrax/collections#files
-#                   collection GET      /collections/:id(.:format)              hyrax/collections#show
-
+  scope module: :hyrax do
+    resources :teams, only: :show do # public landing team/project show page
+      member do
+        get 'page/:page', action: :index
+        get 'facet/:id', action: :facet, as: :dashboard_facet
+        get :files
+      end
+    end
   end
 
   # override ProfilesController
@@ -192,16 +190,6 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'
-    end
-  end
-
-  scope module: :hyrax do
-    resources :teams, only: :show do # public landing team/project show page
-      member do
-        get 'page/:page', action: :index
-        get 'facet/:id', action: :facet, as: :dashboard_facet
-        get :files
-      end
     end
   end
   

@@ -3,18 +3,37 @@ $(document).on('turbolinks:load', function() {
   if ($('div[class*="showcase"]').length) { // check if the page is showcase page
 
     var mediaTable = $('#datatable-media-list').DataTable({
+      responsive: true,
+      columnDefs: [
+        { responsivePriority: 1, targets: 0 },
+        { responsivePriority: 2, targets: 1 },
+        { responsivePriority: 3, targets: 2 },
+        { responsivePriority: 4, targets: -1 } // rightmost column
+      ],
       pageLength: 10,
       bPaginate: true,
       bLengthChange: false, // hide the show number of entries dropdown
       bFilter: false // hide search box
     });
     var bsoTable = $('#datatable-bso-list').DataTable({
+      responsive: true,
+      columnDefs: [
+        { responsivePriority: 1, targets: 0 },
+        { responsivePriority: 3, targets: 1 },
+        { responsivePriority: 4, targets: 2 }
+      ],
       pageLength: 10,
       bPaginate: true,
       bLengthChange: false, // hide the show number of entries dropdown
       bFilter: false // hide search box
     });
     var choTable = $('#datatable-cho-list').DataTable({
+      responsive: true,
+      columnDefs: [
+        { responsivePriority: 1, targets: 0 },
+        { responsivePriority: 3, targets: 1 },
+        { responsivePriority: 4, targets: 2 }
+      ],
       pageLength: 10,
       bPaginate: true,
       bLengthChange: false, // hide the show number of entries dropdown

@@ -28,15 +28,22 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
+<<<<<<< HEAD
     resources :teams, only: [:show] do # public landing team/project show page
+=======
+    resources :teams, only: :show do # public landing team/project show page
+>>>>>>> show/hide columns priority, datatables responsive enabled
       member do
         get 'page/:page', action: :index
         get 'facet/:id', action: :facet, as: :dashboard_facet
         get :files
       end
     end
+<<<<<<< HEAD
     get 'projects/:id', to: 'teams#show'
     get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
+=======
+>>>>>>> show/hide columns priority, datatables responsive enabled
   end
 
   # override ProfilesController
@@ -193,9 +200,16 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'
+<<<<<<< HEAD
 
       patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
     end
   end
 
 end
+=======
+    end
+  end
+  
+end
+>>>>>>> show/hide columns priority, datatables responsive enabled

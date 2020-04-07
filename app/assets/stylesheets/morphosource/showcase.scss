@@ -53,8 +53,12 @@ html {
   opacity: .5;
   z-index: 9999;
 }
+.break-all {
+  word-break: break-all;
+}
 
-.showcase.teams {
+.showcase.teams { /* / teams and projects show page styles */
+
   .flex { /* setting column with same height */
     display: flex;
   }
@@ -88,18 +92,22 @@ html {
   }
   @media (max-width: 768px) {
     #showcase-title {
-      font-size: 2vw;
+      font-size: 3.9vw;
     }  
   }
   @media (min-width: 768px) {
     #showcase-title {
       font-size: 28px;
-      margin-bottom: 10px;
-      padding-bottom: 7px;
+      margin-bottom: 4px;
+      padding-bottom: 0;
     }
   }
   h4 {
     font-size: 14px;
+  }
+  .hyc-blacklight, hyc-bl-results {
+    margin:0;
+    padding:0;
   }
   .hyc-bl-results ul {
     list-style-type: square;
@@ -132,7 +140,41 @@ html {
       left: -17px;
     }
   }
-}
+
+  table.teams-projects {
+    td {
+      font-size: 12px;
+    }
+    td.long-badge {
+      a {
+        display: inline-block;
+        width: 100%;
+        span {
+          display: inline-block;
+          font-weight: bold;
+          font-size: 10px;
+          width: 100%;
+          padding-top: 4px;
+          padding-bottom: 4px;
+        }
+      }
+    }
+  }
+
+  .view-type-group {
+    white-space: nowrap;
+    .btn-primary, .btn-default, .btn-sm, .btn-big {
+      background-color: transparent;
+      color: $font-color;
+      border-color: transparent;
+    }
+  }
+
+  .choose-columns-media {
+    float: none;
+  }
+
+} /* / teams and projects show page styles */
 
 div.showcase {
   

@@ -2,14 +2,12 @@
 provide :page_title, construct_page_title(@presenter.title) 
 %>
 <div class="hyc-container showcase teams" itemscope itemtype="http://schema.org/CollectionPage">
-  <div class="row hyc-header">
-    <div class="col-md-12">
-      <% unless @presenter.banner_file.blank? %>
-          <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
-      <% else %>
-          <header class="hyc-generic"></header>
-      <% end %>
-    </div>
+  <div class="hyc-header">
+    <% unless @presenter.banner_file.blank? %>
+        <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
+    <% else %>
+        <header class="hyc-generic"></header>
+    <% end %>
   </div>
 
   <div class="row team-header">

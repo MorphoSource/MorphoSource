@@ -24,8 +24,7 @@ module Hyrax
       def decide_layout
         layout = case action_name
                  when 'show'
-                   '1_column'
-                   # 'morphosource_2_columns'
+                   'morphosource_1_column'
                  else
                    'dashboard'
                  end

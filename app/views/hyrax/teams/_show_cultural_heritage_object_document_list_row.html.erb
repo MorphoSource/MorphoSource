@@ -17,6 +17,7 @@ cho = CulturalHeritageObject.find(id)
   </td>
   <td class="break-all"><%= cho.title&.first %></td>
   <td><%= cho.material&.first %></td>
+  <td><%= cho.cho_type&.first %></td>
   <td><%= cho.vouchered&.first %></td>
   <td><%= render_extra(@cho_extras, id, 'media_count') %></td>  
   <td><%= document.date_uploaded %> </td> 

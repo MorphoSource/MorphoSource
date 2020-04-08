@@ -11,7 +11,7 @@ html {
 }
 
 
-/* utility classes below.  Some will be available in Boostrap 4.0+ */
+/* global and utility classes below.  Some will be available in Boostrap 4.0+ */
 .m-0 {
   margin: 0 !important;
 }
@@ -55,6 +55,15 @@ html {
 }
 .break-all {
   word-break: break-all;
+}
+.navbar-brand {
+  padding: 15px 0;
+}
+.navbar-nav > li > a {
+  padding: 10px 8px;
+}
+#search-form-header {
+  margin-top: 0.6em;
 }
 
 .showcase.teams { /* / teams and projects show page styles */

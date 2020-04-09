@@ -35,6 +35,8 @@ Rails.application.routes.draw do
         get :files
       end
     end
+    get 'projects/:id', to: 'teams#show'
+    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
   end
 
   # override ProfilesController

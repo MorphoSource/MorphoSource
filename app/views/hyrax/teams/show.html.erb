@@ -284,25 +284,4 @@ provide :page_title, construct_page_title(@presenter.title)
 
   </div><!-- /panel panel-default tabs -->
 
-
-
 </div><!-- div hyc-container -->
-
-
-
-              <%# unless has_collection_search_parameters? %>
-                  <%#= render 'show_descriptions' %>
-              <%# end %>
-
-
-              <%# if @presenter.collection_type_is_nestable? && @presenter.total_parent_collections > 0 % >
-                  <div class="hyc-blacklight hyc-bl-title">
-                    <h2>
-                      <% = t('.parent_collection_header') % > (<% = @presenter.total_parent_collections % >)
-                    </h2>
-                  </div>
-                  <div class="hyc-blacklight hyc-bl-results">
-  show_parent_collections
-                    <%= render 'show_parent_collections', presenter: @presenter % >
-                  </div>
-              <% end %>

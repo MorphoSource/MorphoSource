@@ -154,20 +154,25 @@ html {
     td {
       font-size: 12px;
     }
-    td.long-badge {
-      a {
+  }
+
+  .long-badge {
+    a {
+      display: inline-block;
+      width: 100%;
+      span {
         display: inline-block;
-        width: 100%;
-        span {
-          display: inline-block;
-          font-weight: bold;
-          font-size: 10px;
-          width: 100%;
-          padding-top: 4px;
-          padding-bottom: 4px;
-        }
+        font-weight: bold;
+        font-size: 10px;
+        width: 90%;
+        padding-top: 4px;
+        padding-bottom: 4px;
       }
     }
+  }
+
+  .gallery .long-badge a span {
+    width:70%;
   }
 
   .view-type-group {
@@ -183,7 +188,17 @@ html {
     float: none;
   }
 
+  .document dd {
+    text-align: center;
+  }
+
+  .gallery .file_listing_thumbnail {
+    width: auto;
+    max-width: 140px;
+  }
+
 } /* / teams and projects show page styles */
+
 
 div.showcase {
   

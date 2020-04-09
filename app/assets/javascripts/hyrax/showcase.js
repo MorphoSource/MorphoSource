@@ -12,6 +12,7 @@ $(document).on('turbolinks:load', function() {
       ],
       pageLength: 10,
       bPaginate: true,
+      bDestroy: true,
       bLengthChange: false, // hide the show number of entries dropdown
       bFilter: false // hide search box
     });
@@ -24,6 +25,7 @@ $(document).on('turbolinks:load', function() {
       ],
       pageLength: 10,
       bPaginate: true,
+      bDestroy: true,
       bLengthChange: false, // hide the show number of entries dropdown
       bFilter: false // hide search box
     });
@@ -36,6 +38,7 @@ $(document).on('turbolinks:load', function() {
       ],
       pageLength: 10,
       bPaginate: true,
+      bDestroy: true,
       bLengthChange: false, // hide the show number of entries dropdown
       bFilter: false // hide search box
     });

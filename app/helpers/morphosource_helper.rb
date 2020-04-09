@@ -15,6 +15,15 @@ module MorphosourceHelper
     names.include?(current_controller)
   end
 
+  def collection_type_from_path
+    current_uri = request.env['PATH_INFO']
+    if current_uri.include?("teams")
+      "teams"
+    elsif current_uri.include?("projects")
+      "projects"
+    end      
+  end
+
   def device_selector
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
     hits = devices

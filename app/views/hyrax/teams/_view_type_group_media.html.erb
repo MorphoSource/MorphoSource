@@ -2,10 +2,11 @@
 <div class="view-type pull-right">
   <span class="sr-only"><%= t('blacklight.search.view_title') %></span>
   <div class="view-type-group btn-group">
-    <% 
+    <%
+    collection_type = collection_type_from_path 
   	document_index_views.each do |view, config| 
 	  	link = collection_path(params[:id], view: view)
-	  	link["collections"] = "teams"
+	  	link["collections"] = collection_type # replace "collection' with "teams" or "projects" in links
 	  	%>
       <%= link_to link, title: t("blacklight.search.view_title.#{view}", default: t("blacklight.search.view.#{view}", default: blacklight_config.view[view].title)), class: "btn btn-default view-type-#{view.to_s.parameterize } #{"active" if document_index_view_type == view}" do %>
         <%= render_view_type_group_icon view %>
@@ -13,33 +14,35 @@
       <% end %>
     <% end %>
 
-		<div class="btn-group choose-columns-media">
-		  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		    <i class="fa fa-columns"></i> <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu">
-		    <li><input type="checkbox" class="toggle-vis" data-column="2" checked="checked" /> ID</li>
-		    <li><input type="checkbox" class="toggle-vis" data-column="3" checked="checked" /> Part</li>
-		    <% 
-	    	nextIndex = 4 
-	    	if @bso_member_count > 0 
-		    	%>
-			    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Specimen</li>
-			    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Taxonomy</li>
+    <% if document_index_view_type == :list %>
+			<div class="btn-group choose-columns-media">
+			  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			    <i class="fa fa-columns"></i> <span class="caret"></span>
+			  </button>
+			  <ul class="dropdown-menu">
+			    <li><input type="checkbox" class="toggle-vis" data-column="2" checked="checked" /> ID</li>
+			    <li><input type="checkbox" class="toggle-vis" data-column="3" checked="checked" /> Part</li>
 			    <% 
-			    nextIndex = nextIndex + 2
-		    end 
-		    if @cho_member_count > 0 %>
-			    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Object</li>
-		    	<% 
-			    nextIndex = nextIndex + 1
-		    end 
-		    %>
-		    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Type</li>
-		    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Date Added</li>
-		    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 2 %>" checked="checked" /> Access Level</li>
-		  </ul>
-		</div>
+		    	nextIndex = 4 
+		    	if @bso_member_count > 0 
+			    	%>
+				    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Specimen</li>
+				    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Taxonomy</li>
+				    <% 
+				    nextIndex = nextIndex + 2
+			    end 
+			    if @cho_member_count > 0 %>
+				    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Object</li>
+			    	<% 
+				    nextIndex = nextIndex + 1
+			    end 
+			    %>
+			    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Type</li>
+			    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Date Added</li>
+			    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 2 %>" checked="checked" /> Access Level</li>
+			  </ul>
+			</div>
+		<% end %>
 
   </div>
 </div>

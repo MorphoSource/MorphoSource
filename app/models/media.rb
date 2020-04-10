@@ -10,6 +10,8 @@ class Media < Morphosource::Works::Base
 
   validates :title, presence: { message: 'Your work must have a title.' }
 
+  attr_accessor :download_permission
+
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
 
@@ -91,8 +93,8 @@ class Media < Morphosource::Works::Base
   end
 
   def organizations
-    specimens.each_with_object([]) do |s, org|
-      org += s.organizations
+    specimens.each_with_object([]) do |s, orgs|
+      s.organizations.each { |o| orgs << o }
     end
   end
 

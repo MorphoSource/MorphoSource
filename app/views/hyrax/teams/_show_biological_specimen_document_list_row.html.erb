@@ -16,7 +16,7 @@ bso = BiologicalSpecimen.find(id)
     </div>
   </td>
   <td class="break-all"><%= bso&.title&.first %></td>
-  <td><%= bso&.taxonomies&.first&.title&.first %></td>
+  <td><%= bso&.taxonomies&.first&.taxonomy_genus&.first %></td>
 
   <td><%= render_extra(@bso_extras, id, 'media_count') %></td>  
   <td><%= document.date_uploaded %> </td> 

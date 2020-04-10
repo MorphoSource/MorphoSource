@@ -16,7 +16,10 @@ module Hyrax
       :organization_address,
       :organization_city,
       :organization_state_province,
-      :organization_country
+      :organization_country,
+      :organization_media_count,
+      :organization_bso_count,
+      :organization_cho_count
 
     attr_accessor :parent_collections # This is expected to be a Blacklight::Solr::Response with all of the parent collections
     attr_writer :collection_type
@@ -62,10 +65,24 @@ module Hyrax
       @collection_type ||= Hyrax::CollectionType.find_by_gid!(collection_type_gid)
     end
 
-    #def collection_organization
-    #  collection = Collection.find(id)
-    #  collection.organization
-    #end
+    def organization_object_counts(org)
+      #get the media count, bso count, cho count
+      #bso / cho count:
+      #organization > bso/cho  
+      #media count:
+      #organization > bso/cho > IE > media 
+#
+#      #
+#      #bso_count = 0
+#      #cho_count = 0
+#      #media_count = 0
+#
+#
+      #bso_work, bso_extra, cho_work, cho_extra = physical_object_from_media(media_id)
+      return 11, 22, 33
+
+
+    end
 
     def set_organization_data
       collection = Collection.find(id)
@@ -80,6 +97,8 @@ module Hyrax
         @organization_city = organization.city
         @organization_state_province = organization.state_province
         @organization_country = organization.country
+        @organization_media_count, @organization_bso_count, @organization_cho_count =
+          organization_object_counts(organization)
       end
     end
 

@@ -8,11 +8,11 @@ bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
 <dl class="document-metadata dl-horizontal dl-invert">
   <dd><%= document.id %></dd>
   <% if @bso_member_count > 0 %>
-    <dd class="break-all"><%= bso&.title&.first %></dd>
-    <dd><%= bso&.taxonomies&.first&.title&.first %></dd>
+    <dd class="text-truncate"><%= bso&.title&.first %></dd>
+    <dd class="text-truncate"><%= bso&.taxonomies&.first&.taxonomy_genus&.first %></dd>
   <% end %>
   <% if @cho_member_count > 0 %>
-    <dd class="break-all"><%= cho&.title&.first %></dd>
+    <dd class="text-truncate"><%= cho&.title&.first %></dd>
   <% end %>
   <dd class='long-badge'><%= render_publication_status_badge(document) %></dd>
 </dl>

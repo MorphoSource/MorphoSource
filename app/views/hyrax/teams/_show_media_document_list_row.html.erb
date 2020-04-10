@@ -21,7 +21,7 @@ bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
   <td><%= document.part&.first %></td>  
   <% if @bso_member_count > 0 %>
     <td class="break-all"><%= bso&.title&.first %></td>
-    <td><%= bso&.taxonomies&.first&.title&.first %></td>
+    <td><%= bso&.taxonomies&.first&.taxonomy_genus&.first %></td>
   <% end %>
   <% if @cho_member_count > 0 %>
     <td class="break-all"><%= cho&.title&.first %></td>

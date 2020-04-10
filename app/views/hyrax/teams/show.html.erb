@@ -61,7 +61,9 @@ provide :page_title, construct_page_title(@presenter.title)
             <div class="clearfix">
               <b>REPRESENTS ORGANIZATION</b><br />
               <%= @presenter.organization_title.first %><br />
-              140Media · 123Specimens 
+              <%= @presenter.organization_media_count %> Media 
+              · <%= @presenter.organization_bso_count %> Specimens 
+              · <%= @presenter.organization_cho_count %> CHO  
             </div>
           </div>
         </div>

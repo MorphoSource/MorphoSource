@@ -24,6 +24,11 @@ module MorphosourceHelper
     end      
   end
 
+  def truncate_value(value, length=20)
+    return "" if value.nil?
+    value.truncate(length)
+  end
+
   def device_selector
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
     hits = devices

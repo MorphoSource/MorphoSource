@@ -65,6 +65,11 @@ html {
 #search-form-header {
   margin-top: 0.6em;
 }
+.text-truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;  
+}
 
 .showcase.teams { /* / teams and projects show page styles */
 
@@ -188,13 +193,27 @@ html {
     float: none;
   }
 
-  .document dd {
-    text-align: center;
+  .document {
+    header, dl {
+      width: 150px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    h3 {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;  
+    }
+    dd {
+      text-align: center;
+    }
   }
 
   .gallery .file_listing_thumbnail {
-    width: auto;
-    max-width: 140px;
+    width: 140px;
+    height: 140px;
   }
 
 } /* / teams and projects show page styles */

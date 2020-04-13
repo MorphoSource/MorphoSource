@@ -176,10 +176,6 @@ html {
     }
   }
 
-  .gallery .long-badge a span {
-    width:70%;
-  }
-
   .view-type-group {
     white-space: nowrap;
     .btn-primary, .btn-default, .btn-sm, .btn-big {
@@ -208,12 +204,25 @@ html {
     }
     dd {
       text-align: center;
+      height: 22px;
     }
   }
 
-  .gallery .file_listing_thumbnail {
-    width: 140px;
-    height: 140px;
+
+  .gallery {
+    .file_listing_thumbnail {
+      width: 140px;
+      height: 140px;
+    }
+    .long-badge {
+      a span {
+        width:70%;
+      }
+    }
+    .thumbnail {
+      max-width: 220px;
+      height: 100%;
+    }
   }
 
 } /* / teams and projects show page styles */

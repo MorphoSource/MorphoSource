@@ -19,12 +19,12 @@ bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
   </td>
   <td><%= document.id %></td>  
   <td><%= document.part&.first %></td>  
-  <% if @bso_member_count > 0 %>
-    <td class="break-all"><%= bso&.title&.first %></td>
-    <td><%= bso&.taxonomies&.first&.taxonomy_genus&.first %></td>
+  <% if bso.present? %>
+    <td class="break-all"><%= bso.title&.first %></td>
+    <td><%= bso.taxonomies&.first&.taxonomy_genus&.first %></td>
   <% end %>
-  <% if @cho_member_count > 0 %>
-    <td class="break-all"><%= cho&.title&.first %></td>
+  <% if cho.present? %>
+    <td class="break-all"><%= cho.title&.first %></td>
   <% end %>
   <td><%= document.media_type&.first.underscore.humanize %></td>  
   <td><%= document.date_uploaded %> </td>

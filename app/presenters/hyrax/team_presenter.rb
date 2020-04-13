@@ -52,13 +52,10 @@ module Hyrax
     def manager_list(managers)
       ml = []
       managers.each do |m|
-        if m.display_name.present?
-          ml << m.display_name
-        else
-          ml << m.email
-        end
-      end  
-      ml.join(', ')  
+        renderer = Hyrax::Renderers::ShowcaseUserLinkAttributeRenderer.new(nil,nil)
+        ml << renderer.user_link(m)
+      end
+      ml.join(', ').html_safe
     end
 
     def collection_type
@@ -66,22 +63,38 @@ module Hyrax
     end
 
     def organization_object_counts(org)
-      #get the media count, bso count, cho count
-      #bso / cho count:
-      #organization > bso/cho  
-      #media count:
-      #organization > bso/cho > IE > media 
-#
-#      #
-#      #bso_count = 0
-#      #cho_count = 0
-#      #media_count = 0
-#
-#
-      #bso_work, bso_extra, cho_work, cho_extra = physical_object_from_media(media_id)
-      return 11, 22, 33
-
-
+      # get the media count, bso count, cho count
+      # bso / cho count:
+      # organization > bso/cho  
+      # media count:
+      # organization > bso/cho > IE > media 
+      # todo: handle absentee parents?
+      bso_count = 0
+      cho_count = 0
+      media_count = 0
+      bso_works = BiologicalSpecimen.where('id' => org.member_ids)
+      cho_works = CulturalHeritageObject.where('id' => org.member_ids)
+      imaging_event_works = []
+      if bso_works.present?
+        bso_count = bso_works.length 
+        bso_works.each do |po|
+          imaging_event_works = (imaging_event_works + ImagingEvent.where('id' => po.member_ids)&.to_ary).uniq
+        end
+      end
+      if cho_works.present?
+        cho_count = cho_works.length 
+        cho_works.each do |po|
+          imaging_event_works = (imaging_event_works + ImagingEvent.where('id' => po.member_ids)&.to_ary).uniq
+        end
+      end
+      if imaging_event_works.present?
+        imaging_event_works.each do |ie|
+          imaging_event = ImagingEvent.find(ie.id)
+          media_work = Media.where('id' => imaging_event.member_ids)
+          media_count += media_work.length if media_work.present?
+        end
+      end
+      return media_count, bso_count, cho_count
     end
 
     def set_organization_data

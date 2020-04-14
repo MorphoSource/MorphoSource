@@ -102,12 +102,15 @@ html {
     margin-top:0;
   }
   .text-muted {
-    font-size: 14px;
+    font-size: 13px;
   }
   @media (max-width: 768px) {
     #showcase-title {
-      font-size: 3.9vw;
+      font-size: 4.5vw;
     }  
+    .text-muted {
+      font-size: 2.4vw;
+    }
   }
   @media (min-width: 768px) {
     #showcase-title {
@@ -127,6 +130,7 @@ html {
     list-style-type: square;
   }
   .represents-organization {
+    width: 100%;
     @media (max-width: 991px) {
       margin-left: 1px;
     }
@@ -140,7 +144,7 @@ html {
       margin-right: 5px;
     }
     > [class^=col] {
-      padding-left: 15px;
+      padding-left: 6px;
       padding-right: 0;
       div {
         float:none;
@@ -148,6 +152,8 @@ html {
       }
       b { white-space: nowrap; }
     }
+    .icon { padding-left: 2px; }
+    .title { padding-left: 15px; }
     sup {
       font-size: 14px;
       top: 4px;
@@ -210,6 +216,10 @@ html {
     }
   }
 
+  .show-actions {
+    padding-left: 10px;
+    padding-right: 6px;
+  }
 
   .gallery {
     .file_listing_thumbnail {

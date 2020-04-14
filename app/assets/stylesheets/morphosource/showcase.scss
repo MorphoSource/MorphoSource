@@ -200,11 +200,13 @@ html {
     h3 {
       text-overflow: ellipsis;
       white-space: nowrap;
-      overflow: hidden;  
+      overflow: hidden; 
+      padding: 0 4px;
+      margin: 0 !important;
     }
     dd {
       text-align: center;
-      height: 22px;
+      height: 18px;
     }
   }
 
@@ -213,16 +215,25 @@ html {
     .file_listing_thumbnail {
       width: 140px;
       height: 140px;
+      margin-top: 10px;
     }
     .long-badge {
-      a span {
-        width:70%;
+      a {
+        margin-top: 6px;
+        span {
+          width:70%;
+        }
       }
     }
     .thumbnail {
       max-width: 220px;
       height: 100%;
     }
+    .document {
+      border-bottom: none !important;
+      -webkit-flex: inherit;
+    }
+
   }
 
 } /* / teams and projects show page styles */

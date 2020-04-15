@@ -150,22 +150,36 @@ provide :page_title, construct_page_title(@presenter.title)
         <div role="tabpanel" class="tab-pane active" id="media">
           <div class="form-tab-content">
 
+
             <div class="row">
+              <div class="col-xs-3">
+                <!--a class="btn btn-default" rel="nofollow" data-method="post" href="/add_to_cart?locale=en&amp;work_id=2b88qc16g">Add items to cart</a -->
+
+
+
+
+              </div>
               <!-- Search bar -->
               <div class="col-xs-6">
                 <%= render 'search_form', presenter: @presenter, url: @presenter.search_form_url %>
               </div>
-              <div class="col-xs-6">
+              <div class="col-xs-3">
                 <%= render 'sort_and_per_page_media', collection: @presenter %>
               </div>
             </div>
             <!-- Works -->
             <div class="hyc-blacklight hyc-bl-results">
-              <%= render_document_index @media_member_docs, work_type: 'media' %>
+              <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
+                <%= submit_tag("Add selected to cart", class: 'batch-all-button btn btn-sm btn-primary', id:'add-selected-to-cart') %>
+
+                <%= render_document_index @media_member_docs, work_type: 'media' %>
+  
+              <% end # / form_tag %>
             </div>
             <%# div class="hyc-blacklight hyc-bl-pager">
               <%= render 'paginate' % >
             </div %>
+
 
           </div>
         </div>

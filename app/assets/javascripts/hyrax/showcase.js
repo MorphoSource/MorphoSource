@@ -52,7 +52,7 @@ $(document).on('turbolinks:load', function() {
             type: 'none'
           }
         },
-        order: [[ 2, "asc" ]],
+        order: [[ 1, "asc" ]],
         columnDefs: [
           { orderable: false, targets: 0 }, // disable sorting
           { responsivePriority: 1, targets: 0 },
@@ -71,7 +71,7 @@ $(document).on('turbolinks:load', function() {
             type: 'none'
           }
         },
-        order: [[ 2, "asc" ]],
+        order: [[ 1, "asc" ]],
         columnDefs: [
           { orderable: false, targets: 0 }, // disable sorting
           { responsivePriority: 1, targets: 0 },
@@ -108,6 +108,13 @@ $(document).on('turbolinks:load', function() {
       $(document).on('click', '#add-selected-to-cart', function (e) {
         // todo: any checked checkboxes? disable button 
         $('#add-selected-to-cart-hidden').trigger('click');
+      });
+
+      $(document).on('click', '#select-all-for-download', function (e) {
+        var checkedStatus = this.checked;
+        $('.batch_add_selector').each(function() {
+          $(this).prop('checked', checkedStatus);
+        });        
       });
 
     } // / end if teams and projects show page

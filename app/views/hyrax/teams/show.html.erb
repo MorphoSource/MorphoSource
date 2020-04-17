@@ -161,8 +161,11 @@ provide :page_title, construct_page_title(@presenter.title)
               </div>
             </div>
 
-
-            
+            <% if document_index_view_type == :gallery %>
+            <div class="col-xs-12 text-muted">
+              <input type="checkbox" id="select-all-for-download" /> Select all
+            </div>
+            <% end %>
 
             <!-- Works -->
             <div class="hyc-blacklight hyc-bl-results">

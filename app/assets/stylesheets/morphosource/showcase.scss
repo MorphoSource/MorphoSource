@@ -164,7 +164,7 @@ html {
   table.teams-projects {
     th.checkbox {
       display: table-cell;
-      padding: 10px 18px;
+      padding: 10px;
       vertical-align: top;
     } 
     td.checkbox {
@@ -240,11 +240,6 @@ html {
       max-width: 155px;
     }
   }
-
-  .batch_add_selector {
-    float: left;
-    margin: 0;
-  }
   
   .dropdown-toggle {
     @media (min-width: 768px) {
@@ -253,6 +248,10 @@ html {
   }
 
   .gallery {
+    .batch_add_selector {
+      float: left;
+      margin: 0;
+    }
     .file_listing_thumbnail {
       width: 100px;
       height: 100px;

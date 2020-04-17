@@ -3,7 +3,7 @@ id = document.id
 bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
 %>
 <tr id="document_<%= id %>">
-  <td>
+  <td class="checkbox">
     <%= check_box_tag "batch_work_ids[]", id, false, class:"batch_add_selector", id: "batch_work_#{id}" %>
   </td>
   <td>

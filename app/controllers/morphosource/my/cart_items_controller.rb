@@ -51,13 +51,13 @@ module Morphosource
         notice = ''
         alert = ''
         if success_count > 0
-          notice = success_count.to_s + ' item'.pluralize(success_count) + ' added to cart.  '
+          notice = success_count.to_s + ' item'.pluralize(success_count) + ' added to cart for download.  '
         end
         if already_count > 0
-          alert += already_count.to_s + ' item'.pluralize(already_count) + ' already in the cart.  '
+          alert += already_count.to_s + ' item'.pluralize(already_count) + ' already in the cart for download.  '
         end
         if requested_count > 0
-          alert += requested_count.to_s + ' item'.pluralize(requested_count) + ' have been requested already.  '
+          alert += requested_count.to_s + ' item'.pluralize(requested_count) + ' have been requested for download already.  '
         end
         flash[:notice] = notice if notice.present?
         flash[:alert] = alert if alert.present?

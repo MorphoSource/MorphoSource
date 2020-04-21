@@ -63,7 +63,7 @@ parser.add_argument('-u', '--unit',
     help='Unit of input mesh file, one of mm, cm, m, km, in, ft, or mi')
 args = parser.parse_args(argv)
 
-target_faces = 100000
+target_faces = 16000000
 
 if (args.input and args.output and args.unit and 
     args.unit in ['mm','cm','m', 'km', 'in', 'ft', 'mi']):

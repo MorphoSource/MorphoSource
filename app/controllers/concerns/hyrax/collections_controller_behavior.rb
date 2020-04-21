@@ -27,7 +27,23 @@ module Hyrax
     def show
       @curation_concern ||= ActiveFedora::Base.find(params[:id])
       presenter
-      query_collection_members
+      id = @curation_concern.id
+      locale = params[:locale]
+      locale = 'en' unless locale.present?
+      view = params[:view]
+      if presenter.collection_type.title == 'Team'
+        url = '/teams/' + id + '?locale=' + locale 
+        url = url + '&view=' + view if view.present?
+        redirect_to url
+        # redirect_to controller: 'teams', action: 'show', id: id, view: view
+      elsif presenter.collection_type.title == 'Project'
+        url = '/projects/' + id + '?locale=' + locale 
+        url = url + '&view=' + view if view.present?
+        redirect_to url      
+      else
+        # remaining actions for non team/project collections
+        query_collection_members
+      end
     end
 
     def collection

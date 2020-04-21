@@ -43,9 +43,6 @@ provide :page_title, construct_page_title(@presenter.title)
                 <%= @cho_member_count %> CHO · 
               <% end %>
               Managed by: <%= @presenter.collection_managers %>
-
-               <%# todo: display user link 
-               = @presenter.attribute_to_html(:collection_managers, label: 'Managed by', render_as: :showcase_user_link, include_empty: false, html_dl: false) %>
             </div>
         </h1>
       </div>
@@ -176,9 +173,10 @@ provide :page_title, construct_page_title(@presenter.title)
   
               <% end # / form_tag %>
             </div>
-            <%# div class="hyc-blacklight hyc-bl-pager">
-              <%= render 'paginate' % >
-            </div %>
+            
+            <div class="hyc-blacklight hyc-bl-pager">
+              <%#= render 'paginate' %>
+            </div>
 
 
           </div>

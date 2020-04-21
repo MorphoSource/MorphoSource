@@ -107,7 +107,29 @@ en:
           manager: 'Manager'
           editor: 'Editor'
           depositor: 'Depositor'
+          downloader: 'Downloader'
           viewer: 'Viewer'
+        form_share_table:
+          editors:
+            action: Action
+            agent_name: User/Group
+            empty: No editors have been added to this collection.
+            help: Editors of this collection can view the collection and add works to it, even if the visibility permissions of the collection otherwise would not permit them to view it. Editors cannot modify collection metadata, delete the collection, or share the collection with others.
+            help_with_works: For collections of type %{type_title}, when works are created directly in this collection, the editors are given edit access to the new work.
+            remove: Remove
+            title: Editors
+            type: Type
+          downloaders:
+            action: Action
+            agent_name: User/Group
+            empty: No downloaders have been added to this collection.
+            help: Downloaders of this collection can view it even if the visibility permissions of the collection otherwise would not permit them to view it.
+            help_with_works: For collections of type %{type_title}, when works are created directly in this collection, the downloaders are given read access to the new work and are able to download its files, regardless of the work's publication status.
+            remove: Remove
+            title: Downloaders
+            type: Type
+          viewers:
+            help_with_works: For collections of type %{type_title}, when works are created directly in this collection, the viewers are given read access to the new work, but are not able to download its files if the publication status precludes it.
     works:
       form:
         find_parent_work: Parent Works

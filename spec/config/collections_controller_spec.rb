@@ -50,7 +50,7 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
       subject.set_morphosource_permissions
     end
     it 'creates a custom permission template' do
-      expect(Hyrax::Collections::PermissionsCreateService).to receive(:create_ms_template).with(collection: collection)
+      expect(Morphosource::Collections::PermissionsCreateService).to receive(:create_default).with(collection: collection)
       subject.set_morphosource_permissions
     end
     context 'the collection does not have a parent' do

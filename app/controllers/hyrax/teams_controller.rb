@@ -1,20 +1,20 @@
 module Hyrax
-  class TeamsController < CollectionsController
+  class TeamsController < ApplicationController
 
     include TeamsControllerBehavior
-#    include BreadcrumbsForCollections
-#    with_themed_layout :decide_layout
-#    load_and_authorize_resource except: [:index, :show, :create], instance_name: :collection
-#
-#    # Renders a JSON response with a list of files in this collection
-#    # This is used by the edit form to populate the thumbnail_id dropdown
-#    def files
-#      result = form.select_files.map do |label, id|
-#        { id: id, text: label }
-#      end
-#      render json: result
-#    end
-#
+    include BreadcrumbsForCollections
+    with_themed_layout :decide_layout
+    load_and_authorize_resource except: [:index, :show, :create], instance_name: :collection
+
+    # Renders a JSON response with a list of files in this collection
+    # This is used by the edit form to populate the thumbnail_id dropdown
+    def files
+      result = form.select_files.map do |label, id|
+        { id: id, text: label }
+      end
+      render json: result
+    end
+
     private
 
       def form

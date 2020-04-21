@@ -41,7 +41,7 @@ $(document).on('turbolinks:load', function() {
           { responsivePriority: 4, targets: -1 } // rightmost column
         ],
         pageLength: 10,
-        bPaginate: true,
+        bPaginate: false,
         bDestroy: true,
         bLengthChange: false, // hide the show number of entries dropdown
         bFilter: false // hide search box
@@ -60,7 +60,7 @@ $(document).on('turbolinks:load', function() {
           { responsivePriority: 4, targets: 2 }
         ],
         pageLength: 10,
-        bPaginate: true,
+        bPaginate: false,
         bDestroy: true,
         bLengthChange: false, // hide the show number of entries dropdown
         bFilter: false // hide search box
@@ -79,7 +79,7 @@ $(document).on('turbolinks:load', function() {
           { responsivePriority: 4, targets: 2 }
         ],
         pageLength: 10,
-        bPaginate: true,
+        bPaginate: false,
         bDestroy: true,
         bLengthChange: false, // hide the show number of entries dropdown
         bFilter: false // hide search box

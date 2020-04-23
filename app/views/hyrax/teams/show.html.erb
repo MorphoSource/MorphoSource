@@ -173,11 +173,9 @@ provide :page_title, construct_page_title(@presenter.title)
   
               <% end # / form_tag %>
             </div>
-            
             <div class="hyc-blacklight hyc-bl-pager">
-              <%= render 'paginate' %>
+              <%= render 'paginate_media' %>
             </div>
-
 
           </div>
         </div>
@@ -197,7 +195,10 @@ provide :page_title, construct_page_title(@presenter.title)
               </div>
             </div>
             <div class="hyc-blacklight hyc-bl-results">
-              <%= render_document_index @bso_member_docs, work_type: 'biological_specimen' %> 
+              <%= render_document_index @paged_bso_member_docs, work_type: 'biological_specimen' %> 
+            </div>
+            <div class="hyc-blacklight hyc-bl-pager">
+              <%= render 'paginate_bso' %>
             </div>
     
           </div>

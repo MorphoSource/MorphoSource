@@ -79,6 +79,10 @@ html {
 
   .paginate-wrapper > [class*='col-'] {
     /* text-align: center; */
+    white-space: nowrap;
+    div {
+      white-space: nowrap;
+    }
     .pagination {
       text-align: right;
       li {

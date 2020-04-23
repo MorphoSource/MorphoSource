@@ -169,13 +169,13 @@ provide :page_title, construct_page_title(@presenter.title)
               <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
                 <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
 
-                <%= render_document_index @media_member_docs, work_type: 'media' %>
+                <%= render_document_index @paged_media_member_docs, work_type: 'media' %>
   
               <% end # / form_tag %>
             </div>
             
             <div class="hyc-blacklight hyc-bl-pager">
-              <%#= render 'paginate' %>
+              <%= render 'paginate' %>
             </div>
 
 

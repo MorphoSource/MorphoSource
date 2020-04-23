@@ -90,7 +90,9 @@ module Hyrax
         @media_member_count = @media_member_docs.length
         @bso_member_count = @bso_member_docs&.length || 0
         @cho_member_count = @cho_member_docs&.length || 0
+
         @paged_media_member_docs = list_of_medias_to_display
+        @media_total_pages = total_pages
       end
 
       # @return [Array] list to display with Kaminari pagination

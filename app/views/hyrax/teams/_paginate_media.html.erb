@@ -1,0 +1,20 @@
+	<div class="row record-padding paginate-wrapper">
+
+		<div class="col-md-2 text-left">
+		  <%= form_tag '', method: :get, :id => 'media_rows_per_page' do %>
+		    <div class="select-tag">
+		      Rows per page <%= select_tag :rows, options_for_select([2, 5, 10, 15, 20], selected: params[:rows] || 10), onchange: "$('#media_rows_per_page').submit();" %> 
+		    </div>
+		  <% end %>
+		</div>
+
+		<div class="col-md-2 text-left">
+			Showing <%= page_entries_info @paged_media_member_docs %>
+		</div>
+
+		<div class="col-md-8 text-right">
+		  <%= paginate @paged_media_member_docs, outer_window: 2, theme: 'blacklight', param_name: :page, route_set: main_app, :params => { :anchor => 'media' } %>
+		</div>
+
+	</div><!-- /row -->
+

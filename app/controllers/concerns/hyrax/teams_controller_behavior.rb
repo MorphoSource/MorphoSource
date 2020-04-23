@@ -91,37 +91,61 @@ module Hyrax
         @bso_member_count = @bso_member_docs&.length || 0
         @cho_member_count = @cho_member_docs&.length || 0
 
-        @paged_media_member_docs = list_of_medias_to_display
-        @media_total_pages = total_pages
+        @paged_media_member_docs = paginated_media_item_list
+        @media_total_pages = media_total_pages
+        @paged_bso_member_docs = paginated_bso_item_list
+        @bso_total_pages = bso_total_pages
       end
 
       # @return [Array] list to display with Kaminari pagination
-      def list_of_medias_to_display
-        paginated_item_list(page_array: @media_member_docs)
-      end
+#      def list_of_media_to_display
+#        paginated_item_list(page_array: @media_member_docs)
+#      end
+#
+#      def list_of_bso_to_display
+#        paginated_item_list(page_array: @bso_member_docs)
+#      end
 
       # Uses kaminari to paginate an array to avoid need for solr documents for items here
-      def paginated_item_list(page_array:)
-        Kaminari.paginate_array(page_array, total_count: page_array.size).page(current_page).per(rows_from_params)
+      def paginated_media_item_list
+        Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
       end
 
-      def total_items
+      def media_total_items
         @media_member_count
+      end
+
+      def media_current_page
+        page = request.params[:page].nil? ? 1 : request.params[:page].to_i
+        page > media_total_pages ? media_total_pages : page
+      end
+
+      # @return [Integer] total number of pages of viewable items
+      def media_total_pages
+        (media_total_items.to_f / rows_from_params.to_f).ceil
       end
 
       def rows_from_params
         request.params[:rows].nil? ? Hyrax.config.show_work_item_rows : request.params[:rows].to_i
       end
 
-      def current_page
-        page = request.params[:page].nil? ? 1 : request.params[:page].to_i
-        page > total_pages ? total_pages : page
+      def paginated_bso_item_list
+        Kaminari.paginate_array(@bso_member_docs, total_count: @bso_member_docs.size).page(bso_current_page).per(rows_from_params)
       end
 
-      # @return [Integer] total number of pages of viewable items
-      def total_pages
-        (total_items.to_f / rows_from_params.to_f).ceil
+      def bso_total_items
+        @bso_member_count
       end
+
+      def bso_current_page
+        page = request.params[:page].nil? ? 1 : request.params[:page].to_i
+        page > bso_total_pages ? bso_total_pages : page
+      end
+
+      def bso_total_pages
+        (bso_total_items.to_f / rows_from_params.to_f).ceil
+      end
+
 
       def dedup(docs) 
         unique_docs = [] 

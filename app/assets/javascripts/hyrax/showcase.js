@@ -31,7 +31,7 @@ $(document).on('turbolinks:load', function() {
             type: 'none' // hide the details and button in responsive
           }
         },
-        order: [[ 2, "asc" ]],
+        //order: [[ 2, "asc" ]],  // if sorting is needed, we might need to sort the same way in gallery view
         columnDefs: [
           { orderable: false, targets: 0 }, // disable sorting
           { orderable: false, targets: 1 },
@@ -53,7 +53,7 @@ $(document).on('turbolinks:load', function() {
             type: 'none'
           }
         },
-        order: [[ 1, "asc" ]],
+        //order: [[ 1, "asc" ]],
         columnDefs: [
           { orderable: false, targets: 0 }, // disable sorting
           { responsivePriority: 1, targets: 0 },
@@ -73,7 +73,7 @@ $(document).on('turbolinks:load', function() {
             type: 'none'
           }
         },
-        order: [[ 1, "asc" ]],
+        //order: [[ 1, "asc" ]],
         columnDefs: [
           { orderable: false, targets: 0 }, // disable sorting
           { responsivePriority: 1, targets: 0 },

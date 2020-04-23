@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    resources :teams, only: :show do # public landing team/project show page
+    resources :teams, only: [:show] do # public landing team/project show page
       member do
         get 'page/:page', action: :index
         get 'facet/:id', action: :facet, as: :dashboard_facet

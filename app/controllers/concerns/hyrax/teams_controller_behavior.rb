@@ -52,6 +52,8 @@ module Hyrax
       # Instantiates the search builder that builds a query for a single item
       # this is useful in the show view.
       def single_item_search_builder
+        # setting higher collection limit   
+        # params.merge!({ 'rows' => '999999', 'page' => '1' })
         single_item_search_builder_class.new(self).with(params.except(:q, :page))
       end
 
@@ -88,6 +90,35 @@ module Hyrax
         @media_member_count = @media_member_docs.length
         @bso_member_count = @bso_member_docs&.length || 0
         @cho_member_count = @cho_member_docs&.length || 0
+        @paged_media_member_docs = list_of_medias_to_display
+      end
+
+      # @return [Array] list to display with Kaminari pagination
+      def list_of_medias_to_display
+        paginated_item_list(page_array: @media_member_docs)
+      end
+
+      # Uses kaminari to paginate an array to avoid need for solr documents for items here
+      def paginated_item_list(page_array:)
+        Kaminari.paginate_array(page_array, total_count: page_array.size).page(current_page).per(rows_from_params)
+      end
+
+      def total_items
+        @media_member_count
+      end
+
+      def rows_from_params
+        request.params[:rows].nil? ? Hyrax.config.show_work_item_rows : request.params[:rows].to_i
+      end
+
+      def current_page
+        page = request.params[:page].nil? ? 1 : request.params[:page].to_i
+        page > total_pages ? total_pages : page
+      end
+
+      # @return [Integer] total number of pages of viewable items
+      def total_pages
+        (total_items.to_f / rows_from_params.to_f).ceil
       end
 
       def dedup(docs) 
@@ -156,7 +187,10 @@ module Hyrax
       #   search_field: 'all_fields'
       # @return <Hash> the inputs required for the collection member query service
       def params_for_query
-        params.merge(q: params[:cq])
+        #params.merge(q: params[:cq])
+
+        # setting higher collection limit for paginating the array       
+        params.merge(q: params[:cq]).merge({ 'rows' => '999999', 'page' => '1' })
       end
   end
 end

@@ -1,6 +1,7 @@
 $(document).on('turbolinks:load', function() {
 
-  if ($('form[id*="media"]').length) { // if media form page (add/edit)
+  if ( $('form[id*="edit_media"]').length || 
+       $('form[id*="new_media"]').length ) { // if media form page (add/edit)
 
     IsImagingEventOK = false;
     IsProcessingEventOK = false;

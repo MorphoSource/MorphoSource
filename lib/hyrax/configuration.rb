@@ -377,6 +377,16 @@ module Hyrax
       @show_work_item_rows ||= 10 # rows on show view
     end
 
+    attr_writer :teams_show_work_item_rows
+    def teams_show_work_item_rows
+      @teams_show_work_item_rows ||= 40 # default rows per page on teams/project show view
+    end
+
+    attr_writer :teams_rows_per_page_range
+    def teams_rows_per_page_range
+      [2, 5, 10, 20, 40, 60, 80, 100] # rows per page that users can choose
+    end
+
     attr_writer :batch_user_key
     def batch_user_key
       @batch_user_key ||= 'batchuser@example.com'

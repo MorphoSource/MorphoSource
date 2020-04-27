@@ -97,17 +97,9 @@ module Hyrax
         @bso_total_pages = bso_total_pages
       end
 
-      # @return [Array] list to display with Kaminari pagination
-#      def list_of_media_to_display
-#        paginated_item_list(page_array: @media_member_docs)
-#      end
-#
-#      def list_of_bso_to_display
-#        paginated_item_list(page_array: @bso_member_docs)
-#      end
-
-      # Uses kaminari to paginate an array to avoid need for solr documents for items here
+      # media pagination methods
       def paginated_media_item_list
+        # Uses kaminari to paginate an array to avoid need for solr documents for items here
         Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
       end
 
@@ -126,11 +118,12 @@ module Hyrax
       end
 
       def rows_from_params
-        request.params[:rows].nil? ? Hyrax.config.show_work_item_rows : request.params[:rows].to_i
+        request.params[:rows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:rows].to_i
       end
 
+      # bso pagination methods
       def paginated_bso_item_list
-        Kaminari.paginate_array(@bso_member_docs, total_count: @bso_member_docs.size).page(bso_current_page).per(rows_from_params)
+        Kaminari.paginate_array(@bso_member_docs, total_count: @bso_member_docs.size).page(bso_current_page).per(bso_rows_from_params)
       end
 
       def bso_total_items
@@ -143,9 +136,12 @@ module Hyrax
       end
 
       def bso_total_pages
-        (bso_total_items.to_f / rows_from_params.to_f).ceil
+        (bso_total_items.to_f / bso_rows_from_params.to_f).ceil
       end
 
+      def bso_rows_from_params
+        request.params[:brows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:brows].to_i
+      end
 
       def dedup(docs) 
         unique_docs = [] 

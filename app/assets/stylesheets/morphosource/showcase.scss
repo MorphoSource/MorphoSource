@@ -78,13 +78,14 @@ html {
   }
 
   .paginate-wrapper > [class*='col-'] {
-    /* text-align: center; */
+    text-align: center;
     white-space: nowrap;
     div {
       white-space: nowrap;
+      padding: 6px 12px;
     }
     .pagination {
-      text-align: right;
+      text-align: center;
       li {
         display: inline-block;
       }
@@ -181,6 +182,11 @@ html {
       padding: 10px;
       vertical-align: top;
     } 
+    th.checkbox.sorting_asc:after,
+    th.checkbox.sorting_desc:after {
+      /* remove the sorting arrows in the checkbox column */
+      content: "" !important;
+    }
     td.checkbox {
       display: table-cell;
     }

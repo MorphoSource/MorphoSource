@@ -95,6 +95,8 @@ module Hyrax
         @media_total_pages = media_total_pages
         @paged_bso_member_docs = paginated_bso_item_list
         @bso_total_pages = bso_total_pages
+        @paged_cho_member_docs = paginated_cho_item_list
+        @cho_total_pages = cho_total_pages
       end
 
       # media pagination methods
@@ -141,6 +143,28 @@ module Hyrax
 
       def bso_rows_from_params
         request.params[:brows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:brows].to_i
+      end
+
+      # cho pagination methods
+      def paginated_cho_item_list
+        Kaminari.paginate_array(@cho_member_docs, total_count: @cho_member_docs.size).page(cho_current_page).per(cho_rows_from_params)
+      end
+
+      def cho_total_items
+        @cho_member_count
+      end
+
+      def cho_current_page
+        page = request.params[:page].nil? ? 1 : request.params[:page].to_i
+        page > cho_total_pages ? cho_total_pages : page
+      end
+
+      def cho_total_pages
+        (cho_total_items.to_f / cho_rows_from_params.to_f).ceil
+      end
+
+      def cho_rows_from_params
+        request.params[:crows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:crows].to_i
       end
 
       def dedup(docs) 

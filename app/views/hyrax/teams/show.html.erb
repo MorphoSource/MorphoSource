@@ -219,7 +219,10 @@ provide :page_title, construct_page_title(@presenter.title)
               </div>
             </div>
             <div class="hyc-blacklight hyc-bl-results">
-              <%= render_document_index @cho_member_docs, work_type: 'cultural_heritage_object' %> 
+              <%= render_document_index @paged_cho_member_docs, work_type: 'cultural_heritage_object' %> 
+            </div>
+            <div class="hyc-blacklight hyc-bl-pager">
+              <%= render 'paginate_cho' %>
             </div>
     
           </div>

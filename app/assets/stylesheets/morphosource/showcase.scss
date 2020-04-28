@@ -179,11 +179,12 @@ html {
   table.teams-projects {
     th.checkbox {
       display: table-cell;
-      padding: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
       vertical-align: top;
     } 
-    th.checkbox.sorting_asc:after,
-    th.checkbox.sorting_desc:after {
+    th.no-sort.sorting_asc:after,
+    th.no-sort.sorting_desc:after {
       /* remove the sorting arrows in the checkbox column */
       content: "" !important;
     }

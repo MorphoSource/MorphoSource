@@ -1,7 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe Hyrax::CollectionsController do
-  routes { Hyrax::Engine.routes }
+include Warden::Test::Helpers
+
+RSpec.feature 'Test redirects for teams and projects', js: true do
 
   let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
 
@@ -34,17 +35,22 @@ RSpec.describe Hyrax::CollectionsController do
   }
 
 
+  before do
+    allow(Role).to receive(:find_by).and_return(role)
+    team.create_collection_groups
+  end
+
   let(:presenter) { described_class.new(SolrDocument.new(team.to_solr), ability, nil) }
 
+
   scenario 'teams collections should redirect to /teams' do
-    get :show, params: { id: team.id }
-    expect(response).to redirect_to "/teams/" + team.id + "?locale=en"
+    visit '/collections/' + team.id
+    expect(page.current_path).to eq("/teams/" + team.id)
   end
 
   scenario 'projects collections should redirect to /projects' do
-    get :show, params: { id: project.id }
-    expect(response).to redirect_to "/projects/" + project.id + "?locale=en"
+    visit '/collections/' + project.id
+    expect(page.current_path).to eq("/projects/" + project.id)
   end
-
-
+  
 end

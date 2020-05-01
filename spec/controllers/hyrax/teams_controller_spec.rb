@@ -2,10 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::TeamsController do
 
-<<<<<<< HEAD
   let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
-=======
->>>>>>> be107b3973f123cfc17ebf777dfeb9c9bf5eae4a
 
   let(:ability) { double Ability }
 

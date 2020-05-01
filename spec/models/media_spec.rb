@@ -44,7 +44,6 @@ RSpec.describe Media do
         subject.agreement_uri = ['foo']
         subject.rights_statement = ['foo']
         subject.terms_of_use = ['foo']
-        subject.usage_agreement = ['foo']
         subject.permits_commercial_use = ['foo']
         subject.permits_3d_use = ['foo']
         subject.rights_holder = ['foo']

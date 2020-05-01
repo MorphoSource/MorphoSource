@@ -16,4 +16,8 @@ class CulturalHeritageObject < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
+  def organizations
+    member_of.select{|work| work.class == Organization}
+  end
+
 end

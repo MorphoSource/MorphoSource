@@ -28,16 +28,24 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    resources :teams, only: [:show] do # public landing team/project show page
+    resources :teams do # public landing team/project show page
       member do
         get 'page/:page', action: :index
         get 'facet/:id', action: :facet, as: :dashboard_facet
         get :files
       end
     end
-    get 'projects/:id', to: 'teams#show'
-    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
+    #    get 'projects/:id', to: 'teams#show'
+    #    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
+    resources :projects, controller: 'teams'
+
+    #    get 'dashboard/teams/:id/edit(.:format)', to: 'dashboard/collections#edit_team'
+    namespace :dashboard do
+      resources :teams, controller: 'collections'
+    end
+
   end
+
 
   # override ProfilesController
   scope module: :morphosource do

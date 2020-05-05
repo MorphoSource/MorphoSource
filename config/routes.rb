@@ -39,7 +39,7 @@ Rails.application.routes.draw do
     #    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
     resources :projects, controller: 'teams'
 
-    #    get 'dashboard/teams/:id/edit(.:format)', to: 'dashboard/collections#edit_team'
+    # todo: dashboard/teams routes might not be needed since dashboard/controllers will be used
     namespace :dashboard do
       resources :teams, controller: 'collections'
     end

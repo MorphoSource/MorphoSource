@@ -8,6 +8,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
 
   include_context 'cart items'
 
+
   describe "POST #create" do
 
     context 'item is not in cart and has not been requested' do
@@ -90,6 +91,29 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
       end
     end
   end
+
+
+  describe "POST #batch_create" do
+
+    context '2 items not in cart , 1 item already in the cart' do
+      let(:post_params) { {:batch_work_ids => [ work4.id, work6.id, work2.id ] } }
+
+      it "creates new CartItems" do
+        expect{
+          process :batch_create, method: :post, params: post_params
+          }.to change{CartItem.count}.by(2)
+      end
+
+      it "returns correct flash messages " do
+        post :batch_create, params: post_params
+        expect(response.flash[:notice]).to eq("2 items added to cart for download.  ")
+        expect(response.flash[:alert]).to eq("1 item already in the cart for download.  ")
+      end
+
+    end
+
+  end
+
 
   describe '#GET download' do
     let(:testwork)         { Media.create(id: 'xxx', title: ["Test Media Work"], depositor: depositor.ms_id)}
@@ -339,4 +363,5 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
       end
     end
   end
+
 end

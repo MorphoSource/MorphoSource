@@ -1,30 +1,44 @@
 <% provide :page_title, construct_page_title( t('.header', type_title: @collection.collection_type.title, title: @form.title.first) ) %>
 
-<%
+<% if @collection.team? or @collection.project? %>
 
+	<% if @media_member_count > 0 %>
+	  <%= @media_member_count %> <%= 'Media'.pluralize(@media_member_count) %> · 
+	<% end %>
+	<% if @bso_member_count > 0 %>
+	  <%= @bso_member_count %> <%= 'Specimen'.pluralize(@bso_member_count) %> · 
+	<% end %>
+	<% if @cho_member_count > 0 %>
+	  <%= @cho_member_count %> CHO · 
+	<% end %>
+	
+	--- Gigabytes
 
-#byebug
+	<% provide :page_header do %>
+	  <h1><span class="fa fa-edit" aria-hidden="true"></span><%= t('.header', type_title: @collection.collection_type.title, title: @form.title.first) %></h1>
+	<% end %>
 
- if @media_member_count > 0 %>
-  <%= @media_member_count %> <%= 'Media'.pluralize(@media_member_count) %> · 
-<% end %>
-
-<% provide :page_header do %>
-  <h1><span class="fa fa-edit" aria-hidden="true"></span><%= t('.header', type_title: @collection.collection_type.title, title: @form.title.first) %></h1>
-<% end %>
-
-<div class="row">
-  <div class="col-md-12">
-    <%= render 'flash_msg' %>
-
-		<%
-			#todo: setup a render file variable and moved to presenter 
-
-
-		 if @collection.team? or @collection.project? %>
+	<div class="row">
+	  <div class="col-md-12">
+	    <%= render 'flash_msg' %>
 		  <%= render 'hyrax/dashboard/teams/form' %>
-		<% else %>
+	  </div>
+	</div>
+
+<% else %>
+
+	<% provide :page_header do %>
+	  <h1><span class="fa fa-edit" aria-hidden="true"></span><%= t('.header', type_title: @collection.collection_type.title, title: @form.title.first) %></h1>
+	<% end %>
+
+	<div class="row">
+	  <div class="col-md-12">
+	    <%= render 'flash_msg' %>
 		  <%= render 'form' %>
-		<% end %>
-  </div>
-</div>
+	  </div>
+	</div>
+
+<% end %>
+
+
+

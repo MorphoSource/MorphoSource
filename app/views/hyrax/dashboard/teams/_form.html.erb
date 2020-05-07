@@ -1,36 +1,73 @@
---- teams _form ---
-<div class="panel panel-default tabs" id="collection-edit-controls">
+<div class="panel panel-default tabs teams" id="collection-edit-controls">
   <ul class="nav nav-tabs" role="tablist">
-    <li class="active">
-      <a href="#description" role="tab" data-toggle="tab"><%= t('.tabs.description') %></a>
+
+    <% if @media_member_count > 0 %>
+      <li role="presentation" class="active">
+        <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
+        <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
+        </a>
+      </li>
+    <% end %>
+    <% if @bso_member_count > 0 %>
+      <li role="presentation">
+        <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
+          <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+        </a>
+      </li>
+    <% end %>
+    <% if @cho_member_count > 0 %>
+      <li role="presentation">
+        <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
+          <i class="fas fa-frog" aria-hidden="true"></i> CHO
+        </a>
+      </li>
+    <% end %>
+
+    <li role="presentation">
+      <a href="#details" role="tab" data-toggle="tab">
+        <i class="fas fa-newspaper" aria-hidden="true"></i> DETAILS        
+      </a>
     </li>
     <% if @form.persisted? %>
       <% if @collection.brandable? %>
-      <li>
+      <li role="presentation">
         <a href="#branding" role="tab" data-toggle="tab"><%= t('.tabs.branding') %></a>
       </li>
       <% end %>
       <% if @collection.discoverable? %>
-      <li>
+      <li role="presentation">
         <a href="#discovery" role="tab" data-toggle="tab"><%= t('.tabs.discovery') %></a>
       </li>
       <% end %>
       <% if @collection.sharable? %>
-      <li>
+      <li role="presentation">
         <a href="#sharing" role="tab" data-toggle="tab"><%= t('.tabs.sharing') %></a>
       </li>
       <% end %>
       <% if @collection.team? && @collection.organization && @current_user.can?(:edit, @collection) %>
-        <li>
+        <li role="presentation">
           <a href="#organization" role="tab" data-toggle="tab"><%= 'Organization' %></a>
         </li>
       <% end %>
     <% end %>
   </ul>
 
+
+
   <%= simple_form_for @form, url: [hyrax, :dashboard, @form], html: { class: 'editor' } do |f| %>
     <div class="tab-content">
-      <div id="description" class="tab-pane active">
+
+      <% if @media_member_count > 0 %>
+        <div role="tabpanel" class="tab-pane active" id="media">
+          <div class="form-tab-content">
+            <%= render 'hyrax/teams/tab_media' %>
+          </div>
+        </div>
+      <% end # if @media_member_count > 0 %>
+
+
+
+      <div id="details" class="tab-pane">
         <div class="panel panel-default labels">
           <div class="panel-body">
 

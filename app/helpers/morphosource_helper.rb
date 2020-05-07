@@ -21,6 +21,8 @@ module MorphosourceHelper
       "teams"
     elsif current_uri.include?("projects")
       "projects"
+    else
+      "collections"
     end      
   end
 

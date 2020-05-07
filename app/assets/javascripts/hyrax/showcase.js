@@ -1,6 +1,6 @@
 $(document).on('turbolinks:load', function() {
 
-  if ($('div[class*="showcase"]').length) { // check if the page is showcase page
+  if ($('[class*="showcase"]').length) { // check if the page is showcase page
     
     // switching icons and button labels for expand / collapse
     $(".collapse-block").not(".glyphicon-only").on("hide.bs.collapse", function(){

@@ -7,7 +7,8 @@ module Hyrax
       include BreadcrumbsForCollections
       include MorphosourceHelper
       
-      with_themed_layout 'dashboard'
+      #with_themed_layout 'dashboard'
+      with_themed_layout :decide_layout
 
       before_action :filter_docs_with_read_access!, except: [:show, :edit]
       before_action :remove_select_something_first_flash, except: :show
@@ -75,10 +76,13 @@ module Hyrax
       end
 
       def edit
-        # run the presenter and other methods (same as the team_presenter methods) necessary for
-        # displaying teams and project show page content 
-        presenter
-        query_collection_members
+        if collection.team? or collection.project?        
+          # run the presenter and other methods (same as the team_presenter methods) necessary for
+          # displaying teams and project show page content 
+          self.presenter_class = Hyrax::TeamPresenter
+          presenter
+          query_collection_members
+        end
 
         form
       end
@@ -447,7 +451,7 @@ module Hyrax
           @media_member_count = @media_member_docs.length
           @bso_member_count = @bso_member_docs&.length || 0
           @cho_member_count = @cho_member_docs&.length || 0
-byebug
+
           @paged_media_member_docs = paginated_media_item_list
           @media_total_pages = media_total_pages
           @paged_bso_member_docs = paginated_bso_item_list
@@ -591,7 +595,10 @@ byebug
         #   search_field: 'all_fields'
         # @return <Hash> the inputs required for the collection member search builder
         def params_for_query
-          params.merge(q: params[:cq])
+          #params.merge(q: params[:cq])
+
+          # setting higher collection limit for paginating the array       
+          params.merge(q: params[:cq]).merge({ 'rows' => '999999', 'page' => '1' })
         end
 
         # Only accept HTTP|HTTPS urls;
@@ -604,6 +611,22 @@ byebug
         def valid_url?(url)
           (url =~ URI.regexp(['http', 'https']))
         end
+
+
+        def decide_layout
+          layout = case action_name
+                   when 'edit'
+                     if collection.team? 
+                       'morphosource_dashboard'
+                     else
+                       'dashboard'
+                     end
+                   else
+                     'dashboard'
+                   end
+          File.join(theme, layout)
+        end
+
     end
   end
 end

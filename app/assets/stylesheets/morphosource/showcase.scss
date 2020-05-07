@@ -306,7 +306,14 @@ html {
 } /* / teams and projects show page styles */
 
 
-div.showcase {
+div.container-fluid.showcase {
+  max-width: 1200px;
+  border: 2px solid #efefef;
+  margin-top: 18px;
+
+}
+
+body.showcase, div.showcase {
   
   /* ************************** 
       team and projects show page styles.  might need to move them to 
@@ -326,10 +333,6 @@ div.showcase {
 
 
   /* ************************** */
-
-  max-width: 1200px;
-  border: 2px solid #efefef;
-  margin-top: 18px;
 
   .btn {
     border-radius: 0;

@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
 
-  <body>
+  <body class="<%= content_for(:body_css_classes) %>">
     <%= render '/ms_masthead' %>
     <div id="content-wrapper" class="container-fluid showcase <%= content_for(:content_css_classes) %>" role="main">
       <a name="skip-to-content" id="skip-to-content"></a>

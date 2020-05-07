@@ -42,6 +42,10 @@ module Morphosource
         self.class == Media
       end
 
+      def user_with_ownership
+        owner || depositor
+      end
+
       private
 
       def get_all_children(objects)
@@ -57,7 +61,7 @@ module Morphosource
       def get_all_parents(objects)
         objects.flatten.each do |object|
           next if object.member_of.blank?
-          
+
           parents = object.member_of
           @ancestors << parents
           get_all_parents(parents)

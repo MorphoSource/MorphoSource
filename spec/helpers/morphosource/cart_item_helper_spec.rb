@@ -10,6 +10,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     before do
       allow(Media).to receive(:find).with(work.id).and_return(work)
+      allow(work).to receive(:reviewer).and_return(depositor.ms_id)
     end
 
     context 'the item is canceled' do

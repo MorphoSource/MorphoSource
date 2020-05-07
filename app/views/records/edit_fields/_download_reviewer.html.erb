@@ -1,9 +1,23 @@
-
-
 <div class="form-group string optional media_download_reviewer">
+
+<% if @_controller.class == SubmissionsController %>
+  <!-- display label and select as column for submissions form -->
   <label class="control-label string optional" for="media_download_reviewer">Download Reviewer</label>
   <p class="help-block">The person responsible for approving download requests for this media.</p>
   <%= f.text_field :download_reviewer, id: 'media_download_reviewer', user_email: reviewer_email(f), class: 'form-control string optional' %>
+
+<% else %>
+  <!-- display label and select in a row for media edit form -->
+  <div class="row">
+    <div class="col-xs-6 showcase-label">
+      <label class="control-label string optional" for="media_download_reviewer">Download Reviewer</label>
+    </div>
+    <div class="col-xs-6 showcase-value">
+      <%= f.text_field :download_reviewer, id: 'media_download_reviewer', user_email: reviewer_email(f), class: 'form-control string optional' %>
+    </div>
+  </div>
+
+<% end %>
 </div>
 
 <script>

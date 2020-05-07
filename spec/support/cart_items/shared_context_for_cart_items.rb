@@ -4,12 +4,14 @@ RSpec.shared_context 'cart items', :shared_context => :metadata do
 
   let(:depositor)     { User.create(email: 'another@email.com', password: "password") }
 
+  let(:reviewer)      { User.create(email: 'reviewer@email.com', password: 'password') }
+
   let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'])}
   let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: [''])}
   let(:work3)         { Media.create(id: "ccc", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'])}
   let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: [''])}
   let(:work5)         { Media.create(id: "eee", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download']) }
-  let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['']) }
+  let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: [''], download_reviewer: ['xxx']) }
   let(:work7)         { Media.create(id: "ggg", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download']) }
 
   let(:cartItem1)     { CartItem.create( user_id: current_user.ms_id, work_id: work1.id, in_cart: true, date_requested: Date.yesterday, date_downloaded: Date.yesterday, restricted: true, date_approved: Date.yesterday, date_expired: Date.tomorrow) }

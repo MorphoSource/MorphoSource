@@ -4,12 +4,13 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::PermissionTemplateAccess do
   let(:depositor)            { User.create(email: 'depositor@email.com', password: 'password') }
+  let(:downloader)           { User.create(email: 'downloader@email.com', password: 'password') }
   let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:collection)           { Collection.create(id: 'team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: team_collection_type.gid) }
 
   before do
     collection.create_collection_groups
-    Hyrax::Collections::PermissionsCreateService.create_ms_template(collection: collection)
+    Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
 
     collection.reset_access_controls!
   end
@@ -101,11 +102,32 @@ RSpec.describe Hyrax::PermissionTemplateAccess do
       end
     end
 
-    context 'with the editors group' do
+    context 'with the downloaders group' do
+      subject { access_grants.detect{ |grant| grant[:access] == "download" } }
+
+      describe '#label' do
+        it 'returns the collection downloaders label' do
+          expect(subject.label).to eq 'team_downloaders'
+        end
+      end
+      describe '#admin_group?' do
+        it 'returns false' do
+          expect(subject).not_to be_admin_group
+        end
+      end
+      describe '#destroy' do
+        it 'destroys the permission template access record' do
+          subject.destroy
+          expect(subject).to be_destroyed
+        end
+      end
+    end
+
+    context 'with the viewers group' do
       subject { access_grants.detect{ |grant| grant[:access] == "view" } }
 
       describe '#label' do
-        it 'returns the collection editors label' do
+        it 'returns the collection viewers label' do
           expect(subject.label).to eq 'team_viewers'
         end
       end
@@ -133,7 +155,31 @@ RSpec.describe Hyrax::PermissionTemplateAccess do
         end
       end
       describe '#admin_group?' do
-        it 'returns true' do
+        it 'returns false' do
+          expect(subject).not_to be_admin_group
+        end
+      end
+      describe '#destroy' do
+        it 'carries out the destroy operation' do
+          subject.destroy
+          expect(subject).to be_destroyed
+          expect(subject.errors).to be_empty
+        end
+      end
+    end
+
+    context 'with a user that is a collection downloader' do
+      let(:permission_template_access) { Hyrax::PermissionTemplateAccess.create!(permission_template: collection.permission_template, agent_type: 'user', agent_id: 'agent_id', access: Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS) }
+
+      subject { permission_template_access }
+
+      describe '#label' do
+        it 'returns the user label' do
+          expect(subject.label).to eq 'agent_id'
+        end
+      end
+      describe '#admin_group?' do
+        it 'returns false' do
           expect(subject).not_to be_admin_group
         end
       end
@@ -157,7 +203,7 @@ RSpec.describe Hyrax::PermissionTemplateAccess do
         end
       end
       describe '#admin_group?' do
-        it 'returns true' do
+        it 'returns false' do
           expect(subject).not_to be_admin_group
         end
       end
@@ -181,7 +227,7 @@ RSpec.describe Hyrax::PermissionTemplateAccess do
         end
       end
       describe '#admin_group?' do
-        it 'returns true' do
+        it 'returns false' do
           expect(subject).not_to be_admin_group
         end
       end
@@ -205,7 +251,7 @@ RSpec.describe Hyrax::PermissionTemplateAccess do
         end
       end
       describe '#admin_group?' do
-        it 'returns true' do
+        it 'returns false' do
           expect(subject).not_to be_admin_group
         end
       end

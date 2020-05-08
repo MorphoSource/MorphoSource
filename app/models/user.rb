@@ -51,7 +51,11 @@ class User < ApplicationRecord
   # user class to get a user-displayable login/identifier for
   # the account.
   def to_s
-    email
+    ms_id
+  end
+
+  def name
+    display_name.blank? ? email : display_name
   end
 
   # Mailboxer (the notification system) needs the User object to respond to this method

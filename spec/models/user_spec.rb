@@ -36,6 +36,33 @@ RSpec.describe User, type: :model do
     allCartItems.each(&:touch)
   end
 
+  describe '#to_s' do
+    it 'returns the ms_id' do
+      expect(user.to_s).to eq(user.ms_id)
+    end
+  end
+
+  describe '#name' do
+    context 'user has a display name' do
+      before do
+        user.display_name = 'display name'
+        user.save
+      end
+      it 'returns the display name' do
+        expect(user.name).to eq(user.display_name)
+      end
+    end
+    context 'user does not have a display name' do
+      before do
+        user.display_name = nil
+        user.save
+      end
+      it 'returns the email address' do
+        expect(user.name).to eq(user.email)
+      end
+    end
+  end
+
   describe '#items_in_cart' do
     it "returns all cart items in the user's shopping cart" do
       expect(user.items_in_cart).to match_array([cartItem1, cartItem2, cartItem3])

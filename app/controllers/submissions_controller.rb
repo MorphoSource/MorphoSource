@@ -470,7 +470,6 @@ class SubmissionsController < ApplicationController
     rescue
       new_organization_id = nil
     end
-
     if new_organization_id.present?
       status = 'OK'
       message = 'New organization created'

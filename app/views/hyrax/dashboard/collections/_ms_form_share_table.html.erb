@@ -1,15 +1,8 @@
 <% group_name = access.dup.concat("_group") %>
 <% group = @collection.send(group_name) %>
-<% if access == 'editors' %>
-  <h3>Editors</h3>
-  <p>Editors of this collection can view the collection and add works to it, even if the visibility permissions of the collection otherwise would not permit them to view it. Editors cannot modify collection metadata, delete the collection, or share the collection with others.</p>
-  <p>When works are created directly in this collection, editors are given edit access to the work.</p>
-<% else %>
-  <h3><%= t("hyrax.dashboard.collections.form_share_table.#{access}.title") %></h3>
-  <p><%= t("hyrax.dashboard.collections.form_share_table.#{access}.help") %></p>
-  <p><%= t("hyrax.dashboard.collections.form_share_table.#{access}.help_with_works", type_title: @collection.collection_type.title) if @collection.share_applies_to_new_works? && access != 'depositors' %></p>
-<% end %>
-
+<h3><%= t("hyrax.dashboard.collections.form_share_table.#{access}.title") %></h3>
+<p><%= t("hyrax.dashboard.collections.form_share_table.#{access}.help") %></p>
+<p><%= t("hyrax.dashboard.collections.form_share_table.#{access}.help_with_works", type_title: @collection.collection_type.title) if @collection.share_applies_to_new_works? && access != 'depositors' %></p>
 <% if group.users.count > 0 %>
   <table class="table table-striped share-status">
     <thead>

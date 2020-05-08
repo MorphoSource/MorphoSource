@@ -542,7 +542,7 @@ class SolrDocument
   def detector_pixels_y
     self[Solrizer.solr_name('detector_pixels_y', :stored_searchable)]
   end
-  
+
   def detector_pixel_size_y
     self[Solrizer.solr_name('detector_pixel_size_y', :stored_searchable)]
   end
@@ -754,6 +754,15 @@ class SolrDocument
 
   def trusted
     self[Solrizer.solr_name('trusted', :stored_searchable)]
+  end
+
+  # Download fields
+  def download_groups
+    self["download_access_group_ssim"]
+  end
+
+  def download_people
+    self["download_access_person_ssim"]
   end
 
 end

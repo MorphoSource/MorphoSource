@@ -7,8 +7,8 @@ module Hyrax
       include BreadcrumbsForCollections
       include MorphosourceHelper
       
-      #with_themed_layout 'dashboard'
-      with_themed_layout :decide_layout
+      with_themed_layout 'morphosource_dashboard'
+      #with_themed_layout :decide_layout
 
       before_action :filter_docs_with_read_access!, except: [:show, :edit]
       before_action :remove_select_something_first_flash, except: :show
@@ -612,20 +612,20 @@ module Hyrax
           (url =~ URI.regexp(['http', 'https']))
         end
 
-
-        def decide_layout
-          layout = case action_name
-                   when 'edit'
-                     if collection.team? 
-                       'morphosource_dashboard'
-                     else
-                       'dashboard'
-                     end
-                   else
-                     'dashboard'
-                   end
-          File.join(theme, layout)
-        end
+        # todo: delete later since we should be able to use morphosource_dashboard for all dashboard layout
+        #def decide_layout
+        #  layout = case action_name
+        #           when 'edit'
+        #             if collection.team? 
+        #               'morphosource_dashboard'
+        #             else
+        #               'dashboard'
+        #             end
+        #           else
+        #             'dashboard'
+        #           end
+        #  File.join(theme, layout)
+        #end
 
     end
   end

@@ -313,17 +313,24 @@ div.container-fluid.showcase {
 
 }
 
-body.showcase, div.showcase {
-  
-  /* ************************** 
-      team and projects show page styles.  might need to move them to 
-      elsewhere, after deciding if the styles will be shared 
-   */
+body.showcase, div.showcase, div.showcase.dashboard {
+
+  .main-content {
+    background-color: #fff;
+  }
+
   .nav-tabs {
     li.active {
       border-bottom: 3px solid $line-color;
+
+      a, a:hover {
+        border: none;
+        margin-right: 0;
+      }
     }
   }
+
+
   .panel-default {border: none;}
   .teams-projects {
     th, td {

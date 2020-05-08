@@ -1,7 +1,9 @@
+<% content_for :body_css_classes do %>showcase teams<% end %> 
+
 <% 
 provide :page_title, construct_page_title(@presenter.title) 
 %>
-<div class="hyc-container showcase teams" itemscope itemtype="http://schema.org/CollectionPage">
+<div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
   <div class="hyc-header">
     <% unless @presenter.banner_file.blank? %>
         <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>

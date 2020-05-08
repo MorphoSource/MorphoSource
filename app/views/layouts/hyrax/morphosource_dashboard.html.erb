@@ -5,13 +5,13 @@
     <%= content_for(:head) %>
   </head>
 
-  <body class="dashboard showcase <%= content_for(:body_css_classes) %>">
+  <body class="dashboard <%= content_for(:body_css_classes) %>">
     <div class="skip-to-content">
       <%= link_to "Skip to Content", "#skip-to-content" %>
     </div>
     <%= render '/masthead' %>
     <%= content_for(:navbar) %>
-    <div id="content-wrapper" role="main">
+    <div id="content-wrapper" class="content-wrapper <%= content_for(:content_css_classes) %>" role="main">
       <div class="sidebar maximized">
         <%= render 'hyrax/dashboard/sidebar' %>
       </div>

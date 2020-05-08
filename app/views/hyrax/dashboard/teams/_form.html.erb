@@ -1,14 +1,16 @@
+<% content_for :body_css_classes do %>showcase teams<% end %> 
+
 <%= simple_form_for @form, url: [hyrax, :dashboard, @form], html: { class: 'editor' } do |f| %>
 
-                  <div class="text-right">
-                    <% if @collection.persisted? %>
-                      <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
-                      <%= link_to t(:'helpers.action.cancel'), hyrax.dashboard_collection_path(@collection), class: 'btn btn-link' %>
-                    <% else %>
-                      <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
-                      <%= link_to t(:'helpers.action.cancel'), hyrax.my_collections_path, class: 'btn btn-link' %>
-                    <% end %>
-                  </div>
+  <div class="text-right">
+    <% if @collection.persisted? %>
+      <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
+      <%= link_to t(:'helpers.action.cancel'), hyrax.dashboard_collection_path(@collection), class: 'btn btn-link' %>
+    <% else %>
+      <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
+      <%= link_to t(:'helpers.action.cancel'), hyrax.my_collections_path, class: 'btn btn-link' %>
+    <% end %>
+  </div>
 
   <div class="panel panel-default tabs teams" id="collection-edit-controls">
     <ul class="nav nav-tabs" role="tablist">
@@ -165,6 +167,21 @@
         </div>
       <% end # if @media_member_count > 0 %>
 
+      <% if @bso_member_count > 0 %>
+        <div id="biological_specimens" role="tabpanel" class="tab-pane">
+          <div class="form-tab-content">
+
+          </div>
+        </div>
+      <% end # if @bso_member_count > 0 %>
+
+      <% if @cho_member_count > 0 %>
+        <div id="cultural_heritage_objects" role="tabpanel" class="tab-pane">
+          <div class="form-tab-content">
+
+          </div>
+        </div>
+      <% end # if @cho_member_count > 0 %>
 
     </div> <!-- end tab-content -->
 

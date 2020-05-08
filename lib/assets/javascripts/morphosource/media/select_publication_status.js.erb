@@ -1,6 +1,10 @@
 function set_initial_value() {
   let selected_visibility = $('#selected_visibility').attr('class');
 
+  set_visibility(selected_visibility);
+}
+
+function set_visibility(val) {
   let open = $('#media_visibility_open');
   let restricted_download = $('#media_visibility_restricted_download');
   let preview = $('#media_visibility_preview');
@@ -8,7 +12,7 @@ function set_initial_value() {
 
   let current_visibility_value = $('#current_visibility_value');
 
-  switch (selected_visibility) {
+  switch (val) {
     case 'new':
       select_visibility(open);
       display_value = "Publish with Open Download";
@@ -20,17 +24,17 @@ function set_initial_value() {
       display_class = "label-success";
       break;
     case 'restricted_download':
-      select_visibility(restricted_download)
+      select_visibility(restricted_download);
       display_value = "Publish with Restricted Download";
       display_class = "label-info";
       break;
-    case 'preview_only':
-      select_visibility(preview)
+    case 'preview':
+      select_visibility(preview);
       display_value = "Publish with No Download";
       display_class = "label-info";
       break;
     case 'hidden':
-      select_visibility(hidden)
+      select_visibility(hidden);
       display_value = "Publish with Hidden File";
       display_class = "label-info";
       break;
@@ -41,6 +45,10 @@ function set_initial_value() {
 
   if (current_visibility_value.length) {
     current_visibility_value.text(display_value);
+    current_visibility_value
+      .removeClass('label-success')
+      .removeClass('label-info')
+      .removeClass('label-danger');
     current_visibility_value.addClass(display_class);
   }
 }
@@ -52,5 +60,16 @@ function select_visibility(visibility) {
 $(document).on('turbolinks:load', function() {
   if ($('form[id*="media"]').length) {
     set_initial_value();
+
+
+    $('input[name="media[visibility]"]').change(function(event){
+      console.log('Radio visibility changed');
+
+      if ($(this).val()){
+        console.log('Value provided');
+        console.log($(this).val()); 
+        set_visibility($(this).val());    
+      }
+    });
   }
 });

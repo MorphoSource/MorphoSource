@@ -1,0 +1,88 @@
+<div id="submission_po_search_ajax" class="mt-1 <%= show ? 'show' : 'hide' %>">
+  <div id="submission_po_search_loading" class="ui-loading <%= loading ? 'show' : 'hide' %>"></div>
+  <div id="submission_po_search_results" class="row <%= loading ? 'hide' : 'show' %>">
+    <div class="container-fluid">
+      <div class="col-sm-10 col-sm-offset-1 block">
+        <div class="row">
+          <span class="h4"><%= t('morphosource.submission.search_results') %></span>
+          <i id="po-search-results-close" class="fas fa-times clickable" style='float: right;'></i>
+        </div>
+        <div class="row">
+          <% if (docs.nil? || docs.empty?) && (idigbio.nil? || idigbio.empty?) %>
+            <div id="empty_search_results">
+                <%= t('morphosource.submission.po_empty_search_results') %>
+            </div>
+          <% else %>
+            <% if (docs.nil? || docs.empty?) %>
+              <div id="empty_search_results">
+                <%= t('morphosource.submission.morphosource_empty_search_results') %>
+              </div>
+            <% else %>
+
+              <div id="submission_link_po" class="<%= po_type == 'bso' ? 'col-sm-6' : 'col-sm-8 col-sm-offset-2' %>">
+                <div class="row list-item">
+                  <b><%= t('morphosource.submission.morphosource_search_results') %></b>
+                </div>
+              
+                <% docs.each do |doc| %>
+                  <div class="row vertical-align list-item object-search-result row-striped">
+                    <div class="col-sm-9 text-left">
+                      <div><span><%= doc.sortable_title %></span></div>
+                      <% if po_type == 'bso' %>
+                        <div><em><%= "#{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_genus.first unless BiologicalSpecimen.find(doc.id).taxonomies.first.nil?} #{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_species.first unless BiologicalSpecimen.find(doc.id).taxonomies.first.nil?}" %></em></div>
+                        <% obj_url = Rails.application.routes.url_helpers.hyrax_biological_specimen_path(doc.id) %>
+                      <% else %>
+                        <% obj_url = Rails.application.routes.url_helpers.hyrax_cultural_heritage_object_path(doc.id)%>
+                      <% end %>
+
+                      <div>
+                        <%= link_to obj_url, target: '_blank' do %>
+                          See on MorphoSource <i class="fas fa-external-link-alt"></i>
+                        <% end %>
+                      </div>                    
+                    </div>
+                    
+                    <div class="col-sm-3 text-right no-padding">
+                      <a href="#" id="<%= doc.id %>" class="btn btn-primary use-morphosource-object">Use</a>
+                    </div>
+                  </div>
+                <% end %>
+
+              </div>
+            <% end %>
+
+            <% if po_type == 'bso' %>
+              <% if (idigbio.nil? || idigbio.empty?) %>
+                <div id="empty_search_results">
+                  <%= t('morphosource.submission.idigbio_empty_search_results') %>
+                </div>
+              <% else %>
+                <div id="submission_link_idigbio" class="col-sm-6">
+                  <div class="row list-item">
+                    <b><%= t('morphosource.submission.idigbio_search_results') %></b>
+                  </div>
+                
+                  <% idigbio.each do |idb| %>
+                    <div class="row vertical-align list-item object-search-result row-striped">
+                      <div class="col-sm-9 text-left">
+                        <div><span><%= "#{idb['data']['dwc:institutionCode']}:#{idb['data']['dwc:collectionCode']}:#{idb['data']['dwc:catalogNumber']}" %></span></div>
+                        <div><em><%= "#{idb['data']['dwc:genus']} #{idb['data']['dwc:specificEpithet']}" %></em></div>
+                        <div><a href="https://www.idigbio.org/portal/records/<%= idb['uuid'] %>" target="_blank">See on iDigBio <i class="fas fa-external-link-alt"></i></a></div>
+                      </div>
+                      
+                      <div class="col-sm-3 text-right no-padding">
+                        <a href="#" id="<%= idb['uuid'] %>" class="btn btn-primary import-idigbio-object">Import</a>
+                      </div>
+                    </div>
+                  <% end %>
+
+                </div>
+              <% end %>
+            <% end %>
+
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

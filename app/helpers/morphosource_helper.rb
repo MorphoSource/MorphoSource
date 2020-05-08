@@ -104,6 +104,10 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_organizations?type[]=Organization&id=NA&q='
   end
 
+  def find_organization_with_devices_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_organizations_with_devices?type[]=Organization&id=NA&q='
+  end
+
   def find_taxonomy_autocomplete_url
     Rails.application.routes.url_helpers.qa_path + '/search/find_taxonomies?type[]=Taxonomy&id=NA&q='
   end
@@ -222,6 +226,12 @@ module MorphosourceHelper
         organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
       end
       organization_institution
+  end
+
+  def organization_devices(id)
+    # get device id, make, and model for all devices associated with organization id
+    devices = Device.where('id' => Organization.where('id' => id).first.member_ids)
+    devices.map { |d| {'id': d.id, 'title': d.title, 'creator': d.creator, 'modality': d.modality, 'description': d.description } }
   end
 
   def source_of_record(idigbio_uuid, idigbio_recordset_id)

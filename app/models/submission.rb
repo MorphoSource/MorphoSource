@@ -1,47 +1,58 @@
 class Submission
   include ActiveModel::Model
 
-  attr_accessor :biospec_id,
-                :biospec_or_cho,
+  attr_accessor :form_data,
+                :work_data,
+                :saved_step,
+                :submission_media_type,
+                :submission_modality,
+                :raw_or_derived_media,
+                :parent_media_list,
+                :parent_media_not_in_ms,
+                :biological_specimen_or_cultural_heritage_object,
+                :po_saved_view,
+                :biological_specimen_id,
+                :idigbio_id,
+                :will_create_biological_specimen,
+                :cultural_heritage_object_id,
+                :will_create_cultural_heritage_object,
+                :organization_id,
+                :no_organization,
+                :will_create_organization,
+                :taxonomy_id,
+                :canonical_taxonomy_id,
+                :will_create_taxonomy,
+                :device_id,
+                :will_create_device,
+                :device_organization_id,
+                :device_no_organization,
+                :will_create_device_organization,
+                :imaging_event_id,
+                :processing_event_id,
+                :media_id,
+                :is_start_over,
+                :parent_media_search,
                 :biospec_search_catalog_number,
                 :biospec_search_collection_code,
                 :biospec_search_institution_code,
                 :biospec_search_occurrence_id,
                 :biospec_search_taxonomy_genus,
                 :biospec_search_taxonomy_species,
-                :device_id,
-                :idigbio_id,
-                :imaging_event_id,
-                :organization_id,
-                :device_organization_id,
-                :media_id,
-                :processing_event_id,
-                :raw_or_derived_media,
-                :parent_media_how_to_proceed,
-                :parent_media_list,
-                :parent_media_search,
-                :cho_id,
-                :cho_search_catalog_number,
-                :cho_search_collection_code,
-                :cho_search_institution_code,
-                :cho_search_occurrence_id,
-                :taxonomy_id,
-                :canonical_taxonomy_id,
+                :cultural_heritage_object_search_catalog_number,
+                :cultural_heritage_object_search_collection_code,
+                :cultural_heritage_object_search_institution_code,
+                :cultural_heritage_object_search_occurrence_id,
+                :cultural_heritage_object_search_short_title,
                 :taxonomy_search,
-                :is_start_over,
-                :saved_step,
-                :modality
+                :organization_search
 
-
+                
   MEDIA_DERIVED = 'Derived'
   MEDIA_RAW = 'Raw'
-  PHYSICAL_OBJECT_BIOSPEC = { code: 'biospec',
+  PHYSICAL_OBJECT_BSO = { code: 'bso',
                               klass: BiologicalSpecimen,
                               label: BiologicalSpecimen.human_readable_type }
   PHYSICAL_OBJECT_CHO = { code: 'cho',
                           klass: CulturalHeritageObject,
                           label: CulturalHeritageObject.human_readable_type }
-
-  PARENT_MEDIA_LATER = ['Submit derived media and information for media acquisition involving single parent. Can add parent media file later. Can add information and file for additional parent media later as well.', 'later']
-  PARENT_MEDIA_NOW = ['Enter information and file for parent media now. This will start submission over. Can add information and file for derived media or additional parent media later', 'now']
 end

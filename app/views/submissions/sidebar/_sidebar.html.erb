@@ -1,0 +1,29 @@
+<nav>
+  <ul class="nav nav-pills nav-stacked">
+    <li>
+      <div class="profile">
+        <div class="profile-data">
+          <div class="profile-data-name">
+            <span class="fa fas fa-cube" aria-hidden="true"></span>
+            <span>
+              <%= t('morphosource.submission.sidebar.media_upload') %> 
+            </span>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li>
+      <%= link_to new_submission_path(restart: true) do %>
+        <span class="fa fas fa-redo" aria-hidden="true"></span>
+        <span class="sidebar-action-text">
+          <%= t('morphosource.submission.sidebar.start_over') %> 
+        </span>
+      <% end %>
+    </li>
+    
+    <%= render 'submissions/sidebar/initial_information' %>
+    <%= render 'submissions/sidebar/physical_object' %>
+    <%= render 'submissions/sidebar/media' %>
+  </ul>
+</nav>

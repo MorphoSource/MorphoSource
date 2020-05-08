@@ -1,0 +1,3 @@
+// Receives Ruby variable @organization_attrs for select organization attributes
+$("#submission_organization_select_display_container").html(
+  "<%= escape_javascript(render( partial: 'submissions/physical_object/organization_select_display', locals: { organization_attrs: @selected_organization })) %>" );

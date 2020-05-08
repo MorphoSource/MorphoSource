@@ -1,0 +1,57 @@
+<div id="submission_device" class="submission_section submission_flow submission-v2 hide">
+  <div class="container-fluid">
+
+    <div class="row">
+      <h4><%= t('morphosource.submission.header_text.media_device') %></h4>
+    </div>
+
+    <div id="submission_select_device_section">
+      
+      <%= render(partial: 'submissions/media/device_select') %>
+      
+      <div id = "submission_device_select_display_container">
+        <div class="row">
+          <%= render(
+                partial: 'submissions/media/device_select_display',
+                locals: { device_attrs: {} }
+              )
+          %>
+        </div>
+      </div>
+    </div>
+
+    <div id="submission_create_device_button_section">
+      <div class="row">
+        <b><%= t('morphosource.submission.or') %></b>
+      </div>
+
+      <div class="row">
+        <a href="#" id="submission_show_create_device" class="btn btn-primary btn-continue">
+          <%= t('morphosource.submission.create_device') %>
+        </a>
+      </div>
+    </div>
+
+    <div id="submission_create_device_form_section" class="hide">
+      <div class="row form-group">
+        <%= render(partial: 'submissions/media/device_create') %>
+      </div>
+
+      <div class="row">
+        <a href="#" id="submission_create_device_continue" class="btn btn-primary btn-continue">
+          <%= t('morphosource.submission.continue') %>
+        </a>
+      </div>
+
+      <div class="row">
+        <b><%= t('morphosource.submission.or') %></b>
+      </div>
+
+      <div class="row">
+        <a href="#" id="submission_create_device_close" class="btn btn-primary btn-continue">
+          <%= t('morphosource.submission.go_back') %>
+        </a>
+      </div>      
+    </div>
+  </div>
+</div>

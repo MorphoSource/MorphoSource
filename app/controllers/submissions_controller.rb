@@ -1,10 +1,14 @@
+require 'net/http'
+require 'uri'
+require 'json'
+
 class SubmissionsController < ApplicationController
   # Adds Hyrax behaviors to the controller.
   include Hyrax::WorksControllerBehavior
   include MorphosourceHelper
   include Morphosource::LinkedTeams::LinkedTeamsManagement
 
-  load_and_authorize_resource
+  load_and_authorize_resource except: [:search_po_ajax, :get_organization, :get_device, :get_device_organization, :create2, :save_data]
 
   before_action :instantiate_work_forms
 
@@ -22,37 +26,220 @@ class SubmissionsController < ApplicationController
   end
 
   def new
-    # todo: remove the below few lines later, since the clear_session_submission_settings has been moved to clean start block.
-    # clear session when user request to start all over
-    if cookies[:ms_submission_start_over].present?
-        clear_session_submission_settings
+    if params[:restart]
+      clear_session_submission_settings
     end
-    if session[:submission].present?
-      # Continue where the user has left off
-      # last_render saves the page that needs to be rendered if the user reload the page, or
-      # come back to when the user has left off later
-      # saved_step stores the last page usually. it's needed when, for example, the user needs to go back
-      # to new device after creating / selecting an organization.
-      # if needed, read the var from session instead: session[:submission]['saved_step']
-      saved_step = cookies[:saved_step]
-      last_render = cookies[:last_render]
-      if last_render.present?
-        # certain pages require getting back the search result before rendering
-        if last_render == 'biospec'
-          @docs = search_biospec
-          @idigbio = search_idigbio
-          @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])} unless (@docs.nil? || @idigbio.nil?)
-        elsif last_render == 'cho'
-          @docs = search_cho
-        end
-        render last_render
-      end
-    else
-      # clean start
-      session[:submission] ||= {}
-      @submission = Submission.new(session[:submission])
+    session[:submission] ||= {}
+    form_data = session[:submission]['form_data'] ||= {}
+    work_data = session[:submission]['work_data'] ||= {}
+
+    @submission = Submission.new({
+      form_data: form_data,
+      work_data: work_data
+    })
+  end
+
+  ### NEW METHODS ###
+
+  def search_po_ajax
+    @po_type = submission_params[:biological_specimen_or_cultural_heritage_object]
+    if @po_type == 'bso'
+      @docs = search_biospec
+      @idigbio = search_idigbio
+      @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])} unless (@docs.nil? || @idigbio.nil?)
+    elsif @po_type == 'cho'
+      @docs = search_cho
+      @idigbio = []
+    end
+    respond_to do |format|
+      format.js
     end
   end
+
+  def get_organization
+    @selected_organization = Organization.find(submission_params[:organization_id])
+      .attributes.slice(
+      'id', 'title', 'institution', 'institution_code', 'collection_code', 
+      'address', 'city', 'state_province', 'country')
+      .transform_values { |v| Array(v).first }
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def get_device
+    d = Device.find(submission_params[:device_id])
+    @selected_device = d
+      .attributes.slice('id', 'title', 'creator', 'modality', 'description')
+      .merge('member_of' => d.member_of)
+      .map {|k, v| k == 'member_of' ? ['organization_title', v.first.title.first] : [k, Array(v).join(', ')] }
+      .to_h
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def get_device_organization
+    @selected_organization = Organization.find(submission_params[:device_organization_id])
+      .attributes.slice(
+      'id', 'title', 'institution', 'institution_code', 'collection_code', 
+      'address', 'city', 'state_province', 'country')
+      .transform_values { |v| Array(v).first }
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def save_data
+    save_params_to_session
+  end
+
+  def create2
+    reinstantiate_submission
+
+    byebug
+    works.each do |work|
+      puts("Creating #{work} if necessary")
+      create_work_if_needed(work, params)
+    end
+
+    render 'show' 
+  end
+
+  def works
+    ['organization', 'device_organization', 'taxonomy', 'biological_specimen', 
+      'cultural_heritage_object', 'device', 'imaging_event', 'processing_event', 'media']
+  end
+
+  def create_work_if_needed(work, params)
+    if !@submission.public_send(to_id(work)).present? && params[work]
+      puts("Creating #{work}")
+      @submission.public_send(to_id(work) + '=', prepare_and_create_work(work, params))
+    end
+  end
+
+  def prepare_and_create_work(work, params)
+    create_work(to_model(work), create_model_params(work, params))
+  end
+
+  def create_model_params(work, params)
+    model_params = to_form(work).model_attributes(params[work])
+    if work == 'media'
+      finalize_model_params(work, model_params, { uploaded_files: params[:uploaded_files] } )
+    else
+      finalize_model_params(work, model_params)
+    end
+  end
+
+  def finalize_model_params(work, model_params, addl_params={})
+    case work
+    when 'biological_specimen'
+      model_params = assign_model_params_parents(
+        model_params, 
+        [@submission.organization_id, @submission.taxonomy_id])
+      if @submission.canonical_taxonomy_id.present?
+        model_params.merge!('canonical_taxonomy' => [@submission.canonical_taxonomy_id])
+      end
+      @biospec_create_params = model_params
+
+    when 'cultural_heritage_object'
+      model_params = assign_model_params_parents(
+        model_params, 
+        [@submission.organization_id])
+      @cho_create_params = model_params
+
+    when 'device'
+      if @submission.device_organization_id == 'submission_organization'
+        @submission.device_organization_id = @submission.organization_id
+      end
+      model_params = assign_model_params_parents(
+        model_params, 
+        [@submission.device_organization_id])
+      @device_create_params = model_params
+
+    when 'imaging_event'
+      parents = []
+      if @submission.biological_specimen_or_cultural_heritage_object == 'bso'
+        if !@submission.biological_specimen_id.present?
+          abort("Debug no biological specimen id #{@submission.biological_specimen_id}")
+        end
+        parents << @submission.biological_specimen_id
+      elsif @submission.biological_specimen_or_cultural_heritage_object == 'cho'
+        if !@submission.cultural_heritage_object_id.present?
+          abort("Debug no cho id #{@submission.cultural_heritage_object_id}")
+        end
+        parents << @submission.cultural_heritage_object_id
+      end
+      if !@submission.device_id.present?
+          abort("Debug no device id #{@submission.device_id}")
+      end
+      parents << @submission.device_id
+      model_params = assign_model_params_parents(model_params, parents)
+      @imaging_event_create_params = model_params
+
+    when 'processing_event'
+      parents = []
+      if @submission.parent_media_not_in_ms.presence
+        # absentee parent media
+        parents = [@submission.imaging_event_id]
+      else
+        parents = @submission.parent_media_list.split(',')
+      end
+      model_params = assign_model_params_parents(model_params, parents)
+      @processing_event_create_params = model_params
+
+    when 'media'
+      if @submission.raw_or_derived_media == 'raw' 
+        parent = @submission.imaging_event_id
+      elsif @submission.raw_or_derived_media == 'derived'
+        parent = @submission.processing_event_id
+      end
+      model_params = assign_model_params_parents(model_params, parent)
+      if addl_params[:uploaded_files].present?
+        params.merge!({ uploaded_files: addl_params[:uploaded_files] })
+      end
+      @media_create_params = model_params
+
+    # the below cases are only required for temp show page instance object creation
+    when 'organization' 
+      @organization_create_params = model_params
+    when 'taxonomy'
+      @taxonomy_create_params = model_params
+    when 'device_organization'
+      @device_organization_create_params = model_params
+    end
+  end
+
+  def assign_model_params_parents(model_params, parents)
+    parents = Array(parents)
+    parent_attributes = {}
+    i = 0
+    abort("Debug empty parent error") if parents.empty?
+    parents.each do |parent|
+      abort("Debug parent error with #{parent}") if !parent.present?
+      parent_attributes.merge!({ i.to_s => { "id" => parent, "_destroy" => "false" } })
+      i += 1
+    end
+    model_params.merge!('work_parents_attributes' => parent_attributes)
+  end
+
+  # Utility functions
+
+  def to_id(work)
+    work + '_id'
+  end
+
+  def to_form(work)  
+    work = ( work == 'device_organization' ? 'organization' : work )
+    ('Hyrax::' + work.camelize + 'Form').constantize
+  end
+
+  def to_model(work)
+    work = ( work == 'device_organization' ? 'organization' : work )
+    work.camelize.constantize
+  end
+
+  ### END NEW METHODS ###
 
   def create
     reinstantiate_submission
@@ -155,7 +342,7 @@ class SubmissionsController < ApplicationController
 
   def render_and_save(pg)
     # save this page to render again if user reloads the page
-    cookies.permanent[:last_render] = pg
+    cookies.permanent[:current_render] = pg
     if (pg != 'new')
       cookies.delete :saved_clicks
     end
@@ -629,22 +816,6 @@ class SubmissionsController < ApplicationController
 
   def clear_session_submission_settings
     session[:submission] = nil
-    session[:submission_biospec_create_params] = nil
-    session[:submission_cho_create_params] = nil
-    session[:submission_device_create_params] = nil
-    session[:submission_imaging_event_create_params] = nil
-    session[:submission_processing_event_create_params] = nil
-    session[:submission_organization_create_params] = nil
-    session[:submission_device_organization_create_params] = nil
-    session[:submission_media_create_params] = nil
-    session[:submission_taxonomy_create_params] = nil
-    cookies.delete :ms_submission_start_over
-    cookies.delete :saved_step
-    cookies.delete :last_render
-    cookies.delete :saved_clicks
-    cookies.delete :will_create
-    cookies.delete :absentee_parent
-    cookies.delete :modality_to_set
   end
 
   def create_work(model, form_params)
@@ -713,8 +884,12 @@ class SubmissionsController < ApplicationController
     @taxonomy_form = Hyrax::WorkFormService.build(Taxonomy.new, current_ability, self)
   end
 
-  def reinstantiate_submission
+  def save_params_to_session
     session[:submission].deep_merge!(submission_params) if params[:submission]
+  end
+
+  def reinstantiate_submission
+    save_params_to_session
     @submission = Submission.new(session[:submission])
   end
 
@@ -738,9 +913,9 @@ class SubmissionsController < ApplicationController
 
   def search_cho
     search_params = {}
-    cho_search_params = submission_params.select{ |k,v| k.match(/^cho_search_/) }.select{ |k,v| v.present? }
+    cho_search_params = submission_params.select{ |k,v| k.match(/^cultural_heritage_object_search_/) }.select{ |k,v| v.present? }
     cho_search_params.each do |k,v|
-      search_params[k.sub('cho_search_', '')] = v
+      search_params[k.sub('cultural_heritage_object_search_', '')] = v
     end
     Morphosource::PhysicalObjectsSearchService.call(CulturalHeritageObject, search_params)
   end
@@ -765,34 +940,60 @@ class SubmissionsController < ApplicationController
     end
   end
 
+  def coerce_strings_to_booleans(params)
+    params.transform_values {|p| (p == 'true' || p == 'false') ? ActiveModel::Type::Boolean.new.cast(p) : p  } 
+  end
+
   def submission_params
-    params.fetch(:submission, {}).permit( :biospec_id,
-                                          :biospec_or_cho,
-                                          :biospec_search_catalog_number,
-                                          :biospec_search_collection_code,
-                                          :biospec_search_institution_code,
-                                          :biospec_search_occurrence_id,
-                                          :biospec_search_taxonomy_genus,
-                                          :biospec_search_taxonomy_species,
-                                          :cho_id,
-                                          :cho_search_catalog_number,
-                                          :cho_search_collection_code,
-                                          :cho_search_institution_code,
-                                          :cho_search_occurrence_id,
-                                          :device_id,
-                                          :imaging_event_id,
-                                          :organization_id,
-                                          :device_organization_id,
-                                          :media_id,
-                                          :processing_event_id,
-                                          :raw_or_derived_media,
-                                          :parent_media_how_to_proceed,
-                                          :parent_media_search,
-                                          :parent_media_list,
-                                          :taxonomy_search,
-                                          :canonical_taxonomy_id,
-                                          :taxonomy_id
-      )
+    coerce_strings_to_booleans(
+      params
+        .fetch(:submission, {})
+        .permit( 
+                { :form_data => {} },
+                { :work_data => {} },
+                :saved_step,
+                :submission_media_type,
+                :submission_modality,
+                :raw_or_derived_media,
+                :parent_media_list,
+                :parent_media_not_in_ms,
+                :biological_specimen_or_cultural_heritage_object,
+                :po_saved_view,
+                :biological_specimen_id,
+                :idigbio_id,
+                :will_create_biological_specimen,
+                :cultural_heritage_object_id,
+                :will_create_cultural_heritage_object,
+                :organization_id,
+                :no_organization,
+                :will_create_organization,
+                :taxonomy_id,
+                :canonical_taxonomy_id,
+                :will_create_taxonomy,
+                :device_id,
+                :will_create_device,
+                :device_organization_id,
+                :device_no_organization,
+                :will_create_device_organization,
+                :imaging_event_id,
+                :processing_event_id,
+                :media_id,
+                :is_start_over,
+                :parent_media_search,
+                :biospec_search_catalog_number,
+                :biospec_search_collection_code,
+                :biospec_search_institution_code,
+                :biospec_search_occurrence_id,
+                :biospec_search_taxonomy_genus,
+                :biospec_search_taxonomy_species,
+                :cultural_heritage_object_search_catalog_number,
+                :cultural_heritage_object_search_collection_code,
+                :cultural_heritage_object_search_institution_code,
+                :cultural_heritage_object_search_occurrence_id,
+                :cultural_heritage_object_search_short_title,
+                :taxonomy_search
+        )
+    )
   end
 
 end

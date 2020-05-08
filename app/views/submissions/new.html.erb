@@ -1,21 +1,22 @@
 <% provide :page_title, t('morphosource.submission.page_title') %>
-<% provide :page_header do %>
-  <h1><%= t('morphosource.submission.page_header') %></h1>
-<% end %>
+
+<script type="text/javascript">
+  var submissionYaml = <%= json_escape(YAML.load_file(Rails.root.join('config','submission.yml')).to_json.html_safe) %>;
+</script>
 
 <div class="submission_flow" id="submission_new">
-  <%= simple_form_for @submission do |f| %>
-    <%= render(partial: 'raw_derived_media', locals: { f: f }) %>
-    <% # Raw media flow %>
-    <%= render(partial: 'physical_object', locals: { f: f }) %>
-    <%= render(partial: 'biospec_search', locals: {f: f }) %>
-    <%= render(partial: 'cho_search', locals: {f: f }) %>
-    <% # Derived media flow %>
-    <%= render(partial: 'parents_in_ms', locals: { f: f }) %>
-    <%= render(partial: 'parents_not_in_ms', locals: { f: f }) %>
-    <% # Child media in MS %>
-    <%= render(partial: 'child_media_in_ms', locals: { f: f }) %>
-  <% end %>
+	<% # All form partials loaded, submission.js used To control visibility %>
+	<% # Initial Information %>
+  <%= render(partial: 'submissions/initial_information/raw_derived_media') %>
+  <%= render(partial: 'submissions/initial_information/parents_in_ms') %>
+  <% # Physical Object %>
+  <%= render(partial: 'submissions/physical_object/physical_object') %>
+  <%= render(partial: 'submissions/physical_object/organization') %>
+  <%= render(partial: 'submissions/physical_object/taxonomy') %>
+  <%= render(partial: 'submissions/physical_object/physical_object_details') %>
+  <% # Media %>
+  <%= render(partial: 'submissions/media/device') %>
+  <%= render(partial: 'submissions/media/image_capture') %>
+  <%= render(partial: 'submissions/media/processing_event') %>
+  <%= render(partial: 'submissions/media/media') %>
 </div>
-
-<%= render(partial: 'footer') %>

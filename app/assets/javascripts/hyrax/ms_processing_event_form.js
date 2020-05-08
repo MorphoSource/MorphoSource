@@ -42,7 +42,7 @@ $(document).on('turbolinks:load', function() {
     // note: this has been moved out of "    if (hasAdditionalEmptyField) {  " condition block
     form.addEventListener("submit", function(peSubmitEvent) {
       var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
-      if (!isFormValid) {
+      if (!isFormValid || $('form[id*="processing_event"]').hasClass('stop-disable')) {
         peSubmitEvent.preventDefault();
         enablePage();
       } else {

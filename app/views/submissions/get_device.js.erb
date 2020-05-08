@@ -1,0 +1,3 @@
+// Receives Ruby variable @device_attrs for select device attributes
+$("#submission_device_select_display_container").html(
+  "<%= escape_javascript(render( partial: 'submissions/media/device_select_display', locals: { device_attrs: @selected_device })) %>" );

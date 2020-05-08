@@ -1,18 +1,19 @@
 <div class="base-terms">
   <% f.object.primary_terms.each do |term| %>
-    <%= render_edit_field_partial(term, f: f) %>
+    <% if term == :date_created %>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Date created</div>
+        <div class="col-xs-6 showcase-value">
+          <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
+        </div>
+      </div>
+    <% else %>
+      <%= render_edit_field_partial(term, f: f) %>
+    <% end %>
   <% end %>
 </div>
 <% if f.object.display_additional_fields? %>
-  <% extended_terms_id = "extended-#{f.object.class.name.underscore.split('/').last}-terms" %>
-  <%= link_to t('hyrax.works.form.additional_fields'),
-              "##{extended_terms_id}",
-              class: 'btn btn-default additional-fields',
-              data: {toggle: 'collapse'},
-              role: "button",
-              'aria-expanded' => "false",
-              'aria-controls' => "extended-terms" %>
-  <div id=<%= extended_terms_id %> class='collapse'>
+  <div class="additional-terms">
     <% f.object.secondary_terms.each do |term| %>
       <%= render_edit_field_partial(term, f: f) %>
     <% end %>

@@ -15,15 +15,26 @@ module MorphosourceHelper
     names.include?(current_controller)
   end
 
-  def collection_type_from_path
+  def collection_view_link(id, view, anchor=nil)
     current_uri = request.env['PATH_INFO']
-    if current_uri.include?("teams")
-      "teams"
-    elsif current_uri.include?("projects")
-      "projects"
+    if current_uri.include?("dashboard/collections")
+      if action_name == 'edit'
+        link = edit_dashboard_collection_path(id, view)
+      else
+        link = dashboard_collection_path(id, view)
+      end
     else
-      "collections"
-    end      
+      link = collection_path(id, view)
+      if current_uri.include?("teams")
+        # todo: fix team_path route 
+        # link = team_path(id)
+        link["collections"] = "teams" # replace "collection' with "teams"
+      elsif current_uri.include?("projects")
+        link["collections"] = "projects"
+      end
+    end
+    link = link + "#" + anchor if anchor.present?
+    link.html_safe
   end
 
   def truncate_value(value, length=20)

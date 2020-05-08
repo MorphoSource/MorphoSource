@@ -39,9 +39,9 @@ Rails.application.routes.draw do
     #    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
     resources :projects, controller: 'teams'
 
-    # todo: dashboard/teams routes might not be needed since dashboard/controllers will be used
+    # Note: the following route might effect pagination links
     namespace :dashboard do
-      resources :teams, controller: 'collections'
+      resources :collections, controller: 'collections'
     end
 
   end

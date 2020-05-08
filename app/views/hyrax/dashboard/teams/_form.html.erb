@@ -1,69 +1,70 @@
-<div class="panel panel-default tabs teams" id="collection-edit-controls">
-  <ul class="nav nav-tabs" role="tablist">
+<%= simple_form_for @form, url: [hyrax, :dashboard, @form], html: { class: 'editor' } do |f| %>
 
-    <% if @media_member_count > 0 %>
-      <li role="presentation" class="active">
-        <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
-        <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
-        </a>
-      </li>
-    <% end %>
-    <% if @bso_member_count > 0 %>
-      <li role="presentation">
-        <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
-          <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
-        </a>
-      </li>
-    <% end %>
-    <% if @cho_member_count > 0 %>
-      <li role="presentation">
-        <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
-          <i class="fas fa-frog" aria-hidden="true"></i> CHO
-        </a>
-      </li>
-    <% end %>
+                  <div class="text-right">
+                    <% if @collection.persisted? %>
+                      <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
+                      <%= link_to t(:'helpers.action.cancel'), hyrax.dashboard_collection_path(@collection), class: 'btn btn-link' %>
+                    <% else %>
+                      <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
+                      <%= link_to t(:'helpers.action.cancel'), hyrax.my_collections_path, class: 'btn btn-link' %>
+                    <% end %>
+                  </div>
 
-    <li role="presentation">
-      <a href="#details" role="tab" data-toggle="tab">
-        <i class="fas fa-newspaper" aria-hidden="true"></i> DETAILS        
-      </a>
-    </li>
-    <% if @form.persisted? %>
-      <% if @collection.brandable? %>
-      <li role="presentation">
-        <a href="#branding" role="tab" data-toggle="tab"><%= t('.tabs.branding') %></a>
-      </li>
-      <% end %>
-      <% if @collection.discoverable? %>
-      <li role="presentation">
-        <a href="#discovery" role="tab" data-toggle="tab"><%= t('.tabs.discovery') %></a>
-      </li>
-      <% end %>
-      <% if @collection.sharable? %>
-      <li role="presentation">
-        <a href="#sharing" role="tab" data-toggle="tab"><%= t('.tabs.sharing') %></a>
-      </li>
-      <% end %>
-      <% if @collection.team? && @collection.organization && @current_user.can?(:edit, @collection) %>
-        <li role="presentation">
-          <a href="#organization" role="tab" data-toggle="tab"><%= 'Organization' %></a>
-        </li>
-      <% end %>
-    <% end %>
-  </ul>
-
-
-
-  <%= simple_form_for @form, url: [hyrax, :dashboard, @form], html: { class: 'editor' } do |f| %>
-    <div class="tab-content">
+  <div class="panel panel-default tabs teams" id="collection-edit-controls">
+    <ul class="nav nav-tabs" role="tablist">
 
       <% if @media_member_count > 0 %>
-        <div role="tabpanel" class="tab-pane active" id="media">
-          <div class="form-tab-content">
-            <%= render 'hyrax/teams/tab_media' %>
-          </div>
-        </div>
-      <% end # if @media_member_count > 0 %>
+        <li role="presentation" class="active">
+          <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
+          <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
+          </a>
+        </li>
+      <% end %>
+      <% if @bso_member_count > 0 %>
+        <li role="presentation">
+          <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
+            <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+          </a>
+        </li>
+      <% end %>
+      <% if @cho_member_count > 0 %>
+        <li role="presentation">
+          <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
+            <i class="fas fa-frog" aria-hidden="true"></i> CHO
+          </a>
+        </li>
+      <% end %>
+
+      <li role="presentation">
+        <a href="#details" role="tab" data-toggle="tab">
+          <i class="fas fa-newspaper" aria-hidden="true"></i> DETAILS        
+        </a>
+      </li>
+      <% if @form.persisted? %>
+        <% if @collection.brandable? %>
+        <li role="presentation">
+          <a href="#branding" role="tab" data-toggle="tab"><%= t('.tabs.branding') %></a>
+        </li>
+        <% end %>
+        <% if @collection.discoverable? %>
+        <li role="presentation">
+          <a href="#discovery" role="tab" data-toggle="tab"><%= t('.tabs.discovery') %></a>
+        </li>
+        <% end %>
+        <% if @collection.sharable? %>
+        <li role="presentation">
+          <a href="#sharing" role="tab" data-toggle="tab"><%= t('.tabs.sharing') %></a>
+        </li>
+        <% end %>
+        <% if @collection.team? && @collection.organization && @current_user.can?(:edit, @collection) %>
+          <li role="presentation">
+            <a href="#organization" role="tab" data-toggle="tab"><%= 'Organization' %></a>
+          </li>
+        <% end %>
+      <% end %>
+    </ul>
+
+    <div class="tab-content">
 
 
 
@@ -152,16 +153,21 @@
         </div>
       <% end %>
 
-      <div class="panel-footer">
-        <% if @collection.persisted? %>
-          <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
-          <%= link_to t(:'helpers.action.cancel'), hyrax.dashboard_collection_path(@collection), class: 'btn btn-link' %>
-        <% else %>
-          <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
-          <%= link_to t(:'helpers.action.cancel'), hyrax.my_collections_path, class: 'btn btn-link' %>
-        <% end %>
-      </div>
-    </div> <!-- end tab-content -->
-  <% end # simple_form_for %>
+<% end # simple_form_for (edit collection form) %>
 
-</div> <!-- end collection-controls -->
+      <%# the following forms needs to be outside of the edit collection form %>
+
+      <% if @media_member_count > 0 %>
+        <div id="media" role="tabpanel" class="tab-pane active">
+          <div class="form-tab-content">
+            <%= render 'hyrax/teams/tab_media' %>
+          </div>
+        </div>
+      <% end # if @media_member_count > 0 %>
+
+
+    </div> <!-- end tab-content -->
+
+  </div> <!-- end collection-controls -->
+
+

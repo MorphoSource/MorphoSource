@@ -15,6 +15,8 @@ class Media < Morphosource::Works::Base
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
 
+  after_update :update_cart_items
+
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
@@ -25,6 +27,15 @@ class Media < Morphosource::Works::Base
     else
       return work.in_works.reject{|w| w.class == self}.map{|w| self.parent_works(w)}.flatten + work.in_works
     end
+  end
+
+  def cart_items
+    CartItem.where(work_id: id)
+  end
+
+  def reviewer
+    r = User.find_by(ms_id: download_reviewer.first)
+    r ? download_reviewer.first : user_with_ownership
   end
 
   # array of all visibilities that apply to the file sets of a Media work
@@ -104,10 +115,30 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def user_is_reviewer_or_has_ownership(item)
+    item.user_id == reviewer || item.user_id == user_with_ownership
+  end
+
   private
     def add_id_to_title
       unless self.title && self.id && self.title.first.to_s.start_with?("M#{self.id.to_s}: ")
         self.title.set("M#{self.id.to_s}: #{self.title.first.to_s}")
+      end
+    end
+
+    def update_cart_items
+      if (attribute_changed?(:download_reviewer) || attribute_changed?(:owner))
+        cart_items.each do |item|
+          item.approver_id = reviewer
+          if restricted?
+            if user_is_reviewer_or_has_ownership(item)
+              item.restricted = false
+            else
+              item.restricted = true
+            end
+          end
+          item.save
+        end
       end
     end
 end

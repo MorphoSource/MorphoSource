@@ -72,9 +72,9 @@ class CartItem < ApplicationRecord
     request_status == 'Approved'
   end
 
-  # for now, approver = depositor
+  # download_reviewer or depositor
   def set_approver
-    self.approver_id = approver_id || work.depositor
+    self.approver_id = work.reviewer
   end
 
   def set_restriction

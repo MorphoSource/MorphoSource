@@ -58,7 +58,7 @@ module Morphosource
     def create_cart_item(work_id)
       work = Media.find(work_id)
       item = CartItem.create({user_id: current_user.ms_id, work_id: work.id})
-      if user_is_approver?(item) && item.restricted?
+      if item.restricted? && work.user_is_reviewer_or_has_ownership(item)
         unrestrict(item)
       end
       item

@@ -44,6 +44,11 @@ module Morphosource
         self.class == Media
       end
 
+      def user_with_ownership
+        o = User.find_by(ms_id: owner)
+        o ? owner : depositor
+      end
+
       private
 
       def get_all_children(objects)

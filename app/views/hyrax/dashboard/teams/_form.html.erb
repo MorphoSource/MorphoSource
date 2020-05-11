@@ -20,7 +20,6 @@
         <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
         </a>
       </li>
-
       <% if @bso_member_count > 0 %>
         <li role="presentation">
           <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
@@ -35,12 +34,13 @@
           </a>
         </li>
       <% end %>
-
       <li role="presentation">
-        <a href="#details" role="tab" data-toggle="tab">
+        <a href="#details" aria-controls="details" role="tab" data-toggle="tab" aria-expanded="true">
           <i class="fas fa-newspaper" aria-hidden="true"></i> DETAILS        
         </a>
       </li>
+
+
       <% if @form.persisted? %>
         <% if @collection.brandable? %>
         <li role="presentation">
@@ -67,49 +67,12 @@
 
     <div class="tab-content">
 
-
+      <%# media, bso, cho tabs are outside of the edit form %>
 
       <div id="details" class="tab-pane">
         <div class="panel panel-default labels">
           <div class="panel-body">
-
-            <div id="base-terms">
-              <% f.object.primary_terms.each do |term| %>
-                <%= render_edit_field_partial(term, f: f) %>
-              <% end %>
-
-              <% if f.object.persisted? %>
-                <%# we're loading these values dynamically to speed page load %>
-                <%= f.input :thumbnail_id,
-                            input_html: { data: { text: f.object.thumbnail_title } } %>
-              <% end %>
-            </div>
-            <% if f.object.display_additional_fields? %>
-              <%= link_to t('hyrax.collection.form.additional_fields'),
-                      '#extended-terms',
-                      class: 'btn btn-default additional-fields',
-                      data: { toggle: 'collapse' },
-                      role: "button",
-                      'aria-expanded'=> "false",
-                      'aria-controls'=> "extended-terms" %>
-              <div id="extended-terms" class='collapse'>
-                <% f.object.secondary_terms.each do |term| %>
-                  <%= render_edit_field_partial(term, f: f) %>
-                <% end %>
-              </div>
-            <% end %>
-            <%= hidden_field_tag :type, params[:type] %>
-            <%= hidden_field_tag :stay_on_edit, true %>
-            <%= hidden_field_tag :collection_type_gid, @collection.collection_type_gid %>
-            <!-- parent_id may be passed from the nested collections controller to allow a subcollection relationship to be added as collection is created -->
-            <% if params[:parent_id].present? %>
-              <%= hidden_field_tag :parent_id, params[:parent_id] %>
-            <% end %>
-            <% if params[:batch_document_ids].present? %>
-              <% params[:batch_document_ids].each do |batch_item| %>
-                <input type="hidden" name="batch_document_ids[]" value="<%= batch_item %>" />
-              <% end %>
-            <% end %>
+              <%= render 'details', f: f %>
           </div>
         </div>
       </div> <!-- end description -->

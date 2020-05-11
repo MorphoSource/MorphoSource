@@ -43,7 +43,8 @@ module Morphosource
       end
 
       def user_with_ownership
-        owner || depositor
+        o = User.find_by(ms_id: owner)
+        o ? owner : depositor
       end
 
       private

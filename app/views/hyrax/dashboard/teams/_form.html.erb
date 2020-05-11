@@ -15,13 +15,12 @@
   <div class="panel panel-default tabs teams" id="collection-edit-controls">
     <ul class="nav nav-tabs" role="tablist">
 
-      <% if @media_member_count > 0 %>
-        <li role="presentation" class="active">
-          <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
-          <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
-          </a>
-        </li>
-      <% end %>
+      <li role="presentation" class="active">
+        <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
+        <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
+        </a>
+      </li>
+
       <% if @bso_member_count > 0 %>
         <li role="presentation">
           <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
@@ -159,18 +158,16 @@
 
       <%# the following forms needs to be outside of the edit collection form %>
 
-      <% if @media_member_count > 0 %>
-        <div id="media" role="tabpanel" class="tab-pane active">
-          <div class="form-tab-content">
-            <%= render 'hyrax/teams/tab_media' %>
-          </div>
+      <div id="media" role="tabpanel" class="tab-pane active">
+        <div class="form-tab-content">
+          <%= render 'hyrax/teams/tab_media' %>
         </div>
-      <% end # if @media_member_count > 0 %>
+      </div>
 
       <% if @bso_member_count > 0 %>
         <div id="biological_specimens" role="tabpanel" class="tab-pane">
           <div class="form-tab-content">
-
+            <%= render 'hyrax/teams/tab_bso' %>
           </div>
         </div>
       <% end # if @bso_member_count > 0 %>
@@ -178,7 +175,7 @@
       <% if @cho_member_count > 0 %>
         <div id="cultural_heritage_objects" role="tabpanel" class="tab-pane">
           <div class="form-tab-content">
-
+            <%= render 'hyrax/teams/tab_cho' %>
           </div>
         </div>
       <% end # if @cho_member_count > 0 %>

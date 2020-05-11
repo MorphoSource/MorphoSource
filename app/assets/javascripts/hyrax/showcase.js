@@ -1,7 +1,6 @@
 $(document).on('turbolinks:load', function() {
 
-  if ($('[class*="showcase"]').length) { // check if the page is showcase page
-    
+  if ($('body[class*="showcase"]').length) { // check if the page is showcase page
     // switching icons and button labels for expand / collapse
     $(".collapse-block").not(".glyphicon-only").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');
@@ -23,7 +22,7 @@ $(document).on('turbolinks:load', function() {
     });
 
 
-    if ($('div[class*="teams"]').length) { // check if the page is teams/projects show page
+    if ($('body[class*="teams"]').length) { // check if the page is teams/projects show page
 
       var mediaTable = $('#datatable-media-list').DataTable({
         responsive: {

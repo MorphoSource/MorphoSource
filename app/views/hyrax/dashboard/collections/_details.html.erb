@@ -3,6 +3,8 @@
   <div class="col-sm-6">
     <h2>GENERAL DETAILS</h2>
 
+      <%= f.input :title, as: :multi_value %>
+
             <div id="base-terms">
               <% f.object.primary_terms.each do |term| %>
                 <%= render_edit_field_partial(term, f: f) %>

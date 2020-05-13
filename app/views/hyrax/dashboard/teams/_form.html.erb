@@ -42,21 +42,22 @@
 
 
       <% if @form.persisted? %>
-        <% if @collection.brandable? %>
-        <li role="presentation">
-          <a href="#branding" role="tab" data-toggle="tab"><%= t('.tabs.branding') %></a>
-        </li>
-        <% end %>
+
         <% if @collection.discoverable? %>
         <li role="presentation">
           <a href="#discovery" role="tab" data-toggle="tab"><%= t('.tabs.discovery') %></a>
         </li>
         <% end %>
+
+
         <% if @collection.sharable? %>
         <li role="presentation">
-          <a href="#sharing" role="tab" data-toggle="tab"><%= t('.tabs.sharing') %></a>
+          <a href="#members" aria-controls="members" role="tab" data-toggle="tab" aria-expanded="true">
+            <i class="fas fa-newspaper" aria-hidden="true"></i> MEMBERS        
+          </a>
         </li>
         <% end %>
+
         <% if @collection.team? && @collection.organization && @current_user.can?(:edit, @collection) %>
           <li role="presentation">
             <a href="#organization" role="tab" data-toggle="tab"><%= 'Organization' %></a>
@@ -78,10 +79,11 @@
       </div> <!-- end description -->
 
       <% if @form.persisted? %>
-        <div id="branding" class="tab-pane">
-          <div class="panel panel-default labels">
+
+        <div id="members" class="tab-pane">
+          <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
             <div class="panel-body">
-              <%= render 'form_branding', f: f %>
+              <%= render 'form_members', f: f %>
             </div>
           </div>
         </div>
@@ -93,19 +95,6 @@
             </div>
           </div>
         </div>
-
-        <div id="sharing" class="tab-pane">
-          <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
-            <div class="panel-body">
-              <% if @collection.type_assigns_groups? %>
-                <%= render 'ms_form_share', f: f %>
-              <% else %>
-                <%= render 'form_share', f: f %>
-              <% end %>
-            </div>
-          </div>
-        </div>
-
         <div id="organization" class="tab-pane">
           <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
             <div class="panel-body">
@@ -142,6 +131,8 @@
           </div>
         </div>
       <% end # if @cho_member_count > 0 %>
+
+
 
     </div> <!-- end tab-content -->
 

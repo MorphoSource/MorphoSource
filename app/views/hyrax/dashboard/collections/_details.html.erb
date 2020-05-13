@@ -24,7 +24,11 @@
 
   <div class="col-sm-6">
     <div class="content-block">
-      <%= render 'form_branding', f: f %>
+      <% if @form.persisted? %>
+        <% if @collection.brandable? %>
+          <%= render 'form_branding', f: f %>
+        <% end %>
+      <% end %>
     </div>
   </div>
 

@@ -108,6 +108,11 @@ en:
           editor: 'Editor'
           depositor: 'Depositor'
           viewer: 'Viewer'
+        form_branding:
+          logo:
+            description: Team logo will be displayed on the team's public page to the left of the team title. For best results, upload a square image (JPG, GIF, or PNG) that is 40x40 pixels. Larger images will be resized to 40x40 pixels. You may specify a URL the logo will direct users to if clicked. You may also provide alternate text to describe the logo for users with visual impairments.
+          banner:
+            description: Team banner will be displayed on the team's public page above the team title. For best results, upload an image (JPG, GIF, or PNG) that is 1200 pixels wide and at least 120 pixels tall.
     works:
       form:
         find_parent_work: Parent Works

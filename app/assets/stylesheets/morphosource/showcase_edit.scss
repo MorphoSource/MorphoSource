@@ -40,6 +40,7 @@ input.disabled {
   }
 
   h2 {
+    text-transform: uppercase;
     font-size: 15px;
     a.btn {
       float: right;
@@ -341,4 +342,31 @@ input.disabled {
     }
   }
 
+  .banner-image img {
+    border:1px solid red;
+    width:100%;
+  }
+
+  input.branding-logo-input, input.branding-banner-input {
+    width:auto;
+  }
+
 } /* / .showcase-edit */
+
+
+/* styles for dashboard collection edit page */
+.dashboard.showcase-edit {
+  .main-content {
+    padding-right: 0;
+  }
+  .branding-logo-input > label {
+    display:flex;
+    span {
+      display: inline-block;
+    }
+    input {
+      width:50px;
+    }
+  }
+}
+/* /styles for dashboard collection edit page */

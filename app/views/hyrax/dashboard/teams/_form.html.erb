@@ -1,6 +1,6 @@
-<% content_for :body_css_classes do %>showcase teams<% end %> 
+<% content_for :body_css_classes do %>showcase showcase-edit teams<% end %> 
 
-<%= simple_form_for @form, url: [hyrax, :dashboard, @form], html: { class: 'editor' } do |f| %>
+<%= simple_form_for @form, url: [hyrax, :dashboard, @form], wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
   <div class="text-right">
     <% if @collection.persisted? %>

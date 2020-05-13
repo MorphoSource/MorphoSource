@@ -1,5 +1,3 @@
-require 'hyrax/permission_template_access'
-
 module Morphosource
   module Collections
     class PermissionsCreateService < Hyrax::Collections::PermissionsCreateService

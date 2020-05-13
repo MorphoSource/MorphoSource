@@ -1,0 +1,45 @@
+
+<%= render_edit_field_partial('license', f: f) %>
+<%= render_edit_field_partial('rights_statement', f: f) %>
+<%= render_edit_field_partial('terms_of_use', f: f) %>
+<%= render_edit_field_partial('agreement_uri', f: f) %>
+<%= f.input :permits_commercial_use, as: :select, class: 'form-control' %>
+<%= f.input :permits_3d_use, as: :select, class: 'form-control' %>
+<%= render_edit_field_partial('download_reviewer', f: f) %>
+<%= render_edit_field_partial('rights_holder', f: f) %>
+<%= render_edit_field_partial('funding', f: f) %>
+<%= render_edit_field_partial('publisher', f: f) %>
+<%= render_edit_field_partial('cite_as', f: f) %>
+
+<script>
+  // If a field has default permissions filled in, warn users when they click on it.
+  // multi-value fields
+  <% Morphosource::PermissionsHelper::MULTI_VALUE.each do |field| %>
+    <% if default_present?(@media_form, field) %>
+      $('#media_<%=field%>').closest( "ul" ).one( "click", function() {
+        alert( "<%= alert(@organization) %>" );
+      });
+    <% end %>
+  <% end %>
+
+  // single-value fields
+  <% Morphosource::PermissionsHelper::SINGLE_VALUE.each do |field| %>
+    <% if default_present?(@media_form, field) %>
+      $('#media_<%=field%>').one( "focus", function() {
+        alert( "<%= alert(@organization) %>" );
+      });
+    <% end %>
+  <% end %>
+
+  // download reviewer
+  <% if default_present?(@media_form, 'download_reviewer') %>
+    $('#media_download_reviewer').one("select2-opening", function() {
+    alert( "<%= alert(@organization) %>" );});
+  <% end %>
+
+  // rights holder
+  <% if default_present?(@media_form, 'rights_holder') %>
+    $('#media_rights_holder_wrapper').one('click', function() {
+    alert( "<%= alert(@organization) %>" );});
+  <% end %>
+</script>

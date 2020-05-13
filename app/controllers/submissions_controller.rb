@@ -32,8 +32,6 @@ class SubmissionsController < ApplicationController
     })
   end
 
-  ### NEW METHODS ###
-
   def search_po_ajax
     @po_type = submission_params[:biological_specimen_or_cultural_heritage_object]
     if @po_type == 'bso'
@@ -387,6 +385,62 @@ class SubmissionsController < ApplicationController
                 :taxonomy_search
         )
     )
+  end
+
+  def set_up_media_permissions
+    reinstantiate_submission
+    @organization = find_ancestor_organization
+    media = Media.new
+    assign_default_permissions(@organization, media) if @organization
+    @media_form = Hyrax::WorkFormService.build(media, current_ability, self)
+    render_and_save 'media'
+  end
+
+  def find_ancestor_organization
+    parent_list = @submission.instance_variable_get(:@parent_media_list)
+    organization_id = @submission.instance_variable_get(:@organization_id)
+    biospec_id = @submission.instance_variable_get(:@biospec_id)
+    cho_id = @submission.instance_variable_get(:@cho_id)
+
+    organization = nil
+
+    if parent_list.present?
+      parent = Media.find(parent_list)
+      if parent.organizations.present?
+        organization = parent.organizations.first
+      end
+    elsif organization_id.present? && organization_id != 'new'
+      organization = Organization.find(organization_id)
+    elsif biospec_id.present? && biospec_id != 'new'
+      specimen = BiologicalSpecimen.find(biospec_id)
+      if specimen.organizations.present?
+        organization = specimen.organizations.first
+      end
+    elsif cho_id.present? && cho_id != 'new'
+      cho = CulturalHeritageObject.find(cho_id)
+      if cho.organizations.present?
+        organization = cho.organizations.first
+      end
+    end
+  end
+
+  def assign_default_permissions(organization, media)
+    default_permissions = {
+      download_reviewer: organization.download_reviewer,
+      agreement_uri: organization.agreement_uri,
+      license: organization.license,
+      rights_statement: organization.rights_statement,
+      terms_of_use: organization.terms_of_use,
+      permits_commercial_use: organization.permits_commercial_use,
+      permits_3d_use: organization.permits_3d_use,
+      rights_holder: organization.rights_holder,
+      funding: organization.funding,
+      publisher: organization.publisher,
+      cite_as: organization.cite_as,
+      download_permission: organization.download_permission.first
+    }
+
+    media.assign_attributes(default_permissions)
   end
 
 end

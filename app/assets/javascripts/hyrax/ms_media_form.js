@@ -1,10 +1,11 @@
 $(document).on('turbolinks:load', function() {
 
-  if ($('form[id*="media"]').length) { // if media form page (add/edit)
+  if ( $('form[id*="edit_media"]').length || 
+       $('form[id*="new_media"]').length ) { // if media form page (add/edit)
 
     IsImagingEventOK = false;
     IsProcessingEventOK = false;
-    
+
     if ($('form[id*="related_form_imaging_event"]').length)
       HasEditImagingEventForm = true;
     else
@@ -42,14 +43,19 @@ $(document).on('turbolinks:load', function() {
     concatFields = targetGroup.querySelectorAll("input");
     concatFieldCount = (targetGroup.querySelectorAll("input").length) - 1;
 
+    // TODO: Needs more investigation -
+    // Rights holder fields are being hidden on media edit pages for recently added media, but it is unclear why that is happening.
+    // Below ensures that field shows up:
+    $('#media_rights_holder_wrapper').removeClass('hide');
+
     // Two part rightsHolder entry
     targetWrapper = document.getElementById("media_rights_holder_wrapper");
     targetWrapperUl = targetWrapper.querySelector('ul');
     targetWrapperLi = targetWrapper.querySelector('li');
 
-  	hide_fields(['.media_number_of_images_in_set','.media_scale_bar']);
-  	adjust_form_media_type();
-    setupRightsHolder();    
+    hide_fields(['.media_number_of_images_in_set','.media_scale_bar']);
+    adjust_form_media_type();
+    setupRightsHolder();
     setupScaleBar();
 
     $(document).on('change', '#media_media_type', function() {
@@ -60,16 +66,16 @@ $(document).on('turbolinks:load', function() {
     $(".btn-save.debug").click(function() {
       var targetForm = $('form[id*="' + $(this).attr('id') + '"]');
       console.log('clicked save button for ' + targetForm.attr('id'));
-      if ($('form[id*="processing_event"]').length) { // if PE form 
+      if ($('form[id*="processing_event"]').length) { // if PE form
         buildProcessingActivity(); // populate the PA field before saving PE
       }
       //      targetForm.submit();
       targetForm.submitRelatedWork();
-    }) 
+    })
 
     function prepareFieldsBeforeSubmit() {
       // Before submit, name and type fields are concatenated and inserted into hidden default rights holder field.
-      $(targetGroupUl).empty(); // remove all items and re-build 
+      $(targetGroupUl).empty(); // remove all items and re-build
       var rightsHolderCount = $('select[name="media[rights_holder_type][]"]').length;
       for (i = 0; i < rightsHolderCount; i++) {
 
@@ -251,7 +257,7 @@ $(document).on('turbolinks:load', function() {
           }
           $('input[name="media[rights_holder_name][]"]')[0].value = name;
         } else {
-          // Assemble new name, type 
+          // Assemble new name, type
           var li = document.createElement('li');
           li.className = 'field-wrapper input-group input-append';
           //li.setAttribute('style', "display:flex; flex-direction:row; justify-content:space-evenly;");
@@ -323,7 +329,7 @@ $(document).on('turbolinks:load', function() {
         if (relatedFormId.indexOf('imaging_event') != -1)
           IsImagingEventOK = true;
         else if (relatedFormId.indexOf('processing_event') != -1)
-          IsProcessingEventOK = true;        
+          IsProcessingEventOK = true;
         if (callback) callback();
       }, "json").fail(function(data) {
         console.log("getting a fail status ", data );
@@ -339,7 +345,7 @@ $(document).on('turbolinks:load', function() {
         if (msg) alert(msg);
         if (callback) callback();
       }).always(function(data) {
-        
+
       });
     }
   });
@@ -355,14 +361,14 @@ $(document).on('turbolinks:load', function() {
       var mediaType = $('[name="media[media_type]"]').val();
       mediaType = '[' + mediaType + ']';
       if ($('[name="imaging_event[ie_modality]"]').length)
-        var ie_modality = $('[name="imaging_event[ie_modality]"]').val(); 
+        var ie_modality = $('[name="imaging_event[ie_modality]"]').val();
       else if ($('.showcase-value.imaging_event_modality').length)
         var ie_modality = $('.showcase-value.imaging_event_modality').html();
       else
         var ie_modality = 'modality_undefined';
       ie_modality = '[' + modalityAbbrev(ie_modality) + ']';
       var title = parts + ' ' + mediaType + ' ' + ie_modality;
-      $('#showcase-title').text(title);     
+      $('#showcase-title').text(title);
     }
 
     function updateDevice(organization, instutition) {
@@ -398,7 +404,7 @@ $(document).on('turbolinks:load', function() {
       $(".related_form." + clickedTab).show();
     })
 
-    // remove organization when clicking no organization button  
+    // remove organization when clicking no organization button
     $('#btn_no_organization').click(function() {
       var removeOrganizationButton = $('#parent-relationships-organizations').find('[data-behavior="remove-relationship"]');
       if (removeOrganizationButton.length) {
@@ -425,9 +431,9 @@ $(document).on('turbolinks:load', function() {
       if (addButtonId == 'btn-add-parent-media') {
         // close the modal, immediately save the processing event form, then refresh the page
         if ($(this).data('hasProcessingEvent') == true) {
-          $('#modal-select-parent-media').modal('hide');        
+          $('#modal-select-parent-media').modal('hide');
           disablePageAndSave(".btn-save-media");
-          $("form#related_form_processing_event").submitRelatedWork(reloadPage);        
+          $("form#related_form_processing_event").submitRelatedWork(reloadPage);
         } else if ($(this).data('hasProcessingEvent') == false) {
           $('#modal-select-parent-media-new-processing-event').modal('hide');
           $('.new-processing-event-wrapper').show();
@@ -436,14 +442,14 @@ $(document).on('turbolinks:load', function() {
           var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
           if (isFormValid) {
             disablePageAndSave(".btn-save-media");
-            $("form#new_processing_event").submitRelatedWork(reloadPage);        
-          } 
+            $("form#new_processing_event").submitRelatedWork(reloadPage);
+          }
           */
         }
       } else {
         var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
         $(newWorkDiv).hide();
-        closeLinkedContent(newWorkDiv);        
+        closeLinkedContent(newWorkDiv);
       }
     })
 
@@ -487,7 +493,7 @@ $(document).on('turbolinks:load', function() {
       function submitProcessingEvent() {
         // only needs to save PE edit form. Note that for cases like raw media,
         // which has no PE, the page will have a new PE form, which does not need
-        // to be submitted when saving the Media 
+        // to be submitted when saving the Media
         if (HasEditProcessingEventForm) {
           var isProcessingActivityValid = buildProcessingActivity(); // populate the PA field before saving PE
           if (isProcessingActivityValid) {
@@ -523,10 +529,9 @@ $(document).on('turbolinks:load', function() {
       prepareFieldsBeforeSubmit();
 
       //console.log('about to add media work...');
-      
+
     }); // /on submit
 
   } // end if new media form page
 
 })
-

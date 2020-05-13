@@ -1,0 +1,34 @@
+<% if has_alternative_views? -%>
+<div class="view-type pull-right">
+  <span class="sr-only"><%= t('blacklight.search.view_title') %></span>
+  <div class="view-type-group btn-group">
+    <% 
+    collection_type = collection_type_from_path 
+  	document_index_views.each do |view, config| 
+	  	link = collection_path(params[:id], view: view)
+	  	link["collections"] = collection_type # replace "collection' with "teams" or "projects" in links
+	  	%>
+      <%= link_to link, title: t("blacklight.search.view_title.#{view}", default: t("blacklight.search.view.#{view}", default: blacklight_config.view[view].title)), class: "btn btn-default view-type-#{view.to_s.parameterize } #{"active" if document_index_view_type == view}" do %>
+        <%= render_view_type_group_icon view %>
+        <span class="caption"><%= t("blacklight.search.view.#{view}") %></span>
+      <% end %>
+    <% end %>
+
+    <% if document_index_view_type == :list %>
+			<div class="btn-group choose-columns-bso">
+			  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			    <i class="fa fa-columns"></i> <span class="caret"></span>
+			  </button>
+			  <ul class="dropdown-menu">
+			    <li><input type="checkbox" class="toggle-vis" data-column="2" checked="checked" /> Identifier</li>
+			    <li><input type="checkbox" class="toggle-vis" data-column="3" checked="checked" /> Taxonomy</li>
+			    <li><input type="checkbox" class="toggle-vis" data-column="4" checked="checked" /> Total Media</li>
+			    <li><input type="checkbox" class="toggle-vis" data-column="5" checked="checked" /> Date Added</li>
+			    <li><input type="checkbox" class="toggle-vis" data-column="6" checked="checked" /> Source</li>
+			  </ul>
+			</div>
+		<% end %>
+
+  </div>
+</div>
+<% end -%>

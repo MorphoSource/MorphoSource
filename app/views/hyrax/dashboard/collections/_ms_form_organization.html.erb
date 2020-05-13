@@ -1,0 +1,19 @@
+<% org_form = Hyrax::OrganizationForm.new(@collection.organization, @current_ability, controller) %>
+<%= simple_form_for org_form, :url => main_app.update_default_permissions_path(@collection), html: { class: 'editor' } do |f| %>
+  <div id="organization-permissions">
+    <%= f.input :download_permission, as: :select, multiple: true, collection: Morphosource::PermissionsHelper::PUBLICATION_OPTIONS, class: 'form-control' %>
+    <%= f.input :download_reviewer, as: :select, collection: @collection.group_members, value_method: :user_key, multiple: true, class: 'form-control' %>
+    <%= render_edit_field_partial('license', f: f) %>
+    <%= render_edit_field_partial('rights_statement', f: f) %>
+    <%= f.input :terms_of_use, as: :text, input_html: { rows: '4' }, class: 'form-control' %>
+    <%= render_edit_field_partial('agreement_uri', f: f) %>
+    <%= f.input :permits_commercial_use, as: :select, class: 'form-control' %>
+    <%= f.input :permits_3d_use, as: :select, class: 'form-control' %>
+    <%= render_edit_field_partial('rights_holder', f: f) %>
+    <%= render 'records/edit_fields/rights_holder_organization', f: f %>
+    <%= render_edit_field_partial('funding', f: f) %>
+    <%= render_edit_field_partial('publisher', f: f) %>
+    <%= render_edit_field_partial('cite_as', f: f) %>
+    <%= f.submit 'Save Default Permissions' %>
+  </div>
+<% end %>

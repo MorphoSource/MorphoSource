@@ -58,7 +58,8 @@ function select_visibility(visibility) {
 }
 
 $(document).on('turbolinks:load', function() {
-  if ($('form[id*="media"]').length) {
+  if ( $('form[id*="edit_media"]').length || 
+       $('form[id*="new_media"]').length ) { // if media form page (add/edit)
     set_initial_value();
 
 

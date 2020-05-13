@@ -7,15 +7,6 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
 
   include_context 'cart items'
 
-  before do
-    restricted_items = [cartItem1,cartItem3,cartItem5,cartItem7]
-    
-    restricted_items.each do |item|
-      item.approver_id = current_user.ms_id
-      item.save
-    end
-  end
-
   describe "GET #index" do
 
     let(:user1) { User.create(email: "user1@test.com", password: "password")}
@@ -29,6 +20,10 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
       cartItem5.user_id = user3.ms_id
       cartItem7.user_id = user4.ms_id
       [cartItem1,cartItem3,cartItem5,cartItem7].each(&:save)
+      [work1,work3,work5,work7].each do |work|
+        work.download_reviewer = [current_user.ms_id]
+        work.save
+      end
     end
 
     context 'normal index stuff' do

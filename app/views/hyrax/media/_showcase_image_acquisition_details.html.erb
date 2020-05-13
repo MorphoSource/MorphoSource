@@ -79,75 +79,17 @@
 			</div><!-- /row -->
 
 			<% if @presenter.raw_or_derived == "Derived" %>
-				<div class="row">
+				
+				<% @presenter.processing_events_data.map do |pe| %>
+					<%= render @presenter.showcase_image_acquisition_details_processing_partial, 
+						presenter: @presenter,
+						processing_activity_items: pe[:processing_activity_items],
+						processing_member: pe[:child_members].first,
+						parent_member: pe[:parent_members].first,
+						upstream: !pe[:child_ids].include?(presenter.this_media_member.id)
+					%>
+				<% end %>
 
-					<div class="indicators table-cell">
-						<span class="glyphicon glyphicon-flash"></span>
-					</div>
-
-					<div class="content-block-lg row table-cell">
-
-						<h3>Image Processing</h3>
-
-						<div class="col-sm-6">
-							<div class="content-block-intro">
-								<%
-								this_media_member =  presenter.this_media_member
-								%>
-								<%= presenter.raw_or_derived %> media 
-						    <%= link_to(this_media_member.link_name, contextual_path(this_media_member, @presenter)) %> 
-							 	(this media) was created by processing raw media 
-								<% if @presenter.is_absentee_parent == true %>
-								 	(unavailable)
-								<% else %>
-								 	<%= link_to(parent_member.link_name, contextual_path(parent_member, @presenter)) %>
-							 	<% end %>
-								<% if presenter.processing_activity_items.present?  %>
-									in <%= pluralize(presenter.processing_activity_count, 'step') %>
-							 	<% end %>
-							</div>
-							<div class="content-block">
-								<% if presenter.processing_activity_items.present? %>
-									<!--div id="collapse-block-image-acquisition-processing-activities" class="panel-collapse collapse collapse-block" -->		
-									<% presenter.processing_activity_items.map do |item| %>
-										<h4>Step <%= item["Step"] %>: </b><%= item["Type"] %> </h4>
-										<div class="row indent">
-											<div class="col-xs-6 showcase-label">Software</div>
-											<div class="col-xs-6 showcase-value"><%= item["Software"] %></div>
-										</div>
-										<div class="row indent">
-											<div class="col-xs-6 showcase-label">Description</div>
-											<div class="col-xs-6 showcase-value"><%= item["Description"] %></div>
-										</div>
-									<% end %>
-									<!--/div -->
-									<%#= collapse_expand_panel("collapse-block-image-acquisition-processing-activities") %>
-								<% end %>
-							</div>
-						</div>
-
-						<div class="col-sm-6">
-							<div class="content-block-intro media">
-								Media produced by this event on MorphoSource
-							</div>
-							<div class="content-block">
-								<% if this_media_member.present? %>
-									<div class="row media-block">
-
-										 	<div class="thumbnail col-xs-4">
-										    <%= render_thumbnail_tag this_media_member %><br>
-										    <%= link_to(this_media_member.link_name, contextual_path(this_media_member, @presenter)) %><br>
-										    <%= this_media_member.file_format %><br>
-										  </div>
-
-									</div>							
-								<% end %>
-							</div>
-						</div>
-
-					</div><!-- /content-block-lg -->
-
-				</div><!-- /row -->
 			<% end %>
 		
 		</div><!-- /collapse-block-image-acquisition-in-detail -->

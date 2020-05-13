@@ -16,7 +16,7 @@ en:
         # X-ray CT metadata
         exposure_time: Exposure time of a volume shall be the time of the X-Ray radiation in position with this volume. It depends on the travel speed and the total collimation width.
         flux_normalization: Flux Normalization Calibration
-        geometric_calibration:
+        pixel_spacing_calibration:
         shading_correction: Shading Correction Calibration
         filter: Filter (material that xrays must pass through before encounter object and detector and its thickness in millimeters)
         frame_averaging: Frame Averaging. The number of images acquired at each projection angle and their average.

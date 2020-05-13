@@ -11,7 +11,7 @@ module Hydra::Works
     end
 
     attr_accessor :object, :source, :mapping, :parser_class, :tools
-    attr_accessor :sub_object, :content, :file_name
+    attr_accessor :sub_object, :content, :file_name, :accepted_file_count
 
     def initialize(object, source, options)
       @object       = object
@@ -23,7 +23,7 @@ module Hydra::Works
     end
 
     def characterize
-      @content, @file_name = source_to_content
+      @content, @file_name, @accepted_file_count = source_to_content
       raise "Error characterizing #{source}: no representative file found" if file_name == nil
       @parser_class, @tools = blender_options if mesh_file_types.include? File.extname(file_name).downcase
       extracted_md = extract_metadata(content)
@@ -37,24 +37,27 @@ module Hydra::Works
     # Unlike Morphosource::Works::CharacterizationService, expects source to be a string.
     def source_to_content
       rep_f = nil
+      accepted_file_count = 0
       Zip::File.open(source) do |zip_file|
         zip_file.each do |f|
           next if File.basename(f.name).start_with?('.')
+          accepted_file_count = accepted_file_count + 1 if f_priority(f)
           if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
             rep_f = f
           end
         end
         rep_f = zip_file.first if !rep_f.presence
-        return rep_f.get_input_stream, rep_f.name if rep_f
+        return rep_f.get_input_stream, rep_f.name, accepted_file_count if rep_f
       end
     end
 
     def f_priority(f)
+      return nil if file_is_hidden?(f)
       file_type_priorities.find_index(File.extname(f.name).downcase)
     end
 
     def file_type_priorities
-      ['.dcm', '.dicom', '.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d', '.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg']
+      ['.dcm', '.dicom', '.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d', '.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg', '.dng', '.nef', '.crw', '.cr2', '.cr3', '.iiq', '.arw', '.raw', '.rw2']
     end
 
     def mesh_file_types
@@ -67,6 +70,10 @@ module Hydra::Works
 
     def file_name
       @file_name
+    end
+
+    def accepted_file_count
+      @accepted_file_count
     end
 
     def transfer_metadata_to_object
@@ -96,6 +103,7 @@ module Hydra::Works
 
     def transfer_special_fields_to_object
       object.send('contents_file_name=', file_name)
+      object.send('contents_accepted_file_count=', accepted_file_count)
       special_fields.each { |sf| object.send("contents_#{sf.to_s}=", sub_object.send(sf)) }
     end
 

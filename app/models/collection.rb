@@ -12,11 +12,12 @@ class Collection < ActiveFedora::Base
   after_destroy :destroy_default_groups, if: :type_assigns_groups?
 
   # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
-  DEFAULT_GROUP_ROLES = %w[managers editors depositors viewers].freeze
+  DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
 
-  # override Hyrax::CollectionBehavior to add editors to read_groups
+  # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
   def permission_template_read_groups
     (permission_template.agent_ids_for(access: 'view', agent_type: 'group') + permission_template.agent_ids_for(access: 'edit_works', agent_type: 'group') +
+    permission_template.agent_ids_for(access: 'download', agent_type: 'group') +
     permission_template.agent_ids_for(access: 'deposit', agent_type: 'group')).uniq -
     [::Ability.registered_group_name, ::Ability.public_group_name]
   end
@@ -25,14 +26,14 @@ class Collection < ActiveFedora::Base
     team? || project?
   end
 
-  # managers_group, depositors_group, editors_group, and viewers_group methods
+  # managers_group, depositors_group, editors_group, downloaders_group, and viewers_group methods
   DEFAULT_GROUP_ROLES.each do |role|
     define_method("#{role}_group") do
       Role.find_by(name: id.concat("_#{role}"))
     end
   end
 
-  # managers, depositors, editors, viewers methods
+  # managers, depositors, editors, downloaders, and viewers methods
   DEFAULT_GROUP_ROLES.each do |role|
     define_method(role) do
       Role.find_by(name: id.concat("_#{role}")).users
@@ -48,7 +49,7 @@ class Collection < ActiveFedora::Base
   end
 
   def user_groups
-    [managers_group, editors_group, depositors_group, viewers_group]
+    [managers_group, editors_group, depositors_group, downloaders_group, viewers_group]
   end
 
   def user_groups_names
@@ -56,7 +57,7 @@ class Collection < ActiveFedora::Base
   end
 
   def group_members
-    managers + editors + depositors + viewers
+    managers + editors + depositors + downloaders + viewers
   end
 
   def first_parent

@@ -3,6 +3,8 @@
 module Morphosource
   module Works
     class Base < ActiveFedora::Base
+      include Morphosource::AccessControls::Permissions
+      
       class_attribute :work_parents_attributes
       class_attribute :work_requires_files
       class_attribute :valid_parent_concerns
@@ -42,6 +44,11 @@ module Morphosource
         self.class == Media
       end
 
+      def user_with_ownership
+        o = User.find_by(ms_id: owner)
+        o ? owner : depositor
+      end
+
       private
 
       def get_all_children(objects)
@@ -57,7 +64,7 @@ module Morphosource
       def get_all_parents(objects)
         objects.flatten.each do |object|
           next if object.member_of.blank?
-          
+
           parents = object.member_of
           @ancestors << parents
           get_all_parents(parents)

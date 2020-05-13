@@ -1,13 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe Hyrax::PermissionTemplateApplicator do
-  subject(:applicator) { described_class.new(template: template) }
-  let(:manage_groups)  { ['managers_group'] }
-  let(:manage_users)   { ['manage_user'] }
-  let(:work_editor_groups)  { ['editors_group'] }
-  let(:view_groups)    { ['viewers_group'] }
-  let(:view_users)     { ['view_user'] }
-  let(:work)           { Media.create(title: ['media']) }
+  subject(:applicator)          { described_class.new(template: template) }
+  let(:manage_groups)           { ['managers_group'] }
+  let(:manage_users)            { ['manage_user'] }
+  let(:work_editor_groups)      { ['editors_group'] }
+  let(:work_downloader_groups)  { ['downloaders_group'] }
+  let(:view_groups)             { ['viewers_group'] }
+  let(:view_users)              { ['view_user'] }
+  let(:work)                    { Media.create(title: ['media']) }
 
   describe '.apply' do
     let(:template)       { :not_a_template }
@@ -25,6 +26,7 @@ RSpec.describe Hyrax::PermissionTemplateApplicator do
       # groups
       Hyrax::PermissionTemplateAccess.create(permission_template: template, agent_type: 'group', agent_id: 'managers_group', access: Hyrax::PermissionTemplateAccess::MANAGE)
       Hyrax::PermissionTemplateAccess.create(permission_template: template, agent_type: 'group', agent_id: 'editors_group', access: Hyrax::PermissionTemplateAccess::EDIT_WORKS)
+      Hyrax::PermissionTemplateAccess.create(permission_template: template, agent_type: 'group', agent_id: 'downloaders_group', access: Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS)
       Hyrax::PermissionTemplateAccess.create(permission_template: template, agent_type: 'group', agent_id: 'viewers_group', access: Hyrax::PermissionTemplateAccess::VIEW)
 
       # users
@@ -48,6 +50,14 @@ RSpec.describe Hyrax::PermissionTemplateApplicator do
       expect { applicator.apply_to(model: work) }
         .to change { work.edit_users }
         .to contain_exactly(*edit_after_application)
+    end
+
+    it 'applies download groups' do
+      download_after_application = work_downloader_groups
+
+      expect { applicator.apply_to(model: work) }
+       .to change { work.download_groups }
+       .to contain_exactly(*download_after_application)
     end
 
     it 'applies read groups' do

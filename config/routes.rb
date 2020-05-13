@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
   # Physical Object show case pages
+  # todo: clean up and rewrite the rules 
   scope module: :hyrax do
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
@@ -24,6 +25,18 @@ Rails.application.routes.draw do
     get 'concern/media/show/:id', to: 'media#show'
     get 'concern/biological_specimens/show/:id', to: 'biological_specimens#show'
     get 'concern/cultural_heritage_objects/show/:id', to: 'cultural_heritage_objects#show'
+  end
+
+  scope module: :hyrax do
+    resources :teams, only: [:show] do # public landing team/project show page
+      member do
+        get 'page/:page', action: :index
+        get 'facet/:id', action: :facet, as: :dashboard_facet
+        get :files
+      end
+    end
+    get 'projects/:id', to: 'teams#show'
+    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
   end
 
   # override ProfilesController
@@ -150,6 +163,7 @@ Rails.application.routes.draw do
 
       # cart items
       post 'add_to_cart', action: :create, controller: :cart_items
+      post 'batch_add_to_cart', action: :batch_create, controller: :cart_items
       get 'download_work', action: :download, controller: :cart_items
 
       # media cart
@@ -186,6 +200,9 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'
+
+      patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
     end
   end
+
 end

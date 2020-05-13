@@ -3,14 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Collection, type: :model do
-  let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
-  let(:user) { User.create(email: 'email@email.com', password: 'password', ms_id: 'abc123') }
-
-  let(:team) { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-
-  let(:project) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
+  let(:user)                    { User.create(email: 'email@email.com', password: 'password', ms_id: 'abc123') }
+  let(:team)                    { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+  let(:project)                 { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
 
   describe '#organization' do
     let!(:org1)  { Organization.create(title: ['title'], team_id: [team.id]) }
@@ -22,23 +20,22 @@ RSpec.describe Collection, type: :model do
     end
   end
 
-  # override Hyrax::CollectionBehavior to add editors to read_groups
+  # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
   describe '#permission_template_read_groups' do
     before do
       team.create_collection_groups
-      Hyrax::Collections::PermissionsCreateService.create_ms_template(collection: team)
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
     end
 
-    it 'returns collection editors, depositors, and viewers' do
-      expect(team.permission_template_read_groups).to match_array([team.editors_group, team.depositors_group, team.viewers_group].map(&:name))
+    it 'returns collection editors, depositors, downloaders, and viewers' do
+      expect(team.permission_template_read_groups).to match_array([team.editors_group, team.depositors_group, team.downloaders_group, team.viewers_group].map(&:name))
     end
-
   end
 
   describe '#create_collection_groups' do
 
-    it 'creates manager, depositor, editor, and viewer groups' do
-      expect { team.create_collection_groups }.to change { Role.count }.by(4)
+    it 'creates manager, depositor, editor, downloader, and viewer groups' do
+      expect { team.create_collection_groups }.to change { Role.count }.by(5)
     end
 
     it 'assigns them names with the collection id' do
@@ -56,11 +53,12 @@ RSpec.describe Collection, type: :model do
   end
 
   describe '#copy_parent_membership' do
-    let(:parent) { Collection.create(title: ['Parent'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-    let(:parent_manager) { User.create(email: 'manager@email.com', password: 'password') }
-    let(:parent_editor) { User.create(email: 'editor@email.com', password: 'password') }
-    let(:parent_depositor) { User.create(email: 'depositor@email.com', password: 'password') }
-    let(:parent_viewer) { User.create(email: 'viewer@email.com', password: 'password') }
+    let(:parent)            { Collection.create(title: ['Parent'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:parent_manager)    { User.create(email: 'manager@email.com', password: 'password') }
+    let(:parent_editor)     { User.create(email: 'editor@email.com', password: 'password') }
+    let(:parent_depositor)  { User.create(email: 'depositor@email.com', password: 'password') }
+    let(:parent_downloader) { User.create(email: 'downloader@email.com', password: 'password') }
+    let(:parent_viewer)     { User.create(email: 'viewer@email.com', password: 'password') }
 
     before do
       allow(Collection).to receive(:find).with(parent.id).and_return(parent)
@@ -77,9 +75,9 @@ RSpec.describe Collection, type: :model do
       parent.managers << parent_manager
       parent.editors << parent_editor
       parent.depositors << parent_depositor
+      parent.downloaders << parent_downloader
       parent.viewers << parent_viewer
       parent.user_groups.each(&:save)
-
       project.copy_parent_membership(parent.id)
     end
 
@@ -87,34 +85,38 @@ RSpec.describe Collection, type: :model do
       expect(project.managers).to include(parent_manager)
       expect(project.editors).to include(parent_editor)
       expect(project.depositors).to include(parent_depositor)
+      expect(project.downloaders).to include(parent_downloader)
       expect(project.viewers).to include(parent_viewer)
     end
   end
 
   describe 'user groups' do
-    let(:collection) { Collection.create(title: ['collection title'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-    let(:user1) { User.new(email: 'email1@email.com', password: 'password') }
-    let(:user2) { User.new(email: 'email2@email.com', password: 'password') }
-    let(:user3) { User.new(email: 'email3@email.com', password: 'password') }
-    let(:user4) { User.new(email: 'email4@email.com', password: 'password') }
-    let(:user5) { User.new(email: 'email5@email.com', password: 'password') }
-    let(:user6) { User.new(email: 'email6@email.com', password: 'password') }
-    let(:all_users) { [user, user1, user2, user3, user4, user5, user6] }
+    let(:collection)  { Collection.create(title: ['collection title'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:user1)       { User.new(email: 'email1@email.com', password: 'password') }
+    let(:user2)       { User.new(email: 'email2@email.com', password: 'password') }
+    let(:user3)       { User.new(email: 'email3@email.com', password: 'password') }
+    let(:user4)       { User.new(email: 'email4@email.com', password: 'password') }
+    let(:user5)       { User.new(email: 'email5@email.com', password: 'password') }
+    let(:user6)       { User.new(email: 'email6@email.com', password: 'password') }
+    let(:user7)       { User.new(email: 'email7@email.com', password: 'password') }
+    let(:all_users)   { [user, user1, user2, user3, user4, user5, user6, user7] }
 
     before do
       collection.create_collection_groups
       collection.managers_group.users << user1 << user2
       collection.editors_group.users << user3
       collection.depositors_group.users << user4
+      collection.downloaders_group.users << user7
       collection.viewers_group.users << user5 << user6
       collection.user_groups.each(&:save)
     end
 
-    describe '#managers, #editors, #depositors, #viewers' do
+    describe '#managers, #editors, #depositors, #downloaders, #viewers' do
       it 'returns users for each of the different roles' do
         expect(collection.managers).to match_array([user, user1, user2])
         expect(collection.editors).to match_array([user3])
         expect(collection.depositors).to match_array([user4])
+        expect(collection.downloaders).to match_array([user7])
         expect(collection.viewers).to match_array([user5, user6])
       end
     end
@@ -146,7 +148,7 @@ RSpec.describe Collection, type: :model do
 
       it 'destroys all of the default user groups when a team or project is destroyed' do
         team.create_collection_groups
-        expect { team.destroy }.to change { Role.count }.by(-4)
+        expect { team.destroy }.to change { Role.count }.by(-5)
       end
     end
   end

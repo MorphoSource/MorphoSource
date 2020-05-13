@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Hyrax::Collections::PermissionsCreateService do
+RSpec.describe Morphosource::Collections::PermissionsCreateService do
   let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
@@ -35,18 +35,19 @@ RSpec.describe Hyrax::Collections::PermissionsCreateService do
       end
       allow_any_instance_of(Collection).to receive(:add_depositor_to_managers).and_return(true)
 
-      described_class.create_ms_template(collection: collection)
+      described_class.create_default(collection: collection)
     end
 
     context 'user creates a new team' do
       let(:collection) { team_a }
 
       it 'assigns admins and collection groups to appropriate access levels' do
-        expect(access_grants.count).to be(5)
+        expect(access_grants.count).to be(6)
         expect(admin[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
         expect(managers[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
         expect(editors[:access]).to eq(Hyrax::PermissionTemplateAccess::EDIT_WORKS)
         expect(depositors[:access]).to eq(Hyrax::PermissionTemplateAccess::DEPOSIT)
+        expect(downloaders[:access]).to eq(Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS)
         expect(viewers[:access]).to eq(Hyrax::PermissionTemplateAccess::VIEW)
       end
     end
@@ -54,11 +55,12 @@ RSpec.describe Hyrax::Collections::PermissionsCreateService do
       let(:collection) { project_a }
 
       it 'assigns admins and collection groups to appropriate access levels' do
-        expect(access_grants.count).to be(5)
+        expect(access_grants.count).to be(6)
         expect(admin[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
         expect(managers[:access]).to eq(Hyrax::PermissionTemplateAccess::MANAGE)
         expect(editors[:access]).to eq(Hyrax::PermissionTemplateAccess::EDIT_WORKS)
         expect(depositors[:access]).to eq(Hyrax::PermissionTemplateAccess::DEPOSIT)
+        expect(downloaders[:access]).to eq(Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS)
         expect(viewers[:access]).to eq(Hyrax::PermissionTemplateAccess::VIEW)
       end
     end

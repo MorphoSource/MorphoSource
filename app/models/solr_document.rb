@@ -330,6 +330,10 @@ class SolrDocument
     self[Solrizer.solr_name('slice_thickness', :stored_searchable)]
   end
 
+  def number_of_images_in_set
+    self[Solrizer.solr_name('number_of_images_in_set', :stored_searchable)]
+  end
+
   def bits_allocated
     self[Solrizer.solr_name('bits_allocated', :stored_searchable)]
   end
@@ -364,6 +368,71 @@ class SolrDocument
 
   def window_center_and_width_explanation
     self[Solrizer.solr_name('window_center_and_width_explanation', :stored_searchable)]
+  end
+
+
+  def exposure_time
+    self[Solrizer.solr_name('exposure_time', :stored_searchable)]
+  end
+
+  def pixel_spacing_calibration_description
+    self[Solrizer.solr_name('pixel_spacing_calibration_description', :stored_searchable)]
+  end
+
+  def pixel_spacing_calibration_type
+    self[Solrizer.solr_name('pixel_spacing_calibration_type', :stored_searchable)]
+  end
+
+  def contrast_frame_averaging
+    self[Solrizer.solr_name('contrast_frame_averaging', :stored_searchable)]
+  end
+
+  def images_in_acquisition
+    self[Solrizer.solr_name('images_in_acquisition', :stored_searchable)]
+  end
+
+  def KVP
+    self[Solrizer.solr_name('KVP', :stored_searchable)]
+  end
+
+  def generator_power
+    self[Solrizer.solr_name('generator_power', :stored_searchable)]
+  end
+
+  def x_ray_tube_current
+    self[Solrizer.solr_name('x_ray_tube_current', :stored_searchable)]
+  end
+
+  def container_description
+    self[Solrizer.solr_name('container_description', :stored_searchable)]
+  end
+
+  def generator_id
+    self[Solrizer.solr_name('generator_id', :stored_searchable)]
+  end
+
+  def detector_description
+    self[Solrizer.solr_name('detector_description', :stored_searchable)]
+  end
+
+  def distance_source_to_patient
+    self[Solrizer.solr_name('distance_source_to_patient', :stored_searchable)]
+  end
+
+  def distance_source_to_detector
+    self[Solrizer.solr_name('distance_source_to_detector', :stored_searchable)]
+  end
+
+  def anode_target_material
+    self[Solrizer.solr_name('anode_target_material', :stored_searchable)]
+  end
+
+  def spiral_pitch_factor
+    self[Solrizer.solr_name('spiral_pitch_factor', :stored_searchable)]
+  end
+
+  def number_of_series_related_instances
+    self[Solrizer.solr_name('number_of_series_related_instances', :stored_searchable)]
   end
 
 
@@ -414,8 +483,8 @@ class SolrDocument
       self[Solrizer.solr_name('flux_normalization', :stored_searchable)]
   end
 
-  def geometric_calibration
-      self[Solrizer.solr_name('geometric_calibration', :stored_searchable)]
+  def pixel_spacing_calibration
+      self[Solrizer.solr_name('pixel_spacing_calibration', :stored_searchable)]
   end
 
   def shading_correction
@@ -473,7 +542,7 @@ class SolrDocument
   def detector_pixels_y
     self[Solrizer.solr_name('detector_pixels_y', :stored_searchable)]
   end
-  
+
   def detector_pixel_size_y
     self[Solrizer.solr_name('detector_pixel_size_y', :stored_searchable)]
   end
@@ -524,6 +593,22 @@ class SolrDocument
 
   def light_source
       self[Solrizer.solr_name('light_source', :stored_searchable)]
+  end
+
+  def focal_length
+      self[Solrizer.solr_name('focal_length', :stored_searchable)]
+  end
+
+  def aperture_value
+      self[Solrizer.solr_name('aperture_value', :stored_searchable)]
+  end
+
+  def iso_speed_ratings
+      self[Solrizer.solr_name('iso_speed_ratings', :stored_searchable)]
+  end
+
+  def shutter_speed
+      self[Solrizer.solr_name('shutter_speed', :stored_searchable)]
   end
 
   # mesh
@@ -591,6 +676,10 @@ class SolrDocument
 
   def contents_file_size
     self[Solrizer.solr_name('contents_file_size', :stored_searchable)]
+  end
+
+  def contents_accepted_file_count
+    self[Solrizer.solr_name('contents_accepted_file_count', :stored_searchable)]
   end
 
   # Taxonomy fields
@@ -665,6 +754,15 @@ class SolrDocument
 
   def trusted
     self[Solrizer.solr_name('trusted', :stored_searchable)]
+  end
+
+  # Download fields
+  def download_groups
+    self["download_access_group_ssim"]
+  end
+
+  def download_people
+    self["download_access_person_ssim"]
   end
 
 end

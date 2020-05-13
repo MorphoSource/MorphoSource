@@ -3,22 +3,20 @@ require 'rails_helper'
 RSpec.describe CartItem, type: :model do
 
   let(:current_user)  { User.create(email: "example@email.com", password: "password") }
+  let(:reviewer)      { User.create(email: 'reviewer@email.com', password: 'password') }
+  let(:depositor)     { User.create(email: 'depositor@email.com', password: 'password') }
 
-  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: "abc123", fileset_accessibility: ['restricted_download'])}
+  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, download_reviewer: [reviewer.ms_id], fileset_accessibility: ['restricted_download'])}
 
-  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: "abc123", fileset_accessibility: [''])}
+  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: "abc123", download_reviewer: [], fileset_accessibility: [''])}
 
   let(:cartItem1)     { CartItem.create( user: current_user, work_id: work1.id, restricted: true) }
   let(:cartItem2)     { CartItem.create( user: current_user, work_id: work2.id, restricted: false) }
 
-  before do
-    allow(Media).to receive(:find).with(work1.id).and_return(work1)
-    allow(Media).to receive(:find).with(work2.id).and_return(work2)
-  end
-
   describe '#set_approver' do
-     it 'assigns the work depositor as approver' do
-       expect(cartItem1.approver_id).to eq(work1.depositor)
+     it 'assigns the work reviewer as the approver' do
+       expect(cartItem1.approver_id).to eq(work1.reviewer)
+       expect(cartItem2.approver_id).to eq(work2.reviewer)
      end
   end
 

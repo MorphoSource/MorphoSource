@@ -423,5 +423,21 @@ input.disabled {
       }
     }
   }
+
+  .form-add-organization-wrapper {
+    > div {
+      text-align: center;
+      @media (min-width: $desktop-min) {
+        text-align: right;
+      }
+    }
+
+    select {
+      height: 30px;
+      margin-right:8px;
+    }
+  }
+
+
 }
 /* /styles for dashboard collection edit page */

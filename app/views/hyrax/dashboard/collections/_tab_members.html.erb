@@ -1,3 +1,4 @@
+<%# taken from form_share.html.erb %>
 <div class="row">
   <div class="col-sm-12">
     <div class="content-block">
@@ -59,10 +60,10 @@
           </section>
 
           <section class="section-collection-sharing">
-            <%= render 'form_members_table', access: 'managers', filter: :manage? %>
-            <%= render 'form_members_table', access: 'editors', filter: :edit_works? %>
-            <%= render 'form_members_table', access: 'depositors', filter: :deposit? %>
-            <%= render 'form_members_table', access: 'viewers', filter: :view? %>
+            <%= render 'tab_members_table', access: 'managers', filter: :manage? %>
+            <%= render 'tab_members_table', access: 'editors', filter: :edit_works? %>
+            <%= render 'tab_members_table', access: 'depositors', filter: :deposit? %>
+            <%= render 'tab_members_table', access: 'viewers', filter: :view? %>
           </section>
         </div>
       </div>

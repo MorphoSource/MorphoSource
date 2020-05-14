@@ -49,20 +49,22 @@
         </li>
         <% end %>
 
+        <% if @collection.team? && @collection.organization && @current_user.can?(:edit, @collection) %>
+          <li role="presentation">
+            <a href="#organization" role="tab" data-toggle="tab">
+            <i class="fas fa-university" aria-hidden="true"></i> ORGANIZATION              
+            </a>
+          </li>
+        <% end %>
 
         <% if @collection.sharable? %>
         <li role="presentation">
           <a href="#members" aria-controls="members" role="tab" data-toggle="tab" aria-expanded="true">
-            <i class="fas fa-newspaper" aria-hidden="true"></i> MEMBERS        
+            <i class="fas fa-users-cog" aria-hidden="true"></i> MEMBERS        
           </a>
         </li>
         <% end %>
 
-        <% if @collection.team? && @collection.organization && @current_user.can?(:edit, @collection) %>
-          <li role="presentation">
-            <a href="#organization" role="tab" data-toggle="tab"><%= 'Organization' %></a>
-          </li>
-        <% end %>
       <% end %>
     </ul>
 
@@ -73,34 +75,38 @@
       <div id="details" class="tab-pane">
         <div class="panel panel-default labels">
           <div class="panel-body">
-              <%= render 'details', f: f %>
+              <%= render 'tab_details', f: f %>
           </div>
         </div>
       </div> <!-- end description -->
 
       <% if @form.persisted? %>
 
-        <div id="members" class="tab-pane">
+        <div id="organization" class="tab-pane">
           <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
             <div class="panel-body">
-              <%= render 'form_members', f: f %>
+              <% if @collection.team? && @collection.organization %>
+                <%= render 'tab_linked_organization', f: f %>
+              <% end %>
             </div>
           </div>
         </div>
+
+        <div id="members" class="tab-pane">
+          <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
+            <div class="panel-body">
+              <%= render 'tab_members', f: f %>
+            </div>
+          </div>
+        </div>
+
+
+        
 
         <div id="discovery" class="tab-pane">
           <div class="panel panel-default labels">
             <div class="panel-body">
               <%= render 'form_discovery', f: f %>
-            </div>
-          </div>
-        </div>
-        <div id="organization" class="tab-pane">
-          <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
-            <div class="panel-body">
-              <% if @collection.team? && @collection.organization %>
-                <%= render 'ms_form_organization', f: f %>
-              <% end %>
             </div>
           </div>
         </div>

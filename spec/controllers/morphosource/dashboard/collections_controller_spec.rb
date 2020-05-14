@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 require 'rails_helper'
+require 'morphosource/dashboard/collections_controller'
 
-RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
-  routes { Hyrax::Engine.routes }
+RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller do
 
   let(:user) { User.create(email: 'email@email.com', password: 'password') }
   let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 'project') }
+  let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another') }
   let(:collection_params) { { collection: { title: ['New Collection'] } } }
 
   before do
@@ -70,6 +71,32 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
       it 'calls #copy_parent_membership' do
         expect(collection).to receive(:create_collection_groups)
         subject.set_morphosource_permissions
+      end
+    end
+  end
+
+  describe '#set_default_permissions' do
+    context 'collection type does not assign groups' do
+      it 'calls #set_default_permissions and does not call #set_morphosource_permissions' do
+        expect(subject).to receive(:set_default_permissions).and_call_original
+        expect(subject).not_to receive(:set_morphosource_permissions)
+        post :create, params: collection_params.merge(collection_type_gid: another_collection_type.gid)
+      end
+    end
+    context 'collection type assigns groups' do
+      context 'collection is a team' do
+        it 'calls #set_default_permissions and #set_morphosource_permissions' do
+          expect(subject).to receive(:set_default_permissions).and_call_original
+          expect(subject).to receive(:set_morphosource_permissions)
+          post :create, params: collection_params.merge(collection_type_gid: team_collection_type.gid)
+        end
+      end
+      context 'collection is a project' do
+        it 'calls #set_default_permissions and #set_morphosource_permissions' do
+          expect(subject).to receive(:set_default_permissions).and_call_original
+          expect(subject).to receive(:set_morphosource_permissions)
+          post :create, params: collection_params.merge(collection_type_gid: project_collection_type.gid)
+        end
       end
     end
   end

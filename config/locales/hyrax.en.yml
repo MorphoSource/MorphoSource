@@ -125,10 +125,12 @@ en:
             title: 'Viewers'
             help: Viewers of this collection can view it even if the visibility permissions of the collection otherwise would not permit them to view it. For collections of type Project, when works are created directly in this collection, the viewers are given read access to the new work.
             empty: No viewers have been added.
-        form_branding:
+        tab_details_branding:
           logo:
+            label: logo
             description: Team logo will be displayed on the team's public page to the left of the team title. For best results, upload a square image (JPG, GIF, or PNG) that is 40x40 pixels. Larger images will be resized to 40x40 pixels. You may specify a URL the logo will direct users to if clicked. You may also provide alternate text to describe the logo for users with visual impairments.
           banner:
+            label: banner
             description: Team banner will be displayed on the team's public page above the team title. For best results, upload an image (JPG, GIF, or PNG) that is 1200 pixels wide and at least 120 pixels tall.
     works:
       form:

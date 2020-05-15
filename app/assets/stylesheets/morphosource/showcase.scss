@@ -318,21 +318,31 @@ html {
     margin-top: 18px;
   }
 
+  #add-selected-to-cart, .add-selected-to-cart {
+    .material-icons {
+      font-size: 9px;
+    }
+  }
+
   .main-content {
     background-color: #fff;
   }
 
   .nav-tabs {
+    li {
+      border-bottom: 3px solid transparent;
+      a, a:hover {
+        border-top: none;      
+      }      
+    }
     li.active {
       border-bottom: 3px solid $line-color;
-
       a, a:hover {
-        border: none;
         margin-right: 0;
+        border-top: none;      
       }
     }
   }
-
 
   .panel-default {border: none;}
   .teams-projects {

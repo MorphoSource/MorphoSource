@@ -356,6 +356,34 @@ input.disabled {
 
 /* styles for dashboard collection edit page */
 .dashboard.showcase-edit {
+  .title {
+    padding-left:0;
+    h1 {
+      font-size: 28px;
+      margin-bottom: 2px;
+    }
+    .fa-edit {
+      font-size: 48px;
+      float: left;
+      margin-right: 8px;
+    }    
+  }
+
+  .show-actions {
+    padding: .5vw 1vw;
+    .btn {
+      margin-bottom: 1px;
+      padding: 5px 10px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .btn:hover {
+      color: $button-hover-font-color;
+      background-color: $button-hover-color;
+      border-color: $button-hover-border-color;
+    }
+  }
+
   .content-block {
     padding-left: 0;
     padding-right: 0;

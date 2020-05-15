@@ -12,7 +12,7 @@
           html: { id: 'add-organization-form' } do |f| %>
         <%= f.select(:organization_id, unlinked_organizations, { prompt: "Select an organization", class: 'form-control'})  %> 
         <%= submit_tag 'Link to organization', class: 'btn btn-sm btn-default' %> 
-        <a class="btn btn-link" href="javascript:void(0)">Clear organization</a>
+        <a class="btn btn-link" href="javascript:void(0)">Remove organization</a>
       <% end %>
     </div>
   </div>

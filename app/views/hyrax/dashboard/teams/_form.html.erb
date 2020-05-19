@@ -29,46 +29,27 @@
             <% if @collection.persisted? %>
               <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
               <%#= link_to t(:'helpers.action.cancel'), hyrax.dashboard_collection_path(@collection), class: 'btn btn-link' %>
-
-              
-
-              <%# The actions button should have the following actions: Save, Add Media To Team, Create New Media In Team, Add Project to Team, Create New Project In Team, Delete %>
-
-
             <% else %>
               <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
               <%#= link_to t(:'helpers.action.cancel'), hyrax.my_collections_path, class: 'btn btn-link' %>
             <% end %>
+            <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
+                        hyrax.my_works_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
+                        class: 'btn btn-primary' %>
+            <%= link_to t('hyrax.dashboard.collections.actions.create_new_media_in_' + @presenter.collection_type_title + '.label'),
+                        '/submissions/new?' + @presenter.collection_type_title.downcase + '=' + @presenter.id,
+                        class: 'btn btn-primary' %>
+
+
+            <%# The actions button should have the following actions: Save, Add Media To Team, Create New Media In Team, Add Project to Team, Create New Project In Team, Delete %>
+
+
           </li>
         </ul>
     <% end %>
   
   </div>  
 
-<h2 class="sr-only"><%= t('hyrax.collection.actions.header') %></h2>
-<div class="text-right">
-  <% if can? :deposit, @presenter.solr_document %>
-    <div>
-      <% if @presenter.create_many_work_types? %>
-        <%= link_to t('hyrax.collection.actions.add_new_work.label'),
-                    '#',
-                    title: t('hyrax.collection.actions.add_new_work.desc'),
-                    data: { behavior: "select-work", target: "#worktypes-to-create", 'create-type' => 'single', add_works_to_collection: @presenter.id },
-                    class: 'btn btn-primary deposit-new-work-through-collection' %>
-      <% else # simple link to the first work type %>
-        <%= link_to t('hyrax.collection.actions.add_new_work.label'),
-                    new_polymorphic_path([main_app, @presenter.first_work_type], add_works_to_collection: @presenter.id),
-                    class: 'btn btn-primary' %>
-      <% end %>
-    </div>
-    <div>
-      <%= link_to t('hyrax.collection.actions.add_existing_works.label'),
-                  hyrax.my_works_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
-                  title: t('hyrax.collection.actions.add_existing_works.desc'),
-                  class: 'btn btn-link side-arrows' %>
-    </div>
-  <% end %>
-</div>
 
   <div class="panel panel-default tabs teams" id="collection-edit-controls">
     <ul class="nav nav-tabs" role="tablist">
@@ -173,6 +154,18 @@
 
       <div id="media" role="tabpanel" class="tab-pane active">
         <div class="form-tab-content">
+
+          <% if can? :deposit, @presenter.solr_document %>
+            <div class="row tab-action-buttons">
+              <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
+                          hyrax.my_works_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
+                          class: 'btn btn-primary' %>
+              <%= link_to t('hyrax.dashboard.collections.actions.create_new_media_in_' + @presenter.collection_type_title + '.label'),
+                          '/submissions/new?' + @presenter.collection_type_title.downcase + '=' + @presenter.id,
+                          class: 'btn btn-primary' %>
+            </div>
+          <% end %>
+
           <%= render 'hyrax/teams/tab_media' %>
         </div>
       </div>
@@ -180,6 +173,16 @@
       <% if @bso_member_count > 0 %>
         <div id="biological_specimens" role="tabpanel" class="tab-pane">
           <div class="form-tab-content">
+
+            <% if can? :deposit, @presenter.solr_document %>
+              <div class="row">
+                <div class="col-sm-6 col-md-5 col-lg-4 col-xl-2 pull-right tab-note">
+                  <i>Media represent objects. To add a new 
+                  object, add media representing that object.</i>
+                </div>
+              </div>
+            <% end %>
+            
             <%= render 'hyrax/teams/tab_bso' %>
           </div>
         </div>
@@ -188,6 +191,16 @@
       <% if @cho_member_count > 0 %>
         <div id="cultural_heritage_objects" role="tabpanel" class="tab-pane">
           <div class="form-tab-content">
+
+            <% if can? :deposit, @presenter.solr_document %>
+              <div class="row">
+                <div class="col-sm-6 col-md-5 col-lg-4 col-xl-2 pull-right tab-note">
+                  <i>Media represent objects. To add a new 
+                  object, add media representing that object.</i>
+                </div>
+              </div>
+            <% end %>
+            
             <%= render 'hyrax/teams/tab_cho' %>
           </div>
         </div>

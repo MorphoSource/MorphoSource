@@ -217,7 +217,7 @@ html {
 
   .view-type-group {
     white-space: nowrap;
-    .btn-primary, .btn-default, .btn-sm, .btn-big {
+    .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big {
       background-color: transparent;
       color: $font-color;
       border-color: transparent;
@@ -329,6 +329,7 @@ html {
   }
 
   .nav-tabs {
+    border-bottom: 1px solid $line-inactive-color;
     li {
       border-bottom: 3px solid transparent;
       a, a:hover {
@@ -358,7 +359,7 @@ html {
     border-radius: 0;
   }
 
-  .btn-primary, .btn-default, .btn-sm, .btn-big {
+  .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big {
     background-color: $button-color;
     color: $button-font-color;
     border-color: $button-border-color;

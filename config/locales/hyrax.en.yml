@@ -103,6 +103,15 @@ en:
           title: Taxonomy
     dashboard:
       collections:
+        actions:
+          add_media_to_Team:
+            label: 'Add media to team'
+          create_new_media_in_Team: 
+            label: 'Create new media in team'
+          add_media_to_Project:
+            label: 'Add media to project'
+          create_new_media_in_Project: 
+            label: 'Create new media in project'
         form_share:
           manager: 'Manager'
           editor: 'Editor'

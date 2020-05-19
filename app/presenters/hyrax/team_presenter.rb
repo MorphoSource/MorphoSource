@@ -1,7 +1,7 @@
 module Hyrax
   class TeamPresenter < CollectionPresenter
 
-    attr_reader :subcollection_count, :search_form_url, :collection, :collection_managers, :specimens,
+    attr_reader :subcollection_count, :search_form_url, :collection, :collection_managers, :collection_type_title, :specimens, 
       :organization,
       :organization_title,
       :organization_institution_name,
@@ -37,6 +37,10 @@ module Hyrax
 
     def collection_type
       @collection_type ||= Hyrax::CollectionType.find_by_gid!(collection_type_gid)
+    end
+
+    def collection_type_title
+      collection_type.title
     end
 
     def organization_object_counts(org)

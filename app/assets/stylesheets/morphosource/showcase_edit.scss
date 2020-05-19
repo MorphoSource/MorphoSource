@@ -170,7 +170,7 @@ input.disabled {
   .media-showcase .show-actions, 
   .show-actions {
     padding: 3.5vw 0;
-    .btn, .btn-save {
+    > .btn {
       @media (max-width: $tablet-max) {
         min-width: 76px;
         margin-right: 8px;
@@ -180,6 +180,11 @@ input.disabled {
         min-width: 100px;
         margin-right: 0;
         margin-bottom: 6px;
+      }
+    }
+    .dropdown-menu {
+      .btn {
+        text-align: left;
       }
     }
   }
@@ -384,6 +389,14 @@ input.disabled {
     }
   }
 
+  .btn-xs {
+    font-size: 9px;
+  }
+
+  .tab-note {
+    font-size: 12px;
+  }
+
   .content-block {
     padding-left: 0;
     padding-right: 0;
@@ -466,6 +479,23 @@ input.disabled {
     }
   }
 
+  .tab-action-buttons {
+    @media (max-width: $tablet-max) {
+      text-align: center;
+      .btn {
+        width:90%;
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
+    }
 
+    @media (min-width: $desktop-min) {
+      text-align: right;
+      .btn {
+        width: auto;
+        margin-bottom: 8px;
+      }
+    }
+  }
 }
 /* /styles for dashboard collection edit page */

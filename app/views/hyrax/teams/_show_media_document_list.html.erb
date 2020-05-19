@@ -16,6 +16,9 @@
     <th>Type</th>
     <th>Date Added</th>
     <th>Access Level</th>
+    <% if current_user and can? :edit, @collection %>
+      <th><!--remove button column--></th>
+    <% end %>
   </tr>
   </thead>
   <tbody>

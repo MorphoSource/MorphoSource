@@ -112,6 +112,10 @@ en:
             label: 'Add media to project'
           create_new_media_in_Project: 
             label: 'Create new media in project'
+          add_project_to_Team:
+            label: 'Add project to team'
+          create_new_project_in_Team: 
+            label: 'Create new project in team'
         form_share:
           manager: 'Manager'
           editor: 'Editor'

@@ -1,5 +1,5 @@
 module MorphosourceHelper
-  
+
   include ActionView::Helpers::UrlHelper
   include MediaFinderHelper
   include Hyrax::Renderers
@@ -21,7 +21,7 @@ module MorphosourceHelper
       "teams"
     elsif current_uri.include?("projects")
       "projects"
-    end      
+    end
   end
 
   def truncate_value(value, length=20)
@@ -62,7 +62,7 @@ module MorphosourceHelper
   def find_works_autocomplete_url(curation_concern, relation)
     valid_concerns = curation_concern.send("valid_#{relation}_concerns").map(&:to_s)
     type_params = valid_concerns.sort.map { |type| "type[]=#{type}" }
-    # add id in the url if missing since id is expected by find_works 
+    # add id in the url if missing since id is expected by find_works
     if type_params.find { |e| /^id=/ =~ e }.nil?
       type_params << "id=NA"
     end
@@ -105,7 +105,7 @@ module MorphosourceHelper
     @child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
     @sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
     total_media_count = 1 + @parent_media_id_list.length +
-                        @child_media_id_list.length + 
+                        @child_media_id_list.length +
                         @sibling_media_id_list.length
 
     # get the top parent
@@ -302,7 +302,7 @@ module MorphosourceHelper
     when 'ScanningElectronMicroscopy'
       'SEM'
     else
-      'Etc' 
+      'Etc'
     end
   end
 
@@ -356,7 +356,7 @@ module MorphosourceHelper
       Date.parse(value).to_formatted_s(:long)
     rescue StandardError => e
       if e.message == 'invalid date'
-        
+
         begin
           # attempt to parse the date
           parsed_date = Date.strptime(value, "%m/%d/%Y")
@@ -366,7 +366,7 @@ module MorphosourceHelper
             value # just return the string as it is
           end
         rescue StandardError => e
-          value # just return the string as it is              
+          value # just return the string as it is
         end
 
       else
@@ -376,6 +376,10 @@ module MorphosourceHelper
       end
     end
 
+  end
+
+  def collection_form_url(form)
+    form.persisted? ? [hyrax, :dashboard, form] : [main_app, form]
   end
 
 end

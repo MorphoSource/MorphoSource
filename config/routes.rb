@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   # Physical Object show case pages
-  # todo: clean up and rewrite the rules 
+  # todo: clean up and rewrite the rules
   scope module: :hyrax do
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
@@ -36,7 +36,7 @@ Rails.application.routes.draw do
       end
     end
     get 'projects/:id', to: 'teams#show'
-    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
+    get 'projects/:id/page/:page(.:format)', to: 'teams#index'
   end
 
   # override ProfilesController
@@ -183,6 +183,13 @@ Rails.application.routes.draw do
       put 'clear_request', action: :clear_request, controller: :request_managers, as: 'clear_request'
       put 'deny_download', action: :deny_download, controller: :request_managers, as: 'deny_download'
       put 'edit_expiration', action: :edit_expiration, controller: :request_managers, as: 'edit_expiration'
+    end
+  end
+
+  # when creating a collection, use the morphosource collections controller
+  scope module: :morphosource do
+    scope module: :dashboard do
+      resources :collections, only: [:create]
     end
   end
 

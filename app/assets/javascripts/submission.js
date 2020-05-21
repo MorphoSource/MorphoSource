@@ -331,6 +331,9 @@ $( document ).on('turbolinks:load', function() {
             self.form.setVisibleView(9); // view 12 Media Processing Event
             self.form.setSidebarViewCheck([2, 3, 4, 5, 6, 7, 8]);
             self.form.setSidebarViewFade(2);
+
+            // Get organization permissions fields if applicable
+            self.form.setDefaultMediaPermissionFields();
           } 
           console.log(data);
         });
@@ -500,6 +503,7 @@ $( document ).on('turbolinks:load', function() {
             }
 
             self.form.setVisibleView(7); // view 7 media device
+            self.form.setDefaultMediaPermissionFields(); // Organization default fields
             console.log(data);
         });
 

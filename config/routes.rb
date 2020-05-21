@@ -116,32 +116,12 @@ Rails.application.routes.draw do
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  resources :submissions, only: [ :new, :create, :search_bso_ajax, :get_organization, :get_device, :get_device_organization, :create2, :test] do
+  resources :submissions, only: [ :new, :create, :search_bso_ajax, :organization_default_media_fields] do
     collection do
-      post 'stage_biological_specimen'
-      post 'stage_biological_specimen_from_idigbio'
-      post 'stage_device'
-      post 'stage_imaging_event'
-      post 'stage_organization'
-      post 'stage_device_organization'
-      post 'stage_media'
-      post 'stage_processing_event'
-      post 'stage_cho'
-      post 'stage_taxonomy'
-      # for new work modal
-      get 'new_organization'
-      post 'new_organization_submit'
-      get 'new_taxonomy'
-      post 'new_taxonomy_submit'
-      post 'new_device_submit'
-      post 'new_processing_event_submit'
       # AJAX methods
       post 'search_po_ajax'
-      get 'get_organization'
-      get 'get_device'
-      get 'get_device_organization'
-      post 'create2'
       post 'save_data'
+      get 'organization_default_media_fields'
     end
   end
 

@@ -6,9 +6,10 @@ class SubmissionsController < ApplicationController
   # Adds Hyrax behaviors to the controller.
   include Hyrax::WorksControllerBehavior
   include MorphosourceHelper
+  include Morphosource::PermissionsHelper
   include Morphosource::LinkedTeams::LinkedTeamsManagement
 
-  load_and_authorize_resource except: [:search_po_ajax, :save_data]
+  load_and_authorize_resource except: [:search_po_ajax, :save_data, :organization_default_media_fields]
 
   before_action :instantiate_work_forms
 
@@ -22,6 +23,7 @@ class SubmissionsController < ApplicationController
     if params[:restart]
       clear_session_submission_settings
     end
+
     session[:submission] ||= {}
     form_data = session[:submission]['form_data'] ||= {}
     work_data = session[:submission]['work_data'] ||= {}
@@ -45,6 +47,33 @@ class SubmissionsController < ApplicationController
     respond_to do |format|
       format.js
     end
+  end
+
+  def organization_default_media_fields
+    organization = find_ancestor_organization
+    if organization.present?
+      status = 'OK'
+      default_fields = default_media_permissions(organization)
+      message = 'Organization default permission settings retrieved'
+      message << ', but no default fields present' if !default_fields.present?
+      organization_alert_message = alert(organization)
+      organization_title = organization.title
+      
+    else
+      status = 'FAIL'
+      message = 'Organization does not exist'
+      default_fields = {}
+      organization_alert_message = ''
+      organization_title = ''
+    end
+    response_object = {
+      status: status,
+      message: message,
+      default_fields: default_fields,
+      organization_alert_message: organization_alert_message,
+      organization_title: organization_title
+    }
+    render :json => response_object
   end
 
   def save_data
@@ -387,20 +416,11 @@ class SubmissionsController < ApplicationController
     )
   end
 
-  def set_up_media_permissions
-    reinstantiate_submission
-    @organization = find_ancestor_organization
-    media = Media.new
-    assign_default_permissions(@organization, media) if @organization
-    @media_form = Hyrax::WorkFormService.build(media, current_ability, self)
-    render_and_save 'media'
-  end
-
   def find_ancestor_organization
-    parent_list = @submission.instance_variable_get(:@parent_media_list)
-    organization_id = @submission.instance_variable_get(:@organization_id)
-    biospec_id = @submission.instance_variable_get(:@biospec_id)
-    cho_id = @submission.instance_variable_get(:@cho_id)
+    parent_list = params[:parent_media_list]
+    organization_id = params[:organization_id]
+    biological_specimen_id = params[:biological_specimen_id]
+    cultural_heritage_object_id = params[:cultural_heritage_object_id]
 
     organization = nil
 
@@ -411,21 +431,21 @@ class SubmissionsController < ApplicationController
       end
     elsif organization_id.present? && organization_id != 'new'
       organization = Organization.find(organization_id)
-    elsif biospec_id.present? && biospec_id != 'new'
-      specimen = BiologicalSpecimen.find(biospec_id)
+    elsif biological_specimen_id.present? && biological_specimen_id != 'new'
+      specimen = BiologicalSpecimen.find(biological_specimen_id)
       if specimen.organizations.present?
         organization = specimen.organizations.first
       end
-    elsif cho_id.present? && cho_id != 'new'
-      cho = CulturalHeritageObject.find(cho_id)
+    elsif cultural_heritage_object_id.present? && cultural_heritage_object_id != 'new'
+      cho = CulturalHeritageObject.find(cultural_heritage_object_id)
       if cho.organizations.present?
         organization = cho.organizations.first
       end
     end
   end
 
-  def assign_default_permissions(organization, media)
-    default_permissions = {
+  def default_media_permissions(organization)
+    fields = {
       download_reviewer: organization.download_reviewer,
       agreement_uri: organization.agreement_uri,
       license: organization.license,
@@ -440,7 +460,7 @@ class SubmissionsController < ApplicationController
       download_permission: organization.download_permission.first
     }
 
-    media.assign_attributes(default_permissions)
+    fields.select {|k, v| v.present? }
   end
-
+  
 end

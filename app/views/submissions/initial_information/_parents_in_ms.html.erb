@@ -8,7 +8,7 @@
     <% if media.present? %>
       <%= simple_form_for @submission, html: { id: :parent_search_form } do |f| %>
         <div class="row">
-          <div class="col-sm-5 col-sm-offset-3 no-padding">
+          <div class="col-xs-10 col-sm-5 col-sm-offset-3 no-padding">
             <%= f.input :parent_media_search,
               placeholder: "Enter parent media title here",
               input_html: {
@@ -16,7 +16,7 @@
               } 
             %>
           </div>
-          <div class="col-sm-1 text-left">
+          <div class="col-xs-2 col-sm-1 text-left">
             <a id="btn_add_parent" class="btn btn-primary">Add</a>
           </div>
         </div>

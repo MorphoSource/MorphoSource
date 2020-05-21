@@ -1,18 +1,18 @@
 <%= simple_form_for @submission, html: { id: :organization_search_form } do |f| %>
-  <div class="row form-group"> 
-    <div class="col-sm-6 col-sm-offset-3 no-padding">
-      <%= f.input :organization_search,
-      placeholder: "Enter organization keywords here",
-      label: false,
-      input_html: { class: 'form-control' } %>
+    <div class="row form-group"> 
+      <div class="col-sm-6 col-sm-offset-3 no-padding">
+        <%= f.input :organization_search,
+        placeholder: "Enter organization keywords here",
+        label: false,
+        input_html: { class: 'form-control' } %>
+      </div>
     </div>
-  </div>
 
-  <div id="organizations" class="hide">
-    <input class="organization_label" type="hidden" name="organization_title" value="" />
-    <input class="organization_title" type="hidden" name="organization_title" value="" />
-    <input class="organization_id" type="hidden" name="organization_id" value="" />
-  </div>
+    <div id="organizations" class="hide">
+      <input class="organization_label" type="hidden" name="organization_title" value="" />
+      <input class="organization_title" type="hidden" name="organization_title" value="" />
+      <input class="organization_id" type="hidden" name="organization_id" value="" />
+    </div>
  
 <% end %>
 

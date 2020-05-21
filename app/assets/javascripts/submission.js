@@ -577,6 +577,7 @@ $( document ).on('turbolinks:load', function() {
             self.next();
 
             console.log(data);
+            self.form.setDefaultMediaPermissionFields();
           }
         });
 
@@ -1229,6 +1230,215 @@ $( document ).on('turbolinks:load', function() {
         $('.required').addClass('required-flag');
         $('.submission_flow input:not(#media_submit)').removeAttr('data-disable-with'); 
         this.sidebarEventFuncs();
+        this.setMediaPermissionFieldEvent();
+
+        // Comment out for debug ability to access any step any time
+        this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);        
+      }
+
+      setMediaPermissionFieldEvent() {
+        $('form#new_media div,a').click(function(event) {
+          console.log('hi');
+          if ($(this).hasClass('permissions-field')) {
+            console.log('hi2');
+            alert($('#organization-alert-message').text());
+            $(this).off(event); // Only fire once
+          }
+        });
+      }
+
+      setDefaultMediaPermissionFields() {
+        let self = this; 
+
+        $.get('organization_default_media_fields', 
+               {
+                'parent_media_list': this.data.parentMediaList,
+                'organization_id': this.data.organizationId,
+                'biological_specimen_id': this.data.biologicalSpecimenId,
+                'cultural_heritage_object_id': this.data.culturalHeritageObjectId
+               }, 
+               function(getData){
+                console.log('Got organization default fields');
+                console.log(getData);
+                if (getData.default_fields) {
+                  console.log($('form#new_media div#submission-media-ownership'));
+                  // Add loading to media page
+                  $('form#new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
+
+                  // Remove previous settings, if present
+                  $('form#new_media div#submission-media-ownership div').removeClass('permissions-field');
+                  $('form#new_media div#submission-media-ownership i.fa-university').remove();
+                  self.emptyMediaFields(getData.default_fields);
+
+                  // Set up text
+                  $('#organization-alert-message').text(getData.organization_alert_message);
+                  $('#organization-name').text(getData.organization_title);
+                  $('#ownership-section-header-text').addClass('show').removeClass('hide');
+
+                  // Add new settings
+                  self.fillMediaFields(getData.default_fields);
+
+                  // Remove loading
+                  $('form#new_media div#submission-media-ownership').removeClass('ui-loading-whole-page');
+                }
+               });
+      }
+
+      emptyMediaFields(defaultFields) {
+        for (const f in defaultFields) {
+          this.emptyMediaField(f);
+        }
+      }
+
+      emptyMediaField(field) {
+        let multiSelector = 
+          "form#new_media select[name='media[" + field + "][]'], " + 
+          "form#new_media input[name='media[" + field + "][]']";
+        let selector = 
+          "form#new_media select[name='media[" + field + "]'], " + 
+          "form#new_media input[name='media[" + field + "]'], " + 
+          "form#new_media textarea[name='media[" + field + "]']";
+
+        switch(field) {
+          case 'download_permission':
+            $('form#new_media input#media_visibility_open').trigger('click');
+            break;
+          case 'rights_holder': // multi-value
+            $("form#new_media input[name='media[rights_holder_name][]']").first().val('');
+            $("form#new_media input[name='media[rights_holder_type][]']").first().val('');
+            $("form#new_media input[name='media[rights_holder_name][]']").slice(1).parent().remove();
+            break;
+          case 'download_reviewer':
+            $(selector).val('');
+            $('form#new_media div.media_download_reviewer span.select2-chosen').text('');
+            break;
+          case 'license': // multi-value fields
+          case 'agreement_uri':
+          case 'funding':
+          case 'publisher':
+            $(multiSelector).first().val('');
+            $(multiSelector).slice(1).parent().remove();
+            break;
+          default: // single-value fields
+            $(selector).val('');
+        }
+      }
+
+      fillMediaFields(defaultFields) {
+        for (const f in defaultFields) {
+          this.fillMediaField(f, defaultFields[f]);
+        }
+      }
+
+      fillMediaField(field, val) {
+        let multiSelector = 
+          "form#new_media select[name='media[" + field + "][]'], " + 
+          "form#new_media input[name='media[" + field + "][]']";
+        let selector = 
+          "form#new_media select[name='media[" + field + "]'], " + 
+          "form#new_media input[name='media[" + field + "]'], " + 
+          "form#new_media textarea[name='media[" + field + "]']";
+
+        if (Array.isArray(val)) {
+          val = val.filter(v => v !== '');
+        }     
+        console.log(val);
+        switch(field) {
+          case 'download_permission':
+            if (val == 'preview_only') {
+              let val = 'preview';
+            }
+            $('form#new_media input#media_visibility_' + val.toLowerCase()).trigger('click');
+            $('form#new_media div.media_download_permission').addClass('permissions-field');
+            $('form#new_media div.media_download_permission').find('i.tooltip-icon').after(
+              "<i class='fas fa-university'></i>"
+            );
+            break;
+          case 'rights_holder': // multi-value
+            if (Array.isArray(val) && val.length > 1) {
+              for (i = 0; i < val.length; i++) {
+                if (val[i]) {
+                  // console.log('element: ' + val[i]);
+                  let rightsHolderArray = this.extractRightsHolderArray(val[i]);
+                  // console.log(rightsHolderArray);
+                  $("form#new_media input[name='media[rights_holder_name][]']").eq(i).val(rightsHolderArray[0]);
+                  $("form#new_media select[name='media[rights_holder_type][]']").eq(i).val(rightsHolderArray[1]);
+                  $(multiSelector).eq(i).val(val[i]);
+                  if (i < (val.length - 1) && val[i+1]) {
+                    $("form#new_media input[name='media[rights_holder_name][]']").eq(i).parent().find('button.add').trigger('click');
+                  }  else {
+                    $('form#new_media div.media_rights_holder').addClass('permissions-field');
+                    $('form#new_media div.media_rights_holder').find('i.tooltip-icon').after(
+                      "<i class='fas fa-university'></i>"
+                    );
+                  }   
+                }
+              }
+            } else {
+              let rightsHolderArray = this.extractRightsHolderArray(val[0]);
+              $("form#new_media input[name='media[rights_holder_name][]']").val(rightsHolderArray[0]);
+              $("form#new_media select[name='media[rights_holder_type][]']").val(rightsHolderArray[1]);
+              $('form#new_media div.media_rights_holder').addClass('permissions-field');
+              // console.log($('form#new_media div#media_rights_holder_visible').find('label'));
+              $('form#new_media div#media_rights_holder_visible').find('i.tooltip-icon').after(
+                "<i class='fas fa-university'></i>"
+              );
+            }
+            break;
+          case 'download_reviewer':
+            $(selector).val(val[0]);
+            $('form#new_media div.media_download_reviewer span.select2-chosen').text(val[0]);
+            $('form#new_media div.media_download_reviewer').addClass('permissions-field');
+            $('form#new_media div.media_download_reviewer').find('i.tooltip-icon').after(
+              "<i class='fas fa-university'></i>"
+            );
+
+            $('#media_download_reviewer').one("select2-opening", function() {
+              alert($('#organization-alert-message').text());
+            });
+            break;
+          case 'license': // multi-value fields
+          case 'agreement_uri':
+          case 'funding':
+          case 'publisher':
+            if (Array.isArray(val) && val.length > 1) {
+              for (i = 0; i < val.length; i++) {
+                if (val[i]) {
+                  // console.log('element: ' + val[i]);
+                  $(multiSelector).eq(i).val(val[i]);
+                  if (i < (val.length - 1) && val[i+1]) {
+                    $(multiSelector).eq(i).parent().find('button.add').trigger('click');
+                  } else {
+                    $(multiSelector).parents('div .media_'+field).addClass('permissions-field');
+                    $(multiSelector).parents('div .media_'+field).find('i.tooltip-icon').after(
+                      "<i class='fas fa-university'></i>"
+                    );
+                  }
+                    
+                }
+              }
+            } else {
+              $(multiSelector).val(val);
+              $(multiSelector).parents('div .media_'+field).addClass('permissions-field');
+              $(multiSelector).parents('div .media_'+field).find('i.tooltip-icon').after(
+                "<i class='fas fa-university'></i>"
+              );
+            }
+            break;
+          default: // single-value fields
+            $(selector).val(val);
+            $(selector).parents('div .media_'+field).addClass('permissions-field');
+            $(selector).parents('div .media_'+field).find('i.tooltip-icon').after(
+              "<i class='fas fa-university'></i>"
+            );
+
+        }
+      }
+
+      extractRightsHolderArray(s) {
+        let rightsHolder = s.substring(s.indexOf('Name: ') + 6, s.lastIndexOf(', Type: '));
+        let rightsHolderType = s.substring(s.lastIndexOf(', Type: ') + 8);
+        return [rightsHolder, rightsHolderType];
       }
 
       // TODO: Implement submission data checking? Probably best done at the end
@@ -1272,6 +1482,7 @@ $( document ).on('turbolinks:load', function() {
         this.setVisibility([this.viewSectionIds[v]]);
         $('.sidebar a').removeClass('selected');
         $(this.viewSidebarClass[v]).addClass('selected');
+        $(this.viewSidebarClass[v]).removeClass('inactive');
       }
 
       setVisibility(idArray) {

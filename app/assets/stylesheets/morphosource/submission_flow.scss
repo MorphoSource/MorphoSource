@@ -98,6 +98,14 @@
     display: none;
   }
 
+  i.fa-university {
+    color: #ff861f;
+  }
+
+  div.showcase-label i.fa-university {
+    margin-left: 3px;
+  }
+
   .submission-v2 {
 
     h4 {
@@ -210,6 +218,7 @@
 
   .sidebar {
     cursor: default;
+    width: 224px;
 
     a {
       cursor: pointer;
@@ -243,6 +252,8 @@
     background: none;
     height: calc(100vh - 50px);
     overflow: auto;
+    padding-right: 0px;
+    padding-left: 224px;
   }
 
   input[type='text'].ui-autocomplete-loading {

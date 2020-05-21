@@ -1,0 +1,4 @@
+// Receives Ruby variable @media_form for media form with default permission fields filled (if applicable)
+$("#media-container").html(
+  "<%= escape_javascript(render(partial: 'submissions/media/media', locals: { media_form: @media_form })) %>"
+);

@@ -9,13 +9,13 @@
     <div id="submission_select_taxonomy_section">
       <%= simple_form_for @submission, html: { id: :taxonomy_search_form } do |f| %>
         <div class="row">
-          <div class="col-sm-5 col-sm-offset-3 no-padding">
+          <div class="col-xs-10 col-sm-5 col-sm-offset-3 no-padding">
             <%= f.input :taxonomy_search,
             placeholder: "Enter taxonomy keywords here",
             input_html: { class: 'form-control' } %>
           </div>
 
-          <div class="col-sm-1 text-left">
+          <div class="col-xs-2 col-sm-1 text-left">
             <a id="btn_add_taxonomy" class="btn btn-primary">Add</a>
           </div>
         </div>

@@ -19,7 +19,7 @@
               </div>
             <% else %>
 
-              <div id="submission_link_po" class="<%= po_type == 'bso' ? 'col-sm-6' : 'col-sm-8 col-sm-offset-2' %>">
+              <div id="submission_link_po" class="<%= po_type == 'bso' ? 'col-xs-12 col-md-6' : 'col-sm-8 col-sm-offset-2' %>" style='margin-bottom: 2em;'>
                 <div class="row list-item">
                   <b><%= t('morphosource.submission.morphosource_search_results') %></b>
                 </div>
@@ -57,7 +57,7 @@
                   <%= t('morphosource.submission.idigbio_empty_search_results') %>
                 </div>
               <% else %>
-                <div id="submission_link_idigbio" class="col-sm-6">
+                <div id="submission_link_idigbio" class="col-xs-12 col-md-6" style='margin-bottom: 2em;'>
                   <div class="row list-item">
                     <b><%= t('morphosource.submission.idigbio_search_results') %></b>
                   </div>
@@ -65,7 +65,7 @@
                   <% idigbio.each do |idb| %>
                     <div class="row vertical-align list-item object-search-result row-striped">
                       <div class="col-sm-9 text-left">
-                        <div><span><%= "#{idb['data']['dwc:institutionCode']}:#{idb['data']['dwc:collectionCode']}:#{idb['data']['dwc:catalogNumber']}" %></span></div>
+                        <div><span><%= "#{idb['data']['dwc:institutionCode']}:" %><wbr><%= "#{idb['data']['dwc:collectionCode']}:" %><wbr><%= "#{idb['data']['dwc:catalogNumber']}" %></span></div>
                         <div><em><%= "#{idb['data']['dwc:genus']} #{idb['data']['dwc:specificEpithet']}" %></em></div>
                         <div><a href="https://www.idigbio.org/portal/records/<%= idb['uuid'] %>" target="_blank">See on iDigBio <i class="fas fa-external-link-alt"></i></a></div>
                       </div>

@@ -206,12 +206,12 @@
             <div class="panel-body">
 
               <% unless has_collection_search_parameters? %>
-                <div class="row tab-action-buttons">
-
+                <div class="row tab-action-buttons sub-collections-wrapper">
                     <!-- The user should have deposit access to the parent (the collection we are showing) and read access to the child -->
                     <% if @presenter.user_can_nest_collection? %>
 
                       <%= button_tag t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
+                            type: 'button',
                             class: 'btn btn-primary add-subcollection',
                             title: t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
                             data: { nestable: true,
@@ -219,14 +219,10 @@
                                     presenter_id: @presenter.id } %>
 
                       <!-- The user must have the ability to create a new collection of parent's type -->
+                      <%# pass the collection type id for Projects so it will redirect user to a new Project form %>
                       <% if @presenter.user_can_create_new_nest_collection? %>
-
-                      <%# the link's collection_type_id should be 3 (for project) when creating new collection 
-                      http://localhost:3000/dashboard/collections/new?collection_type_id=3&locale=en&parent_id=fn106x926
-                      %>
-
                         <%= link_to t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
-                          hyrax.dashboard_create_subcollection_under_path(parent_id: @presenter.id),
+                          hyrax.dashboard_create_subcollection_under_path(parent_id: @presenter.id, target_collection_type_id: Hyrax::CollectionType.find_by(machine_id: "project").id),
                           title: t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
                           class: 'btn btn-primary' %>
                       <% end %>
@@ -259,3 +255,9 @@
   </div> <!-- end collection-controls -->
 
 
+
+<% if @presenter.collection_type_is_nestable? && !has_collection_search_parameters? %>
+  <%= render 'hyrax/my/collections/modal_add_to_collection', source: 'show' %>
+  <%= render 'hyrax/my/collections/modal_add_project', id: @presenter.id, source: 'show' %>
+  <%= render 'hyrax/dashboard/collections/modal_parent_collection_remove_deny', source: 'show' %>
+<% end %>

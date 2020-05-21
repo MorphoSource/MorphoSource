@@ -42,6 +42,8 @@ Rails.application.routes.draw do
     # Note: the following route might effect pagination links
     namespace :dashboard do
       resources :collections, controller: 'collections'
+
+      get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
     end
 
   end

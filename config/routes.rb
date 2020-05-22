@@ -125,17 +125,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # Route to flow initial page when using browser reload or back button
-  get '/submissions/stage_biological_specimen', to: 'submissions#new'
-  get '/submissions/stage_biological_specimen_from_idigbio', to: 'submissions#new'
-  get '/submissions/stage_device', to: 'submissions#new'
-  get '/submissions/stage_imaging_event', to: 'submissions#new'
-  get '/submissions/stage_organization', to: 'submissions#new'
-  get '/submissions/stage_device_organization', to: 'submissions#new'
-  get '/submissions/stage_media', to: 'submissions#new'
-  get '/submissions/stage_processing_event', to: 'submissions#new'
-  get '/submissions/stage_cho', to: 'submissions#new'
-  get '/submissions/stage_taxonomy', to: 'submissions#new'
   get '/submissions', to: 'submissions#new'
 
   scope module: :morphosource do

@@ -83,12 +83,36 @@ class SubmissionsController < ApplicationController
   def create
     reinstantiate_submission
 
+    if @submission.idigbio_id
+      idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(
+        @submission.idigbio_id)
+      existing_bso = Morphosource::PhysicalObjectsSearchService.call(
+        BiologicalSpecimen, idb_taxonomy_params.clone)
+      if (!existing_bso.nil?) && existing_bso.any?
+        # iDigBio taxonomy already exists
+        if existing_bso.first.canonical_taxonomy.present?
+          @submission.taxonomy_id = existing_bso.first.canonical_taxonomy.first
+        else
+          @submission.taxonomy_id = existing_bso.first.taxonomies.first.id
+        end
+        @submission.canonical_taxonomy_id = @submission.taxonomy_id
+      else
+        # Need to create new taxonomy to match this
+        params[:taxonomy] = ActionController::Parameters.new(idb_taxonomy_params)
+        @submission.canonical_taxonomy_id = 'created_taxonomy'
+      end
+      params[:biological_specimen] = ActionController::Parameters.new(
+        Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(
+          @submission.idigbio_id))
+    end
+
     works.each do |work|
       puts("Creating #{work} if necessary")
       create_work_if_needed(work, params)
     end
 
-    render 'show' 
+    # render 'show' # re-enable for debug mode
+    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en')
   end
 
   private
@@ -127,7 +151,9 @@ class SubmissionsController < ApplicationController
       model_params = assign_model_params_parents(
         model_params, 
         [@submission.organization_id, @submission.taxonomy_id])
-      if @submission.canonical_taxonomy_id.present?
+      if @submission.canonical_taxonomy_id == 'created_taxonomy'
+        model_params.merge!('canonical_taxonomy' => [@submission.taxonomy_id])
+      elsif @submission.canonical_taxonomy_id.present?
         model_params.merge!('canonical_taxonomy' => [@submission.canonical_taxonomy_id])
       end
       @biospec_create_params = model_params
@@ -462,5 +488,5 @@ class SubmissionsController < ApplicationController
 
     fields.select {|k, v| v.present? }
   end
-  
+
 end

@@ -517,9 +517,9 @@ $( document ).on('turbolinks:load', function() {
 
           if (data.idigbioId) {
             data.savedStep = 3;
-            self.form.setSidebarViewCheck([3, 4, 5, 6]); 
-            self.form.setSidebarViewFade(3);
-            self.form.setVisibleView(7); // view 7 media device
+            self.form.setSidebarViewCheck([3, 5, 6]); 
+            self.form.setSidebarViewFade([3, 5, 6]);
+            self.form.setVisibleView(4); // view 4 select organization
           }
           
           console.log(data);
@@ -645,7 +645,11 @@ $( document ).on('turbolinks:load', function() {
 
       next() {
         this.form.setSidebarViewCheck(4);
-        if (data.biologicalSpecimenOrCulturalHeritageObject == 'cho') {
+        if (data.idigbioId) {
+          this.form.setSidebarViewCheck([5, 6]); 
+          this.form.setSidebarViewFade([5, 6]);
+          this.form.setVisibleView(7); // view 7 media device
+        } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'cho') {
           this.form.setSidebarViewFade(5); // fade out view 5 taxonomy
           this.form.setVisibleView(6); // view 6 details
         } else {

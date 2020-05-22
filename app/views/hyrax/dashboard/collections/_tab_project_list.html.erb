@@ -1,8 +1,6 @@
 <%# taken from https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collections/_subcollection_list.html.erb %>
 <% if @subcollection_docs.nil? || @subcollection_docs.empty? %>
-  
   <div class="alert alert-warning" role="alert"><%= t('hyrax.collections.show.no_visible_subcollections') %></div>
-
 <% else %>
 
   <section id="sub-collections-wrapper" class="sub-collections-wrapper">
@@ -12,7 +10,6 @@
       <tr>
         <th class="no-sort">&nbsp;<!-- thumbnail column --></th>
         <th>Title</th>
-        <th>Organization</th>
         <th>Media</th>
         <th>Last modified</th>
         <th>Visibility</th>

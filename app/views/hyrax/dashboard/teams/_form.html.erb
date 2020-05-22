@@ -79,7 +79,7 @@
         </a>
       </li>
 
-      <% if @presenter.collection_type_is_nestable? %>
+      <% if @collection.team? && @presenter.collection_type_is_nestable? %>
         <li role="presentation">
           <a href="#team_projects" aria-controls="team_projects" role="tab" data-toggle="tab" aria-expanded="true">
             <i class="fas fa-folder-open" aria-hidden="true"></i> TEAM PROJECTS

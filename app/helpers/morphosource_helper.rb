@@ -275,6 +275,10 @@ module MorphosourceHelper
     )
   end
 
+  def permission_badge(value)
+    Hyrax::PermissionBadge.new(value).render
+  end
+
   def generated_media_title(part, media_type, ie_modality)
     # id will be added by add_id_to_title in Media model
     parts = part.presence || ['Element unspecified']
@@ -382,6 +386,9 @@ module MorphosourceHelper
           value # just return the string as it is              
         end
 
+      elsif e.message.include?("no implicit conversion of Date")
+        # since the value passed in is already a Date class, just format it
+        value.to_formatted_s(:long)
       else
         # if landed here. check e.message for the exception message
         Rails.logger.info("Error in display_date: #{e.message} ")

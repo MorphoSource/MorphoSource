@@ -201,9 +201,8 @@
       <% end # if @cho_member_count > 0 %>
 
       <% if @presenter.collection_type_is_nestable? %>
-        <div id="team_projects" class="tab-pane">
-          <div class="panel panel-default labels">
-            <div class="panel-body">
+        <div id="team_projects" role="tabpanel" class="tab-pane">
+          <div class="form-tab-content">
 
               <% unless has_collection_search_parameters? %>
                 <div class="row tab-action-buttons sub-collections-wrapper">
@@ -232,19 +231,8 @@
                 </div>
               <% end %>
 
+              <%= render 'tab_project_list', id: @presenter.id, collection: @subcollection_docs %>
 
-          <section id="sub-collections-wrapper" class="sub-collections-wrapper">
-            <h4><%= t('.subcollection_count') %> (<%= @subcollection_count %>)</h4>
-            <div class="row">
-              <div class="col-md-7">
-                <%= render 'subcollection_list', id: @presenter.id, collection: @subcollection_docs %>
-              </div>
-
-            </div>
-          </section>
-
-
-            </div>
           </div>
         </div>
       <% end %>
@@ -257,7 +245,7 @@
 
 
 <% if @presenter.collection_type_is_nestable? && !has_collection_search_parameters? %>
-  <%= render 'hyrax/my/collections/modal_add_to_collection', source: 'show' %>
+  <%#= render 'hyrax/my/collections/modal_add_to_collection', source: 'show' %>
   <%= render 'hyrax/my/collections/modal_add_project', id: @presenter.id, source: 'show' %>
-  <%= render 'hyrax/dashboard/collections/modal_parent_collection_remove_deny', source: 'show' %>
+  <%#= render 'hyrax/dashboard/collections/modal_parent_collection_remove_deny', source: 'show' %>
 <% end %>

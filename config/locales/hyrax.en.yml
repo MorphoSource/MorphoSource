@@ -114,8 +114,13 @@ en:
             label: 'Create new media in project'
           add_project_to_Team:
             label: 'Add project to team'
+            select_label: 'Select project' 
+            button_label: 'Add project' 
           create_new_project_in_Team: 
             label: 'Create new project in team'
+        form_relationships:
+          modals:
+            remove_this_project_description: Removing this project will not remove it from the repository.  It will only remove the project from this team. Are you sure you want to remove this project?
         form_share:
           manager: 'Manager'
           editor: 'Editor'

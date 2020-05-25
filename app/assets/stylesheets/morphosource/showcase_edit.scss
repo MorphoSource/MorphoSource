@@ -468,12 +468,20 @@ input.disabled {
   .form-add-organization-wrapper {
     > div {
       text-align: center;
+      select, input {
+        margin-top: 4px;
+      }
       @media (min-width: $desktop-min) {
         text-align: right;
+        select, input {
+          margin-top: 0;
+        }
       }
     }
-
+    form {display: inline-block;}
     select {
+      font-size: 12px;
+      width: 130px;
       height: 30px;
       margin-right:8px;
     }

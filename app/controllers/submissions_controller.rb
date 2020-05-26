@@ -112,7 +112,7 @@ class SubmissionsController < ApplicationController
     end
 
     # render 'show' # re-enable for debug mode
-    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en')
+    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en') if @submission.media_id
   end
 
   private

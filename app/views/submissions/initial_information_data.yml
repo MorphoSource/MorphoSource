@@ -1,0 +1,92 @@
+# app/views/submissions/intial_information/initial_information_data.yml
+# Raw or derived status and examples for media and modality combinations
+status:
+  Image:
+    MicroNanoXRayComputedTomography: derived
+    MedicalXRayComputedTomography: derived
+    MagneticResonanceImaging: derived
+    Photogrammetry: derived
+    StructuredLight: derived
+    LaserScan: derived
+    Photography: any
+  Video:
+    MicroNanoXRayComputedTomography: derived
+    MedicalXRayComputedTomography: derived
+    MagneticResonanceImaging: derived
+    Photogrammetry: derived
+    StructuredLight: derived
+    LaserScan: derived
+    Photography: any
+  CTImageSeries:
+    MicroNanoXRayComputedTomography: any
+    MedicalXRayComputedTomography: any
+    MagneticResonanceImaging: any
+    Photogrammetry: none
+    StructuredLight: none
+    LaserScan: none
+    Photography: none
+  PhotogrammetryImageSeries:
+    MicroNanoXRayComputedTomography: none
+    MedicalXRayComputedTomography: none
+    MagneticResonanceImaging: none
+    Photogrammetry: any
+    StructuredLight: none
+    LaserScan: none
+    Photography: none
+  Mesh:
+    MicroNanoXRayComputedTomography: derived
+    MedicalXRayComputedTomography: derived
+    MagneticResonanceImaging: derived
+    Photogrammetry: derived
+    StructuredLight: any
+    LaserScan: any
+    Photography: none
+examples:
+  Image:
+    Photography:
+      raw: 
+        - Image produced by camera with no filters or processing applied
+      derived:
+        - Image with filter or processing applied (dimension reduction, contrast enhancement, etc.)
+  Video:
+    Photography:
+      raw:
+        - Initial video with no filters or processing applied
+      derived:
+        - Video with filter or processing applied
+  CTImageSeries:
+    MicroNanoXRayComputedTomography:
+      raw:
+        - Projection data produced by scanner software
+      derived:
+        - Reconstruction data
+        - Projection data with subsequent processing
+    MedicalXRayComputedTomography:
+      raw:
+        - Projection data produced by scanner software
+      derived:
+        - Reconstruction data
+        - Projection data with subsequent processing
+    MagneticResonanceImaging:
+      raw:
+        - Projection data produced by scanner software
+      derived:
+        - Reconstruction data
+        - Projection data with subsequent processing
+  PhotogrammetryImageSeries:
+    Photogrammetry:
+      raw:
+        - Initial images produced by camera with no filters or processing applied
+      derived:
+        - Camera images with any type of processing (masking, etc.)
+  Mesh:
+    StructuredLight:
+      raw:
+        - Data produced by scanner software with no additional processing applied
+      derived:
+        - Mesh or point cloud with subsequent processing (merging, denoising, simplification, etc.)
+    LaserScan:
+      raw:
+        - Data produced by scanner software with no additional processing applied
+      derived:
+        - Mesh or point cloud with subsequent processing (merging, denoising, simplification, etc.)

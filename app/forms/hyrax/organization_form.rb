@@ -12,8 +12,8 @@ module Hyrax
     class_attribute :media_permissions_fields
 
     # Customizing field terms
-    self.terms += [
-      :institution_code, :address, :city, :state_province, :country, :institution_name, :collection_code, :download_permission, :download_reviewer, :agreement_uri, :terms_of_use,  :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :cite_as]
+    self.terms = [
+      :title, :institution_code, :address, :city, :state_province, :country, :institution_name, :collection_code, :description, :download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as]
 
     self.required_fields = [:title, :institution_code]
 

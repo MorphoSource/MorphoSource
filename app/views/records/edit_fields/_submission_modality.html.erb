@@ -1,0 +1,9 @@
+<% modalities_service = Morphosource::ModalitiesService.new %>
+<%= f.input :submission_modality, as: :select,
+    collection: modalities_service.select_all_options,
+    include_blank: true,
+    item_helper: modalities_service.method(:include_current_value),
+    input_html: { class: 'form-control', onchange:'showFieldsByModality();' },
+    wrapper_html: { class: 'required-flag-hidden' },
+    required: true
+%>

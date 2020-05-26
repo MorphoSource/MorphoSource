@@ -1,0 +1,59 @@
+<!-- Bootstrap container-fluid class div is in parent view partial -->
+<div id="submission_bso_search_form" class="new_media">
+  <div class="row">
+    <h4><%= t('morphosource.submission.header_text.bso_search') %></h4>
+  </div>
+  <%= simple_form_for @submission, 
+    url: {controller: 'submissions', action: 'search_po_ajax'},
+    html: { id: :bso_search_ajax_form },
+    method: :post,
+    remote: true do |f| %>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-sm-6 col-sm-offset-3">
+            <%= f.input :biospec_search_occurrence_id, input_html: { class: 'form-control-sm' } %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2 col-sm-offset-3">
+            <%= f.input :biospec_search_institution_code, input_html: {class: 'form-control-sm'} %>
+          </div>
+          <div class="col-sm-2">
+            <%= f.input :biospec_search_collection_code, input_html: { class: 'form-control-sm' } %>
+          </div>
+          <div class="col-sm-2">
+            <%= f.input :biospec_search_catalog_number, input_html: {class: 'form-control-sm'} %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 col-sm-offset-3">
+            <%= f.input :biospec_search_taxonomy_genus, input_html: {class: 'form-control-sm'} %>
+          </div>
+          <div class="col-sm-3">
+            <%= f.input :biospec_search_taxonomy_species, input_html: {class: 'form-control-sm'} %>
+          </div>
+        </div>
+        <div class="row hide">
+          <%= f.input :biological_specimen_or_cultural_heritage_object, 
+            :as => :hidden, 
+            :input_html => { :value => "bso" } 
+          %> 
+        </div>
+      </div>
+      <div class="row">
+        <%= f.submit 'Search', name: 'bso_search', class: 'btn btn-primary btn-continue' %>
+      </div>
+  <% end %>
+
+  <div id="bso_search_non_search_options">
+    <div class="row">
+      <b><%= t('morphosource.submission.or') %></b>
+    </div>
+
+    <div class="row">
+      <a href="#" id="submission_will_create_bso" class="btn btn-primary btn-continue">
+        <%= t('morphosource.submission.new_specimen') %>  
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,64 @@
+<div id="submission_choose_raw_or_derived_media" class="submission_section submission-v2">	
+  <%= simple_form_for @submission, html: {id: :raw_or_derived_form } do |f| %>
+    <div class="container-fluid">
+      <div class="row">
+        <h4><%= t('morphosource.submission.header_text.initial_information') %></h4>
+      </div>
+      	<div class="row">
+          <div class="col-sm-6 col-sm-offset-3 no-padding">
+      		  <%= render_edit_field_partial('submission_media_type', f: f) %>
+          </div>
+      	</div>
+      	<div class="row">
+          <div class="col-sm-6 col-sm-offset-3 no-padding">
+      		  <%= render_edit_field_partial('submission_modality', f: f) %>
+      	  </div>
+        </div>
+      
+      <div id="submission-suggestions-container" class="row hide">
+    		<div class="col-sm-6 col-sm-offset-3 block">
+    			<div class="row">
+            <b><%= t('morphosource.submission.raw_or_derived_suggestions') %></b>
+          </div>
+          <div class="row">
+            <span id="submission-suggestions"></span>
+          </div>
+          <div id="submission-suggestions-examples" class="row mt-1 text-left hide raw-derived-list">
+            <div class="col-sm-6">
+              <div><b>Raw</b></div>
+              <div><ul id="submission-suggestions-examples-raw"></ul></div>
+            </div>
+            <div class="col-sm-6">
+              <div><b>Derived</b></div>
+              <div><ul id="submission-suggestions-examples-derived"></ul></div>
+            </div>
+          </div>
+    		</div>
+    	</div>
+
+      <div id="submission-raw-or-derived-section" class="row hide">
+        <div class="col-sm-4 col-sm-offset-4 raw-or-derived-form-group">
+          <div>
+            <label class="control-label" for="raw-or-derived-btn-group">
+              <%= t('morphosource.submission.raw_or_derived') %>
+            </label>
+          </div>
+          <div id="raw-or-derived-btn-group" class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-primary" id="radio_raw">
+              <input type="radio" name="radio_raw_option" id="radio_raw_option" autocomplete="off" checked> 
+              <%= t('morphosource.submission.raw') %>
+            </label>
+            <label class="btn btn-primary" id="radio_derived">
+              <input type="radio" name="radio_derived_option" id="radio_derived_option" autocomplete="off"> 
+              <%= t('morphosource.submission.derived') %>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <%= f.submit t('morphosource.submission.continue'), class: "btn btn-primary btn-continue" %>
+      </div>
+  	</div class="container">
+  <% end %>
+</div>

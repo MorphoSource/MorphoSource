@@ -116,39 +116,15 @@ Rails.application.routes.draw do
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  resources :submissions, only: [ :new, :create ] do
+  resources :submissions, only: [ :new, :create, :search_bso_ajax, :organization_default_media_fields] do
     collection do
-      post 'stage_biological_specimen'
-      post 'stage_biological_specimen_from_idigbio'
-      post 'stage_device'
-      post 'stage_imaging_event'
-      post 'stage_organization'
-      post 'stage_device_organization'
-      post 'stage_media'
-      post 'stage_processing_event'
-      post 'stage_cho'
-      post 'stage_taxonomy'
-      # for new work modal
-      get 'new_organization'
-      post 'new_organization_submit'
-      get 'new_taxonomy'
-      post 'new_taxonomy_submit'
-      post 'new_device_submit'
-      post 'new_processing_event_submit'
+      # AJAX methods
+      post 'search_po_ajax'
+      post 'save_data'
+      get 'organization_default_media_fields'
     end
   end
 
-  # Route to flow initial page when using browser reload or back button
-  get '/submissions/stage_biological_specimen', to: 'submissions#new'
-  get '/submissions/stage_biological_specimen_from_idigbio', to: 'submissions#new'
-  get '/submissions/stage_device', to: 'submissions#new'
-  get '/submissions/stage_imaging_event', to: 'submissions#new'
-  get '/submissions/stage_organization', to: 'submissions#new'
-  get '/submissions/stage_device_organization', to: 'submissions#new'
-  get '/submissions/stage_media', to: 'submissions#new'
-  get '/submissions/stage_processing_event', to: 'submissions#new'
-  get '/submissions/stage_cho', to: 'submissions#new'
-  get '/submissions/stage_taxonomy', to: 'submissions#new'
   get '/submissions', to: 'submissions#new'
 
   scope module: :morphosource do

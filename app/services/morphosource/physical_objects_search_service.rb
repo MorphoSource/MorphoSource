@@ -59,9 +59,17 @@ module Morphosource
     def param_clauses
       clauses = []
       params.each do |k,v|
-        clauses << "#{Solrizer.solr_name(k, :stored_searchable)}:#{v}"
+        clauses << "#{Solrizer.solr_name(k, :stored_searchable)}:#{prepare_value(v)}"
       end
       clauses
+    end
+
+    def prepare_value(v)
+      if v.include? " "
+        "\"#{v}\"" 
+      else
+        v
+      end
     end
 
     def search_solr(qry)

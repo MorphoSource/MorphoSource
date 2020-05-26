@@ -10,3 +10,21 @@ $button-disabled-border-color: #ccc;
 $link-disabled-font-color: #ccc;
 $link-font-color: #2e74b2;
 $line-color: #337ab7;
+
+.material-icons.tooltip-icon:before {
+  content: 'help_outline';
+}
+
+.material-icons.tooltip-icon {
+  color: $font-color;
+  font-size: 11px;
+  margin-left: 3px;
+}
+
+.tooltip {
+  pointer-events: none; /* fix the boostrap tooltip flickering issue */
+}
+
+div.wrapper_for_2 span.input-group-btn.field-controls {
+	width: auto;
+}

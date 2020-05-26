@@ -1,0 +1,29 @@
+<div id="submission_physical_object" class="submission_section submission-v2 hide">
+  <div 
+    id="submission_physical_object_type_section" 
+    class="<%= @submission.biological_specimen_or_cultural_heritage_object ? 'hide' : '' %>"
+  >
+    <%= render(partial: 'submissions/physical_object/physical_object_type') %>
+  </div>
+  
+  <div
+    id="submission_bso_search_section"
+    class="<%= @submission.biological_specimen_or_cultural_heritage_object == 'bso' ? '' : 'hide' %>"
+  >
+    <%= render(partial: 'submissions/physical_object/bso_search') %>
+  </div>
+  
+  <div
+    id="submission_cho_search_section"
+    class="<%= @submission.biological_specimen_or_cultural_heritage_object == 'cho' ? '' : 'hide' %>"
+  >
+    <%= render(partial: 'submissions/physical_object/cho_search') %>
+  </div>
+
+  <div id="submission_po_search_results_container">
+    <%= render(
+      partial: 'submissions/physical_object/physical_object_search_results',
+      locals: { po_type: '', docs: [], idigbio: [], show: false, loading: true }) 
+    %>
+  </div>
+</div>

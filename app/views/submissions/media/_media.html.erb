@@ -1,0 +1,185 @@
+<div id="submission_media" class="submission_flow submission_section submission-v2 hide">
+  <div class="hide">
+    <span id="organization-alert-message"></span>
+  </div>
+  <div class="container-fluid wider">
+    <div class="row">
+      <h4><%= t('morphosource.submission.header_text.media_details') %></h4>
+    </div>
+
+    <%= simple_form_for media_form, 
+    wrapper: :showcase_default,
+    url: { controller: 'submissions', action: 'create' },
+    html: { data: { behavior: 'work-form', 'param-key' => 'media' } } do |f| %>
+
+      <div class="row">
+        <!-- left column -->
+        <div class="col-xs-12 col-md-6">
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">GENERAL DETAILS</span>
+            </div>
+
+            <div class="content-block">
+              <%= render_edit_field_partial('media_type', f: f) %>
+              <%= f.input :part, label: 'Element or part of the object', as: :multi_value %>
+              <%= render_edit_field_partial('side', f: f) %>
+              <%= f.input :orientation, as: :multi_value %>
+              <%= f.input :short_description, label: 'Short description' %>
+              <%= f.input :description, label: 'Full description', as: :multi_value %>
+            </div>
+          </div>
+
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">OWNERSHIP AND PERMISSIONS</span>
+            </div>
+
+            <div id="submission-media-ownership" class="content-block">
+              <div id="ownership-section-header-text" class="row hide">
+                <div class="col-sm-12" style="text-align: center;">
+                  <span><span id='organization-name'></span> has suggested default permission settings, indicated by the <i class='fas fa-university'></i> icon. If you have agreed to abide by this organization's preferences for media ownership, take caution before changing these settings.</span>
+                </div>
+              </div>
+              <div class="row media_download_permission">
+                <div class="col-xs-6 showcase-label">
+                  <label class="control-label select optional" for="media_download_permission">Download permission</label>
+                  <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
+                </div>
+                <div class="col-xs-6 showcase-value">
+                  <div class="m-0 p-0 text-nowrap">            
+                  <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
+                  <% if f.object.embargo_release_date %>
+                    <span class="label label-warning">Embargo</span>
+                  <% elsif f.object.lease_expiration_date %>
+                    <span class="label label-warning">Lease</span>
+                  <% else %>
+                    <span class="label" id="current_visibility_value"></span>
+                  <% end %>
+                    <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
+                  <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
+                    <%= render 'ms_form_visibility_component', f: f %>
+                  </div>
+                </div>
+              </div>
+
+              <%= render_edit_field_partial('license', f: f) %>
+              <%= render_edit_field_partial('rights_statement', f: f) %>
+              <%= render_edit_field_partial('terms_of_use', f: f) %>
+              <%= render_edit_field_partial('agreement_uri', f: f) %>
+              <%= f.input :permits_commercial_use, as: :select, class: 'form-control' %>
+              <%= f.input :permits_3d_use, as: :select, class: 'form-control' %>
+              <%= render_edit_field_partial('download_reviewer', f: f) %>
+
+              <%= f.input :rights_holder, as: :multi_value %>
+              <div id='media_rights_holder_visible' class="row media_rights_holder">
+                <div class="col-xs-6 showcase-label">
+                  <label class="control-label optional" for="media_rights_holder">IP holder(s) (Name, Type)</label>
+                  <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
+                </div>
+                <div class="col-xs-6 showcase-value form-group multi_value optional managed wrapper_for_2" id="media_rights_holder_wrapper">
+                  <ul class="listing rights_holder_listing" aria-live="polite">
+                    <li class="field-wrapper input-group input-append">
+                      <input class="string multi_value optional form-control media_rights_holder_name form-control multi-text-field" name="media[rights_holder_name][]" value="" id="media_rights_holder_name" type="text">
+                      <select class="form-control select optional form-control" name="media[rights_holder_type][]" id="media_rights_holder_type">
+                        <option value=""></option>
+                        <option value="Copyright and License">Copyright and License</option>
+                        <option value="Copyright">Copyright</option>
+                        <option value="License">License</option>
+                      </select>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <%= render_edit_field_partial('funding', f: f) %>
+              <%= render_edit_field_partial('publisher', f: f) %>
+              <%= render_edit_field_partial('cite_as', f: f) %>
+            </div>
+
+          </div>
+
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">IDENTIFIERS AND EXTERNAL LINKS</span>
+            </div>
+
+            <div class="content-block">
+              <%= f.input :identifier, label: 'External identifier' %>
+              <%= f.input :related_url, label: 'External media URL' %>
+            </div>
+          </div>
+
+          <div id="file-object-details" class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">FILE OBJECT DETAILS</span>
+            </div>
+
+            <div class="content-block">
+              <%= render 'submissions/media/edit_file_object_details', f: f %>
+            </div>
+          </div>
+        </div>
+
+        <!-- right column -->
+        <div class="col-xs-12 col-md-6">
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2 required-flag">UPLOAD FILE <span class="label label-info"></span>
+            </div>
+
+            <div class="content-block">
+              <%= render 'form_files_edit', f: f %>
+            </div>
+          </div>
+
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">PROJECTS AND TEAMS</span>
+            </div>
+
+            <div class="content-block">
+              <%= render 'form_member_of_collections', f: f %>
+            </div>
+          </div>
+
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">MEDIA TAGS</span>
+            </div>
+
+            <div class="row content-block">
+              <div class="col-xs-6 showcase-label">
+            Not yet implemented
+              </div>
+              <div class="col-xs-6 showcase-value">
+            Not yet implemented
+              </div>
+            </div>
+          </div>
+
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">BIBLIOGRAPHIC CITATIONS FOR THIS MEDIA</span>
+            </div>
+
+            <div class="row content-block">
+              <div class="col-xs-6 showcase-label">
+            Not yet implemented
+              </div>
+              <div class="col-xs-6 showcase-value">
+            Not yet implemented
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-1">
+        <%= f.submit 'Submit Media', class: "btn btn-primary btn-continue", input_html: {id: :media_submit } %>
+      </div>      
+  
+    <% end %>
+  </div>
+</div>

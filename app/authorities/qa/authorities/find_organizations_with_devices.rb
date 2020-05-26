@@ -1,0 +1,35 @@
+module Qa::Authorities
+  class FindOrganizationsWithDevices < Qa::Authorities::FindWorks
+
+    include MorphosourceHelper
+
+    def search(_q, controller)
+      # The My::FindWorksSearchBuilder expects a current_user
+      return [] unless controller.current_user
+      repo = CatalogController.new.repository
+      builder = search_builder(controller)
+      response = repo.search(builder)
+      docs = response.documents
+      docs.map do |doc|
+        id = doc.id
+        title = doc.title
+        institution_code = doc.institution_code
+        institution_name = doc.institution_name
+        collection_code = doc.collection_code
+        description = doc.description
+        address = doc.address
+        city = doc.city
+        state_province = doc.state_province
+        country = doc.country
+        devices = organization_devices(id)
+        { id: id, label: title, value: id, institution_code: institution_code, institution_name: institution_name, collection_code: collection_code, description: description, address: address, city: city, state_province: state_province, country: country, devices: devices }
+      end
+    end
+
+    private
+
+      def search_builder(controller)
+        super
+      end
+  end
+end

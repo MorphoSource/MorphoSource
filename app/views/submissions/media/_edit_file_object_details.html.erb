@@ -1,0 +1,47 @@
+<p class="media_type_block Mesh">
+Please enter information for editable fields. Uneditable fields will be parsed automatically on submission.
+</p>
+<p class="media_type_block CTImageSeries">
+Please enter information for editable fields. If uploading a DICOM image stack, fields with the <i class="fa fa-search"></i> icon will be parsed automatically on submission and do not need to be entered. Uneditable fields will be parsed automatically on submission.
+</p>
+<p class="media_type_block PhotogrammetryImageSeries">
+Please enter information for editable fields. Uneditable fields will be parsed automatically on submission.
+</p>
+
+<div class="media_type_block Mesh">
+  <%= render_edit_field_partial('map_type', f: f) %>
+</div>
+
+<div class="media_type_block Mesh CTImageSeries">
+  <%= render_edit_field_partial('unit', f: f) %>
+</div>
+
+<div class="media_type_block CTImageSeries">
+  <%= render_edit_field_partial('series_type', f: f) %>
+  <%= render_edit_field_partial('x_spacing', f: f) %>
+  <%= render_edit_field_partial('y_spacing', f: f) %>
+  <%= render_edit_field_partial('z_spacing', f: f) %>
+  <%= render_edit_field_partial('slice_thickness', f: f) %>
+</div>
+
+<div class="media_type_block PhotogrammetryImageSeries">
+  <%= f.input :scale_bar, as: :multi_value %>
+  <div class="row" id="media_scale_bar_wrapper">
+    <div class="col-xs-6 showcase-label">Scale Bar (Target type, Distance, Units)</div>
+    <div class="col-xs-6 showcase-value form-group multi_value optional managed wrapper_for_3">
+      <ul class="listing" aria-live="polite">
+        <li class="field-wrapper input-group input-append">
+          <input class="string multi_value optional form-control media_scale_bar_target_type form-control multi-text-field" name="media[scale_bar_target_type][]" value="" id="media_scale_bar_target_type" type="text">
+          <input class="string multi_value optional form-control media_scale_bar_distance form-control multi-text-field" name="media[scale_bar_distance][]" value="" id="media_scale_bar_distance" type="text" >
+          <input class="string multi_value optional form-control media_scale_bar_units form-control multi-text-field" name="media[scale_bar_units][]" value="" id="media_scale_bar_units" type="text">
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<%# elsif @presenter.this_media_type.match(/image/i) %>
+<div class="media_type_block CTImageSeries PhotogrammetryImageSeries">
+</div>
+
+

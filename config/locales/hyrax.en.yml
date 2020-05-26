@@ -138,6 +138,7 @@ en:
     labels:
       defaults:
         find_parent_work: Add to work
+        description: Description
     placeholders:
       defaults:
         find_parent_work: Search...

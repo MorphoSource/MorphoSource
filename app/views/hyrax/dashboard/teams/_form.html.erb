@@ -7,15 +7,14 @@
     <h1><%= @form.title.first %></h1>
     <span>
       <% if @media_member_count > 0 %>
-        <%= @media_member_count %> <%= 'Media'.pluralize(@media_member_count) %> · 
+        <%= @media_member_count %> <%= 'Media'.pluralize(@media_member_count) %>
       <% end %>
       <% if @bso_member_count > 0 %>
-        <%= @bso_member_count %> <%= 'Specimen'.pluralize(@bso_member_count) %> · 
+         · <%= @bso_member_count %> <%= 'Specimen'.pluralize(@bso_member_count) %>
       <% end %>
       <% if @cho_member_count > 0 %>
-        <%= @cho_member_count %> CHO · 
+         · <%= @cho_member_count %> CHO 
       <% end %>
-    --- Gigabytes
     </span>              
   </div>
   <div class="col-xs-3 show-actions text-right">
@@ -40,9 +39,29 @@
                         '/submissions/new?' + @presenter.collection_type_title.downcase + '=' + @presenter.id,
                         class: 'btn btn-primary' %>
 
+            <% if @collection.team? && @presenter.collection_type_is_nestable? %>
 
-            <%# The actions button should have the following actions: Save, Add Media To Team, Create New Media In Team, Add Project to Team, Create New Project In Team, Delete %>
+              <%= link_to t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
+                          'javascript:void(0)',
+                          class: 'btn btn-primary actions-add-subcollection' %>
 
+              <% if @presenter.user_can_create_new_nest_collection? %>
+                <%= link_to t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
+                  hyrax.dashboard_create_subcollection_under_path(parent_id: @presenter.id, target_collection_type_id: Hyrax::CollectionType.find_by(machine_id: "project").id),
+                  title: t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
+                  class: 'btn btn-primary' %>
+              <% end %>
+
+            <% end %>
+
+            <% if can? :destroy, @presenter.solr_document %>
+              <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                          hyrax.dashboard_collection_path(@presenter),
+                          title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                          class: 'btn btn-primary',
+                          data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
+                                  method: :delete } %>
+            <% end %>
 
           </li>
         </ul>
@@ -200,7 +219,7 @@
         </div>
       <% end # if @cho_member_count > 0 %>
 
-      <% if @presenter.collection_type_is_nestable? %>
+      <% if @collection.team? && @presenter.collection_type_is_nestable? %>
         <div id="team_projects" role="tabpanel" class="tab-pane">
           <div class="form-tab-content">
 

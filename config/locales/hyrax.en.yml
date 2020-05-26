@@ -118,6 +118,12 @@ en:
             button_label: 'Add project' 
           create_new_project_in_Team: 
             label: 'Create new project in team'
+          delete_Team:
+            label: 'Delete team'
+            confirmation: 'Delete this team?'
+          delete_Project:
+            label: 'Delete project'
+            confirmation: 'Delete this project?'
         form_relationships:
           modals:
             remove_this_project_description: Removing this project will not remove it from the repository.  It will only remove the project from this team. Are you sure you want to remove this project?

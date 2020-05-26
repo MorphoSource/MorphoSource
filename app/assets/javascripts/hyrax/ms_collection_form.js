@@ -6,6 +6,20 @@ $(document).on('turbolinks:load', function() {
     setupTooltip();
     removeLastRepeatable();
 
+    // Handling Actions dropdown menu clicks
+    $('.actions-add-subcollection').on('click', function (e) {
+      $('.sub-collections-wrapper button.add-subcollection').trigger('click');
+    });
+
+    $('.btn-remove-media').on('click', function (e) {
+      if (confirm('Remove this media?') == false) {
+        e.preventDefault();
+        return false;
+      } else {
+        return true;
+      }
+    });
+
     /* 
     form.addEventListener("submit", function(mediaSubmitEvent) {
 

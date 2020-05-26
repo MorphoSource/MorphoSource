@@ -33,7 +33,8 @@ bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>
   <% if current_user and can? :edit, @collection %>
     <td class="text-center">
-      <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-danger btn-xs" %>
+      <form></form>
+      <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
     </td>
   <% end %>
 </tr>

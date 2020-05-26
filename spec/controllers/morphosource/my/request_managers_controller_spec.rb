@@ -80,6 +80,9 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
       it "marks the item's date expired to one month from now" do
         expect(cartItem1.date_expired.to_date).to eq(1.month.from_now.to_date)
       end
+      it 'records the current user in action_by' do
+        expect(cartItem1.action_by).to eq(current_user.ms_id)
+      end
       it "creates a flash message with the number of items approved" do
         expect(response.flash[:notice]).to eq("1 Item Approved for Download")
       end
@@ -95,6 +98,10 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
       it "marks the items' date approved to today" do
         expect(cartItem1.date_approved.to_date).to eq(Date.today)
         expect(cartItem5.date_approved.to_date).to eq(Date.today)
+      end
+      it 'marks the items action_by with the approver ms_id' do
+        expect(cartItem1.action_by).to eq(current_user.ms_id)
+        expect(cartItem5.action_by).to eq(current_user.ms_id)
       end
       it "marks the items' date expired to one month from now" do
         expect(cartItem1.date_expired.to_date).to eq(1.month.from_now.to_date)
@@ -120,6 +127,9 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
     it 'marks the date cleared as today' do
       expect(cartItem5.date_cleared.to_date).to eq(Date.today)
     end
+    it 'records action_by' do
+      expect(cartItem5.action_by).to eq(current_user.ms_id)
+    end
     it 'creates a flash message' do
       expect(response.flash[:notice]).to eq("Request cleared for 1 Item")
     end
@@ -136,6 +146,9 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
     it "marks the item's date denied to today" do
       expect(cartItem5.date_denied.to_date).to eq(Date.today)
     end
+    it 'records action_by' do
+      expect(cartItem5.action_by).to eq(current_user.ms_id)
+    end
     it "creates a flash message" do
       expect(response.flash[:notice]).to eq("Download Denied")
     end
@@ -147,10 +160,13 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
   describe 'PUT #edit_expiration' do
     before do
       put :edit_expiration, params: { item_id: cartItem1.id, expiration_date: [Date.yesterday] }
+      cartItem1.reload
     end
     it "marks the item's expiration date as yesterday" do
-      cartItem1.reload
       expect(cartItem1.date_expired.to_date).to eq(Date.yesterday)
+    end
+    it 'records action_by' do
+      expect(cartItem1.action_by).to eq(current_user.ms_id)
     end
     it "creates a flash message" do
       expect(response.flash[:notice]).to eq("Expiration Date Updated")

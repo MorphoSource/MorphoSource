@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191210191248) do
+ActiveRecord::Schema.define(version: 20200522145919) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 20191210191248) do
     t.text "use"
     t.datetime "date_cleared"
     t.string "user_id", null: false
+    t.string "action_by"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end
 

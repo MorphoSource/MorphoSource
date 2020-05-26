@@ -240,6 +240,25 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       let(:path) { previous_requests_path }
       it{ expect(page).to eq('previous_requests') }
     end
+  end
 
+  describe 'action_by' do
+    let(:user)      { User.create(email: 'user@email.com', password: 'password') }
+    let(:approver)  {User.create(email: 'approver@email.com', password: 'password', display_name: 'approver name')}
+    let(:item)      { CartItem.new(user_id: user.ms_id, approver_id: approver.ms_id, work_id: 'work_id', action_by: nil ) }
+
+    context 'action_by is nil' do
+      it 'returns nil' do
+        expect(action_by(item)).to be(nil)
+      end
+    end
+    context 'action_by has approver id' do
+      before do
+        item.action_by = approver.ms_id
+      end
+      it 'returns the approver name' do
+        expect(action_by(item)).to eq(approver.display_name)
+      end
+    end
   end
 end

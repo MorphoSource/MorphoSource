@@ -111,6 +111,12 @@ module Morphosource::CartItemHelper
     item.send(attribute)&.strftime("%Y-%m-%d")
   end
 
+  def action_by(item)
+    return if item.action_by.nil?
+    ms_id = item.action_by
+    User.find_by(ms_id: ms_id).name
+  end
+
   def get_requester_items(items,requester)
     @requester_items = items.select{|item| item.user_id == requester.ms_id}
   end

@@ -75,6 +75,7 @@ module Morphosource
        items.each do |item|
         item.date_cleared = nil
         item.send(attribute, value)
+        item.action_by = current_user.ms_id if manager_action
         item.save
       end
     end
@@ -94,6 +95,10 @@ module Morphosource
       else
         value
       end
+    end
+
+    def manager_action
+      self.class == Morphosource::My::RequestManagersController
     end
 
     def get_items_by_id(ids=id_params)

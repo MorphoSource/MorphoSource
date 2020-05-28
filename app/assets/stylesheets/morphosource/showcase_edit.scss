@@ -193,6 +193,18 @@ input.disabled {
     min-width: 80px;
   }
 
+  .list-filters {
+    .dropdown-menu {
+      background-color: transparent;
+    }
+    .dropdown-toggle {
+      background-color: transparent;
+    }
+    .btn {
+      color: $font-color;
+    }
+  }
+
   .panel {
     border: none;
     margin-left: -15px;

@@ -16,22 +16,26 @@ $(document).on('turbolinks:load', function() {
         e.preventDefault();
         return false;
       } else {
+        disablePageAndSave(".dropdown-toggle");
         return true;
       }
     });
 
-    /* 
-    form.addEventListener("submit", function(mediaSubmitEvent) {
-
-      mediaSubmitEvent.preventDefault();
-
-      if (isFormValid()) {
-        disablePageAndSave(".btn-save-media");
-
-      }
-
+    form = $('form[id*="edit_collection"]')[0];
+    form.addEventListener("submit", function(submitEvent) {
+      //submitEvent.preventDefault();
+      disablePageAndSave(".dropdown-toggle");
     })
+
+    /*
+    $('.tab-action-buttons .btn').click(function() {
+      disablePageAndSave(".tab-action-buttons .btn");
+    });
     */
+
+    $('.btn-delete-collection').click(function() {
+      disablePageAndSave(".dropdown-toggle");
+    });
 
   } // end if collection form page
 

@@ -70,9 +70,12 @@ module Hyrax
           banner_info = CollectionBrandingInfo.where(collection_id: @collection.id.to_s).where(role: "banner")
           @banner_file = "/" + banner_info.first.local_path.split("/")[-4..-1].join("/") unless banner_info.empty?
         end
-
         presenter
         query_collection_members
+        
+        # todo: redirect dashboard page to edit page when ready
+        #url = '/dashboard/collections/' + @collection.id + '/edit' 
+        #redirect_to url
       end
 
       def edit
@@ -547,25 +550,43 @@ module Hyrax
           bso_extras = []
           cho_extras = []
 
+media_filter_params = {}
+m_params = params.select{ |k,v| k.match(/^m_/) }.select{ |k,v| v.present? }
+m_params.each do |k,v|
+  media_filter_params[k.sub('m_', '')] = v
+end
+
+
+
+
           docs.each do |doc|
             work = ::ActiveFedora::Base.find(doc.id)
             if work.class == Media
-              media_documents << doc
-              # get BSO and CHO
-              bso_doc, bso_extra, cho_doc, cho_extra = physical_object_solr_from_media(doc.id)
-              if bso_doc.present?
-                unless bso_documents.any? {|h| h['id'] == bso_doc.id}
-                  # check if the ID already exists before adding
-                  bso_documents << bso_doc
-                  bso_extras << bso_extra
+
+      
+              # filter 
+              if work.visibility == media_filter_params['visibility']
+
+                media_documents << doc
+  
+                # get BSO and CHO
+                bso_doc, bso_extra, cho_doc, cho_extra = physical_object_solr_from_media(doc.id)
+                if bso_doc.present?
+                  unless bso_documents.any? {|h| h['id'] == bso_doc.id}
+                    # check if the ID already exists before adding
+                    bso_documents << bso_doc
+                    bso_extras << bso_extra
+                  end
                 end
-              end
-              if cho_doc.present?
-                unless cho_documents.any? {|h| h['id'] == cho_doc.id}
-                  cho_documents << cho_doc 
-                  cho_extras << cho_extra
+                if cho_doc.present?
+                  unless cho_documents.any? {|h| h['id'] == cho_doc.id}
+                    cho_documents << cho_doc 
+                    cho_extras << cho_extra
+                  end
                 end
-              end
+              
+              end # end filter
+
             end
           end 
           return media_documents.compact, bso_documents.compact, bso_extras,

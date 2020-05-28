@@ -58,7 +58,7 @@
               <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
                           hyrax.dashboard_collection_path(@presenter),
                           title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
-                          class: 'btn btn-primary',
+                          class: 'btn btn-primary btn-delete-collection',
                           data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
                                   method: :delete } %>
             <% end %>
@@ -179,6 +179,7 @@
             </div>
           <% end %>
 
+          <%= render 'facets' %>
           <%= render 'hyrax/teams/tab_media' %>
         </div>
       </div>

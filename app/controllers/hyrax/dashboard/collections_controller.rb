@@ -449,6 +449,7 @@ module Hyrax
  
           @media_member_docs, @bso_member_docs, @bso_extras, 
             @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs)
+#byebug
           @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
           @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
           @media_member_count = @media_member_docs.length
@@ -558,14 +559,18 @@ end
 
 
 
+          @m_visibility_options = []
 
           docs.each do |doc|
             work = ::ActiveFedora::Base.find(doc.id)
             if work.class == Media
-
+              @m_visibility_options << work.visibility
       
+              m_visibility_to_compare = media_filter_params['visibility'] || work.visibility
+              m_media_type_to_compare = media_filter_params['media_type'] || work.media_type.first
               # filter 
-              if work.visibility == media_filter_params['visibility']
+              if work.visibility == m_visibility_to_compare &&
+                work.media_type.first == m_media_type_to_compare
 
                 media_documents << doc
   
@@ -585,10 +590,13 @@ end
                   end
                 end
               
-              end # end filter
+              end 
+              # / filter
 
             end
-          end 
+          end # / docs.each
+
+# byebug
           return media_documents.compact, bso_documents.compact, bso_extras,
             cho_documents.compact, cho_extras
         end

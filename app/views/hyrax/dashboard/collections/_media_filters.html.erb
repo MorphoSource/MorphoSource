@@ -1,0 +1,48 @@
+<form id="filters" action="" method="get">
+
+<div class="filters row">
+
+	<div class="col-sm-2">Filter:</div>
+	<div class="col-sm-10">
+
+		<% 
+	#byebug
+		if params['m_visibility'].present? %>
+			<input type="hidden" name="m_visibility" value="<%= params['m_visibility'] %>" class="filter-param" />
+		<% else %>
+	  	<select name="m_visibility">
+	  		<option value="">Visibility</option>
+	  		<option>restricted</option>
+	  		<option>open</option>
+	  	</select>
+	  <% end %>
+
+	 	<% if params['m_media_type'].present? %>
+			<input type="hidden" name="m_media_type" value="<%= params['m_media_type'] %>" class="filter-param" />
+		<% else %>
+	  	<select name="m_media_type">
+	  		<option value="">Media type</option>
+	  		<option>Image</option>
+	  		<option>Mesh</option>
+	  	</select>
+	  <% end %>
+	</div>
+
+</div>
+
+<div class="filter-by row">
+
+	<div class="col-sm-2">Filtering by:</div>
+	<div class="col-sm-8">
+		<% if params['m_visibility'].present? %>
+			<p id="m_visibility" class="filter-param">Visibility > <%= params['m_visibility'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-param="m_visibility"></i></p>
+		<% end %>
+		<% if params['m_media_type'].present? %>
+			<p id="m_media_type" class="filter-param">Media type > <%= params['m_media_type'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-param="m_media_type"></i></p>
+		<% end %>
+	</div>
+	<div class="col-sm-2">Remove all filters <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-param="all"></i></div>
+
+</div>
+
+</form>

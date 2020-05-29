@@ -21,6 +21,21 @@ $(document).on('turbolinks:load', function() {
       }
     });
 
+    $('form#filters select').change(function() {
+      $('form#filters').submit();
+    });
+
+    $('[data-behavior="remove-filter"]').on('click', function (e) {
+      removing_param = $(this).data('param');
+      if (removing_param == 'all') {
+        $('[class="filter-param"]').remove();
+      } else {
+        $('input[name=' + removing_param + ']').remove();
+        $('p[id=' + removing_param + ']').remove();        
+      }
+      $('form#filters').submit();      
+    });
+
     form = $('form[id*="edit_collection"]')[0];
     form.addEventListener("submit", function(submitEvent) {
       //submitEvent.preventDefault();

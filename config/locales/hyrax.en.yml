@@ -102,6 +102,14 @@ en:
           actions: Action
           title: Taxonomy
     dashboard:
+
+
+      my:
+        heading:
+          visibility: visibility
+          collection_type: collection type
+
+
       collections:
         actions:
           add_media_to_Team:

@@ -78,20 +78,20 @@
         <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
         </a>
       </li>
-      <% if @bso_member_count > 0 %>
+      <%# if @bso_member_count > 0 %>
         <li role="presentation">
           <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
             <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
           </a>
         </li>
-      <% end %>
-      <% if @cho_member_count > 0 %>
+      <%# end %>
+      <%# if @cho_member_count > 0 %>
         <li role="presentation">
           <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
             <i class="fas fa-frog" aria-hidden="true"></i> CHO
           </a>
         </li>
-      <% end %>
+      <%# end %>
       <li role="presentation">
         <a href="#details" aria-controls="details" role="tab" data-toggle="tab" aria-expanded="true">
           <i class="fas fa-newspaper" aria-hidden="true"></i> DETAILS        
@@ -184,7 +184,7 @@
         </div>
       </div>
 
-      <% if @bso_member_count > 0 %>
+      <%# if @bso_member_count > 0 %>
         <div id="biological_specimens" role="tabpanel" class="tab-pane">
           <div class="form-tab-content">
 
@@ -197,12 +197,13 @@
               </div>
             <% end %>
             
+            <%= render 'bso_filters' %>
             <%= render 'hyrax/teams/tab_bso' %>
           </div>
         </div>
-      <% end # if @bso_member_count > 0 %>
+      <%# end # if @bso_member_count > 0 %>
 
-      <% if @cho_member_count > 0 %>
+      <%# if @cho_member_count > 0 %>
         <div id="cultural_heritage_objects" role="tabpanel" class="tab-pane">
           <div class="form-tab-content">
 
@@ -218,7 +219,7 @@
             <%= render 'hyrax/teams/tab_cho' %>
           </div>
         </div>
-      <% end # if @cho_member_count > 0 %>
+      <%# end # if @cho_member_count > 0 %>
 
       <% if @collection.team? && @presenter.collection_type_is_nestable? %>
         <div id="team_projects" role="tabpanel" class="tab-pane">

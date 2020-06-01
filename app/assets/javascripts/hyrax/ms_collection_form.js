@@ -21,8 +21,10 @@ $(document).on('turbolinks:load', function() {
       }
     });
 
-    $('form#filters select').change(function() {
-      $('form#filters').submit();
+    $('form.filters select').change(function() {
+      var form_id = $(this).data('form');
+      disablePage();
+      $('#'+form_id).submit();
     });
 
     $('[data-behavior="remove-filter"]').on('click', function (e) {
@@ -33,7 +35,9 @@ $(document).on('turbolinks:load', function() {
         $('input[name=' + removing_param + ']').remove();
         $('p[id=' + removing_param + ']').remove();        
       }
-      $('form#filters').submit();      
+      var form_id = $(this).data('form');
+      disablePage();
+      $('#'+form_id).submit();
     });
 
     form = $('form[id*="edit_collection"]')[0];

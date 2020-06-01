@@ -365,6 +365,14 @@ module MorphosourceHelper
     url
   end
 
+  def display_source(bso)
+    if bso.idigbio_uuid.present?
+      return "iDigbio"
+    else
+      return 'User'
+    end
+  end
+
   def display_date(value)
     # first try to parse and format the date generated from datepicker (YYYY-MM-DD)
     # for other format, e.g. "04/26/2019", it will throw invalid date exception

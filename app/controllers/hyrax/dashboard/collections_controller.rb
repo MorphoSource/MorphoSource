@@ -557,6 +557,11 @@ m_params.each do |k,v|
   media_filter_params[k.sub('m_', '')] = v
 end
 
+bso_filter_params = {}
+b_params = params.select{ |k,v| k.match(/^b_/) }.select{ |k,v| v.present? }
+b_params.each do |k,v|
+  bso_filter_params[k.sub('b_', '')] = v
+end
 
 
           @m_visibility_options = []
@@ -570,17 +575,23 @@ end
               m_media_type_to_compare = media_filter_params['media_type'] || work.media_type.first
               # filter 
               if work.visibility == m_visibility_to_compare &&
-                work.media_type.first == m_media_type_to_compare
-
+                  work.media_type.first == m_media_type_to_compare
                 media_documents << doc
-  
                 # get BSO and CHO
                 bso_doc, bso_extra, cho_doc, cho_extra = physical_object_solr_from_media(doc.id)
                 if bso_doc.present?
+                  # check if the ID already exists before adding
                   unless bso_documents.any? {|h| h['id'] == bso_doc.id}
-                    # check if the ID already exists before adding
-                    bso_documents << bso_doc
-                    bso_extras << bso_extra
+                    # filter
+                    bso = BiologicalSpecimen.find(bso_doc.id)
+                    bso_source = display_source(bso)
+                    b_visibility_to_compare = bso_filter_params['visibility'] || bso.visibility
+                    b_source_to_compare = bso_filter_params['source'] || display_source(bso)
+                    if bso.visibility == b_visibility_to_compare &&
+                        bso_source == b_source_to_compare
+                      bso_documents << bso_doc
+                      bso_extras << bso_extra
+                    end
                   end
                 end
                 if cho_doc.present?

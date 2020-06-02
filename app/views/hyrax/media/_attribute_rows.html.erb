@@ -1,5 +1,5 @@
 <!-- Fields on the show page are in the order below -->
-<%= link_to t('hyrax.file_sets.actions.download'), main_app.zip_hyrax_media_index_path(ids: [presenter.id]) , class: 'btn btn-lg btn-primary', role: 'button', download: true, target: '_blank' %>
+<%= link_to t('hyrax.file_sets.actions.download'), main_app.zip_path(ids: [presenter.id]) , class: 'btn btn-lg btn-primary', role: 'button', download: true, target: '_blank' %>
 <br/><br/>
 <!-- Hyrax Basic Metadata -->
 <%= presenter.attribute_to_html(:date_modified, label: t('hyrax.base.show.last_modified'), html_dl: true) %>

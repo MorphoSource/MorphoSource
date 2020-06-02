@@ -76,6 +76,21 @@ class Media < Morphosource::Works::Base
     fileset_accessibility.first == "open"
   end
 
+  # true if publication status is open, restricted, lease
+  def can_add_to_cart?
+    case publication_status
+    when 'open'
+      true
+    when 'lease'
+      true
+    when 'restricted'
+      true
+    else
+      false
+    end
+  end
+
+  # TODO - consider what happens with fileset_accessibility for lease/embargo
   def publication_status
     accessibility = fileset_accessibility.first
     case

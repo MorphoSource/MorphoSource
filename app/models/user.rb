@@ -64,6 +64,15 @@ class User < ApplicationRecord
     email
   end
 
+  # true if user has download access or an approved cart item
+  def has_download_access_or_approval?(media_id)
+    (self.can? :download, media_id) || (downloadable_item_work_ids.include? media_id)
+  end
+
+  def approved_to_download?(media_id)
+    downloadable_item_work_ids.include? media_id
+  end
+
   def items_in_cart
     cart_items.select{ |i| i.in_cart == true }
   end

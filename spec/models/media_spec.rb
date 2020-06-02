@@ -173,6 +173,46 @@ RSpec.describe Media do
       end
     end
 
+    describe '#can_add_to_cart?' do
+      subject { described_class.new }
+      context 'media is open' do
+        before do
+          subject.fileset_accessibility = ['open']
+        end
+        it { expect(subject.can_add_to_cart?).to be(true) }
+      end
+      context 'media is on lease' do
+        before do
+          allow(subject).to receive(:active_lease?).and_return(true)
+        end
+        it { expect(subject.can_add_to_cart?).to be(true) }
+      end
+      context 'media is restricted' do
+        before do
+          subject.fileset_accessibility = ['restricted_download']
+        end
+        it { expect(subject.can_add_to_cart?).to be(true) }
+      end
+      context 'media is preview onoy' do
+        before do
+          subject.fileset_accessibility = ['preview_only']
+        end
+        it { expect(subject.can_add_to_cart?).to be(false) }
+      end
+      context 'media is hidden' do
+        before do
+          subject.fileset_accessibility = ['hidden']
+        end
+        it { expect(subject.can_add_to_cart?).to be(false) }
+      end
+      context 'media is under embargo' do
+        before do
+          allow(subject).to receive(:under_embargo?).and_return(true)
+        end
+        it { expect(subject.can_add_to_cart?).to be(false) }
+      end
+    end
+
     describe '#publication_status' do
       let(:open) { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
       let(:private) { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }

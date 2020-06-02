@@ -341,14 +341,27 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
   end
 
   describe "POST #request_work" do
-    context "work is not in the user's cart and hasn't been requested" do
-      let(:depositor) { User.create(email: "test@test.com", password: "password")}
-      let(:new_work)    { Media.create(id: 'zzz', fileset_accessibility: ["restricted_download"], depositor: depositor.ms_id)}
-      let(:post_params) { { work_id: [new_work.id], intended_use: ["Intended Use"] } }
+    let(:depositor) { User.create(email: "test@test.com", password: "password")}
+    let(:new_work)    { Media.create(id: 'zzz', fileset_accessibility: ["restricted_download"], depositor: depositor.ms_id)}
+    let(:post_params) { { work_id: [new_work.id], intended_use: ["Intended Use"] } }
+
+    before do
+      request.env["HTTP_REFERER"] = "original_page"
+      allow(Media).to receive(:find).with('zzz').and_return(new_work)
+    end
+
+    context "work can't be added to cart and the user doesn't have download access" do
       before do
-        request.env["HTTP_REFERER"] = "original_page"
-        allow(Media).to receive(:find).with('zzz').and_return(new_work)
+        allow(new_work).to receive(:can_add_to_cart?).and_return(false)
+        allow(subject.current_user).to receive(:can?).with(:download, new_work.id).and_return(false)
       end
+      it 'does not request the work' do
+        post :request_work, params: post_params
+        expect(response.flash[:alert]).to eq('You are not authorized to request this work.')
+      end
+    end
+
+    context "work is not in the user's cart and hasn't been requested" do
 
       it "creates a new CartItem" do
         expect{

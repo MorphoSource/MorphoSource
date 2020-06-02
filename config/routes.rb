@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     get 'concern/parent/:parent_id/cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
     # redirect the default media view to showcase view, except for certain action (e.g. new)
     get 'concern/media/new', to: 'media#new'
-    get 'concern/media/zip', to: 'media#zip'
+    get 'concern/media/zip', to: 'morphosource/zip_media#zip'
     get 'concern/media/:id', to: 'media#showcase'
     # in case we need to reference the old edit page. remove this hyraxedit route later
     get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
@@ -72,12 +72,8 @@ Rails.application.routes.draw do
   resources :welcome, only: 'index'
   root 'hyrax/homepage#index'
 
-  namespace :hyrax, path: :concern do
-    namespaced_resources 'media' do
-      collection do
-        get :zip, action: :zip
-      end
-    end
+  scope module: :morphosource do
+    get :zip, action: :zip, controller: :zip_media
   end
 
   namespace :hyrax do

@@ -12,6 +12,9 @@ module Hyrax
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::MediaPresenter
 
+    # override Hydra::AccessControlsEnforcement to include 'download' access in @discovery_permissions
+    self.search_builder_class = Morphosource::WorkSearchBuilder
+
     before_action :save_fileset_visibility, only: [:update]
     before_action :save_publication_status, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]

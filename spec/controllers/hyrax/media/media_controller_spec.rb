@@ -42,6 +42,101 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
   end
 
+  describe "search_builder_class" do
+    it "is Morphosource::WorkSearchBuilder" do
+      expect(subject.search_builder_class).to be(Morphosource::WorkSearchBuilder)
+    end
+  end
+
+  describe 'GET #showcase' do
+    let!(:work)         { Media.create(title: ['test title'], visibility: private, fileset_visibility: [""], fileset_accessibility: ["private"]) }
+    let(:access_group)  { Role.create(name: 'access_group') }
+    let(:user)          { User.create(email: 'user@email.com', password: 'password') }
+
+    before do
+      access_group.users << user
+      access_group.save
+      sign_in user
+    end
+
+    describe 'user ability to view' do
+      context 'work is private' do
+        context 'user does not have access' do
+          it 'is unauthorized' do
+            get :showcase, params: { id: work.id }
+            expect(response.status).to eq(401)
+          end
+        end
+        context 'user has edit access' do
+          context 'through a group' do
+            before do
+              work.edit_groups += [access_group]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+          context 'as a user' do
+            before do
+              work.edit_users += [user]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+        end
+        context 'user has download access' do
+          context 'through a group' do
+            before do
+              work.download_groups += [access_group]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+          context 'as a user' do
+            before do
+              work.download_users += [user]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+        end
+        context 'user has read access' do
+          context 'through a group' do
+            before do
+              work.read_groups += [access_group]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+          context 'as a user' do
+            before do
+              work.read_users += [user]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+        end
+      end
+    end
+  end
+
   describe "#valid_file_formats" do
     let(:work)        { Media.new(title: ["Test Media Work"]) }
     let(:user)        { FactoryBot.create(:user) }

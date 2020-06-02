@@ -63,6 +63,46 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '#has_download_access_or_approval?' do
+    context 'user has download access' do
+      subject { user.has_download_access_or_approval?(work.id) }
+
+      it { expect(subject).to be(true) }
+    end
+    context 'user has an approved request' do
+      subject { user.has_download_access_or_approval?(work2.id) }
+
+      before do
+        cartItem1.date_approved = Date.yesterday
+        cartItem1.save
+      end
+
+      it { expect(subject).to be(true) }
+    end
+    context 'user does not have download access or an approved request' do
+      subject { user.has_download_access_or_approval?(work2.id) }
+
+      it { expect(subject).to be(false) }
+    end
+  end
+
+  describe '#approved_to_download?' do
+    subject { user.approved_to_download?(work2.id) }
+
+    context 'user does not have an approved request' do
+      it { expect(subject).to be(false) }
+    end
+
+    context 'user has an approved download' do
+      before do
+        cartItem1.date_approved = Date.yesterday
+        cartItem1.save
+      end
+
+      it{ expect(subject).to be(true) }
+    end
+  end
+
   describe '#items_in_cart' do
     it "returns all cart items in the user's shopping cart" do
       expect(user.items_in_cart).to match_array([cartItem1, cartItem2, cartItem3])

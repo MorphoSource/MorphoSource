@@ -449,7 +449,6 @@ module Hyrax
  
           @media_member_docs, @bso_member_docs, @bso_extras, 
             @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs)
-#byebug
           @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
           @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
           @media_member_count = @media_member_docs.length
@@ -551,17 +550,9 @@ module Hyrax
           bso_extras = []
           cho_extras = []
 
-media_filter_params = {}
-m_params = params.select{ |k,v| k.match(/^m_/) }.select{ |k,v| v.present? }
-m_params.each do |k,v|
-  media_filter_params[k.sub('m_', '')] = v
-end
+          media_filter_params = filter_params('m_', params)
+          bso_filter_params = filter_params('b_', params)
 
-bso_filter_params = {}
-b_params = params.select{ |k,v| k.match(/^b_/) }.select{ |k,v| v.present? }
-b_params.each do |k,v|
-  bso_filter_params[k.sub('b_', '')] = v
-end
 
 
           @m_visibility_options = []
@@ -607,7 +598,6 @@ end
             end
           end # / docs.each
 
-# byebug
           return media_documents.compact, bso_documents.compact, bso_extras,
             cho_documents.compact, cho_extras
         end

@@ -37,6 +37,15 @@ module MorphosourceHelper
     link.html_safe
   end
 
+  def filter_params(prefix, params=nil)
+    return_params = {}
+    temp_params = params.select{ |k,v| k.match(/^#{prefix}/) }.select{ |k,v| v.present? }
+    temp_params.each do |k,v|
+      return_params[k.sub(prefix, '')] = v
+    end
+    return_params
+  end
+
   def truncate_value(value, length=20)
     return "" if value.nil?
     value.truncate(length)

@@ -1,51 +1,52 @@
 <% show_filter_by = false %>
-<form id="bso-filters" name="bso-filters" class="filters" action="" method="get">
 
-<div class="filters row">
+<%= simple_form_for @form, url: edit_dashboard_collection_url + '#biological_specimens', html: { class: 'filters', id: "bso-filters", name: "bso-filters", method: "get" } do |bf| %>
 
-	<div class="col-sm-2 col-lg-1 filter-label">Filter:</div>
-	<div class="col-sm-10 col-lg-11">
+	<div class="filters row">
 
-		<% if params['b_visibility'].present? 
-				 show_filter_by = true %>
-			<input type="hidden" name="b_visibility" value="<%= params['b_visibility'] %>" class="filter-param" />
-		<% else %>
-	  	<select name="b_visibility" data-form="bso-filters">
-	  		<option value="">Visibility</option>
-	  		<option>restricted</option>
-	  		<option>open</option>
-	  	</select>
-	  <% end %>
+		<div class="col-sm-2 col-lg-1 filter-label">Filter:</div>
+		<div class="col-sm-10 col-lg-11">
 
-	 	<% if params['b_source'].present? 
-				 show_filter_by = true %>
-			<input type="hidden" name="b_source" value="<%= params['b_source'] %>" class="filter-param" />
-		<% else %>
-	  	<select name="b_source" data-form="bso-filters">
-	  		<option value="">Source</option>
-	  		<option>iDigbio</option>
-	  		<option>User</option>
-	  	</select>
-	  <% end %>
-	</div>
+			<% if params['b_visibility'].present? 
+					 show_filter_by = true %>
+				<input type="hidden" name="b_visibility" value="<%= params['b_visibility'] %>" class="filter-param" />
+			<% else %>
+		  	<select name="b_visibility" data-form="bso-filters">
+		  		<option value="">Visibility</option>
+		  		<option>restricted</option>
+		  		<option>open</option>
+		  	</select>
+		  <% end %>
 
-</div>
-
-<% if show_filter_by == true %>
-	<div class="filter-by row">
-
-		<div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
-		<div class="col-sm-8 col-lg-9">
-			<% if params['b_visibility'].present? %>
-				<p id="b_visibility" class="filter-param">Visibility > <%= params['b_visibility'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_visibility"></i></p>
-			<% end %>
-			<% if params['b_source'].present? %>
-				<p id="b_source" class="filter-param">Source > <%= params['b_source'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_source"></i></p>
-			<% end %>
+		 	<% if params['b_source'].present? 
+					 show_filter_by = true %>
+				<input type="hidden" name="b_source" value="<%= params['b_source'] %>" class="filter-param" />
+			<% else %>
+		  	<select name="b_source" data-form="bso-filters">
+		  		<option value="">Source</option>
+		  		<option>iDigbio</option>
+		  		<option>User</option>
+		  	</select>
+		  <% end %>
 		</div>
-		<div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>
 
 	</div>
-<% end %>
 
-</form>
+	<% if show_filter_by == true %>
+		<div class="filter-by row">
+
+			<div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
+			<div class="col-sm-8 col-lg-9">
+				<% if params['b_visibility'].present? %>
+					<p id="b_visibility" class="filter-param">Visibility > <%= params['b_visibility'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_visibility"></i></p>
+				<% end %>
+				<% if params['b_source'].present? %>
+					<p id="b_source" class="filter-param">Source > <%= params['b_source'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_source"></i></p>
+				<% end %>
+			</div>
+			<div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>
+
+		</div>
+	<% end %>
+
+<% end %>

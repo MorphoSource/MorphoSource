@@ -1,0 +1,39 @@
+<% show_filter_by = false %>
+
+<%= simple_form_for @form, url: edit_dashboard_collection_url + '#team_projects', html: { class: 'filters', id: "project-filters", name: "project-filters", method: "get" } do |pf| %>
+
+	<div class="filters row">
+
+		<div class="col-sm-2 col-lg-1 filter-label">Filter:</div>
+		<div class="col-sm-10 col-lg-11">
+
+			<% if params['p_visibility'].present? 
+					 show_filter_by = true %>
+				<input type="hidden" name="p_visibility" value="<%= params['p_visibility'] %>" class="filter-param" />
+			<% else %>
+		  	<select name="p_visibility" data-form="project-filters">
+		  		<option value="">Visibility</option>
+		  		<option>restricted</option>
+		  		<option>open</option>
+		  	</select>
+		  <% end %>
+
+		</div>
+
+	</div>
+
+	<% if show_filter_by == true %>
+		<div class="filter-by row">
+
+			<div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
+			<div class="col-sm-8 col-lg-9">
+				<% if params['p_visibility'].present? %>
+					<p id="p_visibility" class="filter-param">Visibility > <%= params['p_visibility'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="project-filters" data-param="p_visibility"></i></p>
+				<% end %>
+			</div>
+			<div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="project-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>
+
+		</div>
+	<% end %>
+
+<% end %>

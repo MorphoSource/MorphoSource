@@ -252,7 +252,8 @@
                 </div>
               <% end %>
 
-              <%= render 'tab_project_list', id: @presenter.id, collection: @subcollection_docs %>
+              <%= render 'project_filters' %>
+              <%= render 'tab_project_list', id: @presenter.id, collection: @presenter.filter_projects(@subcollection_docs, request.params) %>
 
           </div>
         </div>

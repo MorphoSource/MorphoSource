@@ -1,7 +1,8 @@
 module Hyrax
   class TeamPresenter < CollectionPresenter
+    include MorphosourceHelper
 
-    attr_reader :subcollection_count, :search_form_url, :collection, :collection_managers, :collection_type_title, :specimens, 
+    attr_reader :filter_projects, :subcollection_count, :search_form_url, :collection, :collection_managers, :collection_type_title, :specimens, 
       :organization,
       :organization_title,
       :organization_institution_name,
@@ -41,6 +42,15 @@ module Hyrax
 
     def collection_type_title
       collection_type.title
+    end
+
+
+    def filter_projects(docs, params)
+
+
+      project_filter_params = filter_params('p_', params)
+
+      docs
     end
 
     def organization_object_counts(org)

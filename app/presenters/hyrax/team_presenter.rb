@@ -44,13 +44,18 @@ module Hyrax
       collection_type.title
     end
 
-
     def filter_projects(docs, params)
-
-
       project_filter_params = filter_params('p_', params)
-
-      docs
+      return docs if project_filter_params.empty?
+      filtered_docs = []
+      docs.each do |doc|
+        collection = Collection.find(doc.id)
+        visibility_to_compare = project_filter_params['visibility'] || collection.visibility
+        if collection.visibility == visibility_to_compare
+          filtered_docs << doc
+        end
+      end
+      filtered_docs
     end
 
     def organization_object_counts(org)

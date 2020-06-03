@@ -37,7 +37,7 @@ module MorphosourceHelper
     link.html_safe
   end
 
-  def filter_params(prefix, params=nil)
+  def filter_params(prefix, params)
     return_params = {}
     temp_params = params.select{ |k,v| k.match(/^#{prefix}/) }.select{ |k,v| v.present? }
     temp_params.each do |k,v|
@@ -184,6 +184,10 @@ module MorphosourceHelper
     return bso, bso_extra, cho, cho_extra
   end
 
+  def organization_from_bso(bso)
+    organization = Organization.where('member_ids_ssim' => bso.id).first
+    organization
+  end
 
   def ms_work_form_tabs(work)
     if files_required?(work)

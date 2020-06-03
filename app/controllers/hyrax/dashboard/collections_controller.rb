@@ -555,48 +555,69 @@ module Hyrax
 
 
 
-          @m_visibility_options = []
+          @visibility_options = []
+          @organization_options = []
 
           docs.each do |doc|
             work = ::ActiveFedora::Base.find(doc.id)
             if work.class == Media
-              @m_visibility_options << work.visibility
+              @visibility_options << work.visibility
       
               m_visibility_to_compare = media_filter_params['visibility'] || work.visibility
               m_media_type_to_compare = media_filter_params['media_type'] || work.media_type.first
-              # filter 
+
+              # get BSO and CHO
+              bso_doc, bso_extra, cho_doc, cho_extra = physical_object_solr_from_media(doc.id)
+              if bso_doc.present?
+                bso = BiologicalSpecimen.find(bso_doc.id)
+                organization = organization_from_bso(bso)
+
+                if organization.present?
+                  bso_organization = organization.title.first 
+                  @organization_options << bso_organization
+                else
+                  bso_organization = ''
+                end
+                # check if the ID already exists before adding
+                unless bso_documents.any? {|h| h['id'] == bso_doc.id}
+                  # filter
+                  bso_source = display_source(bso)
+
+                  b_visibility_to_compare = bso_filter_params['visibility'] || bso.visibility
+                  b_source_to_compare = bso_filter_params['source'] || display_source(bso)
+                  b_organization_to_compare = bso_filter_params['organization'] || bso_organization
+                  
+                  if bso.visibility == b_visibility_to_compare &&
+                      bso_source == b_source_to_compare &&
+                      bso_organization == b_organization_to_compare
+                    bso_documents << bso_doc
+                    bso_extras << bso_extra
+                  end
+                end
+              end
+
+              m_organization_to_compare = media_filter_params['organization'] || bso_organization
+
+              if cho_doc.present?
+                unless cho_documents.any? {|h| h['id'] == cho_doc.id}
+                  cho_documents << cho_doc 
+                  cho_extras << cho_extra
+                end
+              end
+
+              # filter media
               if work.visibility == m_visibility_to_compare &&
-                  work.media_type.first == m_media_type_to_compare
+                  work.media_type.first == m_media_type_to_compare &&
+                  bso_organization == m_organization_to_compare
+                
                 media_documents << doc
-                # get BSO and CHO
-                bso_doc, bso_extra, cho_doc, cho_extra = physical_object_solr_from_media(doc.id)
-                if bso_doc.present?
-                  # check if the ID already exists before adding
-                  unless bso_documents.any? {|h| h['id'] == bso_doc.id}
-                    # filter
-                    bso = BiologicalSpecimen.find(bso_doc.id)
-                    bso_source = display_source(bso)
-                    b_visibility_to_compare = bso_filter_params['visibility'] || bso.visibility
-                    b_source_to_compare = bso_filter_params['source'] || display_source(bso)
-                    if bso.visibility == b_visibility_to_compare &&
-                        bso_source == b_source_to_compare
-                      bso_documents << bso_doc
-                      bso_extras << bso_extra
-                    end
-                  end
-                end
-                if cho_doc.present?
-                  unless cho_documents.any? {|h| h['id'] == cho_doc.id}
-                    cho_documents << cho_doc 
-                    cho_extras << cho_extra
-                  end
-                end
-              
               end 
-              # / filter
+              # / filter media
 
             end
           end # / docs.each
+
+          @organization_options = @organization_options.uniq
 
           return media_documents.compact, bso_documents.compact, bso_extras,
             cho_documents.compact, cho_extras

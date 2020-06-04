@@ -13,8 +13,9 @@
 			<% else %>
 		  	<select name="p_visibility" data-form="project-filters">
 		  		<option value="">Visibility</option>
-		  		<option>restricted</option>
-		  		<option>open</option>
+		  		<% @visibility_options.each do |v| %>
+			  		<option><%= v %></option>
+		  		<% end %>
 		  	</select>
 		  <% end %>
 

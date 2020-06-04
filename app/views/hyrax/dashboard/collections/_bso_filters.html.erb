@@ -13,8 +13,9 @@
 			<% else %>
 		  	<select name="b_visibility" data-form="bso-filters">
 		  		<option value="">Visibility</option>
-		  		<option>restricted</option>
-		  		<option>open</option>
+		  		<% @visibility_options.each do |v| %>
+			  		<option><%= v %></option>
+		  		<% end %>
 		  	</select>
 		  <% end %>
 
@@ -24,8 +25,9 @@
 			<% else %>
 		  	<select name="b_source" data-form="bso-filters">
 		  		<option value="">Source</option>
-		  		<option>iDigbio</option>
-		  		<option>User</option>
+		  		<% @bso_source_options.each do |v| %>
+			  		<option><%= v %></option>
+		  		<% end %>
 		  	</select>
 		  <% end %>
 
@@ -35,8 +37,8 @@
 			<% else %>
 		  	<select name="b_organization" data-form="bso-filters">
 		  		<option value="">Organization</option>
-		  		<% @organization_options.each do |organization_title| %>
-			  		<option><%= organization_title %></option>
+		  		<% @organization_options.each do |v| %>
+			  		<option><%= v %></option>
 		  		<% end %>
 		  	</select>
 		  <% end %>

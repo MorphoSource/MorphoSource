@@ -552,17 +552,14 @@ module Hyrax
 
           media_filter_params = filter_params('m_', params)
           bso_filter_params = filter_params('b_', params)
-
-
-
           @visibility_options = []
+          @media_type_options = []
           @organization_options = []
+          @bso_source_options = []
 
           docs.each do |doc|
             work = ::ActiveFedora::Base.find(doc.id)
-            if work.class == Media
-              @visibility_options << work.visibility
-      
+            if work.class == Media      
               m_visibility_to_compare = media_filter_params['visibility'] || work.visibility
               m_media_type_to_compare = media_filter_params['media_type'] || work.media_type.first
 
@@ -592,6 +589,7 @@ module Hyrax
                       bso_organization == b_organization_to_compare
                     bso_documents << bso_doc
                     bso_extras << bso_extra
+                    @bso_source_options << bso_source
                   end
                 end
               end
@@ -611,13 +609,18 @@ module Hyrax
                   bso_organization == m_organization_to_compare
                 
                 media_documents << doc
+                @visibility_options << work.visibility
+                @media_type_options << work.media_type.first
               end 
               # / filter media
 
             end
           end # / docs.each
 
+          @visibility_options = @visibility_options.uniq
+          @media_type_options = @media_type_options.uniq
           @organization_options = @organization_options.uniq
+          @bso_source_options = @bso_source_options.uniq
 
           return media_documents.compact, bso_documents.compact, bso_extras,
             cho_documents.compact, cho_extras

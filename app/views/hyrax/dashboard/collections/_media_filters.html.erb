@@ -13,8 +13,9 @@
 			<% else %>
 		  	<select name="m_visibility" data-form="media-filters">
 		  		<option value="">Visibility</option>
-		  		<option>restricted</option>
-		  		<option>open</option>
+		  		<% @visibility_options.each do |v| %>
+			  		<option><%= v %></option>
+		  		<% end %>
 		  	</select>
 		  <% end %>
 
@@ -24,8 +25,9 @@
 			<% else %>
 		  	<select name="m_media_type" data-form="media-filters">
 		  		<option value="">Media type</option>
-		  		<option>Image</option>
-		  		<option>Mesh</option>
+		  		<% @media_type_options.each do |v| %>
+			  		<option><%= v %></option>
+		  		<% end %>
 		  	</select>
 		  <% end %>
 
@@ -35,8 +37,8 @@
 			<% else %>
 		  	<select name="m_organization" data-form="media-filters">
 		  		<option value="">Organization</option>
-		  		<% @organization_options.each do |organization_title| %>
-			  		<option><%= organization_title %></option>
+		  		<% @organization_options.each do |v| %>
+			  		<option><%= v %></option>
 		  		<% end %>
 		  	</select>
 		  <% end %>

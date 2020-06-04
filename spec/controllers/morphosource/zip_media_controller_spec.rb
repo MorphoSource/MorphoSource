@@ -135,8 +135,8 @@ RSpec.describe Morphosource::ZipMediaController, type: :controller do
         end
 
         context 'user has downloadable items' do
-          let!(:cart_item1) { CartItem.create(user_id: user.ms_id, work_id: work1.id, date_approved: Date.yesterday, restricted: true, date_expired: Date.tomorrow, approver_id: depositor.ms_id, in_cart: true) }
-          let!(:cart_item2) { CartItem.create(user_id: user.ms_id, work_id: work2.id, date_approved: Date.yesterday, restricted: true, date_expired: Date.tomorrow, approver_id: depositor.ms_id, in_cart: true) }
+          let!(:cart_item1) { CartItem.create(user_id: user.ms_id, work_id: work1.id, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
+          let!(:cart_item2) { CartItem.create(user_id: user.ms_id, work_id: work2.id, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
 
           context 'the items have already been downloaded' do
             before do

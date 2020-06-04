@@ -58,16 +58,8 @@ module Morphosource
     def create_cart_item(work_id)
       work = Media.find(work_id)
       if work.can_add_to_cart? || (current_user.can? :download, work.id)
-        item = CartItem.create({user_id: current_user.ms_id, work_id: work.id})
-        if item.restricted? && (work.user_is_reviewer_or_has_ownership(item) || (current_user.can? :download, work.id))
-          unrestrict(item)
-        end
-        item
+        CartItem.create({user_id: current_user.ms_id, work_id: work.id})
       end
-    end
-
-    def user_is_depositor?(work)
-      current_user.ms_id == work.depositor
     end
 
     def mark_as(action,items=@items,value: nil)
@@ -143,19 +135,9 @@ module Morphosource
       @active_requests_moved = []
     end
 
-    def user_is_approver?(item)
-      current_user.ms_id == item.approver_id
-    end
-
-    def unrestrict(item)
-      item.restricted = false
-      item.save
-    end
-
     def undownloadable(items)
       items.select{|item| !item.downloadable? }
     end
-
 
     delegate :downloaded_work_ids, :cart_items, :items_in_cart, :my_active_requests, :my_active_requests_work_ids, :requested_items, :previously_requested_items, :newly_requested_items, :requested_item_ids,   :requested_items_work_ids, :downloadable_item_work_ids, :my_cleared_requests_work_ids, to: :current_user
   end

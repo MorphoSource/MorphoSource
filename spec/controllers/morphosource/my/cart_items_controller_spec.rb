@@ -8,7 +8,6 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
 
   include_context 'cart items'
 
-
   describe "POST #create" do
 
     context 'item is not in cart and has not been requested' do
@@ -26,8 +25,6 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
         expect(item.user_id).to eq(current_user.ms_id)
         expect(item.work_id).to eq(work6.id)
         expect(item.in_cart).to be(true)
-        expect(item.restricted).to be(work6.restricted?)
-        expect(item.approver_id).to eq(work6.reviewer)
       end
 
       it "returns flash message 'Item Added to Cart'" do
@@ -37,7 +34,8 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
 
       context 'work cannot be added to the cart' do
         before do
-          allow(work6).to receive(:publication_status).and_return('hidden')
+          work6.fileset_accessibility = ['hidden']
+          work6.save
         end
         context 'user does not have download access' do
           it 'returns flash message Download Unauthorized' do
@@ -52,44 +50,6 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
           it 'returns flash message Item Added to Cart' do
             post :create, params: post_params
             expect(response.flash[:notice]).to eq('Item Added to Cart')
-          end
-        end
-      end
-
-      context 'work is restricted' do
-        before do
-          allow(work6).to receive(:restricted?).and_return(true)
-          post :create, params: post_params
-        end
-
-        it 'creates a restricted cart item' do
-          item = CartItem.last
-          expect(item.restricted).to be(true)
-        end
-      end
-
-      context 'work is restricted but user is reviewer or depositor' do
-        before do
-          allow(work6).to receive(:restricted?).and_return(true)
-        end
-        context 'user is reviewer' do
-          before do
-            allow(work6).to receive(:download_reviewer).and_return([current_user.ms_id])
-            post :create, params: post_params
-          end
-          it 'changes the item to unrestricted' do
-            item = CartItem.last
-            expect(item.restricted).to be(false)
-          end
-        end
-        context 'user is depositor' do
-          before do
-            allow(work6).to receive(:depositor).and_return(current_user.ms_id)
-            post :create, params: post_params
-          end
-          it 'changes the item to unrestricted' do
-            item = CartItem.last
-            expect(item.restricted).to be(false)
           end
         end
       end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200522145919) do
+ActiveRecord::Schema.define(version: 20200604200822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,8 +33,6 @@ ActiveRecord::Schema.define(version: 20200522145919) do
     t.datetime "updated_at", null: false
     t.datetime "date_downloaded"
     t.boolean "in_cart", default: true
-    t.boolean "restricted", default: true
-    t.string "approver_id", null: false
     t.datetime "date_requested"
     t.datetime "date_approved"
     t.datetime "date_denied"

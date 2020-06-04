@@ -16,7 +16,6 @@ module Hyrax
     self.search_builder_class = Morphosource::WorkSearchBuilder
 
     before_action :save_fileset_visibility, only: [:update]
-    before_action :save_publication_status, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
 
     # override the layout from WorksControllerBehavior
@@ -93,7 +92,6 @@ module Hyrax
 
     def update
       if file_formats_valid? && actor.update(actor_environment)
-        update_cart_items if publication_status_changed?
         after_update_response
       else
         respond_to do |wants|
@@ -257,35 +255,6 @@ module Hyrax
           file.save!
         end
         curation_concern.update_index
-      end
-
-      # If publication status is updated, update all cart items for that work
-      def save_publication_status
-        @saved_publication_status = curation_concern.publication_status
-      end
-
-      def publication_status_changed?
-        @saved_publication_status != curation_concern.publication_status
-      end
-
-      def update_cart_items
-        items = CartItem.where(work_id: curation_concern.id)
-        value = restrict_items?
-        items.each do |item|
-          item.restricted = value
-          item.save
-        end
-      end
-
-      def restrict_items?
-        if curation_concern.active_lease?
-          status = curation_concern.visibility_during_lease
-        elsif curation_concern.under_embargo?
-          status = curation_concern.visibility_during_embargo
-        else
-          status = curation_concern.publication_status
-        end
-        status != "open"
       end
   end
 end

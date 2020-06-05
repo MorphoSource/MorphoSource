@@ -435,7 +435,9 @@ module Hyrax
           member_works
           member_subcollections if collection.collection_type.nestable?
           parent_collections if collection.collection_type.nestable? && action_name == 'show'
+          prepare_docs
         end
+
 
         # Instantiate the membership query service
         def collection_member_service
@@ -446,9 +448,16 @@ module Hyrax
           @response = collection_member_service.available_member_works
           @member_docs = @response.documents
           @members_count = @response.total
- 
+        end
+
+        def prepare_docs
+
+          @combined_member_docs = @member_docs 
+          if @collection.team? 
+            @combined_member_docs = @combined_member_docs + media_from_team_projects(@subcollection_docs)
+          end        
           @media_member_docs, @bso_member_docs, @bso_extras, 
-            @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs)
+            @cho_member_docs, @cho_extras = get_medias_and_objects(@combined_member_docs)
           @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
           @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
           @media_member_count = @media_member_docs.length

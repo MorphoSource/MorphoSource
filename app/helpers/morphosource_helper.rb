@@ -107,6 +107,21 @@ module MorphosourceHelper
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
+  def media_from_team_projects(docs)
+    media_list = []
+    # get all media from each project 
+    docs.each do |doc|
+      project = Collection.find(doc.id)
+      project.member_works.each do |work| 
+        if work.class == Media
+          media_doc = SolrDocument.new(work.to_solr) 
+          media_list << media_doc
+        end
+      end
+    end
+    media_list
+  end
+
   def physical_object_solr_from_media(media_id)
     # this method returns the solr doc (and other details) of a PO associated with the media ID
     bso_work, bso_extra, cho_work, cho_extra = physical_object_from_media(media_id)

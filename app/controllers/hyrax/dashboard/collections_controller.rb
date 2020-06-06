@@ -452,12 +452,31 @@ module Hyrax
 
         def prepare_docs
 
-          @combined_member_docs = @member_docs 
+          @visibility_options = []
+          @media_type_options = []
+          @organization_options = []
+          @bso_source_options = []
+
+          @media_member_docs, @media_extras, @bso_member_docs, @bso_extras, 
+            @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs, @collection.collection_type.title.downcase)
+
           if @collection.team? 
-            @combined_member_docs = @combined_member_docs + media_from_team_projects(@subcollection_docs)
+            # add items from team projects
+            @member_docs_from_projects = media_from_team_projects(@subcollection_docs)
+            extras_for_filter = {'source_of_result' => 'team_project'}
+            @media_member_docs_from_projects, @media_extras_from_projects, 
+              @bso_member_docs_from_projects, @bso_extras_from_projects, 
+                @cho_member_docs_from_projects, @cho_extras_from_projects = get_medias_and_objects(@member_docs_from_projects, 'team_project')
+
+            @media_member_docs += @media_member_docs_from_projects
+            @bso_member_docs += @bso_member_docs_from_projects
+            @cho_member_docs += @cho_member_docs_from_projects
+            @media_extras += @media_extras_from_projects
+            @bso_extras += @bso_extras_from_projects
+            @cho_extras += @cho_extras_from_projects
+
           end        
-          @media_member_docs, @bso_member_docs, @bso_extras, 
-            @cho_member_docs, @cho_extras = get_medias_and_objects(@combined_member_docs)
+
           @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
           @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
           @media_member_count = @media_member_docs.length
@@ -470,6 +489,11 @@ module Hyrax
           @bso_total_pages = bso_total_pages
           @paged_cho_member_docs = paginated_cho_item_list
           @cho_total_pages = cho_total_pages
+
+          @visibility_options = @visibility_options.uniq
+          @media_type_options = @media_type_options.uniq
+          @organization_options = @organization_options.uniq
+          @bso_source_options = @bso_source_options.uniq
         end
 
         # media pagination methods
@@ -552,19 +576,16 @@ module Hyrax
           return unique_docs
         end
 
-        def get_medias_and_objects(docs)
+        def get_medias_and_objects(docs, source_of_result)
           media_documents = []
           bso_documents = []
           cho_documents = []
+          media_extras = []
           bso_extras = []
           cho_extras = []
 
           media_filter_params = filter_params('m_', params)
           bso_filter_params = filter_params('b_', params)
-          @visibility_options = []
-          @media_type_options = []
-          @organization_options = []
-          @bso_source_options = []
 
           docs.each do |doc|
             work = ::ActiveFedora::Base.find(doc.id)
@@ -596,8 +617,10 @@ module Hyrax
                   if bso.visibility == b_visibility_to_compare &&
                       bso_source == b_source_to_compare &&
                       bso_organization == b_organization_to_compare
+
                     bso_documents << bso_doc
                     bso_extras << bso_extra
+                    bso_extras << { 'id' => bso_doc.id, 'source_of_result' => source_of_result } 
                     @bso_source_options << bso_source
                   end
                 end
@@ -609,6 +632,7 @@ module Hyrax
                 unless cho_documents.any? {|h| h['id'] == cho_doc.id}
                   cho_documents << cho_doc 
                   cho_extras << cho_extra
+                  cho_extras << { 'id' => cho_doc.id, 'source_of_result' => source_of_result } 
                 end
               end
 
@@ -618,6 +642,7 @@ module Hyrax
                   bso_organization == m_organization_to_compare
                 
                 media_documents << doc
+                media_extras << { 'id' => doc.id, 'source_of_result' => source_of_result } 
                 @visibility_options << work.visibility
                 @media_type_options << work.media_type.first
               end 
@@ -626,13 +651,9 @@ module Hyrax
             end
           end # / docs.each
 
-          @visibility_options = @visibility_options.uniq
-          @media_type_options = @media_type_options.uniq
-          @organization_options = @organization_options.uniq
-          @bso_source_options = @bso_source_options.uniq
-
-          return media_documents.compact, bso_documents.compact, bso_extras,
-            cho_documents.compact, cho_extras
+          return media_documents.compact, media_extras, 
+                   bso_documents.compact, bso_extras,
+                     cho_documents.compact, cho_extras
         end
 
 

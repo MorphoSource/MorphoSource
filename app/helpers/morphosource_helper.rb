@@ -191,6 +191,7 @@ module MorphosourceHelper
     end
     bso_extra = {}
     cho_extra = {}
+
     if bso.present?
       bso_extra = { 'id' => bso.id, 'media_count' => total_media_count.to_s}
     elsif cho.present?
@@ -363,8 +364,24 @@ module MorphosourceHelper
       organization_institution
   end
 
+  def extra(extras, id)
+    item = {} 
+    extras.each do |h|
+      if h['id'] == id 
+        item.merge!(h)
+      end
+    end
+    item.delete('id')
+    item
+  end
+
+  # todo; replace this method with extra
   def render_extra(extras, id, variable)
-    extras.find { |h| h['id'] == id }[variable]
+    begin
+      extras.find { |h| h['id'] == id }[variable]
+    rescue Exception => e
+      return 'unknown'
+    end    
   end
 
   def render_source_of_record(bso)

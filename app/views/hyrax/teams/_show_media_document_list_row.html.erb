@@ -1,6 +1,7 @@
 <% 
 id = document.id 
 bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
+media_extra = extra(@media_extras, id)
 %>
 <tr id="document_<%= id %>">
   <td class="checkbox">
@@ -31,10 +32,17 @@ bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
   <td><%= document.media_type&.first.underscore.humanize %></td>  
   <td><%= document.date_uploaded %> </td>
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>
-  <% if current_user and can? :edit, @collection %>
-    <td class="text-center">
-      <form></form>
-      <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
-    </td>
+
+  <% # todo: show info instead of remove button if the media is not in the team bucket 
+  %>
+
+  <% if media_extra["source_of_result"] == 'team' %> 
+    <% if current_user and can? :edit, @collection %>
+      <td class="text-center">
+        <form></form>
+        <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
+      </td>
+    <% end %>
   <% end %>
+
 </tr>

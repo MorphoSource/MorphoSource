@@ -586,6 +586,7 @@ module Hyrax
 
           media_filter_params = filter_params('m_', params)
           bso_filter_params = filter_params('b_', params)
+          cho_filter_params = filter_params('c_', params)
 
           docs.each do |doc|
             work = ::ActiveFedora::Base.find(doc.id)
@@ -624,17 +625,25 @@ module Hyrax
                     @bso_source_options << bso_source
                   end
                 end
-              end
+              end # / if bso_doc present
+
+              if cho_doc.present?
+                cho = CulturalHeritageObject.find(cho_doc.id)
+
+                unless cho_documents.any? {|h| h['id'] == cho_doc.id}
+                  # filter
+                  c_visibility_to_compare = cho_filter_params['visibility'] || cho.visibility
+                  
+                  if cho.visibility == c_visibility_to_compare
+                    cho_documents << cho_doc 
+                    cho_extras << cho_extra
+                    cho_extras << { 'id' => cho_doc.id, 'source_of_result' => source_of_result } 
+                  end
+                end
+              end # / if cho_doc present
 
               m_organization_to_compare = media_filter_params['organization'] || bso_organization
 
-              if cho_doc.present?
-                unless cho_documents.any? {|h| h['id'] == cho_doc.id}
-                  cho_documents << cho_doc 
-                  cho_extras << cho_extra
-                  cho_extras << { 'id' => cho_doc.id, 'source_of_result' => source_of_result } 
-                end
-              end
 
               # filter media
               if work.visibility == m_visibility_to_compare &&

@@ -1,6 +1,7 @@
 <% 
 id = document.id 
 cho = CulturalHeritageObject.find(id)
+cho_extra = extra(@cho_extras, id)
 %>
 <tr id="document_<%= id %>">
   <td>
@@ -14,7 +15,7 @@ cho = CulturalHeritageObject.find(id)
   <td><%= cho.material&.first %></td>
   <td><%= cho.cho_type&.first %></td>
   <td><%= cho.vouchered&.first %></td>
-  <td><%= render_extra(@cho_extras, id, 'media_count') %></td>  
+  <td><%= cho_extra['media_count'] %></td>  
   <td><%= document.date_uploaded %> </td> 
   <%# todo: might need to format the date later, e.g. using MS helper display_date 
       Make sure it can be sorted in datatables

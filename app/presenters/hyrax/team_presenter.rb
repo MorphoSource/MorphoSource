@@ -44,6 +44,14 @@ module Hyrax
       collection_type.title
     end
 
+    def team?
+      collection_type_title == 'Team'
+    end
+
+    def project?
+      collection_type_title == 'Project'
+    end
+
     def filter_projects(docs, params)
       project_filter_params = filter_params('p_', params)
       return docs if project_filter_params.empty?

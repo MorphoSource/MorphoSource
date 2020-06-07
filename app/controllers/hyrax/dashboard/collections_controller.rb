@@ -6,6 +6,7 @@ module Hyrax
       include Blacklight::Base
       include BreadcrumbsForCollections
       include MorphosourceHelper
+      include Morphosource::CollectionHelper
       
       with_themed_layout 'morphosource_dashboard'
       #with_themed_layout :decide_layout
@@ -435,9 +436,8 @@ module Hyrax
           member_works
           member_subcollections if collection.collection_type.nestable?
           parent_collections if collection.collection_type.nestable? && action_name == 'show'
-          prepare_docs
+          prepare_docs_and_filters(@collection)
         end
-
 
         # Instantiate the membership query service
         def collection_member_service
@@ -448,52 +448,6 @@ module Hyrax
           @response = collection_member_service.available_member_works
           @member_docs = @response.documents
           @members_count = @response.total
-        end
-
-        def prepare_docs
-
-          @visibility_options = []
-          @media_type_options = []
-          @organization_options = []
-          @bso_source_options = []
-
-          @media_member_docs, @media_extras, @bso_member_docs, @bso_extras, 
-            @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs, @collection.collection_type.title.downcase)
-
-          if @collection.team? 
-            # add items from team projects
-            @member_docs_from_projects = media_from_team_projects(@subcollection_docs)
-            extras_for_filter = {'source_of_result' => 'team_project'}
-            @media_member_docs_from_projects, @media_extras_from_projects, 
-              @bso_member_docs_from_projects, @bso_extras_from_projects, 
-                @cho_member_docs_from_projects, @cho_extras_from_projects = get_medias_and_objects(@member_docs_from_projects, 'team_project')
-
-            @media_member_docs += @media_member_docs_from_projects
-            @bso_member_docs += @bso_member_docs_from_projects
-            @cho_member_docs += @cho_member_docs_from_projects
-            @media_extras += @media_extras_from_projects
-            @bso_extras += @bso_extras_from_projects
-            @cho_extras += @cho_extras_from_projects
-
-          end        
-
-          @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
-          @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
-          @media_member_count = @media_member_docs.length
-          @bso_member_count = @bso_member_docs&.length || 0
-          @cho_member_count = @cho_member_docs&.length || 0
-
-          @paged_media_member_docs = paginated_media_item_list
-          @media_total_pages = media_total_pages
-          @paged_bso_member_docs = paginated_bso_item_list
-          @bso_total_pages = bso_total_pages
-          @paged_cho_member_docs = paginated_cho_item_list
-          @cho_total_pages = cho_total_pages
-
-          @visibility_options = @visibility_options.uniq
-          @media_type_options = @media_type_options.uniq
-          @organization_options = @organization_options.uniq
-          @bso_source_options = @bso_source_options.uniq
         end
 
         # media pagination methods
@@ -575,96 +529,6 @@ module Hyrax
           end
           return unique_docs
         end
-
-        def get_medias_and_objects(docs, source_of_result)
-          media_documents = []
-          bso_documents = []
-          cho_documents = []
-          media_extras = []
-          bso_extras = []
-          cho_extras = []
-
-          media_filter_params = filter_params('m_', params)
-          bso_filter_params = filter_params('b_', params)
-          cho_filter_params = filter_params('c_', params)
-
-          docs.each do |doc|
-            work = ::ActiveFedora::Base.find(doc.id)
-            if work.class == Media      
-              m_visibility_to_compare = media_filter_params['visibility'] || work.visibility
-              m_media_type_to_compare = media_filter_params['media_type'] || work.media_type.first
-
-              # get BSO and CHO
-              bso_doc, bso_extra, cho_doc, cho_extra = physical_object_solr_from_media(doc.id)
-              if bso_doc.present?
-                bso = BiologicalSpecimen.find(bso_doc.id)
-                organization = organization_from_bso(bso)
-
-                if organization.present?
-                  bso_organization = organization.title.first 
-                  @organization_options << bso_organization
-                else
-                  bso_organization = ''
-                end
-                # check if the ID already exists before adding
-                unless bso_documents.any? {|h| h['id'] == bso_doc.id}
-                  # filter
-                  bso_source = display_source(bso)
-
-                  b_visibility_to_compare = bso_filter_params['visibility'] || bso.visibility
-                  b_source_to_compare = bso_filter_params['source'] || display_source(bso)
-                  b_organization_to_compare = bso_filter_params['organization'] || bso_organization
-                  
-                  if bso.visibility == b_visibility_to_compare &&
-                      bso_source == b_source_to_compare &&
-                      bso_organization == b_organization_to_compare
-
-                    bso_documents << bso_doc
-                    bso_extras << bso_extra
-                    bso_extras << { 'id' => bso_doc.id, 'source_of_result' => source_of_result } 
-                    @bso_source_options << bso_source
-                  end
-                end
-              end # / if bso_doc present
-
-              if cho_doc.present?
-                cho = CulturalHeritageObject.find(cho_doc.id)
-
-                unless cho_documents.any? {|h| h['id'] == cho_doc.id}
-                  # filter
-                  c_visibility_to_compare = cho_filter_params['visibility'] || cho.visibility
-                  
-                  if cho.visibility == c_visibility_to_compare
-                    cho_documents << cho_doc 
-                    cho_extras << cho_extra
-                    cho_extras << { 'id' => cho_doc.id, 'source_of_result' => source_of_result } 
-                  end
-                end
-              end # / if cho_doc present
-
-              m_organization_to_compare = media_filter_params['organization'] || bso_organization
-
-
-              # filter media
-              if work.visibility == m_visibility_to_compare &&
-                  work.media_type.first == m_media_type_to_compare &&
-                  bso_organization == m_organization_to_compare
-                
-                media_documents << doc
-                media_extras << { 'id' => doc.id, 'source_of_result' => source_of_result } 
-                @visibility_options << work.visibility
-                @media_type_options << work.media_type.first
-              end 
-              # / filter media
-
-            end
-          end # / docs.each
-
-          return media_documents.compact, media_extras, 
-                   bso_documents.compact, bso_extras,
-                     cho_documents.compact, cho_extras
-        end
-
 
         def member_subcollections
           results = collection_member_service.available_member_subcollections

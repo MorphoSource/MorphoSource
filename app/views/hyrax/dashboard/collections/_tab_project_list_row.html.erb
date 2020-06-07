@@ -28,7 +28,7 @@ media_count = project_presenter.total_items
   </td>
   <td><%= media_count %></td>
   <td><%= display_date(document.modified_date) %></td>
-  <td><%= permission_badge(document.visibility) %></td>
+  <td><%= permission_badge_by_value(document.visibility) %></td>
   <td>
     <% if can? :edit, parent_id %>
     <button type="button" class="btn btn-xs btn-danger remove-subcollection-button"><%= t('hyrax.collections.show.buttons.remove_this_sub_collection') %></button>

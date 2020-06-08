@@ -116,6 +116,10 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
+      property :acquisition_type, predicate: ::RDF::URI.new("http://purl.org/healthcarevocab/v1#AcquisitionType") do |index|
+          index.as :stored_searchable, :facetable
+      end
+
       # Photogrammetry properties
       property :focal_length_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/focalLengthType") do |index|
           index.as :stored_searchable, :facetable

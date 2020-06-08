@@ -465,6 +465,10 @@ class SolrDocument
     self[Solrizer.solr_name('institution_name', :stored_searchable)]
   end
 
+  def contact_person
+    self[Solrizer.solr_name('contact_person', :stored_searchable)]
+  end
+
   # Processing Event & Image Capture Event
   def software
     self[Solrizer.solr_name('software', :stored_searchable)]
@@ -573,6 +577,10 @@ class SolrDocument
 
   def optical_magnification
       self[Solrizer.solr_name('optical_magnification', :stored_searchable)]
+  end
+
+  def acquisition_type
+      self[Solrizer.solr_name('acquisition_type', :stored_searchable)]
   end
 
   def focal_length_type

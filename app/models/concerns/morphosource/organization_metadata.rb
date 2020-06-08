@@ -25,6 +25,10 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
+      property :contact_person, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/contactUser") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
       property :institution_name, predicate: ::RDF::Vocab::DWC.institutionName do |index|
         index.as :stored_searchable, :facetable
       end

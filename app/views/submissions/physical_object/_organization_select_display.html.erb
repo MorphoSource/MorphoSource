@@ -9,36 +9,53 @@
   </div>
 
   <div class="row text-left">
-    <div class="col-xs-6 showcase-label">Institution Code</div>
-    <div class="col-xs-6 showcase-value" id="institution_code"><%= organization_attrs['institution_code'] %></div>
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.institution_name') %></div>
+    <div class="col-xs-6 showcase-value" id="institution_name"><%= organization_attrs['institution_name'] %></div>
   </div>
+
   <div class="row text-left">
-    <div class="col-xs-6 showcase-label">Collection Code</div>
-    <div class="col-xs-6 showcase-value" id="collection_code"><%= organization_attrs['collection_code'] %></div>
-  </div>
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label">Title</div>
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.title') %></div>
     <div class="col-xs-6 showcase-value" id="title"><%= organization_attrs['title'] %></div>
   </div>
+
   <div class="row text-left">
-    <div class="col-xs-6 showcase-label">Description</div>
-    <div class="col-xs-6 showcase-value" id="description"><%= organization_attrs['description'] %></div>
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.institution_code') %></div>
+    <div class="col-xs-6 showcase-value" id="institution_code"><%= organization_attrs['institution_code'] %></div>
   </div>
+
   <div class="row text-left">
-    <div class="col-xs-6 showcase-label">Address</div>
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.collection_code') %></div>
+    <div class="col-xs-6 showcase-value" id="collection_code"><%= organization_attrs['collection_code'] %></div>
+  </div>
+
+  <div class="row text-left">
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.address') %></div>
     <div class="col-xs-6 showcase-value" id="address"><%= organization_attrs['address'] %></div>
   </div>
+
   <div class="row text-left">
-    <div class="col-xs-6 showcase-label">City</div>
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.city') %></div>
     <div class="col-xs-6 showcase-value" id="city"><%= organization_attrs['city'] %></div>
   </div>
+
   <div class="row text-left">
-    <div class="col-xs-6 showcase-label">State/Province</div>
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.state_province') %></div>
     <div class="col-xs-6 showcase-value" id="state_province"><%= organization_attrs['state_province'] %></div>
   </div>
+
   <div class="row text-left">
-    <div class="col-xs-6 showcase-label">Country</div>
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.country') %></div>
     <div class="col-xs-6 showcase-value" id="country"><%= organization_attrs['country'] %></div>
+  </div>
+
+  <div class="row text-left">
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.contact_person') %></div>
+    <div class="col-xs-6 showcase-value" id="contact_person"><%= organization_attrs['contact_person'] %></div>
+  </div>
+
+  <div class="row text-left">
+    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.description') %></div>
+    <div class="col-xs-6 showcase-value" id="description"><%= organization_attrs['description'] %></div>
   </div>
 
 </div>

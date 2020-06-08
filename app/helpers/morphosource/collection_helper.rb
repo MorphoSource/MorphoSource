@@ -19,7 +19,6 @@ module Morphosource
         # add items from team projects
         @subcollection_docs.each do |project_doc|
           @member_docs_from_projects = media_from_team_project(project_doc)
-
           extras_for_filter = {'source_of_result' => 'team_project', 'team_project_title' => project_doc.title.first}
           @media_member_docs_from_projects, @media_extras_from_projects, 
             @bso_member_docs_from_projects, @bso_extras_from_projects, 
@@ -32,6 +31,21 @@ module Morphosource
           @bso_extras += @bso_extras_from_projects
           @cho_extras += @cho_extras_from_projects
         end
+
+        # add items from linked org
+        @member_docs_from_linked_org = media_from_linked_organization(collection.organization)
+        extras_for_filter = {'source_of_result' => 'linked_org'}
+        @media_member_docs_from_linked_org, @media_extras_from_linked_org, 
+          @bso_member_docs_from_linked_org, @bso_extras_from_linked_org, 
+            @cho_member_docs_from_linked_org, @cho_extras_from_linked_org = get_medias_and_objects(@member_docs_from_linked_org, extras_for_filter)
+
+        @media_member_docs += @media_member_docs_from_linked_org
+        @bso_member_docs += @bso_member_docs_from_linked_org
+        @cho_member_docs += @cho_member_docs_from_linked_org
+        @media_extras += @media_extras_from_linked_org
+        @bso_extras += @bso_extras_from_linked_org
+        @cho_extras += @cho_extras_from_linked_org
+
       end        
 
       @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
@@ -70,6 +84,16 @@ module Morphosource
         if work.class == Media      
           m_visibility_to_compare = media_filter_params['visibility'] || work.visibility
           m_media_type_to_compare = media_filter_params['media_type'] || work.media_type.first
+
+          # if the media comes from linked organization, determine the origin:
+          # origin = team if it’s in the team, and origin = org if it’s not in the team
+#          if extras['source_of_result'] == 'linked_org'
+#            if work is in the team
+#              extras.merge({'origin' => 'Team'})
+#            else
+#              extras.merge({'origin' => 'Org.'})
+#            end
+#          end
 
           # get BSO and CHO
           bso_doc, bso_extra, cho_doc, cho_extra = physical_object_solr_from_media(doc.id)
@@ -156,20 +180,15 @@ module Morphosource
       media_list
     end
 
-    #def media_from_team_projects(docs)
-    #  media_list = []
-    #  # get all media from each project 
-    #  docs.each do |doc|
-    #    project = Collection.find(doc.id)
-    #    project.member_works.each do |work| 
-    #      if work.class == Media
-    #        media_doc = SolrDocument.new(work.to_solr) 
-    #        media_list << media_doc
-    #      end
-    #    end
-    #  end
-    #  media_list
-    #end
+    def media_from_linked_organization(organization)
+      media_list = []
+      # get all media from the linked org
+      organization.outside_media.each do |media|
+        media_doc = SolrDocument.new(media.to_solr) 
+        media_list << media_doc
+      end
+      media_list
+    end
 
     def physical_object_solr_from_media(media_id)
       # this method returns the solr doc (and other details) of a PO associated with the media ID

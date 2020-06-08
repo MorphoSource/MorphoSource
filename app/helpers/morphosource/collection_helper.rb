@@ -8,25 +8,30 @@ module Morphosource
       @media_type_options = []
       @organization_options = []
       @bso_source_options = []
+      #@team_project_options = @subcollection_docs.map{|p| p.title}.flatten
+      @team_project_options = @subcollection_docs.map(&:title).flatten
 
+      extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
       @media_member_docs, @media_extras, @bso_member_docs, @bso_extras, 
-        @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs, collection.collection_type.title.downcase)
+        @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs, extras_for_filter)
 
       if collection.team? 
         # add items from team projects
-        @member_docs_from_projects = media_from_team_projects(@subcollection_docs)
-        extras_for_filter = {'source_of_result' => 'team_project'}
-        @media_member_docs_from_projects, @media_extras_from_projects, 
-          @bso_member_docs_from_projects, @bso_extras_from_projects, 
-            @cho_member_docs_from_projects, @cho_extras_from_projects = get_medias_and_objects(@member_docs_from_projects, 'team_project')
+        @subcollection_docs.each do |project_doc|
+          @member_docs_from_projects = media_from_team_project(project_doc)
 
-        @media_member_docs += @media_member_docs_from_projects
-        @bso_member_docs += @bso_member_docs_from_projects
-        @cho_member_docs += @cho_member_docs_from_projects
-        @media_extras += @media_extras_from_projects
-        @bso_extras += @bso_extras_from_projects
-        @cho_extras += @cho_extras_from_projects
+          extras_for_filter = {'source_of_result' => 'team_project', 'team_project_title' => project_doc.title.first}
+          @media_member_docs_from_projects, @media_extras_from_projects, 
+            @bso_member_docs_from_projects, @bso_extras_from_projects, 
+              @cho_member_docs_from_projects, @cho_extras_from_projects = get_medias_and_objects(@member_docs_from_projects, extras_for_filter)
 
+          @media_member_docs += @media_member_docs_from_projects
+          @bso_member_docs += @bso_member_docs_from_projects
+          @cho_member_docs += @cho_member_docs_from_projects
+          @media_extras += @media_extras_from_projects
+          @bso_extras += @bso_extras_from_projects
+          @cho_extras += @cho_extras_from_projects
+        end
       end        
 
       @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
@@ -48,7 +53,7 @@ module Morphosource
       @bso_source_options = @bso_source_options.uniq
     end
 
-    def get_medias_and_objects(docs, source_of_result)
+    def get_medias_and_objects(docs, extras)
       media_documents = []
       bso_documents = []
       cho_documents = []
@@ -93,7 +98,7 @@ module Morphosource
 
                 bso_documents << bso_doc
                 bso_extras << bso_extra
-                bso_extras << { 'id' => bso_doc.id, 'source_of_result' => source_of_result } 
+                bso_extras << { 'id' => bso_doc.id }.merge(extras) 
                 @bso_source_options << bso_source
               end
             end
@@ -109,21 +114,22 @@ module Morphosource
               if cho.visibility == c_visibility_to_compare
                 cho_documents << cho_doc 
                 cho_extras << cho_extra
-                cho_extras << { 'id' => cho_doc.id, 'source_of_result' => source_of_result } 
+                cho_extras << { 'id' => cho_doc.id }.merge(extras) 
               end
             end
           end # / if cho_doc present
 
           m_organization_to_compare = media_filter_params['organization'] || bso_organization
-
+          m_team_project_to_compare = media_filter_params['team_project'] || extras['team_project_title']
 
           # filter media
           if work.visibility == m_visibility_to_compare &&
               work.media_type.first == m_media_type_to_compare &&
-              bso_organization == m_organization_to_compare
+              bso_organization == m_organization_to_compare &&
+              extras['team_project_title'] == m_team_project_to_compare
             
             media_documents << doc
-            media_extras << { 'id' => doc.id, 'source_of_result' => source_of_result } 
+            media_extras << { 'id' => doc.id }.merge(extras) 
             @visibility_options << work.visibility
             @media_type_options << work.media_type.first
           end 
@@ -137,21 +143,33 @@ module Morphosource
                  cho_documents.compact, cho_extras
     end
 
-
-    def media_from_team_projects(docs)
+    def media_from_team_project(project_doc)
       media_list = []
-      # get all media from each project 
-      docs.each do |doc|
-        project = Collection.find(doc.id)
-        project.member_works.each do |work| 
-          if work.class == Media
-            media_doc = SolrDocument.new(work.to_solr) 
-            media_list << media_doc
-          end
+      # get all media from the project 
+      project = Collection.find(project_doc.id)
+      project.member_works.each do |work| 
+        if work.class == Media
+          media_doc = SolrDocument.new(work.to_solr) 
+          media_list << media_doc
         end
       end
       media_list
     end
+
+    #def media_from_team_projects(docs)
+    #  media_list = []
+    #  # get all media from each project 
+    #  docs.each do |doc|
+    #    project = Collection.find(doc.id)
+    #    project.member_works.each do |work| 
+    #      if work.class == Media
+    #        media_doc = SolrDocument.new(work.to_solr) 
+    #        media_list << media_doc
+    #      end
+    #    end
+    #  end
+    #  media_list
+    #end
 
     def physical_object_solr_from_media(media_id)
       # this method returns the solr doc (and other details) of a PO associated with the media ID

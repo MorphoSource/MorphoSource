@@ -14,11 +14,10 @@
       <th>CHO</th>
     <% end %>
     <th>Type</th>
+    <th>Project</th>
     <th>Date Added</th>
     <th>Access Level</th>
-    <% if current_user and can? :edit, @collection %>
-      <th><!--remove button column--></th>
-    <% end %>
+    <th><!--remove button column--></th>
   </tr>
   </thead>
   <tbody>

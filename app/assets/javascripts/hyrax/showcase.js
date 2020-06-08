@@ -34,6 +34,7 @@ $(document).on('turbolinks:load', function() {
         columnDefs: [
           { orderable: false, targets: 0 }, // disable sorting
           { orderable: false, targets: 1 },
+          { visible: false, targets: 9 }, // hide column 9 by default
           { responsivePriority: 1, targets: 0 },
           { responsivePriority: 2, targets: 1 },
           { responsivePriority: 3, targets: 2 },

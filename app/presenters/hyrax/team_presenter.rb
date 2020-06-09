@@ -101,6 +101,10 @@ module Hyrax
       return media_count, bso_count, cho_count
     end
 
+    def organization
+      @collection.organization
+    end
+
     def set_organization_data
       collection = Collection.find(id)
       organization = collection.organization

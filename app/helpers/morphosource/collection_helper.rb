@@ -11,9 +11,12 @@ module Morphosource
       #@team_project_options = @subcollection_docs.map{|p| p.title}.flatten
       @team_project_options = @subcollection_docs.map(&:title).flatten
 
+      # add items from team bucket
       extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
       @media_member_docs, @media_extras, @bso_member_docs, @bso_extras, 
         @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs, extras_for_filter)
+      # save the item IDs in the team bucket, for determining the origin  
+      @team_bucket_media_id_list = @media_member_docs.map{|d| d.id}
 
       if collection.team? 
         # add items from team projects
@@ -32,19 +35,21 @@ module Morphosource
           @cho_extras += @cho_extras_from_projects
         end
 
-        # add items from linked org
-        @member_docs_from_linked_org = media_from_linked_organization(collection.organization)
-        extras_for_filter = {'source_of_result' => 'linked_org'}
-        @media_member_docs_from_linked_org, @media_extras_from_linked_org, 
-          @bso_member_docs_from_linked_org, @bso_extras_from_linked_org, 
-            @cho_member_docs_from_linked_org, @cho_extras_from_linked_org = get_medias_and_objects(@member_docs_from_linked_org, extras_for_filter)
+        if collection.organization.present?
+          # add items from linked org
+          @member_docs_from_linked_org = media_from_linked_organization(collection.organization)
+          extras_for_filter = {'source_of_result' => 'linked_org'}
+          @media_member_docs_from_linked_org, @media_extras_from_linked_org, 
+            @bso_member_docs_from_linked_org, @bso_extras_from_linked_org, 
+              @cho_member_docs_from_linked_org, @cho_extras_from_linked_org = get_medias_and_objects(@member_docs_from_linked_org, extras_for_filter)
 
-        @media_member_docs += @media_member_docs_from_linked_org
-        @bso_member_docs += @bso_member_docs_from_linked_org
-        @cho_member_docs += @cho_member_docs_from_linked_org
-        @media_extras += @media_extras_from_linked_org
-        @bso_extras += @bso_extras_from_linked_org
-        @cho_extras += @cho_extras_from_linked_org
+          @media_member_docs += @media_member_docs_from_linked_org
+          @bso_member_docs += @bso_member_docs_from_linked_org
+          @cho_member_docs += @cho_member_docs_from_linked_org
+          @media_extras += @media_extras_from_linked_org
+          @bso_extras += @bso_extras_from_linked_org
+          @cho_extras += @cho_extras_from_linked_org
+        end
 
       end        
 
@@ -82,18 +87,17 @@ module Morphosource
       docs.each do |doc|
         work = ::ActiveFedora::Base.find(doc.id)
         if work.class == Media      
-          m_visibility_to_compare = media_filter_params['visibility'] || work.visibility
-          m_media_type_to_compare = media_filter_params['media_type'] || work.media_type.first
-
           # if the media comes from linked organization, determine the origin:
           # origin = team if it’s in the team, and origin = org if it’s not in the team
-#          if extras['source_of_result'] == 'linked_org'
-#            if work is in the team
-#              extras.merge({'origin' => 'Team'})
-#            else
-#              extras.merge({'origin' => 'Org.'})
-#            end
-#          end
+          origin = 'Team'
+          if extras['source_of_result'] == 'linked_org'
+            unless @team_bucket_media_id_list.include? doc.id 
+              origin = 'Org.'
+            end
+          end
+          m_visibility_to_compare = media_filter_params['visibility'] || work.visibility
+          m_media_type_to_compare = media_filter_params['media_type'] || work.media_type.first
+          m_origin_to_compare = media_filter_params['origin'] || origin
 
           # get BSO and CHO
           bso_doc, bso_extra, cho_doc, cho_extra = physical_object_solr_from_media(doc.id)
@@ -115,14 +119,16 @@ module Morphosource
               b_visibility_to_compare = bso_filter_params['visibility'] || bso.visibility
               b_source_to_compare = bso_filter_params['source'] || display_source(bso)
               b_organization_to_compare = bso_filter_params['organization'] || bso_organization
+              b_origin_to_compare = bso_filter_params['origin'] || origin
               
               if bso.visibility == b_visibility_to_compare &&
                   bso_source == b_source_to_compare &&
-                  bso_organization == b_organization_to_compare
+                  bso_organization == b_organization_to_compare &&
+                  origin == b_origin_to_compare
 
                 bso_documents << bso_doc
                 bso_extras << bso_extra
-                bso_extras << { 'id' => bso_doc.id }.merge(extras) 
+                bso_extras << { 'id' => bso_doc.id, 'origin' => origin }.merge(extras) 
                 @bso_source_options << bso_source
               end
             end
@@ -134,11 +140,14 @@ module Morphosource
             unless cho_documents.any? {|h| h['id'] == cho_doc.id}
               # filter
               c_visibility_to_compare = cho_filter_params['visibility'] || cho.visibility
+              c_origin_to_compare = cho_filter_params['origin'] || origin
               
-              if cho.visibility == c_visibility_to_compare
+              if cho.visibility == c_visibility_to_compare &&
+                origin == c_origin_to_compare
+                
                 cho_documents << cho_doc 
                 cho_extras << cho_extra
-                cho_extras << { 'id' => cho_doc.id }.merge(extras) 
+                cho_extras << { 'id' => cho_doc.id, 'origin' => origin }.merge(extras) 
               end
             end
           end # / if cho_doc present
@@ -150,10 +159,11 @@ module Morphosource
           if work.visibility == m_visibility_to_compare &&
               work.media_type.first == m_media_type_to_compare &&
               bso_organization == m_organization_to_compare &&
-              extras['team_project_title'] == m_team_project_to_compare
+              extras['team_project_title'] == m_team_project_to_compare &&
+              origin == m_origin_to_compare
             
             media_documents << doc
-            media_extras << { 'id' => doc.id }.merge(extras) 
+            media_extras << { 'id' => doc.id, 'origin' => origin } 
             @visibility_options << work.visibility
             @media_type_options << work.media_type.first
           end 

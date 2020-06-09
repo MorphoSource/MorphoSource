@@ -30,8 +30,9 @@ media_extra = extra(@media_extras, id)
     <td class="break-all"><%= cho&.title&.first %></td>
   <% end %>
   <td><%= document.media_type&.first.underscore.humanize %></td>  
-  <td><%= media_extra["team_project_title"] %>
-  <td><%= document.date_uploaded %> </td>
+  <td><%= media_extra["team_project_title"] %></td>
+  <td><%= media_extra["origin"] %></td>
+  <td><%= document.date_uploaded %></td>
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>
 
   <% # todo: show info instead of remove button if the media is not in the team bucket 

@@ -1,6 +1,7 @@
 <% show_filter_by = false %>
 
 <%= simple_form_for @form, url: edit_dashboard_collection_url + '#biological_specimens', html: { class: 'filters', id: "bso-filters", name: "bso-filters", method: "get" } do |bf| %>
+	<%= hidden_params_for_filters('b_') %>
 
 	<div class="filters row">
 

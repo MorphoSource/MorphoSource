@@ -1,6 +1,7 @@
 module Hyrax
   class TeamPresenter < CollectionPresenter
-    include MorphosourceHelper
+    #include MorphosourceHelper
+    include Morphosource::CollectionHelper
 
     attr_reader :filter_projects, :subcollection_count, :search_form_url, :collection, :collection_managers, :collection_type_title, :specimens, 
       :organization,

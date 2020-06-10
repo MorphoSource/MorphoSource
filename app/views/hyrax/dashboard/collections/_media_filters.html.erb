@@ -1,7 +1,8 @@
 <% show_filter_by = false %>
 
 <%= simple_form_for @form, url: edit_dashboard_collection_url + '#media', html: { class: 'filters', id: "media-filters", name: "media-filters", method: "get" } do |mf| %>
-
+	<%= hidden_params_for_filters('m_') %>
+	
 	<div class="filters row">
 
 		<div class="col-sm-2 col-lg-1 filter-label">Filter:</div>

@@ -2,6 +2,30 @@
 module Morphosource
   module CollectionHelper
 
+
+    def filter_params(prefix, params)
+      return_params = {}
+      temp_params = params.select{ |k,v| k.match(/^#{prefix}/) }.select{ |k,v| v.present? }
+      temp_params.each do |k,v|
+        return_params[k.sub(prefix, '')] = v
+      end
+      return_params
+    end
+
+    def hidden_params_for_filters(prefix)
+      hidden_params = {}
+      params = request.params
+      view =  params['view'] || 'list'
+      #todo: might also merge the filter params here later
+      #filters = filter_params(prefix, params)
+      hidden_params.merge!({'view' => view })
+      html = ''
+      hidden_params.map do |k,v|
+        html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
+      end
+      html.html_safe
+    end
+
     def prepare_docs_and_filters(collection)
 
       @visibility_options = []

@@ -15,7 +15,7 @@ module MorphosourceHelper
     names.include?(current_controller)
   end
 
-  def collection_view_link(id, view, anchor=nil)
+  def ms_collection_view_link(id, view)
     current_uri = request.env['PATH_INFO']
     if current_uri.include?("dashboard/collections")
       if action_name == 'edit'
@@ -33,17 +33,17 @@ module MorphosourceHelper
         link["collections"] = "projects"
       end
     end
-    link = link + "#" + anchor if anchor.present?
     link.html_safe
   end
 
-  def filter_params(prefix, params)
-    return_params = {}
-    temp_params = params.select{ |k,v| k.match(/^#{prefix}/) }.select{ |k,v| v.present? }
-    temp_params.each do |k,v|
-      return_params[k.sub(prefix, '')] = v
-    end
-    return_params
+  def ms_collection_view_link_qs(tab, filter_prefix)
+    link = ""
+    parsed_params =  filter_params(filter_prefix, request.params)
+    parsed_params.map do |k,v|
+      link = link + '&' + filter_prefix + k + '=' + v 
+    end       
+    link = link + "#" + tab if tab.present?
+    link.html_safe
   end
 
   def truncate_value(value, length=20)

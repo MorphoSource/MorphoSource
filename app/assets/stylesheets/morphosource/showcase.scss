@@ -181,6 +181,9 @@ html {
   }
 
   table.teams-projects {
+    th, td {
+      text-align: center;
+    }
     th.checkbox {
       display: table-cell;
       padding-left: 10px;
@@ -198,6 +201,8 @@ html {
     td {
       font-size: 12px;
     }
+    .remove-column {
+    }
   }
 
   .long-badge {
@@ -208,7 +213,7 @@ html {
         display: inline-block;
         font-weight: bold;
         font-size: 10px;
-        width: 90%;
+        width: 100%;
         padding-top: 4px;
         padding-bottom: 4px;
       }
@@ -346,12 +351,6 @@ html {
   }
 
   .panel-default {border: none;}
-  .teams-projects {
-    th, td {
-      text-align: center;
-    }
-  }
-
 
   /* ************************** */
 

@@ -2,6 +2,26 @@
 module Morphosource
   module CollectionHelper
 
+    def ms_collection_view_link(id, view)
+      current_uri = request.env['PATH_INFO']
+      if current_uri.include?("dashboard/collections")
+        if action_name == 'edit'
+          link = edit_dashboard_collection_path(id, view)
+        else
+          link = dashboard_collection_path(id, view)
+        end
+      else
+        link = collection_path(id, view)
+        if current_uri.include?("teams")
+          # todo: fix team_path route 
+          # link = team_path(id)
+          link["collections"] = "teams" # replace "collection' with "teams"
+        elsif current_uri.include?("projects")
+          link["collections"] = "projects"
+        end
+      end
+      link.html_safe
+    end
 
     def filter_params(prefix, params)
       return_params = {}
@@ -31,7 +51,9 @@ module Morphosource
       @visibility_options = []
       @media_type_options = []
       @organization_options = []
+      @bso_visibility_options = []
       @bso_source_options = []
+      @cho_visibility_options = []
       #@team_project_options = @subcollection_docs.map{|p| p.title}.flatten
       @team_project_options = @subcollection_docs.map(&:title).flatten
 
@@ -153,6 +175,7 @@ module Morphosource
                 bso_documents << bso_doc
                 bso_extras << bso_extra
                 bso_extras << { 'id' => bso_doc.id, 'origin' => origin }.merge(extras) 
+                @bso_visibility_options << bso.visibility
                 @bso_source_options << bso_source
               end
             end
@@ -172,6 +195,7 @@ module Morphosource
                 cho_documents << cho_doc 
                 cho_extras << cho_extra
                 cho_extras << { 'id' => cho_doc.id, 'origin' => origin }.merge(extras) 
+                @cho_visibility_options << cho.visibility
               end
             end
           end # / if cho_doc present
@@ -187,7 +211,7 @@ module Morphosource
               origin == m_origin_to_compare
             
             media_documents << doc
-            media_extras << { 'id' => doc.id, 'origin' => origin } 
+            media_extras << { 'id' => doc.id, 'origin' => origin }.merge(extras)
             @visibility_options << work.visibility
             @media_type_options << work.media_type.first
           end 
@@ -199,6 +223,28 @@ module Morphosource
       return media_documents.compact, media_extras, 
                bso_documents.compact, bso_extras,
                  cho_documents.compact, cho_extras
+    end
+
+    def publication_status_label(value)
+      case value
+      when 'open'
+        display_value = "Open Download"
+      when 'restricted'
+        display_value = "Restricted Download"
+      when 'preview_only'
+        display_value = "No Download"
+      when 'hidden'
+        display_value = "Hidden"
+      when 'private'
+        display_value = "Private"
+      when 'embargo'
+        display_value = "Embargo"
+      when 'lease'
+        display_value = "Lease"
+      else
+        display_value = value
+      end
+      display_value
     end
 
     def media_from_team_project(project_doc)

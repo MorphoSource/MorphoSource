@@ -15,27 +15,6 @@ module MorphosourceHelper
     names.include?(current_controller)
   end
 
-  def ms_collection_view_link(id, view)
-    current_uri = request.env['PATH_INFO']
-    if current_uri.include?("dashboard/collections")
-      if action_name == 'edit'
-        link = edit_dashboard_collection_path(id, view)
-      else
-        link = dashboard_collection_path(id, view)
-      end
-    else
-      link = collection_path(id, view)
-      if current_uri.include?("teams")
-        # todo: fix team_path route 
-        # link = team_path(id)
-        link["collections"] = "teams" # replace "collection' with "teams"
-      elsif current_uri.include?("projects")
-        link["collections"] = "projects"
-      end
-    end
-    link.html_safe
-  end
-
   def ms_collection_view_link_qs(tab, filter_prefix)
     link = ""
     parsed_params =  filter_params(filter_prefix, request.params)

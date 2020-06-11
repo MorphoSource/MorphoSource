@@ -67,16 +67,19 @@ module Hyrax
       end
 
       def show
-        if @collection.collection_type.brandable?
-          banner_info = CollectionBrandingInfo.where(collection_id: @collection.id.to_s).where(role: "banner")
-          @banner_file = "/" + banner_info.first.local_path.split("/")[-4..-1].join("/") unless banner_info.empty?
+        if request.parameters['hyrax'].present?
+          # todo: keep the old show page in case needed.  this param check can be removed later
+          if @collection.collection_type.brandable?
+            banner_info = CollectionBrandingInfo.where(collection_id: @collection.id.to_s).where(role: "banner")
+            @banner_file = "/" + banner_info.first.local_path.split("/")[-4..-1].join("/") unless banner_info.empty?
+          end
+          presenter
+          query_collection_members
+        else
+          # redirect dashboard page to edit page when ready
+          redirect_to '/dashboard/collections/' + @collection.id + '/edit' 
         end
-        presenter
-        query_collection_members
         
-        # todo: redirect dashboard page to edit page when ready
-        #url = '/dashboard/collections/' + @collection.id + '/edit' 
-        #redirect_to url
       end
 
       def edit

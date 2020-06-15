@@ -49,6 +49,35 @@ RSpec.describe Morphosource::AccessControls::Permissions do
         expect(subject[0].to_hash).to eq({:name=>"downloader_group2", :type=>"group", :access=>"download"})
       end
     end
+    context 'adding a download group' do
+      let(:downloader_group3) { Role.create(name: 'downloader_group3') }
+      before do
+        media.download_groups = [downloader_group, downloader_group2]
+        media.save
+      end
+      context 'adding an array of groups' do
+        before do
+          media.download_groups += [downloader_group3]
+          media.save
+        end
+        it 'adds the group' do
+          expect(subject[0].to_hash).to eq({:name=>"downloader_group", :type=>"group", :access=>"download"})
+          expect(subject[1].to_hash).to eq({:name=>"downloader_group2", :type=>"group", :access=>"download"})
+          expect(subject[2].to_hash).to eq({:name=>"downloader_group3", :type=>"group", :access=>"download"})
+        end
+      end
+      context 'adding an array of group names' do
+        before do
+          media.download_groups += ['downloader_group3']
+          media.save
+        end
+        it 'adds the group' do
+          expect(subject[0].to_hash).to eq({:name=>"downloader_group", :type=>"group", :access=>"download"})
+          expect(subject[1].to_hash).to eq({:name=>"downloader_group2", :type=>"group", :access=>"download"})
+          expect(subject[2].to_hash).to eq({:name=>"downloader_group3", :type=>"group", :access=>"download"})
+        end
+      end
+    end
   end
   describe '#download_groups_string=' do
     subject{ media.download_groups }
@@ -87,6 +116,31 @@ RSpec.describe Morphosource::AccessControls::Permissions do
     it 'assigns the users download permission' do
       expect(subject[0].to_hash).to eq({:name=>download_user.ms_id, :type=>"person", :access=>"download"})
       expect(subject[1].to_hash).to eq({:name=>download_user2.ms_id, :type=>"person", :access=>"download"})
+    end
+    context 'adding additional users' do
+      let(:download_user3) { User.create(email: 'downloader3@email.com', password: 'password') }
+      context 'adding an array of users' do
+        before do
+          media.download_users += [download_user3]
+          media.save
+        end
+        it 'assigns the users download permission' do
+          expect(subject[0].to_hash).to eq({:name=>download_user.ms_id, :type=>"person", :access=>"download"})
+          expect(subject[1].to_hash).to eq({:name=>download_user2.ms_id, :type=>"person", :access=>"download"})
+          expect(subject[2].to_hash).to eq({:name=>download_user3.ms_id, :type=>"person", :access=>"download"})
+        end
+      end
+      context 'adding an array of user ids' do
+        before do
+          media.download_users += [download_user3.ms_id]
+          media.save
+        end
+        it 'assigns the users download permission' do
+          expect(subject[0].to_hash).to eq({:name=>download_user.ms_id, :type=>"person", :access=>"download"})
+          expect(subject[1].to_hash).to eq({:name=>download_user2.ms_id, :type=>"person", :access=>"download"})
+          expect(subject[2].to_hash).to eq({:name=>download_user3.ms_id, :type=>"person", :access=>"download"})
+        end
+      end
     end
   end
   describe '#download_users_string=' do

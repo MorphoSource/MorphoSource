@@ -3,8 +3,15 @@ module Morphosource
 
   autoload :Configurable
   autoload :Derivatives
+  autoload :Minter
 
   include Morphosource::Configurable
+
+  # The Minter code must be loaded after initialization, otherwise it will
+  # sometimes race with configuration variables being set correctly
+  Rails.configuration.after_initialize do
+    include Morphosource::Minter
+  end
 
   VERSION = '2.0a'.freeze
 

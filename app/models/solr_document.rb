@@ -59,10 +59,6 @@ class SolrDocument
     self[Solrizer.solr_name('fileset_visibility', :stored_searchable)]
   end
 
-  def fileset_accessibility
-    self[Solrizer.solr_name('fileset_accessibility', :stored_searchable)]
-  end
-
   def map_type
     self[Solrizer.solr_name('map_type', :stored_searchable)]
   end

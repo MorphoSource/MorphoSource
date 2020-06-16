@@ -42,6 +42,22 @@ RSpec.describe User, type: :model do
       end
     end
 
+    describe '#registered?' do
+      context 'when not registered' do
+        before do
+          allow(user).to receive(:groups).and_return(['contributor'])
+        end
+        it 'is false' do
+          expect(user.registered?).to be(false)
+        end
+      end
+      context 'when registered' do
+        it 'is true' do
+          expect(user.registered?).to be(true)
+        end
+      end
+    end
+
     describe '#collections_managed' do
       let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
       let(:team_a)                { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }

@@ -64,6 +64,10 @@ class User < ApplicationRecord
     display_name.blank? ? email : display_name
   end
 
+  def registered?
+    groups.include? 'registered'
+  end
+
   # Mailboxer (the notification system) needs the User object to respond to this method
   # in order to send emails
   def mailboxer_email(_object)
@@ -169,7 +173,7 @@ class User < ApplicationRecord
     items.select{ |i| i.date_requested? || i.date_cleared? }
   end
 
-  # TODO: Remove 
+  # TODO: Remove
   # def requested_items
     # requests
   # end

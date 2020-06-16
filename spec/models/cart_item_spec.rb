@@ -2,30 +2,74 @@ require 'rails_helper'
 
 RSpec.describe CartItem, type: :model do
 
-  let(:current_user)  { User.create(email: "example@email.com", password: "password") }
+  let(:user)          { User.create(email: "example@email.com", password: "password") }
   let(:reviewer)      { User.create(email: 'reviewer@email.com', password: 'password') }
   let(:depositor)     { User.create(email: 'depositor@email.com', password: 'password') }
 
   let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, download_reviewer: [reviewer.ms_id], fileset_accessibility: ['restricted_download'])}
 
-  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: "abc123", download_reviewer: [], fileset_accessibility: [''])}
+  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, download_reviewer: [], visibility: 'open', fileset_accessibility: ['open'])}
 
-  let(:cartItem1)     { CartItem.create( user: current_user, work_id: work1.id, restricted: true) }
-  let(:cartItem2)     { CartItem.create( user: current_user, work_id: work2.id, restricted: false) }
+  let!(:cartItem1)     { CartItem.create(user: user, work_id: work1.id) }
+  let!(:cartItem2)     { CartItem.create(user: user, work_id: work2.id) }
 
-  describe '#set_approver' do
-     it 'assigns the work reviewer as the approver' do
-       expect(cartItem1.approver_id).to eq(work1.reviewer)
-       expect(cartItem2.approver_id).to eq(work2.reviewer)
-     end
-  end
-
-  describe '#unrestricted' do
-    it 'returns true when restricted is false' do
-      expect(cartItem2.unrestricted?).to be(true)
+  describe '#active_request, #inactive_request' do
+    context 'item is requested' do
+      before do
+        cartItem1.date_requested = Date.today
+        cartItem1.save
+      end
+      it { expect(cartItem1.active_request?).to be(true) }
+      it { expect(cartItem1.inactive_request?).to be(false) }
     end
-    it 'returns false when restricted is true' do
-      expect(cartItem1.unrestricted?).to be(false)
+    context 'item is approved' do
+      before do
+        cartItem1.date_requested = Date.today
+        cartItem1.date_approved = Date.today
+        cartItem1.save
+      end
+      it { expect(cartItem1.active_request?).to be(true) }
+      it { expect(cartItem1.inactive_request?).to be(false) }
+    end
+    context 'item is cleared' do
+      before do
+        cartItem1.date_requested = Date.today
+        cartItem1.date_cleared = Date.today
+        cartItem1.save
+      end
+      it { expect(cartItem1.active_request?).to be(true) }
+      it { expect(cartItem1.inactive_request?).to be(false) }
+    end
+    context 'item is canceled' do
+      before do
+        cartItem1.date_requested = Date.today
+        cartItem1.date_canceled = Date.today
+        cartItem1.save
+      end
+      it { expect(cartItem1.active_request?).to be(false) }
+      it { expect(cartItem1.inactive_request?).to be(true) }
+    end
+    context 'item is denied' do
+      before do
+        cartItem1.date_requested = Date.today
+        cartItem1.date_denied = Date.today
+        cartItem1.save
+      end
+      it { expect(cartItem1.active_request?).to be(false) }
+      it { expect(cartItem1.inactive_request?).to be(true) }
+    end
+    context 'item is expired' do
+      before do
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_expired = Date.yesterday
+        cartItem1.save
+      end
+      it { expect(cartItem1.active_request?).to be(false) }
+      it { expect(cartItem1.inactive_request?).to be(true) }
+    end
+    context 'item is open' do
+      it { expect(cartItem1.active_request?).to be(false) }
+      it { expect(cartItem1.inactive_request?).to be(false) }
     end
   end
 
@@ -74,55 +118,17 @@ RSpec.describe CartItem, type: :model do
     end
   end
 
-  describe '#downloadable?' do
-    context 'the item is not restricted' do
-      it { expect(cartItem2.downloadable?).to be(true) }
-    end
-    context 'a restricted item is approved' do
-      before do
-        allow(cartItem1).to receive(:request_status).and_return('Approved')
-      end
-      it { expect(cartItem1.downloadable?).to be(true) }
-    end
-    context 'a restricted item is not approved' do
-      before do
-        allow(cartItem1).to receive(:request_status).and_return('Denied')
-      end
-      it { expect(cartItem1.downloadable?).to be(false) }
-    end
-  end
-
-  describe '#expired?' do
-    context 'an approved item is not yet expired' do
-      before do
-        cartItem1.date_requested = Date.yesterday
-        cartItem1.date_approved = Date.yesterday
-        cartItem1.date_expired = Date.tomorrow
-      end
-      it { expect(cartItem1.expired?).to be(false) }
-    end
-    context 'an approved item has passed its expiration date' do
-      before do
-        cartItem1.date_requested = Date.yesterday
-        cartItem1.date_approved = Date.yesterday
-        cartItem1.date_expired = Date.yesterday
-      end
-      it { expect(cartItem1.expired?).to be(true) }
-    end
-    context 'an unrestricted item does not have an expiration date' do
-      it { expect(cartItem2.expired?).to be(false) }
-    end
-  end
-
   describe '#editable?' do
     before do
-      [cartItem1,cartItem1].each do |items|
+      allow(cartItem2).to receive(:restricted?).and_return(true)
+      [cartItem1,cartItem2].each do |items|
         items.date_requested = Date.yesterday
       end
     end
     context 'item is approved' do
       before do
         cartItem1.date_approved = Date.today
+        cartItem1.date_expired = Date.tomorrow
       end
       it { expect(cartItem1.editable?).to be(true) }
       it { expect(cartItem2.editable?).to be(false) }
@@ -150,5 +156,154 @@ RSpec.describe CartItem, type: :model do
       it { expect(cartItem1.editable?).to be(false) }
       it { expect(cartItem2.editable?).to be(true) }
     end
+  end
+
+  describe '#unrequested' do
+    context 'item has been requested' do
+      before do
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.save
+      end
+      it { expect(cartItem1.unrequested?).to be(false) }
+    end
+    context 'item has not been requested' do
+      it { expect(cartItem1.unrequested?).to be(true) }
+    end
+  end
+
+  describe '#cleared?' do
+    context 'item has been cleared' do
+      before do
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_cleared = Date.yesterday
+        cartItem1.save
+      end
+      it { expect(cartItem1.cleared?).to be(true) }
+    end
+    context 'item has not been cleared' do
+      it { expect(cartItem1.cleared?).to be(false) }
+    end
+  end
+
+  describe '#work' do
+    it { expect(cartItem1.work).to eq(work1) }
+    it { expect(cartItem2.work).to eq(work2) }
+  end
+
+  describe '#expired?' do
+    context 'an approved item is not yet expired' do
+      before do
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_approved = Date.yesterday
+        cartItem1.date_expired = Date.tomorrow
+      end
+      it { expect(cartItem1.expired?).to be(false) }
+    end
+    context 'an approved item has passed its expiration date' do
+      before do
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_approved = Date.yesterday
+        cartItem1.date_expired = Date.yesterday
+      end
+      it { expect(cartItem1.expired?).to be(true) }
+    end
+    context 'an unrestricted item does not have an expiration date' do
+      it { expect(cartItem2.expired?).to be(false) }
+    end
+  end
+
+  describe '#approved?' do
+    context 'work is not approved' do
+      it { expect(cartItem1.approved?).to be(false) }
+    end
+    context 'work is approved' do
+      before do
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_approved = Date.yesterday
+        cartItem1.save
+      end
+      context 'work is expired' do
+        before do
+          cartItem1.date_expired = Date.yesterday
+          cartItem1.save
+        end
+        it { expect(cartItem1.approved?).to be(false) }
+      end
+      context 'work is not expired' do
+        it { expect(cartItem1.approved?).to be(true) }
+      end
+    end
+  end
+
+  describe '#downloadable?' do
+    context 'work is open' do
+      subject { cartItem2.downloadable? }
+      it { expect(subject).to be(true) }
+    end
+    context 'work is restricted' do
+      subject { cartItem1.downloadable? }
+      context 'user has download access' do
+        before do
+          work1.download_users += [user]
+          work1.save
+        end
+        it { expect(subject).to be(true) }
+      end
+      context 'user is the work download reviewer' do
+        before do
+          work1.download_reviewer = [user.ms_id]
+          work1.save
+        end
+        it { expect(subject).to be(true) }
+      end
+      context 'user is the depositor' do
+        before do
+          work1.depositor = user.ms_id
+          work1.save
+        end
+        it { expect(subject).to be(true) }
+      end
+      context 'request is approved' do
+        before do
+          cartItem1.date_requested = Date.yesterday
+          cartItem1.date_approved = Date.yesterday
+          cartItem1.date_expired = Date.tomorrow
+        end
+        it { expect(subject).to be(true) }
+      end
+    end
+  end
+
+  describe '#user_is_reviewer_or_has_ownership?' do
+    subject { cartItem1.user_is_reviewer_or_has_ownership? }
+    context 'user is not the reviewer or owner' do
+      it { expect(subject).to be(false) }
+    end
+    context 'user is the reviewer' do
+      before do
+        work1.download_reviewer = [user.ms_id]
+        work1.save
+      end
+      it { expect(subject).to be(true) }
+    end
+    context 'user is the owner' do
+      before do
+        work1.owner = user.ms_id
+        work1.save
+      end
+      it { expect(subject).to be(true) }
+    end
+    context 'user is the depositor' do
+      before do
+        work1.depositor = user.ms_id
+        work1.save
+      end
+      it { expect(subject).to be(true) }
+    end
+  end
+
+  describe '#reviewer' do
+    it { expect(cartItem1.reviewer).to eq(reviewer) }
+    it { expect(cartItem2.reviewer).to eq(depositor) }
   end
 end

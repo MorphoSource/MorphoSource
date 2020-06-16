@@ -42,72 +42,98 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
   end
 
-  describe "GET #zip" do
-    let(:work1)       { Media.new(title: ["Test Media Work"], id: 'tmw1', depositor: 'example@example.com') }
-    let(:work2)       { Media.new(title: ["Test Media Work 2"], id: 'tmw2', depositor: 'example@example.com') }
-    let(:work_dup)    { Media.new(title: ["Test Media Work"], id: 'tmw3', depositor: 'example@example.com') }
-    let(:solr_doc1)   { SolrDocument.new(work1.to_solr) }
-    let(:solr_doc2)   { SolrDocument.new(work2.to_solr) }
-    let(:solr_doc_dup){ SolrDocument.new(work_dup.to_solr) }
-    let(:file_path1)  { fixture_path + '/images/duke.png' }
-    let(:file_path2)  { fixture_path + '/images/ms.jpg' }
-    let(:file_path3)  { fixture_path + '/images/ms_2.jpg' }
-    let(:local_file1) { File.open(file_path1) }
-    let(:local_file2) { File.open(file_path2) }
-    let(:local_file3) { File.open(file_path3) }
-    let(:local_file_dup) { File.open(file_path1) }
+  describe "search_builder_class" do
+    it "is Morphosource::WorkSearchBuilder" do
+      expect(subject.search_builder_class).to be(Morphosource::WorkSearchBuilder)
+    end
+  end
 
-    let(:ability) { double Ability }
-
-    let(:file_set_1)   { FileSet.new }
-    let(:file_set_2)   { FileSet.new }
-    let(:file_set_3)   { FileSet.new }
-    let(:file_set_dup) { FileSet.new }
+  describe 'GET #showcase' do
+    let!(:work)         { Media.create(title: ['test title'], visibility: private, fileset_visibility: [""], fileset_accessibility: ["private"]) }
+    let(:access_group)  { Role.create(name: 'access_group') }
+    let(:user)          { User.create(email: 'user@email.com', password: 'password') }
 
     before do
-      sign_in depositor
-      Hydra::Works::AddFileToFileSet.call(file_set_1, local_file1, :original_file, versioning: true)
-      Hydra::Works::AddFileToFileSet.call(file_set_2, local_file2, :original_file, versioning: true)
-      Hydra::Works::AddFileToFileSet.call(file_set_3, local_file3, :original_file, versioning: true)
-      Hydra::Works::AddFileToFileSet.call(file_set_dup, local_file_dup, :original_file, versioning: true)
-      allow(ability).to receive(:can?).with(:read, solr_doc1.id).and_return(true)
-      allow(ability).to receive(:can?).with(:read, solr_doc2.id).and_return(true)
-      allow(ability).to receive(:can?).with(:read, solr_doc_dup.id).and_return(true)
-      work1.ordered_members << file_set_1 << file_set_2
-      work2.ordered_members << file_set_3
-      work_dup.ordered_members << file_set_dup
+      access_group.users << user
+      access_group.save
+      sign_in user
     end
 
-    it "returns a zip for a single work" do
-      get :zip, params: { ids: [work1.id] }
-      expect(response.status).to eq(200)
-      expect(response.headers["Content-Type"]).to eq("application/zip")
-      expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource-')
-      expect(response.headers["Content-Disposition"]).to end_with('.zip"')
-    end
-
-    it "returns a zip for multiple works" do
-      get :zip, params: { ids: [work1.id, work2.id] }
-      expect(response.status).to eq(200)
-      expect(response.headers["Content-Type"]).to eq("application/zip")
-      expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource-')
-      expect(response.headers["Content-Disposition"]).to end_with('.zip"')
-    end
-
-    it "returns a zip for duplicated works" do
-      get :zip, params: { ids: [work1.id, work1.id] }
-      expect(response.status).to eq(200)
-      expect(response.headers["Content-Type"]).to eq("application/zip")
-      expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource-')
-      expect(response.headers["Content-Disposition"]).to end_with('.zip"')
-    end
-
-    it "returns a zip for unique works with conflicting names" do
-      get :zip, params: { ids: [work1.id, work_dup.id] }
-      expect(response.status).to eq(200)
-      expect(response.headers["Content-Type"]).to eq("application/zip")
-      expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource-')
-      expect(response.headers["Content-Disposition"]).to end_with('.zip"')
+    describe 'user ability to view' do
+      context 'work is private' do
+        context 'user does not have access' do
+          it 'is unauthorized' do
+            get :showcase, params: { id: work.id }
+            expect(response.status).to eq(401)
+          end
+        end
+        context 'user has edit access' do
+          context 'through a group' do
+            before do
+              work.edit_groups += [access_group]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+          context 'as a user' do
+            before do
+              work.edit_users += [user]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+        end
+        context 'user has download access' do
+          context 'through a group' do
+            before do
+              work.download_groups += [access_group]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+          context 'as a user' do
+            before do
+              work.download_users += [user]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+        end
+        context 'user has read access' do
+          context 'through a group' do
+            before do
+              work.read_groups += [access_group]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+          context 'as a user' do
+            before do
+              work.read_users += [user]
+              work.save
+            end
+            it 'is authorized' do
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+        end
+      end
     end
   end
 

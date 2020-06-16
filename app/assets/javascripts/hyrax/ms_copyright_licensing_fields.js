@@ -1,12 +1,10 @@
 $(document).on('turbolinks:load', function() {
   // shared functions and listeners for copyright statement and licensing fields
-  console.log('hallo');
 
   // TODO: Unify media and organization functions here
 
   // When a copyright statement is selected, check against license and prune available license options
   $('select[name="media[rights_statement]"]').change(function() {
-    console.log('mm');
     event.preventDefault();
 
     var conditions = {
@@ -59,7 +57,6 @@ $(document).on('turbolinks:load', function() {
   };
 
   $('select[name="organization[rights_statement]"]').change(function() {
-    console.log('mm');
     event.preventDefault();
 
     var conditions = {

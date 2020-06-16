@@ -20,6 +20,18 @@
 		  	</select>
 		  <% end %>
 
+			<% if params['m_pub_status'].present? 
+					 show_filter_by = true %>
+				<input type="hidden" name="m_pub_status" value="<%= params['m_pub_status'] %>" class="filter-param" />
+			<% else %>
+		  	<select name="m_pub_status" data-form="media-filters">
+		  		<option value="">Publication status</option>
+		  		<% @pub_status_options.each do |v| %>
+			  		<option value="<%= v %>"><%= publication_status_label(v) %></option>
+		  		<% end %>
+		  	</select>
+		  <% end %>
+
 		 	<% if params['m_media_type'].present? 
 					 show_filter_by = true %>
 				<input type="hidden" name="m_media_type" value="<%= params['m_media_type'] %>" class="filter-param" />
@@ -78,6 +90,9 @@
 			<div class="col-sm-8 col-lg-9">
 				<% if params['m_visibility'].present? %>
 					<p id="m_visibility" class="filter-param">Visibility > <%= params['m_visibility'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_visibility"></i></p>
+				<% end %>
+				<% if params['m_pub_status'].present? %>
+					<p id="m_pub_status" class="filter-param">Publication status > <%= params['m_pub_status'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_pub_status"></i></p>
 				<% end %>
 				<% if params['m_media_type'].present? %>
 					<p id="m_media_type" class="filter-param">Media type > <%= params['m_media_type'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_media_type"></i></p>

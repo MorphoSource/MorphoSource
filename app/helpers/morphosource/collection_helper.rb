@@ -57,6 +57,7 @@ module Morphosource
     def prepare_docs_and_filters(collection)
 
       @visibility_options = []
+      @pub_status_options = []
       @media_type_options = []
       @organization_options = []
       @bso_visibility_options = []
@@ -121,6 +122,7 @@ module Morphosource
       @cho_total_pages = cho_total_pages
 
       @visibility_options = @visibility_options.uniq
+      @pub_status_options = @pub_status_options.uniq
       @media_type_options = @media_type_options.uniq
       @organization_options = @organization_options.uniq
       @bso_source_options = @bso_source_options.uniq
@@ -150,6 +152,7 @@ module Morphosource
             end
           end
           m_visibility_to_compare = media_filter_params['visibility'] || work.visibility
+          m_publication_status_to_compare = media_filter_params['pub_status'] || work.publication_status
           m_media_type_to_compare = media_filter_params['media_type'] || work.media_type.first
           m_origin_to_compare = media_filter_params['origin'] || origin
 
@@ -210,9 +213,9 @@ module Morphosource
 
           m_organization_to_compare = media_filter_params['organization'] || bso_organization
           m_team_project_to_compare = media_filter_params['team_project'] || extras['team_project_title']
-
           # filter media
           if work.visibility == m_visibility_to_compare &&
+              work.publication_status == m_publication_status_to_compare &&
               work.media_type.first == m_media_type_to_compare &&
               bso_organization == m_organization_to_compare &&
               extras['team_project_title'] == m_team_project_to_compare &&
@@ -221,6 +224,7 @@ module Morphosource
             media_documents << doc
             media_extras << { 'id' => doc.id, 'origin' => origin }.merge(extras)
             @visibility_options << work.visibility
+            @pub_status_options << work.publication_status
             @media_type_options << work.media_type.first
           end 
           # / filter media

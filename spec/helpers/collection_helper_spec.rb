@@ -18,51 +18,52 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
 
   let(:role) { Role.new(name: 'role') }
   
-#  let!(:org1)  { 
-#    Organization.create(
-#      title: ['title'], 
-#      institution_name: ["institution_name"],
-#      institution_code: ["institution_code"],
-#      collection_code: ["collection_code"],
-#      description: ["description"],
-#      address: ["address"],
-#      city: ["city"],
-#      state_province: ["state_province"],
-#      country: ["country"],
-#      team_id: [team.id]
-#    ) 
-#  }
   let!(:org1)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
 
   let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id) }
   let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id) }
   let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }
+  let(:media2)            { Media.create(title: ['new media 2'], depositor: user.ms_id) }
   let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
   let(:team_depositor)   { User.create(email: 'depositor@test.com', password: 'password') }
   let(:team_viewer)      { User.create(email: 'viewer@test.com', password: 'password') }
-  let(:works)             { [org1, specimen, imagingEvent, media] }
+  let(:works)             { [org1, specimen, imagingEvent, media, media2] }
 
   let(:presenter) { described_class.new(SolrDocument.new(team.to_solr), ability, nil) }
 
   before do
 
-        org1.ordered_members << specimen
-        specimen.ordered_members << imagingEvent
-        imagingEvent.ordered_members << media
+    org1.ordered_members << specimen
+    specimen.ordered_members << imagingEvent
+    imagingEvent.ordered_members << media
+
+    media2.member_of_collections = [project]
 
 #        team.managers << team_manager
 #        team.depositors << team_depositor
 #        team.viewers << team_viewer
 #        team.user_groups.each(&:save)
 
-        works.each(&:save)
-        works.each(&:reload)
+    works.each(&:save)
+    works.each(&:reload)
 
     team.create_collection_groups
 #    sign_in user
     allow(ability).to receive(:can?).with(:edit, team.id).and_return(true)
-#    allow(controller).to receive(:authorize!).with(:edit, team).and_return(true)
 
+  end
+
+  describe '#media_from_team_project(project_doc)' do
+    it 'returns media from project' do
+      project_doc = SolrDocument.new(project.to_solr) 
+      expect(helper.media_from_team_project(project_doc).count).to eq (1)
+    end
+  end
+
+  describe '#media_from_linked_organization' do
+    it 'returns a media from linked org' do
+      expect(helper.media_from_linked_organization(org1).count).to eq (1)
+    end
   end
 
 
@@ -76,7 +77,6 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
       expect(results).to eq ("<input type=\"hidden\" name=\"view\" value=\"gallery\" />")
     end
   end
-
 
   describe '#ms_collection_view_link' do
     let(:uri) {'dashboard/collections'}

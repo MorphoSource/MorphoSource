@@ -1271,7 +1271,7 @@ $( document ).on('turbolinks:load', function() {
         this.setMediaPermissionFieldEvent();
 
         // Comment out for debug ability to access any step any time
-        // this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);        
+        this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);        
       }
 
       setMediaPermissionFieldEvent() {

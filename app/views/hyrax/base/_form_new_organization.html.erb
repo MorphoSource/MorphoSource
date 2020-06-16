@@ -2,6 +2,7 @@
 
 <p>Create a new organization by filling in fields below and selecting Create New Organization. You can also go back and <a class="cancel">select organization or no organization</a> instead. </p>
 
+<%= render_edit_field_partial('organization_type', f: i) %>
 <%= i.input :institution_name %>
 <%= i.input :title, label_wrapper_html: { class: 'required-flag' }  %>
 <%= i.input :institution_code, as: :multi_value, label_wrapper_html: { class: 'required-flag' }  %>

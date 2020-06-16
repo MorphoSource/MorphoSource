@@ -96,14 +96,16 @@ module Morphosource
         {
           id: parent.id,
           label: parent.to_s,
-          institution_code: parent.institution_code.first.to_s,
+          organization_type: parent.organization_type.first.to_s,
           institution_name: parent.institution_name.first.to_s,
+          institution_code: parent.institution_code.first.to_s,
           collection_code: parent.collection_code.first.to_s,
           description: parent.description.first.to_s,
           address: parent.address.first.to_s,
           city: parent.city.first.to_s,
           state_province: parent.state_province.first.to_s,
           country: parent.country.first.to_s,
+          contact_person: parent.contact_person.first.to_s,
           path: @controller.url_for(parent)
         }
       end.to_json

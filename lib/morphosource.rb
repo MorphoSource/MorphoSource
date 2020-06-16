@@ -3,6 +3,7 @@ module Morphosource
 
   autoload :Configurable
   autoload :Derivatives
+  autoload :IDigBio
 
   include Morphosource::Configurable
 

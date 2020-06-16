@@ -3,6 +3,7 @@ module Hyrax
 
     attr_reader :subcollection_count, :search_form_url, :collection, :collection_managers, :specimens,
       :organization,
+      :organization_organization_type,
       :organization_title,
       :organization_institution_name,
       :organization_institution_code,
@@ -79,6 +80,7 @@ module Hyrax
       organization = collection.organization
       if organization.present?
         @organization_title = organization.title
+        @organization_organization_type = organization.organization_type
         @organization_institution_name = organization.institution_name
         @organization_institution_code = organization.institution_code
         @organization_collection_code = organization.collection_code

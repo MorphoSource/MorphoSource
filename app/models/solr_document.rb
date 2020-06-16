@@ -441,6 +441,10 @@ class SolrDocument
   end
 
   # Organization fields
+  def organization_type
+    self[Solrizer.solr_name('organization_type', :stored_searchable)]
+  end
+
   def institution_code
     self[Solrizer.solr_name('institution_code', :stored_searchable)]
   end

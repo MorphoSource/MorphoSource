@@ -1,6 +1,7 @@
 @import 'shared';
 
 .submission_flow {
+  background-color: white;
 
   .ui-loading {
     background: image-url('loading.gif') center center no-repeat;
@@ -210,15 +211,11 @@
   }
 
   .sidebar {
+    cursor: default;
+    width: 224px;
     margin-top: 0px !important;
     margin-bottom: 0px !important;
     background-color: #003880 !important;
-    min-height: calc(100vh - 50px) !important;
-  }
-
-  .sidebar {
-    cursor: default;
-    width: 224px;
 
     a {
       cursor: pointer;
@@ -249,9 +246,7 @@
   .main-content {
     margin-top: 0px !important;
     margin-bottom: 0px !important;
-    background: none;
-    height: calc(100vh - 50px);
-    overflow: auto;
+    background-color: #003880;
     padding-right: 0px;
     padding-left: 224px;
   }

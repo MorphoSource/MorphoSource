@@ -1,0 +1,110 @@
+require 'rails_helper'
+
+RSpec.describe Morphosource::CollectionHelper, type: :helper do
+
+
+  let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
+
+  let(:ability) { double Ability }
+
+  let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
+  let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
+  let(:user) { User.create(display_name: 'John Doe', email: 'johndoe@email.com', password: 'password', ms_id: 'abc123') }
+
+  let(:team) { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id, visibility: public) }
+
+  let(:project) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id, visibility: public) }
+
+  let(:role) { Role.new(name: 'role') }
+  
+#  let!(:org1)  { 
+#    Organization.create(
+#      title: ['title'], 
+#      institution_name: ["institution_name"],
+#      institution_code: ["institution_code"],
+#      collection_code: ["collection_code"],
+#      description: ["description"],
+#      address: ["address"],
+#      city: ["city"],
+#      state_province: ["state_province"],
+#      country: ["country"],
+#      team_id: [team.id]
+#    ) 
+#  }
+  let!(:org1)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
+
+  let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id) }
+  let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id) }
+  let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }
+  let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
+  let(:team_depositor)   { User.create(email: 'depositor@test.com', password: 'password') }
+  let(:team_viewer)      { User.create(email: 'viewer@test.com', password: 'password') }
+  let(:works)             { [org1, specimen, imagingEvent, media] }
+
+  let(:presenter) { described_class.new(SolrDocument.new(team.to_solr), ability, nil) }
+
+  before do
+
+        org1.ordered_members << specimen
+        specimen.ordered_members << imagingEvent
+        imagingEvent.ordered_members << media
+
+#        team.managers << team_manager
+#        team.depositors << team_depositor
+#        team.viewers << team_viewer
+#        team.user_groups.each(&:save)
+
+        works.each(&:save)
+        works.each(&:reload)
+
+    team.create_collection_groups
+#    sign_in user
+    allow(ability).to receive(:can?).with(:edit, team.id).and_return(true)
+#    allow(controller).to receive(:authorize!).with(:edit, team).and_return(true)
+
+  end
+
+
+  describe '#hidden_params_for_filters' do
+    let(:params) { { 'view' => 'gallery' } }
+    before do
+      allow(helper).to receive(:request_params) { params }
+    end
+    it 'returns hidden form field for view=gallery' do
+      results = helper.hidden_params_for_filters('m_')
+      expect(results).to eq ("<input type=\"hidden\" name=\"view\" value=\"gallery\" />")
+    end
+  end
+
+
+  describe '#ms_collection_view_link' do
+    let(:uri) {'dashboard/collections'}
+    let(:view) {{:view=>:list}}
+    before do
+      allow(helper).to receive(:path_info) { uri }   
+    end
+    it 'returns correct link' do
+      expect(helper.ms_collection_view_link(team.id, view)).to eq ("/dashboard/collections/"+team.id+"?view=list") 
+    end
+
+  end
+
+#  describe '#prepare_docs_and_filters' do
+#    before do
+#      media_doc_list = []
+#      media_doc = SolrDocument.new(media.to_solr) 
+#      media_doc_list << media_doc
+#      @member_docs = {}
+#      @subcollection_docs = {}
+#      allow(helper).to receive(:get_medias_and_objects) { media_doc_list, [], [], [], [], [] }
+#
+#      prepare_docs_and_filters(team)
+#    end
+#    it 'media_member_docs should be...' do
+#      expect(@media_member_docs).length.to be(1)
+#    end
+#  end
+
+end
+

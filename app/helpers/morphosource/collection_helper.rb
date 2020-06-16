@@ -3,7 +3,7 @@ module Morphosource
   module CollectionHelper
 
     def ms_collection_view_link(id, view)
-      current_uri = request.env['PATH_INFO']
+      current_uri = path_info
       if current_uri.include?("dashboard/collections")
         if action_name == 'edit'
           link = edit_dashboard_collection_path(id, view)
@@ -34,9 +34,9 @@ module Morphosource
 
     def hidden_params_for_filters(prefix)
       hidden_params = {}
-      params = request.params
+      params = request_params
       view =  params['view'] || 'list'
-      #todo: might also merge the filter params here later
+      #todo: might also merge the filter params here later.  For now just add the view param
       #filters = filter_params(prefix, params)
       hidden_params.merge!({'view' => view })
       html = ''
@@ -44,6 +44,14 @@ module Morphosource
         html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
       end
       html.html_safe
+    end
+
+    def request_params
+      request.params
+    end
+
+    def path_info 
+      request.env['PATH_INFO']
     end
 
     def prepare_docs_and_filters(collection)

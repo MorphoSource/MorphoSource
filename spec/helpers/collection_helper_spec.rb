@@ -2,32 +2,27 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::CollectionHelper, type: :helper do
 
-
   let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
-
   let(:ability) { double Ability }
-
   let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
   let(:user) { User.create(display_name: 'John Doe', email: 'johndoe@email.com', password: 'password', ms_id: 'abc123') }
-
   let(:team) { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id, visibility: public) }
-
   let(:project) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id, visibility: public) }
-
   let(:role) { Role.new(name: 'role') }
-  
   let!(:org1)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
 
   let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id) }
   let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id) }
+  let(:cho)         { CulturalHeritageObject.create(title: ['cho title'], vouchered: [true], depositor: user.ms_id) }
+  let(:imagingEvent2)     { ImagingEvent.create(title: ['imagingEvent2'], depositor: user.ms_id) }
   let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }
   let(:media2)            { Media.create(title: ['new media 2'], depositor: user.ms_id) }
   let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
   let(:team_depositor)   { User.create(email: 'depositor@test.com', password: 'password') }
   let(:team_viewer)      { User.create(email: 'viewer@test.com', password: 'password') }
-  let(:works)             { [org1, specimen, imagingEvent, media, media2] }
+  let(:works)             { [org1, specimen, imagingEvent, media, media2, cho, imagingEvent2] }
 
   let(:presenter) { described_class.new(SolrDocument.new(team.to_solr), ability, nil) }
 
@@ -36,13 +31,9 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
     org1.ordered_members << specimen
     specimen.ordered_members << imagingEvent
     imagingEvent.ordered_members << media
-
     media2.member_of_collections = [project]
-
-#        team.managers << team_manager
-#        team.depositors << team_depositor
-#        team.viewers << team_viewer
-#        team.user_groups.each(&:save)
+    cho.ordered_members << imagingEvent2
+    imagingEvent2.ordered_members << media2
 
     works.each(&:save)
     works.each(&:reload)
@@ -51,6 +42,25 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
 #    sign_in user
     allow(ability).to receive(:can?).with(:edit, team.id).and_return(true)
 
+  end
+
+  describe '#organization_from_bso(bso)' do
+    it 'returns the organization' do
+      expect(helper.organization_from_bso(specimen).id).to eq(org1.id)
+    end
+  end
+
+  describe '#physical_object_solr_from_media(media_id)' do
+    it 'returns BSO solr' do
+      bso_work, bso_extra, cho_work, cho_extra = helper.physical_object_from_media(media.id)
+      expect(bso_work.id).to eq(specimen.id)
+      expect(bso_extra).to eq({"id"=>specimen.id, "media_count"=>"1"}) 
+    end
+    it 'returns CHO solr' do
+      bso_work, bso_extra, cho_work, cho_extra = helper.physical_object_from_media(media2.id)
+      expect(cho_work.id).to eq(cho.id)
+      expect(cho_extra).to eq({"id"=>cho.id, "media_count"=>"1"}) 
+    end
   end
 
   describe '#media_from_team_project(project_doc)' do
@@ -65,7 +75,6 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
       expect(helper.media_from_linked_organization(org1).count).to eq (1)
     end
   end
-
 
   describe '#hidden_params_for_filters' do
     let(:params) { { 'view' => 'gallery' } }
@@ -87,24 +96,7 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
     it 'returns correct link' do
       expect(helper.ms_collection_view_link(team.id, view)).to eq ("/dashboard/collections/"+team.id+"?view=list") 
     end
-
   end
-
-#  describe '#prepare_docs_and_filters' do
-#    before do
-#      media_doc_list = []
-#      media_doc = SolrDocument.new(media.to_solr) 
-#      media_doc_list << media_doc
-#      @member_docs = {}
-#      @subcollection_docs = {}
-#      allow(helper).to receive(:get_medias_and_objects) { media_doc_list, [], [], [], [], [] }
-#
-#      prepare_docs_and_filters(team)
-#    end
-#    it 'media_member_docs should be...' do
-#      expect(@media_member_docs).length.to be(1)
-#    end
-#  end
 
 end
 

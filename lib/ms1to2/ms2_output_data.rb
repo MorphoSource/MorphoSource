@@ -2,7 +2,7 @@ module Ms1to2
   class Ms2OutputData
     def self.standard_tables
       ['media', 'imaging_event', 'processing_event', 'biological_specimen', 
-       'taxonomy', 'device', 'organization', 'collection', 'f_to_i']
+       'taxonomy', 'device', 'organization', 'collection', 'f_to_i', 'user']
     end
 
     attr_accessor *standard_tables, :output_path
@@ -19,6 +19,7 @@ module Ms1to2
     def export_table(t)
       return if t == 'f_to_i'
       table = send(t)
+      return if !table.present?
       keys = subkeys(table)
       CSV.open(File.join(output_path, t+'.csv'), 'wb') do |csv|
         csv << keys

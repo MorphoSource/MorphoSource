@@ -49,6 +49,19 @@ module Importer
       BatchObjectImportJob.perform_now(model, attributes, files_directory, true)
     end
 
+    def import_all_users
+      count = 0
+      parser.each do |attributes|
+        attrs = Importer::Factory::UserFactory.prepare_attributes(attributes)
+        if attrs[:id] && model.constantize.exists?(attrs[:id])
+          next
+        end
+        BatchUserImportJob.perform_now(attrs)
+      count += 1
+      end
+      count
+    end
+
     private
 
     def deposit_attributes

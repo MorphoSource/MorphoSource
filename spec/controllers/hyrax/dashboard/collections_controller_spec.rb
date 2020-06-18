@@ -21,6 +21,7 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
   let!(:org1)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
 
   let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id) }
+  let(:cho)              { CulturalHeritageObject.create(title: ['cho'], vouchered: [true], depositor: user.ms_id) }
   let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id) }
   let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }
   let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
@@ -55,21 +56,56 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
     expect(response).to redirect_to "/dashboard/collections/" + project.id + "/edit"
   end
 
-#  scenario 'Team Dashboard collections should have TeamPresenter' do
-#    before do
-#      allow(ability).to receive(:can?).with(:edit, team.id).and_return(true)
-#      allow(controller).to receive(:authorize!).with(:edit, team).and_return(true)
-#    end 
-#    it 'should have TeamPresenter'
-#    get :edit, params: { id: team.id }
-#    expect(controller.presenter_class).to be(Hyrax::TeamPresenter)
-#  end
+  describe '#paginated_bso_item_list' do
+    before do
+      doc = SolrDocument.new(specimen.to_solr)
+      docs = [doc]
+      controller.instance_variable_set(:@bso_member_docs, docs)
+    end
+    it 'returns a paginated array' do
+      result = controller.send(:paginated_bso_item_list)
+      expect(result.count).to eq(1)
+    end
+  end
+
+  describe '#paginated_cho_item_list' do
+    before do
+      doc = SolrDocument.new(cho.to_solr)
+      docs = [doc]
+      controller.instance_variable_set(:@cho_member_docs, docs)
+    end
+    it 'returns a paginated array' do
+      result = controller.send(:paginated_cho_item_list)
+      expect(result.count).to eq(1)
+    end
+  end
+
+  describe '#paginated_media_item_list' do
+    before do
+      doc = SolrDocument.new(media.to_solr)
+      docs = [doc]
+      controller.instance_variable_set(:@media_member_docs, docs)
+    end
+    it 'returns a paginated array' do
+      result = controller.send(:paginated_media_item_list)
+      expect(result.count).to eq(1)
+    end
+  end
+
+  describe '#edit' do
+    before do
+      allow(ability).to receive(:can?).with(:edit, team.id).and_return(true)
+      allow(controller).to receive(:authorize!).with(:edit, team).and_return(true)
+      allow(controller).to receive(:collection).and_return(team)
+      allow(controller).to receive(:presenter).and_return(nil)
+      allow(controller).to receive(:query_collection_members).and_return(nil)      
+      allow(controller).to receive(:form).and_return(nil)
+    end 
+    it 'should have TeamPresenter' do
+      controller.edit
+      expect(controller.presenter_class).to be(Hyrax::TeamPresenter)
+    end
+  end
 
 end
-
-
-
-
-
-
 

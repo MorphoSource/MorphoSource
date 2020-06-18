@@ -5,6 +5,10 @@ module Morphosource
       include Hyrax::Ability
     end
 
+    def contributor?
+      user_groups.include? 'contributor'
+    end
+
     # Grant all users with edit or download access permission to download
     def download_groups(id)
       @doc ||= get_doc(id)

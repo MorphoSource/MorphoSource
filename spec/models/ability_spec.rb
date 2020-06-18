@@ -3,83 +3,34 @@ require 'cancan/matchers'
 
 RSpec.describe Ability, type: :model do
 
-  let!(:user) { FactoryBot.build(:user) }
+  let(:user)        { FactoryBot.build(:registered_user) }
+  let(:contributor) { FactoryBot.build(:contributor) }
+  let(:admin)       { FactoryBot.build(:admin) }
 
-  subject { Ability.new(user) }
+  let(:user_ability)        { Ability.new(user) }
+  let(:contributor_ability) { Ability.new(contributor) }
+  let(:admin_ability)       { Ability.new(admin) }
 
-  describe 'submissions' do
-    describe 'create' do
-      describe 'logged in' do
-        before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:create, Submission) }
-      end
-      describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:create, Submission) }
-      end
-    end
-    describe 'stage_biological_specimen' do
-      describe 'logged in' do
-        before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:stage_biological_specimen, Submission) }
-      end
-      describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:stage_biological_specimen, Submission) }
-      end
-    end
-    describe 'stage_cultural_heritage_object' do
-      describe 'logged in' do
-        before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:stage_cultural_heritage_object, Submission) }
-      end
-      describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:stage_cultural_heritage_object, Submission) }
-      end
-    end
-    describe 'stage_device' do
-      describe 'logged in' do
-        before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:stage_device, Submission) }
-      end
-      describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:stage_device, Submission) }
-      end
-    end
-    describe 'stage_imaging_event' do
-      describe 'logged in' do
-        before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:stage_imaging_event, Submission) }
-      end
-      describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:stage_imaging_event, Submission) }
-      end
-    end
-    describe 'stage_organization' do
-      describe 'logged in' do
-        before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:stage_organization, Submission) }
-      end
-      describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:stage_organization, Submission) }
-      end
-    end
-    describe 'stage_media' do
-      describe 'logged in' do
-        before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:stage_media, Submission) }
-      end
-      describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:stage_media, Submission) }
-      end
-    end
-    describe 'stage_taxonomy' do
-      describe 'logged in' do
-        before { allow(user).to receive(:groups) { [ 'registered' ] } }
-        it { is_expected.to be_able_to(:stage_taxonomy, Submission) }
-      end
-      describe 'not logged in' do
-        it { is_expected.to_not be_able_to(:stage_taxonomy, Submission) }
+  describe 'Submissions user abilities' do
+    let(:submission_actions) { [ :new, :create, :stage_biological_specimen, :stage_biological_specimen_from_idigbio, :stage_cultural_heritage_object, :stage_device, :stage_imaging_event, :stage_organization, :stage_device_organization, :stage_media, :stage_processing_event, :stage_cho, :stage_taxonomy, :new_organization, :new_organization_submit, :new_taxonomy, :new_taxonomy_submit, :new_device_submit, :new_processing_event_submit ] }
+
+    it 'denies registered users, authorizes admins and contributors' do
+      submission_actions.each do |action|
+        expect(admin_ability).to be_able_to(action, Submission)
+        expect(contributor_ability).to be_able_to(action, Submission)
+        expect(user_ability).not_to be_able_to(action, Submission)
       end
     end
   end
 
+  describe 'Fedora user abilities' do
+    context 'when creating new objects' do
+
+      it 'denies registered users, authorizes admins and contributors' do
+        expect(user_ability).not_to be_able_to(:create, ActiveFedora::Base)
+        expect(admin_ability).to be_able_to(:create, ActiveFedora::Base)
+        expect(contributor_ability).to be_able_to(:create, ActiveFedora::Base)      
+      end
+    end
+  end
 end

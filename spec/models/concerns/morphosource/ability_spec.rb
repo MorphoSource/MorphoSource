@@ -96,4 +96,20 @@ RSpec.describe 'Morphosource::Ability', type: :model do
       end
     end
   end
+
+  describe '#contributor?' do
+    context 'user is not a contributor' do
+      it 'returns false' do
+        expect(ability.contributor?).to be(false)
+      end
+    end
+    context 'user is a contributor' do
+      before do
+        allow(user).to receive(:groups).and_return(['contributor'])
+      end
+      it 'returns true' do
+        expect(ability.contributor?).to be(true)
+      end
+    end
+  end
 end

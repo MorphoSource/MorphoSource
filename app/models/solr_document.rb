@@ -441,6 +441,10 @@ class SolrDocument
   end
 
   # Organization fields
+  def organization_type
+    self[Solrizer.solr_name('organization_type', :stored_searchable)]
+  end
+
   def institution_code
     self[Solrizer.solr_name('institution_code', :stored_searchable)]
   end
@@ -463,6 +467,10 @@ class SolrDocument
 
   def institution_name
     self[Solrizer.solr_name('institution_name', :stored_searchable)]
+  end
+
+  def contact_person
+    self[Solrizer.solr_name('contact_person', :stored_searchable)]
   end
 
   # Processing Event & Image Capture Event
@@ -573,6 +581,10 @@ class SolrDocument
 
   def optical_magnification
       self[Solrizer.solr_name('optical_magnification', :stored_searchable)]
+  end
+
+  def acquisition_type
+      self[Solrizer.solr_name('acquisition_type', :stored_searchable)]
   end
 
   def focal_length_type

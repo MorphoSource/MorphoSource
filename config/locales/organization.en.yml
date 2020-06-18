@@ -6,3 +6,21 @@ en:
       organization:
         description:        "Organization works"
         name:               "Organization"
+  simple_form:
+    labels:    
+      organization:
+        institution_name: Parent Institution Name
+        title: Organization Name/Title
+        institution_code: Institution Code(s)
+        collection_code: Collection Code(s)
+        state_province: State/Province
+        address: Street Address
+        description: Description/Notes
+    hints:
+      organization:
+        institution_name: The name of the larger museum, university, or corporation this organization belongs to.
+        title: The name of the collection, laboratory, department, or other autonomous organization that manages a collection of physical objects.
+        institution_code: The code used in the first part of the organization's Darwin Core triplet for specimens. Probably used by multiple organizations in an institution.
+        collection_code: The code used in the second part of the organization's Darwin Core triplet for specimens. Used to differentiate specimens in one collection from specimens in other collections.
+
+

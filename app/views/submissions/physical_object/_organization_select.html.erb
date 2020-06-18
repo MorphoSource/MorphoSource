@@ -31,10 +31,14 @@ $(function(){
         $("#organization_search_form input.organization_label").val(ui.item.label);
         console.log(ui.item.label);
 
+
+
         // Display selected organization
         $('#submission_organization_select_display').addClass('show').removeClass('hide');
         for (const prop in ui.item) {
-          $('#submission_organization_select_display #'+prop).text(ui.item[prop]);
+          if (ui.item[prop]) {
+            $('#submission_organization_select_display #'+prop).text(ui.item[prop]);
+          }     
         }
 
         // Other UI control

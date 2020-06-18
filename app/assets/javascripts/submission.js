@@ -537,6 +537,36 @@ $( document ).on('turbolinks:load', function() {
 
           console.log(data);
         });
+
+        $('#submission_will_create_cho').click(function(event){
+          event.preventDefault();
+          console.log('View 3 create new physical object button');
+
+          data.willCreateCulturalHeritageObject = true;
+          data.savedStep = 3;
+
+          // Set CHO details form to visible
+          $('#submission_bso_create_section').addClass('hide').removeClass('show');
+          $('#submission_cho_create_section').addClass('show').removeClass('hide');
+
+          self.form.setSidebarViewCheck(3);
+          self.form.setSidebarViewFade(3);
+          self.form.setVisibleView(4); // view 4 create organization
+
+          console.log(data);
+        });
+
+        $('.submission_back_to_po_type').click(function(event){
+          event.preventDefault();
+          console.log('View 3 back to physical object type button');
+
+          data.setPhysicalObjectDefaults();
+          
+          $('#submission_cho_search_section').addClass('hide').removeClass('show');
+          $('#submission_bso_search_section').addClass('hide').removeClass('show');
+          $('#submission_physical_object_type_section').addClass('show').removeClass('hide');          
+          console.log(data);
+        });
       }
     }
 

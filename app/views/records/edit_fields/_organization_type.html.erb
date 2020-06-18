@@ -1,0 +1,9 @@
+<% # app/views/records/edit_fields/_organization_type.html.erb %>
+<% organization_types_service = Morphosource::OrganizationTypesService.new %>
+<%= f.input :organization_type, as: :select,
+    collection: organization_types_service.select_all_options,
+    include_blank: true,
+    item_helper: organization_types_service.method(:include_current_value),
+    input_html: { class: 'form-control' },
+    label_wrapper_html: { class: 'parsed' } 
+%>

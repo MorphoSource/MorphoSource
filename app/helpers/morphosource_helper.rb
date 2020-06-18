@@ -143,7 +143,7 @@ module MorphosourceHelper
     # or
     # media < PE < IE < PO (for media with absentee parent)
     if @is_absentee_parent == true
-      @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
+      @imaging_event = ImagingEvent.where('member_ids_ssim' => @processing_events.first.id).first
     else
       @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
     end

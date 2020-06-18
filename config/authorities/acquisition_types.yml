@@ -1,0 +1,11 @@
+terms:
+  - id: Sequenced
+    term: Sequenced (Rotational)
+  - id: Spiral
+    term: Spiral
+  - id: ConstantAngle
+    term: Constant Angle
+  - id: Stationary
+    term: Stationary
+  - id: Free
+    term: Free

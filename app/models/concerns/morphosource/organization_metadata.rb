@@ -5,6 +5,10 @@ module Morphosource
     extend ActiveSupport::Concern
 
     included do
+      property :organization_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationType") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
       property :institution_code, predicate: ::RDF::Vocab::DWC.organizationID do |index|
         index.as :stored_searchable
       end
@@ -22,6 +26,10 @@ module Morphosource
       end
 
       property :country, predicate: ::RDF::Vocab::DWC.country do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :contact_person, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/contactUser") do |index|
         index.as :stored_searchable, :facetable
       end
 

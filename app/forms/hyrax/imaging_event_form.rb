@@ -45,6 +45,7 @@ module Hyrax
         :rotation_number,
         :phase_contrast,
         :optical_magnification,
+        :acquisition_type,
         # Photogrammetry properties
         :focal_length_type,
         :background_removal,
@@ -95,6 +96,7 @@ module Hyrax
         :rotation_number,
         :phase_contrast,
         :optical_magnification,
+        :acquisition_type,
         # Photogrammetry properties
         :focal_length_type,
         :background_removal,
@@ -137,6 +139,7 @@ module Hyrax
             :rotation_number,
             :phase_contrast,
             :optical_magnification,
+            :acquisition_type,
             # Photogrammetry properties
             :focal_length_type,
             :background_removal,

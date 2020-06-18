@@ -4,6 +4,7 @@ RSpec.describe User, type: :model do
 
   let(:user)          { User.create(email: "example@email.com", password: "password") }
   let(:data_owner)    { User.create(email: "test@test.com", password: "password") }
+  let(:ms1_user)      { User.create(email: "test@test.com", password: "password", ms1_user: true, ms1_password_hash: 'hash') }
 
   let(:work)          { Media.create(id: "aaa", title: ["Test Media Work"], depositor: data_owner.user_key, fileset_accessibility: ['open'])}
 
@@ -34,6 +35,17 @@ RSpec.describe User, type: :model do
     allow(Media).to receive(:find).with('fff').and_return(work6)
 
     allCartItems.each(&:touch)
+  end
+
+  describe 'after_database_authentication' do
+    before do 
+      ms1_user.after_database_authentication
+    end
+
+    it 'converts ms1_user to ms2 user' do
+      expect(ms1_user.ms1_user).to be false
+      expect(ms1_user.ms1_password_hash).to eq(nil)
+    end
   end
 
   describe '#to_s' do

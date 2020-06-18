@@ -47,6 +47,14 @@ class User < ApplicationRecord
      serialize field, Array
    end
 
+  # Devise callback for action after authentication
+  def after_database_authentication
+    if ms1_user
+      self.ms1_user = false
+      self.ms1_password_hash = nil
+    end
+  end 
+
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account.

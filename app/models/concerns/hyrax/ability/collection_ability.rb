@@ -28,6 +28,11 @@ module Hyrax
             Hyrax::Collections::PermissionsService.can_deposit_in_collection?(ability: self, collection_id: solr_doc.id) # checks collections and admin_sets
           end
 
+          # users can view and download all works in a collection, regardless of work publication status
+          can :download_works, ::Collection do |collection|
+            Hyrax::Collections::PermissionsService.can_download_collection_works?(ability: self, collection_id: collection.id)
+          end
+
           can :view_admin_show, ::Collection do |collection| # admin show page
             Hyrax::Collections::PermissionsService.can_view_admin_show_for_collection?(ability: self, collection_id: collection.id)
           end

@@ -1,0 +1,76 @@
+<%= simple_form_for @submission, html: { id: :organization_search_form } do |f| %>
+    <div class="row form-group"> 
+      <div class="col-sm-6 col-sm-offset-3 no-padding">
+        <%= f.input :organization_search,
+        placeholder: "Enter organization keywords here",
+        label: false,
+        input_html: { class: 'form-control' } %>
+      </div>
+    </div>
+
+    <div id="organizations" class="hide">
+      <input class="organization_label" type="hidden" name="organization_title" value="" />
+      <input class="organization_title" type="hidden" name="organization_title" value="" />
+      <input class="organization_id" type="hidden" name="organization_id" value="" />
+    </div>
+ 
+<% end %>
+
+<script>
+$(function(){
+  $('#submission_organization_search').autocomplete({
+    select: function(event, ui) {
+        event.preventDefault();
+
+        // Add data to form fields
+        $("#submission_organization_search").val(ui.item.label);
+        $("#organization_search_form input.organization_id").val(ui.item.value);
+        console.log(ui.item.value);
+        $("#organization_search_form input.organization_title").val(ui.item.title);
+        console.log(ui.item.title);
+        $("#organization_search_form input.organization_label").val(ui.item.label);
+        console.log(ui.item.label);
+
+
+
+        // Display selected organization
+        $('#submission_organization_select_display').addClass('show').removeClass('hide');
+        for (const prop in ui.item) {
+          if (ui.item[prop]) {
+            $('#submission_organization_select_display #'+prop).text(ui.item[prop]);
+          }     
+        }
+
+        // Other UI control
+        $('#submission_create_organization_button_section').addClass('hide').removeClass('show');
+        $('#submission_create_organization_form_section').addClass('hide').removeClass('show');
+        $('#submission_no_organization_section').addClass('hide').removeClass('show');
+        $('#submission_select_organization').removeAttr('disabled');
+
+    },
+    focus: function(event, ui) {
+      event.preventDefault();
+      $('submission_organization_search').val(ui.item.label);
+    },
+    source: function (request, response) {
+      $.ajax({
+        url: "<%= find_organization_autocomplete_url %>" + request.term,
+        type: 'GET',
+        dataType: 'json',
+        complete: function (xhr, status) {
+          var results = $.parseJSON(xhr.responseText);
+          console.log(results);
+          for (const org of results) {
+            org.title = org.label;
+            var institutionCode = org.institution_code ? org.institution_code[0] : '';
+            var collectionCodes = org.collection_code ? org.collection_code.join('/') : '';
+            org.label = [org.title[0] + ' (' + institutionCode + ':' + collectionCodes + ')'];
+          }
+          response(results);
+        }
+      });
+    },
+    autoFocus: true
+  });
+});
+</script>

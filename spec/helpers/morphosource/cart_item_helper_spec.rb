@@ -4,13 +4,10 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
   include Rails.application.routes.url_helpers
 
   describe '#item_status_label and #item_action_button' do
-    let(:depositor) { User.create(email: "test@test.com", password: "password")}
-    let(:work)  { double('work', id: 'www', depositor: depositor.ms_id)}
-    let(:item)  { CartItem.create( id: 'aaa', user_id: '555', work_id: work.id)}
-
-    before do
-      allow(Media).to receive(:find).with(work.id).and_return(work)
-    end
+    let(:depositor) { User.create(email: "test@test.com", password: "password") }
+    let(:user)  { User.create(email: 'user@test.com', password: 'password') }
+    let(:work)  { Media.create(title:['work'], id: 'www', depositor: depositor.ms_id, fileset_accessibility: ['restricted_download']) }
+    let(:item)  { CartItem.create( id: 'aaa', user_id: user.ms_id, work_id: work.id) }
 
     context 'the item is canceled' do
       let(:label_content) do
@@ -147,14 +144,14 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       let(:button_content) do
         %(<a class=\"btn btn-info\" style=\"\" data-method=\"get\" href=\"/download_items?item_id=#{item.id}\">Download Item</a>)
       end
+
       before do
-        item.restricted = false
+        allow(item).to receive(:downloadable?).and_return(true)
       end
 
       it 'creates a "Download Item" button' do
         expect(item_action_button(item)).to eq(button_content)
       end
-
     end
   end
 
@@ -180,7 +177,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
     end
     context "item is in the user's cart, has been requested, and has been approved" do
       it 'displays the download button' do
-        expect(choose_download_button('aaa')).to eq("<a class=\"btn btn-default\" download=\"true\" target=\"_blank\" role=\"button\" id=\"file_download\" data-label=\"aaa\" href=\"/download_work?work_id%5B%5D=aaa\">Download</a>")
+        expect(choose_download_button('aaa')).to eq("<a class=\"btn btn-default\" download=\"true\" target=\"_blank\" role=\"button\" id=\"file_download\" data-label=\"aaa\" href=\"/zip?ids%5B%5D=aaa\">Download</a>")
       end
     end
   end
@@ -239,6 +236,25 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       let(:path) { previous_requests_path }
       it{ expect(page).to eq('previous_requests') }
     end
+  end
 
+  describe 'action_by' do
+    let(:user)      { User.create(email: 'user@email.com', password: 'password') }
+    let(:approver)  {User.create(email: 'approver@email.com', password: 'password', display_name: 'approver name')}
+    let(:item)      { CartItem.new(user_id: user.ms_id, work_id: 'work_id', action_by: nil ) }
+
+    context 'action_by is nil' do
+      it 'returns nil' do
+        expect(action_by(item)).to be(nil)
+      end
+    end
+    context 'action_by has approver id' do
+      before do
+        item.action_by = approver.ms_id
+      end
+      it 'returns the approver name' do
+        expect(action_by(item)).to eq(approver.display_name)
+      end
+    end
   end
 end

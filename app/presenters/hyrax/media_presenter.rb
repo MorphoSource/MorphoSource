@@ -59,6 +59,7 @@ module Hyrax
       :rotation_number,
       :phase_contrast,
       :optical_magnification,
+      :acquisition_type,
       # CT imagestack fields
       :image_width,
       :image_height,
@@ -394,6 +395,7 @@ module Hyrax
           @rotation_number = @imaging_event.rotation_number.first
           @phase_contrast = @imaging_event.phase_contrast.first
           @optical_magnification = @imaging_event.optical_magnification.first
+          @acquisition_type = @imaging_event.acquisition_type.first
 
         end
         @imaging_event_creator = @imaging_event.creator

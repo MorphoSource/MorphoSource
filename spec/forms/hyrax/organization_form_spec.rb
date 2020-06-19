@@ -5,15 +5,15 @@ require 'rails_helper'
 RSpec.describe Hyrax::OrganizationForm do
   subject { Hyrax::OrganizationForm }
 
-  let(:terms)                     { [:title, :creator, :contributor, :description, :keyword, :license, :rights_statement, :publisher, :date_created, :subject, :language, :identifier, :based_near, :related_url, :representative_id, :thumbnail_id, :rendering_ids, :files, :visibility_during_embargo, :embargo_release_date, :visibility_after_embargo, :visibility_during_lease, :lease_expiration_date, :visibility_after_lease, :visibility, :ordered_member_ids, :source, :in_works_ids, :member_of_collection_ids, :admin_set_id, :institution_code, :address, :city, :state_province, :country, :institution_name, :collection_code, :download_permission, :download_reviewer, :agreement_uri, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :cite_as] }
+  let(:terms)                     { [:organization_type, :institution_name, :title, :institution_code, :address, :city, :state_province, :country, :contact_person, :collection_code, :description, :download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as] }
 
-  let(:required_fields)           { [:title, :institution_code] }
+  let(:required_fields)           { [:organization_type, :institution_name, :title, :institution_code] }
 
-  let(:single_valued_fields)      { [:title, :institution_code, :description, :address, :city, :state_province, :country, :institution_name, :terms_of_use, :cite_as] }
+  let(:single_valued_fields)      { [:organization_type, :institution_name, :title, :description, :address, :city, :state_province, :country, :terms_of_use, :cite_as] }
 
   let(:media_permissions_fields)  { [:download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as] }
 
-  let(:secondary_terms)           { [:creator, :contributor, :description, :keyword, :date_created, :subject, :language, :identifier, :based_near, :related_url, :source, :address, :city, :state_province, :country, :institution_name, :collection_code] }
+  let(:secondary_terms)           { [:description, :address, :city, :state_province, :country, :contact_person, :collection_code] }
 
   it "has expected metadata terms" do
     expect(subject.terms).to match_array(terms)

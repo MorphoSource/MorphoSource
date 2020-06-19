@@ -1,0 +1,87 @@
+<%= simple_form_for @submission, html: { id: :submission_device_select_form } do |f| %>
+  <div class="row form-group">
+    <div class="col-sm-6 col-sm-offset-3">
+  	
+
+        <%= f.input :organization_search,
+        placeholder: 'Enter organization keywords here',
+        label: 'First, find the organization that manages the device.',
+        input_html: {
+          class: 'form-control mb-1',
+          id: :submission_device_select_organization_search
+        } %>
+  	    
+  	    <%= f.input :device_id, 
+          collection: [], 
+          prompt: 'Select device', 
+          label: 'Then select from devices associated with the organization.', 
+          required: true,
+          wrapper_html: { class: 'required-flag-hidden' }
+        %>    
+    </div>
+  </div>
+<% end %>
+
+<div class="row">
+  <a href="#" id="submission_select_device_continue" class="btn btn-primary btn-continue" disabled="disabled">
+    <%= t('morphosource.submission.continue') %>
+  </a>
+</div>
+
+<script>
+$(function(){
+  $('#submission_device_select_organization_search').autocomplete({
+    select: function(event, ui) {
+      event.preventDefault();
+
+      // Add data to form fields
+      $("#submission_device_select_organization_search").val(ui.item.label);
+
+      $('form#submission_device_select_form select#submission_device_id option').each(function () {
+        if ($(this).attr('value')) {
+          $(this).remove();
+        }
+      });
+
+      // Enable device field and modify select results based on organization
+      if (ui.item.devices) {
+        $('form#submission_device_select_form select#submission_device_id').removeAttr('disabled');
+        console.log(ui.item.devices);
+        for (const device of ui.item.devices) {
+          console.log(device);
+          $('form#submission_device_select_form select#submission_device_id')
+            .append($('<option></option>')
+              .attr('value', device.id)
+              .attr('data-modality', device.modality)
+              .attr('data-creator', device.creator)
+              .attr('data-description', device.description)
+              .text(device.title)
+            );
+        }
+      }
+    },
+    source: function (request, response) {
+      $.ajax({
+        url: "<%= find_organization_with_devices_autocomplete_url %>" + request.term,
+        type: 'GET',
+        dataType: 'json',
+        complete: function (xhr, status) {
+          var results = $.parseJSON(xhr.responseText);
+          console.log(results);
+
+          // Knit together labels
+          for (const org of results) {
+            org.title = org.label;
+            var institutionCode = org.institution_code ? org.institution_code[0] : '';
+            var collectionCodes = org.collection_code ? org.collection_code.join('/') : '';
+            org.label = [org.title[0] + ' (' + institutionCode + ':' + collectionCodes + ')'];
+          }
+
+          response(results);
+        }
+      });
+    },
+    autoFocus: true
+  });
+});
+</script>

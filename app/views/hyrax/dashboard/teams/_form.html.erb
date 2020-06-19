@@ -63,6 +63,10 @@
                                   method: :delete } %>
             <% end %>
 
+            <%= link_to t('hyrax.dashboard.collections.actions.public_view.label'),
+                        hyrax.collection_path(@presenter),
+                        class: 'btn btn-primary' %>
+
           </li>
         </ul>
     <% end %>

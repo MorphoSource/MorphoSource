@@ -16,3 +16,21 @@ $line-color: #337ab7;
 $line-inactive-color: #d4d4d4;
 $block-background-color: #efefef;
 $block-border-color: #d4d4d4;
+
+.material-icons.tooltip-icon:before {
+  content: 'help_outline';
+}
+
+.material-icons.tooltip-icon {
+  color: $font-color;
+  font-size: 11px;
+  margin-left: 3px;
+}
+
+.tooltip {
+  pointer-events: none; /* fix the boostrap tooltip flickering issue */
+}
+
+div.wrapper_for_2 span.input-group-btn.field-controls {
+	width: auto;
+}

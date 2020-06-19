@@ -37,12 +37,9 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
     end
   end
 
-
   describe 'GET #download' do
-
     context 'the user uses the item download button to
     download one item' do
-
       context 'the item is unrestricted' do
         before do
           cartItem2.date_downloaded = nil
@@ -50,42 +47,22 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           get :download, params: {item_id: cartItem2.id}
         end
 
-        it "marks the item downloaded" do
-          cartItem2.reload
-          expect(cartItem2.date_downloaded.to_date).to eq(Time.now.to_date)
-        end
-
-        it "does not change the date downloaded for unselected items in the cart" do
-          cartItem3.reload
-          expect(cartItem3.date_downloaded).to be(nil)
-        end
-
-        it "redirects to media/#zip with the work id as params" do
+        it "redirects to zip with the work id as params" do
           work_id = cartItem2.work_id
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/concern/media/zip?)
+          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
           expect(redirect_params["ids[]"]).to eq(work_id)
         end
-
       end
+
       context 'the item is restricted' do
         before do
           get :download, params: {item_id: cartItem3.id}
         end
 
-        it "does not mark the item downloaded" do
-          cartItem3.reload
-          expect(cartItem3.date_downloaded).to be(nil)
-        end
-
-        it "does not change the date downloaded for unselected items in the cart" do
-          cartItem1.reload
-          expect(cartItem1.date_downloaded.to_date).to eq(Date.yesterday)
-        end
-
-        it "redirects to media/#zip with nil as params" do
+        it "redirects to zip with nil as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/concern/media/zip?)
+          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
           expect(redirect_params["ids[]"]).to be(nil)
         end
       end
@@ -98,20 +75,11 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           cartItem2.save
           get :download, params: { batch_document_ids: [cartItem2.id] }
         end
-        it "sets the items' date_downloaded" do
-          cartItem2.reload
-          expect(cartItem2.date_downloaded.to_date).to eq(Time.now.to_date)
-        end
-        it "does not change the date downloaded for unselected items in the cart" do
-          [cartItem1, cartItem3].each(&:reload)
-          expect(cartItem1.date_downloaded).to eq(Date.yesterday)
-          expect(cartItem3.date_downloaded).to be(nil)
 
-        end
-        it "redirects to media/#zip with the work ids as params" do
+        it "redirects to zip with the work ids as params" do
           work_id = cartItem2.work_id
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/concern/media/zip?)
+          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
           expect(redirect_params["ids[]"]).to eq(work_id)
         end
       end
@@ -120,18 +88,10 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         before do
           get :download, params: { batch_document_ids: [cartItem5.id,cartItem3.id] }
         end
-        it "does not set the items' date_downloaded" do
-          [cartItem5,cartItem3].each(&:reload)
-          expect(cartItem5.date_downloaded).to be(nil)
-          expect(cartItem3.date_downloaded).to be(nil)
-        end
-        it "does not change the date downloaded for unselected items in the cart" do
-          cartItem2.reload
-          expect(cartItem2.date_downloaded).to eq(Date.yesterday)
-        end
-        it "redirects to media/#zip without the work ids as params" do
+
+        it "redirects to zip without the work ids as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/concern/media/zip?)
+          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
           expect(redirect_params["ids[]"]).to be(nil)
         end
       end
@@ -142,19 +102,11 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           cartItem2.save
           get :download, params: { batch_document_ids: [cartItem2.id,cartItem3.id] }
         end
-        it "sets only the unrestricted item's date_downloaded" do
-          [cartItem2,cartItem3].each(&:reload)
-          expect(cartItem2.date_downloaded.to_date).to eq(Time.now.to_date)
-          expect(cartItem3.date_downloaded).to be(nil)
-        end
-        it "does not change the date downloaded for unselected items in the cart" do
-          [cartItem1, cartItem3].each(&:reload)
-          expect(cartItem1.date_downloaded).to eq(Date.yesterday)
-        end
-        it "redirects to media/#zip with only the unrestricted work ids as params" do
+
+        it "redirects to zip with only the unrestricted work ids as params" do
           work_id = cartItem2.work_id
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/concern/media/zip?)
+          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
           expect(redirect_params["ids[]"]).to eq(work_id)
         end
       end
@@ -162,47 +114,31 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
     context 'the user uses the download all button' do
       context 'the cart has only unrestricted items' do
+        let(:unrestricted_work_ids)  { [cartItem1.work_id, cartItem2.work_id, cartItem3.work_id] }
         before do
-          restricted_items = [cartItem1,cartItem2,cartItem3]
-          restricted_items.each do |item|
-            item.restricted = false
-            item.date_downloaded = nil
-            item.save
-          end
+          cartItem3.date_approved = Date.yesterday
+          cartItem3.save
           get :download, params: {}
         end
-        it "sets all the items' date_downloaded" do
-          [cartItem1,cartItem2,cartItem3].each(&:reload)
-          expect(cartItem1.date_downloaded.to_date).to eq(Date.today)
-          expect(cartItem2.date_downloaded.to_date).to eq(Date.today)
-          expect(cartItem3.date_downloaded.to_date).to eq(Date.today)
-        end
-        it "redirects to media/#zip with all the work ids as params" do
-          work_ids = [cartItem1.work_id,cartItem2.work_id,cartItem3.work_id]
+        it "redirects to zip with all the work ids as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/concern/media/zip?)
-          expect(redirect_params["ids[]"]).to match_array(work_ids)
+          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
+          expect(redirect_params["ids[]"]).to match_array(unrestricted_work_ids)
         end
-
       end
 
       context 'the page has only restricted items' do
         before do
-          cartItem2.restricted = true
-          cartItem2.save
           cartItem1.date_approved = nil
           cartItem1.save
+          cartItem2.work.fileset_accessibility = ['restricted_download']
+          cartItem2.work.save
           get :download, params: {}
         end
-        it "sets none of the items' date_downloaded" do
-          [cartItem1,cartItem2,cartItem3].each(&:reload)
-          expect(cartItem1.date_downloaded.to_date).to eq(Date.yesterday)
-          expect(cartItem2.date_downloaded.to_date).to eq(Date.yesterday)
-          expect(cartItem3.date_downloaded).to be(nil)
-        end
-        it "redirects to media/#zip with none of the work ids as params" do
+
+        it "redirects to zip with none of the work ids as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/concern/media/zip?)
+          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
           expect(redirect_params["ids[]"]).to eq(nil)
         end
       end
@@ -213,16 +149,11 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           cartItem2.save
           get :download, params: {}
         end
-        it "sets only the unrestricted items' date_downloaded" do
-          [cartItem5,cartItem2,cartItem3].each(&:reload)
-          expect(cartItem5.date_downloaded).to be(nil)
-          expect(cartItem2.date_downloaded.to_date).to eq(Date.today)
-          expect(cartItem3.date_downloaded).to eq(nil)
-        end
+
         it "redirects to media/#zip with only the unrestricted work ids as params" do
           work_ids = [cartItem1.work_id,cartItem2.work_id]
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/concern/media/zip?)
+          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
           expect(redirect_params["ids[]"]).to match_array(work_ids)
         end
       end

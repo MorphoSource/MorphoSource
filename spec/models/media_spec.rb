@@ -173,6 +173,46 @@ RSpec.describe Media do
       end
     end
 
+    describe '#can_add_to_cart?' do
+      subject { described_class.new }
+      context 'media is open' do
+        before do
+          subject.fileset_accessibility = ['open']
+        end
+        it { expect(subject.can_add_to_cart?).to be(true) }
+      end
+      context 'media is on lease' do
+        before do
+          allow(subject).to receive(:active_lease?).and_return(true)
+        end
+        it { expect(subject.can_add_to_cart?).to be(true) }
+      end
+      context 'media is restricted' do
+        before do
+          subject.fileset_accessibility = ['restricted_download']
+        end
+        it { expect(subject.can_add_to_cart?).to be(true) }
+      end
+      context 'media is preview onoy' do
+        before do
+          subject.fileset_accessibility = ['preview_only']
+        end
+        it { expect(subject.can_add_to_cart?).to be(false) }
+      end
+      context 'media is hidden' do
+        before do
+          subject.fileset_accessibility = ['hidden']
+        end
+        it { expect(subject.can_add_to_cart?).to be(false) }
+      end
+      context 'media is under embargo' do
+        before do
+          allow(subject).to receive(:under_embargo?).and_return(true)
+        end
+        it { expect(subject.can_add_to_cart?).to be(false) }
+      end
+    end
+
     describe '#publication_status' do
       let(:open) { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
       let(:private) { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
@@ -230,6 +270,38 @@ RSpec.describe Media do
 
         it { expect(subject.publication_status).to eq("open") }
 
+      end
+    end
+
+    describe '#reviewer' do
+      context 'there is no download_reviewer' do
+        before do
+          subject.download_reviewer = []
+          subject.depositor = 'depositor'
+        end
+        it 'returns the depositor' do
+          expect(subject.reviewer).to eq('depositor')
+        end
+      end
+      context 'there is a download_reviewer' do
+        context 'the download_reviewer exists' do
+          before do
+            subject.download_reviewer = ['reviewer']
+            subject.depositor = 'depositor'
+            expect(User).to receive(:find_by).with(ms_id: 'reviewer').and_return('reviewer')
+          end
+          it 'returns the reviewer' do
+            expect(subject.reviewer).to eq('reviewer')
+          end
+        end
+        context 'the download_reviewer does not exist' do
+          before do
+            subject.depositor = 'depositor'
+          end
+          it 'returns the depositor' do
+            expect(subject.reviewer).to eq('depositor')
+          end
+        end
       end
     end
   end

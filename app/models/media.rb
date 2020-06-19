@@ -27,6 +27,15 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def cart_items
+    CartItem.where(work_id: id)
+  end
+
+  def reviewer
+    r = User.find_by(ms_id: download_reviewer.first)
+    r ? download_reviewer.first : user_with_ownership
+  end
+
   # array of all visibilities that apply to the file sets of a Media work
   # used to populate File Visibility column in dashboard works list
   def file_set_visibilities
@@ -65,6 +74,21 @@ class Media < Morphosource::Works::Base
     fileset_accessibility.first == "open"
   end
 
+  # true if publication status is open, restricted, lease
+  def can_add_to_cart?
+    case publication_status
+    when 'open'
+      true
+    when 'lease'
+      true
+    when 'restricted'
+      true
+    else
+      false
+    end
+  end
+
+  # TODO - consider what happens with fileset_accessibility for lease/embargo
   def publication_status
     accessibility = fileset_accessibility.first
     case

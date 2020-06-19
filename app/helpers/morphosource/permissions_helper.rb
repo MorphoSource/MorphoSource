@@ -18,7 +18,7 @@ module Morphosource
 
 
     def alert(organization)
-      "This value has been suggested by #{organization.title.first}"
+      "This value has been suggested by #{organization&.title&.first}"
     end
 
     def reviewer_email(f)

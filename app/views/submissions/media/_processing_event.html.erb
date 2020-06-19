@@ -1,0 +1,54 @@
+<div id="submission_processing_event" class="submission_flow submission_section submission-v2 hide">
+  <%= simple_form_for @processing_event_form, 
+    wrapper: :showcase_default,
+    html: { class: 'stop-disable' } do |f| 
+  %>
+    <div class="container-fluid wider">
+
+      <div class="row">
+        <h4><%= t('morphosource.submission.header_text.media_processing') %></h4>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-md-6">
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">PROCESSING DETAILS</span>
+            </div>
+            <div class="content-block">
+              <%= f.input :creator, as: :multi_value %>
+              <%# todo: render date_field in simple_form_bootstrap %>
+              <div class="row">
+                  <div class="col-xs-6 showcase-label">Date created</div>
+                  <div class="col-xs-6 showcase-value">
+                  <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created || Date.today, class: 'datepicker form-control' %>
+                  </div>
+              </div>
+              <%= f.input :software, as: :multi_value %>
+              <%= f.input :description, label: 'Full description' %>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-md-6">
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">INDIVIDUAL PROCESSING STEPS</span>
+            </div>
+
+            <div class="content-block">
+              <%= render_edit_field_partial('processing_activity', f: f) %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-1">
+        <%= f.submit t('morphosource.submission.continue'), 
+          class: "btn btn-primary btn-continue", 
+          id: 'submission_create_processing_event_submit' 
+        %>
+      </div>
+    </div>
+  <% end %>
+</div>

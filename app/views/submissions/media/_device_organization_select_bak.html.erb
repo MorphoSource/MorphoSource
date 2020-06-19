@@ -1,0 +1,15 @@
+<%= simple_form_for @submission, 
+    url: {controller: 'submissions', action: 'get_device_organization'},
+    method: :get,
+    html: { id: :submission_device_organization_select_form },
+    remote: true do |f| %>
+      <% # if a new organization has been added previously, add it to the select dropdown manually (since the work has not been created yet) # TODO: Add this in via Javascript!
+      if session[:submission_organization_create_params].present? 
+        new_organization_title = session[:submission_organization_create_params][:title].first
+        organization_selector_new = organization_selector.unshift([new_organization_title, "new_organization_id_to_be_created"])
+      else
+        organization_selector_new = organization_selector
+      end
+      %>
+      <%= f.input :device_organization_id, collection: organization_selector_new, prompt: 'Select organization', label: false %>
+<% end %>

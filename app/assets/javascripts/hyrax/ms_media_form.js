@@ -206,26 +206,33 @@ $(document).on('turbolinks:load', function() {
     } // /setupScaleBar
 
     function adjust_form_media_type() {
-       $('.media_type_block').hide();
+      $('.media_type_block').hide();
+      $('#file-object-details').hide();
+      // All references to #file-object-details relate to work submission UI section
       if ($('#media_media_type').val() == 'CTImageSeries') {
         $('.CTImageSeries').show();
+        $('#file-object-details').show(); 
 
         // show/hide in hyrax add media form
         show_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit']);
         hide_fields(['.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
       } else if ($('#media_media_type').val() == 'PhotogrammetryImageSeries') {
         $('.PhotogrammetryImageSeries').show();
+        $('#file-object-details').show(); 
 
         // show/hide in hyrax add media form
         show_fields(['#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
         hide_fields(['.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type']);
       } else if ($('#media_media_type').val() == 'Mesh') {
         $('.Mesh').show();
+        $('#file-object-details').show(); 
 
         // show/hide in hyrax add media form
         show_fields(['.media_unit', '.media_map_type']);
         hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
       } else {
+        $('.media_type_block').hide();
+        
         // show/hide in hyrax add media form
         hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
       }

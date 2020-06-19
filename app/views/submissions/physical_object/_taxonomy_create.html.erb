@@ -1,0 +1,11 @@
+<div id="submission_taxonomy_create" class="col-sm-8 col-sm-offset-2 block showcase-edit showcase-section form-group">
+	<div class="row showcase-section-header">
+    <span class="h2">CREATE NEW TAXONOMY</span>
+    <i id="taxonomy-create-close" class="fas fa-times clickable" style='float: right;'></i>
+  </div>
+  <%= simple_form_for @taxonomy_form, wrapper: :showcase_default do |f| %>
+    <div class="form-group content-block">
+      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+    </div>
+  <% end %>
+</div>

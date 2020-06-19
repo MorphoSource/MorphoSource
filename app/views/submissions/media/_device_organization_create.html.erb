@@ -1,0 +1,16 @@
+<div id="submission_device_organization_create" class="col-sm-12 block showcase-edit showcase-section form-group">
+  <div class="row showcase-section-header">
+    <span class="h2">CREATE NEW DEVICE ORGANIZATION</span>
+    <i id="device-organization-create-close" class="fas fa-times clickable" style='float: right;'></i>
+  </div>
+  <%= simple_form_for @organization_form, 
+  	wrapper: :showcase_default,
+  	html: { id: :new_device_organization } do |f| %>
+    <div class="form-group">
+      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
+    </div>
+    <div class="hide">
+      <%= f.submit t('morphosource.submission.continue'), class: "btn btn-primary btn-continue" %>
+    </div>
+  <% end %>
+</div>

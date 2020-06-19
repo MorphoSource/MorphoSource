@@ -660,7 +660,9 @@ $( document ).on('turbolinks:load', function() {
         $("#biological_specimen_institution_code").empty();
         $("#cultural_heritage_object_institution_code").empty();
         $("#biological_specimen_institution_code").append($('<option>', {value: data.organizationInstitutionCode, text: data.organizationInstitutionCode}));
+        $("#biological_specimen_institution_code").append($('<option>'));
         $("#cultural_heritage_object_institution_code").append($('<option>', {value: data.organizationInstitutionCode, text: data.organizationInstitutionCode}));
+        $("#cultural_heritage_object_institution_code").append($('<option>'));
 
         $("#biological_specimen_collection_code").empty();
         $("#cultural_heritage_object_collection_code").empty();
@@ -668,6 +670,8 @@ $( document ).on('turbolinks:load', function() {
           $("#biological_specimen_collection_code").append($('<option>', {value: collection_code, text: collection_code}));
           $("#cultural_heritage_object_collection_code").append($('<option>', {value: collection_code, text: collection_code}));
         });
+        $("#biological_specimen_collection_code").append($('<option>'));
+        $("#cultural_heritage_object_collection_code").append($('<option>'));
       }
 
       next() {

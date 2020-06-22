@@ -1,3 +1,5 @@
+require 'csv'
+
 module Importer
   class CSVParser
     include Enumerable

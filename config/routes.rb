@@ -28,15 +28,22 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    resources :teams, only: [:show] do # public landing team/project show page
+    resources :teams do # public landing team/project show page
       member do
         get 'page/:page', action: :index
         get 'facet/:id', action: :facet, as: :dashboard_facet
         get :files
       end
     end
-    get 'projects/:id', to: 'teams#show'
-    get 'projects/:id/page/:page(.:format)', to: 'teams#index'
+    #    get 'projects/:id', to: 'teams#show'
+    #    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
+    resources :projects, controller: 'teams'
+    # Note: the following route might effect pagination links
+    namespace :dashboard do
+      resources :collections, controller: 'collections'
+
+      get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
+    end
   end
 
   # override ProfilesController
@@ -57,7 +64,7 @@ Rails.application.routes.draw do
     concerns :searchable
   end
 
-  devise_for :users, :controllers => { registrations: 'registrations' }
+  devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'
 
   mount Qa::Engine => '/authorities'
@@ -172,6 +179,8 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'
+
+      post 'dashboard/collections/:id/unlink_organization', action: :unlink_organization, controller: :linked_teams, as: 'dashboard_collection_unlink_organization'
 
       patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
     end

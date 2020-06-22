@@ -2,7 +2,19 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
 
-  let(:user)  { FactoryBot.create(:registered_user) }
+  let(:user)          { User.create(email: "example@email.com", password: "password") }
+  let(:ms1_user)      { User.create(email: "test@test.com", password: "password", ms1_user: true, ms1_password_hash: 'hash') }
+
+  describe 'after_database_authentication' do
+    before do 
+      ms1_user.after_database_authentication
+    end
+
+    it 'converts ms1_user to ms2 user' do
+      expect(ms1_user.ms1_user).to be false
+      expect(ms1_user.ms1_password_hash).to eq(nil)
+    end
+  end
 
   describe '#to_s' do
     it 'returns the ms_id' do
@@ -96,6 +108,22 @@ RSpec.describe User, type: :model do
           expect(contributor_group.users).to include(another_user)
           expect(contributor_group.users).not_to include(user)
           expect(user.groups).not_to include('contributor')
+        end 
+      end
+    end
+
+    describe '#registered?' do
+      context 'when not registered' do
+        before do
+          allow(user).to receive(:groups).and_return(['contributor'])
+        end
+        it 'is false' do
+          expect(user.registered?).to be(false)
+        end
+      end
+      context 'when registered' do
+        it 'is true' do
+          expect(user.registered?).to be(true)
         end
       end
     end

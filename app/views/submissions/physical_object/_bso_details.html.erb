@@ -17,8 +17,8 @@
                 input_html: { class: 'form-control' },
                 label_wrapper_html: { class: 'required-flag' } 
             %>
-            <%= f.input :institution_code, label_wrapper_html: { class: 'recommended-flag' }  %>
-            <%= f.input :collection_code, label_wrapper_html: { class: 'recommended-flag' }  %>
+            <%= f.input :institution_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
+            <%= f.input :collection_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :occurrence_id, label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :identifier, as: :multi_value %>

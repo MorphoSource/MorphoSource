@@ -31,12 +31,12 @@ module Hyrax
       locale = params[:locale]
       locale = 'en' unless locale.present?
       view = params[:view]
-      if presenter.collection_type.title == 'Team'
+      if collection_object.team?
         url = '/teams/' + id + '?locale=' + locale 
         url = url + '&view=' + view if view.present?
         redirect_to url
-        # redirect_to controller: 'teams', action: 'show', id: id, view: view
-      elsif presenter.collection_type.title == 'Project'
+        #redirect_to controller: 'hyrax/teams', action: 'show', id: id, view: view
+      elsif collection_object.project?
         url = '/projects/' + id + '?locale=' + locale 
         url = url + '&view=' + view if view.present?
         redirect_to url      

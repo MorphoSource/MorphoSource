@@ -88,7 +88,7 @@ class SubmissionsController < ApplicationController
   def create
     reinstantiate_submission
 
-    if @submission.idigbio_id
+    if @submission.idigbio_id.present?
       idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(
         @submission.idigbio_id)
       existing_bso = Morphosource::PhysicalObjectsSearchService.call(

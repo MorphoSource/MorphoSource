@@ -7,10 +7,11 @@
     <th>Taxonomy</th>
     <th>Total Media</th>
     <th>Date Added</th>
+    <th>Origin</th>
     <th>Source</th>
   </tr>
   </thead>
   <tbody>
-    <%= render partial: 'show_biological_specimen_document_list_row', collection: documents, as: :document %>
+    <%= render partial: 'hyrax/teams/show_biological_specimen_document_list_row', collection: documents, as: :document %>
   </tbody>
 </table>

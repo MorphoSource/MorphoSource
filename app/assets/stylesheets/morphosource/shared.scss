@@ -4,12 +4,18 @@ $font-color: #333;
 $button-color: #286090;
 $button-font-color: #fff;
 $button-border-color: #265b89;
+$button-hover-color: #286090;
+$button-hover-font-color: #fff;
+$button-hover-border-color: #265b89;
 $button-disabled-color: #ccc;
 $button-disabled-font-color: #eee;
 $button-disabled-border-color: #ccc;
 $link-disabled-font-color: #ccc;
 $link-font-color: #2e74b2;
 $line-color: #337ab7;
+$line-inactive-color: #d4d4d4;
+$block-background-color: #efefef;
+$block-border-color: #d4d4d4;
 
 .material-icons.tooltip-icon:before {
   content: 'help_outline';

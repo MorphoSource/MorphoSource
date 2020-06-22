@@ -102,13 +102,73 @@ en:
           actions: Action
           title: Taxonomy
     dashboard:
+
+
+      my:
+        heading:
+          visibility: visibility
+          collection_type: collection type
+
+
       collections:
+        actions:
+          add_media_to_Team:
+            label: 'Add media to team'
+          create_new_media_in_Team: 
+            label: 'Create new media in team'
+          add_media_to_Project:
+            label: 'Add media to project'
+          create_new_media_in_Project: 
+            label: 'Create new media in project'
+          add_project_to_Team:
+            label: 'Add project to team'
+            select_label: 'Select project' 
+            button_label: 'Add project' 
+          create_new_project_in_Team: 
+            label: 'Create new project in team'
+          delete_Team:
+            label: 'Delete team'
+            confirmation: 'Delete this team?'
+          delete_Project:
+            label: 'Delete project'
+            confirmation: 'Delete this project?'
+          public_view:
+            label: 'Public view'
+        form_relationships:
+          modals:
+            remove_this_project_description: Removing this project will not remove it from the repository.  It will only remove the project from this team. Are you sure you want to remove this project?
         form_share:
           manager: 'Manager'
           editor: 'Editor'
           depositor: 'Depositor'
           downloader: 'Downloader'
           viewer: 'Viewer'
+
+        form_members_table:
+          managers: 
+            title: 'Managers'
+            help: Managers of this collection can add to and remove works from the collection, modify collection metadata, and delete the collection. For collections of type Project, when works are created directly in this collection, the managers are given edit access to the new work.
+            empty: No managers have been added.
+          editors: 
+            title: 'Editors'
+            help: Depositors of this collection can view the collection and add works to it, even if the visibility permissions of the collection otherwise would not permit them to view it.
+            empty: No editors have been added.
+          depositors:
+            title: 'Depositors'
+            help: ' '
+            empty: No depositors have been added.
+          viewers: 
+            title: 'Viewers'
+            help: Viewers of this collection can view it even if the visibility permissions of the collection otherwise would not permit them to view it. For collections of type Project, when works are created directly in this collection, the viewers are given read access to the new work.
+            empty: No viewers have been added.
+        tab_details_branding:
+          logo:
+            label: logo
+            description: Team logo will be displayed on the team's public page to the left of the team title. For best results, upload a square image (JPG, GIF, or PNG) that is 40x40 pixels. Larger images will be resized to 40x40 pixels. You may specify a URL the logo will direct users to if clicked. You may also provide alternate text to describe the logo for users with visual impairments.
+          banner:
+            label: banner
+            description: Team banner will be displayed on the team's public page above the team title. For best results, upload an image (JPG, GIF, or PNG) that is 1200 pixels wide and at least 120 pixels tall.
+
         form_share_table:
           editors:
             action: Action
@@ -130,6 +190,7 @@ en:
             type: Type
           viewers:
             help_with_works: For collections of type %{type_title}, when works are created directly in this collection, the viewers are given read access to the new work, but are not able to download its files if the publication status precludes it.
+
     works:
       form:
         find_parent_work: Parent Works

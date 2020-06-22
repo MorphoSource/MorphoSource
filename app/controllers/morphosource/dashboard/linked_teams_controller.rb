@@ -14,6 +14,13 @@ module Morphosource
         redirect_back_organization
       end
 
+      def unlink_organization
+        return unless current_user.admin?
+
+        clear_organization
+        redirect_back_organization
+      end
+
       def update_permissions
         return unless current_user.can?(:edit, @team)
 

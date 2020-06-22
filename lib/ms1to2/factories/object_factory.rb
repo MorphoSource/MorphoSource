@@ -21,7 +21,6 @@ module Ms1to2
         ms1_table.each do |k, v|
           id = derive_id(k)
           process_row(id, v) unless (ms2_table.key?(id) || ms2_output_data.exists?(ms2_model_var, id))
-          #process_row(id, v) unless (ms2_table.key?(id) || ms2_output_data.exists?(ms2_model_var, id))
         end 
       end
 
@@ -40,9 +39,9 @@ module Ms1to2
         hyraxify(id)
       end
 
-      def hyraxify(id)
-        if id.length < 9
-          id = id + 'x' + "0"*(8-id.length)
+      def hyraxify(id, chars=9)
+        if id.length < chars
+          id = ("0" * (chars - id.length)) + id
         else
           id
         end

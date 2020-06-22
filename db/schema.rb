@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200604200822) do
-
+ActiveRecord::Schema.define(version: 20200618155650) do
+    
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -605,6 +605,8 @@ ActiveRecord::Schema.define(version: 20200604200822) do
     t.string "printer_model"
     t.string "printer_file"
     t.string "ms_id", null: false
+    t.string "ms1_password_hash"
+    t.boolean "ms1_user", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["ms_id"], name: "index_users_on_ms_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

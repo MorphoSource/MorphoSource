@@ -64,7 +64,7 @@ Rails.application.routes.draw do
     concerns :searchable
   end
 
-  devise_for :users, :controllers => { registrations: 'registrations' }
+  devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'
 
   mount Qa::Engine => '/authorities'

@@ -87,7 +87,6 @@ class SubmissionsController < ApplicationController
 
   def create
     reinstantiate_submission
-    byebug
 
     if @submission.idigbio_id.present?
       idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(

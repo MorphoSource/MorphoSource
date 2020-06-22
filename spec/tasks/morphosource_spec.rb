@@ -1,11 +1,13 @@
 require "rails_helper"
 require 'rake'
 
-  describe "morphosource:create_collection_types", type: :task do
+describe 'morphosource rake tasks' do
 
-    before do
-      Rails.application.load_tasks if Rake::Task.tasks.empty?
-    end
+  before do
+    Rails.application.load_tasks if Rake::Task.tasks.empty?
+  end
+
+  describe "morphosource:create_collection_types", type: :task do
 
     it "preloads the Rails environment" do
       expect(Rake::Task['morphosource:create_collection_types'].prerequisites).to include "environment"
@@ -61,3 +63,28 @@ require 'rake'
       expect(project_creators.count).to eq(1)
     end
   end
+
+  describe "morphosource:create_contributor_group", type: :task do
+    subject { Rake::Task['morphosource:create_contributor_group'].invoke }
+
+    it "preloads the Rails environment" do
+      expect(Rake::Task['morphosource:create_contributor_group'].prerequisites).to include "environment"
+    end
+
+    context 'contributor role does not exist' do
+      it "creates a contributor role" do
+        expect(Role).to receive(:create).with(name: 'contributor').and_return(true)
+        subject
+      end
+    end
+
+    context 'contributor role already exists' do
+      before do
+        Role.create(name: 'contributor')
+      end
+      it "does not create a contributor role" do
+        expect(Role).not_to receive(:create)
+      end
+    end
+  end
+end

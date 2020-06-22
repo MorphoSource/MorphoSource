@@ -74,6 +74,28 @@ class User < ApplicationRecord
     email
   end
 
+  def contributor?
+    groups.include? 'contributor'
+  end
+
+  def make_contributor
+    if contributor?
+      puts "Can't add - #{display_name} is already a contributor"
+    else
+      contributor_group.users += [self]
+      puts "#{display_name} is now a contributor"
+    end
+  end
+
+  def remove_contributor
+    if !contributor?
+      puts "Can't remove - #{display_name} is not a contributor"
+    else
+      contributor_group.users -= [self]
+      puts "#{display_name} contributor status removed"
+    end
+  end
+
   # true if user has download access or an approved cart item
   def has_download_access_or_approval?(media_id)
     (self.can? :download, media_id) || (downloadable_item_work_ids.include? media_id)
@@ -246,6 +268,10 @@ class User < ApplicationRecord
 
   def check_ms_id
     assign_ms_id if ms_id.nil?
+  end
+
+  def contributor_group
+    Role.find_by(name: 'contributor')
   end
 
 end

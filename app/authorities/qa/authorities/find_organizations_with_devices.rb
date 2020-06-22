@@ -13,6 +13,7 @@ module Qa::Authorities
       docs.map do |doc|
         id = doc.id
         title = doc.title
+        organization_type = doc.organization_type
         institution_code = doc.institution_code
         institution_name = doc.institution_name
         collection_code = doc.collection_code
@@ -22,7 +23,7 @@ module Qa::Authorities
         state_province = doc.state_province
         country = doc.country
         devices = organization_devices(id)
-        { id: id, label: title, value: id, institution_code: institution_code, institution_name: institution_name, collection_code: collection_code, description: description, address: address, city: city, state_province: state_province, country: country, devices: devices }
+        { id: id, label: title, value: id, organization_type: organization_type, institution_code: institution_code, institution_name: institution_name, collection_code: collection_code, description: description, address: address, city: city, state_province: state_province, country: country, devices: devices }
       end
     end
 

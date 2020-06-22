@@ -30,6 +30,8 @@ class Submission
                 :imaging_event_id,
                 :processing_event_id,
                 :media_id,
+                :collection_id,
+                :collection_name,
                 :is_start_over,
                 :parent_media_search,
                 :biospec_search_catalog_number,

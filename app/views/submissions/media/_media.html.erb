@@ -138,6 +138,16 @@
               <span class="h2">PROJECTS AND TEAMS</span>
             </div>
 
+            <% if @submission.collection_id %>
+              <div class="row">
+                <div class="content-block">
+                  <span>Media will be added to <%= @submission.collection_name %>. Add to additional teams and projects below if desired.</span>
+                  <input class="collection_id" type="hidden" name="collection_id" value="<%= @submission.collection_id %>" />
+                </div>
+
+              </div>
+            <% end %>
+
             <div class="content-block">
               <%= render 'form_member_of_collections', f: f %>
             </div>

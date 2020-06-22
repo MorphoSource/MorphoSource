@@ -9,22 +9,21 @@
   <script type="text/x-tmpl" id="tmpl-parent-work-organizations">
   <tr>
     <td>
-
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization type</div>
+            <div class="col-xs-6 showcase-value">{%= o.organization_type %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Institution name</div>
+            <div class="col-xs-6 showcase-value" id="institution-name-value">{%= o.institution_name %}</div>
+        </div>
         <div class="row">
             <div class="col-xs-6 showcase-label">Organization title</div>
             <div class="col-xs-6 showcase-value" id="organization-title-value">{%= o.title %}</div>
         </div>
         <div class="row">
-            <div class="col-xs-6 showcase-label">Organization description</div>
-            <div class="col-xs-6 showcase-value">{%= o.description %}</div>
-        </div>
-        <div class="row">
             <div class="col-xs-6 showcase-label">Institution code</div>
             <div class="col-xs-6 showcase-value" id="organization-code">{%= o.institution_code %}</div>
-        </div>
-        <div class="row">
-            <div class="col-xs-6 showcase-label">Institution name</div>
-            <div class="col-xs-6 showcase-value" id="institution-name-value">{%= o.institution_name %}</div>
         </div>
         <div class="row">
             <div class="col-xs-6 showcase-label">Collection code</div>
@@ -46,7 +45,14 @@
             <div class="col-xs-6 showcase-label">Organization country</div>
             <div class="col-xs-6 showcase-value">{%= o.country %}</div>
         </div>
-
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Contact person</div>
+            <div class="col-xs-6 showcase-value">{%= o.contact_person %}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Organization description</div>
+            <div class="col-xs-6 showcase-value">{%= o.description %}</div>
+        </div>
     </td>
     <td><button style="display:none" class="btn btn-sm btn-danger" data-behavior="remove-relationship"><%= t('.actions.remove') %></button></td>
   </tr>

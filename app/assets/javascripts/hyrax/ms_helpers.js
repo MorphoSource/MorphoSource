@@ -89,14 +89,16 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
 				var new_data = {
 					id: data.work.id, 
 					text: data.work.title,
-					institution_code: data.work.institution_code,
+					organization_type: data.work.organization_type,
 					institution_name: data.work.institution_name,
+					institution_code: data.work.institution_code,
 					collection_code: data.work.collection_code,
-	        description: data.work.description,
-	        address: data.work.address, 
-	        city: data.work.city, 
-	        state_province: data.work.state_province,
-	        country: data.work.country
+	        		description: data.work.description,
+	        		address: data.work.address, 
+	        		city: data.work.city, 
+	        		state_province: data.work.state_province,
+	        		country: data.work.country,
+	        		contact_person: data.work.contact_person
 				};
 			} else if (work_name == 'device') {
 				var new_data = {

@@ -26,7 +26,7 @@ module Morphosource
       private
 
       # if a user selects items, get only those - otherwise get all downloadable items
-      # an item is downloadable if it is in the cart and restricted = false or request_status is 'Approved'
+      # an item is downloadable if it is in the cart and downloadable
       def get_downloadable_items
         @items = id_params ? get_items_by_id(id_params) & downloadable_items : downloadable_items
       end

@@ -38,7 +38,9 @@ $(function(){
         // Display selected organization
         $('#submission_organization_select_display').addClass('show').removeClass('hide');
         for (const prop in ui.item) {
-          $('#submission_organization_select_display #'+prop).text(ui.item[prop]);
+          if (ui.item[prop]) {
+            $('#submission_organization_select_display #'+prop).text(ui.item[prop]);
+          }     
         }
 
         // Other UI control

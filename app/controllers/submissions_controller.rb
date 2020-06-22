@@ -32,6 +32,11 @@ class SubmissionsController < ApplicationController
       form_data: form_data,
       work_data: work_data
     })
+
+    if params[:collection] && Collection.exists?(params[:collection])
+      @submission.collection_id = params[:collection]
+      @submission.collection_name = Collection.find(@submission.collection_id).title.first
+    end
   end
 
   def search_po_ajax
@@ -138,7 +143,10 @@ class SubmissionsController < ApplicationController
   def create_model_params(work, params)
     model_params = to_form(work).model_attributes(params[work])
     if work == 'media'
-      finalize_model_params(work, model_params, { uploaded_files: params[:uploaded_files] } )
+      addl_params = { uploaded_files: params[:uploaded_files] }
+      addl_params[:collection_id] = params[:collection_id] if params[:collection_id]
+
+      finalize_model_params(work, model_params, addl_params)
     else
       finalize_model_params(work, model_params)
     end
@@ -210,6 +218,9 @@ class SubmissionsController < ApplicationController
       elsif @submission.raw_or_derived_media == 'derived'
         parent = @submission.processing_event_id
       end
+      if addl_params[:collection_id].present?
+        model_params = assign_model_params_collection(model_params, addl_params[:collection_id])
+      end
       model_params = assign_model_params_parents(model_params, parent)
       if addl_params[:uploaded_files].present?
         params.merge!({ uploaded_files: addl_params[:uploaded_files] })
@@ -237,6 +248,32 @@ class SubmissionsController < ApplicationController
       i += 1
     end
     model_params.merge!('work_parents_attributes' => parent_attributes)
+  end
+
+  def assign_model_params_collection(model_params, collection_id)
+    raise StandardError.new "Debug collection error" if !collection_id.present?
+
+    new_params = {
+      "member_of_collection_ids" => ""
+    }
+
+    if model_params.key? "member_of_collections_attributes"
+      coll_attrs = {}
+      i = 0
+      model_params["member_of_collections_attributes"].each do |key, attrs|
+        return model_params if attrs["id"] == collection_id # Check for duplicates
+
+        coll_attrs.merge!( { i.to_s => { "id" => attrs["id"], "_destroy" => "false" } } )
+        i += 1
+      end
+      coll_attrs.merge!( { i.to_s => { "id" => collection_id, "_destroy" => "false" } } )
+
+      new_params["member_of_collections_attributes"] = coll_attrs
+    else 
+      new_params["member_of_collections_attributes"] = { "0" => { "id" => collection_id, "_destroy" => "false" } }
+    end
+
+    model_params.merge!(new_params)
   end
 
   # Utility functions
@@ -424,6 +461,7 @@ class SubmissionsController < ApplicationController
                 :imaging_event_id,
                 :processing_event_id,
                 :media_id,
+                :collection_id,
                 :is_start_over,
                 :parent_media_search,
                 :biospec_search_catalog_number,

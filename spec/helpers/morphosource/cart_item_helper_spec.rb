@@ -4,14 +4,10 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
   include Rails.application.routes.url_helpers
 
   describe '#item_status_label and #item_action_button' do
-    let(:depositor) { User.create(email: "test@test.com", password: "password")}
-    let(:work)  { double('work', id: 'www', depositor: depositor.ms_id)}
-    let(:item)  { CartItem.create( id: 'aaa', user_id: '555', work_id: work.id)}
-
-    before do
-      allow(Media).to receive(:find).with(work.id).and_return(work)
-      allow(work).to receive(:reviewer).and_return(depositor.ms_id)
-    end
+    let(:depositor) { User.create(email: "test@test.com", password: "password") }
+    let(:user)  { User.create(email: 'user@test.com', password: 'password') }
+    let(:work)  { Media.create(title:['work'], id: 'www', depositor: depositor.ms_id, fileset_accessibility: ['restricted_download']) }
+    let(:item)  { CartItem.create( id: 'aaa', user_id: user.ms_id, work_id: work.id) }
 
     context 'the item is canceled' do
       let(:label_content) do
@@ -148,14 +144,14 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       let(:button_content) do
         %(<a class=\"btn btn-info\" style=\"\" data-method=\"get\" href=\"/download_items?item_id=#{item.id}\">Download Item</a>)
       end
+
       before do
-        item.restricted = false
+        allow(item).to receive(:downloadable?).and_return(true)
       end
 
       it 'creates a "Download Item" button' do
         expect(item_action_button(item)).to eq(button_content)
       end
-
     end
   end
 
@@ -245,7 +241,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
   describe 'action_by' do
     let(:user)      { User.create(email: 'user@email.com', password: 'password') }
     let(:approver)  {User.create(email: 'approver@email.com', password: 'password', display_name: 'approver name')}
-    let(:item)      { CartItem.new(user_id: user.ms_id, approver_id: approver.ms_id, work_id: 'work_id', action_by: nil ) }
+    let(:item)      { CartItem.new(user_id: user.ms_id, work_id: 'work_id', action_by: nil ) }
 
     context 'action_by is nil' do
       it 'returns nil' do

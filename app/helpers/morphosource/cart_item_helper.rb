@@ -152,7 +152,6 @@ module Morphosource::CartItemHelper
   end
 
   def editable_items(items)
-    items.select{|item| item.editable?}
+    items.select(&:editable?)
   end
-
 end

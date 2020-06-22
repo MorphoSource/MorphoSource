@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe MediaIndexer do
   subject(:solr_document) { MediaIndexer.new(media).generate_solr_document }
-  let(:media)             { Media.create(title: ['New Media']) }
+  let(:media)             { Media.create(title: ['New Media'], fileset_accessibility: ['restricted_download']) }
 
   describe 'custom fields' do
     let(:file_set_visibilities) { ['restricted'] }
@@ -23,6 +23,9 @@ RSpec.describe MediaIndexer do
     end
     it 'indexes download_access_person' do
       expect(subject['download_access_person_ssim']).to match_array download_users
+    end
+    it 'indexes fileset_accessibility' do
+      expect(subject['fileset_accessibility_ssim']).to eq(media.fileset_accessibility)
     end
   end
 end

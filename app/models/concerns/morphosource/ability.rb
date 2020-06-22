@@ -27,7 +27,7 @@ module Morphosource
     def open_download(id)
       @doc ||= get_doc(id)
       return false if @doc.nil?
-      @doc["fileset_accessibility_tesim"] == ['open']
+      @doc["fileset_accessibility_ssim"] == ['open']
     end
 
     private
@@ -48,6 +48,7 @@ module Morphosource
       end
 
       def test_download(id)
+        return false if !current_user.registered?
         return true if open_download(id)
 
         Rails.logger.debug("[CANCAN] Checking download permissions for user: #{current_user.user_key} with groups: #{user_groups.inspect}")

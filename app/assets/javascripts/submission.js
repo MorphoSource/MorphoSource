@@ -937,13 +937,19 @@ $( document ).on('turbolinks:load', function() {
             data.willCreateDeviceOrganization = false;
           } else if (data.willCreateDeviceOrganization) {
             if ($('form#new_device_organization')[0].checkValidity()) {
+              data.setDeviceOrganizationDefaults();
               data.deviceOrganizationCreateParams = $('#new_device_organization').serializeArray();
+              data.willCreateDeviceOrganization = true;
+              data.noDeviceOrganization = false;
             } else {
               $('form#new_device_organization').find(':submit').click();
               return false;
             }
-          } else if (data.deviceNoOrganization !== true) {
-            console.log('ok');
+          } else if (data.noDeviceOrganization === true) {
+            data.setDeviceOrganizationDefaults();
+            data.noDeviceOrganization = true;
+            data.willCreateDeviceOrganization = false;
+          } else {
             $('div#device_create_organization_section').addClass('div-invalid');
             return false;
           }
@@ -1195,7 +1201,12 @@ $( document ).on('turbolinks:load', function() {
               if (Array.isArray(data[k])) {
                 for (let createParamField of data[k]) {
                   if (createParamField != 'utf8' && createParamField != 'authenticity_token') {
-                    self.addParamToForm('#new_media', createParamField['name'], createParamField['value']);
+                    let paramName = createParamField['name'];
+                    if (k == 'deviceOrganizationCreateParams') {
+                      paramName = paramName.replace('organization[', 'device_organization[');
+                    }
+
+                    self.addParamToForm('#new_media', paramName, createParamField['value']);
                   }
                 }
               } 

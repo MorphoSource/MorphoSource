@@ -87,8 +87,9 @@ class SubmissionsController < ApplicationController
 
   def create
     reinstantiate_submission
+    byebug
 
-    if @submission.idigbio_id
+    if @submission.idigbio_id.present?
       idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(
         @submission.idigbio_id)
       existing_bso = Morphosource::PhysicalObjectsSearchService.call(
@@ -176,9 +177,12 @@ class SubmissionsController < ApplicationController
       if @submission.device_organization_id == 'submission_organization'
         @submission.device_organization_id = @submission.organization_id
       end
-      model_params = assign_model_params_parents(
-        model_params, 
-        [@submission.device_organization_id])
+      if @submission.device_organization_id.present?
+        model_params = assign_model_params_parents(
+          model_params, 
+          [@submission.device_organization_id]
+        )
+      end
       @device_create_params = model_params
 
     when 'imaging_event'

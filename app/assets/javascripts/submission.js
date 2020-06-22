@@ -601,6 +601,13 @@ $( document ).on('turbolinks:load', function() {
           data.willCreateOrganization = false;
           data.savedStep = 4;
           self.toggleNoOrganizationVisibility();
+          ['biological_specimen','cultural_heritage_object'].forEach((physical_object_type) => {
+            ['collection_code','institution_code'].forEach((code_type) => {
+              var dom_id = physical_object_type + '_' + code_type;
+              var form_input_name = physical_object_type + '[' + code_type + ']';
+              $('#' + dom_id).replaceWith($('<input>',{id: dom_id, name: form_input_name, class: 'form-control string optional'}));
+            });
+          });
           self.next();
 
           console.log(data);
@@ -616,7 +623,7 @@ $( document ).on('turbolinks:load', function() {
           $('#submission_no_organization_section').addClass('show').removeClass('hide');
           $('#submission_no_organization_display_section').addClass('hide').removeClass('show');
           console.log(data);
-        }); 
+        });
 
         // Create Organization Events
 

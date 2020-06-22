@@ -1,10 +1,19 @@
-# frozen_string_literal: true
-
 module Morphosource
   module Dashboard
-    # Overrides the set_default_permissions method from Hyrax::Dashboard::CollectionsController
-    # If collection being created is a team or project, create collection groups and appropriate access grants.
-    module CollectionsControllerBehavior
+    class CollectionsController < Hyrax::Dashboard::CollectionsController
+
+      def after_create
+        form
+        set_default_permissions
+        # if we are creating the new collection as a subcollection (via the nested collections controller),
+        # we pass the parent_id through a hidden field in the form and link the two after the create.
+        link_parent_collection(params[:parent_id]) unless params[:parent_id].nil?
+        respond_to do |format|
+          ActiveFedora::SolrService.commit
+          format.html { redirect_to hyrax.edit_dashboard_collection_path(@collection), notice: t('hyrax.dashboard.my.action.collection_create_success') }
+          format.json { render json: @collection, status: :created, location: hyrax.dashboard_collection_path(@collection) }
+        end
+      end
 
       def set_default_permissions
         if @collection.type_assigns_groups?

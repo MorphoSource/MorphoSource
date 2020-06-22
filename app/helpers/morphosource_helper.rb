@@ -1,5 +1,5 @@
 module MorphosourceHelper
-  
+
   include ActionView::Helpers::UrlHelper
   include MediaFinderHelper
   include Hyrax::Renderers
@@ -15,13 +15,18 @@ module MorphosourceHelper
     names.include?(current_controller)
   end
 
-  def collection_type_from_path
-    current_uri = request.env['PATH_INFO']
-    if current_uri.include?("teams")
-      "teams"
-    elsif current_uri.include?("projects")
-      "projects"
-    end      
+  def request_params
+    request.params
+  end
+
+  def ms_collection_view_link_qs(tab, filter_prefix)
+    link = ""
+    parsed_params =  filter_params(filter_prefix, request_params)
+    parsed_params.map do |k,v|
+      link = link + '&' + filter_prefix + k + '=' + v 
+    end       
+    link = link + "#" + tab if tab.present?
+    link.html_safe
   end
 
   def truncate_value(value, length=20)
@@ -62,7 +67,7 @@ module MorphosourceHelper
   def find_works_autocomplete_url(curation_concern, relation)
     valid_concerns = curation_concern.send("valid_#{relation}_concerns").map(&:to_s)
     type_params = valid_concerns.sort.map { |type| "type[]=#{type}" }
-    # add id in the url if missing since id is expected by find_works 
+    # add id in the url if missing since id is expected by find_works
     if type_params.find { |e| /^id=/ =~ e }.nil?
       type_params << "id=NA"
     end
@@ -105,7 +110,7 @@ module MorphosourceHelper
     @child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
     @sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
     total_media_count = 1 + @parent_media_id_list.length +
-                        @child_media_id_list.length + 
+                        @child_media_id_list.length +
                         @sibling_media_id_list.length
 
     # get the top parent
@@ -266,6 +271,10 @@ module MorphosourceHelper
     )
   end
 
+  def permission_badge_by_value(value)
+    Hyrax::PermissionBadge.new(value).render
+  end
+
   def generated_media_title(part, media_type, ie_modality)
     # id will be added by add_id_to_title in Media model
     parts = part.presence || ['Element unspecified']
@@ -306,7 +315,7 @@ module MorphosourceHelper
     when 'ScanningElectronMicroscopy'
       'SEM'
     else
-      'Etc' 
+      'Etc'
     end
   end
 
@@ -322,14 +331,30 @@ module MorphosourceHelper
       organization_institution
   end
 
+  def extra(extras, id)
+    item = {} 
+    extras.each do |h|
+      if h['id'] == id 
+        item.merge!(h)
+      end
+    end
+    item.delete('id')
+    item
+  end
+
+  # todo; replace this method with extra
+  def render_extra(extras, id, variable)
+    begin
+      extras.find { |h| h['id'] == id }[variable]
+    rescue Exception => e
+      return 'unknown'
+    end    
+  end
+
   def organization_devices(id)
     # get device id, make, and model for all devices associated with organization id
     devices = Device.where('id' => Organization.where('id' => id).first.member_ids)
     devices.map { |d| {'id': d.id, 'title': d.title, 'creator': d.creator, 'modality': d.modality, 'description': d.description } }
-  end
-
-  def render_extra(extras, id, variable)
-    extras.find { |h| h['id'] == id }[variable]
   end
 
   def render_source_of_record(bso)
@@ -358,6 +383,14 @@ module MorphosourceHelper
     url
   end
 
+  def display_source(bso)
+    if bso.idigbio_uuid.present?
+      return "iDigbio"
+    else
+      return 'User'
+    end
+  end
+
   def display_date(value)
     # first try to parse and format the date generated from datepicker (YYYY-MM-DD)
     # for other format, e.g. "04/26/2019", it will throw invalid date exception
@@ -366,7 +399,7 @@ module MorphosourceHelper
       Date.parse(value).to_formatted_s(:long)
     rescue StandardError => e
       if e.message == 'invalid date'
-        
+
         begin
           # attempt to parse the date
           parsed_date = Date.strptime(value, "%m/%d/%Y")
@@ -376,15 +409,22 @@ module MorphosourceHelper
             value # just return the string as it is
           end
         rescue StandardError => e
-          value # just return the string as it is              
+          value # just return the string as it is
         end
 
+      elsif e.message.include?("no implicit conversion of Date")
+        # since the value passed in is already a Date class, just format it
+        value.to_formatted_s(:long)
       else
         # if landed here. check e.message for the exception message
         Rails.logger.info("Error in display_date: #{e.message} ")
         '(Error)'
       end
     end
+  end
+
+  def collection_form_url(form)
+    form.persisted? ? [hyrax, :dashboard, form] : [main_app, form]
   end
 
 end

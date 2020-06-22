@@ -3,7 +3,7 @@
 current_path = ""
 if show_sort_and_per_page? && active_sort_fields.many? %>
   <%= form_tag current_path, method: :get, class: 'per_page form-horizontal' do %>
-    <%= render 'view_type_group_bso' %>
+    <%= render 'hyrax/teams/view_type_group_bso' %>
     <%#fieldset class="pull-left">
       <legend class="sr-only"><%= t('hyrax.sort_label') %></legend>
       <%#= label_tag(:sort, '<span>Sort by:</span>'.html_safe) %>

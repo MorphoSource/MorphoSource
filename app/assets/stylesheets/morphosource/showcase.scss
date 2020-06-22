@@ -70,6 +70,10 @@ html {
   white-space: nowrap;
   overflow: hidden;  
 }
+.no-result {
+  text-align: center;
+  margin:50px auto;
+}
 
 .showcase.teams { /* / teams and projects show page styles */
 
@@ -177,6 +181,9 @@ html {
   }
 
   table.teams-projects {
+    th, td {
+      text-align: center;
+    }
     th.checkbox {
       display: table-cell;
       padding-left: 10px;
@@ -194,6 +201,8 @@ html {
     td {
       font-size: 12px;
     }
+    .remove-column {
+    }
   }
 
   .long-badge {
@@ -204,7 +213,7 @@ html {
         display: inline-block;
         font-weight: bold;
         font-size: 10px;
-        width: 90%;
+        width: 100%;
         padding-top: 4px;
         padding-bottom: 4px;
       }
@@ -213,7 +222,7 @@ html {
 
   .view-type-group {
     white-space: nowrap;
-    .btn-primary, .btn-default, .btn-sm, .btn-big {
+    .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big {
       background-color: transparent;
       color: $font-color;
       border-color: transparent;
@@ -306,36 +315,50 @@ html {
 } /* / teams and projects show page styles */
 
 
-div.showcase {
-  
-  /* ************************** 
-      team and projects show page styles.  might need to move them to 
-      elsewhere, after deciding if the styles will be shared 
-   */
+.showcase {
+
+  .content-wrapper.fixed-width {
+    max-width: 1200px;
+    border: 2px solid #efefef;
+    margin-top: 18px;
+  }
+
+  #add-selected-to-cart, .add-selected-to-cart {
+    .material-icons {
+      font-size: 9px;
+    }
+  }
+
+  .main-content {
+    background-color: #fff;
+  }
+
   .nav-tabs {
+    border-bottom: 1px solid $line-inactive-color;
+    li {
+      border-bottom: 3px solid transparent;
+      a, a:hover {
+        border-top: none;      
+      }      
+    }
     li.active {
       border-bottom: 3px solid $line-color;
-    }
-  }
-  .panel-default {border: none;}
-  .teams-projects {
-    th, td {
-      text-align: center;
+      a, a:hover {
+        margin-right: 0;
+        border-top: none;      
+      }
     }
   }
 
+  .panel-default {border: none;}
 
   /* ************************** */
-
-  max-width: 1200px;
-  border: 2px solid #efefef;
-  margin-top: 18px;
 
   .btn {
     border-radius: 0;
   }
 
-  .btn-primary, .btn-default, .btn-sm, .btn-big {
+  .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big {
     background-color: $button-color;
     color: $button-font-color;
     border-color: $button-border-color;

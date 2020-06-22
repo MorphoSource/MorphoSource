@@ -1,6 +1,7 @@
 <% 
 id = document.id 
 bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
+media_extra = extra(@media_extras, id)
 %>
 <tr id="document_<%= id %>">
   <td class="checkbox">
@@ -29,6 +30,35 @@ bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
     <td class="break-all"><%= cho&.title&.first %></td>
   <% end %>
   <td><%= document.media_type&.first.underscore.humanize %></td>  
-  <td><%= document.date_uploaded %> </td>
+  <td><%= media_extra["team_project_title"] %></td>
+  <td><%= media_extra["origin"] %></td>
+  <td><%= document.date_uploaded %></td>
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>
+  <td class="text-center">
+    <% if current_user and can? :edit, @collection %>
+
+      <% if media_extra["source_of_result"] == 'team' || 
+        media_extra["source_of_result"] == 'project' %>
+        <form></form>
+        <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
+      <% else %>
+        <%# show info instead of remove button if the media is not in the team bucket %>
+        <i class="material-icons tooltip-icon" data-original-title="" title="">
+          <p class="hint hide">
+            <% if media_extra["source_of_result"] == 'team_project' %> 
+              This media belongs to a team project.
+            <% elsif media_extra["source_of_result"] == 'linked_org' %> 
+              This media belongs to a linked organization.  
+            <% else %>
+              &nbsp; 
+            <% end %>
+          </p>
+        </i>
+      <% end %>
+
+    <% else %>
+      &nbsp; 
+    <% end %>
+  </td>
+
 </tr>

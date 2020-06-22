@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   # Physical Object show case pages
-  # todo: clean up and rewrite the rules 
+  # todo: clean up and rewrite the rules
   scope module: :hyrax do
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     get 'concern/parent/:parent_id/cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
     # redirect the default media view to showcase view, except for certain action (e.g. new)
     get 'concern/media/new', to: 'media#new'
-    get 'concern/media/zip', to: 'media#zip'
+    get 'concern/media/zip', to: 'morphosource/zip_media#zip'
     get 'concern/media/:id', to: 'media#showcase'
     # in case we need to reference the old edit page. remove this hyraxedit route later
     get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
@@ -28,15 +28,22 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    resources :teams, only: [:show] do # public landing team/project show page
+    resources :teams do # public landing team/project show page
       member do
         get 'page/:page', action: :index
         get 'facet/:id', action: :facet, as: :dashboard_facet
         get :files
       end
     end
-    get 'projects/:id', to: 'teams#show'
-    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
+    #    get 'projects/:id', to: 'teams#show'
+    #    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
+    resources :projects, controller: 'teams'
+    # Note: the following route might effect pagination links
+    namespace :dashboard do
+      resources :collections, controller: 'collections'
+
+      get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
+    end
   end
 
   # override ProfilesController
@@ -72,12 +79,8 @@ Rails.application.routes.draw do
   resources :welcome, only: 'index'
   root 'hyrax/homepage#index'
 
-  namespace :hyrax, path: :concern do
-    namespaced_resources 'media' do
-      collection do
-        get :zip, action: :zip
-      end
-    end
+  scope module: :morphosource do
+    get :zip, action: :zip, controller: :zip_media
   end
 
   namespace :hyrax do
@@ -162,6 +165,13 @@ Rails.application.routes.draw do
     end
   end
 
+  # when creating a collection, use the morphosource collections controller
+  scope module: :morphosource do
+    scope module: :dashboard do
+      resources :collections, only: [:create]
+    end
+  end
+
   # Add users to auto-generated collection groups
   post 'dashboard/collections/:id/update_collection_groups', action: :update_collection_groups, controller: :collection_roles, as: 'update_collection_groups'
 
@@ -169,6 +179,8 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'
+
+      post 'dashboard/collections/:id/unlink_organization', action: :unlink_organization, controller: :linked_teams, as: 'dashboard_collection_unlink_organization'
 
       patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
     end

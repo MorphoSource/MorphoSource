@@ -1,0 +1,35 @@
+<%# taken from https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collections/_subcollection_list.html.erb %>
+<% 
+@subcollection_docs = collection # @presenter.filter_projects(@subcollection_docs, request.params)
+if @subcollection_docs.nil? || @subcollection_docs.empty? %>
+  <div class="alert alert-warning" role="alert"><%= t('hyrax.collections.show.no_visible_subcollections') %></div>
+<% else %>
+
+  <section id="sub-collections-wrapper" class="sub-collections-wrapper">
+    <table id="datatable-project-list" class="table table-striped teams-projects">
+      <caption class="sr-only">List of projects in this team</caption>
+      <thead>
+      <tr>
+        <th class="no-sort">&nbsp;<!-- thumbnail column --></th>
+        <th>Title</th>
+        <th>Media</th>
+        <th>Last modified</th>
+        <th>Visibility</th>
+        <th><!-- remove button column --></th>
+      </tr>
+      </thead>
+      <tbody>
+        <%= render partial: 'tab_project_list_row', collection: @subcollection_docs, as: :document, locals: { parent_id: id } %>
+      </tbody>
+    </table>
+
+    <%= render 'hyrax/collections/paginate', solr_response: @subcollection_solr_response, page_param_name: :sub_collection_page %>
+  </section>
+
+  <% if can? :edit, id %>
+  <%= render 'modal_remove_project' %>
+  <% end %>
+
+<% end %>
+
+

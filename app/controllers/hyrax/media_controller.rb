@@ -9,17 +9,14 @@ module Hyrax
     include Hyrax::ChildWorkRedirect
     self.curation_concern_type = ::Media
 
-    include ActionController::Streaming
-    include Zipline
-    require 'open-uri'
-
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::MediaPresenter
 
+    # override Hydra::AccessControlsEnforcement to include 'download' access in @discovery_permissions
+    self.search_builder_class = Morphosource::WorkSearchBuilder
+
     before_action :save_fileset_visibility, only: [:update]
-    before_action :save_publication_status, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
-    skip_load_and_authorize_resource only: [:zip]
 
     # override the layout from WorksControllerBehavior
     def decide_layout
@@ -31,7 +28,7 @@ module Hyrax
                when 'edit'
                  'morphosource_2_columns'
                # in case we need to reference the old edit page. remove this action later
-               when 'hyraxedit' 
+               when 'hyraxedit'
                  '1_column'
                when 'update'
                  'morphosource_2_columns'
@@ -77,35 +74,6 @@ module Hyrax
       render '/hyrax/base/edit', presenter: @presenter
     end
 
-    # GET /concern/media/zip?ids[]=filesetid1&ids[]=filesetid2
-    def zip
-      if params[:ids] && params[:ids].is_a?(Array) && params[:ids].any?
-        params[:ids].uniq!
-        params[:ids].each{|i| authorize! :read, i} unless (Rails.env == 'test')
-        output_prefix = "morphosource-#{Time.now.strftime("%Y-%m-%d-%H%M%S")}"
-        files = ::Media.where(id: params[:ids]).map{|m| m.file_sets}.flatten.map do |f|
-          authorize!(:read, f.id) unless (Rails.env == 'test')
-          m = f.parent
-          # Unzipped filename will be e.g. "Structured Light-2514nk481/bun_zipper_res2-nc580m649.ply"
-          output_dirname = "#{m.title.join('-').tr('[]:','').tr('/\\','-')}-#{m.id}"
-          output_filename = File.basename(f.label, File.extname(f.label)) + "-#{f.id}" + File.extname(f.label)
-          [f.original_file.uri.to_s, "#{output_prefix}/#{output_dirname}/#{output_filename}", modification_time: f.date_modified]
-        end
-        if ((files.length == 0) && (Rails.env != 'test'))
-          head :bad_request
-        else
-          aup_filename = 'MorphoSource_Download_Use_Agreement.pdf'
-          aup_path = File.join(Rails.root, %w{app assets documents}, aup_filename)
-          files.unshift([aup_path, "#{output_prefix}/#{aup_filename}", modification_time: Time.now])
-          Rails.logger.debug("Files for zip: #{files.inspect}")
-          # response.set_header('Content-Disposition', "attachment; filename=\"#{output_prefix}.zip\"")
-          # response.set_header('Content-Type', Mime::Type.lookup_by_extension('zip').to_s)
-          file_mappings = files.lazy.map{|url,path,options| [open(url), path, options]}
-          zipline(file_mappings, "#{output_prefix}.zip")
-        end
-      end
-    end
-
     # Overriding WorksControllerBehavior to add file format validation
     # Could not do this as an ActiveModel validation because new file uploads are not added until after create
     def create
@@ -124,7 +92,6 @@ module Hyrax
 
     def update
       if file_formats_valid? && actor.update(actor_environment)
-        update_cart_items if publication_status_changed?
         after_update_response
       else
         respond_to do |wants|
@@ -288,35 +255,6 @@ module Hyrax
           file.save!
         end
         curation_concern.update_index
-      end
-
-      # If publication status is updated, update all cart items for that work
-      def save_publication_status
-        @saved_publication_status = curation_concern.publication_status
-      end
-
-      def publication_status_changed?
-        @saved_publication_status != curation_concern.publication_status
-      end
-
-      def update_cart_items
-        items = CartItem.where(work_id: curation_concern.id)
-        value = restrict_items?
-        items.each do |item|
-          item.restricted = value
-          item.save
-        end
-      end
-
-      def restrict_items?
-        if curation_concern.active_lease?
-          status = curation_concern.visibility_during_lease
-        elsif curation_concern.under_embargo?
-          status = curation_concern.visibility_during_embargo
-        else
-          status = curation_concern.publication_status
-        end
-        status != "open"
       end
   end
 end

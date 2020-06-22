@@ -173,6 +173,46 @@ RSpec.describe Media do
       end
     end
 
+    describe '#can_add_to_cart?' do
+      subject { described_class.new }
+      context 'media is open' do
+        before do
+          subject.fileset_accessibility = ['open']
+        end
+        it { expect(subject.can_add_to_cart?).to be(true) }
+      end
+      context 'media is on lease' do
+        before do
+          allow(subject).to receive(:active_lease?).and_return(true)
+        end
+        it { expect(subject.can_add_to_cart?).to be(true) }
+      end
+      context 'media is restricted' do
+        before do
+          subject.fileset_accessibility = ['restricted_download']
+        end
+        it { expect(subject.can_add_to_cart?).to be(true) }
+      end
+      context 'media is preview onoy' do
+        before do
+          subject.fileset_accessibility = ['preview_only']
+        end
+        it { expect(subject.can_add_to_cart?).to be(false) }
+      end
+      context 'media is hidden' do
+        before do
+          subject.fileset_accessibility = ['hidden']
+        end
+        it { expect(subject.can_add_to_cart?).to be(false) }
+      end
+      context 'media is under embargo' do
+        before do
+          allow(subject).to receive(:under_embargo?).and_return(true)
+        end
+        it { expect(subject.can_add_to_cart?).to be(false) }
+      end
+    end
+
     describe '#publication_status' do
       let(:open) { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
       let(:private) { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
@@ -260,123 +300,6 @@ RSpec.describe Media do
           end
           it 'returns the depositor' do
             expect(subject.reviewer).to eq('depositor')
-          end
-        end
-      end
-    end
-
-    describe 'update_cart_items' do
-      let(:media)         { Media.create(id: 'media', title: ['media'], download_reviewer: ['old_reviewer']) }
-      let(:user)          { User.create(email: 'user@email.com', password: 'password', ms_id: 'user') }
-      let(:cart_item1)    { CartItem.create(work_id: media.id, approver_id: old_reviewer.ms_id, user_id: user.ms_id) }
-      let(:cart_item2)    { CartItem.create(work_id: media.id, approver_id: old_reviewer.ms_id, user_id: user.ms_id) }
-      let(:cart_item3)    { CartItem.create(work_id: media.id, approver_id: old_reviewer.ms_id, user_id: user.ms_id) }
-      let!(:cart_items)   { [cart_item1, cart_item2, cart_item3] }
-      let(:new_reviewer)  { User.create(email: 'new_reviewer@email.com', password: 'password', ms_id: 'new_reviewer') }
-      let(:old_reviewer)  { User.create(email: 'old_reviewer@email.com', password: 'password', ms_id: 'old_reviewer') }
-
-      context 'the download_reviewer or owner is not updated' do
-        it 'does not update update the cart items' do
-          media.update(title: ['new title'])
-          cart_items.each do |item|
-            item.reload
-            expect(item.approver_id).to eq(old_reviewer.ms_id)
-          end
-        end
-      end
-
-      context 'the download_reviewer is updated' do
-        context 'the work is restricted download' do
-          before do
-            media.fileset_accessibility = ['restricted_download']
-            media.save
-            cart_items.each do |item|
-              item.restricted = false
-              item.save
-            end
-          end
-          context 'the user is not a reviewer/owner' do
-            it 'updates the approver and sets the items to restricted' do
-              media.update(download_reviewer: [new_reviewer.ms_id])
-              cart_items.each do |item|
-                item.reload
-                expect(item.approver_id).to eq(new_reviewer.ms_id)
-                expect(item.restricted).to be(true)
-              end
-            end
-          end
-          context 'the user is a reviewer/owner' do
-            it 'updates the approver and sets the items to unrestricted' do
-              media.update(download_reviewer: [user.ms_id])
-              cart_items.each do |item|
-                item.reload
-                expect(item.approver_id).to eq(user.ms_id)
-                expect(item.restricted).to be(false)
-              end
-            end
-          end
-        end
-        context 'the work is not restricted download' do
-          before do
-            media.fileset_accessibility = ['open']
-            media.save
-          end
-          it 'udpates the cart items approver_ids' do
-            media.update(download_reviewer: [new_reviewer.ms_id])
-            cart_items.each do |item|
-              item.reload
-              expect(item.approver_id).to eq(new_reviewer.ms_id)
-              expect(item.restricted).to be(false)
-            end
-          end
-        end
-      end
-
-      context 'the owner is updated' do
-        context 'the work is restricted download' do
-          before do
-            media.fileset_accessibility = ['restricted_download']
-            media.download_reviewer = []
-            media.save
-            cart_items.each do |item|
-              item.restricted = false
-              item.save
-            end
-          end
-          context 'the user is not a reviewer/owner' do
-            it 'updates the approver and sets the items to restricted' do
-              media.update(owner: new_reviewer.ms_id)
-              cart_items.each do |item|
-                item.reload
-                expect(item.approver_id).to eq(new_reviewer.ms_id)
-                expect(item.restricted).to be(true)
-              end
-            end
-          end
-          context 'the user is a reviewer/owner' do
-            it 'updates the approver and sets the items to unrestricted' do
-              media.update(owner: user.ms_id)
-              cart_items.each do |item|
-                item.reload
-                expect(item.approver_id).to eq(user.ms_id)
-                expect(item.restricted).to be(false)
-              end
-            end
-          end
-        end
-        context 'the work is not restricted download' do
-          before do
-            media.fileset_accessibility = ['open']
-            media.download_reviewer = []
-            media.save
-          end
-          it 'udpates the cart items approver_ids' do
-            media.update(owner: new_reviewer.ms_id)
-            cart_items.each do |item|
-              item.reload
-              expect(item.approver_id).to eq(new_reviewer.ms_id)
-              expect(item.restricted).to be(false)
-            end
           end
         end
       end

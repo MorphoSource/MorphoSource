@@ -8,12 +8,11 @@ class BatchUserImportJob < ApplicationJob
   	else
   		contributor = false
   	end
-  	byebug
   	attributes.delete(:contributor)
     u = User.new(attributes)
     u.validate!
-    u.make_contributor if contributor
     u.save!
+    u.make_contributor if contributor
   end
 
 end

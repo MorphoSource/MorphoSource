@@ -6,7 +6,7 @@ module Ms1to2
       @input_path = input_path
       @update = update
       @update_only_if_no_file = update_only_if_no_file
-      @julie = User.find_by(email: 'julia.m.winchester@gmail.com')
+      @admin_user = User.find_by(email: 'julia.m.winchester@gmail.com') # Can be changed
       # ::Hyrax.config.whitelisted_ingest_dirs = input_path
     end
 
@@ -76,7 +76,7 @@ module Ms1to2
           coll_attrs = {
             :id => collection_id,
             :title => v[:title],
-            :depositor => @julie.user_key,
+            :depositor => v[:depositor].first,
             :visibility => 'open',
             :collection_type => coll_type
           }
@@ -85,17 +85,21 @@ module Ms1to2
           puts('Establishing collection permissions')
           ::Hyrax::Collections::PermissionsCreateService.create_default(
             collection: coll,
-            creating_user: @julie)
+            creating_user: @admin_user)
         end
       end
     end
 
     def import_standard(m)
-      del_col_ids = ( m == :BiologicalSpecimen ) ? true : false
+      opts = { :model => m.to_s }
+      opts[:depositor] = @admin_user.user_key if m != :BiologicalSpecimen
       csv_importer = ::Importer::CSVImporter.new(
         File.join(input_path, csvfile(m)),
         '',
-        { :depositor => @julie.user_key, :model => m.to_s } )
+        opts
+      )
+
+      del_col_ids = ( m == :BiologicalSpecimen ) ? true : false
       csv_importer.import_all(del_col_ids)
     end
 
@@ -119,7 +123,6 @@ module Ms1to2
           # prepare
           attrs = combined_table[id]
           attrs.delete(:collection_id)
-          attrs = attrs.merge({ :depositor => @julie.user_key })
           csv_importer = ::Importer::CSVImporter.new('', input_path, { :model => to_model(id) })
 
           if !to_model(id).to_s.constantize.exists?(id)
@@ -214,7 +217,7 @@ module Ms1to2
     end
 
     def coll_models
-      [:BiologicalSpecimen]
+      [:Media]
     end
 
     def update_models

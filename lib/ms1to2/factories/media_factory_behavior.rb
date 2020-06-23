@@ -8,7 +8,7 @@ module Ms1to2
       end
 
       def derive_mf_id(id)
-        hyraxify("M"+id.to_s)
+        hyraxify(id.to_s)
       end
 
       def derive_special_fields_mf(mf, mg, parent_id)
@@ -29,7 +29,8 @@ module Ms1to2
           :y_spacing => derive_y_spacing(mg),
           :z_spacing => derive_z_spacing(mg),
           :modality => derive_modality(mg),
-          :visibility => derive_visibility(mf, mg)
+          :visibility => derive_visibility(mf, mg),
+          :download_reviewer => derive_download_reviewer(mg[:reviewer_id])
         }
       end
 
@@ -126,7 +127,26 @@ module Ms1to2
       def derive_visibility(mf, mg)
         mf_p = mf[:published]&.first
         mg_p = mg[:published]&.first
-        (mf_p && mf_p.to_i > 0) || (!mf_p && mg_p && mg_p.to_i > 0) ? 'open' : 'restricted'
+        if mf_p.present?
+          publication = mf_p.to_i
+        elsif mg_p.present?
+          publication = mg_p.to_i
+        else
+          publication = 0
+        end
+
+        case publication
+          when 2
+            'restricted_download'
+          when 1
+            'open'
+          else
+            'private'
+        end
+      end
+
+      def derive_download_reviewer(reviewer_id)
+        Array(reviewer_id).first
       end
     end
   end

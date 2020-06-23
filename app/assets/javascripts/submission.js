@@ -79,6 +79,8 @@ $( document ).on('turbolinks:load', function() {
 
       setOrganizationDefaults() {
         this.organizationId = null;
+        this.organizationCollectionCode = null;
+        this.organizationInstitutionCode = null;
         this.noOrganization =  null;
         this.willCreateOrganization = null;
         this.organizationCreateParams = null;
@@ -605,9 +607,12 @@ $( document ).on('turbolinks:load', function() {
           if (selectedOrganizationID) {
             data.setOrganizationDefaults();
             data.organizationId = selectedOrganizationID;
+            data.organizationCollectionCode = $('#organization_search_form input.organization_collection_code').val().split(',');
+            data.organizationInstitutionCode = $('#organization_search_form input.organization_institution_code').val();
             data.noOrganization = false;
             data.willCreateOrganization = false;
             data.savedStep = 4;
+            self.populatePhysicalObjectInstitutionCollectionCodes();
             self.next();
 
             console.log(data);
@@ -626,6 +631,13 @@ $( document ).on('turbolinks:load', function() {
           data.willCreateOrganization = false;
           data.savedStep = 4;
           self.toggleNoOrganizationVisibility();
+          ['biological_specimen','cultural_heritage_object'].forEach((physical_object_type) => {
+            ['collection_code','institution_code'].forEach((code_type) => {
+              var dom_id = physical_object_type + '_' + code_type;
+              var form_input_name = physical_object_type + '[' + code_type + ']';
+              $('#' + dom_id).replaceWith($('<input>',{id: dom_id, name: form_input_name, class: 'form-control string optional'}));
+            });
+          });
           self.next();
 
           console.log(data);
@@ -641,7 +653,7 @@ $( document ).on('turbolinks:load', function() {
           $('#submission_no_organization_section').addClass('show').removeClass('hide');
           $('#submission_no_organization_display_section').addClass('hide').removeClass('show');
           console.log(data);
-        }); 
+        });
 
         // Create Organization Events
 
@@ -666,17 +678,43 @@ $( document ).on('turbolinks:load', function() {
           data.noOrganization = false;
           data.willCreateOrganization = true;
           data.organizationCreateParams = $('#new_organization').serializeArray();
+          data.organizationInstitutionCode = $('#organization_institution_code').val();
+          data.organizationCollectionCode = [];
+          $("[name='organization[collection_code][]']").map((index, collection_code) => {
+            if ($(collection_code).val()) {
+              data.organizationCollectionCode.push($(collection_code).val());
+            }
+          });
           data.savedStep = 4;
+          self.populatePhysicalObjectInstitutionCollectionCodes();
           self.next();
 
           console.log(data);
-        });        
+        });
+      }
+
+      populatePhysicalObjectInstitutionCollectionCodes() {
+        $("#biological_specimen_institution_code").empty();
+        $("#cultural_heritage_object_institution_code").empty();
+        $("#biological_specimen_institution_code").append($('<option>', {value: data.organizationInstitutionCode, text: data.organizationInstitutionCode}));
+        $("#biological_specimen_institution_code").append($('<option>'));
+        $("#cultural_heritage_object_institution_code").append($('<option>', {value: data.organizationInstitutionCode, text: data.organizationInstitutionCode}));
+        $("#cultural_heritage_object_institution_code").append($('<option>'));
+
+        $("#biological_specimen_collection_code").empty();
+        $("#cultural_heritage_object_collection_code").empty();
+        data.organizationCollectionCode.forEach((collection_code) => {
+          $("#biological_specimen_collection_code").append($('<option>', {value: collection_code, text: collection_code}));
+          $("#cultural_heritage_object_collection_code").append($('<option>', {value: collection_code, text: collection_code}));
+        });
+        $("#biological_specimen_collection_code").append($('<option>'));
+        $("#cultural_heritage_object_collection_code").append($('<option>'));
       }
 
       next() {
         this.form.setSidebarViewCheck(4);
         if (data.idigbioId) {
-          this.form.setSidebarViewCheck([5, 6]); 
+          this.form.setSidebarViewCheck([5, 6]);
           this.form.setSidebarViewFade([5, 6]);
           this.form.setVisibleView(7); // view 7 media device
         } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'cho') {

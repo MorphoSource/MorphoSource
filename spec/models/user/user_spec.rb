@@ -42,6 +42,92 @@ RSpec.describe User, type: :model do
       end
     end
 
+    describe '#contributor?' do
+      context 'user is not a contributor' do
+        it 'returns false' do
+          expect(user.contributor?).to be(false)
+        end
+      end
+      context 'user is a contributor' do
+        before do
+          allow(user).to receive(:groups).and_return(['contributor'])
+        end
+        it 'returns true' do
+          expect(user.contributor?).to be(true)
+        end
+      end
+    end
+
+    describe '#make_contributor' do
+      let(:user) { User.create(email: 'user@email.com', password: 'password') }
+      let!(:contributor_group) { Role.create(name: 'contributor') }
+
+      context 'user is not a contributor' do
+        it 'adds the user to the contributors group' do
+          user.make_contributor
+          user.reload
+          expect(contributor_group.users).to include(user)
+          expect(user.groups).to include('contributor')
+        end
+        it 'puts a success message' do
+          expect { user.make_contributor }.to output("#{user.display_name} is now a contributor\n").to_stdout
+        end
+      end
+      context 'user is a contributor' do
+        before do
+          allow(user).to receive(:groups).and_return(['contributor'])
+        end
+        it 'does not add the user to the contributors group' do
+          expect { user.make_contributor }.to output("Can't add - #{user.display_name} is already a contributor\n").to_stdout
+        end
+      end
+    end
+
+    describe '#remove_contributor' do
+      let!(:contributor_group) { Role.create(name: 'contributor') }
+      let!(:user) { User.create(email: 'user@email.com', password: 'password') }
+      let!(:another_user) { User.create(email: 'another@email.com', password: 'password') }
+
+      before do
+        contributor_group.users += [another_user]
+      end
+
+      context 'user is not a contributor' do
+        it "can't remove the user from the contributors group" do
+          expect { user.remove_contributor }.to output("Can't remove - #{user.display_name} is not a contributor\n").to_stdout
+        end
+      end
+      context 'user is a contributor' do
+        before do
+          contributor_group.users += [user]
+        end
+        it 'removes the user from the contributors group' do
+          user.remove_contributor
+          user.reload
+          contributor_group.reload
+          expect(contributor_group.users).to include(another_user)
+          expect(contributor_group.users).not_to include(user)
+          expect(user.groups).not_to include('contributor')
+        end 
+      end
+    end
+
+    describe '#registered?' do
+      context 'when not registered' do
+        before do
+          allow(user).to receive(:groups).and_return(['contributor'])
+        end
+        it 'is false' do
+          expect(user.registered?).to be(false)
+        end
+      end
+      context 'when registered' do
+        it 'is true' do
+          expect(user.registered?).to be(true)
+        end
+      end
+    end
+
     describe '#collections_managed' do
       let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
       let(:team_a)                { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }

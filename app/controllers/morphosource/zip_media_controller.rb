@@ -27,9 +27,8 @@ module Morphosource
       def authorized_to_download?
         @media_ids = params[:ids].uniq
         @media_ids.each do |id|
-          media = ::Media.find(id)
           # next if user has download access to media
-          next if current_user.can? :download, id
+          next if current_user.can?(:download, id)
           # next if user has an approved request to download
           next if current_user.approved_to_download?(id)
           return false

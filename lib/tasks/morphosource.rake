@@ -146,4 +146,13 @@ namespace :morphosource do
     puts 'Team and Project collection types created'
   end
 
+  desc 'Set Up Contributor Group for Users'
+  task :create_contributor_group => :environment do
+    if Role.find_by(name: 'contributor')
+      puts 'Contributor role already exists'
+    else
+      Role.create(name: 'contributor')
+      puts 'Contributor role created'
+    end
+  end
 end

@@ -17,10 +17,22 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     context 'the work is open' do
       let(:work)    { Media.create(title: ['open work'], visibility: 'open', fileset_accessibility: ['open']) }
 
-      it 'returns true' do
-        expect(id_test).to be(true)
-        expect(obj_test).to be(true)
-        expect(doc_test).to be(true)
+      context 'the user is not registered' do
+        before do
+          allow(user).to receive(:groups).and_return([])
+        end
+        it 'returns false' do
+          expect(id_test).to be(false)
+          expect(obj_test).to be(false)
+          expect(doc_test).to be(false)
+        end
+      end
+      context 'the user is registered' do
+        it 'returns true' do
+          expect(id_test).to be(true)
+          expect(obj_test).to be(true)
+          expect(doc_test).to be(true)
+        end
       end
     end
     context 'the work is private' do
@@ -93,6 +105,22 @@ RSpec.describe 'Morphosource::Ability', type: :model do
           expect(obj_test).to be(false)
           expect(doc_test).to be(false)
         end
+      end
+    end
+  end
+
+  describe '#contributor?' do
+    context 'user is not a contributor' do
+      it 'returns false' do
+        expect(ability.contributor?).to be(false)
+      end
+    end
+    context 'user is a contributor' do
+      before do
+        allow(user).to receive(:groups).and_return(['contributor'])
+      end
+      it 'returns true' do
+        expect(ability.contributor?).to be(true)
       end
     end
   end

@@ -9,9 +9,11 @@
     </div>
 
     <div id="organizations" class="hide">
-      <input class="organization_label" type="hidden" name="organization_title" value="" />
+      <input class="organization_label" type="hidden" name="organization_label" value="" />
       <input class="organization_title" type="hidden" name="organization_title" value="" />
       <input class="organization_id" type="hidden" name="organization_id" value="" />
+      <input class="organization_collection_code" type="hidden" name="organization_collection_code" value="" />
+      <input class="organization_institution_code" type="hidden" name="organization_institution_code" value="" />
     </div>
  
 <% end %>
@@ -21,7 +23,6 @@ $(function(){
   $('#submission_organization_search').autocomplete({
     select: function(event, ui) {
         event.preventDefault();
-
         // Add data to form fields
         $("#submission_organization_search").val(ui.item.label);
         $("#organization_search_form input.organization_id").val(ui.item.value);
@@ -31,7 +32,8 @@ $(function(){
         $("#organization_search_form input.organization_label").val(ui.item.label);
         console.log(ui.item.label);
 
-
+        $("#organization_search_form input.organization_collection_code").val(ui.item.collection_code);
+        $("#organization_search_form input.organization_institution_code").val(ui.item.institution_code);
 
         // Display selected organization
         $('#submission_organization_select_display').addClass('show').removeClass('hide');

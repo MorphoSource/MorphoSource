@@ -176,9 +176,12 @@ class SubmissionsController < ApplicationController
       if @submission.device_organization_id == 'submission_organization'
         @submission.device_organization_id = @submission.organization_id
       end
-      model_params = assign_model_params_parents(
-        model_params, 
-        [@submission.device_organization_id])
+      if @submission.device_organization_id.present?
+        model_params = assign_model_params_parents(
+          model_params, 
+          [@submission.device_organization_id]
+        )
+      end
       @device_create_params = model_params
 
     when 'imaging_event'

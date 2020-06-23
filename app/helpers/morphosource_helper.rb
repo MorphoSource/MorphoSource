@@ -1,6 +1,8 @@
 module MorphosourceHelper
-  
+
   include ActionView::Helpers::UrlHelper
+  include MediaFinderHelper
+  include Hyrax::Renderers
 
   def current_controller
     current_uri = request.env['PATH_INFO']
@@ -11,6 +13,25 @@ module MorphosourceHelper
 
   def current_controller?(names)
     names.include?(current_controller)
+  end
+
+  def request_params
+    request.params
+  end
+
+  def ms_collection_view_link_qs(tab, filter_prefix)
+    link = ""
+    parsed_params =  filter_params(filter_prefix, request_params)
+    parsed_params.map do |k,v|
+      link = link + '&' + filter_prefix + k + '=' + v 
+    end       
+    link = link + "#" + tab if tab.present?
+    link.html_safe
+  end
+
+  def truncate_value(value, length=20)
+    return "" if value.nil?
+    value.truncate(length)
   end
 
   def device_selector
@@ -46,7 +67,7 @@ module MorphosourceHelper
   def find_works_autocomplete_url(curation_concern, relation)
     valid_concerns = curation_concern.send("valid_#{relation}_concerns").map(&:to_s)
     type_params = valid_concerns.sort.map { |type| "type[]=#{type}" }
-    # add id in the url if missing since id is expected by find_works 
+    # add id in the url if missing since id is expected by find_works
     if type_params.find { |e| /^id=/ =~ e }.nil?
       type_params << "id=NA"
     end
@@ -68,6 +89,84 @@ module MorphosourceHelper
     qry = "#{Solrizer.solr_name('has_model', :symbol)}:Organization"
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
+
+  def physical_object_solr_from_media(media_id)
+    # this method returns the solr doc (and other details) of a PO associated with the media ID
+    bso_work, bso_extra, cho_work, cho_extra = physical_object_from_media(media_id)
+    bso_doc = SolrDocument.new(bso_work.to_solr) if bso_work.present?
+    cho_doc = SolrDocument.new(cho_work.to_solr) if cho_work.present?
+    return bso_doc, bso_extra, cho_doc, cho_extra
+  end
+
+  def physical_object_from_media(id)
+    #find BSO or CHO assigned to the media id
+    media = Media.find(id)
+
+    # Get parent medias (all)
+    # add current media id, then add child media ids.
+    # currently add up to 5 levels in the tree.  Later we should store the child medias in the work
+    # so there is no need to traverse the tree
+    @parent_media_id_list = parent_media_ids(media, 5, []).flatten.uniq
+    @child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
+    @sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
+    total_media_count = 1 + @parent_media_id_list.length +
+                        @child_media_id_list.length +
+                        @sibling_media_id_list.length
+
+    # get the top parent
+    direct_parent_id = top_parent_media_id(media)
+    #direct_parent_id_list = parent_media_ids(media, 1, []).flatten.uniq
+    direct_parent_id_list = []
+    if direct_parent_id.present?
+      direct_parent_id_list << direct_parent_id
+    end
+
+    @is_absentee_parent = false
+
+    this_media_list = [] << id
+    # get members for this media combined with parents, ordered in reverse
+    @this_media_and_parents_id_list = @parent_media_id_list << id
+    # get processing event:  media < processing_event
+    # then get processing event data: activity items, child/parent IDs and member presenters
+    @processing_events = ProcessingEvent.where('member_ids_ssim' => @this_media_and_parents_id_list)
+    @processing_event_count = @processing_events.count
+
+    if direct_parent_id_list.length > 0
+      # If a media has a parent work and is derived, then that media’s raw ancestor media work
+      # (whether parent, grandparent, etc) should be connected to an IE from which metadata should be derived.
+      target_media = Media.where('id' => direct_parent_id).first
+    else
+      target_media = media
+      # check if this is a Derived media with "absentee parent" by checking if PE exists
+      if @processing_event_count > 0
+        @is_absentee_parent = true
+      end
+    end
+
+    # Get the physical object type from:
+    # Media < IE < PO
+    # or
+    # media < PE < IE < PO (for media with absentee parent)
+    if @is_absentee_parent == true
+      @imaging_event = ImagingEvent.where('member_ids_ssim' => @processing_events.first.id).first
+    else
+      @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
+    end
+
+    if @imaging_event.present?
+      bso = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
+      cho = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
+    end
+    bso_extra = {}
+    cho_extra = {}
+    if bso.present?
+      bso_extra = { 'id' => bso.id, 'media_count' => total_media_count.to_s}
+    elsif cho.present?
+      cho_extra = { 'id' => cho.id, 'media_count' => total_media_count.to_s}
+    end
+    return bso, bso_extra, cho, cho_extra
+  end
+
 
   def ms_work_form_tabs(work)
     if files_required?(work)
@@ -102,6 +201,10 @@ module MorphosourceHelper
 
   def find_organization_autocomplete_url
     Rails.application.routes.url_helpers.qa_path + '/search/find_organizations?type[]=Organization&id=NA&q='
+  end
+
+  def find_organization_with_devices_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_organizations_with_devices?type[]=Organization&id=NA&q='
   end
 
   def find_taxonomy_autocomplete_url
@@ -168,6 +271,10 @@ module MorphosourceHelper
     )
   end
 
+  def permission_badge_by_value(value)
+    Hyrax::PermissionBadge.new(value).render
+  end
+
   def generated_media_title(part, media_type, ie_modality)
     # id will be added by add_id_to_title in Media model
     parts = part.presence || ['Element unspecified']
@@ -208,7 +315,7 @@ module MorphosourceHelper
     when 'ScanningElectronMicroscopy'
       'SEM'
     else
-      'Etc' 
+      'Etc'
     end
   end
 
@@ -222,6 +329,37 @@ module MorphosourceHelper
         organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
       end
       organization_institution
+  end
+
+  def extra(extras, id)
+    item = {} 
+    extras.each do |h|
+      if h['id'] == id 
+        item.merge!(h)
+      end
+    end
+    item.delete('id')
+    item
+  end
+
+  # todo; replace this method with extra
+  def render_extra(extras, id, variable)
+    begin
+      extras.find { |h| h['id'] == id }[variable]
+    rescue Exception => e
+      return 'unknown'
+    end    
+  end
+
+  def organization_devices(id)
+    # get device id, make, and model for all devices associated with organization id
+    devices = Device.where('id' => Organization.where('id' => id).first.member_ids)
+    devices.map { |d| {'id': d.id, 'title': d.title, 'creator': d.creator, 'modality': d.modality, 'description': d.description } }
+  end
+
+  def render_source_of_record(bso)
+    renderer = Hyrax::Renderers::ShowcaseIdigbioLinkAttributeRenderer.new(nil,nil)
+    renderer.generated_link_from_bso(bso)
   end
 
   def source_of_record(idigbio_uuid, idigbio_recordset_id)
@@ -245,6 +383,14 @@ module MorphosourceHelper
     url
   end
 
+  def display_source(bso)
+    if bso.idigbio_uuid.present?
+      return "iDigbio"
+    else
+      return 'User'
+    end
+  end
+
   def display_date(value)
     # first try to parse and format the date generated from datepicker (YYYY-MM-DD)
     # for other format, e.g. "04/26/2019", it will throw invalid date exception
@@ -253,7 +399,7 @@ module MorphosourceHelper
       Date.parse(value).to_formatted_s(:long)
     rescue StandardError => e
       if e.message == 'invalid date'
-        
+
         begin
           # attempt to parse the date
           parsed_date = Date.strptime(value, "%m/%d/%Y")
@@ -263,15 +409,22 @@ module MorphosourceHelper
             value # just return the string as it is
           end
         rescue StandardError => e
-          value # just return the string as it is              
+          value # just return the string as it is
         end
 
+      elsif e.message.include?("no implicit conversion of Date")
+        # since the value passed in is already a Date class, just format it
+        value.to_formatted_s(:long)
       else
         # if landed here. check e.message for the exception message
+        Rails.logger.info("Error in display_date: #{e.message} ")
         '(Error)'
       end
     end
+  end
 
+  def collection_form_url(form)
+    form.persisted? ? [hyrax, :dashboard, form] : [main_app, form]
   end
 
 end

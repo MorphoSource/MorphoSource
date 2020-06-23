@@ -4,6 +4,6 @@ module Hyrax
   class OrganizationPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :institution_code, :address, :city, :state_province, :country, :team_id, to: :solr_document
+    delegate :organization_type, :institution_name, :institution_code, :collection_code, :address, :city, :state_province, :country, :contact_person, :team_id, to: :solr_document
   end
 end

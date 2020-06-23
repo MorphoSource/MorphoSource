@@ -1,0 +1,29 @@
+<div class="form-group row string optional media_download_reviewer">
+  <div class="col-xs-6 showcase-label">
+    <label class="control-label string optional" for="media_download_reviewer">Download Reviewer</label>
+    <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
+  </div>
+  <div class="col-xs-6 showcase-value">
+    <%= f.text_field :download_reviewer, id: 'media_download_reviewer', user_email: reviewer_email(f), class: 'form-control string optional' %>
+  </div>
+</div>
+
+<script>
+  $( document ).ready(function() {
+    reviewerSelect = $('#media_download_reviewer');
+
+    // add search to download reviewer
+    reviewerSelect.userSearch();
+
+    function createInitialOption(data) {
+      var option = new Option(data.text, data.user_key, true, true);
+      reviewerSelect.append(option)
+      reviewerSelect.val(data.user_key); // Select the newly created option
+      reviewerSelect.trigger('change'); // Notify any JS components that the value changed
+      label = $('#select2-chosen-1');
+      label.text(data.text); // update the label on the select to be the user key
+    };
+
+    createInitialOption({ "user_key":reviewerSelect.attr('value'), "text":reviewerSelect.attr('user_email')});
+  });
+</script>

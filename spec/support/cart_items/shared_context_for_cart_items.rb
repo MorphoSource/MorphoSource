@@ -4,21 +4,23 @@ RSpec.shared_context 'cart items', :shared_context => :metadata do
 
   let(:depositor)     { User.create(email: 'another@email.com', password: "password") }
 
+  let(:reviewer)      { User.create(email: 'reviewer@email.com', password: 'password') }
+
   let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'])}
-  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: [''])}
+  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['open'])}
   let(:work3)         { Media.create(id: "ccc", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'])}
-  let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: [''])}
+  let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['open'])}
   let(:work5)         { Media.create(id: "eee", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download']) }
-  let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['']) }
+  let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['open'], download_reviewer: ['xxx']) }
   let(:work7)         { Media.create(id: "ggg", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download']) }
 
-  let(:cartItem1)     { CartItem.create( user_id: current_user.ms_id, work_id: work1.id, in_cart: true, date_requested: Date.yesterday, date_downloaded: Date.yesterday, restricted: true, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
-  let(:cartItem2)     { CartItem.create( user_id: current_user.ms_id, work_id: work2.id, in_cart: true, date_downloaded: Date.yesterday, restricted: false) }
-  let(:cartItem3)     { CartItem.create( user_id: current_user.ms_id, work_id: work3.id, in_cart: true, date_downloaded: nil, restricted: true) }
-  let(:cartItem4)     { CartItem.create( user_id: current_user.ms_id, work_id: work4.id, in_cart: false, date_downloaded: Date.yesterday, restricted: false) }
-  let(:cartItem5)     { CartItem.create( user_id: current_user.ms_id, work_id: work5.id, in_cart: false, date_downloaded: nil, restricted: true, date_requested: Date.yesterday) }
-  let(:cartItem6)     { CartItem.create( user_id: current_user.ms_id, work_id: work6.id, in_cart: false, date_downloaded: nil, restricted: false) }
-  let(:cartItem7)     { CartItem.create( user_id: current_user.ms_id, work_id: work7.id, in_cart: false, date_downloaded: nil, restricted: true) }
+  let(:cartItem1)     { CartItem.create( user_id: current_user.ms_id, work_id: work1.id, in_cart: true, date_requested: Date.yesterday, date_downloaded: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
+  let(:cartItem2)     { CartItem.create( user_id: current_user.ms_id, work_id: work2.id, in_cart: true, date_downloaded: Date.yesterday) }
+  let(:cartItem3)     { CartItem.create( user_id: current_user.ms_id, work_id: work3.id, in_cart: true, date_downloaded: nil) }
+  let(:cartItem4)     { CartItem.create( user_id: current_user.ms_id, work_id: work4.id, in_cart: false, date_downloaded: Date.yesterday) }
+  let(:cartItem5)     { CartItem.create( user_id: current_user.ms_id, work_id: work5.id, in_cart: false, date_downloaded: nil, date_requested: Date.yesterday) }
+  let(:cartItem6)     { CartItem.create( user_id: current_user.ms_id, work_id: work6.id, in_cart: false, date_downloaded: nil) }
+  let(:cartItem7)     { CartItem.create( user_id: current_user.ms_id, work_id: work7.id, in_cart: false, date_downloaded: nil) }
 
   let(:doc1)          { SolrDocument.new(id: work1.id) }
   let(:doc2)          { SolrDocument.new(id: work2.id) }

@@ -1,0 +1,37 @@
+<%# taken from https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collections/_subcollection_list.html.erb %>
+<% 
+coll = Collection.find(document.id)
+project_presenter = Hyrax::TeamPresenter.new(document, current_ability, request)
+media_count = project_presenter.total_items
+%>
+<tr id="document_<%= document.id %>"
+    data-id="<%= document.id %>"
+    data-parent-id="<%= parent_id %>"
+    data-post-url="<%= hyrax.dashboard_remove_child_relationship_under_path(parent_id, document.id) %>"
+    data-subcollection-label="<%= document.title_or_label %>">
+  <td>
+    <div class="team-logo">
+      <% unless project_presenter.logo_record.blank? %>
+        <% lr = project_presenter.logo_record.first %>
+        <% if lr[:linkurl].blank? %>
+            <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+        <% else %>
+            <a href="<%= lr[:linkurl] %>">
+              <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+            </a>
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+  <td>
+    <%= link_to document.title_or_label, [hyrax, :dashboard, document], id: "src_copy_link_#{document.id}" %>
+  </td>
+  <td><%= media_count %></td>
+  <td><%= display_date(document.modified_date) %></td>
+  <td><%= permission_badge_by_value(document.visibility) %></td>
+  <td>
+    <% if can? :edit, parent_id %>
+    <button type="button" class="btn btn-xs btn-danger remove-subcollection-button"><%= t('hyrax.collections.show.buttons.remove_this_sub_collection') %></button>
+    <% end %>
+  </td>
+</tr>

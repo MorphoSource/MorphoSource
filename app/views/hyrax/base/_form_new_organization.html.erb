@@ -2,10 +2,10 @@
 
 <p>Create a new organization by filling in fields below and selecting Create New Organization. You can also go back and <a class="cancel">select organization or no organization</a> instead. </p>
 
-<%= i.input :title, label_wrapper_html: { class: 'required-flag' }  %>
-<%= i.input :description, as: :text, label: 'Description' %>
-<%= i.input :institution_code, label_wrapper_html: { class: 'required-flag' }  %>
+<%= render_edit_field_partial('organization_type', f: i) %>
 <%= i.input :institution_name %>
+<%= i.input :title, label_wrapper_html: { class: 'required-flag' }  %>
+<%= i.input :institution_code, as: :multi_value, label_wrapper_html: { class: 'required-flag' }  %>
 <%= i.input :collection_code, as: :multi_value %>
 <%= i.input :address %>
 <%= i.input :city %>
@@ -16,6 +16,8 @@
     item_helper: @countries_service.method(:include_current_value),
     input_html: { class: 'form-control' }
 %>
+<%= i.input :contact_person %>
+<%= i.input :description, as: :text, label: 'Description' %>
 
 <div>
   <%= i.submit 'Create new organization', class: "btn btn-primary" %>

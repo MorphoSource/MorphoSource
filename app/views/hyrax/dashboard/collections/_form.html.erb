@@ -19,7 +19,7 @@
         <a href="#sharing" role="tab" data-toggle="tab"><%= t('.tabs.sharing') %></a>
       </li>
       <% end %>
-      <% if @collection.team? && @current_user.can?(:edit, @collection) %>
+      <% if @collection.team? && @collection.organization && @current_user.can?(:edit, @collection) %>
         <li>
           <a href="#organization" role="tab" data-toggle="tab"><%= 'Organization' %></a>
         </li>
@@ -27,7 +27,7 @@
     <% end %>
   </ul>
 
-  <%= simple_form_for @form, url: [hyrax, :dashboard, @form], html: { class: 'editor' } do |f| %>
+  <%= simple_form_for @form, url: collection_form_url(@form), html: { class: 'editor' } do |f| %>
     <div class="tab-content">
       <div id="description" class="tab-pane active">
         <div class="panel panel-default labels">
@@ -106,7 +106,7 @@
         <div id="organization" class="tab-pane">
           <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
             <div class="panel-body">
-              <% if @collection.team? %>
+              <% if @collection.team? && @collection.organization %>
                 <%= render 'ms_form_organization', f: f %>
               <% end %>
             </div>

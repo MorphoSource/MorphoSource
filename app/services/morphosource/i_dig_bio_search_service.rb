@@ -12,7 +12,7 @@ module Morphosource
       'institution_code' => 'institutioncode',
       'collection_code' => 'collectioncode',
       'catalog_number' => 'catalognumber',
-      'occurence_id' => 'occurenceid'
+      'occurrence_id' => 'occurrenceid'
     }
 
     # see: https://docs.google.com/spreadsheets/d/1LJRtcC9cjRNehThsOpnZGLvTny3Zt05aKPIxSlkBzSg/
@@ -54,7 +54,7 @@ module Morphosource
       # set idigbio_recordset_id to indexTerms['recordset']
       # set idigbio_uuid to uuid
       # set original_location to whichever of dwc:locality, dwc:verbatimLocality, dwc:country occurs first
-      idb = IDigBio.view(idigbio_uuid)
+      idb = Morphosource::IDigBio.view(idigbio_uuid)
       bso_params = {
         'idigbio_uuid' => idigbio_uuid,
         'description' => "Imported from iDigBio. UUID: #{idigbio_uuid} Occurrence ID: #{idb['data']['dwc:occurrenceID']}",
@@ -77,7 +77,7 @@ module Morphosource
     # and create MorphoSource Taxonomy params
     # using the resulting mapped metadata
     def self.taxonomy_params_from_idigbio(idigbio_uuid)
-      idb = IDigBio.view(idigbio_uuid)
+      idb = Morphosource::IDigBio.view(idigbio_uuid)
       taxonomy_params = {}
       IDIGBIO_TAXONOMY_MAPPING.each do |key, value|
         if idb['data'].has_key?(key)
@@ -96,7 +96,7 @@ module Morphosource
       if query.empty?
         return []
       else
-        return IDigBio.search(query)
+        return Morphosource::IDigBio.search(query)
       end
     end
 

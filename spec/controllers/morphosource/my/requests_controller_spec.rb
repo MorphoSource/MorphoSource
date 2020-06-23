@@ -77,7 +77,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         let(:requested_work) { Media.create(id: "abc", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'])}
 
-        let(:requested_item) { CartItem.create(user_id: current_user.ms_id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday, restricted: true)}
+        let(:requested_item) { CartItem.create(user_id: current_user.ms_id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday)}
 
         let(:put_params) { {item_id: requested_item.id, intended_use: ["Intended Use"]} }
         let(:items_in_cart) { current_user.items_in_cart }
@@ -107,9 +107,8 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           work = requested_work
           expect(item.user_id).to eq(current_user.ms_id)
           expect(item.work_id).to eq(work.id)
-          expect(item.approver_id).to eq(work.depositor)
           expect(item.date_requested.to_date).to eq(Date.today)
-          expect(item.restricted).to be(true)
+          expect(item.restricted?).to be(true)
           expect(item.in_cart).to be(true)
           expect(item.date_cleared).to be(nil)
           expect(item.use).to eq("Intended Use")
@@ -181,9 +180,8 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           expect(item.user_id).to eq(current_user.ms_id)
           expect(item.work_id).to eq(work.id)
           expect(item.in_cart).to be(true)
-          expect(item.approver_id).to eq(work.depositor)
           expect(item.date_requested.to_date).to eq(Date.today)
-          expect(item.restricted).to be(work.restricted?)
+          expect(item.restricted?).to be(work.restricted?)
           expect(item.date_cleared).to be(nil)
           expect(item.use).to eq("Intended Use")
         end
@@ -238,9 +236,8 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         expect(item.user_id).to eq(current_user.ms_id)
         expect(item.work_id).to eq(work.id)
         expect(item.in_cart).to be(true)
-        expect(item.approver_id).to eq(work.depositor)
         expect(item.date_requested.to_date).to eq(Date.today)
-        expect(item.restricted).to be(work.restricted?)
+        expect(item.restricted?).to be(work.restricted?)
         expect(item.date_cleared).to be(nil)
         expect(item.use).to eq("Intended Use")
       end
@@ -283,18 +280,16 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         expect(item1.user_id).to eq(current_user.ms_id)
         expect(item1.work_id).to eq(work1.id)
         expect(item1.in_cart).to be(true)
-        expect(item1.approver_id).to eq(work1.depositor)
         expect(item1.date_requested.to_date).to eq(Date.today)
-        expect(item1.restricted).to be(work1.restricted?)
+        expect(item1.restricted?).to be(work1.restricted?)
         expect(item1.date_cleared).to be(nil)
         expect(item1.use).to eq("Intended Use")
 
         expect(item2.user_id).to eq(current_user.ms_id)
         expect(item2.work_id).to eq(work2.id)
         expect(item2.in_cart).to be(true)
-        expect(item2.approver_id).to eq(work2.depositor)
         expect(item2.date_requested.to_date).to eq(Date.today)
-        expect(item2.restricted).to be(work2.restricted?)
+        expect(item2.restricted?).to be(work2.restricted?)
         expect(item2.date_cleared).to be(nil)
         expect(item2.use).to eq("Intended Use")
       end
@@ -341,14 +336,27 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
   end
 
   describe "POST #request_work" do
-    context "work is not in the user's cart and hasn't been requested" do
-      let(:depositor) { User.create(email: "test@test.com", password: "password")}
-      let(:new_work)    { Media.create(id: 'zzz', fileset_accessibility: ["restricted_download"], depositor: depositor.ms_id)}
-      let(:post_params) { { work_id: [new_work.id], intended_use: ["Intended Use"] } }
+    let(:depositor) { User.create(email: "test@test.com", password: "password")}
+    let(:new_work)    { Media.create(id: 'zzz', fileset_accessibility: ["restricted_download"], depositor: depositor.ms_id)}
+    let(:post_params) { { work_id: [new_work.id], intended_use: ["Intended Use"] } }
+
+    before do
+      request.env["HTTP_REFERER"] = "original_page"
+      allow(Media).to receive(:find).with('zzz').and_return(new_work)
+    end
+
+    context "work can't be added to cart and the user doesn't have download access" do
       before do
-        request.env["HTTP_REFERER"] = "original_page"
-        allow(Media).to receive(:find).with('zzz').and_return(new_work)
+        allow(new_work).to receive(:can_add_to_cart?).and_return(false)
+        allow(subject.current_user).to receive(:can?).with(:download, new_work.id).and_return(false)
       end
+      it 'does not request the work' do
+        post :request_work, params: post_params
+        expect(response.flash[:alert]).to eq('You are not authorized to request this work.')
+      end
+    end
+
+    context "work is not in the user's cart and hasn't been requested" do
 
       it "creates a new CartItem" do
         expect{
@@ -362,8 +370,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         expect(item.user_id).to eq(current_user.ms_id)
         expect(item.work_id).to eq(new_work.id)
         expect(item.in_cart).to be(true)
-        expect(item.restricted).to be(new_work.restricted?)
-        expect(item.approver_id).to eq(new_work.depositor)
+        expect(item.restricted?).to be(new_work.restricted?)
         expect(item.use).to eq("Intended Use")
       end
     end

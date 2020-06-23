@@ -1,0 +1,51 @@
+<div class="row">
+
+  <div class="col-sm-6">
+    <div class="content-block">
+      
+      <h2>GENERAL DETAILS</h2>
+      <%= f.input :title, as: :multi_value, label_wrapper_html: { class: 'required-flag' } %>
+      <%= f.input :description, as: :multi_value, label: "Full description" %>
+      <%= f.input :creator, as: :multi_value %>
+      <%= f.input :contributor, as: :multi_value %>
+      <%= f.input :based_near, as: :multi_value %>
+      <%= f.input :related_url, as: :multi_value %>
+
+      <h2>THUMBNAIL</h2>
+      <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>
+      <% if f.object.persisted? %>
+        <%# we're loading these values dynamically to speed page load %>
+        <%= f.input :thumbnail_id,
+                    input_html: { data: { text: f.object.thumbnail_title } } %>
+      <% end %>
+
+    </div>
+  </div>
+
+  <div class="col-sm-6">
+    <div class="content-block">
+      <% if @form.persisted? %>
+        <% if @collection.brandable? %>
+          <%= render 'tab_details_branding', f: f %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+</div>
+
+<%# The following form fields might be needed.  Move them outside of the partial,
+ or remove them if not needed %>
+<%= hidden_field_tag :type, params[:type] %>
+<%= hidden_field_tag :stay_on_edit, true %>
+<%= hidden_field_tag :collection_type_gid, @collection.collection_type_gid %>
+<!-- parent_id may be passed from the nested collections controller to allow a subcollection relationship to be added as collection is created -->
+<% if params[:parent_id].present? %>
+  <%= hidden_field_tag :parent_id, params[:parent_id] %>
+<% end %>
+<% if params[:batch_document_ids].present? %>
+  <% params[:batch_document_ids].each do |batch_item| %>
+    <input type="hidden" name="batch_document_ids[]" value="<%= batch_item %>" />
+  <% end %>
+<% end %>
+

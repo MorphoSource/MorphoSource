@@ -59,10 +59,6 @@ class SolrDocument
     self[Solrizer.solr_name('fileset_visibility', :stored_searchable)]
   end
 
-  def fileset_accessibility
-    self[Solrizer.solr_name('fileset_accessibility', :stored_searchable)]
-  end
-
   def map_type
     self[Solrizer.solr_name('map_type', :stored_searchable)]
   end
@@ -441,6 +437,10 @@ class SolrDocument
   end
 
   # Organization fields
+  def organization_type
+    self[Solrizer.solr_name('organization_type', :stored_searchable)]
+  end
+
   def institution_code
     self[Solrizer.solr_name('institution_code', :stored_searchable)]
   end
@@ -463,6 +463,10 @@ class SolrDocument
 
   def institution_name
     self[Solrizer.solr_name('institution_name', :stored_searchable)]
+  end
+
+  def contact_person
+    self[Solrizer.solr_name('contact_person', :stored_searchable)]
   end
 
   # Processing Event & Image Capture Event
@@ -542,7 +546,7 @@ class SolrDocument
   def detector_pixels_y
     self[Solrizer.solr_name('detector_pixels_y', :stored_searchable)]
   end
-  
+
   def detector_pixel_size_y
     self[Solrizer.solr_name('detector_pixel_size_y', :stored_searchable)]
   end
@@ -573,6 +577,10 @@ class SolrDocument
 
   def optical_magnification
       self[Solrizer.solr_name('optical_magnification', :stored_searchable)]
+  end
+
+  def acquisition_type
+      self[Solrizer.solr_name('acquisition_type', :stored_searchable)]
   end
 
   def focal_length_type
@@ -754,6 +762,15 @@ class SolrDocument
 
   def trusted
     self[Solrizer.solr_name('trusted', :stored_searchable)]
+  end
+
+  # Download fields
+  def download_groups
+    self["download_access_group_ssim"]
+  end
+
+  def download_people
+    self["download_access_person_ssim"]
   end
 
 end

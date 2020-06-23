@@ -2,49 +2,42 @@ class CartItem < ApplicationRecord
 
   belongs_to :user, foreign_key: :user_id, primary_key: :ms_id
 
-  belongs_to :approver, class_name: 'User', foreign_key: :approver_id, primary_key: :ms_id
-
-  before_validation :set_approver
-  before_create :set_restriction
-
-  def unrestricted?
-    !restricted?
-  end
-
   def active_request?
-    return false if unrestricted?
     statuses = ["Approved","Requested","Cleared"]
-    statuses.include?(self.request_status)
+    statuses.include?(request_status)
   end
 
   def inactive_request?
-    return false if unrestricted?
     statuses = ["Canceled","Denied","Expired"]
     statuses.include?(request_status)
   end
 
   def request_status
-    if date_canceled?
-      "Canceled"
-    elsif date_denied?
-      "Denied"
-    elsif expired?
-      "Expired"
-    elsif date_approved?
-      "Approved"
-    elsif date_cleared?
-      "Cleared"
-    elsif date_requested?
-      "Requested"
-    elsif restricted?
-      "Not Requested"
-    elsif downloadable?
-      "Downloadable"
+    if downloadable?
+      if date_approved?
+        "Approved"
+      else
+        "Downloadable"
+      end
+    else
+      if date_canceled?
+        "Canceled"
+      elsif date_denied?
+        "Denied"
+      elsif expired?
+        "Expired"
+      elsif date_cleared?
+        "Cleared"
+      elsif date_requested?
+        "Requested"
+      else
+        "Not Requested"
+      end
     end
   end
 
-  def downloadable?
-    unrestricted? || request_status == 'Approved'
+  def restricted?
+    !downloadable?
   end
 
   def editable?
@@ -69,15 +62,25 @@ class CartItem < ApplicationRecord
   end
 
   def approved?
-    request_status == 'Approved'
+    date_approved? && !expired?
   end
 
-  # for now, approver = depositor
-  def set_approver
-    self.approver_id = approver_id || work.depositor
+  def downloadable?
+    case
+      when work.open? then true
+      when user.can?(:download, work) then true
+      when user.ms_id == work.download_reviewer.first then true
+      when user.ms_id == work.user_with_ownership then true
+      when approved? then true
+      else false
+    end
   end
 
-  def set_restriction
-    self.restricted = work.restricted?
+  def user_is_reviewer_or_has_ownership?
+    user_id == work.reviewer || user_id == work.user_with_ownership
+  end
+
+  def reviewer
+    User.find_by(ms_id: work.reviewer)
   end
 end

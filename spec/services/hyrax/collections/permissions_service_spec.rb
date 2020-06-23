@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Hyrax::Collections::PermissionsService do
-  let(:user) { User.create(email: 'user@example.com', password: 'password') }
+  let(:user)                 { User.create(email: 'user@example.com', password: 'password') }
   let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
 
   context 'collection specific methods' do
@@ -14,7 +14,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
 
     before do
       collection.create_collection_groups
-      Hyrax::Collections::PermissionsCreateService.create_ms_template(collection: collection)
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
 
       collection.reset_access_controls!
 
@@ -75,6 +75,24 @@ RSpec.describe Hyrax::Collections::PermissionsService do
       end
     end
 
+    context 'when download user' do
+      let(:ability)       { Ability.new(download_user) }
+      let(:download_user) { User.create(email: 'download@email.com', password: 'password') }
+
+      before do
+        Hyrax::PermissionTemplateAccess.create(permission_template: collection.permission_template, agent_type: 'user', agent_id: download_user.ms_id, access: Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS)
+      end
+
+      subject { described_class }
+
+      it '.can_deposit_in_collection? returns false' do
+        expect(subject.can_deposit_in_collection?(collection_id: collection.id, ability: ability)).to be false
+      end
+      it '.can_view_admin_show_for_collection? returns true' do
+        expect(subject.can_view_admin_show_for_collection?(collection_id: collection.id, ability: ability)).to be true
+      end
+    end
+
     context 'when view user' do
       let(:ability)   { Ability.new(view_user) }
       let(:view_user) { User.create(email: 'view@email.com', password: 'password') }
@@ -123,6 +141,43 @@ RSpec.describe Hyrax::Collections::PermissionsService do
 
         it '.can_deposit_in_collection? returns true' do
           expect(subject.can_deposit_in_collection?(collection_id: collection.id, ability: ability)).to be true
+        end
+        it '.can_view_admin_show_for_collection? returns false' do
+          expect(subject.can_view_admin_show_for_collection?(collection_id: collection.id, ability: ability)).to be false
+        end
+      end
+    end
+
+    context 'when public group download user' do
+      let(:download_user)   { User.create(email: 'deposit@email.com', password: 'password') }
+      let(:ability)         { Ability.new(download_user) }
+
+      context 'thru membership in public group' do
+        before do
+          allow(ability).to receive(:user_groups).and_return(['public'])
+          Hyrax::PermissionTemplateAccess.create(permission_template: collection.permission_template, agent_type: 'group', agent_id: 'public', access: Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS)
+        end
+
+        subject { described_class }
+
+        it '.can_deposit_in_collection? returns false' do
+          expect(subject.can_deposit_in_collection?(collection_id: collection.id, ability: ability)).to be false
+        end
+        it '.can_view_admin_show_for_collection? returns false' do
+          expect(subject.can_view_admin_show_for_collection?(collection_id: collection.id, ability: ability)).to be false
+        end
+      end
+
+      context 'thru membership in registered group' do
+        before do
+          allow(ability).to receive(:user_groups).and_return(['registered'])
+          Hyrax::PermissionTemplateAccess.create(permission_template: collection.permission_template, agent_type: 'group', agent_id: 'registered', access: Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS)
+        end
+
+        subject { described_class }
+
+        it '.can_deposit_in_collection? returns false' do
+          expect(subject.can_deposit_in_collection?(collection_id: collection.id, ability: ability)).to be false
         end
         it '.can_view_admin_show_for_collection? returns false' do
           expect(subject.can_view_admin_show_for_collection?(collection_id: collection.id, ability: ability)).to be false
@@ -199,7 +254,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
     before do
       collections.each do |collection|
         collection.create_collection_groups
-        Hyrax::Collections::PermissionsCreateService.create_ms_template(collection: collection)
+        Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
         collection.reset_access_controls!
       end
     end
@@ -244,6 +299,19 @@ RSpec.describe Hyrax::Collections::PermissionsService do
         end
       end
 
+      describe 'download access' do
+        before do
+          collection.downloaders << user
+          collection.downloaders_group.save
+          collection.downloaders_group.reload
+
+          Hyrax::PermissionTemplateAccess.create(permission_template: collection2.permission_template, agent_type: 'user', agent_id: user.ms_id, access: Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS)
+        end
+        it 'returns collection ids where user has download access' do
+          expect(described_class.collection_ids_for_user(access: 'download', ability: ability)).to match_array [collection.id, collection2.id]
+        end
+      end
+
       describe 'view access' do
         before do
           collection.viewers << user
@@ -259,11 +327,14 @@ RSpec.describe Hyrax::Collections::PermissionsService do
 
       describe 'all access levels' do
         let(:collection4) { Collection.create(id: 'col4', title: ['collection 4'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
+        let(:collection5) { Collection.create(id: 'col5', title: ['collection 5'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
 
         before do
-          collection4.create_collection_groups
-          Hyrax::Collections::PermissionsCreateService.create_ms_template(collection: collection4)
-          collection4.reset_access_controls!
+          [collection4, collection5].each do |c|
+            c.create_collection_groups
+            Morphosource::Collections::PermissionsCreateService.create_default(collection: c)
+            c.reset_access_controls!
+          end
 
           collection.managers << user
           collection.managers_group.save
@@ -276,11 +347,15 @@ RSpec.describe Hyrax::Collections::PermissionsService do
           Hyrax::PermissionTemplateAccess.create(permission_template: collection3.permission_template, agent_type: 'user', agent_id: user.ms_id, access: Hyrax::PermissionTemplateAccess::DEPOSIT)
 
           Hyrax::PermissionTemplateAccess.create(permission_template: collection4.permission_template, agent_type: 'user', agent_id: user.ms_id, access: Hyrax::PermissionTemplateAccess::VIEW)
+
+          collection5.downloaders << user
+          collection5.downloaders_group.save
+          collection5.downloaders_group.reload
         end
 
-        it 'returns collection ids where user has manage, deposit, or view access' do
-          all = [collection.id, collection2.id, collection3.id, collection4.id]
-          expect(described_class.collection_ids_for_user(access: ['manage', 'edit_works', 'deposit', 'view'], ability: ability)).to match_array all
+        it 'returns collection ids where user has manage, deposit, edit, download, or view access' do
+          all = [collection.id, collection2.id, collection3.id, collection4.id, collection5.id]
+          expect(described_class.collection_ids_for_user(access: ['manage', 'edit_works', 'deposit', 'download', 'view'], ability: ability)).to match_array all
         end
       end
 
@@ -381,7 +456,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
       context 'user has edit works access through group and individual access' do
         before do
           collection4.create_collection_groups
-          Hyrax::Collections::PermissionsCreateService.create_ms_template(collection: collection4)
+          Morphosource::Collections::PermissionsCreateService.create_default(collection: collection4)
           collection4.reset_access_controls!
 
           collection.editors << user
@@ -431,6 +506,42 @@ RSpec.describe Hyrax::Collections::PermissionsService do
 
         it 'returns empty array' do
           expect(described_class.collection_ids_for_deposit(ability: ability)).to match_array []
+        end
+      end
+    end
+
+    describe '.collection_ids_for_download_works' do
+      let(:collection4) { Collection.create(id: 'col4', title: ['collection 4'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
+
+      context 'user has download works access through group and individual access' do
+        before do
+          collection4.create_collection_groups
+          Morphosource::Collections::PermissionsCreateService.create_default(collection: collection4)
+          collection4.reset_access_controls!
+
+          collection.downloaders << user
+          collection.downloaders_group.save
+          collection.downloaders_group.reload
+
+          collection2.managers << user
+          collection2.managers_group.save
+          collection2.managers_group.reload
+
+          Hyrax::PermissionTemplateAccess.create(permission_template: collection3.permission_template, agent_type: 'user', agent_id: user.ms_id, access: Hyrax::PermissionTemplateAccess::EDIT_WORKS)
+
+          Hyrax::PermissionTemplateAccess.create(permission_template: collection4.permission_template, agent_type: 'user', agent_id: user.ms_id, access: Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS)
+        end
+
+        it 'returns collection ids where user has download works access' do
+          expect(described_class.collection_ids_for_download_works(ability: ability)).to match_array [collection.id, collection2.id, collection3.id, collection4.id]
+        end
+      end
+
+      context 'when user has no access' do
+        let(:ability) { Ability.new(user) }
+
+        it 'returns empty array' do
+          expect(described_class.collection_ids_for_download_works(ability: ability)).to match_array []
         end
       end
     end
@@ -505,14 +616,26 @@ RSpec.describe Hyrax::Collections::PermissionsService do
     end
 
     describe '.can_view_admin_show_for_any_collection?' do
-      context 'user has access' do
+      context 'user has editor access' do
         before do
           collection.editors << user
           collection.editors_group.save
           collection.editors_group.reload
         end
 
-        it 'returns true when user has manage, deposit, edit works, or view access to at least one collection' do
+        it 'returns true when user has only edit works access to a collection' do
+          expect(described_class.can_view_admin_show_for_any_collection?(ability: ability)).to be true
+        end
+      end
+
+      context 'user has download works access' do
+        before do
+          collection.downloaders << user
+          collection.downloaders_group.save
+          collection.downloaders_group.reload
+        end
+
+        it 'returns true when user has only download works access to a collection' do
           expect(described_class.can_view_admin_show_for_any_collection?(ability: ability)).to be true
         end
       end
@@ -533,12 +656,22 @@ RSpec.describe Hyrax::Collections::PermissionsService do
         Hyrax::PermissionTemplate.create(source_id: admin_set.id)
       end
 
-      context 'user has access' do
+      context 'user has edit works access' do
         before do
-            Hyrax::PermissionTemplateAccess.create(permission_template: admin_set.permission_template, agent_type: 'user', agent_id: user.ms_id, access: Hyrax::PermissionTemplateAccess::VIEW)
+            Hyrax::PermissionTemplateAccess.create(permission_template: admin_set.permission_template, agent_type: 'user', agent_id: user.ms_id, access: Hyrax::PermissionTemplateAccess::EDIT_WORKS)
         end
 
-        it 'returns true when user has manage, deposit, or view access to at least one admin set' do
+        it 'returns true' do
+          expect(described_class.can_view_admin_show_for_any_admin_set?(ability: ability)).to be true
+        end
+      end
+
+      context 'user has download works access' do
+        before do
+            Hyrax::PermissionTemplateAccess.create(permission_template: admin_set.permission_template, agent_type: 'user', agent_id: user.ms_id, access: Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS)
+        end
+
+        it 'returns true' do
           expect(described_class.can_view_admin_show_for_any_admin_set?(ability: ability)).to be true
         end
       end

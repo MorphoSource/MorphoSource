@@ -1,0 +1,35 @@
+<div id="submission_image_capture" class="submission_flow submission_section submission-v2 hide">
+  <%= simple_form_for @imaging_event_form, wrapper: :showcase_default do |f| %>
+  	<div class="container-fluid">
+
+      <div class="row">
+        <h4><%= t('morphosource.submission.header_text.media_capture') %></h4>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+          <div class="block showcase-edit showcase-section">
+            <div class="row showcase-section-header">
+              <span class="h2">IMAGING DETAILS</span>
+            </div>
+
+            <div class="content-block">
+              <div class="form-group">
+                <%= render partial: 'work_creation_metadata', locals: { f: f } %>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-1">
+        <%= f.submit t('morphosource.submission.continue'), 
+            class: "btn btn-primary btn-continue", 
+            id: 'submission_create_imaging_event_submit' 
+        %>
+      </div>
+
+    </div>
+  <% end %>
+</div>

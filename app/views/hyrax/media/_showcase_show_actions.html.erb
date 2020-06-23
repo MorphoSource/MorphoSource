@@ -1,7 +1,7 @@
 <div class="show-actions">
   <div class="btn-group">
     <% if signed_in? %>
-      <% if presenter.editor? || @curation_concern.open? %>
+      <% if current_user.can? :download, @curation_concern %>
         <%= download_button(presenter.id) %>
         <%= choose_cart_button(presenter) %>
       <% elsif @curation_concern.restricted? %>

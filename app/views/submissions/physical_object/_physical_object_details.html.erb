@@ -1,0 +1,15 @@
+<div id="submission_physical_object_details" class="submission_section submission-v2 hide">
+  <div
+    id="submission_bso_create_section"
+    class="<%= @submission.biological_specimen_or_cultural_heritage_object == 'cho' ? 'hide' : '' %>"
+  >
+    <%= render(partial: 'submissions/physical_object/bso_create') %>
+  </div>
+  
+  <div
+    id="submission_cho_create_section"
+    class="<%= @submission.biological_specimen_or_cultural_heritage_object == 'cho' ? '' : 'hide' %>"
+  >
+    <%= render(partial: 'submissions/physical_object/cho_create') %>
+  </div>
+</div>

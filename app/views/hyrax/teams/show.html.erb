@@ -1,0 +1,178 @@
+<% content_for :body_css_classes do %>showcase teams<% end %> 
+
+<% 
+provide :page_title, construct_page_title(@presenter.title) 
+%>
+<div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
+  <div class="hyc-header">
+    <% unless @presenter.banner_file.blank? %>
+        <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
+    <% else %>
+        <header class="hyc-generic"></header>
+    <% end %>
+  </div>
+
+  <div class="row team-header">
+
+    <div class="col-sm-12 col-md-6 flex">
+      <div class="team-logo">
+        <% unless @presenter.logo_record.blank? %>
+          <% lr = @presenter.logo_record.first %>
+          <% if lr[:linkurl].blank? %>
+              <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+          <% else %>
+              <a href="<%= lr[:linkurl] %>">
+                <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+              </a>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="team-title">
+         <h1>
+            <div id="showcase-title">
+              <%= @presenter.title.first %> 
+              <%= @presenter.collection_type_badge %>
+              <%= @presenter.permission_badge %>
+            </div>
+            <div class="text-muted">
+              <% if @media_member_count > 0 %>
+                <%= @media_member_count %> <%= 'Media'.pluralize(@media_member_count) %> · 
+              <% end %>
+              <% if @bso_member_count > 0 %>
+                <%= @bso_member_count %> <%= 'Specimen'.pluralize(@bso_member_count) %> · 
+              <% end %>
+              <% if @cho_member_count > 0 %>
+                <%= @cho_member_count %> CHO · 
+              <% end %>
+              Managed by: <%= @presenter.collection_managers %>
+            </div>
+        </h1>
+      </div>
+    </div>
+    <div class="col-sm-9 col-md-4 flex">
+      <% if @presenter.collection_type.machine_id == 'team' %>  
+        <div class="represents-organization">
+          
+          <div class="col-xs-2 flex icon">
+            <i class="fa fa-university"></i>
+            <sup><i class="fa fa-check-circle"></i></sup>
+          </div>
+          
+          <div class="col-xs-7 flex title">
+            <div class="clearfix">
+              <b>REPRESENTS ORGANIZATION</b><br />
+              <%= @presenter.organization_title.first %><br />
+              <% if @presenter.organization_media_count > 0 %>
+                <%= @presenter.organization_media_count %> <%= 'Media'.pluralize(@presenter.organization_media_count) %> 
+              <% end %>
+              <% if @presenter.organization_bso_count > 0 %>
+              · <%= @presenter.organization_bso_count %> <%= 'Specimen'.pluralize(@presenter.organization_bso_count) %>
+              <% end %>
+              <% if @presenter.organization_cho_count > 0 %>
+              · <%= @presenter.organization_cho_count %> CHO  
+              <% end %>
+            </div>
+          </div>
+        
+        </div><!-- /represents-organization -->
+      <% end %>
+
+    </div>
+
+    <div class="col-xs-12 col-sm-3 col-md-2 flex text-right">
+      <div class="show-actions col-xs-12">
+        <% if can? :edit, @presenter.solr_document %>
+            <button type="button" class="btn btn-sm btn-primary dropdown-toggle col-xs-12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Actions <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu col-xs-12">
+              <li>
+                <%= link_to t('hyrax.collection.actions.edit.label'),
+                            hyrax.edit_dashboard_collection_path(@presenter),
+                            title: t('hyrax.collection.actions.edit.desc'),
+                            class: 'btn btn-primary' %>
+              </li>
+            </ul>
+        <% end %>
+      </div>
+    </div>
+
+  </div><!-- /row -->
+
+  <!-- Subcollections -->
+  <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>
+      <div class="hyc-blacklight hyc-bl-title">
+        <h4>TEAM PROJECTS</h4>
+      </div>
+      <div class="hyc-blacklight hyc-bl-results">
+        <%= render 'subcollection_list', collection: @subcollection_docs %>
+      </div>
+  <% end %>
+
+  <div class="panel panel-default tabs" role="main">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <%# if @media_member_count > 0 %>
+        <li role="presentation" class="active">
+          <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
+          <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
+          </a>
+        </li>
+      <%# end %>
+      <% if @bso_member_count > 0 %>
+        <li role="presentation">
+          <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
+            <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+          </a>
+        </li>
+      <% end %>
+      <% if @cho_member_count > 0 %>
+        <li role="presentation">
+          <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
+            <i class="fas fa-frog" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
+          </a>
+        </li>
+      <% end %>
+      <li role="presentation">
+        <a href="#about" aria-controls="about" role="tab" data-toggle="tab" aria-expanded="true">
+          <i class="fa fa-newspaper" aria-hidden="true"></i> ABOUT
+        </a>
+      </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+
+        <div role="tabpanel" class="tab-pane active" id="media">
+          <div class="form-tab-content">
+            <%= render 'tab_media' %>
+          </div>
+        </div>
+
+      <% if @bso_member_count > 0 %>
+        <div role="tabpanel" class="tab-pane" id="biological_specimens">
+          <div class="form-tab-content">
+            <%= render 'tab_bso' %>    
+          </div>
+        </div>
+      <% end # if @bso_member_count > 0 %>
+
+      <% if @cho_member_count > 0 %>
+        <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
+          <div class="form-tab-content">
+            <%= render 'tab_cho' %>    
+          </div>
+        </div>
+      <% end # if @cho_member_count > 0 %>
+
+      <div role="tabpanel" class="tab-pane" id="about">
+        <div class="form-tab-content">
+          <%= render 'tab_about', presenter: @presenter %>
+        </div>
+      </div>
+
+    </div><!-- /tab-content -->
+
+  </div><!-- /panel panel-default tabs -->
+
+</div><!-- div hyc-container -->

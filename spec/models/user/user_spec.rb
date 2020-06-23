@@ -1,0 +1,170 @@
+require 'rails_helper'
+
+RSpec.describe User, type: :model do
+
+  let(:user)          { User.create(email: "example@email.com", password: "password") }
+  let(:ms1_user)      { User.create(email: "test@test.com", password: "password", ms1_user: true, ms1_password_hash: 'hash') }
+
+  describe 'after_database_authentication' do
+    before do 
+      ms1_user.after_database_authentication
+    end
+
+    it 'converts ms1_user to ms2 user' do
+      expect(ms1_user.ms1_user).to be false
+      expect(ms1_user.ms1_password_hash).to eq(nil)
+    end
+  end
+
+  describe '#to_s' do
+    it 'returns the ms_id' do
+      expect(user.to_s).to eq(user.ms_id)
+    end
+  end
+
+  describe '#name' do
+    context 'user has a display name' do
+      before do
+        user.display_name = 'display name'
+        user.save
+      end
+      it 'returns the display name' do
+        expect(user.name).to eq(user.display_name)
+      end
+    end
+    context 'user does not have a display name' do
+      before do
+        user.display_name = nil
+        user.save
+      end
+      it 'returns the email address' do
+        expect(user.name).to eq(user.email)
+      end
+    end
+
+    describe '#contributor?' do
+      context 'user is not a contributor' do
+        it 'returns false' do
+          expect(user.contributor?).to be(false)
+        end
+      end
+      context 'user is a contributor' do
+        before do
+          allow(user).to receive(:groups).and_return(['contributor'])
+        end
+        it 'returns true' do
+          expect(user.contributor?).to be(true)
+        end
+      end
+    end
+
+    describe '#make_contributor' do
+      let(:user) { User.create(email: 'user@email.com', password: 'password') }
+      let!(:contributor_group) { Role.create(name: 'contributor') }
+
+      context 'user is not a contributor' do
+        it 'adds the user to the contributors group' do
+          user.make_contributor
+          user.reload
+          expect(contributor_group.users).to include(user)
+          expect(user.groups).to include('contributor')
+        end
+        it 'puts a success message' do
+          expect { user.make_contributor }.to output("#{user.display_name} is now a contributor\n").to_stdout
+        end
+      end
+      context 'user is a contributor' do
+        before do
+          allow(user).to receive(:groups).and_return(['contributor'])
+        end
+        it 'does not add the user to the contributors group' do
+          expect { user.make_contributor }.to output("Can't add - #{user.display_name} is already a contributor\n").to_stdout
+        end
+      end
+    end
+
+    describe '#remove_contributor' do
+      let!(:contributor_group) { Role.create(name: 'contributor') }
+      let!(:user) { User.create(email: 'user@email.com', password: 'password') }
+      let!(:another_user) { User.create(email: 'another@email.com', password: 'password') }
+
+      before do
+        contributor_group.users += [another_user]
+      end
+
+      context 'user is not a contributor' do
+        it "can't remove the user from the contributors group" do
+          expect { user.remove_contributor }.to output("Can't remove - #{user.display_name} is not a contributor\n").to_stdout
+        end
+      end
+      context 'user is a contributor' do
+        before do
+          contributor_group.users += [user]
+        end
+        it 'removes the user from the contributors group' do
+          user.remove_contributor
+          user.reload
+          contributor_group.reload
+          expect(contributor_group.users).to include(another_user)
+          expect(contributor_group.users).not_to include(user)
+          expect(user.groups).not_to include('contributor')
+        end 
+      end
+    end
+
+    describe '#registered?' do
+      context 'when not registered' do
+        before do
+          allow(user).to receive(:groups).and_return(['contributor'])
+        end
+        it 'is false' do
+          expect(user.registered?).to be(false)
+        end
+      end
+      context 'when registered' do
+        it 'is true' do
+          expect(user.registered?).to be(true)
+        end
+      end
+    end
+
+    describe '#collections_managed' do
+      let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+      let(:team_a)                { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      let(:team_b)                { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      let(:team_c)                { Collection.create(title: ['Team_C'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      let(:role1)                 { team_a.managers_group }
+      let(:role2)                 { team_b.managers_group }
+      let(:role3)                 { team_c.managers_group }
+      let(:manager_roles)         { [role1, role2, role3] }
+
+      before do
+        team_a.create_collection_groups
+        team_b.create_collection_groups
+        team_c.create_collection_groups
+        allow(user).to receive(:roles).and_return(manager_roles)
+        allow(Collection).to receive(:where).with(id: [team_a.id, team_b.id, team_c.id]).and_return([team_a, team_b, team_c])
+      end
+
+      it 'returns all collections where user belongs to default _manager role' do
+        expect(user.collections_managed).to match_array([team_a, team_b, team_c])
+      end
+    end
+  end
+
+  describe '#check_ms_id' do
+    let(:new_user1) { User.new(email: "testemail@email.com", password: "password")}
+    let(:old_ms_id) { "abc123" }
+    let(:new_user2) { User.new(email: "another@email.com", password: "password", ms_id: old_ms_id)}
+    before do
+      [new_user1, new_user2].each(&:save)
+      [new_user1, new_user2].each(&:reload)
+    end
+    it 'assigns an ms_id to new users without one' do
+      expect(new_user1.ms_id).to_not be(nil)
+    end
+    it 'does not assign an ms_id to users who already have one' do
+      expect(new_user2.ms_id).to eq(old_ms_id)
+    end
+  end
+end

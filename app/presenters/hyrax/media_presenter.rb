@@ -5,6 +5,7 @@ module Hyrax
   class MediaPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
     include MorphosourceHelper
+    include MediaFinderHelper
 
     delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, to: :solr_document
 
@@ -58,6 +59,7 @@ module Hyrax
       :rotation_number,
       :phase_contrast,
       :optical_magnification,
+      :acquisition_type,
       # CT imagestack fields
       :image_width,
       :image_height,
@@ -393,6 +395,7 @@ module Hyrax
           @rotation_number = @imaging_event.rotation_number.first
           @phase_contrast = @imaging_event.phase_contrast.first
           @optical_magnification = @imaging_event.optical_magnification.first
+          @acquisition_type = @imaging_event.acquisition_type.first
 
         end
         @imaging_event_creator = @imaging_event.creator

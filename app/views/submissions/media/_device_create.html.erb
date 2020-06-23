@@ -1,0 +1,82 @@
+<div id="submission_device_create" class="submission_flow">
+  <div class="col-xs-12 col-md-6 form-group">
+    <div id="device_create_organization_section" class="block" style="padding-top: 1em; background-color: white">
+      <div class="content-block">
+        <div class="row text-center mb-1">
+          <b>Do this first! Imaging devices are often managed by organizations. Please select an existing organization, create a new organization, or indicate no organization manages this device.</b>
+        </div>
+
+        <div id="submission_select_device_organization_section">
+          <%= render(partial: 'submissions/media/device_organization_select') %>
+          
+          <div id="device_organization_select_display_container" class="device_organization_display_section hide">
+            <div class="row mt-1">
+              <%= render(
+                    partial: 'submissions/media/device_organization_select_display',
+                    locals: { organization_attrs: {} }
+                  )
+              %>
+            </div>
+          </div> 
+        </div>
+
+        <div id="submission_create_device_organization_button_section">
+          <div class="row">
+            <b><%= t('morphosource.submission.or') %></b>
+          </div>
+
+          <div class="row">
+            <a href="#" id="submission_show_create_device_organization" class="btn btn-primary btn-continue">
+              <%= t('morphosource.submission.create_organization') %>
+            </a>
+          </div>
+        </div>
+
+        <div id="submission_create_device_organization_form_section" class="hide">
+          <div class="row">
+            <%= render(partial: 'submissions/media/device_organization_create') %>
+          </div>
+        </div>
+
+        <div id="submission_no_device_organization_section">
+          <div class="row">
+            <b><%= t('morphosource.submission.or') %></b>
+          </div>
+
+          <div class="row">
+            <a href="#" id="submission_no_device_organization" class="btn btn-primary btn-continue">
+              <%= t('morphosource.submission.no_organization') %>
+            </a>
+          </div>
+        </div>
+
+        <div id="submission_no_device_organization_display_section" class="hide">
+          <div class="row">
+            <div class="col-sm-10 col-sm-offset-1 block">
+              <span class="label-padding"><b>Device not managed by organization</b></span>
+              <i id="no-device-organization-close" class="fas fa-times clickable icon-vertical-align"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+	<div class="col-xs-12 col-md-6 form-group">
+    <div class="block showcase-edit showcase-section">
+      <div class="row showcase-section-header">
+        <span class="h2">CREATE NEW DEVICE</span>
+      </div>
+      <div class="content-block">
+        <%= simple_form_for @device_form, wrapper: :showcase_default do |f| %>
+          <div class="form-group">
+            <%= render partial: 'work_creation_metadata', locals: { f: f } %>
+          </div>
+          <div class="hide">
+            <%= f.submit t('morphosource.submission.continue'), class: "btn btn-primary btn-continue" %>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+  </div> 
+</div>

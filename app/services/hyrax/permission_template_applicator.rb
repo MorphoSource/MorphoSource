@@ -40,6 +40,8 @@ module Hyrax
       # add edit access for collection editors group
       model.edit_groups += template.agent_ids_for(agent_type: 'group', access: 'edit_works')
       model.edit_users  += template.agent_ids_for(agent_type: 'user',  access: 'manage')
+      # add download access for collection downloaders group
+      model.download_groups += template.agent_ids_for(agent_type: 'group', access: 'download')
       model.read_groups += template.agent_ids_for(agent_type: 'group', access: 'view')
       model.read_users  += template.agent_ids_for(agent_type: 'user',  access: 'view')
 

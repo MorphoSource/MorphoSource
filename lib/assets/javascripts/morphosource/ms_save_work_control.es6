@@ -77,7 +77,8 @@ export default class MorphosourceSaveWorkControl extends SaveWorkControl {
     };
 
     // Return if not on Media Work form.
-    if ($('form[id*="media"]').length == 0) {
+    if ( $('form[id*="edit_media"]').length == 0 &&  
+         $('form[id*="new_media"]').length == 0 ) { 
       return;
     }
 

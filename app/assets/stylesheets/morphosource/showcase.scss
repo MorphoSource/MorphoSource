@@ -11,7 +11,7 @@ html {
 }
 
 
-/* utility classes below.  Some will be available in Boostrap 4.0+ */
+/* global and utility classes below.  Some will be available in Boostrap 4.0+ */
 .m-0 {
   margin: 0 !important;
 }
@@ -53,18 +53,312 @@ html {
   opacity: .5;
   z-index: 9999;
 }
+.break-all {
+  word-break: break-all;
+}
+.navbar-brand {
+  padding: 15px 0;
+}
+.navbar-nav > li > a {
+  padding: 10px 8px;
+}
+#search-form-header {
+  margin-top: 0.6em;
+}
+.text-truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;  
+}
+.no-result {
+  text-align: center;
+  margin:50px auto;
+}
 
-div.showcase {
+.showcase.teams { /* / teams and projects show page styles */
 
-  max-width: 1200px;
-  border: 2px solid #efefef;
-  margin-top: 18px;
+  .flex { /* setting column with same height */
+    display: flex;
+  }
+
+  .paginate-wrapper > [class*='col-'] {
+    text-align: center;
+    white-space: nowrap;
+    div {
+      white-space: nowrap;
+      padding: 6px 12px;
+    }
+    .pagination {
+      text-align: center;
+      li {
+        display: inline-block;
+      }
+    }
+  } 
+
+  .team-logo img {
+    width: 80px;
+    margin-right:16px;
+    margin-bottom: 8px;
+  }  
+  .team-title {
+
+    .label, td.status span {
+      display: inline;
+      padding: .2em .6em .3em;
+      font-weight: 700;
+      font-size: 10px;
+      line-height: 1;
+      color: #fff;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      border-radius: 0;
+    }
+
+  }
+  h1 {
+    margin-top:0;
+  }
+  .text-muted {
+    font-size: 13px;
+  }
+  @media (max-width: 768px) {
+    #showcase-title {
+      font-size: 4.5vw;
+    }  
+    .text-muted {
+      font-size: 2.4vw;
+    }
+  }
+  @media (min-width: 768px) {
+    #showcase-title {
+      font-size: 28px;
+      margin-bottom: 4px;
+      padding-bottom: 0;
+    }
+  }
+  h4 {
+    font-size: 14px;
+  }
+  .hyc-blacklight, hyc-bl-results {
+    margin:0;
+    padding:0;
+  }
+  .hyc-bl-results ul {
+    list-style-type: square;
+  }
+  .represents-organization {
+    width: 100%;
+    @media (max-width: 991px) {
+      margin-left: 1px;
+    }
+    background-color: #eee;
+    border: 1px solid #ddd;
+    padding-left: 1px;
+    padding-right: 5px;
+    .fa-university {
+      font-size: 52px;
+      line-height: 68px;
+      margin-right: 5px;
+    }
+    > [class^=col] {
+      padding-left: 6px;
+      padding-right: 0;
+      div {
+        float:none;
+        clear:both !important;
+      }
+      b { white-space: nowrap; }
+    }
+    .icon { padding-left: 2px; }
+    .title { padding-left: 15px; }
+    sup {
+      font-size: 14px;
+      top: 4px;
+      left: -17px;
+    }
+  }
+
+  table.teams-projects {
+    th, td {
+      text-align: center;
+    }
+    th.checkbox {
+      display: table-cell;
+      padding-left: 10px;
+      padding-right: 10px;
+      vertical-align: top;
+    } 
+    th.no-sort.sorting_asc:after,
+    th.no-sort.sorting_desc:after {
+      /* remove the sorting arrows in the checkbox column */
+      content: "" !important;
+    }
+    td.checkbox {
+      display: table-cell;
+    }
+    td {
+      font-size: 12px;
+    }
+    .remove-column {
+    }
+  }
+
+  .long-badge {
+    a {
+      display: inline-block;
+      width: 100%;
+      span {
+        display: inline-block;
+        font-weight: bold;
+        font-size: 10px;
+        width: 100%;
+        padding-top: 4px;
+        padding-bottom: 4px;
+      }
+    }
+  }
+
+  .view-type-group {
+    white-space: nowrap;
+    .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big {
+      background-color: transparent;
+      color: $font-color;
+      border-color: transparent;
+    }
+  }
+
+  .choose-columns-media {
+    float: none;
+  }
+
+  .document {
+    header, dl {
+      width: 106px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    @media (min-width: 768px) {
+      header, dl {
+        width: 150px;
+      }
+    }
+    h3 {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden; 
+      padding: 0 4px;
+      margin: 0 !important;
+    }
+    dd {
+      text-align: center;
+      height: 18px;
+    }
+  }
+
+  .show-actions {
+    padding-left: 10px;
+    padding-right: 6px;
+  }
+
+  #add-selected-to-cart {
+    font-size: 11px;
+    @media (min-width: 768px) {
+      max-width: 155px;
+    }
+  }
+  
+  .dropdown-toggle {
+    @media (min-width: 768px) {
+      max-width: 100px;
+    }
+  }
+
+  .gallery {
+    .batch_add_selector {
+      float: left;
+      margin: 0;
+    }
+    .file_listing_thumbnail {
+      width: 100px;
+      height: 100px;
+      margin-top: 10px;
+      @media (min-width: 768px) {
+        width: 140px;
+        height: 140px;
+      }
+
+    }
+    .long-badge {
+      a {
+        margin-top: 6px;
+        span {
+          width:70%;
+        }
+      }
+    }
+    .thumbnail {
+      /* max-width: 220px; */
+      height: 100%;
+    }
+    .document {
+      min-width: fit-content;
+      border-bottom: none !important;
+      -webkit-flex: inherit;
+    }
+
+  }
+
+} /* / teams and projects show page styles */
+
+
+.showcase {
+
+  .content-wrapper.fixed-width {
+    max-width: 1200px;
+    border: 2px solid #efefef;
+    margin-top: 18px;
+  }
+
+  #add-selected-to-cart, .add-selected-to-cart {
+    .material-icons {
+      font-size: 9px;
+    }
+  }
+
+  .main-content {
+    background-color: #fff;
+  }
+
+  .nav-tabs {
+    border-bottom: 1px solid $line-inactive-color;
+    li {
+      border-bottom: 3px solid transparent;
+      a, a:hover {
+        border-top: none;      
+      }      
+    }
+    li.active {
+      border-bottom: 3px solid $line-color;
+      a, a:hover {
+        margin-right: 0;
+        border-top: none;      
+      }
+    }
+  }
+
+  .panel-default {border: none;}
+
+  /* ************************** */
 
   .btn {
     border-radius: 0;
   }
 
-  .btn-primary, .btn-default, .btn-sm, .btn-big {
+  .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big {
     background-color: $button-color;
     color: $button-font-color;
     border-color: $button-border-color;
@@ -125,7 +419,6 @@ div.showcase {
     overflow-wrap: break-word;
     margin-bottom: 0.5vw;
     padding-bottom: 8px;
-    border-bottom: 2px solid #337ab7;
     font-size: 4vw;
     @media (min-width: 768px) {
       font-size: 3vw;
@@ -139,8 +432,8 @@ div.showcase {
     margin-top: 10px;
   }
   h2 {
-    background-color: #efefef;
-    padding: 12px 20px;
+    border-bottom: 3px solid $line-color;
+    padding: 6px 8px 6px 0;
     font-size:13px;
     @media (min-width: 414px) {
       font-size: 2.6vw;
@@ -438,6 +731,14 @@ div.showcase {
     }
   }
 
+  [class*="choose-columns"] .dropdown-menu {
+    color: $button-color;
+    background-color: #fff;
+    list-style-type: none;
+    padding: 2px 8px;
+    white-space: nowrap;    
+  }
+
   div.preview {
     margin-top: 20px;
     background-color: #efefef;
@@ -466,6 +767,10 @@ div.showcase {
   }
 
   .row.indent {padding-left: 32px}   
+
+  .visibility-link .label, .visibility-link td.status span, td.status .visibility-link span {
+    font-size: .65em;
+  }
 
   /* media showcase specific styles */
   .media-showcase {
@@ -507,6 +812,7 @@ div.showcase {
         background-color: transparent;
       }
     }
+
   }
   /* /media showcase specific styles */
 

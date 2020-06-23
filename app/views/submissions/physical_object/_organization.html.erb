@@ -1,0 +1,65 @@
+<div id="submission_organization" class="submission_section submission_flow submission-v2 hide">
+  <div class="container-fluid">
+    <div class="row">
+      <h4><%= t('morphosource.submission.header_text.po_organization') %></h4>
+    </div>
+
+    <div id="submission_select_organization_section">
+      <%= render(partial: 'submissions/physical_object/organization_select') %>
+
+      <div class="row">
+        <a href="#" id="submission_select_organization" class="btn btn-primary btn-continue" disabled="disabled">
+          <%= t('morphosource.submission.continue') %>
+        </a>
+      </div>
+
+      <div id ="submission_organization_select_display_container">
+        <div class="row">
+          <%= render(
+            partial: 'submissions/physical_object/organization_select_display',
+            locals: { organization_attrs: {} } 
+          ) %>
+        </div>
+      </div>
+    </div>
+
+    <div id="submission_create_organization_button_section">
+      <div class="row">
+        <b><%= t('morphosource.submission.or') %></b>
+      </div>
+
+      <div class="row">
+        <a href="#" id="submission_show_create_organization" class="btn btn-primary btn-continue">
+          <%= t('morphosource.submission.new_organization') %>
+        </a>
+      </div>
+    </div>
+
+    <div id="submission_create_organization_form_section" class="hide">  
+      <%= render(partial: 'submissions/physical_object/organization_create') %>
+    </div>
+    
+    <div id="submission_no_organization_section">
+      <div class="row">
+        <b><%= t('morphosource.submission.or') %></b>
+      </div>
+
+      <div class="row">
+        <a href="#" id="submission_no_organization" class="btn btn-primary btn-continue">
+          <%= t('morphosource.submission.no_organization') %>  
+        </a>
+      </div>
+    </div>
+
+    <div id="submission_no_organization_display_section" class="hide">
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3 block">
+          <span class="label-padding"><b>Object not managed by organization</b></span>
+          <i id="no-organization-close" class="fas fa-times clickable icon-vertical-align"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,110 @@
+<div id="submission_taxonomy" class="submission_section submission_flow submission-v2 hide">
+  <div class="container-fluid">
+
+    <div class="row">
+      <h4><%= t('morphosource.submission.header_text.po_taxonomy') %></h4>
+    </div>
+  
+   
+    <div id="submission_select_taxonomy_section">
+      <%= simple_form_for @submission, html: { id: :taxonomy_search_form } do |f| %>
+        <div class="row">
+          <div class="col-xs-10 col-sm-5 col-sm-offset-3 no-padding">
+            <%= f.input :taxonomy_search,
+            placeholder: "Enter taxonomy keywords here",
+            input_html: { class: 'form-control' } %>
+          </div>
+
+          <div class="col-xs-2 col-sm-1 text-left">
+            <a id="btn_add_taxonomy" class="btn btn-primary">Add</a>
+          </div>
+        </div>
+
+
+
+        <div id="taxonomies" class="row form-group">
+          <input class="taxonomy_title" type="hidden" name="taxonomy_title" value="" />
+          <input class="taxonomy_id" type="hidden" name="taxonomy_id" value="" />
+          <div class="taxonomy_row">
+          </div>
+        </div>
+
+        <%
+        # the value: '' below will clear the parent list every time the form is loaded.
+        # Remove this option if the value needs to be retained later (e.g. reloading the page)
+        %>
+        <%= f.input :taxonomy_id,
+          wrapper_html: { class: 'hide' },
+          input_html: { style: 'width:300px', value: '' }
+        %>
+
+        <div class="row">
+          <%= f.submit t('morphosource.submission.continue'), 
+            class: "btn btn-primary btn-continue", 
+            disabled: 'disabled', 
+            id: 'submission_select_taxonomy_submit' 
+          %>
+        </div>  
+      <% end %>
+    </div>
+
+    <div id="submission_create_taxonomy_button_section">
+      <div class="row">
+        <b><%= t('morphosource.submission.or') %></b>
+      </div>
+
+      <div class="row">
+        <a href="#" id="submission_show_create_taxonomy" class="btn btn-primary btn-continue">
+          <%= t('morphosource.submission.new_taxonomy') %>
+        </a>
+      </div>
+    </div>
+
+    <div id="submission_create_taxonomy_form_section" class="hide">
+      <div class="row">
+        <%= render(partial: 'submissions/physical_object/taxonomy_create') %>
+      </div>
+
+      <div class="row">
+        <a href="#" id="submission_create_taxonomy_continue" class="btn btn-primary btn-continue">
+          <%= t('morphosource.submission.continue') %>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+$(function(){
+  $('#submission_taxonomy_search').autocomplete({
+    select: function(event, ui) {
+        event.preventDefault();
+        $("input.taxonomy_id").val(ui.item.value);
+        console.log(ui.item.value);
+        $("input.taxonomy_title").val(ui.item.label);
+        console.log(ui.item.label);
+
+    },
+    focus: function(event, ui) {
+        event.preventDefault();
+        $("#submission_taxonomy_search").val(ui.item.label);
+    },
+    source: function (request, response) {
+      $.ajax({
+        url: "<%= find_taxonomy_autocomplete_url %>" + request.term,
+        type: 'GET',
+        dataType: 'json',
+        complete: function (xhr, status) {
+          var results = $.parseJSON(xhr.responseText);
+          response(results);
+        }
+      });
+    },
+    autoFocus: true
+  });
+});
+</script>
+
+
+

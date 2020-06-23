@@ -14,6 +14,7 @@ module Hyrax
     VIEW = 'view'
     DEPOSIT = 'deposit'
     EDIT_WORKS = 'edit_works'
+    DOWNLOAD_WORKS = 'download'
     MANAGE = 'manage'
 
     GROUP = 'group'
@@ -24,6 +25,7 @@ module Hyrax
         VIEW => VIEW,
         DEPOSIT => DEPOSIT,
         EDIT_WORKS => EDIT_WORKS,
+        DOWNLOAD_WORKS => DOWNLOAD_WORKS,
         MANAGE => MANAGE
       }
     )

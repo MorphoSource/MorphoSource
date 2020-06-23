@@ -45,8 +45,6 @@ RSpec.describe Morphosource::My::DownloadsController, :type => :controller  do
         expect(item.work_id).to eq(work4.id)
         expect(item.user_id).to eq(current_user.ms_id)
         expect(item.in_cart).to be(true)
-        expect(item.restricted).to be(work4.restricted?)
-        expect(item.approver_id).to eq(work4.depositor)
       end
 
       context 'the user selects duplicate works' do

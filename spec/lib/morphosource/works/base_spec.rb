@@ -42,4 +42,47 @@ RSpec.describe Morphosource::Works::Base do
       expect(specimen2.descendants).to match_array(spec2_desc)
     end
   end
+
+  describe 'user_with_ownership' do
+    subject         { media1.user_with_ownership }
+    let(:owner)     { User.create(email: 'owner@email.com', password: 'password') }
+    let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
+    before do
+      media1.depositor = depositor.ms_id
+    end
+    context 'work has an owner' do
+      before do
+        media1.owner = owner.ms_id
+      end
+      it 'returns the owner' do
+        expect(subject).to eq(owner.ms_id)
+      end
+    end
+    context 'work does not have an owner' do
+      context 'ms_id does not exist' do
+        before do
+          media1.owner = 'notanmsid'
+        end
+        it 'returns the depositor' do
+          expect(subject).to eq(depositor.ms_id)
+        end
+      end
+      context 'ms_id is nil' do
+        before do
+          media1.owner = nil
+        end
+        it 'returns the depositor' do
+          expect(subject).to eq(depositor.ms_id)
+        end
+      end
+      context 'ms_id is empty' do
+        before do
+          media1.owner = ''
+        end
+        it 'returns the depositor' do
+          expect(subject).to eq(depositor.ms_id)
+        end
+      end
+    end
+  end
 end

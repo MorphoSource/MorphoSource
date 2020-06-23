@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
   # Physical Object show case pages
+  # todo: clean up and rewrite the rules
   scope module: :hyrax do
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
@@ -14,7 +15,7 @@ Rails.application.routes.draw do
     get 'concern/parent/:parent_id/cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
     # redirect the default media view to showcase view, except for certain action (e.g. new)
     get 'concern/media/new', to: 'media#new'
-    get 'concern/media/zip', to: 'media#zip'
+    get 'concern/media/zip', to: 'morphosource/zip_media#zip'
     get 'concern/media/:id', to: 'media#showcase'
     # in case we need to reference the old edit page. remove this hyraxedit route later
     get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
@@ -24,6 +25,25 @@ Rails.application.routes.draw do
     get 'concern/media/show/:id', to: 'media#show'
     get 'concern/biological_specimens/show/:id', to: 'biological_specimens#show'
     get 'concern/cultural_heritage_objects/show/:id', to: 'cultural_heritage_objects#show'
+  end
+
+  scope module: :hyrax do
+    resources :teams do # public landing team/project show page
+      member do
+        get 'page/:page', action: :index
+        get 'facet/:id', action: :facet, as: :dashboard_facet
+        get :files
+      end
+    end
+    #    get 'projects/:id', to: 'teams#show'
+    #    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
+    resources :projects, controller: 'teams'
+    # Note: the following route might effect pagination links
+    namespace :dashboard do
+      resources :collections, controller: 'collections'
+
+      get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
+    end
   end
 
   # override ProfilesController
@@ -44,7 +64,7 @@ Rails.application.routes.draw do
     concerns :searchable
   end
 
-  devise_for :users, :controllers => { registrations: 'registrations' }
+  devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'
 
   mount Qa::Engine => '/authorities'
@@ -59,12 +79,8 @@ Rails.application.routes.draw do
   resources :welcome, only: 'index'
   root 'hyrax/homepage#index'
 
-  namespace :hyrax, path: :concern do
-    namespaced_resources 'media' do
-      collection do
-        get :zip, action: :zip
-      end
-    end
+  scope module: :morphosource do
+    get :zip, action: :zip, controller: :zip_media
   end
 
   namespace :hyrax do
@@ -103,39 +119,15 @@ Rails.application.routes.draw do
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  resources :submissions, only: [ :new, :create ] do
+  resources :submissions, only: [ :new, :create, :search_bso_ajax, :organization_default_media_fields] do
     collection do
-      post 'stage_biological_specimen'
-      post 'stage_biological_specimen_from_idigbio'
-      post 'stage_device'
-      post 'stage_imaging_event'
-      post 'stage_organization'
-      post 'stage_device_organization'
-      post 'stage_media'
-      post 'stage_processing_event'
-      post 'stage_cho'
-      post 'stage_taxonomy'
-      # for new work modal
-      get 'new_organization'
-      post 'new_organization_submit'
-      get 'new_taxonomy'
-      post 'new_taxonomy_submit'
-      post 'new_device_submit'
-      post 'new_processing_event_submit'
+      # AJAX methods
+      post 'search_po_ajax'
+      post 'save_data'
+      get 'organization_default_media_fields'
     end
   end
 
-  # Route to flow initial page when using browser reload or back button
-  get '/submissions/stage_biological_specimen', to: 'submissions#new'
-  get '/submissions/stage_biological_specimen_from_idigbio', to: 'submissions#new'
-  get '/submissions/stage_device', to: 'submissions#new'
-  get '/submissions/stage_imaging_event', to: 'submissions#new'
-  get '/submissions/stage_organization', to: 'submissions#new'
-  get '/submissions/stage_device_organization', to: 'submissions#new'
-  get '/submissions/stage_media', to: 'submissions#new'
-  get '/submissions/stage_processing_event', to: 'submissions#new'
-  get '/submissions/stage_cho', to: 'submissions#new'
-  get '/submissions/stage_taxonomy', to: 'submissions#new'
   get '/submissions', to: 'submissions#new'
 
   scope module: :morphosource do
@@ -143,6 +135,7 @@ Rails.application.routes.draw do
 
       # cart items
       post 'add_to_cart', action: :create, controller: :cart_items
+      post 'batch_add_to_cart', action: :batch_create, controller: :cart_items
       get 'download_work', action: :download, controller: :cart_items
 
       # media cart
@@ -172,6 +165,13 @@ Rails.application.routes.draw do
     end
   end
 
+  # when creating a collection, use the morphosource collections controller
+  scope module: :morphosource do
+    scope module: :dashboard do
+      resources :collections, only: [:create]
+    end
+  end
+
   # Add users to auto-generated collection groups
   post 'dashboard/collections/:id/update_collection_groups', action: :update_collection_groups, controller: :collection_roles, as: 'update_collection_groups'
 
@@ -180,9 +180,10 @@ Rails.application.routes.draw do
     scope module: :dashboard do
       post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'
 
+      post 'dashboard/collections/:id/unlink_organization', action: :unlink_organization, controller: :linked_teams, as: 'dashboard_collection_unlink_organization'
+
       patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
     end
   end
-
 
 end

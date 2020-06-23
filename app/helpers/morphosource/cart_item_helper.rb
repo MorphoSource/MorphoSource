@@ -5,7 +5,7 @@ module Morphosource::CartItemHelper
   end
 
   def download_button(id)
-    link_to t('hyrax.file_sets.actions.download'), main_app.download_work_path(work_id: [id]), class: 'btn btn-default', download: true, target: "_blank", role: 'button', id: 'file_download', data: { label: id }
+    link_to t('hyrax.file_sets.actions.download'), main_app.zip_path(ids: [id]), class: 'btn btn-default', download: true, target: "_blank", role: 'button', id: 'file_download', data: { label: id }
   end
 
   def request_download_button(id)
@@ -111,6 +111,12 @@ module Morphosource::CartItemHelper
     item.send(attribute)&.strftime("%Y-%m-%d")
   end
 
+  def action_by(item)
+    return if item.action_by.nil?
+    ms_id = item.action_by
+    User.find_by(ms_id: ms_id).name
+  end
+
   def get_requester_items(items,requester)
     @requester_items = items.select{|item| item.user_id == requester.ms_id}
   end
@@ -146,7 +152,6 @@ module Morphosource::CartItemHelper
   end
 
   def editable_items(items)
-    items.select{|item| item.editable?}
+    items.select(&:editable?)
   end
-
 end

@@ -1,3 +1,5 @@
+require 'csv'
+
 module Ms1to2
   # Taken from Duke RDR Importer Module Written By Jim Coble, Only Minor Modifications Made
   class CSVParser

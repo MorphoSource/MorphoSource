@@ -1,0 +1,86 @@
+<div id="submission_parents_in_ms" class="submission_section submission-v2 derived_media hide">  
+  
+  <div class="container-fluid">
+    <div class="row">
+      <h4><%= t('morphosource.submission.header_text.parent_media') %></h4>
+    </div>
+
+    <%= simple_form_for @submission, html: { id: :parent_search_form } do |f| %>
+      <div class="row">
+        <div class="col-xs-10 col-sm-5 col-sm-offset-3 no-padding">
+          <%= f.input :parent_media_search,
+            placeholder: "Enter parent media title here",
+            input_html: {
+              class: 'form-control'
+            } 
+          %>
+        </div>
+        <div class="col-xs-2 col-sm-1 text-left">
+          <a id="btn_add_parent" class="btn btn-primary">Add</a>
+        </div>
+      </div>
+
+      <div id="parents" class="row form-group">
+        <input class="parent_title" type="hidden" name="parent_title" value="" />
+        <input class="parent_id" type="hidden" name="parent_id" value="" />
+        <div class="parent_row"></div>
+      </div>
+      <% 
+      # the value: '' below will clear the parent list every time the form is loaded.
+      # Remove this option if the value needs to be retained later (e.g. reloading the page)
+      %>
+      <%= f.input :parent_media_list, 
+        wrapper_html: { class: 'hide' },
+        input_html: { style: 'width:300px', value: '' }
+      %>
+
+      <div class="row">
+        <%= f.submit t('morphosource.submission.continue'), 
+          class: "btn btn-primary btn-continue", 
+          disabled: 'disabled', 
+          id: 'submission_parent_media_submit' 
+        %>
+      </div>
+    <% end %>
+    
+    <div class="row">
+      <b><%= t('morphosource.submission.or') %></b>
+    </div>
+
+    <div class="row">
+      <a id="btn_parents_not_in_morphosource" class="btn btn-primary btn-continue">
+        <%= t('morphosource.submission.parent_not_available') %>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+$(function(){
+  $('#submission_parent_media_search').autocomplete({
+    select: function(event, ui) {
+        event.preventDefault();
+        $("input.parent_id").val(ui.item.value);
+        $("input.parent_title").val(ui.item.label);
+    },
+    focus: function(event, ui) {
+      console.log('hey');
+      event.preventDefault();
+      $("#submission_parent_media_search").val(ui.item.label);
+    },
+    source: function (request, response) {
+      console.log('hi');
+      $.ajax({
+        url: "<%= find_media_autocomplete_url %>" + request.term,
+        type: 'GET',
+        dataType: 'json',
+        complete: function (xhr, status) {
+          var results = $.parseJSON(xhr.responseText);
+          response(results);
+        }
+      });
+    },
+    autoFocus: true
+  });
+});    
+</script>

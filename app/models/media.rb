@@ -10,6 +10,8 @@ class Media < Morphosource::Works::Base
 
   validates :title, presence: { message: 'Your work must have a title.' }
 
+  attr_accessor :download_permission
+
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
 
@@ -23,6 +25,15 @@ class Media < Morphosource::Works::Base
     else
       return work.in_works.reject{|w| w.class == self}.map{|w| self.parent_works(w)}.flatten + work.in_works
     end
+  end
+
+  def cart_items
+    CartItem.where(work_id: id)
+  end
+
+  def reviewer
+    r = User.find_by(ms_id: download_reviewer.first)
+    r ? download_reviewer.first : user_with_ownership
   end
 
   # array of all visibilities that apply to the file sets of a Media work
@@ -63,6 +74,21 @@ class Media < Morphosource::Works::Base
     fileset_accessibility.first == "open"
   end
 
+  # true if publication status is open, restricted, lease
+  def can_add_to_cart?
+    case publication_status
+    when 'open'
+      true
+    when 'lease'
+      true
+    when 'restricted'
+      true
+    else
+      false
+    end
+  end
+
+  # TODO - consider what happens with fileset_accessibility for lease/embargo
   def publication_status
     accessibility = fileset_accessibility.first
     case
@@ -91,8 +117,8 @@ class Media < Morphosource::Works::Base
   end
 
   def organizations
-    specimens.each_with_object([]) do |s, org|
-      org += s.organizations
+    specimens.each_with_object([]) do |s, orgs|
+      s.organizations.each { |o| orgs << o }
     end
   end
 

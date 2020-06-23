@@ -4,8 +4,6 @@ class User < ApplicationRecord
 
   has_many :cart_items, primary_key: :ms_id, foreign_key: :user_id
 
-  has_many :requests, class_name: 'CartItem', primary_key: :ms_id, foreign_key: :approver_id
-
   paginates_per 10
 
   # assign user a ms_id to use as user_key
@@ -47,11 +45,27 @@ class User < ApplicationRecord
      serialize field, Array
    end
 
+  # Devise callback for action after authentication
+  def after_database_authentication
+    if ms1_user
+      self.ms1_user = false
+      self.ms1_password_hash = nil
+    end
+  end 
+
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account.
   def to_s
-    email
+    ms_id
+  end
+
+  def name
+    display_name.blank? ? email : display_name
+  end
+
+  def registered?
+    groups.include? 'registered'
   end
 
   # Mailboxer (the notification system) needs the User object to respond to this method
@@ -60,67 +74,98 @@ class User < ApplicationRecord
     email
   end
 
+  def contributor?
+    groups.include? 'contributor'
+  end
+
+  def make_contributor
+    if contributor?
+      puts "Can't add - #{display_name} is already a contributor"
+    else
+      contributor_group.users += [self]
+      puts "#{display_name} is now a contributor"
+    end
+  end
+
+  def remove_contributor
+    if !contributor?
+      puts "Can't remove - #{display_name} is not a contributor"
+    else
+      contributor_group.users -= [self]
+      puts "#{display_name} contributor status removed"
+    end
+  end
+
+  # true if user has download access or an approved cart item
+  def has_download_access_or_approval?(media_id)
+    (self.can? :download, media_id) || (downloadable_item_work_ids.include? media_id)
+  end
+
+  def approved_to_download?(media_id)
+    downloadable_item_work_ids.include? media_id
+  end
+
   def items_in_cart
-    cart_items.select{ |i| i.in_cart == true }
+    cart_items.select(&:in_cart?)
   end
 
   def item_ids_in_cart
-    items_in_cart.map{ |i| i.id }
+    items_in_cart.map(&:id)
   end
 
   def work_ids_in_cart
-    items_in_cart.map{ |i| i.work_id }
+    items_in_cart.map(&:work_id)
   end
 
   # restricted items user has added to cart
   def restricted_items_in_cart
-    items_in_cart.select{ |item| item.restricted? }
+    items_in_cart.select(&:restricted?)
   end
 
   def restricted_items_in_cart_ids
-    restricted_items_in_cart.map{ |item| item.id }
+    restricted_items_in_cart.map(&:id)
   end
 
   def downloadable_items
-    cart_items.select{ |item| item.downloadable? }
+    cart_items.select(&:downloadable?)
   end
 
   def downloadable_ids
-    downloadable_items.map{ |item| item.id }
+    downloadable_items.map(&:id)
   end
 
   def downloadable_item_work_ids
-    downloadable_items.map{ |item| item.work_id }
+    downloadable_items.map(&:work_id)
   end
 
   def downloadable_items_in_cart
-    items_in_cart.select{ |item| item.downloadable? }
+    downloadable_items.select(&:in_cart?)
   end
 
   def downloadable_ids_in_cart
-    downloadable_items_in_cart.map{ |item| item.id }
+    downloadable_items_in_cart.map(&:id)
   end
 
   # all a user's current and past requests (items where user is requestor)
   def my_requests
-    cart_items.select{ |item| (item.date_requested.present? || item.date_cleared.present?) }
+    cart_items.select{ |item| item.date_requested? || item.date_cleared? }
   end
 
   def my_requests_ids
-    my_requests.map{ |item| item.id }
+    my_requests.map(&:id)
   end
 
   def my_requests_work_ids
-    my_requests.map{ |item| item.work_id }
+    my_requests.map(&:work_id)
   end
 
   def my_active_requests
     active_statuses = ["Approved","Requested","Cleared"]
-    my_requests.select{ |item| active_statuses.include?(item.request_status) }
+    my_requests.select{ |item| active_statuses.include? item.request_status }
   end
 
   def my_active_requests_work_ids
-    my_active_requests.map{ |item| item.work_id }
+    my_active_requests.map(&:work_id)
   end
 
   def my_cleared_requests
@@ -128,66 +173,71 @@ class User < ApplicationRecord
   end
 
   def my_cleared_requests_work_ids
-    my_cleared_requests.map{|item| item.work_id }
+    my_cleared_requests.map(&:work_id)
   end
 
   def downloaded_items
-    cart_items.select{ |i| i.date_downloaded.present? }
+    cart_items.select(&:date_downloaded?)
   end
 
   def downloaded_item_ids
-    downloaded_items.map{ |i| i.id }
+    downloaded_items.map(&:id)
   end
 
   def downloaded_work_ids
-    downloaded_items.map{ |i| i.work_id }
+    downloaded_items.map(&:work_id)
   end
 
   # items requested from user (items where user is data manager)
-
-  def requested_items
-    r = requests.select{ |item| item.restricted? }
-    r.select{|item| (!item.date_requested.nil? || !item.date_cleared.nil?)}
+  def requests
+    media = Media.all.select{|m| m.reviewer == self.ms_id}.map(&:id)
+    items = CartItem.where(work_id: media)
+    items.select{ |i| i.date_requested? || i.date_cleared? }
   end
 
+  # TODO: Remove
+  # def requested_items
+    # requests
+  # end
+
   def newly_requested_items
-    requested_items.select{ |item| item.request_status == "Requested" }
+    requests.select{ |item| item.request_status == "Requested" }
   end
 
   def previously_requested_items
-    requested_items - newly_requested_items
+    requests - newly_requested_items
   end
 
   def requested_item_ids
-    requested_items.map{|item| item.id}
+    requests.map(&:id)
   end
 
   def previously_requested_item_ids
-    previously_requested_items.map{|item| item.id}
+    previously_requested_items.map(&:id)
   end
 
   def newly_requested_item_ids
-    newly_requested_items.map{|item| item.id}
+    newly_requested_items.map(&:id)
   end
 
   def requested_items_work_ids
-    requested_items.map{ |item| item.work_id }
+    requests.map(&:work_id)
   end
 
   def previously_requested_items_work_ids
-    previously_requested_items.map{ |item| item.work_id }
+    previously_requested_items.map(&:work_id)
   end
 
   def newly_requested_items_work_ids
-    newly_requested_items.map{ |item| item.work_id }
+    newly_requested_items.map(&:work_id)
   end
 
   def newly_requested_items_user_ids
-    newly_requested_items.map{ |item| item.user_id }
+    newly_requested_items.map(&:user_id)
   end
 
   def previously_requested_items_user_ids
-    previously_requested_items.map{ |item| item.user_id }
+    previously_requested_items.map(&:user_id)
   end
 
   # profile methods
@@ -218,6 +268,10 @@ class User < ApplicationRecord
 
   def check_ms_id
     assign_ms_id if ms_id.nil?
+  end
+
+  def contributor_group
+    Role.find_by(name: 'contributor')
   end
 
 end

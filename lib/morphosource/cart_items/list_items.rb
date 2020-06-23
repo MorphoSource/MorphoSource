@@ -68,11 +68,11 @@ module Morphosource
       end
 
       def downloadable_items
-        items_in_cart.select{ |item| (item.downloadable? || user_is_approver?(item)) }
+        items_in_cart.select(&:downloadable?)
       end
 
       def undownloadable_items
-        items_in_cart.select{ |item| (!item.downloadable? && !user_is_approver?(item)) }
+        items_in_cart.select(&:restricted?)
       end
 
       def uniq_downloaded_work_ids

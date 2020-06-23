@@ -39,8 +39,6 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
     let(:user) { FactoryBot.build(:user) }
     let(:ability) { Ability.new(user) }
     let(:depositor) { FactoryBot.build(:user) }
-    let(:user_display_name) { 'Suzy Smith' }
-    let(:depositor_display_name) { 'Bobby Jones' }
     let(:work) { BiologicalSpecimen.new }
     let(:collection_code_attr) { [ 'ABC' ] }
     let(:catalog_number_attr) { [ '123' ] }
@@ -49,7 +47,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
     let(:unvouchered_attr) { [ 'No' ] }
     let(:env) { Hyrax::Actors::Environment.new(work, ability, attrs) }
     before do
-      
+
       allow(User).to receive(:find_by_user_key).with(depositor.user_key) { depositor }
     end
     describe 'collection code and catalog number' do
@@ -102,7 +100,6 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
           describe 'depositor present' do
             before { work.depositor = depositor.user_key }
             describe 'depositor has display name' do
-              before { depositor.display_name = depositor_display_name }
               let(:expected_title) do
                 I18n.t('morphosource.fallback_object_title', voucher: 'Vouchered', user: depositor.display_name)
               end
@@ -112,12 +109,14 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
               let(:expected_title) do
                 I18n.t('morphosource.fallback_object_title', voucher: 'Vouchered', user: depositor.email)
               end
+              before do
+                depositor.display_name = nil
+              end
               specify { expect(subject.generated_title(env)).to eq(expected_title) }
             end
           end
           describe 'depositor not present' do
             describe 'user has display name' do
-              before { user.display_name = user_display_name }
               let(:expected_title) do
                 I18n.t('morphosource.fallback_object_title', voucher: 'Vouchered', user: user.display_name)
               end
@@ -126,6 +125,9 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
             describe 'user does not have display name' do
               let(:expected_title) do
                 I18n.t('morphosource.fallback_object_title', voucher: 'Vouchered', user: user.email)
+              end
+              before do
+                user.display_name = nil
               end
               specify { expect(subject.generated_title(env)).to eq(expected_title) }
             end
@@ -139,7 +141,6 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
           describe 'depositor present' do
             before { work.depositor = depositor.user_key }
             describe 'depositor has display name' do
-              before { depositor.display_name = depositor_display_name }
               let(:expected_title) do
                 I18n.t('morphosource.fallback_object_title', voucher: 'Unvouchered', user: depositor.display_name)
               end
@@ -149,12 +150,14 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
               let(:expected_title) do
                 I18n.t('morphosource.fallback_object_title', voucher: 'Unvouchered', user: depositor.email)
               end
+              before do
+                depositor.display_name = nil
+              end
               specify { expect(subject.generated_title(env)).to eq(expected_title) }
             end
           end
           describe 'depositor not present' do
             describe 'user has display name' do
-              before { user.display_name = user_display_name }
               let(:expected_title) do
                 I18n.t('morphosource.fallback_object_title', voucher: 'Unvouchered', user: user.display_name)
               end
@@ -163,6 +166,9 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
             describe 'user does not have display name' do
               let(:expected_title) do
                 I18n.t('morphosource.fallback_object_title', voucher: 'Unvouchered', user: user.email)
+              end
+              before do
+                user.display_name = nil
               end
               specify { expect(subject.generated_title(env)).to eq(expected_title) }
             end

@@ -12,15 +12,8 @@ module Morphosource
 
       def download
         get_downloadable_items
-        @items.each do |item|
-          if item.date_downloaded
-            create_downloaded_item(item.work_id)
-          else
-            mark_as('downloaded',item)
-          end
-        end
         get_work_ids_by_items
-        redirect_to main_app.zip_hyrax_media_index_path(ids: @work_ids)
+        redirect_to main_app.zip_path(ids: @work_ids)
       end
 
       def destroy
@@ -32,6 +25,8 @@ module Morphosource
 
       private
 
+      # if a user selects items, get only those - otherwise get all downloadable items
+      # an item is downloadable if it is in the cart and downloadable
       def get_downloadable_items
         @items = id_params ? get_items_by_id(id_params) & downloadable_items : downloadable_items
       end
@@ -50,7 +45,6 @@ module Morphosource
           end
         end
       end
-
     end
   end
 end

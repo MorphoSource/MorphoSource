@@ -226,7 +226,7 @@ class SubmissionsController < ApplicationController
       end
       model_params = assign_model_params_parents(model_params, parent)
       if addl_params[:uploaded_files].present?
-        params.merge!({ uploaded_files: addl_params[:uploaded_files] })
+        model_params.merge!({ uploaded_files: addl_params[:uploaded_files] })
       end
       @media_create_params = model_params
 

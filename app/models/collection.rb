@@ -62,7 +62,8 @@ class Collection < ActiveFedora::Base
 
   def add_users_to_group(group, user_ids)
     user_ids.each do |u_id|
-      group.users << u_id unless group_members.include? u_id
+      u = User.find_by_user_key(u_id)
+      group.users << u unless group_members.include? u
     end
   end
 

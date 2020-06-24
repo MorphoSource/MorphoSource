@@ -85,7 +85,11 @@ module Ms1to2
           puts('Establishing collection permissions')
           ::Hyrax::Collections::PermissionsCreateService.create_default(
             collection: coll,
-            creating_user: @admin_user)
+            creating_user: User.find_by_user_key(v[:depositor].first)
+          )
+          coll.create_collection_groups
+          coll.add_users_to_group(coll.editors_group, v[:editors]) if v[:editors]
+          coll.add_users_to_group(coll.downloaders_group, v[:downloaders]) if v[:downloaders]
         end
       end
     end
@@ -139,13 +143,13 @@ module Ms1to2
     end
 
     def to_model(id)
-      case id[0]
-      when 'M'
-        :Media
-      when 'I'
-        :ImagingEvent
-      when 'P'
-        :ProcessingEvent
+      case id.sub(/^[0]*/,"")[0]
+        when 'I'
+          :ImagingEvent
+        when 'P'
+          :ProcessingEvent
+        else
+          :Media
       end
     end
 

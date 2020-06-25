@@ -1,6 +1,8 @@
 module Hyrax
   module My
-    class TeamsController < MyController
+    class TeamsController < MyTeamController
+      include Morphosource::CollectionHelper
+
       # Define collection specific filter facets.
       def self.configure_facets
         configure_blacklight do |config|
@@ -28,7 +30,17 @@ module Hyrax
         collection_type_list_presenter
         managed_collections_count
         super
+        @collection_docs_by_type = docs_by_collection_type(@response.docs)
+        @collection_docs_count = @collection_docs_by_type.count
+        if page_is_team?
+          @collection_list_type = "team"
+        elsif page_is_project?
+          @collection_list_type = "project"
+        else
+          @collection_list_type = "collection"
+        end
       end
+
 
       private
 

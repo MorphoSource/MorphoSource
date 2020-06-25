@@ -22,8 +22,15 @@ module Hyrax
 
     # Return an array of authorized collection types.
     def authorized_collection_types
-byebug
-      @authorized_collection_types ||= Hyrax::CollectionTypes::PermissionsService.can_create_collection_types(user: @current_user)
+      @authorized_collection_types ||= authorized_teams
+    end
+
+    def authorized_teams
+      all_types = Hyrax::CollectionTypes::PermissionsService.can_create_collection_types(user: @current_user)
+      teams_array = all_types.all.select { |m| m.title == 'Team' }
+      teams = CollectionType.where(id: teams_array.map(&:id))
+      @authorized_collection_types = teams
+      return teams
     end
 
     # Return or yield the first type in the list. This is used when the list

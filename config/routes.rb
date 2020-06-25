@@ -79,9 +79,20 @@ Rails.application.routes.draw do
       get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
     end
 
-    get 'dashboard/my/teams', controller: 'my/teams', action: :index
-    get 'dashboard/my/projects', controller: 'my/teams', action: :index
+#    get 'dashboard/my/teams', controller: 'my/teams', action: :index
+#    get 'dashboard/my/projects', controller: 'my/teams', action: :index
 
+  end
+
+  scope module: :hyrax do
+
+    scope :dashboard do
+      namespace :my do
+    
+        resources :teams, only: :index
+
+      end
+    end
   end
 
   # override ProfilesController
@@ -178,7 +189,6 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     scope module: :my do
-
       # cart items
       post 'add_to_cart', action: :create, controller: :cart_items
       post 'batch_add_to_cart', action: :batch_create, controller: :cart_items
@@ -208,6 +218,7 @@ Rails.application.routes.draw do
       put 'clear_request', action: :clear_request, controller: :request_managers, as: 'clear_request'
       put 'deny_download', action: :deny_download, controller: :request_managers, as: 'deny_download'
       put 'edit_expiration', action: :edit_expiration, controller: :request_managers, as: 'edit_expiration'
+
     end
   end
 

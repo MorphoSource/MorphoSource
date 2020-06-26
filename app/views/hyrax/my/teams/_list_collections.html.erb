@@ -9,23 +9,16 @@
   data-post-delete-url="<%= is_admin_set ? hyrax.admin_admin_set_path(id) : hyrax.dashboard_collection_path(id) %>">
 
   <td>
-zzz
-    <% if collection_presenter.allow_batch? %>
-        <input type="checkbox" name="batch_document_ids[]" id="batch_document_<%= id %>" value="<%= id %>" class="batch_document_selector"
-               data-hasaccess="<%= (can?(:edit, collection_presenter.solr_document)) %>" />
-    <% else %>
-        <input type="checkbox" class="disabled" disabled=true />
-    <% end %>
-  </td>
-  <td>
-    <div class="thumbnail-title-wrapper">
-      <div class="thumbnail-wrapper">
+      <div class="team-logo">
         <% if (collection_presenter.thumbnail_path == nil) %>
           <span class="<%= Hyrax::ModelIcon.css_class_for(Collection) %> collection-icon-small"></span>
         <% else %>
           <%= image_tag(collection_presenter.thumbnail_path) %>
         <% end %>
       </div>
+  </td>
+  <td>
+    <div class="thumbnail-title-wrapper">
       <%= link_to collection_presenter.show_path, id: "src_copy_link#{id}" do %>
         <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>
         <%= collection_presenter.title_or_label %>
@@ -57,12 +50,12 @@ zzz
       </div>
     </div>
   </td>
-  <td class="collection_type">
-    <%= collection_presenter.collection_type_badge %>
-  </td>
-  <td><%= collection_presenter.permission_badge %></td>
-  <td><%= collection_presenter.total_viewable_items %></td>
+  <td><%= collection_presenter.organization&.title&.first %></td>
+  <td><%= collection_presenter.total_items %></td>
+  <%#= collection_presenter.total_viewable_items %>
   <td class="date"><%= collection_presenter.modified_date.try(:to_formatted_s, :standard) %> </td>
+  <td><%= collection_presenter.membership(current_user) %></td>
+  <td><%= collection_presenter.permission_badge %></td>
   <td>
     <% if collection_presenter.solr_document.admin_set? %>
       <%= render '/hyrax/my/admin_set_action_menu', admin_set_presenter: collection_presenter %>

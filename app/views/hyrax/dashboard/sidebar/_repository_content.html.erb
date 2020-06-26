@@ -1,8 +1,14 @@
   <li class="h5"><%= t('hyrax.admin.sidebar.repository_objects') %></li>
 
-  <%= menu.nav_link(hyrax.my_collections_path,
+  <%# todo: need to setup the my teams/projects paths using helper %>
+  <%= menu.nav_link('/dashboard/my/teams',
                     also_active_for: hyrax.dashboard_collections_path) do %>
     <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.teams') %></span>
+  <% end %>
+
+  <%= menu.nav_link('/dashboard/my/projects',
+                    also_active_for: hyrax.dashboard_collections_path) do %>
+    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.projects') %></span>
   <% end %>
 
   <%= menu.nav_link(hyrax.my_collections_path,

@@ -116,7 +116,7 @@ namespace :morphosource do
   end
 
   desc 'Set up MS dev team user accounts'
-  task :create_users => :environment do
+  task :create_production_users => :environment do
     emails = Morphosource.ms_init_usr.split(',')
     password = Morphosource.ms_init_pw
     admin = Role.where("name = 'admin'")[0] || Role.create(name: 'admin')
@@ -134,7 +134,28 @@ namespace :morphosource do
     if !User.find_by(email: test_usr)
       User.create(email: test_usr, password: test_pw)
     end
+  end
 
+  desc 'Set up MS development user accounts'
+  task :create_development_users => :environment do
+    defaults = Morphosource::Users::Defaults
+    # create user accounts
+    admin = User.create(defaults::ADMIN)
+    contributor = User.create(defaults::CONTRIBUTOR)
+    registered = User.create(defaults::REGISTERED)
+    # assign admin to admin role
+    admins = Role.find_or_create_by(name: 'admin')
+    admins.users += [admin]
+    admins.save
+    # assign contributor to contributor role
+    contributors = Role.find_or_create_by(name: 'contributor')
+    contributors.users += [contributor]
+    contributors.save
+  end
+
+  desc 'Set up Admin Role'
+  task :create_admin_role => :environment do
+    Role.find_or_create_by(name: 'admin')
   end
 
   desc 'Set up Team and Project collection types'
@@ -143,16 +164,22 @@ namespace :morphosource do
     project = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
     Hyrax::CollectionTypes::CreateService.add_default_participants(team.id)
     Hyrax::CollectionTypes::CreateService.add_default_participants(project.id)
-    puts 'Team and Project collection types created'
   end
 
-  desc 'Set Up Contributor Group for Users'
-  task :create_contributor_group => :environment do
-    if Role.find_by(name: 'contributor')
-      puts 'Contributor role already exists'
-    else
-      Role.create(name: 'contributor')
-      puts 'Contributor role created'
-    end
+  desc 'Set Up Contributor Role'
+  task :create_contributor_role => :environment do
+    Role.find_or_create_by(name: 'contributor')
+  end
+
+  desc 'MorphoSource Setup'
+  task :setup  => :environment do
+    # default admin set
+    Rake::Task["hyrax:default_admin_set:create"].invoke
+    # team and project collection types
+    Rake::Task['morphosource:create_collection_types'].invoke
+    # admin role
+    Rake::Task['morphosource:create_admin_role'].invoke
+    # contributor role
+    Rake::Task['morphosource:create_contributor_role'].invoke
   end
 end

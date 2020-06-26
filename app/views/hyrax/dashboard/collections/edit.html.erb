@@ -1,7 +1,7 @@
 <% provide :page_title, construct_page_title( t('.header', type_title: @collection.collection_type.title, title: @form.title.first) ) %>
 
 
-<% if @collection.team? or @collection.project? %>
+<% if @collection.team? or @collection.project? and request_params.exclude?('hyrax') %>
 
 	<div class="row">
 	  <div class="col-md-12">

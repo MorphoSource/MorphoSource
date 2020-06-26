@@ -26,7 +26,7 @@
 				<%= presenter.raw_or_derived %> media 
 		    <%= link_to(this_media_member.link_name, contextual_path(this_media_member, @presenter)) %> 
 			 	(this media) was created by processing raw media 
-				<% if @presenter.is_absentee_parent == true %>
+				<% if @presenter.is_absentee_parent == true || !parent_member.present? %>
 				 	(unavailable)
 				<% else %>
 				 	<%= link_to(parent_member.link_name, contextual_path(parent_member, @presenter)) %>

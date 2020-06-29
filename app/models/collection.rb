@@ -60,6 +60,13 @@ class Collection < ActiveFedora::Base
     managers + editors + depositors + downloaders + viewers
   end
 
+  def add_users_to_group(group, user_ids)
+    user_ids.each do |u_id|
+      u = User.find_by_user_key(u_id)
+      group.users << u unless group_members.include? u
+    end
+  end
+
   def first_parent
     id = member_of_collection_ids.first
     id ? Collection.find(id) : nil

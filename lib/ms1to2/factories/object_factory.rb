@@ -53,7 +53,7 @@ module Ms1to2
       end
 
       def derive_depositor(user_id)
-        ms1_input_data.find(:ca_users, Array(user_id).first, :email).first
+        Array(user_id).first
       end
 
       def derive_collection_id(project_id)

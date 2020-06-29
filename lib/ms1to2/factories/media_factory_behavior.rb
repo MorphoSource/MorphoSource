@@ -8,7 +8,7 @@ module Ms1to2
       end
 
       def derive_mf_id(id)
-        hyraxify("M"+id.to_s)
+        hyraxify(id.to_s)
       end
 
       def derive_special_fields_mf(mf, mg, parent_id)
@@ -29,7 +29,11 @@ module Ms1to2
           :y_spacing => derive_y_spacing(mg),
           :z_spacing => derive_z_spacing(mg),
           :modality => derive_modality(mg),
-          :visibility => derive_visibility(mf, mg)
+          :download_reviewer => derive_download_reviewer(mf[:reviewer_id]),
+          :visibility => derive_visibility(mf, mg),
+          :fileset_visibility => derive_fileset_visibility(mf, mg),
+          :fileset_accessibility => derive_fileset_accessibility(mf, mg),
+
         }
       end
 
@@ -123,10 +127,55 @@ module Ms1to2
         end
       end
 
-      def derive_visibility(mf, mg)
+      def ms1_publication_code(mf, mg)
+        # 2 is restricted download, 1 is open, 0 is private
         mf_p = mf[:published]&.first
         mg_p = mg[:published]&.first
-        (mf_p && mf_p.to_i > 0) || (!mf_p && mg_p && mg_p.to_i > 0) ? 'open' : 'restricted'
+        if mf_p.present?
+          mf_p.to_i
+        elsif mg_p.present?
+          mg_p.to_i
+        else
+          0
+        end
+      end
+
+      def public
+        Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+      end
+
+      def private
+        Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
+      end
+
+      def derive_visibility(mf, mg)
+        case ms1_publication_code(mf, mg)
+          when 2
+            public
+          when 1
+            public
+          else
+            private
+        end
+      end
+
+      def derive_fileset_visibility(mf, mg)
+        ''
+      end
+
+      def derive_fileset_accessibility(mf, mg)
+        case ms1_publication_code(mf, mg)
+          when 2
+            'restricted_download'
+          when 1
+            'open'
+          else
+            'private'
+        end
+      end
+
+      def derive_download_reviewer(reviewer_id)
+        Array(reviewer_id).first
       end
     end
   end

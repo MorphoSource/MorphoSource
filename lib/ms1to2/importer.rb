@@ -2,11 +2,11 @@ module Ms1to2
   class Importer
     attr_accessor :input_path, :media, :ie, :pe, :update, :update_only_if_no_file
 
-    def initialize(input_path, update=false, update_only_if_no_file=true)
+    def initialize(input_path, admin_user, update=false, update_only_if_no_file=true)
       @input_path = input_path
       @update = update
       @update_only_if_no_file = update_only_if_no_file
-      @julie = User.find_by(email: 'julia.m.winchester@gmail.com')
+      @admin_user = admin_user
       # ::Hyrax.config.whitelisted_ingest_dirs = input_path
     end
 
@@ -76,7 +76,7 @@ module Ms1to2
           coll_attrs = {
             :id => collection_id,
             :title => v[:title],
-            :depositor => @julie.user_key,
+            :depositor => v[:depositor].first,
             :visibility => 'open',
             :collection_type => coll_type
           }
@@ -85,17 +85,25 @@ module Ms1to2
           puts('Establishing collection permissions')
           ::Hyrax::Collections::PermissionsCreateService.create_default(
             collection: coll,
-            creating_user: @julie)
+            creating_user: User.find_by_user_key(v[:depositor].first)
+          )
+          coll.create_collection_groups
+          coll.add_users_to_group(coll.editors_group, v[:editors]) if v[:editors]
+          coll.add_users_to_group(coll.downloaders_group, v[:downloaders]) if v[:downloaders]
         end
       end
     end
 
     def import_standard(m)
-      del_col_ids = ( m == :BiologicalSpecimen ) ? true : false
+      opts = { :model => m.to_s }
+      opts[:depositor] = @admin_user.user_key if m != :BiologicalSpecimen
       csv_importer = ::Importer::CSVImporter.new(
         File.join(input_path, csvfile(m)),
         '',
-        { :depositor => @julie.user_key, :model => m.to_s } )
+        opts
+      )
+
+      del_col_ids = ( m == :BiologicalSpecimen ) ? true : false
       csv_importer.import_all(del_col_ids)
     end
 
@@ -119,7 +127,6 @@ module Ms1to2
           # prepare
           attrs = combined_table[id]
           attrs.delete(:collection_id)
-          attrs = attrs.merge({ :depositor => @julie.user_key })
           csv_importer = ::Importer::CSVImporter.new('', input_path, { :model => to_model(id) })
 
           if !to_model(id).to_s.constantize.exists?(id)
@@ -136,13 +143,13 @@ module Ms1to2
     end
 
     def to_model(id)
-      case id[0]
-      when 'M'
-        :Media
-      when 'I'
-        :ImagingEvent
-      when 'P'
-        :ProcessingEvent
+      case id.sub(/^[0]*/,"")[0]
+        when 'I'
+          :ImagingEvent
+        when 'P'
+          :ProcessingEvent
+        else
+          :Media
       end
     end
 
@@ -214,7 +221,7 @@ module Ms1to2
     end
 
     def coll_models
-      [:BiologicalSpecimen]
+      [:Media]
     end
 
     def update_models

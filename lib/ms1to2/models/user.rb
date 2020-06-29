@@ -66,6 +66,12 @@ module Ms1to2
           'DXF' => '',
           'VRML' => '',
           'Wavefron OBJ' => ''
+        },
+        :userclass => {
+          '1' => true,
+          '50' => false,
+          '100' => false,
+          '255' => false
         }
       }
 
@@ -82,7 +88,8 @@ module Ms1to2
           :registered_on => :created_at,
           :state => :state,
           :terms_conditions => :terms_read,
-          :user_id => :ms_id
+          :user_id => :ms_id,
+          :userclass => :contributor
         }
       end
 

@@ -5,13 +5,15 @@ module Ms1to2
         {
           :name => :title,
           :abstract => :description,
-          :created_on => :date_uploaded
+          :created_on => :date_uploaded,
+          :full_access_users => :editors,
+          :read_access_users => :downloaders
         }
       end
 
       def expected_special_fields
-        [:depositor]
+        [:depositor, :visibility]
       end
     end
-end
+  end
 end 

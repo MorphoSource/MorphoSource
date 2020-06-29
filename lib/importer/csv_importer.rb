@@ -26,8 +26,8 @@ module Importer
     def import_all(delete_collection_ids=false)
       load_checksums if checksum_file
       count = 0
-      parser.each do |attributes|
-        attrs = attributes.merge(deposit_attributes)
+      parser.each do |attrs|
+        attrs = attrs.merge(deposit_attributes) if depositor.present?
         if attrs[:id]&.first && model.constantize.exists?(attrs[:id]&.first)
           next
         end

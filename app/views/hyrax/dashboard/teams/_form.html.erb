@@ -1,4 +1,4 @@
-<% content_for :body_css_classes do %>showcase showcase-edit teams<% end %> 
+<% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
 
 <%= simple_form_for @form, url: [hyrax, :dashboard, @form], wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
@@ -13,9 +13,9 @@
          · <%= @bso_member_count %> <%= 'Specimen'.pluralize(@bso_member_count) %>
       <% end %>
       <% if @cho_member_count > 0 %>
-         · <%= @cho_member_count %> CHO 
+         · <%= @cho_member_count %> CHO
       <% end %>
-    </span>              
+    </span>
   </div>
   <div class="col-xs-3 show-actions text-right">
 
@@ -35,9 +35,7 @@
             <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
                         hyrax.my_works_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
                         class: 'btn btn-primary' %>
-            <%= link_to t('hyrax.dashboard.collections.actions.create_new_media_in_' + @presenter.collection_type_title + '.label'),
-                        '/submissions/new?' + @presenter.collection_type_title.downcase + '=' + @presenter.id,
-                        class: 'btn btn-primary' %>
+            <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
 
             <% if @collection.team? && @presenter.collection_type_is_nestable? %>
 
@@ -70,8 +68,8 @@
           </li>
         </ul>
     <% end %>
-  
-  </div>  
+
+  </div>
 
 
   <div class="panel panel-default tabs teams" id="collection-edit-controls">
@@ -98,7 +96,7 @@
       <%# end %>
       <li role="presentation">
         <a href="#details" aria-controls="details" role="tab" data-toggle="tab" aria-expanded="true">
-          <i class="fas fa-newspaper" aria-hidden="true"></i> DETAILS        
+          <i class="fas fa-newspaper" aria-hidden="true"></i> DETAILS
         </a>
       </li>
 
@@ -115,7 +113,7 @@
         <% if @collection.team? && @current_user.can?(:edit, @collection) %>
           <li role="presentation">
             <a href="#organization" aria-controls="organization" role="tab" data-toggle="tab" aria-expanded="true">
-              <i class="fas fa-university" aria-hidden="true"></i> ORGANIZATION              
+              <i class="fas fa-university" aria-hidden="true"></i> ORGANIZATION
             </a>
           </li>
         <% end %>
@@ -123,7 +121,7 @@
         <% if @collection.sharable? %>
         <li role="presentation">
           <a href="#members" aria-controls="members" role="tab" data-toggle="tab" aria-expanded="true">
-            <i class="fas fa-users-cog" aria-hidden="true"></i> MEMBERS        
+            <i class="fas fa-users-cog" aria-hidden="true"></i> MEMBERS
           </a>
         </li>
         <% end %>
@@ -141,7 +139,7 @@
               <%= render 'tab_details', f: f %>
           </div>
         </div>
-      </div> 
+      </div>
 
       <% if @form.persisted? %>
 
@@ -177,9 +175,8 @@
               <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
                           hyrax.my_works_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
                           class: 'btn btn-primary' %>
-              <%= link_to t('hyrax.dashboard.collections.actions.create_new_media_in_' + @presenter.collection_type_title + '.label'),
-                          '/submissions/new?' + @presenter.collection_type_title.downcase + '=' + @presenter.id,
-                          class: 'btn btn-primary' %>
+
+              <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
             </div>
           <% end %>
 
@@ -195,12 +192,12 @@
             <% if can? :deposit, @presenter.solr_document %>
               <div class="row">
                 <div class="col-sm-6 col-md-5 col-lg-4 col-xl-2 pull-right tab-note">
-                  <i>Media represent objects. To add a new 
+                  <i>Media represent objects. To add a new
                   object, add media representing that object.</i>
                 </div>
               </div>
             <% end %>
-            
+
             <%= render 'bso_filters' %>
             <%= render 'hyrax/teams/tab_bso' %>
           </div>
@@ -214,12 +211,12 @@
             <% if can? :deposit, @presenter.solr_document %>
               <div class="row">
                 <div class="col-sm-6 col-md-5 col-lg-4 col-xl-2 pull-right tab-note">
-                  <i>Media represent objects. To add a new 
+                  <i>Media represent objects. To add a new
                   object, add media representing that object.</i>
                 </div>
               </div>
             <% end %>
-            
+
             <%= render 'cho_filters' %>
             <%= render 'hyrax/teams/tab_cho' %>
           </div>

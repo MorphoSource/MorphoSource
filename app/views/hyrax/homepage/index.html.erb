@@ -4,17 +4,12 @@
 </div>
 <% if @presenter.display_share_button? %>
 <div class="home-share-work text-center">
-  <% if signed_in? %>
+  <% if signed_in? && current_user.admin? %>
     <%= link_to '/submissions/new', class: "btn btn-primary btn-lg" do %>
-      <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('hyrax.share_button') %>
+      <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('morphosource.homepage.share_button') %>
     <% end %>
-  <% else %>
-    <%= link_to hyrax.my_works_path,
-      class: "btn btn-primary btn-lg" do %>
-      <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('hyrax.share_button') %>
-    <% end %>
-  <% end %>
-  <p class="terms-of-use"><%= link_to t(:'hyrax.pages.tabs.terms_page'), hyrax.terms_path %></p>
+    <p class="terms-of-use"><%= link_to t(:'hyrax.pages.tabs.terms_page'), hyrax.terms_path %></p>
+  <% end %>  
 </div>
 <% end %>
 

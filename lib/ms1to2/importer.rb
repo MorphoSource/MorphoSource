@@ -2,11 +2,11 @@ module Ms1to2
   class Importer
     attr_accessor :input_path, :media, :ie, :pe, :update, :update_only_if_no_file
 
-    def initialize(input_path, update=false, update_only_if_no_file=true)
+    def initialize(input_path, admin_user, update=false, update_only_if_no_file=true)
       @input_path = input_path
       @update = update
       @update_only_if_no_file = update_only_if_no_file
-      @admin_user = User.find_by(email: 'julia.m.winchester@gmail.com') # Can be changed
+      @admin_user = admin_user
       # ::Hyrax.config.whitelisted_ingest_dirs = input_path
     end
 

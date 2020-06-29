@@ -39,7 +39,7 @@ module Ms1to2
         [:depositor, :parent_id, :collection_id, :part, :side, :description, :cite_as, 
          :available, :unit, :funding_attribution,
          :license, :rights_holder, :x_spacing, 
-         :y_spacing, :z_spacing, :visibility, :download_reviewer]
+         :y_spacing, :z_spacing, :download_reviewer, :visibility, :fileset_visibility, :fileset_accessibility]
       end
     end
   end

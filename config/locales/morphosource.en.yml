@@ -2,6 +2,8 @@ en:
   morphosource:
     homepage:
       about_html: 'Welcome to MorphoSource 2.0, alpha! We hope you enjoy the new look and functionality.  Please be patient as this version is only meant to showcase specimen record pages, media file pages, and new improved 3D previews with measurement and annotation support. Even this home page is just a place holder. Only a small subset of the media available on MorphoSource 1.0 is currently available here and the only way to explore it is by visiting the collections page. That is, search and browse utilities are not yet available. Finally, file uploading and editing is not yet enabled. We look forward to your feedback on the features we have implemented so far! We are aiming for a more fully featured beta version by October 2019.'
+      share_button: 'Share Your Work'
+      my_works_button: 'My Works'
     admin:
       sidebar:
         downloads: 'Downloads'
@@ -26,6 +28,8 @@ en:
           file_visibility: 'File Visibility'
           date_downloaded: 'Date Downloaded'
           publication_status: 'Publication Status'
+        works:
+          submission_button: 'New Submission'
       profiles:
         edit_primary:
           address: "Address"

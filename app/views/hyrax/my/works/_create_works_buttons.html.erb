@@ -1,0 +1,26 @@
+<!-- new submission button - contributors/admins -->
+<% if current_user.contributor? || current_user.admin? %>
+  <%= link_to '/submissions/new', class: "btn btn-primary" do %>
+    <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('morphosource.dashboard.my.works.submission_button') %>
+  <% end %>
+<% end %>
+
+<!-- create single work buttons - admin only -->
+<% if current_user.admin? %>
+  <% if Flipflop.batch_upload? %>
+    <%= link_to(
+          t(:'helpers.action.batch.new'),
+          '#',
+          data: { behavior: "select-work", target: "#worktypes-to-create", 'create-type' => 'batch' },
+          class: 'btn btn-primary'
+        ) %>
+  <% end %>
+  <%= link_to(
+        t(:'helpers.action.work.new'),
+        '#',
+        data: { behavior: "select-work", target: "#worktypes-to-create", 'create-type' => 'single' },
+        class: 'btn btn-primary'
+      ) %>
+<% end %>
+
+<%= render '/shared/select_work_type_modal', create_work_presenter: @create_work_presenter if @create_work_presenter.many? %>

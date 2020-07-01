@@ -36,7 +36,7 @@ module Morphosource::Derivatives::Processors
     def create_mesh_derivative
       @glb_name = File.basename(source_path, '.*') + '.glb'
       @draco_glb_name = File.basename(source_path, '.*') + '-draco.glb'
-      @unit = directives.fetch(:unit, 'm').to_s.downcase.presence || 'm'
+      @unit = directives.fetch(:unit, 'mm').to_s.downcase.presence || 'mm'
       @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
       @glb_path = File.join(tmp_dir_path, glb_name)

@@ -40,6 +40,9 @@ module Ms1to2
           if mf[:derived_from_media_file_id].presence
             # standard child media, media and processing event
             process_media_pe(ms1_id, mf, mg)
+          elsif mf[:sibling_id].presence
+            # media with absentee parent but with sibling
+            process_media_ie_pe(ms1_id, mf, mg, mf[:sibling_id].map(&:to_i))
           else
             # media with absentee parent, media, imaging, and processing event
             process_media_ie_pe(ms1_id, mf, mg)
@@ -64,12 +67,17 @@ module Ms1to2
         process_mf(mf_id, mf, mg, pe_id)
       end
 
-      def process_media_ie_pe(ms1_id, mf, mg)
-        ie_id = derive_ie_id(ms1_id)
+      def process_media_ie_pe(ms1_id, mf, mg, sibling_ids = [])
+        if sibling_ids.present? && ms1_id.to_i != ([ms1_id.to_i] + sibling_ids).min
+          ie_id = derive_ie_id(([ms1_id.to_i] + sibling_ids).min)
+        else 
+          ie_id = derive_ie_id(ms1_id)
+          process_ie(ie_id, mg)
+        end
+
         pe_id = derive_pe_id(ms1_id)
         mf_id = derive_mf_id(ms1_id)
 
-        process_ie(ie_id, mg)
         process_pe(pe_id, mg, ie_id)
         process_mf(mf_id, mf, mg, pe_id)
       end

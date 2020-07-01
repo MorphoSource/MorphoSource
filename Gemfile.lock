@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/MorphoSource/pul_uv_rails.git
-  revision: 58492386d45f624f5afe205cb8de5749a474cc80
-  branch: aleph
+  revision: adf8606fd83c69cfe2f9cd3d7e6e6c90aebf864d
+  branch: aleph-pre11
   specs:
     pul_uv_rails (2.9)
 

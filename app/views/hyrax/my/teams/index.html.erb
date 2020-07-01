@@ -14,14 +14,10 @@
 </script>
 
 <% provide :page_header do %>
-  <h1><span class="fa fa-folder-open" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar." + @collection_list_type.pluralize) %></h1>
-<% end %>
-
-<div class="collections-wrapper">
-  <section class="tabs-row">
-    <!-- Page tabs -->
-    <nav><%#= render 'tabs' if @managed_collection_count > 0 %></nav>
-
+  <div class="col-xs-9 title">
+    <h1><span class="fa fa-folder-open" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar." + @collection_list_type.pluralize) %></h1>
+  </div>
+  <div class="col-xs-3 show-actions text-right">
     <% if can?(:create_any, Collection) && @collection_type_list_presenter.any? %>
       <% if @collection_type_list_presenter.many? %>
         <% # modal to select type %>
@@ -37,8 +33,21 @@
         <%= link_to(t('helpers.action.' + @collection_list_type + '.new'), append_collection_type_url(new_dashboard_collection_path, @collection_type_list_presenter.first_collection_type.id), class: 'btn btn-primary') %>
       <% end %>
     <% end %>
-  </section>
-
+  </div>
+  <div class="row">
+    <div class="col-xs-1">Manager</div>
+    <div class="col-xs-1"><%= @collection_count_for_manager %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-1">Editor</div>
+    <div class="col-xs-1"><%= @collection_count_for_editor %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-1">Viewer</div>
+    <div class="col-xs-1"><%= @collection_count_for_viewer %></div>
+  </div>
+<% end %>
+<div class="collections-wrapper">
   <%# Collections list %>
   <div class="panel panel-default collections-panel-wrapper">
     <div class="panel-heading">

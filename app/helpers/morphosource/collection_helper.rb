@@ -3,21 +3,6 @@ module Morphosource
   module CollectionHelper
     include MediaFinderHelper
 
-    def docs_by_collection_type(docs)
-      filtered_docs = []
-      docs.each do |doc|
-        collection = Collection.find(doc.id)
-        if page_is_team?
-          filtered_docs << doc if collection.team?
-        elsif page_is_project?
-          filtered_docs << doc if collection.project?
-        else
-          filtered_docs << doc
-        end
-      end
-      filtered_docs
-    end
-
     def page_is_team?
       path_info.include?("teams")      
     end

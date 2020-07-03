@@ -31,7 +31,7 @@ def import_mesh(filepath):
 
     stdout = io.StringIO()
     with redirect_stdout(stdout):
-        import_func_wrapper(import_func[file_suffix(filepath)], filepath=filepath)
+        import_func_wrapper(import_func[file_suffix(filepath).lower()], filepath=filepath)
         stdout.seek(0)
         return stdout.read()
 
@@ -51,6 +51,19 @@ def clean_decimate_modifiers(obj):
     for m in obj.modifiers:
         if(m.type=="DECIMATE"):
             obj.modifiers.remove(modifier=m)
+
+def need_to_apply_material(obj):
+    materials = obj.data.materials
+    if not materials:
+        return True
+    elif len(materials) > 1:
+        return False
+    elif materials[0].use_nodes and len(materials[0].node_tree.nodes) > 2:
+        return False
+    elif [round(x, 1) for x in list(materials[0].diffuse_color)] == [0.8, 0.8, 0.8, 1.0]:
+        return True
+    else:
+        return False
 
 if "--" not in argv:
     argv = [] # as if no args are passed
@@ -82,10 +95,25 @@ if (args.input and args.output and args.unit and
                 for obj in bpy.data.objects:
                     if type(obj.data) == bpy_types.Mesh:
                         # Apply material (only works in Blender 2.8)
-                        # if not obj.data.materials:
-                        #     mat = bpy.data.materials.new(name="Material")
-                        #     mat.use_nodes = True
-                        #     obj.data.materials.append(mat)
+                        if need_to_apply_material(obj):
+                            print('Applying Material')
+                            obj.data.materials.clear()
+                            
+                            # Create and apply material
+                            mat = bpy.data.materials.new("material")
+                            mat.use_nodes = True
+                            bsdf = mat.node_tree.nodes["Principled BSDF"]
+
+                            if obj.data.vertex_colors and len(obj.data.vertex_colors):
+                                vcol = mat.node_tree.nodes.new(type="ShaderNodeVertexColor")
+                                vcol.layer_name = obj.data.vertex_colors[0].name
+                                mat.node_tree.links.new(vcol.outputs[0], bsdf.inputs[0])
+                            else:
+                                bsdf.inputs[0].default_value = (0.2, 0.2, 0.125, 1) # Base color RGBA
+                                bsdf.inputs[5].default_value = 2 # Specular
+
+                            # Apply?
+                            obj.active_material = mat
 
                         #bpy.context.scene.objects.active = obj
                         # the api has been changed in blender 2.8

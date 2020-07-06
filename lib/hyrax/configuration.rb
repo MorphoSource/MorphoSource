@@ -379,7 +379,7 @@ module Hyrax
 
     attr_writer :teams_show_work_item_rows
     def teams_show_work_item_rows
-      @teams_show_work_item_rows ||= 40 # default rows per page on teams/project show view
+      @teams_show_work_item_rows ||= 10 # default rows per page on teams/project show view
     end
 
     attr_writer :teams_rows_per_page_range

@@ -166,10 +166,17 @@ RSpec.describe Media do
       end
       context 'fileset_accessibility is nil' do
         before do
+          allow(subject).to receive(:fileset_accessibility).and_return(nil)
+        end
+        it { expect(subject.restricted?).to be(false) }
+        it { expect(subject.open?).to be(false) }
+      end
+      context 'fileset_accessibility is empty' do
+        before do
           allow(subject).to receive(:fileset_accessibility).and_return([])
         end
         it { expect(subject.restricted?).to be(false) }
-        it { expect(subject.open?).to be(true) }
+        it { expect(subject.open?).to be(false) }
       end
     end
 
@@ -268,7 +275,7 @@ RSpec.describe Media do
       context 'media does not have a fileset_accessibity set' do
         subject { described_class.new(title: ["Test Media Work"], visibility: open, fileset_visibility: [""], fileset_accessibility: nil) }
 
-        it { expect(subject.publication_status).to eq("open") }
+        it { expect(subject.publication_status).to eq("private") }
 
       end
     end

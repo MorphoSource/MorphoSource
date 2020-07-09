@@ -21,8 +21,8 @@ module Hyrax
         attrs = env.attributes
         #parts = attrs['part'].presence || ['Element unspecified']
         id = attrs['id'].presence || env.curation_concern.id.presence || ''
-        part = attrs['part']
-        media_type = attrs['media_type']
+        part = attrs['part'].presence || env.curation_concern.part.presence || ''
+        media_type = attrs['media_type'].presence || env.curation_concern.media_type.presence || ''
         # get the modality from the parent imaging event
         ie_modality = []
         if attrs['work_parents_attributes'].present?
@@ -43,6 +43,7 @@ module Hyrax
         end
         # MorphosourceHelper's generated_media_title method is shared by different actors
         # (e.g. media actor, IE actor)
+        byebug
         updated_title = generated_media_title(part, media_type, ie_modality)
         updated_title
       end

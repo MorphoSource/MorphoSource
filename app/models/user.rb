@@ -8,6 +8,8 @@ class User < ApplicationRecord
 
   # assign user a ms_id to use as user_key
   before_create :check_ms_id
+  # increment based on highest current id
+  before_create :reset_id_incrementer
 
   # Connects this user object to Hydra behaviors.
   include Hydra::User
@@ -51,7 +53,7 @@ class User < ApplicationRecord
       self.ms1_user = false
       self.ms1_password_hash = nil
     end
-  end 
+  end
 
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
@@ -274,4 +276,8 @@ class User < ApplicationRecord
     Role.find_by(name: 'contributor')
   end
 
+  # Fixes errors from incrementer not advancing to account for console-created users
+  def reset_id_incrementer
+    ActiveRecord::Base.connection.reset_pk_sequence!("users")
+  end
 end

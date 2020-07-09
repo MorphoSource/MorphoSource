@@ -6,13 +6,37 @@ RSpec.describe User, type: :model do
   let(:ms1_user)      { User.create(email: "test@test.com", password: "password", ms1_user: true, ms1_password_hash: 'hash') }
 
   describe 'after_database_authentication' do
-    before do 
+    before do
       ms1_user.after_database_authentication
     end
 
     it 'converts ms1_user to ms2 user' do
       expect(ms1_user.ms1_user).to be false
       expect(ms1_user.ms1_password_hash).to eq(nil)
+    end
+  end
+
+  describe 'reset_id_incrementer' do
+    describe 'creating a new user' do
+      context 'no users exist' do
+        before do
+          User.create(email: 'newUser@email.com', password: 'password')
+        end
+        it 'assigns an id of 1' do
+          expect(User.find(1)).to be_present
+        end
+      end
+      context 'other users exist' do
+        let!(:consoleUser1) { User.create(id: 5, email: 'console1@email.com', password: 'password') }
+        let!(:consoleUser2) { User.create(id: 10, email: 'console2@email.com', password: 'password') }
+        let!(:consoleUser3) { User.create(id: 15, email: 'console3@email.com', password: 'password') }
+        before do
+          User.create(email: 'newUser@email.com', password: 'password')
+        end
+        it 'assigns the next highest id' do
+          expect(User.find(16)).to be_present
+        end
+      end
     end
   end
 
@@ -108,7 +132,7 @@ RSpec.describe User, type: :model do
           expect(contributor_group.users).to include(another_user)
           expect(contributor_group.users).not_to include(user)
           expect(user.groups).not_to include('contributor')
-        end 
+        end
       end
     end
 

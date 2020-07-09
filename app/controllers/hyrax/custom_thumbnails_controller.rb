@@ -34,6 +34,7 @@ module Hyrax
           original_image.unlink
         end
         flash[:info] = "Custom thumbnail successfully updated."
+        work.save!
       else
         flash[:error] = "Error setting custom thumbnail."
       end

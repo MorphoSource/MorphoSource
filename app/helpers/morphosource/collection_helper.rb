@@ -11,6 +11,10 @@ module Morphosource
       path_info.include?("projects")      
     end
 
+    def collection_count_for(count)
+      count.to_s + ' ' + @collection_list_type.pluralize(count)
+    end
+
     def ms_collection_view_link(id, view)
       current_uri = path_info
       if current_uri.include?("dashboard/collections")

@@ -53,6 +53,10 @@ en:
       collection:
         new: "New Collection"
   hyrax:
+    admin:
+      sidebar:
+        teams: 'Teams'
+        projects: 'Projects'
     account_name:           "My Organization Account Id"
     directory:
       suffix:               "@example.org"

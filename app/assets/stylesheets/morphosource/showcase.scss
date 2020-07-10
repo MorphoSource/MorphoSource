@@ -42,6 +42,28 @@ html {
 .pb-0 {
   padding-bottom: 0 !important;
 }
+.d-block {
+  display: block;
+}
+.d-inline {
+  display: inline;
+}
+.d-inline-block {
+  display: inline-block;
+}
+.w-100 {
+  width: 100%;
+}
+.w-75 {
+  width: 75%;
+}
+.w-50 {
+  width: 50%;
+}
+.w-25 {
+  width: 25%;
+}
+
 .no-gutter > [class*='col-'] {
   padding-right:0 !important;
   padding-left:0 !important;
@@ -313,6 +335,10 @@ html {
       -webkit-flex: inherit;
     }
 
+  }
+
+  .collection-count .label {
+    width: 77px;
   }
 
 } /* / teams and projects show page styles */

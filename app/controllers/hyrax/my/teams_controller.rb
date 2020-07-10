@@ -54,7 +54,6 @@ module Hyrax
 
       # pagination methods
       def paginated_item_list
-byebug
         # Uses kaminari to paginate an array to avoid need for solr documents for items here
         Kaminari.paginate_array(@collection_docs_by_type, total_count: @collection_docs_count).page(current_page).per(rows_from_params)
       end
@@ -66,7 +65,6 @@ byebug
       def current_page
         page = request.params[:tpage].nil? ? 1 : request.params[:tpage].to_i
         page > total_pages ? total_pages : page
-byebug
       end
 
       # @return [Integer] total number of pages of viewable items

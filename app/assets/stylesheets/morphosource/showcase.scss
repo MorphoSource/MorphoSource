@@ -109,11 +109,13 @@ html {
   .paginate-wrapper > [class*='col-'] {
     text-align: center;
     white-space: nowrap;
+    font-size: 11px;
     div {
       white-space: nowrap;
       padding: 6px 12px;
     }
     .pagination {
+      margin:0;
       text-align: center;
       li {
         display: inline-block;

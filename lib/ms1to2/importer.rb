@@ -104,7 +104,7 @@ module Ms1to2
       )
 
       del_col_ids = ( m == :BiologicalSpecimen ) ? true : false
-      csv_importer.import_all(del_col_ids)
+      csv_importer.import_all(del_col_ids, update)
     end
 
     # Special case media methods
@@ -225,7 +225,7 @@ module Ms1to2
     end
 
     def update_models
-      [:Media]
+      models
     end
   end
 end

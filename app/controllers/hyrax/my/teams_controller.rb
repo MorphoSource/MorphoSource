@@ -37,10 +37,7 @@ module Hyrax
         @collection_count_for_downloader = 0
         @collection_docs_by_type = docs_by_collection_type(@response.docs)
         @collection_docs_count = @collection_docs_by_type.count
-
         @paged_collection_docs_by_type = paginated_item_list
-
-
         if page_is_team?
           @collection_list_type = "team"
           add_breadcrumb t(:'hyrax.admin.sidebar.teams'), hyrax.my_collections_path.sub!('collection', 'team')
@@ -76,31 +73,37 @@ module Hyrax
         request.params[:trows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:trows].to_i
       end
 
-
-
       def docs_by_collection_type(docs)
         filtered_docs = []
+        @visibility_options = []
+        collection_filter_params = filter_params('k_', request.params)
+
         docs.each do |doc|
           collection = Collection.find(doc.id)
           if (page_is_team? and collection.team?) or (page_is_project? and collection.project?)
             if collection.membership_of(current_user).include?('Manager')
               @collection_count_for_manager = @collection_count_for_manager + 1
-              filtered_docs << doc 
             elsif collection.membership_of(current_user).include?('Editor')
               @collection_count_for_editor = @collection_count_for_editor + 1
-              filtered_docs << doc 
             elsif collection.membership_of(current_user).include?('Depositor')
               @collection_count_for_depositor = @collection_count_for_depositor + 1
-              filtered_docs << doc 
             elsif collection.membership_of(current_user).include?('Viewer')
               @collection_count_for_viewer = @collection_count_for_viewer + 1
-              filtered_docs << doc 
             elsif collection.membership_of(current_user).include?('Downloader')
               @collection_count_for_downloader = @collection_count_for_downloader + 1
-              filtered_docs << doc 
+            else
+              byebug
+
             end          
+
+            visibility_to_compare = collection_filter_params['visibility'] || collection.visibility
+            if collection.visibility == visibility_to_compare 
+              filtered_docs << doc 
+              @visibility_options << collection.visibility
+            end
           end
         end
+        @visibility_options = @visibility_options.uniq
         filtered_docs
       end
 

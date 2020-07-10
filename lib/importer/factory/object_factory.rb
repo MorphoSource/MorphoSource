@@ -67,16 +67,14 @@ module Importer
           end
           FileUtils.mkdir_p(File.dirname(thumbnail_path))
           
-          Hydra::Derivatives::ImageDerivatives.create(
+          Morphosource::Derivatives::CroppedImageDerivatives.create(
             attributes[:thumbnail]&.first,
-            outputs: [{ 
+            outputs: [{
               label: :thumbnail,
-              format: 'jpg',
-              size: '200x150>',
               url: "file://#{thumbnail_path}",
-              layer: 0 
             }]
           )
+
           object.save!
         end
       end

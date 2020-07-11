@@ -23,13 +23,13 @@ module Importer
     end
 
     # @return [Integer] count of objects created
-    def import_all(delete_collection_ids=false, update=false)
+    def import_all(delete_collection_ids=false, update=false, update_models=[])
       load_checksums if checksum_file
       count = 0
       parser.each do |attrs|
         attrs = attrs.merge(deposit_attributes) if depositor.present?
         if attrs[:id]&.first && model.constantize.exists?(attrs[:id]&.first)
-          if update
+          if update && update_models.include?(model.to_sym)
             update_batch_object(attrs, delete_collection_ids)
           else
             next

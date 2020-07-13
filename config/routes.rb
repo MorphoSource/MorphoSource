@@ -119,11 +119,12 @@ Rails.application.routes.draw do
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  resources :submissions, only: [ :new, :create, :search_bso_ajax, :organization_default_media_fields] do
+  resources :submissions, only: [ :new, :create, :search_bso_ajax, :search_taxonomy_ajax, :organization_default_media_fields] do
     collection do
       # AJAX methods
       post 'search_po_ajax'
       post 'save_data'
+      get 'search_taxonomy_ajax'
       get 'organization_default_media_fields'
     end
   end

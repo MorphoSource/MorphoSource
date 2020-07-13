@@ -76,6 +76,8 @@ module Hyrax
       def docs_by_collection_type(docs)
         filtered_docs = []
         @visibility_options = []
+        @organization_options = []
+        @membership_options = []
         collection_filter_params = filter_params('k_', request.params)
 
         docs.each do |doc|
@@ -92,18 +94,24 @@ module Hyrax
             elsif collection.membership_of(current_user).include?('Downloader')
               @collection_count_for_downloader = @collection_count_for_downloader + 1
             else
-              byebug
-
+              # should not be here
             end          
-
             visibility_to_compare = collection_filter_params['visibility'] || collection.visibility
-            if collection.visibility == visibility_to_compare 
+            organization_to_compare = collection_filter_params['organization'] || collection.organization
+            membership_to_compare = collection_filter_params['membership'] || collection.membership_of(current_user).first
+            if collection.visibility == visibility_to_compare &&
+              collection.organization == organization_to_compare &&
+              collection.membership_of(current_user).first == membership_to_compare
               filtered_docs << doc 
               @visibility_options << collection.visibility
+              @organization_options << collection.organization if collection.organization.present?
+              @membership_options << collection.membership_of(current_user).first if collection.membership_of(current_user).first.present?
             end
           end
         end
         @visibility_options = @visibility_options.uniq
+        @organization_options = @organization_options.uniq
+        @membership_options = @membership_options.uniq
         filtered_docs
       end
 

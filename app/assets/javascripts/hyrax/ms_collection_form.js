@@ -63,4 +63,44 @@ $(document).ready(function() {
 
   } // end if filter form
 
+
+  // the following are taken from and overridden for teams and projects
+  // https://raw.githubusercontent.com/samvera/hyrax/v2.7.0/app/assets/javascripts/hyrax/collections.js
+  $('.delete-collection-button').on('click', handleDeleteCollection);
+
+  function handleDeleteCollection(e) {
+    e.preventDefault();
+    var $self = $(this),
+      $tr = $self.parents('tr'),
+      totalitems = $self.data('totalitems'),
+      // membership set to true indicates admin_set
+      membership = $self.data('membership') === true,
+      collectionId = $tr.data('id'),
+      modalId = '';
+
+    // Permissions denial
+    if ($(this).data('hasaccess') !== true) {
+      $('#collection-to-delete-deny-modal').modal('show');
+      return;
+    }
+    // Admin set with child items
+    if (totalitems > 0 && membership) {
+      $('#collection-admin-set-delete-deny-modal').modal('show');
+      return;
+    }
+    modalId = (totalitems > 0 ?
+      '#collection-to-delete-modal' :
+      '#collection-empty-to-delete-modal'
+    );
+    addDataAttributesToModal(modalId, ['id', 'post-delete-url'], $tr);
+    $(modalId).modal('show');
+  }
+
+  function addDataAttributesToModal(modalId, dataAttributes, $dataEl) {
+    // Remove and add new data attributes
+    dataAttributes.forEach(function(attribute) {
+      $(modalId).removeAttr('data-' + attribute).attr('data-' + attribute, $dataEl.data(attribute));
+    });
+  }
+
 })

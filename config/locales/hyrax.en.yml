@@ -114,14 +114,24 @@ en:
           actions: Action
           title: Taxonomy
     dashboard:
-
-
       my:
+        action:
+          team:
+            delete_confirmation_html: Are you sure you want to delete this team? This action cannot be undone.
+            delete_confirmation_no_items_html: Deleting this team will permanently remove it from the repository. Items in this team will remain in the repository. Are you sure you want to delete this team?
+          project:
+            delete_confirmation_html: Are you sure you want to delete this project? This action cannot be undone.
+            delete_confirmation_no_items_html: Deleting this project will permanently remove it from the repository. Items in this project will remain in the repository. Are you sure you want to delete this project?
+          view_team: View team
+          edit_team: Edit team
+          delete_team: Delete team
+          view_project: View project
+          edit_project: Edit project
+          delete_project: Delete project
+          
         heading:
           visibility: visibility
           collection_type: collection type
-
-
       collections:
         actions:
           add_media_to_Team:

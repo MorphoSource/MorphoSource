@@ -50,7 +50,9 @@
       </div>
     </div>
   </td>
-  <td><%= collection_presenter.organization&.title&.first %></td>
+  <% if page_is_team? %>
+    <td><%= collection_presenter.organization&.title&.first %></td>
+  <% end %>
   <td><%= collection_presenter.total_items %></td>
   <%#= collection_presenter.total_viewable_items %>
   <td class="date"><%= collection_presenter.modified_date.try(:to_formatted_s, :standard) %> </td>

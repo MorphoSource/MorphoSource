@@ -1,6 +1,10 @@
 <% id = collection_presenter.id %>
 <% ul_id = 'collection-action-dropdown-ul-' + id %>
-
+<% 
+view_action = "hyrax.dashboard.my.action.view_" + collection_type 
+edit_action = "hyrax.dashboard.my.action.edit_" + collection_type 
+delete_action = "hyrax.dashboard.my.action.delete_" + collection_type 
+%>
 <div class="btn-group">
   <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" type="button" id="dropdownMenu_<%= id %>" aria-haspopup="true" aria-expanded="false" aria-controls="<%= ul_id %>">
     <span class="sr-only"><%= t("hyrax.dashboard.my.sr.press_to") %> </span>
@@ -11,18 +15,18 @@
     <li role="menuitem" tabindex="-1">
       <%= link_to hyrax.dashboard_collection_path(id),
                   class: 'itemicon itemedit',
-                  title: t("hyrax.dashboard.my.action.view_collection") do %>
-        <%= t("hyrax.dashboard.my.action.view_collection") %>
+                  title: t(view_action)  do %>
+          <%= t(view_action) %>
       <% end %>
     </li>
     <li role="menuitem" tabindex="-1">
       <%= link_to "#",
                   class: 'itemicon itemtrash delete-collection-button',
-                  title: t("hyrax.dashboard.my.action.delete_collection"),
+                  title: t(delete_action),
                   data: { totalitems: collection_presenter.total_items ,
                           membership: collection_presenter.collection_type_is_require_membership? ,
                           hasaccess: (can?(:edit, collection_presenter.solr_document)) } do %>
-        <%= t("hyrax.dashboard.my.action.delete_collection") %>
+        <%= t(delete_action) %>
       <% end %>
     </li>
   </ul>

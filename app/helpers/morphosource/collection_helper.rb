@@ -11,8 +11,26 @@ module Morphosource
       path_info.include?("projects")      
     end
 
+    def collection_type
+      if page_is_team?
+        'team'
+      elsif page_is_project?
+        'project'
+      end
+    end
+
     def collection_count_for(count)
       count.to_s + ' ' + @collection_list_type.pluralize(count)
+    end
+
+    def ms_dashboard_my_collection_link
+      if page_is_team?
+        "/dashboard/my/teams"
+      elsif page_is_project?
+        "/dashboard/my/projects"
+      else
+        ""
+      end          
     end
 
     def ms_collection_view_link(id, view)
@@ -179,6 +197,20 @@ module Morphosource
       else
         'Team'
       end
+    end
+
+    def visibility_label(value)
+      case value
+      when 'open'
+        display_value = "Public"
+      when 'authenticated'
+        display_value = "Duke University"
+      when 'restricted'
+        display_value = "Private"
+      else
+        display_value = value
+      end
+      display_value
     end
 
     def publication_status_label(value)

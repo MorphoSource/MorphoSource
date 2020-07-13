@@ -4,7 +4,9 @@
   <tr>
     <th class="no-sort">&nbsp;<!-- thumbnail column --></th>
     <th><%= t("hyrax.dashboard.my.heading.title") %></th>
-    <th><%= t("hyrax.dashboard.my.heading.organization") %></th>
+    <% if page_is_team? %>
+      <th><%= t("hyrax.dashboard.my.heading.organization") %></th>
+    <% end %>
     <th><%= t("hyrax.dashboard.my.heading.media") %></th>
     <%#= t("hyrax.dashboard.my.heading.items") %>
     <th><%= t("hyrax.dashboard.my.heading.last_modified") %></th>

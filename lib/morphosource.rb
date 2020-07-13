@@ -3,6 +3,7 @@ module Morphosource
 
   autoload :Configurable
   autoload :Derivatives
+  autoload :Gbif
   autoload :IDigBio
   autoload :Minter
 

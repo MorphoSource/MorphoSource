@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
 
+  scope module: :morphosource do
+    scope module: :dashboard do
+      post 'dashboard/collections/:id', controller: :collection_members, action: :update_members, as: 'update_members'
+    end
+  end
+
   # Physical Object show case pages
   # todo: clean up and rewrite the rules
   scope module: :hyrax do
@@ -36,7 +42,7 @@ Rails.application.routes.draw do
       end
     end
     #    get 'projects/:id', to: 'teams#show'
-    #    get 'projects/:id/page/:page(.:format)', to: 'teams#index' 
+    #    get 'projects/:id/page/:page(.:format)', to: 'teams#index'
     resources :projects, controller: 'teams'
     # Note: the following route might effect pagination links
     namespace :dashboard do
@@ -170,6 +176,7 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     scope module: :dashboard do
       resources :collections, only: [:create]
+      # resources :collections, only: [:update_members]
     end
   end
 
@@ -186,5 +193,4 @@ Rails.application.routes.draw do
       patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
     end
   end
-
 end

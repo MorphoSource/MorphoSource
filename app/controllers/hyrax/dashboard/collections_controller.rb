@@ -7,12 +7,13 @@ module Hyrax
       include BreadcrumbsForCollections
       include MorphosourceHelper
       include Morphosource::CollectionHelper
-      
+
       with_themed_layout 'morphosource_dashboard'
       #with_themed_layout :decide_layout
 
-      before_action :filter_docs_with_read_access!, except: [:show, :edit]
-      before_action :remove_select_something_first_flash, except: :show
+      before_action :filter_docs_with_read_access!, except: [:show, :update, :edit]
+      before_action :filter_docs_with_edit_access!, only: [:update]
+      before_action :remove_select_something_first_flash, except: [:show]
 
       include Hyrax::Collections::AcceptsBatches
 
@@ -77,15 +78,15 @@ module Hyrax
           query_collection_members
         else
           # redirect dashboard page to edit page when ready
-          redirect_to '/dashboard/collections/' + @collection.id + '/edit' 
+          redirect_to '/dashboard/collections/' + @collection.id + '/edit'
         end
-        
+
       end
 
       def edit
-        if collection.team? or collection.project?        
+        if collection.team? or collection.project?
           # run the presenter and other methods (same as the team_presenter methods) necessary for
-          # displaying teams and project show page content 
+          # displaying teams and project show page content
           self.presenter_class = Hyrax::TeamPresenter
           presenter
           query_collection_members
@@ -155,7 +156,6 @@ module Hyrax
           process_banner_input
           process_logo_input
         end
-
         process_member_changes
         @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
         # we don't have to reindex the full graph when updating collection
@@ -392,11 +392,7 @@ module Hyrax
         end
 
         def remove_members_from_collection
-          batch.each do |pid|
-            work = ActiveFedora::Base.find(pid)
-            work.member_of_collections.delete @collection
-            work.save!
-          end
+          @collection.remove_member_objects(batch)
         end
 
         def move_members_between_collections
@@ -521,8 +517,8 @@ module Hyrax
           request.params[:crows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:crows].to_i
         end
 
-        def dedup(docs) 
-          unique_docs = [] 
+        def dedup(docs)
+          unique_docs = []
           unique_ids = []
           docs.each do |doc|
             unless unique_ids.include? doc.id
@@ -557,7 +553,7 @@ module Hyrax
         def params_for_query
           #params.merge(q: params[:cq])
 
-          # setting higher collection limit for paginating the array       
+          # setting higher collection limit for paginating the array
           params.merge(q: params[:cq]).merge({ 'rows' => '999999', 'page' => '1' })
         end
 
@@ -572,11 +568,13 @@ module Hyrax
           (url =~ URI.regexp(['http', 'https']))
         end
 
+
+
         # todo: delete later since we should be able to use morphosource_dashboard for all dashboard layout
         #def decide_layout
         #  layout = case action_name
         #           when 'edit'
-        #             if collection.team? 
+        #             if collection.team?
         #               'morphosource_dashboard'
         #             else
         #               'dashboard'

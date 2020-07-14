@@ -36,17 +36,18 @@ module Hyrax
     # @param model [Hydra::PCDM::Object, Hydra::PCDM::Collection]
     # @return [Boolean] true if the permissions have been successfully applied
     def apply_to(model:)
-      model.edit_groups += template.agent_ids_for(agent_type: 'group', access: 'manage')
+      model.edit_groups += (template.agent_ids_for(agent_type: 'group', access: 'manage') - model.edit_groups)
       # add edit access for collection editors group
-      model.edit_groups += template.agent_ids_for(agent_type: 'group', access: 'edit_works')
-      model.edit_users  += template.agent_ids_for(agent_type: 'user',  access: 'manage')
+      model.edit_groups += (template.agent_ids_for(agent_type: 'group', access: 'edit_works') - model.edit_groups)
+      model.edit_users  += (template.agent_ids_for(agent_type: 'user', access: 'manage') - model.edit_users)
       # add download access for collection downloaders group
-      model.download_groups += template.agent_ids_for(agent_type: 'group', access: 'download')
-      model.read_groups += template.agent_ids_for(agent_type: 'group', access: 'view')
-      model.read_users  += template.agent_ids_for(agent_type: 'user',  access: 'view')
+      model.download_groups += (template.agent_ids_for(agent_type: 'group', access: 'download') - model.download_groups)
+      model.read_groups += (template.agent_ids_for(agent_type: 'group', access: 'view') - model.read_groups)
+      model.read_users  += (template.agent_ids_for(agent_type: 'user', access: 'view') - model.read_users)
 
       true
     end
     alias to apply_to
+
   end
 end

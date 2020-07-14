@@ -88,72 +88,21 @@ $(function(){
     },
     focus: function(event, ui) {
         event.preventDefault();
-        $("#submission_taxonomy_search").val(build_name_no_formatting(ui.item.name, ui.item.rank));
+        $("#submission_taxonomy_search").val(ui.item.label);
     },
     source: function (request, response) {
       $.ajax({
-        url: "search_taxonomy_ajax?type[]=Taxonomy&id=NA&q=" + request.term,
+        url: "<%= find_taxonomy_autocomplete_url %>" + request.term,
         type: 'GET',
         dataType: 'json',
         complete: function (xhr, status) {
           var results = $.parseJSON(xhr.responseText);
-          console.log(results);
           response(results);
         }
       });
     },
-    autoFocus: false
-  }).autocomplete('instance')._renderItem = function(ul, item) {
-    // Overwrite default autocomplete list display
-    return $(
-      "<li><div style='border-bottom: 1px solid #D2D2D2;'>" + 
-      build_name(item.name, item.rank) + 
-      "<br/><span style='font-size: small;'>" + 
-      item.higher_taxonomy + 
-      "</span><br/>" +
-      build_source_info(item.gbif, item.synonym_correction, item.ms) + 
-      "</div></li>"
-    ).appendTo(ul);
-  };
-
-  var build_name = function(name, rank) {
-    var s = "";
-    if (rank) {
-      if (rank == 'GENUS' || rank == 'SPECIES' || rank == 'SUBSPECIES') {
-        s = s + "<i>" + name + "</i>";
-      } else {
-        s = s + name;
-      }
-      s = s + " (" + rank.toLowerCase() + ")";
-    } else {
-      s = s + "<i>" + name + "</i>";
-    }
-    return s;
-  }
-
-  var build_name_no_formatting = function(name, rank) {
-    var s = name;
-    if (rank) {
-      s = s + " (" + rank.toLowerCase() + ")";
-    }
-    return s;
-  }
-
-  var build_source_info = function(gbif, synonym_correction, ms) {
-    sourceChunks = [];
-    if (gbif) {
-      sourceChunks.push('GBIF Taxonomy');
-    }
-    if (synonym_correction) {
-      sourceChunks.push('Suggested Accepted Taxon');
-    }
-    if (ms) {
-      sourceChunks.push('In MorphoSource');
-    }
-    return sourceChunks.join(' · ');
-  }
-
-
+    autoFocus: true
+  });
 });
 </script>
 

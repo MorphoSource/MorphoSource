@@ -9,7 +9,7 @@ class SubmissionsController < ApplicationController
   include Morphosource::PermissionsHelper
   include Morphosource::LinkedTeams::LinkedTeamsManagement
 
-  load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, :save_data, :organization_default_media_fields]
+  load_and_authorize_resource except: [:search_po_ajax, :save_data, :organization_default_media_fields]
 
   before_action :instantiate_work_forms
 
@@ -52,15 +52,6 @@ class SubmissionsController < ApplicationController
     respond_to do |format|
       format.js
     end
-  end
-
-  def search_taxonomy_ajax
-    @submission = Submission.new()
-    search_term = params[:q]
-    gbif_taxa = Morphosource::GbifSearchService.call({ 'name' => search_term })
-    ms_taxa = Qa::Authorities::FindTaxonomies.new().search_submission(search_term, self)
-
-    render :json => gbif_taxa[:results] + ms_taxa
   end
 
   def organization_default_media_fields

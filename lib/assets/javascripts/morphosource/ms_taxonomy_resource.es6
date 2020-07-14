@@ -22,6 +22,8 @@ export default class TaxonomyResource {
             taxonomy_subgenus,
             taxonomy_species,
             taxonomy_subspecies,
+            trusted,
+            gbif_key,
             depositor,
             depositor_link
         ) {
@@ -44,6 +46,8 @@ export default class TaxonomyResource {
             this.taxonomy_subgenus = taxonomy_subgenus
             this.taxonomy_species = taxonomy_species
             this.taxonomy_subspecies = taxonomy_subspecies
+            this.trusted = trusted
+            this.gbif_key = gbif_key
             this.depositor = depositor
             this.depositor_link = depositor_link
             this.index = 0

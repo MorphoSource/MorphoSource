@@ -46,6 +46,8 @@ export default class MorphosourceResource extends Resource {
                                 taxonomy_subgenus: obj.taxonomy_subgenus,
                                 taxonomy_species: obj.taxonomy_species,
                                 taxonomy_subspecies: obj.taxonomy_subspecies,
+                                trusted: obj.trusted,
+                                gbif_key: obj.gbif_key,
                                 depositor: obj.depositor,
                                 depositor_link: obj.depositor_link
                               };

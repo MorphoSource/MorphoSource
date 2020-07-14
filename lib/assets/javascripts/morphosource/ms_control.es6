@@ -78,6 +78,8 @@ export default class RelationshipsControl {
           elem.taxonomy_subgenus,
           elem.taxonomy_species,
           elem.taxonomy_subspecies,
+          elem.trusted,
+          elem.gbif_key,
           elem.depositor,
           this.depositorLink(elem.depositor)
          ))

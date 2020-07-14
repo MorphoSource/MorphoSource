@@ -84,7 +84,7 @@ module Morphosource
     def prepare_result(taxon, synonym_correction=false)
       {
         name: taxon['canonicalName'],
-        key: taxon['key'],
+        gbif_key: taxon['key'],
         higher_taxonomy: higher_taxon_string(
           higher_taxon_terms.map { |t| taxon.has_key?(t) ? taxon[t] : '' }
         ),

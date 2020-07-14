@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Hyrax::TaxonomyPresenter do
 
   let(:work) { Taxonomy.new(title: ["taxonomy title"]) }
-  let(:taxonomy_terms) {[:taxonomy_domain, :taxonomy_kingdom, :taxonomy_phylum, :taxonomy_superclass, :taxonomy_class, :taxonomy_subclass, :taxonomy_superorder, :taxonomy_order, :taxonomy_suborder, :taxonomy_superfamily, :taxonomy_family, :taxonomy_subfamily, :taxonomy_tribe, :taxonomy_genus, :taxonomy_subgenus, :taxonomy_species, :taxonomy_subspecies, :trusted]}
+  let(:taxonomy_terms) {[:taxonomy_domain, :taxonomy_kingdom, :taxonomy_phylum, :taxonomy_superclass, :taxonomy_class, :taxonomy_subclass, :taxonomy_superorder, :taxonomy_order, :taxonomy_suborder, :taxonomy_superfamily, :taxonomy_family, :taxonomy_subfamily, :taxonomy_tribe, :taxonomy_genus, :taxonomy_subgenus, :taxonomy_species, :taxonomy_subspecies, :trusted, :gbif_key]}
 
   subject { described_class.new(SolrDocument.new(work.to_solr), nil) }
 

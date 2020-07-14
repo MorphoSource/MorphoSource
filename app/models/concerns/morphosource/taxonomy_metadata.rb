@@ -61,6 +61,10 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
+      property :gbif_key, predicate: ::RDF::Vocab::DWC.taxonomicStatus do |index|
+        index.as :stored_searchable, :facetable
+      end
+
     end
   end
 end

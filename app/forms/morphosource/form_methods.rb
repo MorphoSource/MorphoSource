@@ -208,6 +208,7 @@ module Morphosource
           taxonomy_subgenus: parent.taxonomy_subgenus.first.to_s,
           taxonomy_species: parent.taxonomy_species.first.to_s,
           taxonomy_subspecies: parent.taxonomy_subspecies.first.to_s,
+          gbif_key: parent.gbif_key.first.to_s,
           depositor: parent.depositor.to_s,
           path: @controller.url_for(parent)
         }

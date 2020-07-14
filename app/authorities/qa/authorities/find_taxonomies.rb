@@ -28,6 +28,7 @@ module Qa::Authorities
         taxonomy_subgenus = doc.taxonomy_subgenus
         taxonomy_species = doc.taxonomy_species
         taxonomy_subspecies = doc.taxonomy_subspecies
+        gbif_key = doc.gbif_key
         depositor = doc.depositor
         { id: id, label: title, value: id, taxonomy_domain: taxonomy_domain, taxonomy_kingdom: taxonomy_kingdom, 
           taxonomy_phylum: taxonomy_phylum,
@@ -45,6 +46,7 @@ module Qa::Authorities
           taxonomy_subgenus: taxonomy_subgenus,
           taxonomy_species: taxonomy_species,
           taxonomy_subspecies: taxonomy_subspecies,
+          gbif_key: gbif_key,
           depositor: depositor
         }
       end

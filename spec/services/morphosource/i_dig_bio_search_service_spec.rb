@@ -43,7 +43,7 @@ RSpec.describe Morphosource::IDigBioSearchService, :vcr do
         expect(results['idigbio_uuid']).to eq(uuid)
         expect(results).to have_key('description')
         expect(results).to have_key('idigbio_recordset_id')
-        expect(results['vouchered']).to eq(true)
+        expect(results['vouchered']).to eq('Yes')
       end
     end
   end

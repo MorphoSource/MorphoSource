@@ -89,7 +89,6 @@ module Morphosource
           higher_taxon_terms.map { |t| taxon.has_key?(t) ? taxon[t] : '' }
         ),
         rank: taxon['rank'],
-        gbif: true,
         synonym_correction: synonym_correction
       }
     end

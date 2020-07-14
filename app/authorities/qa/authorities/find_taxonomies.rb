@@ -79,7 +79,8 @@ module Qa::Authorities
           taxonomy_genus: doc.taxonomy_genus,
           taxonomy_subgenus: doc.taxonomy_subgenus,
           taxonomy_species: doc.taxonomy_species,
-          taxonomy_subspecies: doc.taxonomy_subspecies
+          taxonomy_subspecies: doc.taxonomy_subspecies,
+          gbif_key: doc.gbif_key
         }
         
         depositor = doc.depositor
@@ -87,7 +88,8 @@ module Qa::Authorities
           id: id, label: title, value: id, 
           name: build_name(taxonomy_attrs),
           higher_taxonomy: title,
-          ms: true
+          ms: true,
+          gbif_key: taxonomy_attrs[:gbif_key]
         }
       end
     end

@@ -25,6 +25,7 @@
         <div id="taxonomies" class="row form-group">
           <input class="taxonomy_title" type="hidden" name="taxonomy_title" value="" />
           <input class="taxonomy_id" type="hidden" name="taxonomy_id" value="" />
+          <input class="taxonomy_gbif_key" type="hidden" name="taxonomy_gbif_key" value="" />
           <div class="taxonomy_row">
           </div>
         </div>
@@ -82,9 +83,10 @@ $(function(){
         event.preventDefault();
         $("input.taxonomy_id").val(ui.item.value);
         console.log(ui.item.value);
-        $("input.taxonomy_title").val(ui.item.label);
-        console.log(ui.item.label);
-
+        $("input.taxonomy_gbif_key").val(ui.item.gbif_key);
+        console.log(ui.item.gbif_key);
+        $("input.taxonomy_title").val(build_name_no_formatting(ui.item.name, ui.item.rank));
+        console.log(build_name_no_formatting(ui.item.name, ui.item.rank));
     },
     focus: function(event, ui) {
         event.preventDefault();
@@ -111,7 +113,7 @@ $(function(){
       "<br/><span style='font-size: small;'>" + 
       item.higher_taxonomy + 
       "</span><br/>" +
-      build_source_info(item.gbif, item.synonym_correction, item.ms) + 
+      build_source_info(item.gbif_key, item.synonym_correction, item.ms) + 
       "</div></li>"
     ).appendTo(ul);
   };
@@ -139,9 +141,9 @@ $(function(){
     return s;
   }
 
-  var build_source_info = function(gbif, synonym_correction, ms) {
+  var build_source_info = function(gbif_key, synonym_correction, ms) {
     sourceChunks = [];
-    if (gbif) {
+    if (gbif_key) {
       sourceChunks.push('GBIF Taxonomy');
     }
     if (synonym_correction) {

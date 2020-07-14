@@ -17,9 +17,9 @@ $( document ).ready(function() {
           'biological_specimen_id', 'idigbio_id', 'will_create_biological_specimen',
           'cultural_heritage_object_id', 'will_create_cultural_heritage_object', 
           'organization_id', 'no_organization', 'will_create_organization',
-          'taxonomy_id', 'will_create_taxonomy', 'device_id', 'will_create_device',
-          'device_organization_id', 'device_no_organization',
-          'will_create_device_organization'];
+          'taxonomy_id_array', 'taxonomy_gbif_key_array', 'will_create_taxonomy', 
+          'device_id', 'will_create_device', 'device_organization_id', 
+          'device_no_organization', 'will_create_device_organization'];
       
         for (let param of submissionParamsArray) {
           if (sessionState.form_data && sessionState.form_data.hasOwnProperty(param)) {
@@ -772,8 +772,8 @@ $( document ).ready(function() {
           event.preventDefault();
           console.log('View 5 Continue with selected taxonomy button');
 
-          var taxonomyId = $('input[id="submission_taxonomy_id"]').val();
-          if (taxonomyId != '') {
+          var taxonomyIdArray = $('input[id="submission_taxonomy_id"]').val();
+          if (taxonomyIdArray != '') {
             data.taxonomyId = taxonomyId;
             data.willCreateTaxonomy = false;
             data.taxonomyCreateParams = null;
@@ -814,6 +814,11 @@ $( document ).ready(function() {
 
         $('#btn_add_taxonomy').click(function(event){
           event.preventDefault();
+          console.log('View 5 add taxonomy to list button');
+
+          var newId = $("input.taxonomy_id").val();
+          var newGbifKey = $("input.taxonomy_gbif_key").val();
+
           var currentTaxonomyList = $('input[id="submission_taxonomy_id"]').val();
           var selectedId = $("input.taxonomy_id").val();
           currentTaxonomyList = selectedId;

@@ -38,6 +38,7 @@ module Importer
             work_actor.create(environment(attrs))
           end
         end
+        ingest_thumbnail_image
         log_created(object)
       end
 
@@ -46,7 +47,40 @@ module Importer
         @object = klass.find(attrs[:id])
         attrs.delete(:id)       
         work_actor.update(environment(attrs))
+        ingest_thumbnail_image
         log_created(object)
+      end
+
+      def ingest_thumbnail_image
+        if attributes[:thumbnail]&.first.present? && klass.exists?(object.id) && object.thumbnail_id.present?
+          thumbnail_path = get_thumbnail_path(object.thumbnail_id, 'thumbnail')
+          original_thumbnail_path = get_thumbnail_path(object.thumbnail_id, 'original_thumbnail')
+
+          # Move an existing original 'thumbnail' to 'original_thumbnail',
+          # but don't overwrite an 'original_thumbnail'
+          if File.exist?(thumbnail_path)
+            if !File.exist?(original_thumbnail_path)
+              FileUtils.mv thumbnail_path, original_thumbnail_path
+            else
+              FileUtils.rm thumbnail_path
+            end
+          end
+          FileUtils.mkdir_p(File.dirname(thumbnail_path))
+          
+          Morphosource::Derivatives::CroppedImageDerivatives.create(
+            attributes[:thumbnail]&.first,
+            outputs: [{
+              label: :thumbnail,
+              url: "file://#{thumbnail_path}",
+            }]
+          )
+
+          object.save!
+        end
+      end
+
+      def get_thumbnail_path(thumbnail_id, label)
+        Hyrax::DerivativePath.derivative_path_for_reference(thumbnail_id, label)
       end
 
       def create_attributes

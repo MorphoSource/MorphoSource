@@ -15,10 +15,10 @@ module Hyrax
 
       def generated_title(env)
         attrs = env.attributes
-        inst = attrs['institution_code']&.first.presence || ''
-        coll = attrs['collection_code']&.first.presence || ''
-        cnum = attrs['catalog_number']&.first.presence || ''
-        taxn = taxonomy_title(env).presence || ''
+        inst = attrs['institution_code']&.first.presence || env.curation_concern.institution_code.presence || ''
+        coll = attrs['collection_code']&.first.presence || env.curation_concern.collection_code.presence || ''
+        cnum = attrs['catalog_number']&.first.presence || env.curation_concern.catalog_number.presence || ''
+        taxn = taxonomy_title(env).presence || existing_work_taxonomy(env).presence || ''
 
         case
         when inst.presence || coll.presence || cnum.presence || taxn.presence
@@ -46,18 +46,20 @@ module Hyrax
             taxonomy_id = v['id'] if v['id'] && v['id'].first == 'T'
           end
         end
-        if taxonomy_id.presence
-          taxonomy = Taxonomy.find(taxonomy_id)
-          genus = taxonomy.taxonomy_genus&.first
-          species = taxonomy.taxonomy_species&.first
-          subspecies = taxonomy.taxonomy_subspecies&.first
-          return '' +
-            (genus ? ' ' + genus.to_s : '') +
-            (species ? ' ' + species.to_s : '') +
-            (subspecies ? ' ' + subspecies.to_s : '')
+        if taxonomy_id.presence && Taxonomy.exists?(taxonomy_id)
+          generate_taxonomy_title(Taxonomy.find(taxonomy_id))
         else
           return ''
         end
+      end
+
+      def existing_work_taxonomy(env)
+        id = env.curation_concern.id.presence || ''
+        if id.present? and BiologicalSpecimen.exists?(id)
+          taxonomy = BiologicalSpecimen.find(id).best_taxonomy
+          return generate_taxonomy_title(taxonomy) if taxonomy.present?
+        end
+        return ''
       end
 
       def identifier_generated_title(identifier)
@@ -68,6 +70,16 @@ module Hyrax
         voucher_term = vouchered.first == 'Yes' ? 'Vouchered' : 'Unvouchered'
         user_term = user.display_name.present? ? user.display_name : user.email
         I18n.t('morphosource.fallback_object_title', voucher: voucher_term, user: user_term)
+      end
+
+      def generate_taxonomy_title(taxonomy)
+        genus = taxonomy.taxonomy_genus&.first
+        species = taxonomy.taxonomy_species&.first
+        subspecies = taxonomy.taxonomy_subspecies&.first
+        '' +
+          (genus ? ' ' + genus.to_s : '') +
+          (species ? ' ' + species.to_s : '') +
+          (subspecies ? ' ' + subspecies.to_s : '')
       end
 
       def check_canonical_taxonomy(env)

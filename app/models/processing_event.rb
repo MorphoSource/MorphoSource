@@ -15,6 +15,10 @@ class ProcessingEvent < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
+  def imaging_event
+    ancestors.find(&:imaging_event?)
+  end
+
   private
     def add_id_to_title
       unless self.title && self.id && self.title.first.to_s.start_with?("PE#{self.id.to_s}: ")

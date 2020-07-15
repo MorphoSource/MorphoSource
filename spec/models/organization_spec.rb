@@ -146,7 +146,7 @@ RSpec.describe Organization do
         before do
           subject.ordered_members << specimen1 << specimen2 << attachment
           subject.save
-          team.add_member_objects [specimen1.id]
+          specimen1.member_of_collections << team
           team.save
         end
 
@@ -185,7 +185,8 @@ RSpec.describe Organization do
           imagingEvent2.ordered_members << media3
           imagingEvent2.save
 
-          team.add_member_objects [media3.id]
+          media3.member_of_collections << team
+          media3.save
           team.save
           [media1, media2, media3].each(&:reload)
         end

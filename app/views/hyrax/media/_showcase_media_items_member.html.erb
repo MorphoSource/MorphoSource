@@ -9,7 +9,7 @@
 	<% end %>
 
 	 	<div class="thumbnail col-xs-4">
-			<%  # todo: need to display "Parent / Child / Sibling Media" %>  
+			<%  # todo: need to display "Parent / Child / Sibling Media" %>
 	    <%= render_thumbnail_tag member %><br>
 	    <%= link_to(member.link_name, contextual_path(member, @presenter)) %><br>
 	    <%= member.file_format %><br>

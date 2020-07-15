@@ -59,7 +59,7 @@ module Morphosource
         'idigbio_uuid' => idigbio_uuid,
         'description' => "Imported from iDigBio. UUID: #{idigbio_uuid} Occurrence ID: #{idb['data']['dwc:occurrenceID']}",
         'idigbio_recordset_id' => idb['indexTerms']['recordset'],
-        'vouchered' => true
+        'vouchered' => "Yes"
       }
       IDIGBIO_DATA_BSO_MAPPING.each do |key, value|
         if idb['data'].has_key?(key)

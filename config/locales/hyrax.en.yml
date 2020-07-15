@@ -114,17 +114,17 @@ en:
         actions:
           add_media_to_Team:
             label: 'Add media to team'
-          create_new_media_in_Team: 
+          create_new_media_in_Team:
             label: 'Create new media in team'
           add_media_to_Project:
             label: 'Add media to project'
-          create_new_media_in_Project: 
+          create_new_media_in_Project:
             label: 'Create new media in project'
           add_project_to_Team:
             label: 'Add project to team'
-            select_label: 'Select project' 
-            button_label: 'Add project' 
-          create_new_project_in_Team: 
+            select_label: 'Select project'
+            button_label: 'Add project'
+          create_new_project_in_Team:
             label: 'Create new project in team'
           delete_Team:
             label: 'Delete team'
@@ -145,21 +145,25 @@ en:
           viewer: 'Viewer'
 
         form_members_table:
-          managers: 
+          managers:
             title: 'Managers'
-            help: Managers of this collection can add to and remove works from the collection, modify collection metadata, and delete the collection. For collections of type Project, when works are created directly in this collection, the managers are given edit access to the new work.
+            help: Managers of this collection can add and remove works from the collection, modify collection metadata, and delete the collection. Managers are given edit access to all works in the collection.
             empty: No managers have been added.
-          editors: 
+          editors:
             title: 'Editors'
-            help: Depositors of this collection can view the collection and add works to it, even if the visibility permissions of the collection otherwise would not permit them to view it.
+            help: Editors of this collection can view the collection and add works to it, even if the visibility permissions of the collection otherwise would not permit them to view it. Editors are given edit access to all works in the collection.
             empty: No editors have been added.
           depositors:
             title: 'Depositors'
-            help: ' '
+            help: Depositors of this collection can view the collection and add works to it, even if the visibility permissions of the collection otherwise would not permit them to view it. Depositors are not given additional access to read or download other collection works.
             empty: No depositors have been added.
-          viewers: 
+          downloaders:
+            title: 'Downloaders'
+            help: Downloaders of this collection can view it even if the visibility permissions of the collection otherwise would not permit them to view it. Downloaders are given read and download access to all works in this collection regardless of publication status.
+            empty: No downloaders have been added.
+          viewers:
             title: 'Viewers'
-            help: Viewers of this collection can view it even if the visibility permissions of the collection otherwise would not permit them to view it. For collections of type Project, when works are created directly in this collection, the viewers are given read access to the new work.
+            help: Viewers of this collection can view it even if the visibility permissions of the collection otherwise would not permit them to view it. Viewers are given read access to all works in this collection regardless of publication status.
             empty: No viewers have been added.
         tab_details_branding:
           logo:

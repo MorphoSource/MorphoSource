@@ -6,6 +6,7 @@ module Morphosource
 
     	autoload :MeshDerivatives
     	autoload :CTImageSeriesDerivatives
+        autoload :CroppedImageDerivatives
 
     	def self.blender_path
     		Hyrax.config.blender_path

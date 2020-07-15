@@ -75,6 +75,37 @@ RSpec.describe Hyrax::PermissionTemplateApplicator do
         .to change { work.read_users }
         .to contain_exactly(*read_after_application)
     end
+
+    context 'work already has same access grants' do
+      before do
+        work.edit_groups += ['managers_group', 'editors_group']
+        work.edit_users += ['manage_user']
+        work.download_groups += ['downloaders_group']
+        work.read_groups += ['viewers_group']
+        work.read_users += ['view_user']
+        work.save
+      end
+      it 'does not add duplicate edit groups' do
+        expect { applicator.apply_to(model: work) }
+         .not_to change { work.edit_groups }
+      end
+      it 'does not add duplicate edit users' do
+        expect { applicator.apply_to(model: work) }
+         .not_to change { work.edit_users }
+      end
+      it 'does not add duplicate download groups' do
+        expect { applicator.apply_to(model: work) }
+         .not_to change { work.download_groups }
+      end
+      it 'does not add duplicate read groups' do
+        expect { applicator.apply_to(model: work) }
+         .not_to change { work.read_groups }
+      end
+      it 'does not add duplicate read users' do
+        expect { applicator.apply_to(model: work) }
+         .not_to change { work.read_users }
+      end
+    end
   end
 
   describe '#template' do

@@ -98,6 +98,37 @@ class Collection < ActiveFedora::Base
     user_groups.each(&:save)
   end
 
+  # override the method from models/concerns/hyrax/collection_behavior.rb to apply collection permissions to works
+  def add_member_objects(new_member_ids)
+    Array(new_member_ids).collect do |member_id|
+      member = ActiveFedora::Base.find(member_id)
+      message = Hyrax::MultipleMembershipChecker.new(item: member).check(collection_ids: id, include_current_members: true)
+      if message
+        member.errors.add(:collections, message)
+      else
+        member.member_of_collections << self
+        Hyrax::PermissionTemplateApplicator.apply(permission_template).to(model: member)
+        member.save!
+      end
+      member
+    end
+  end
+
+  def remove_member_objects(member_ids)
+    member_ids.each do |id|
+      work = ActiveFedora::Base.find(id)
+      work.member_of_collections.delete self
+      remove_team_access_grants(work)
+      work.save!
+    end
+  end
+
+  def remove_team_access_grants(work)
+    work.edit_groups -= [managers_group.name, editors_group.name]
+    work.read_groups -= [viewers_group.name]
+    work.download_groups -= [downloaders_group.name]
+  end
+
   private
 
     def add_depositor_to_managers

@@ -7,7 +7,7 @@ module Ms1to2
       @update = update
       @update_only_if_no_file = update_only_if_no_file
       @admin_user = admin_user
-      # ::Hyrax.config.whitelisted_ingest_dirs = input_path
+      # ::Hyrax.config.whitelisted_ingest_dirs = [input_path]
     end
 
     def call
@@ -104,7 +104,7 @@ module Ms1to2
       )
 
       del_col_ids = ( m == :BiologicalSpecimen ) ? true : false
-      csv_importer.import_all(del_col_ids)
+      csv_importer.import_all(del_col_ids, update, update_models)
     end
 
     # Special case media methods
@@ -225,7 +225,7 @@ module Ms1to2
     end
 
     def update_models
-      [:Media]
+      [:BiologicalSpecimen, :Media]
     end
   end
 end

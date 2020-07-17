@@ -29,6 +29,9 @@ module Morphosource
     # @return [NilClass]
     def find_parent_work; end
 
+    # @return [NilClass]
+    def taxonomy_search; end
+
     def member_of_works_json(work_type=nil)
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id

@@ -31,12 +31,12 @@
 
 
 <% organizational_taxonomy = presenter.attribute_to_html(:canonical_taxonomy_object, label: presenter.canonical_taxonomy_label, render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
-<% trusted_taxonomies = presenter.attribute_to_html(:trusted_taxonomies, label: I18n.t('morphosource.taxonomy.labels.trusted'), render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
+<% gbif_taxonomies = presenter.attribute_to_html(:gbif_taxonomies, label: I18n.t('morphosource.taxonomy.labels.gbif'), render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
 <% user_taxonomies = presenter.attribute_to_html(:user_taxonomies, label: I18n.t('morphosource.taxonomy.labels.user'), render_as: :showcase_taxonomy, include_empty: false, html_dl: true, locale: locale) %>
 
-<% unless organizational_taxonomy.blank? && trusted_taxonomies.blank? && user_taxonomies.blank? %>
+<% unless organizational_taxonomy.blank? && gbif_taxonomies.blank? && user_taxonomies.blank? %>
   <h4>Taxonomies</h4>
   <%= organizational_taxonomy %>
-  <%= trusted_taxonomies %>
+  <%= gbif_taxonomies %>
   <%= user_taxonomies %>
 <% end %>

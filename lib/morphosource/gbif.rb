@@ -21,5 +21,9 @@ module Morphosource
       response = RestClient.get "#{API_ENDPOINT}/#{key}"
       JSON.parse(response.body) if response
     end
+
+    def self.dataset_key
+      'd7dddbf4-2cf0-4f39-9b2a-bb099caae36c'
+    end
   end
 end

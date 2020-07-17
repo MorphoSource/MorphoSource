@@ -62,6 +62,7 @@ module Qa::Authorities
       docs.map do |doc|
         id = doc.id
         title = doc.title
+        depositor = doc.depositor
         taxonomy_attrs = {
           taxonomy_domain: doc.taxonomy_domain,
           taxonomy_kingdom: doc.taxonomy_kingdom,
@@ -80,17 +81,21 @@ module Qa::Authorities
           taxonomy_subgenus: doc.taxonomy_subgenus,
           taxonomy_species: doc.taxonomy_species,
           taxonomy_subspecies: doc.taxonomy_subspecies,
-          gbif_key: doc.gbif_key
+          gbif_key: doc.gbif_key,
+          depositor: depositor
         }
         
-        depositor = doc.depositor
+        name = build_name(taxonomy_attrs)
+        source_info = build_source_info(taxonomy_attrs[:gbif_key], id)
+        nice_title = build_title(name, source_info)
         { 
-          id: id, label: title, value: id, 
-          name: build_name(taxonomy_attrs),
+          id: id, label: [nice_title], value: id, 
+          name: name,
           higher_taxonomy: title,
           ms: true,
-          gbif_key: taxonomy_attrs[:gbif_key]
-        }
+          gbif_key: taxonomy_attrs[:gbif_key],
+          source_info: source_info
+        }.merge(taxonomy_attrs)
       end
     end
 
@@ -101,8 +106,8 @@ module Qa::Authorities
       end
 
       def ordered_terms
-        [ 'taxonomy_family', 'taxonomy_order', 'taxonomy_class',
-          'taxonomy_phylum', 'taxonomy_kingdom' ]
+        [ :taxonomy_family, :taxonomy_order, :taxonomy_class,
+          :taxonomy_phylum, :taxonomy_kingdom ]
       end
 
       def build_name(taxonomy_attrs)
@@ -115,7 +120,7 @@ module Qa::Authorities
         else
           ordered_terms.each do |t|
             if taxonomy_attrs[t].present?
-              return taxonomy_attrs[t] + ' Indet.'
+              return taxonomy_attrs[t].first + ' Indet.'
             end
           end
         end
@@ -126,6 +131,18 @@ module Qa::Authorities
         (genus&.first.present? ? "#{genus&.first}" : '') +
         (species&.first.present? ? " #{species&.first}" : '') +
         (subspecies&.first.present? ? " #{subspecies&.first}" : '')
+      end
+
+      def build_source_info(gbif_key, ms_id)
+        source_chunks = [];
+        source_chunks << 'GBIF Taxonomy' if gbif_key.present?
+        source_chunks << 'In MorphoSource' if ms_id.present?
+        source_chunks.join(' · ')
+      end
+
+      def build_title(name, source_info=nil)
+        name +
+        ( source_info.present? ? ' · ' + source_info : '' )
       end
   end
 end

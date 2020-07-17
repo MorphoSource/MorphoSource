@@ -1,5 +1,4 @@
-
-$(document).on('turbolinks:load', function() {
+$( document ).ready(function() {
   if ($('form[id*="edit_biological_specimen"]').length) { // if BSO form page
 
 		function updateObjectTitle() {

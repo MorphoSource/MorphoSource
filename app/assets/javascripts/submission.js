@@ -758,58 +758,53 @@ $( document ).ready(function() {
       eventFuncs() {
         let self = this;
 
-        $('input#submission_taxonomy_id').change(function(){
-          console.log('triggered change function');
-          console.log($(this).val());
-          if ($(this).val()) {
-            $('#submission_select_taxonomy_submit').removeAttr('disabled');
-          } else {
-            $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
-          }
+        $('#submission_select_taxonomy_submit').click(function(event){
+          $('form#taxonomy_search_form').submit();
         });
 
         $('form#taxonomy_search_form').submit(function(event){
           event.preventDefault();
           console.log('View 5 Continue with selected taxonomy button');
 
-          var taxonomyIdArray = $('input[id="submission_taxonomy_id"]').val();
-          if (taxonomyIdArray != '') {
-            data.taxonomyId = taxonomyId;
-            data.willCreateTaxonomy = false;
-            data.taxonomyCreateParams = null;
-            data.savedStep = 5;
+          if ((data.willCreateTaxonomy) ||
+              (data.taxonomyIdArray && data.taxonomyIdArray.length) ||
+              (data.taxonomyGbifKeyArray && data.taxonomyGbifKeyArray.length)
+          ) {
+            if (data.willCreateTaxonomy) {
+              data.taxonomyCreateParams = $('#new_taxonomy').serializeArray();
+            } else {
+              data.taxonomyCreateParams = null;
+            }
 
+            data.savedStep = 5;
             self.form.setSidebarViewCheck(5);
             self.form.setVisibleView(6); // view 6 create physical object details
           }
+
           console.log(data);
         });
 
         $('#submission_show_create_taxonomy').click(function(event){
           event.preventDefault();
+          data.willCreateTaxonomy = true;
           self.toggleCreateTaxonomyVisibility();
+          $('#submission_select_taxonomy_submit').removeAttr('disabled');
+
         });
 
         $('#taxonomy-create-close').click(function(event){
           event.preventDefault();
-          $('#submission_select_taxonomy_section').addClass('show').removeClass('hide');
+          data.willCreateTaxonomy = false;
+          
           $('#submission_create_taxonomy_button_section').addClass('show').removeClass('hide');
           $('#submission_create_taxonomy_form_section').addClass('hide').removeClass('show');
-        });
 
-        $('#submission_create_taxonomy_continue').click(function(event){
-          event.preventDefault();
-          console.log('View 5 create taxonomy and continue button');
-
-          data.taxonomyId = null;
-          data.willCreateTaxonomy = true;
-          data.taxonomyCreateParams = $('#new_taxonomy').serializeArray();
-          data.savedStep = 5;
-
-          self.form.setSidebarViewCheck(5);
-          self.form.setVisibleView(6); // view 6 create physical object details
-
-          console.log(data);
+          if ( 
+            (!data.taxonomyIdArray || !data.taxonomyIdArray.length) && 
+            (!data.taxonomyGbifKeyArray || !data.taxonomyGbifKeyArray.length) 
+          ) {
+            $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
+          }
         });
 
         $('#btn_add_taxonomy').click(function(event){
@@ -819,33 +814,65 @@ $( document ).ready(function() {
           var newId = $("input.taxonomy_id").val();
           var newGbifKey = $("input.taxonomy_gbif_key").val();
 
-          var currentTaxonomyList = $('input[id="submission_taxonomy_id"]').val();
-          var selectedId = $("input.taxonomy_id").val();
-          currentTaxonomyList = selectedId;
-          $('input#submission_taxonomy_id').val(currentTaxonomyList);
-          $('input#submission_taxonomy_id').trigger('change');
-          // clear previous selection if any
-          $('#taxonomies > div:nth-child(4)').remove();
-          // display a new taxonomy row
-          $('.taxonomy_row:last-child').after(self.newTaxonomyRow(selectedId));
+          if (newId && newId.indexOf('gbif:') == -1) {
+            if (!Array.isArray(data.taxonomyIdArray)) {
+              data.taxonomyIdArray = [];
+            }
+            data.taxonomyIdArray.push(newId);
+          }
+
+          if (newGbifKey) {
+            if (!Array.isArray(data.taxonomyGbifKeyArray)) {
+              data.taxonomyGbifKeyArray = [];
+            }
+            data.taxonomyGbifKeyArray.push(newGbifKey);
+          }
+
+          // Display a new taxonomy row
+          if (newId || newGbifKey) {
+            $('.taxonomy_row:last-child').after(self.newTaxonomyRow(newId, newGbifKey));
+          }
+               
+          // Clear temp values for new taxonomy to be added
           $('input[id="submission_taxonomy_search"]').val('');
           $("input.taxonomy_id").val('');
+          $("input.taxonomy_gbif_key").val('');
           $("input.taxonomy_title").val('');
+
+          // Enable step completion
+          $('#submission_select_taxonomy_submit').removeAttr('disabled');
         });
 
         $('div#taxonomies').on('click', '#btn-remove-taxonomy', function(event){
             event.preventDefault();
             let row = $(this).parent().parent();
-            let id = row.data('id');
+            let id = row.data('id').toString();
+            let gbifKey = row.data('gbifkey').toString();
+            console.log(gbifKey);
             row.remove();
-            var currentTaxonomyList = $('input[id="submission_taxonomy_id"]').val();
-            var newTaxonomyList = self.removeValue(currentTaxonomyList, id);
-            self.triggerChangeVal('input#submission_taxonomy_id', newTaxonomyList);
+
+            if (id && Array.isArray(data.taxonomyIdArray)) {
+              if (data.taxonomyIdArray.indexOf(id) > -1) {
+                data.taxonomyIdArray.splice(data.taxonomyIdArray.indexOf(id), 1);
+              }
+            }
+            if (gbifKey && Array.isArray(data.taxonomyGbifKeyArray)) {
+              if (data.taxonomyGbifKeyArray.indexOf(gbifKey) > -1) {
+                data.taxonomyGbifKeyArray.splice(data.taxonomyGbifKeyArray.indexOf(gbifKey), 1);
+              }
+            }
+
+            if ( 
+              (!data.taxonomyIdArray || !data.taxonomyIdArray.length) && 
+              (!data.taxonomyGbifKeyArray || !data.taxonomyGbifKeyArray.length) 
+            ) {
+              $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
+            }
         });
       }
 
-      newTaxonomyRow(id) {
-        var row = '<div class="taxonomy_row row" data=id="' + id + '">' +
+      newTaxonomyRow(id, gbifKey) {
+        var row = '<div class="taxonomy_row row" data-id="' + id + '" data-gbifkey="' + gbifKey + '">' +
           '<div class="col-sm-6 col-sm-offset-3 block">' +
           '<span>' + $("input.taxonomy_title").val() + '</span>' +
           '<i id="btn-remove-taxonomy" class="fas fa-trash-alt btn_remove_parent clickable" style="float: right;"></i>' +
@@ -855,9 +882,10 @@ $( document ).ready(function() {
 
       toggleCreateTaxonomyVisibility() {
         $('#submission_create_taxonomy_form_section').addClass('show').removeClass('hide');
-        $('#submission_select_taxonomy_section').addClass('hide').removeClass('show');
         $('#submission_create_taxonomy_button_section').addClass('hide').removeClass('show');
       }
+
+
     }
 
     class PhysicalObjectDetailsView extends SubmissionView {
@@ -1329,7 +1357,7 @@ $( document ).ready(function() {
       }
 
       setMediaPermissionFieldEvent() {
-        $('form#new_media div,a').click(function(event) {
+        $('form#new_media div,form#new_media a').click(function(event) {
           console.log('hi');
           if ($(this).hasClass('permissions-field')) {
             console.log('hi2');

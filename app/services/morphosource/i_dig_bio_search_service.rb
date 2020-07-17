@@ -36,6 +36,11 @@ module Morphosource
     BSO_ARRAY_VALUES = ['creator','periodic_time','related_url']
 
     IDIGBIO_TAXONOMY_MAPPING = {
+      'dwc:kingdom' => 'taxonomy_kingdom',
+      'dwc:phylum' => 'taxonomy_phylum',
+      'dwc:class' => 'taxonomy_class',
+      'dwc:order' => 'taxonomy_order',
+      'dwc:family' => 'taxonomy_family',
       'dwc:genus' => 'taxonomy_genus',
       'dwc:specificEpithet' => 'taxonomy_species',
       'dwc:infraspecificEpithet' => 'taxonomy_subspecies'
@@ -73,18 +78,26 @@ module Morphosource
       return bso_params
     end
 
-    # Given an IDigBio UUID, search for the UUID
-    # and create MorphoSource Taxonomy params
-    # using the resulting mapped metadata
-    def self.taxonomy_params_from_idigbio(idigbio_uuid)
+    # Given an IDigBio UUID, search for the UUID and create two sets of taxonomy
+    # params. The first is based on the data provider supplied 'data' taxonomy.
+    # The second is based on iDigBio-corrected 'indexTerms' taxonomies with GBIF links.
+    def self.taxonomy_param_sets_from_idigbio(idigbio_uuid)
       idb = Morphosource::IDigBio.view(idigbio_uuid)
-      taxonomy_params = {}
+      taxonomy_param_sets = { provider: {}, gbif: {} }
+
+      # Construct provider params
       IDIGBIO_TAXONOMY_MAPPING.each do |key, value|
         if idb['data'].has_key?(key)
-          taxonomy_params[value] ||= idb['data'][key]
+          taxonomy_param_sets[:provider][value] ||= idb['data'][key]
         end
       end
-      return taxonomy_params
+
+      # Construct gbif params
+      if idb.has_key?('indexTerms') && idb['indexTerms'].has_key?('taxonid')
+        taxonomy_param_sets[:gbif] = Morphosource::GbifSearchService.taxonomy_params_from_gbif(idb['indexTerms']['taxonid'], true)
+      end
+
+      return taxonomy_param_sets
     end
 
     def initialize(params={})

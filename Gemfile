@@ -29,6 +29,9 @@ gem 'pul_uv_rails', :git => 'https://github.com/MorphoSource/pul_uv_rails.git', 
 # pull iiif_manifest fork that can handle 3D manifests
 gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :branch => 'morphosource'
 
+# used for XML validation in Crossref DOI deposit
+gem 'nokogiri'
+
 gem 'hyrax', '2.7.0'
 
 gem 'om'
@@ -73,6 +76,7 @@ group :development, :test do
   gem 'geckodriver-helper'
   gem 'shoulda-callback-matchers', '~> 1.1.1'
   gem 'shoulda-matchers', '~> 3.1'
+  gem 'dotenv-rails'
 end
 
 group :test do

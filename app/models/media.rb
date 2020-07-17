@@ -11,6 +11,7 @@ class Media < Morphosource::Works::Base
   validates :title, presence: { message: 'Your work must have a title.' }
 
   attr_accessor :download_permission
+  after_create :mint_remote_identifiers
 
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
@@ -126,6 +127,27 @@ class Media < Morphosource::Works::Base
     organizations.each_with_object([]) do |org, teams|
       teams += Collection.find(org.team_id.first)
     end
+  end
+
+  def mint_doi
+    if self.doi.empty?
+      depositor_user = User.find_by(ms_id: self.depositor)
+      depositor_user_name_components = depositor_user.display_name.split(' ')
+      minted_doi = Morphosource::CrossrefDoiMinter.mint_doi( self.id,
+                                                            {'title' => self.title.first,
+                                                             'author_first' => depositor_user_name_components.first,
+                                                             'author_last' => depositor_user_name_components.drop(1).join(' '),
+                                                             'url' => 'http://example.com',
+                                                             'resource_type' => self.media_type.first} )
+      unless minted_doi.nil?
+        self.doi = [minted_doi]
+        self.save
+      end
+    end
+  end
+
+  def mint_remote_identifiers
+    self.mint_doi
   end
 
   private

@@ -86,6 +86,5 @@ end
 group :production do
   gem 'passenger'
   gem 'therubyracer', platforms: :ruby
-  gem 'rack-mini-profiler'
   gem 'dalli'
 end

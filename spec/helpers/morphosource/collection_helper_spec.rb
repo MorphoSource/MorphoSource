@@ -44,47 +44,9 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
 
   end
 
-  describe '#get_medias_and_objects' do
-    let(:extras_for_filter) {{'source_of_result' => team.collection_type.title.downcase}}
-    let(:docs) {[]}
-    before do
-      doc = SolrDocument.new(media.to_solr)
-      docs << doc
-      helper.instance_variable_set(:@visibility_options, [])
-      helper.instance_variable_set(:@pub_status_options, [])
-      helper.instance_variable_set(:@media_type_options, [])
-      helper.instance_variable_set(:@organization_options, [])
-      helper.instance_variable_set(:@bso_visibility_options, [])
-      helper.instance_variable_set(:@bso_source_options, [])
-      helper.instance_variable_set(:@cho_visibility_options, [])
-    end
-    it 'returns medias and objects' do
-      @media_member_docs, @media_extras, @bso_member_docs, @bso_extras, 
-        @cho_member_docs, @cho_extras = helper.get_medias_and_objects(docs, extras_for_filter)
-      expect(@media_member_docs.count).to eq(1)
-      expect(@bso_member_docs.count).to eq(1)
-      expect(@media_extras.first['source_of_result']).to eq('team')
-      expect(@bso_extras).to eq([{"id"=>specimen.id, "media_count"=>"1"}, {"id"=>specimen.id, "origin"=>"Team", "source_of_result"=>"team"}]
-)
-    end
-  end
-
   describe '#organization_from_bso(bso)' do
     it 'returns the organization' do
       expect(helper.organization_from_bso(specimen).id).to eq(org1.id)
-    end
-  end
-
-  describe '#physical_object_solr_from_media(media_id)' do
-    it 'returns BSO solr' do
-      bso_work, bso_extra, cho_work, cho_extra = helper.physical_object_from_media(media.id)
-      expect(bso_work.id).to eq(specimen.id)
-      expect(bso_extra).to eq({"id"=>specimen.id, "media_count"=>"1"}) 
-    end
-    it 'returns CHO solr' do
-      bso_work, bso_extra, cho_work, cho_extra = helper.physical_object_from_media(media2.id)
-      expect(cho_work.id).to eq(cho.id)
-      expect(cho_extra).to eq({"id"=>cho.id, "media_count"=>"1"}) 
     end
   end
 

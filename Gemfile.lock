@@ -711,7 +711,6 @@ GEM
       redis (>= 3.0.0, < 5.0)
     ref (2.0.0)
     regexp_parser (1.6.0)
-    render_async (2.1.6)
     representable (3.0.4)
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
@@ -957,7 +956,6 @@ DEPENDENCIES
   rails (~> 5.1.4)
   rails-controller-testing
   redis
-  render_async
   resque
   resque-pool
   resque-web

@@ -82,8 +82,6 @@ Rails.application.routes.draw do
     get 'dashboard/my/teams', controller: 'my/teams', action: :index
     get 'dashboard/my/projects', controller: 'my/teams', action: :index
 
-    get 'teams/specimens/:id', controller: 'teams', action: :specimens
-
   end
 
   # override ProfilesController

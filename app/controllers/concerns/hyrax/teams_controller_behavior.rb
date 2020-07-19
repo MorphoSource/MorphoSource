@@ -45,7 +45,7 @@ module Hyrax
     end
 
     def collection
-      action_name == 'show' || action_name == 'specimens' ? @presenter : @collection
+      action_name == 'show' ? @presenter : @collection
     end
 
     private
@@ -134,12 +134,11 @@ module Hyrax
       # media pagination methods
       def paginated_media_item_list
         # Uses kaminari to paginate an array to avoid need for solr documents for items here
-        #Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
-        Kaminari.paginate_array(@member_docs, total_count: @member_docs.size).page(media_current_page).per(rows_from_params)
+        Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
       end
 
       def media_total_items
-        @members_count
+        @media_member_count
       end
 
       def media_current_page

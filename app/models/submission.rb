@@ -22,6 +22,8 @@ class Submission
                 :taxonomy_id,
                 :canonical_taxonomy_id,
                 :will_create_taxonomy,
+                :taxonomy_id_array,
+                :taxonomy_gbif_key_array,
                 :device_id,
                 :will_create_device,
                 :device_organization_id,
@@ -46,7 +48,8 @@ class Submission
                 :cultural_heritage_object_search_occurrence_id,
                 :cultural_heritage_object_search_short_title,
                 :taxonomy_search,
-                :organization_search
+                :organization_search,
+                :taxonomy_params_array
 
                 
   MEDIA_DERIVED = 'Derived'

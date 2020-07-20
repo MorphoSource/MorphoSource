@@ -764,6 +764,10 @@ class SolrDocument
     self[Solrizer.solr_name('trusted', :stored_searchable)]
   end
 
+  def gbif_key
+    self[Solrizer.solr_name('gbif_key', :stored_searchable)]
+  end
+
   # Download fields
   def download_groups
     self["download_access_group_ssim"]

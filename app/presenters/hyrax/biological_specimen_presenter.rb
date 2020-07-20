@@ -7,7 +7,7 @@ module Hyrax
 
     delegate :bibliographic_citation, :catalog_number,  :collection_code, :institution_code, :numeric_time, :original_location, :periodic_time, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, :member_ids, to: :solr_document
 
-    delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :user_taxonomies, to: :work
+    delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :gbif_taxonomies, :user_taxonomies, to: :work
 
     def canonical_taxonomy_label
       if canonical_taxonomy_object.present?

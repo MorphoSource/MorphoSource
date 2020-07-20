@@ -29,6 +29,9 @@ module Morphosource
     # @return [NilClass]
     def find_parent_work; end
 
+    # @return [NilClass]
+    def taxonomy_search; end
+
     def member_of_works_json(work_type=nil)
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id
@@ -208,6 +211,7 @@ module Morphosource
           taxonomy_subgenus: parent.taxonomy_subgenus.first.to_s,
           taxonomy_species: parent.taxonomy_species.first.to_s,
           taxonomy_subspecies: parent.taxonomy_subspecies.first.to_s,
+          gbif_key: parent.gbif_key.first.to_s,
           depositor: parent.depositor.to_s,
           path: @controller.url_for(parent)
         }

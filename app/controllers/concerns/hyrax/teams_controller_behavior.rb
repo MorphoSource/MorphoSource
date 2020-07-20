@@ -71,7 +71,8 @@ module Hyrax
       def query_collection_members
         member_works # 15.7, 9.5, 53.0, 97.2 ms
         member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
-        parent_collections if collection.collection_type.nestable? && action_name == 'show' # 7 - 14 ms for project
+        # parent collection should not be needed.  remove below later
+        #parent_collections if collection.collection_type.nestable? && action_name == 'show' # 7 - 14 ms for project
         prepare_docs_and_filters(collection)
       end
 
@@ -89,11 +90,12 @@ module Hyrax
       # media pagination methods
       def paginated_media_item_list
         # Uses kaminari to paginate an array to avoid need for solr documents for items here
-        Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
+        #Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
+        Kaminari.paginate_array(@member_docs, total_count: @member_docs.size).page(media_current_page).per(rows_from_params)
       end
 
       def media_total_items
-        @media_member_count
+        @members_count
       end
 
       def media_current_page

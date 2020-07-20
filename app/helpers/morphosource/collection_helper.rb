@@ -68,8 +68,11 @@ module Morphosource
 
       # add items from team bucket
       extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
+
+      @paged_media_member_docs = paginated_media_item_list
+
       @media_member_docs, @media_extras, @bso_member_docs, @bso_extras, 
-        @cho_member_docs, @cho_extras = get_medias_and_objects(@member_docs, extras_for_filter)
+        @cho_member_docs, @cho_extras = get_medias_and_objects(@paged_media_member_docs, extras_for_filter)
       # save the item IDs in the team bucket, for determining the origin  
       @team_bucket_media_id_list = @media_member_docs.map{|d| d.id}
 
@@ -110,11 +113,11 @@ module Morphosource
 
       @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
       @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
-      @media_member_count = @media_member_docs.length
+      @media_member_count = @member_docs.length
       @bso_member_count = @bso_member_docs&.length || 0
       @cho_member_count = @cho_member_docs&.length || 0
 
-      @paged_media_member_docs = paginated_media_item_list
+#      @paged_media_member_docs = paginated_media_item_list
       @media_total_pages = media_total_pages
       @paged_bso_member_docs = paginated_bso_item_list
       @bso_total_pages = bso_total_pages

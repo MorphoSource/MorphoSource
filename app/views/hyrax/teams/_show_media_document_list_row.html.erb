@@ -23,11 +23,11 @@ po_taxonomy = media_extra['po_taxonomy']
   </td>
   <td><%= document.id %></td>  
   <td><%= document.part&.first %></td>  
-  <% if po_title.present? %>
-    <td class="break-all"><%= po_title %></td>
-  <% end %>
-  <% if po_taxonomy.present? %>
+  <td class="break-all"><%= po_title %></td>
+  <% if @bso_member_count > 0 %>
     <td><%= po_taxonomy %></td>
+  <% else %>
+    <td></td>
   <% end %>
   <td><%= document.media_type&.first.underscore.humanize %></td>  
   <td><%= media_extra["team_project_title"] %></td>

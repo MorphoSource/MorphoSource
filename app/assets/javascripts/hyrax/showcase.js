@@ -1,4 +1,4 @@
-$( document ).ready(function() {
+$(document).ready(function() {
 
   if ($('body[class*="showcase"]').length) { // check if the page is showcase page
     // switching icons and button labels for expand / collapse
@@ -35,7 +35,7 @@ $( document ).ready(function() {
           { orderable: false, targets: 0 }, // disable sorting
           { orderable: false, targets: 1 },
           { orderable: false, targets: -1 },
-          { visible: false, targets: 10 }, // hide column by default
+//          { visible: false, targets: 9 }, // hide column by default
           //{ width: "20%", targets: -1 },
           { responsivePriority: 1, targets: 0 },
           { responsivePriority: 2, targets: 1 },

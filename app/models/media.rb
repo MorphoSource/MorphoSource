@@ -12,6 +12,7 @@ class Media < Morphosource::Works::Base
 
   attr_accessor :download_permission
   after_create :mint_remote_identifiers
+  before_destroy :prevent_doi_deletion
 
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
@@ -154,6 +155,12 @@ class Media < Morphosource::Works::Base
     def add_id_to_title
       unless self.title && self.id && self.title.first.to_s.start_with?("M#{self.id.to_s}: ")
         self.title.set("M#{self.id.to_s}: #{self.title.first.to_s}")
+      end
+    end
+
+    def prevent_doi_deletion
+      unless self.doi.empty?
+        throw(:abort)
       end
     end
 end

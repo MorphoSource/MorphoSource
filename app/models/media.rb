@@ -119,6 +119,10 @@ class Media < Morphosource::Works::Base
     ancestors.select(&:specimen?)
   end
 
+  def imaging_event
+    ancestors.find(&:imaging_event?)
+  end
+
   def organizations
     specimens.each_with_object([]) do |s, orgs|
       s.organizations.each { |o| orgs << o }

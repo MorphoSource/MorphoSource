@@ -9,6 +9,10 @@ RSpec.describe Collection, type: :model do
   let(:user)                    { User.create(email: 'email@email.com', password: 'password', ms_id: 'abc123') }
   let(:team)                    { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let(:project)                 { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
+  let(:media)     { Media.create(title: ['media']) }
+  let(:media2)    { Media.create(title: ['media2']) }
+  let(:media3)    { Media.create(title: ['media3']) }
+
 
   describe '#organization' do
     let!(:org1)  { Organization.create(title: ['title'], team_id: [team.id]) }
@@ -149,6 +153,82 @@ RSpec.describe Collection, type: :model do
       it 'destroys all of the default user groups when a team or project is destroyed' do
         team.create_collection_groups
         expect { team.destroy }.to change { Role.count }.by(-5)
+      end
+    end
+  end
+
+  describe '#add_member_objects' do
+    let(:works)     { [media, media2, media3] }
+    let(:work_ids)  { [media.id, media2.id, media3.id] }
+
+    before do
+      team.create_collection_groups
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
+      team.add_member_objects(work_ids)
+    end
+
+    it 'adds works to the collection' do
+      expect(team.member_objects).to match_array(works)
+    end
+
+    it 'applies permissions to the works' do
+      works.each do |work|
+        work.reload
+        expect(work.edit_groups).to match_array([team.managers_group.name, team.editors_group.name, 'admin'])
+        expect(work.download_groups).to match_array([team.downloaders_group.name])
+        expect(work.read_groups).to match_array([team.viewers_group.name])
+      end
+    end
+  end
+  describe '#remove_member_objects' do
+    let(:works)     { [media, media2, media3] }
+    let(:work_ids)  { [media.id, media2.id, media3.id] }
+
+    before do
+      team.create_collection_groups
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
+      works.each do |work|
+        Hyrax::PermissionTemplateApplicator.apply(team.permission_template).to(model: work)
+        work.save
+      end
+      team.remove_member_objects(work_ids)
+    end
+
+    it 'removes the member objects' do
+      expect(team.member_objects).to match_array([])
+    end
+
+    it 'removes the collection permissions from the works' do
+      works.each do |work|
+        work.reload
+        expect(work.edit_groups).to match_array(['admin'])
+        expect(work.download_groups).to match_array([])
+        expect(work.read_groups).to match_array([])
+      end
+    end
+  end
+  describe '#remove_team_access_grants' do
+    let(:works)         { [media, media2, media3] }
+    let(:work_ids)      { [media.id, media2.id, media3.id] }
+    let(:another_group) { double('Role', name: 'another_group') }
+    before do
+      team.create_collection_groups
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
+      works.each do |work|
+        Hyrax::PermissionTemplateApplicator.apply(team.permission_template).to(model: work)
+        work.edit_groups += [another_group.name]
+        work.read_groups += [another_group.name]
+        work.download_groups += [another_group.name]
+        work.save
+      end
+      team.remove_member_objects(work_ids)
+    end
+    it 'removes only the collection groups' do
+      works.each do |work|
+        work.reload
+        expect(work.edit_groups).to match_array([another_group.name, 'admin'])
+        expect(work.read_groups).to match_array([another_group.name])
+        expect(work.download_groups).to match_array([another_group.name])
       end
     end
   end

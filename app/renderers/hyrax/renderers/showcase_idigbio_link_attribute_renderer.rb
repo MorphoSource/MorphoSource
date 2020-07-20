@@ -23,13 +23,13 @@ module Hyrax
           label = '' unless label.present?
           if label.include? 'UUID'
             url = 'https://www.idigbio.org/portal/records/'
-            link = link_to(value, "#{url}#{value}")
+            link = link_to(value, "#{url}#{value}", target: :_blank)
           elsif label.include? 'recordset ID'
             url = 'https://www.idigbio.org/portal/recordsets/'
-            link = link_to(value, "#{url}#{value}")
+            link = link_to(value, "#{url}#{value}", target: :_blank)
           else
             url = 'https://www.idigbio.org'
-            link = link_to(value, "#{url}")
+            link = link_to(value, "#{url}", target: :_blank)
           end
           markup << "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link}</span>"
           markup.html_safe

@@ -19,21 +19,20 @@ module Hyrax
           end
         end
         FileUtils.mkdir_p(File.dirname(thumbnail_path))
-        original_image = Tempfile.new(File.basename(work.thumbnail_id))
         begin
-          original_image.binmode
-          original_image.write(params[:image].read)
-          Hydra::Derivatives::ImageDerivatives.create(original_image.path,
-                                                      outputs: [{ label: :thumbnail,
-                                                                  format: 'jpg',
-                                                                  size: '200x150>',
-                                                                  url: "file://#{thumbnail_path}",
-                                                                  layer: 0 }])
+          Morphosource::Derivatives::CroppedImageDerivatives.create(
+            params[:image].path,
+            outputs: [{
+              label: :thumbnail,
+              url: "file://#{thumbnail_path}",
+            }]
+          )
         ensure
-          original_image.close
-          original_image.unlink
+          params[:image].tempfile.close
+          params[:image].tempfile.unlink
         end
         flash[:info] = "Custom thumbnail successfully updated."
+        work.save!
       else
         flash[:error] = "Error setting custom thumbnail."
       end

@@ -21,6 +21,14 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
   before_update :update_metadata_from_idigbio_occurrence_id, if: :occurrence_id_changed?
 
+  def best_taxonomy
+    if canonical_taxonomy.present?
+      canonical_taxonomy_object
+    else
+      taxonomies&.first
+    end
+  end
+
   def taxonomies
     member_of.select{|work| work.class == Taxonomy}
   end

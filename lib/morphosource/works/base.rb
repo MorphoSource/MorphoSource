@@ -44,6 +44,10 @@ module Morphosource
         self.class == Media
       end
 
+      def imaging_event?
+        self.class == ImagingEvent
+      end
+
       def user_with_ownership
         o = User.find_by(ms_id: owner)
         o ? owner : depositor

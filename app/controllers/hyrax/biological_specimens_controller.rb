@@ -61,7 +61,6 @@ module Hyrax
 
     def update
       create_gbif_taxonomies
-      byebug
       if actor.update(actor_environment)
         update_media_team_access
         after_update_response

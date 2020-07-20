@@ -1,7 +1,8 @@
 <% 
 id = document.id 
-bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
 media_extra = extra(@media_extras, id)
+po_title = media_extra['po_title']
+po_taxonomy = media_extra['po_taxonomy']
 %>
 <tr id="document_<%= id %>">
   <td class="checkbox">
@@ -22,12 +23,11 @@ media_extra = extra(@media_extras, id)
   </td>
   <td><%= document.id %></td>  
   <td><%= document.part&.first %></td>  
-  <% if @bso_member_count > 0 %>
-    <td class="break-all"><%= bso&.title&.first %></td>
-    <td><%= bso&.taxonomies&.first&.taxonomy_genus&.first %></td>
+  <% if po_title.present? %>
+    <td class="break-all"><%= po_title %></td>
   <% end %>
-  <% if @cho_member_count > 0 %>
-    <td class="break-all"><%= cho&.title&.first %></td>
+  <% if po_taxonomy.present? %>
+    <td><%= po_taxonomy %></td>
   <% end %>
   <td><%= document.media_type&.first.underscore.humanize %></td>  
   <td><%= media_extra["team_project_title"] %></td>

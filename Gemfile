@@ -11,7 +11,7 @@ gem 'pg'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.2'
-# gem 'turbolinks', '~> 5'
+gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 gem 'figaro'
 gem 'redis'
@@ -24,7 +24,7 @@ gem 'bootstrap-sass', '~> 3.4'
 gem 'riiif', '~> 1.1'
 
 # pul_uv_rails fork upgraded for universal viewer aleph
-gem 'pul_uv_rails', :git => 'https://github.com/MorphoSource/pul_uv_rails.git', :branch => 'aleph-pre11'
+gem 'pul_uv_rails', :git => 'https://github.com/MorphoSource/pul_uv_rails.git', :branch => 'aleph-0.0.12'
 
 # pull iiif_manifest fork that can handle 3D manifests
 gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :branch => 'morphosource'
@@ -86,4 +86,5 @@ end
 group :production do
   gem 'passenger'
   gem 'therubyracer', platforms: :ruby
+  gem 'dalli'
 end

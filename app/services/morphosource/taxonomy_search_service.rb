@@ -33,7 +33,8 @@ module Morphosource
     def param_clauses
       clauses = []
       params.each do |k,v|
-        clauses << "#{Solrizer.solr_name(k, :stored_searchable)}:#{prepare_value(v)}"
+        term_type = ( k == 'member_ids' ? :symbol : :stored_searchable )
+        clauses << "#{Solrizer.solr_name(k, term_type)}:#{prepare_value(v)}"
       end
       clauses
     end
@@ -50,4 +51,8 @@ module Morphosource
       ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC")
     end
   end
+<<<<<<< HEAD
 end
+=======
+end
+>>>>>>> origin/dev

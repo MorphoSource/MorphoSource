@@ -11,6 +11,8 @@
 // about supported directives.
 //
 
+//= require turbolinks
+
 // Required by Blacklight
 //= require jquery
 //= require jquery_ujs

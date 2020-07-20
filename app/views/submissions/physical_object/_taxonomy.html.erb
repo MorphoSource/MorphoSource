@@ -84,12 +84,11 @@ $(function(){
     },
     source: function (request, response) {
       $.ajax({
-        url: "search_taxonomy_ajax?type[]=Taxonomy&id=NA&q=" + request.term,
+        url: "<%= find_taxonomy_autocomplete_url %>" + request.term,
         type: 'GET',
         dataType: 'json',
         complete: function (xhr, status) {
           var results = $.parseJSON(xhr.responseText);
-          console.log(results);
           response(results);
         }
       });
@@ -130,6 +129,7 @@ $(function(){
     }
     return s;
   }
+
 });
 </script>
 

@@ -28,7 +28,7 @@ function clearHiddenInputs() {
   form.find('input[name="batch_document_ids[]"]').remove();
 }
 
-$(document).on('turbolinks:load', function(){
+$( document ).ready(function(){
   // remove item ids from the form if modal is closed or cancel button is clicked
   $("#modal-cancel, #close-modal").bind('click', function() {
     clearHiddenInputs();

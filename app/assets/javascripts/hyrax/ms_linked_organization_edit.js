@@ -1,5 +1,5 @@
 // Based on code from ms_media_form
-$(document).on('turbolinks:load', function() {
+$( document ).ready(function() {
 
   if ($('form[id*="edit_organization"]').length) { // if team organization edit form tab
 

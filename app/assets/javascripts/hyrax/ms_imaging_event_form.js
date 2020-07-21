@@ -43,7 +43,7 @@ function buildFilter(filter, filterGroupUl) {
   filterGroupUl.appendChild(li);
 }
 
-$(document).on('turbolinks:load', function(){
+$( document ).ready(function() {
   //console.log('ready... length='+ $('form[id*="imaging_event"]').length) ;
   if ($('form[id*="imaging_event"]').length) { // if ICE add/edit form page
 
@@ -81,7 +81,7 @@ $(document).on('turbolinks:load', function(){
         }
         $('input[name="imaging_event[filter_thickness][]"]')[0].value = thickness;
       } else {
-        // Assemble new material, thickness 
+        // Assemble new material, thickness
         var li = document.createElement('li');
         li.className = 'field-wrapper input-group input-append';
         li.setAttribute('style', "display:flex; flex-direction:row; justify-content:space-evenly;");
@@ -163,6 +163,6 @@ $(document).on('turbolinks:load', function(){
         buildFilter('', filterGroupUl);
       }
     });
-    
+
   } // end if ICE add/edit form page
 });

@@ -41,7 +41,7 @@ module Morphosource
 
     def prepare_value(v)
       if v.to_s.include? " "
-        "\"#{v}\"" 
+        "\"#{v}\""
       else
         v
       end
@@ -51,8 +51,4 @@ module Morphosource
       ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC")
     end
   end
-<<<<<<< HEAD
 end
-=======
-end
->>>>>>> origin/dev

@@ -78,13 +78,19 @@ module Hyrax
 
       # Instantiate the membership query service
       def collection_member_service 
-        @collection_member_service ||= membership_service_class.new(scope: self, collection: collection, params: params_for_query)
+         membership_service_class.new(scope: self, collection: collection, params: params_for_query)
       end
 
-      def member_works
-        @response = collection_member_service.available_member_works
+      def member_works # 24ms
+        @response = cached_media_works
         @member_docs = @response.documents
         @members_count = @response.total
+      end
+
+      def cached_media_works
+        Rails.cache.fetch("/user/#{current_user.id}/collection/#{collection.id}/cached_media_works", expires_in: 12.hours) do
+          collection_member_service.available_member_works
+        end
       end
 
       # media pagination methods

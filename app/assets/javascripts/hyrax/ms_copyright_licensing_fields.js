@@ -1,4 +1,4 @@
-$(document).on('turbolinks:load', function() {
+$( document ).ready(function() {
   // shared functions and listeners for copyright statement and licensing fields
 
   // TODO: Unify media and organization functions here

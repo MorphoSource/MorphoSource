@@ -1,6 +1,6 @@
-$(document).on('turbolinks:load', function() {
+$( document ).ready(function() {
 
-  if ( $('form[id*="edit_collection"]').length || 
+  if ( $('form[id*="edit_collection"]').length ||
        $('form[id*="new_collection"]').length ) { // if collection form page (add/edit)
 
     setupTooltip();
@@ -33,7 +33,7 @@ $(document).on('turbolinks:load', function() {
         $('.filter-param').remove();
       } else {
         $('input[name=' + removing_param + ']').remove();
-        $('p[id=' + removing_param + ']').remove();        
+        $('p[id=' + removing_param + ']').remove();
       }
       var form_id = $(this).data('form');
       disablePage();

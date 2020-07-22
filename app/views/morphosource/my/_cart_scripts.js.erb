@@ -90,7 +90,7 @@ Blacklight.onLoad(function() {
   });
 });
 
-$(document).on('turbolinks:load', function(){
+$( document ).ready(function(){
   togglePageButtons();
   // re-enable the download all button after being clicked
   $('#download-all').bind('click', function(e) {

@@ -57,8 +57,8 @@ function select_visibility(visibility) {
   visibility.prop("checked", true);
 }
 
-$(document).on('turbolinks:load', function() {
-  if ( $('form[id*="edit_media"]').length || 
+$( document ).ready(function() {
+  if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) { // if media form page (add/edit)
     set_initial_value();
 
@@ -68,8 +68,8 @@ $(document).on('turbolinks:load', function() {
 
       if ($(this).val()){
         console.log('Value provided');
-        console.log($(this).val()); 
-        set_visibility($(this).val());    
+        console.log($(this).val());
+        set_visibility($(this).val());
       }
     });
   }

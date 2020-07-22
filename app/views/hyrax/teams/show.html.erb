@@ -158,7 +158,10 @@ provide :page_title, construct_page_title(@presenter.title)
       <% if @bso_member_count > 0 %>
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
-            <%= render 'tab_bso' %>
+            <%#= render 'tab_bso' %>
+            <%= render_async '/teams/specimens/' + @presenter.id do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
           </div>
         </div>
       <% end # if @bso_member_count > 0 %>

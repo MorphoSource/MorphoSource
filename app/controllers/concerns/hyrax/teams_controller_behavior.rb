@@ -33,8 +33,15 @@ module Hyrax
       query_collection_members
     end
 
+    def specimens
+      @curation_concern ||= ActiveFedora::Base.find(params[:id])
+      presenter
+      query_collection_members
+      render partial: "tab_bso"
+    end
+
     def collection
-      action_name == 'show' ? @presenter : @collection
+      action_name == 'show' || action_name == 'specimens' ? @presenter : @collection
     end
 
     private

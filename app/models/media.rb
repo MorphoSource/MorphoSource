@@ -11,7 +11,6 @@ class Media < Morphosource::Works::Base
   validates :title, presence: { message: 'Your work must have a title.' }
 
   attr_accessor :download_permission
-  after_create :mint_remote_identifiers
   before_destroy :prevent_doi_deletion
 
   include Morphosource::MediaMetadata
@@ -144,6 +143,7 @@ class Media < Morphosource::Works::Base
         self.doi = [minted_doi]
         self.save
       end
+      return minted_doi
     end
   end
 

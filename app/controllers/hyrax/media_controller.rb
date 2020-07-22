@@ -123,6 +123,25 @@ module Hyrax
       end
     end
 
+    def mint_doi
+      if current_user.admin?
+        media_work = Media.find(params[:id])
+        if media_work.doi.empty?
+          minted_doi = media_work.mint_doi
+          if minted_doi.nil?
+            flash[:error] = "Error minting DOI"
+          else
+            flash[:notice] = "Minted DOI: #{minted_doi}"
+          end
+        else
+          flash[:error] = "Error minting DOI: DOI already exists"
+        end
+      else
+        flash[:error] = "Error minting DOI: you must be an administrator in order to assign DOIs"
+      end
+      redirect_to(main_app.media_showcase_path(id: params[:id])) and return
+    end
+
     private
 
       def manifest_builder

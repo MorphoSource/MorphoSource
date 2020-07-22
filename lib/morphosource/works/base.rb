@@ -36,6 +36,14 @@ module Morphosource
         self.class == BiologicalSpecimen
       end
 
+      def cho?
+        self.class == CulturalHeritageObject
+      end
+
+      def physical_object?
+        self.class == BiologicalSpecimen || self.class == CulturalHeritageObject
+      end
+
       def organization?
         self.class == Organization
       end

@@ -119,6 +119,10 @@ class Media < Morphosource::Works::Base
     ancestors.select(&:specimen?)
   end
 
+  def physical_objects
+    ancestors.select(&:physical_object?)
+  end
+
   def imaging_event
     ancestors.find(&:imaging_event?)
   end

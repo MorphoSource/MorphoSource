@@ -139,6 +139,11 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def update_physical_object_id
+    self.physical_object_id = physical_objects.map { |po| po.id }
+    save!
+  end
+
   private
     def add_id_to_title
       unless self.title && self.id && self.title.first.to_s.start_with?("M#{self.id.to_s}: ")

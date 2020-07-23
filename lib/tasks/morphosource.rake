@@ -108,7 +108,7 @@ namespace :morphosource do
   desc 'Loop over media and update all media-work physical object ID references'
   task :update_media_physical_object_ids => :environment do
     Media.all.each do |m| 
-      puts "Updating physical object ID for media #{m.id}"
+      Rails.logger.warn("Updating physical object ID for media #{m.id}") 
       m.update_physical_object_id
     end
   end

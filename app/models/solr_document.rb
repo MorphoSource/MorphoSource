@@ -79,6 +79,10 @@ class SolrDocument
     self[Solrizer.solr_name('part', :stored_searchable)]
   end
 
+  def physical_object_id
+    self[Solrizer.solr_name('physical_object_id', :stored_searchable)]
+  end
+
   def rights_holder
     self[Solrizer.solr_name('rights_holder', :stored_searchable)]
   end

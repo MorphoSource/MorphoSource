@@ -105,6 +105,14 @@ namespace :morphosource do
     Rails.logger.warn("#{n} Media works lack FileSets or have FileSets missing original_file")
   end
 
+  desc 'Loop over media and update all media-work physical object ID references'
+  task :update_media_physical_object_ids => :environment do
+    Media.all.each do |m| 
+      Rails.logger.warn("Updating physical object ID for media #{m.id}") 
+      m.update_physical_object_id
+    end
+  end
+
   desc 'Mass ingest data'
   task :mass_ingest => :environment do
     MassIngestJob.perform_later({csv_path: File.expand_path("tmp/ingest/"), update: true, update_only_if_no_file: true})

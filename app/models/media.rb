@@ -119,6 +119,10 @@ class Media < Morphosource::Works::Base
     ancestors.select(&:specimen?)
   end
 
+  def physical_objects
+    ancestors.select(&:physical_object?)
+  end
+
   def imaging_event
     ancestors.find(&:imaging_event?)
   end
@@ -133,6 +137,11 @@ class Media < Morphosource::Works::Base
     organizations.each_with_object([]) do |org, teams|
       teams += Collection.find(org.team_id.first)
     end
+  end
+
+  def update_physical_object_id
+    self.physical_object_id = physical_objects.map { |po| po.id }
+    save!
   end
 
   private

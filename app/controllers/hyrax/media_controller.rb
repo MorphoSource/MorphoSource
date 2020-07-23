@@ -186,31 +186,36 @@ module Hyrax
 
       def set_fileset_visibility
         selected_visibility = params["media"]["visibility"]
-        public = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-        private = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
-        embargo = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
-        lease = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE
+        unrestrictable_doi_visibilities = %w{open restricted_download preview_only hidden}
+        if (!curation_concern.doi.empty?) && unrestrictable_doi_visibilities.include?(curation_concern.fileset_accessibility.first) && (!unrestrictable_doi_visibilities.include?(selected_visibility))
+          curation_concern.errors.add(:base, "Media has been assigned a DOI and published. Visibility can only be changed to one of: #{unrestrictable_doi_visibilities.join(', ')}")
+        else
+          public = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+          private = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
+          embargo = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
+          lease = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE
 
-        case selected_visibility
-        when public
-          map_fileset_accessibility("","open")
-        when "restricted_download"
-          map_work_visibility(public)
-          map_fileset_accessibility("","restricted_download")
-        when "preview"
-          map_work_visibility(public)
-          map_fileset_accessibility("","preview_only")
-        when "hidden"
-          map_work_visibility(public)
-          map_fileset_accessibility("restricted","hidden")
-        when private
-          map_fileset_accessibility("","private")
-        when embargo
-          map_fileset_accessibility("","")
-        when lease
-          map_fileset_accessibility("","")
+          case selected_visibility
+          when public
+            map_fileset_accessibility("","open")
+          when "restricted_download"
+            map_work_visibility(public)
+            map_fileset_accessibility("","restricted_download")
+          when "preview"
+            map_work_visibility(public)
+            map_fileset_accessibility("","preview_only")
+          when "hidden"
+            map_work_visibility(public)
+            map_fileset_accessibility("restricted","hidden")
+          when private
+            map_fileset_accessibility("","private")
+          when embargo
+            map_fileset_accessibility("","")
+          when lease
+            map_fileset_accessibility("","")
+          end
+          update_fileset_accessibility
         end
-        update_fileset_accessibility
       end
 
       def update_fileset_accessibility

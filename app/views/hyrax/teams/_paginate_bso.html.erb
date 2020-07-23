@@ -14,7 +14,7 @@
 		</div>
 
 		<div class="col-md-12 col-lg-8">
-		  <%= paginate @paged_bso_member_docs, outer_window: 2, theme: 'blacklight', param_name: :page, route_set: main_app, :params => { :anchor => 'biological_specimens' } %>
+		  <%= paginate @paged_bso_member_docs, outer_window: 2, theme: 'blacklight', param_name: :page, route_set: main_app, :params => { script_name: "/" + @presenter.collection_type.machine_id + "_paging", :anchor => 'biological_specimens' } %>
 		</div>
 
 	</div><!-- /row -->

@@ -35,16 +35,22 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    resources :teams do # public landing team/project show page
-      member do
-        get 'page/:page', action: :index
-        get 'facet/:id', action: :facet, as: :dashboard_facet
-        get :files
-      end
-    end
-    #    get 'projects/:id', to: 'teams#show'
-    #    get 'projects/:id/page/:page(.:format)', to: 'teams#index'
-    resources :projects, controller: 'teams'
+    #resources :teams do # public landing team/project show page
+    #  member do
+    #    get 'page/:page', action: :index
+    #    get 'facet/:id', action: :facet, as: :dashboard_facet
+    #    get :files
+    #  end
+    #end
+    get 'teams/:id', to: 'teams#show'
+    get 'teams/specimens/:id', to: 'teams#specimens'
+    get 'teams_paging/teams/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'projects/:id', to: 'teams#show'
+    get 'projects/specimens/:id', to: 'teams#specimens'
+    get 'projects_paging/projects/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+
+    #resources :projects, controller: 'teams'
+    
     # Note: the following route might effect pagination links
     namespace :dashboard do
       resources :collections, controller: 'collections'
@@ -54,8 +60,6 @@ Rails.application.routes.draw do
 
     #get 'dashboard/my/teams', controller: 'my/teams', action: :index
     #get 'dashboard/my/projects', controller: 'my/teams', action: :index
-
-    get 'teams/specimens/:id', controller: 'teams', action: :specimens
 
   end
 

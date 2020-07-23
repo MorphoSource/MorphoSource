@@ -36,7 +36,7 @@ module Hyrax
     def specimens
       @curation_concern ||= ActiveFedora::Base.find(params[:id])
       presenter
-      query_collection_members
+      query_collection_members_for_po
       render partial: "tab_bso"
     end
 
@@ -80,7 +80,16 @@ module Hyrax
         member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
         # parent collection should not be needed.  remove below later
         #parent_collections if collection.collection_type.nestable? && action_name == 'show' # 7 - 14 ms for project
-        prepare_docs_and_filters(collection)
+        prepare_docs_and_filters_for_media(collection)
+      end
+
+      def query_collection_members_for_po
+
+
+        member_works # is this still needed?
+#        member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
+        prepare_docs_and_filters_for_po(collection)
+
       end
 
       # Instantiate the membership query service

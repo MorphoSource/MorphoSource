@@ -141,6 +141,24 @@ module Morphosource
  #     @bso_source_options = @bso_source_options.uniq
     end
 
+    def total_media_count(id)
+      # todo: will need to optimize this 
+      media = Media.find(id)
+      @parent_media_id_list = parent_media_ids(media, 5, []).flatten.uniq
+      @child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
+      @sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
+      total_media_count = 1 + @parent_media_id_list.length +
+                          @child_media_id_list.length + 
+                          @sibling_media_id_list.length
+      total_media_count
+    end
+
+    def cached_total_media_count(id)
+      Rails.cache.fetch("/cached_total_media_count/#{id}", expires_in: 24.hours) do
+        total_media_count(id)
+      end
+    end
+
     def get_media_extras(docs, extras)
       media_extras = []
 
@@ -167,6 +185,10 @@ module Morphosource
           po_doc = Morphosource::PhysicalObjectParentSearchService.call({ id: doc.id })&.first
           if po_doc.present?
             this_media_extras['po_title'] = po_doc.title&.first
+
+
+
+
             if po_doc.hydra_model == BiologicalSpecimen
               taxonomy = Morphosource::TaxonomySearchService.call({ 'member_ids' => po_doc.id})&.first
               this_media_extras['po_taxonomy'] = taxonomy.title&.first if taxonomy.present? && taxonomy.title.present?
@@ -238,10 +260,10 @@ module Morphosource
           if po_doc.present?
             if po_doc.hydra_model == BiologicalSpecimen
               bso_documents << po_doc unless bso_documents.include? po_doc
-              bso_extras << { 'id' => po_doc.id, 'origin' => origin }.merge(extras) 
+              bso_extras << { 'id' => po_doc.id, 'origin' => origin, 'media_count' => cached_total_media_count(doc.id) }.merge(extras) 
             elsif po_doc.hydra_model == CulturalHeritageObject
               cho_documents << po_doc unless cho_documents.include? po_doc
-              cho_extras << { 'id' => po_doc.id, 'origin' => origin }.merge(extras) 
+              cho_extras << { 'id' => po_doc.id, 'origin' => origin, 'media_count' => cached_total_media_count(doc.id) }.merge(extras) 
             end
           end
 

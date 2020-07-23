@@ -122,6 +122,13 @@ $(document).ready(function() {
         });
       });
 
+      // populate PO counts when the tab has been loaded
+      document.addEventListener("bso-loaded", function(event) {
+        //console.log("bso have loaded!", event.container);
+        $('span.bso-count').html($('input[name="bso-count"]').val() + ' Specimens · ');
+        $('.tab-bso-count').html($('input[name="bso-count"]').val());
+      });
+
     } // / end if teams and projects show page
 
   } // end if the page is showcase page

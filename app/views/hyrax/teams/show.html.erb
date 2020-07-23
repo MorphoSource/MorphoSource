@@ -35,15 +35,12 @@ provide :page_title, construct_page_title(@presenter.title)
               <%= @presenter.permission_badge %>
             </div>
             <div class="text-muted">
-              <% if @media_member_count > 0 %>
-                <%= @media_member_count %> <%= 'Media'.pluralize(@media_member_count) %> ·
-              <% end %>
-              <% if @bso_member_count > 0 %>
-                <%= @bso_member_count %> <%= 'Specimen'.pluralize(@bso_member_count) %> ·
-              <% end %>
-              <% if @cho_member_count > 0 %>
-                <%= @cho_member_count %> CHO ·
-              <% end %>
+              <%= @media_member_count %> Media ·
+              <span class="bso-count"></span> 
+
+
+
+
               Managed by: <%= @presenter.collection_managers %>
             </div>
         </h1>
@@ -158,7 +155,7 @@ provide :page_title, construct_page_title(@presenter.title)
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
             <%#= render 'tab_bso' %>
-            <%= render_async_cache bso_tab_url(@presenter.id) do %>
+            <%= render_async_cache bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>
             <% end %>
           </div>

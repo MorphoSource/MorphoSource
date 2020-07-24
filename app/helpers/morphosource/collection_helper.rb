@@ -153,11 +153,11 @@ module Morphosource
       total_media_count
     end
 
-    def cached_total_media_count(id)
-      Rails.cache.fetch("/cached_total_media_count/#{id}", expires_in: 24.hours) do
-        total_media_count(id)
-      end
-    end
+    #def cached_total_media_count(id)
+    #  Rails.cache.fetch("/cached_total_media_count/#{id}", expires_in: 24.hours) do
+    #    total_media_count(id)
+    #  end
+    #end
 
     def get_media_extras(docs, extras)
       media_extras = []
@@ -260,10 +260,10 @@ module Morphosource
           if po_doc.present?
             if po_doc.hydra_model == BiologicalSpecimen
               bso_documents << po_doc unless bso_documents.include? po_doc
-              bso_extras << { 'id' => po_doc.id, 'origin' => origin, 'media_count' => cached_total_media_count(doc.id) }.merge(extras) 
+              bso_extras << { 'id' => po_doc.id, 'origin' => origin, 'media_count' => total_media_count(doc.id) }.merge(extras) 
             elsif po_doc.hydra_model == CulturalHeritageObject
               cho_documents << po_doc unless cho_documents.include? po_doc
-              cho_extras << { 'id' => po_doc.id, 'origin' => origin, 'media_count' => cached_total_media_count(doc.id) }.merge(extras) 
+              cho_extras << { 'id' => po_doc.id, 'origin' => origin, 'media_count' => total_media_count(doc.id) }.merge(extras) 
             end
           end
 

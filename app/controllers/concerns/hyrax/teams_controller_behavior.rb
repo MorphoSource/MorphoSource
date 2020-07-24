@@ -98,16 +98,17 @@ module Hyrax
       end
 
       def member_works # 24ms
-        @response = cached_media_works
+        #@response = cached_media_works
+        @response = collection_member_service.available_member_works
         @member_docs = @response.documents
         @members_count = @response.total
       end
 
-      def cached_media_works
-        Rails.cache.fetch("/user/#{current_user.id}/collection/#{collection.id}/cached_media_works", expires_in: 12.hours) do
-          collection_member_service.available_member_works
-        end
-      end
+      #def cached_media_works
+      #  Rails.cache.fetch("/user/#{current_user.id}/collection/#{collection.id}/cached_media_works", expires_in: 12.hours) do
+      #    collection_member_service.available_member_works
+      #  end
+      #end
 
       # media pagination methods
       def paginated_media_item_list

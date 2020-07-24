@@ -2,69 +2,71 @@ module Morphosource
   module CartItems
     module ListItems
 
-      # Used by #index for all cart item views
-
       def get_items(page)
         @items = items(page)
         @solr_docs = solr_docs(page)
-        @item_count = item_count(page)
+        @item_count = count_text(@items.size)
       end
 
-      def get_restricted_items
-        @unrestricted_items = downloadable_items
-        @restricted_items = undownloadable_items
-        @restricted_count = count_text(@restricted_items.count)
+      def options(page)
+        case page
+        when 'cart'
+          item_ids = :item_ids_in_cart
+          order = 'created_at DESC'
+          work_ids = :work_ids_in_cart
+        when 'downloads'
+          item_ids = :downloaded_items
+          order = 'date_downloaded DESC'
+          work_ids = :uniq_downloaded_work_ids
+        when 'my_requests'
+          item_ids = :my_requests_ids
+          order = 'created_at DESC'
+          work_ids = :my_requests_work_ids
+        when 'new'
+          item_ids = :newly_requested_item_ids
+          order = 'user_id DESC'
+          order2 = "use desc"
+          work_ids = :newly_requested_item_work_ids
+        when 'previous'
+          item_ids = :previously_requested_item_ids
+          order = 'user_id DESC'
+          order2 = "use desc"
+          work_ids = :previously_requested_items_work_ids
+        end
+        { item_ids: item_ids,
+          order: order,
+          order2: order2,
+          work_ids: work_ids }
       end
-
-      @@page_items = {
-        'cart' => {
-          item_ids: :item_ids_in_cart,
-          order: 'created_at DESC',
-          work_ids: :work_ids_in_cart,
-        },
-        'downloads' => {
-          item_ids: :downloaded_items,
-          order: 'date_downloaded DESC',
-          work_ids: :uniq_downloaded_work_ids
-        },
-        'my_requests' => {
-          item_ids: :my_requests_ids,
-          order: 'created_at DESC',
-          work_ids: :my_requests_work_ids
-        },
-        'request_manager' => {
-          item_ids: :newly_requested_item_ids,
-          order: "user_id DESC",
-          work_ids: :newly_requested_items_work_ids,
-          user_ids: :newly_requested_items_user_ids
-        },
-        'previous_requests' => {
-          item_ids: :previously_requested_item_ids,
-          order: 'date_requested DESC',
-          work_ids: :previously_requested_items_work_ids,
-          user_ids: :previously_requested_items_user_ids
-        }
-      }
 
       def items(page)
-        ids = get_value(page,:item_ids)
-        order = get_order(page)
-        if page == 'request_manager'
-          new_request_items(ids)
+        ids = self.send(options(page)[:item_ids])
+        order = options(page)[:order]
+        # if request manager new/previous
+        if @tab
+          order2 = options(page)[:order2]
+          CartItem.where(id: ids).order(order).order(order2)
         else
           CartItem.where(id: ids).order(order).page params[:page]
         end
       end
 
-      # Using instead of search in order to get back full results instead of paginated
       def solr_docs(page)
-        work_ids = get_value(page,:work_ids)
-        work_ids.each_with_object([]){|id, docs| docs << SolrDocument.find(id)}
+        work_ids = self.send(options(page)[:work_ids]).uniq
+
+        ActiveFedora::SolrService.query(ActiveFedora::SolrQueryBuilder.construct_query_for_ids([work_ids]), rows: 999999).map{ |doc| SolrDocument.new(doc) }
       end
 
-      def item_count(page)
-        count = get_value(page,:item_ids).count
-        count_text(count)
+      # downloads page
+      def uniq_downloaded_work_ids
+        downloaded_work_ids.uniq
+      end
+
+      # media cart
+      def get_restricted_items
+        @unrestricted_items = downloadable_items
+        @restricted_items = undownloadable_items
+        @restricted_count = count_text(@restricted_items.count)
       end
 
       def downloadable_items
@@ -75,28 +77,20 @@ module Morphosource
         items_in_cart.select(&:restricted?)
       end
 
-      def uniq_downloaded_work_ids
-        downloaded_work_ids.uniq
-      end
+      # media cart page
+      delegate :item_ids_in_cart, :work_ids_in_cart, to: :current_user
 
-      def new_request_items(ids)
-        CartItem.where(id: ids).order("user_id desc").order("use desc")
-      end
+      # downloads page
+      delegate :downloaded_items, :downloaded_work_ids, to: :current_user
 
-      def get_requesters(page)
-        ids = get_value(page,:user_ids).uniq
-        User.where(ms_id: ids).page params[:page]
-      end
+      # my requests page
+      delegate :my_requests_ids, :my_requests_work_ids, to: :current_user
 
-      def get_value(page,key)
-        self.method(@@page_items[page][key]).()
-      end
+      # request manager - new requests
+      delegate :newly_requested_item_ids, :newly_requested_item_work_ids, to: :current_user
 
-      def get_order(page)
-        @@page_items[page][:order]
-      end
-
-      delegate :item_ids_in_cart, :work_ids_in_cart, :downloaded_items, :my_requests_ids, :my_requests_work_ids, :newly_requested_item_ids, :newly_requested_items_work_ids, :newly_requested_items_user_ids, :previously_requested_item_ids, :previously_requested_items_work_ids, :previously_requested_items_user_ids, to: :current_user
+      # request manager - previous requests
+      delegate :previously_requested_item_ids, :previously_requested_items_work_ids, to: :current_user
     end
   end
 end

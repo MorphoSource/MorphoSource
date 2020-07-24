@@ -785,4 +785,9 @@ class SolrDocument
     self["download_access_person_ssim"]
   end
 
+  # Request Management
+  def reviewer
+    self["download_reviewer_ssim"].first || self["owner_ssim"] || self["depositor_ssim"]
+  end
+
 end

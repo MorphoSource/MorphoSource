@@ -1,8 +1,8 @@
 module Morphosource
   module My
     class RequestManagersController < Hyrax::MyController
-
       include Morphosource::CartItems
+      include Morphosource::CartItems::RequestManagerItems
 
       before_action :get_items_by_id, only: [:clear_request, :approve_download, :deny_download, :edit_expiration]
 
@@ -11,7 +11,7 @@ module Morphosource
       def index
         get_items_for_tab
         render 'morphosource/my/request_manager/index'
-       end
+      end
 
       def approve_download
         mark_as('approved')
@@ -48,12 +48,12 @@ module Morphosource
         def get_items_for_tab
           if previous_requests?
             @tab = 'previous'
-            get_items('previous_requests')
-            @requesters = get_requesters('previous_requests')
+            get_previous_items
+            # @requesters = get_requesters('previous_requests')
           else
             @tab = 'new'
-            get_items('request_manager')
-            @requesters = get_requesters('request_manager')
+            get_new_items
+            # @requesters = get_requesters('request_manager')
           end
         end
 

@@ -50,6 +50,11 @@ module ActiveFedora
       model(opts).find(id, cast: true)
     end
 
+    # Request Management
+    def reviewer
+      self["download_reviewer_ssim"].try(:first) || self["owner_ssim"].try(:first) || self["depositor_ssim"].try(:first)
+    end
+
     private
 
       def classifier

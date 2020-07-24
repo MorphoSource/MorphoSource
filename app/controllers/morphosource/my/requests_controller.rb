@@ -1,7 +1,7 @@
 module Morphosource
   module My
     class RequestsController < Hyrax::MyController
-
+      include Morphosource::CartItems::ListItems
       include Morphosource::CartItems
 
       before_action :get_items_by_id, except: [:index]

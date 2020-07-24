@@ -32,12 +32,6 @@ module Morphosource
           order: 'created_at DESC',
           work_ids: :my_requests_work_ids
         },
-        'request_manager' => {
-          item_ids: :newly_requested_item_ids,
-          order: "user_id DESC",
-          work_ids: :newly_requested_items_work_ids,
-          user_ids: :newly_requested_items_user_ids
-        },
         'previous_requests' => {
           item_ids: :previously_requested_item_ids,
           order: 'date_requested DESC',
@@ -49,11 +43,7 @@ module Morphosource
       def items(page)
         ids = get_value(page,:item_ids)
         order = get_order(page)
-        if page == 'request_manager'
-          new_request_items(ids)
-        else
-          CartItem.where(id: ids).order(order).page params[:page]
-        end
+        CartItem.where(id: ids).order(order).page params[:page]
       end
 
       # Using instead of search in order to get back full results instead of paginated

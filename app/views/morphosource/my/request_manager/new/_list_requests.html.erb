@@ -22,9 +22,9 @@
         </tr>
       </thead>
       <tbody>
-        <% use_requests(items,use).each_with_index do |item, counter| %>
-          <% document = @solr_docs.select{|doc| doc.id == item.work_id}[0] %>
-          <%= render 'morphosource/my/request_manager/new/list_works', document: document, counter: counter, item: item, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
+        <% use_requests(items,use).each do |item| %>
+          <% document = @solr_docs.find{|doc| doc.id == item.work_id} %>
+          <%= render 'morphosource/my/request_manager/new/list_works', item: item, document: document %>
         <% end %>
       </tbody>
     </table>

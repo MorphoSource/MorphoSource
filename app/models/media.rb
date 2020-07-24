@@ -32,6 +32,7 @@ class Media < Morphosource::Works::Base
     CartItem.where(work_id: id)
   end
 
+  # TODO: make this more efficient
   def reviewer
     r = User.find_by(ms_id: download_reviewer.first)
     r ? download_reviewer.first : user_with_ownership

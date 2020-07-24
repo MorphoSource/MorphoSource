@@ -67,6 +67,8 @@ module Morphosource
         flash[:alert] = alert if alert.present?
         redirect_back(fallback_location: my_cart_path)
       end
+
+      delegate :work_ids_in_cart, to: :current_user
     end
   end
 end

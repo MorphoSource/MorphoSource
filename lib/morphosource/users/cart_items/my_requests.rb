@@ -1,0 +1,38 @@
+# Methods for populating the dashboard requests page
+module Morphosource
+  module Users
+    module CartItems
+      module MyRequests
+
+        # all a user's current and past requests (items where user is requestor)
+        def my_requests
+          @my_requests ||= cart_items.select{ |item| item.date_requested? || item.date_cleared? }
+        end
+
+        def my_active_requests
+          @my_active_requests ||= my_requests.select{ |item| ["Approved","Requested","Cleared"].include? item.request_status }
+        end
+
+        def my_requests_ids
+          my_requests.map(&:id)
+        end
+
+        def my_requests_work_ids
+          my_requests.map(&:work_id)
+        end
+
+        def my_active_requests_work_ids
+          my_active_requests.map(&:work_id)
+        end
+
+        def my_cleared_requests
+          my_requests.select{|item| item.request_status == "Cleared" }
+        end
+
+        def my_cleared_requests_work_ids
+          my_cleared_requests.map(&:work_id)
+        end
+      end
+    end
+  end
+end

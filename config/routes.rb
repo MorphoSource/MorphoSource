@@ -22,9 +22,10 @@ Rails.application.routes.draw do
     # redirect the default media view to showcase view, except for certain action (e.g. new)
     get 'concern/media/new', to: 'media#new'
     get 'concern/media/zip', to: 'morphosource/zip_media#zip'
-    get 'concern/media/:id', to: 'media#showcase'
+    get 'concern/media/:id', to: 'media#showcase', as: :media_showcase
     # in case we need to reference the old edit page. remove this hyraxedit route later
     get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
+    put 'concern/media/:id/mint_doi', to: 'media#mint_doi', as: :media_mint_doi
     get 'concern/parent/:parent_id/media/:id', to: 'media#showcase'
     # setup temp routes for the default views (for debugging)
     # remove them later if no longer needed

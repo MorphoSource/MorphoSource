@@ -11,6 +11,7 @@ class Media < Morphosource::Works::Base
   validates :title, presence: { message: 'Your work must have a title.' }
 
   attr_accessor :download_permission
+  before_destroy :prevent_doi_deletion
 
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
@@ -139,6 +140,24 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def mint_doi
+    if self.doi.empty?
+      depositor_user = User.find_by(ms_id: self.depositor)
+      depositor_user_name_components = depositor_user.display_name.split(' ')
+      minted_doi = Morphosource::CrossrefDoiMinter.mint_doi( self.id,
+                                                            {'title' => self.title.first,
+                                                             'author_first' => depositor_user_name_components.first,
+                                                             'author_last' => depositor_user_name_components.drop(1).join(' '),
+                                                             'url' => 'http://example.com',
+                                                             'resource_type' => self.media_type.first} )
+      unless minted_doi.nil?
+        self.doi = [minted_doi]
+        self.save
+      end
+      return minted_doi
+    end
+  end
+
   def update_physical_object_id
     self.physical_object_id = physical_objects.map { |po| po.id }
     save!
@@ -148,6 +167,12 @@ class Media < Morphosource::Works::Base
     def add_id_to_title
       unless self.title && self.id && self.title.first.to_s.start_with?("M#{self.id.to_s}: ")
         self.title.set("M#{self.id.to_s}: #{self.title.first.to_s}")
+      end
+    end
+
+    def prevent_doi_deletion
+      unless self.doi.empty?
+        throw(:abort)
       end
     end
 end

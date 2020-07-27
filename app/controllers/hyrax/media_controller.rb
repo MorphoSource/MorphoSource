@@ -123,6 +123,25 @@ module Hyrax
       end
     end
 
+    def mint_doi
+      if current_user.admin?
+        media_work = Media.find(params[:id])
+        if media_work.doi.empty?
+          minted_doi = media_work.mint_doi
+          if minted_doi.nil?
+            flash[:error] = "Error minting DOI"
+          else
+            flash[:notice] = "Minted DOI: #{minted_doi}"
+          end
+        else
+          flash[:error] = "Error minting DOI: DOI already exists"
+        end
+      else
+        flash[:error] = "Error minting DOI: you must be an administrator in order to assign DOIs"
+      end
+      redirect_to(main_app.media_showcase_path(id: params[:id])) and return
+    end
+
     private
 
       def manifest_builder
@@ -167,31 +186,36 @@ module Hyrax
 
       def set_fileset_visibility
         selected_visibility = params["media"]["visibility"]
-        public = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-        private = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
-        embargo = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
-        lease = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE
+        unrestrictable_doi_visibilities = %w{open restricted_download preview_only hidden}
+        if (!curation_concern.doi.empty?) && unrestrictable_doi_visibilities.include?(curation_concern.fileset_accessibility.first) && (!unrestrictable_doi_visibilities.include?(selected_visibility))
+          curation_concern.errors.add(:base, "Media has been assigned a DOI and published. Visibility can only be changed to one of: #{unrestrictable_doi_visibilities.join(', ')}")
+        else
+          public = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+          private = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
+          embargo = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
+          lease = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE
 
-        case selected_visibility
-        when public
-          map_fileset_accessibility("","open")
-        when "restricted_download"
-          map_work_visibility(public)
-          map_fileset_accessibility("","restricted_download")
-        when "preview"
-          map_work_visibility(public)
-          map_fileset_accessibility("","preview_only")
-        when "hidden"
-          map_work_visibility(public)
-          map_fileset_accessibility("restricted","hidden")
-        when private
-          map_fileset_accessibility("","private")
-        when embargo
-          map_fileset_accessibility("","")
-        when lease
-          map_fileset_accessibility("","")
+          case selected_visibility
+          when public
+            map_fileset_accessibility("","open")
+          when "restricted_download"
+            map_work_visibility(public)
+            map_fileset_accessibility("","restricted_download")
+          when "preview"
+            map_work_visibility(public)
+            map_fileset_accessibility("","preview_only")
+          when "hidden"
+            map_work_visibility(public)
+            map_fileset_accessibility("restricted","hidden")
+          when private
+            map_fileset_accessibility("","private")
+          when embargo
+            map_fileset_accessibility("","")
+          when lease
+            map_fileset_accessibility("","")
+          end
+          update_fileset_accessibility
         end
-        update_fileset_accessibility
       end
 
       def update_fileset_accessibility

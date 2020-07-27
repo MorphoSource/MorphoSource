@@ -91,3 +91,5 @@ group :production do
   gem 'therubyracer', platforms: :ruby
   gem 'dalli'
 end
+
+gem "ezid-client", "~> 1.8"

@@ -43,7 +43,7 @@ RSpec.describe Morphosource::IDigBioSearchService, :vcr do
         expect(results['idigbio_uuid']).to eq(uuid)
         expect(results).to have_key('description')
         expect(results).to have_key('idigbio_recordset_id')
-        expect(results['vouchered']).to eq(true)
+        expect(results['vouchered']).to eq('Yes')
       end
     end
   end
@@ -51,10 +51,10 @@ RSpec.describe Morphosource::IDigBioSearchService, :vcr do
   describe '.taxonomy_params_from_idigbio' do
     describe 'an IDigBio UUID' do
       it 'returns params suitable for Taxonomy construction' do
-        results = described_class.taxonomy_params_from_idigbio('061594f4-69a3-41ff-9396-dac55cc8409b')
+        results = described_class.taxonomy_param_sets_from_idigbio('061594f4-69a3-41ff-9396-dac55cc8409b')
         expect(results).to be_a(Hash)
-        expect(results).to have_key('taxonomy_genus')
-        expect(results).to have_key('taxonomy_species')
+        expect(results).to have_key(:provider)
+        expect(results).to have_key(:gbif)
       end
     end
   end

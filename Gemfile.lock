@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/MorphoSource/pul_uv_rails.git
-  revision: 58492386d45f624f5afe205cb8de5749a474cc80
-  branch: aleph
+  revision: 2e9eb9d15b95c119b3e183ee98cf5aa21f49f963
+  branch: aleph-0.0.12
   specs:
     pul_uv_rails (2.9)
 
@@ -199,6 +199,7 @@ GEM
     crass (1.0.6)
     curb (0.9.8)
     daemons (1.3.1)
+    dalli (2.7.10)
     declarative (0.0.10)
     declarative-option (0.1.0)
     deprecation (1.0.0)
@@ -867,9 +868,6 @@ GEM
     tilt (2.0.10)
     tinymce-rails (4.9.8)
       railties (>= 3.1.1)
-    turbolinks (5.2.0)
-      turbolinks-source (~> 5.2)
-    turbolinks-source (5.2.0)
     twitter-bootstrap-rails (4.0.0)
       actionpack (~> 5.0, >= 5.0.1)
       execjs (~> 2.7)
@@ -930,6 +928,7 @@ DEPENDENCIES
   byebug
   capybara
   coffee-rails (~> 4.2)
+  dalli
   devise
   devise-guests (~> 0.6)
   dotenv-rails
@@ -970,7 +969,6 @@ DEPENDENCIES
   spring
   spring-watcher-listen (~> 2.0.0)
   therubyracer
-  turbolinks (~> 5)
   tzinfo-data
   uglifier (>= 1.3.0)
   vcr

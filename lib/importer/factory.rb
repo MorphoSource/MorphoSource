@@ -7,6 +7,14 @@ module Importer
       autoload :DatasetFactory
       autoload :ObjectFactory
       autoload :WithAssociatedCollection
+      autoload :BiologicalSpecimenFactory
+      autoload :DeviceFactory
+      autoload :ImagingEventFactory
+      autoload :MediaFactory
+      autoload :OrganizationFactory
+      autoload :ProcessingEventFactory
+      autoload :TaxonomyFactory
+      autoload :UserFactory
     end
 
     # @param [#to_s] First (Xxx) portion of an "XxxFactory" constant

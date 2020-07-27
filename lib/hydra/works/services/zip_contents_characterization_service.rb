@@ -56,6 +56,10 @@ module Hydra::Works
       file_type_priorities.find_index(File.extname(f.name).downcase)
     end
 
+    def file_is_hidden?(f)
+      f.name[0] == '.'
+    end
+
     def file_type_priorities
       ['.dcm', '.dicom', '.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d', '.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg', '.dng', '.nef', '.crw', '.cr2', '.cr3', '.iiq', '.arw', '.raw', '.rw2']
     end

@@ -103,6 +103,7 @@ en:
         trusted_canonical: "Organizational / MorphoSource Inferred"
         trusted: "MorphoSource Inferred"
         user: "User Supplied"
+        gbif: "GBIF"
     visibility:
       open:
         note_html: "<p>Anyone can view the page and download the associated file(s)</p>"

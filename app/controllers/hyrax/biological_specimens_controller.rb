@@ -60,6 +60,7 @@ module Hyrax
     end
 
     def update
+      create_gbif_taxonomies
       if actor.update(actor_environment)
         update_media_team_access
         after_update_response
@@ -75,6 +76,29 @@ module Hyrax
     end
 
     private
+
+    def create_gbif_taxonomies
+      if params[:biological_specimen] && params[:biological_specimen][:work_parents_attributes]
+        params[:biological_specimen][:work_parents_attributes].each do |wpa_id, wpa_val|
+          if wpa_val[:id].include? 'gbif:'
+            taxonomy_id = new_gbif_taxonomy(wpa_val[:id])
+            wpa_val[:id] = taxonomy_id if taxonomy_id.present?
+          end
+        end
+      end
+    end
+
+    def new_gbif_taxonomy(t_id)
+      gbif_key = t_id.sub!('gbif:', '')
+      gbif_params = ActionController::Parameters.new(
+          Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key))
+      taxonomy_params = Hyrax::TaxonomyForm.model_attributes(gbif_params)
+      taxonomy_params.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
+      curation_concern = Taxonomy.new
+      env = Hyrax::Actors::Environment.new(curation_concern, current_ability, taxonomy_params)
+      Hyrax::CurationConcern.actor.create(env)
+      curation_concern.id
+    end
 
     def old_orgs
       select_organizations(@original_parents)

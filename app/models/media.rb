@@ -63,16 +63,12 @@ class Media < Morphosource::Works::Base
     all_visibilities & file_visibilities
   end
 
-  # after media are migrated next round, should all have fileset_accessibility
   def restricted?
-    return false if !fileset_accessibility.first
-    fileset_accessibility.first == "restricted_download"
+    publication_status == "restricted"
   end
 
-  # after media are migrated next round, should all have fileset_accessibility
   def open?
-    return true if !fileset_accessibility.first
-    fileset_accessibility.first == "open"
+    publication_status == "open"
   end
 
   # true if publication status is open, restricted, lease
@@ -91,30 +87,45 @@ class Media < Morphosource::Works::Base
 
   # TODO - consider what happens with fileset_accessibility for lease/embargo
   def publication_status
-    accessibility = fileset_accessibility.first
+    return 'private' if fileset_accessibility_not_set
+    access = fileset_accessibility.first
     case
-    when accessibility == "open"
-      "open"
-    when accessibility == "restricted_download"
-      "restricted"
-    when accessibility == "preview_only"
-      "preview"
-    when accessibility == "hidden"
-      "hidden"
-    when accessibility == "private"
-      "private"
     when under_embargo?
       "embargo"
     when active_lease?
       "lease"
-      #TODO: remove after migrated media have fileset_accessibility values
-    when accessibility == "" || accessibility == nil
+    when access == "open"
       "open"
+    when access == "restricted_download"
+      "restricted"
+    when access == "preview_only"
+      "preview"
+    when access == "hidden"
+      "hidden"
+    else
+      "private"
     end
+  end
+
+  # true if nil, [], [''] unless under lease or embargo
+  def fileset_accessibility_not_set
+    return false if under_embargo?
+    return false if active_lease?
+    return true if fileset_accessibility.blank?
+    return true if fileset_accessibility.first.blank?
+    false
   end
 
   def specimens
     ancestors.select(&:specimen?)
+  end
+
+  def physical_objects
+    ancestors.select(&:physical_object?)
+  end
+
+  def imaging_event
+    ancestors.find(&:imaging_event?)
   end
 
   def organizations
@@ -147,8 +158,9 @@ class Media < Morphosource::Works::Base
     end
   end
 
-  def mint_remote_identifiers
-    self.mint_doi
+  def update_physical_object_id
+    self.physical_object_id = physical_objects.map { |po| po.id }
+    save!
   end
 
   private

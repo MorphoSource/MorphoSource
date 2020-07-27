@@ -11,6 +11,7 @@ module Ms1to2
           :file_path => :file,
           :created_on => :date_uploaded,
           :title => :short_description,
+          :thumbnail => :thumbnail
         }
       end
 

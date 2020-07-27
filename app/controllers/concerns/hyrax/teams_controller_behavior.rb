@@ -69,14 +69,14 @@ module Hyrax
       end
 
       def query_collection_members
-        member_works
-        member_subcollections if collection.collection_type.nestable?
-        parent_collections if collection.collection_type.nestable? && action_name == 'show'
+        member_works # 15.7, 9.5, 53.0, 97.2 ms
+        member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
+        parent_collections if collection.collection_type.nestable? && action_name == 'show' # 7 - 14 ms for project
         prepare_docs_and_filters(collection)
       end
 
       # Instantiate the membership query service
-      def collection_member_service
+      def collection_member_service 
         @collection_member_service ||= membership_service_class.new(scope: self, collection: collection, params: params_for_query)
       end
 

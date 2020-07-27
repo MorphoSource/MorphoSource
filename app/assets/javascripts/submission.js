@@ -1,6 +1,6 @@
 /*jshint esversion: 6 */
 
-$( document ).on('turbolinks:load', function() {
+$( document ).ready(function() {
   if ($('div[class="submission_flow"]').length) { // check if the page is submission flow page
     class SubmissionData {
       constructor(sessionState=null) {
@@ -15,12 +15,12 @@ $( document ).on('turbolinks:load', function() {
           'submission_modality', 'raw_or_derived_media', 'parent_media_list',
           'parent_media_not_in_ms', 'biological_specimen_or_cultural_heritage_object',
           'biological_specimen_id', 'idigbio_id', 'will_create_biological_specimen',
-          'cultural_heritage_object_id', 'will_create_cultural_heritage_object', 
+          'cultural_heritage_object_id', 'will_create_cultural_heritage_object',
           'organization_id', 'no_organization', 'will_create_organization',
-          'taxonomy_id', 'will_create_taxonomy', 'device_id', 'will_create_device',
-          'device_organization_id', 'device_no_organization',
-          'will_create_device_organization'];
-      
+          'taxonomy_id_array', 'taxonomy_gbif_key_array', 'will_create_taxonomy',
+          'device_id', 'will_create_device', 'device_organization_id',
+          'device_no_organization', 'will_create_device_organization'];
+
         for (let param of submissionParamsArray) {
           if (sessionState.form_data && sessionState.form_data.hasOwnProperty(param)) {
             this[this.underscoreToCamelCase(param)] = sessionState.form_data[param];
@@ -30,19 +30,19 @@ $( document ).on('turbolinks:load', function() {
 
       constructCreateParams(sessionState) {
         var createParamsHash = {
-          'organization': 'organizationCreateParams', 
+          'organization': 'organizationCreateParams',
           'taxonomy': 'taxonomyCreateParams',
-          'biological_specimen': 'biologicalSpecimenCreateParams', 
-          'cultural_heritage_object': 'culturalHeritageObjectCreateParams', 
-          'device': 'deviceCreateParams', 
-          'device_organization': 'deviceOrganizationCreateParams', 
+          'biological_specimen': 'biologicalSpecimenCreateParams',
+          'cultural_heritage_object': 'culturalHeritageObjectCreateParams',
+          'device': 'deviceCreateParams',
+          'device_organization': 'deviceOrganizationCreateParams',
           'imaging_event': 'imagingEventCreateParams',
           'processing_event': 'processingEventCreateParams'
         };
 
         for (let workName in createParamsHash) {
           if (sessionState.work_data && sessionState.work_data.hasOwnProperty(workName)) {
-            this[createParamsHash[workName]] = 
+            this[createParamsHash[workName]] =
               this.objectToCreateParams(
                 sessionState.work_data[workName],
                 workName
@@ -112,7 +112,7 @@ $( document ).on('turbolinks:load', function() {
         console.log('Saving data...');
 
         let createParams = ['organizationCreateParams', 'taxonomyCreateParams',
-          'biologicalSpecimenCreateParams', 'culturalHeritageObjectCreateParams', 'deviceCreateParams', 
+          'biologicalSpecimenCreateParams', 'culturalHeritageObjectCreateParams', 'deviceCreateParams',
           'deviceOrganizationCreateParams', 'imagingEventCreateParams',
           'processingEventCreateParams'];
 
@@ -128,22 +128,22 @@ $( document ).on('turbolinks:load', function() {
                   if (createParamField['name'].slice(-2) == '[]') {
                     // Multi-value field
                     saveDataObj.push(
-                      { 'name': 'submission[work_data[' + createParamField['name'].slice(0, -2) + ']][]', 
-                        'value': createParamField['value'] } 
+                      { 'name': 'submission[work_data[' + createParamField['name'].slice(0, -2) + ']][]',
+                        'value': createParamField['value'] }
                     );
                   } else {
-                    saveDataObj.push( 
-                      { 'name': 'submission[work_data[' + createParamField['name'] + ']]', 
-                        'value': createParamField['value'] } 
+                    saveDataObj.push(
+                      { 'name': 'submission[work_data[' + createParamField['name'] + ']]',
+                        'value': createParamField['value'] }
                     );
                   }
                 }
               }
             }
           } else {
-            saveDataObj.push( 
-              { 'name': 'submission[form_data[' + camelcaseToUnderscore(k) + ']]', 
-                'value': this[k] } 
+            saveDataObj.push(
+              { 'name': 'submission[form_data[' + camelcaseToUnderscore(k) + ']]',
+                'value': this[k] }
             );
           }
         }
@@ -196,7 +196,7 @@ $( document ).on('turbolinks:load', function() {
         $("select[name='submission[submission_media_type]']").change(function() {
           console.log('View 1 Step 1 media type changed');
 
-          
+
           self.triggerChangeVal("select[name='media[media_type]']", $(this).val());
           setRawDerivedStatus();
         });
@@ -219,7 +219,7 @@ $( document ).on('turbolinks:load', function() {
           console.log(mediaType);
           console.log(modality);
 
-          if (submissionYaml.status.hasOwnProperty(mediaType) && 
+          if (submissionYaml.status.hasOwnProperty(mediaType) &&
              (submissionYaml.status[mediaType].hasOwnProperty(modality))
           ) {
             if (submissionYaml.status[mediaType][modality] == 'raw') {
@@ -254,7 +254,7 @@ $( document ).on('turbolinks:load', function() {
               $('#radio_raw').removeClass('active');
               $('#radio_derived').removeClass('active');
               $('#submission-suggestions').text('Your media could be raw or derived, depending on different factors. See the examples below and select whether your media is better described as raw or derived.');
-              
+
               $('#submission-suggestions-examples-raw li').remove();
               for (const raw_example of submissionYaml.examples[mediaType][modality].raw) {
                 console.log(raw_example);
@@ -328,7 +328,7 @@ $( document ).on('turbolinks:load', function() {
             data.parentMediaList = parentMediaList;
             data.parentMediaNotInMs = false;
             data.savedStep = 2;
-            
+
             // TODO add in other behavior from plan doc
             self.form.setVisibleView(9); // view 12 Media Processing Event
             self.form.setSidebarViewCheck([2, 3, 4, 5, 6, 7, 8]);
@@ -336,7 +336,7 @@ $( document ).on('turbolinks:load', function() {
 
             // Get organization permissions fields if applicable
             self.form.setDefaultMediaPermissionFields();
-          } 
+          }
           console.log(data);
         });
 
@@ -424,7 +424,7 @@ $( document ).on('turbolinks:load', function() {
           $('#submission_bso_search_section').addClass('show').removeClass('hide');
           $('#submission_cho_search_section').addClass('hide').removeClass('show');
           $('#submission_physical_object_type_section').addClass('hide').removeClass('show');
-          
+
           console.log(data);
         });
 
@@ -436,7 +436,7 @@ $( document ).on('turbolinks:load', function() {
           $('#submission_cho_search_section').addClass('show').removeClass('hide');
           $('#submission_bso_search_section').addClass('hide').removeClass('show');
           $('#submission_physical_object_type_section').addClass('hide').removeClass('show');
-          
+
           console.log(data);
         });
 
@@ -448,7 +448,7 @@ $( document ).on('turbolinks:load', function() {
             .filter(function() {
               return this.value !== "" && this.value !== "0";
             })
-            .length > 0 ) 
+            .length > 0 )
           {
             if (data.biologicalSpecimenOrCulturalHeritageObject == 'bso') {
               console.log('toggling viewability');
@@ -468,7 +468,7 @@ $( document ).on('turbolinks:load', function() {
           } else {
             return false;
           }
-          
+
         });
 
         $('#submission_po_search_results_container').on(
@@ -481,25 +481,25 @@ $( document ).on('turbolinks:load', function() {
               $('#bso_search_non_search_options').addClass('show').removeClass('hide');
             } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'cho') {
               $('#cho_search_non_search_options').addClass('show').removeClass('hide');
-            }   
+            }
         });
 
         $('#submission_po_search_results_container').on(
           'click', '.use-morphosource-object', function(event){
             event.preventDefault();
             console.log('View 3 use morphosource object button');
-            
+
             data.setPhysicalObjectDefaults();
             data.savedStep = 3;
 
             if (data.biologicalSpecimenOrCulturalHeritageObject == 'bso' && $(this).attr('id')) {
               data.biologicalSpecimenId = $(this).attr('id');
-              
+
               self.form.setSidebarViewCheck([3, 4, 5, 6]);
               self.form.setSidebarViewFade([3, 4, 5, 6]);
             } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'cho' && $(this).attr('id')) {
               data.culturalHeritageObjectId = $(this).attr('id');
-              
+
               self.form.setSidebarViewCheck([3, 4, 6]);
               self.form.setSidebarViewFade([3, 4, 5, 6]);
             }
@@ -519,11 +519,11 @@ $( document ).on('turbolinks:load', function() {
 
           if (data.idigbioId) {
             data.savedStep = 3;
-            self.form.setSidebarViewCheck([3, 5, 6]); 
+            self.form.setSidebarViewCheck([3, 5, 6]);
             self.form.setSidebarViewFade([3, 5, 6]);
             self.form.setVisibleView(4); // view 4 select organization
           }
-          
+
           console.log(data);
         });
 
@@ -563,10 +563,10 @@ $( document ).on('turbolinks:load', function() {
           console.log('View 3 back to physical object type button');
 
           data.setPhysicalObjectDefaults();
-          
+
           $('#submission_cho_search_section').addClass('hide').removeClass('show');
           $('#submission_bso_search_section').addClass('hide').removeClass('show');
-          $('#submission_physical_object_type_section').addClass('show').removeClass('hide');          
+          $('#submission_physical_object_type_section').addClass('show').removeClass('hide');
           console.log(data);
         });
       }
@@ -758,101 +758,134 @@ $( document ).on('turbolinks:load', function() {
       eventFuncs() {
         let self = this;
 
-        $('input#submission_taxonomy_id').change(function(){
-          console.log('triggered change function');
-          console.log($(this).val());
-          if ($(this).val()) {
-            $('#submission_select_taxonomy_submit').removeAttr('disabled');
-          } else {
-            $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
-          }
+        $('#submission_select_taxonomy_submit').click(function(event){
+          $('form#taxonomy_search_form').submit();
         });
 
         $('form#taxonomy_search_form').submit(function(event){
           event.preventDefault();
           console.log('View 5 Continue with selected taxonomy button');
 
-          var taxonomyId = $('input[id="submission_taxonomy_id"]').val();
-          if (taxonomyId != '') {
-            data.taxonomyId = taxonomyId;
-            data.willCreateTaxonomy = false;
-            data.taxonomyCreateParams = null;
-            data.savedStep = 5;
+          if ((data.willCreateTaxonomy) ||
+              (data.taxonomyIdArray && data.taxonomyIdArray.length) ||
+              (data.taxonomyGbifKeyArray && data.taxonomyGbifKeyArray.length)
+          ) {
+            if (data.willCreateTaxonomy) {
+              data.taxonomyCreateParams = $('#new_taxonomy').serializeArray();
+            } else {
+              data.taxonomyCreateParams = null;
+            }
 
+            data.savedStep = 5;
             self.form.setSidebarViewCheck(5);
             self.form.setVisibleView(6); // view 6 create physical object details
           }
+
           console.log(data);
         });
 
         $('#submission_show_create_taxonomy').click(function(event){
           event.preventDefault();
+          data.willCreateTaxonomy = true;
           self.toggleCreateTaxonomyVisibility();
+          $('#submission_select_taxonomy_submit').removeAttr('disabled');
+
         });
 
         $('#taxonomy-create-close').click(function(event){
           event.preventDefault();
-          $('#submission_select_taxonomy_section').addClass('show').removeClass('hide');
+          data.willCreateTaxonomy = false;
+
           $('#submission_create_taxonomy_button_section').addClass('show').removeClass('hide');
           $('#submission_create_taxonomy_form_section').addClass('hide').removeClass('show');
-        });
 
-        $('#submission_create_taxonomy_continue').click(function(event){
-          event.preventDefault();
-          console.log('View 5 create taxonomy and continue button');
-
-          data.taxonomyId = null;
-          data.willCreateTaxonomy = true;
-          data.taxonomyCreateParams = $('#new_taxonomy').serializeArray();
-          data.savedStep = 5;
-
-          self.form.setSidebarViewCheck(5);
-          self.form.setVisibleView(6); // view 6 create physical object details
-
-          console.log(data);
+          if (
+            (!data.taxonomyIdArray || !data.taxonomyIdArray.length) &&
+            (!data.taxonomyGbifKeyArray || !data.taxonomyGbifKeyArray.length)
+          ) {
+            $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
+          }
         });
 
         $('#btn_add_taxonomy').click(function(event){
           event.preventDefault();
-          var currentTaxonomyList = $('input[id="submission_taxonomy_id"]').val();
-          var selectedId = $("input.taxonomy_id").val();
-          currentTaxonomyList = selectedId;
-          $('input#submission_taxonomy_id').val(currentTaxonomyList);
-          $('input#submission_taxonomy_id').trigger('change');
-          // clear previous selection if any
-          $('#taxonomies > div:nth-child(4)').remove();
-          // display a new taxonomy row
-          $('.taxonomy_row:last-child').after(self.newTaxonomyRow(selectedId));
+          console.log('View 5 add taxonomy to list button');
+
+          var newId = $("input.taxonomy_id").val();
+          var newGbifKey = $("input.taxonomy_gbif_key").val();
+
+          if (newId && newId.indexOf('gbif:') == -1) {
+            if (!Array.isArray(data.taxonomyIdArray)) {
+              data.taxonomyIdArray = [];
+            }
+            data.taxonomyIdArray.push(newId);
+          }
+
+          if (newGbifKey) {
+            if (!Array.isArray(data.taxonomyGbifKeyArray)) {
+              data.taxonomyGbifKeyArray = [];
+            }
+            data.taxonomyGbifKeyArray.push(newGbifKey);
+          }
+
+          // Display a new taxonomy row
+          if (newId || newGbifKey) {
+            $('.taxonomy_row:last-child').after(self.newTaxonomyRow(newId, newGbifKey));
+          }
+
+          // Clear temp values for new taxonomy to be added
           $('input[id="submission_taxonomy_search"]').val('');
           $("input.taxonomy_id").val('');
+          $("input.taxonomy_gbif_key").val('');
           $("input.taxonomy_title").val('');
+
+          // Enable step completion
+          $('#submission_select_taxonomy_submit').removeAttr('disabled');
         });
 
         $('div#taxonomies').on('click', '#btn-remove-taxonomy', function(event){
             event.preventDefault();
             let row = $(this).parent().parent();
-            let id = row.data('id');
+            let id = row.data('id').toString();
+            let gbifKey = row.data('gbifkey').toString();
+            console.log(gbifKey);
             row.remove();
-            var currentTaxonomyList = $('input[id="submission_taxonomy_id"]').val();
-            var newTaxonomyList = self.removeValue(currentTaxonomyList, id);
-            self.triggerChangeVal('input#submission_taxonomy_id', newTaxonomyList);
+
+            if (id && Array.isArray(data.taxonomyIdArray)) {
+              if (data.taxonomyIdArray.indexOf(id) > -1) {
+                data.taxonomyIdArray.splice(data.taxonomyIdArray.indexOf(id), 1);
+              }
+            }
+            if (gbifKey && Array.isArray(data.taxonomyGbifKeyArray)) {
+              if (data.taxonomyGbifKeyArray.indexOf(gbifKey) > -1) {
+                data.taxonomyGbifKeyArray.splice(data.taxonomyGbifKeyArray.indexOf(gbifKey), 1);
+              }
+            }
+
+            if (
+              (!data.taxonomyIdArray || !data.taxonomyIdArray.length) &&
+              (!data.taxonomyGbifKeyArray || !data.taxonomyGbifKeyArray.length)
+            ) {
+              $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
+            }
         });
       }
 
-      newTaxonomyRow(id) {
-        var row = '<div class="taxonomy_row row" data=id="' + id + '">' +
+      newTaxonomyRow(id, gbifKey) {
+        var row = '<div class="taxonomy_row row" data-id="' + id + '" data-gbifkey="' + gbifKey + '">' +
           '<div class="col-sm-6 col-sm-offset-3 block">' +
           '<span>' + $("input.taxonomy_title").val() + '</span>' +
           '<i id="btn-remove-taxonomy" class="fas fa-trash-alt btn_remove_parent clickable" style="float: right;"></i>' +
           '</div></div>';
         return row;
-      } 
+      }
 
       toggleCreateTaxonomyVisibility() {
         $('#submission_create_taxonomy_form_section').addClass('show').removeClass('hide');
-        $('#submission_select_taxonomy_section').addClass('hide').removeClass('show');
         $('#submission_create_taxonomy_button_section').addClass('hide').removeClass('show');
       }
+
+
     }
 
     class PhysicalObjectDetailsView extends SubmissionView {
@@ -924,10 +957,10 @@ $( document ).on('turbolinks:load', function() {
               alert('Modality of selected device must match modality entered in Initial Information step.');
               $(this).val('');
               $('#submission_select_device_continue').attr('disabled', 'disabled');
-            }  
+            }
          } else {
           $('#submission_select_device_continue').attr('disabled', 'disabled');
-         } 
+         }
         });
 
         $('#submission_device_select_display_container').on(
@@ -969,7 +1002,7 @@ $( document ).on('turbolinks:load', function() {
           // Check device organization...
           if ($("#device_organization_search_form input.device_organization_id").val()) {
             data.setDeviceOrganizationDefaults();
-            data.deviceOrganizationId = 
+            data.deviceOrganizationId =
               $("#device_organization_search_form input.device_organization_id").val();
             data.noDeviceOrganization = false;
             data.willCreateDeviceOrganization = false;
@@ -1043,7 +1076,7 @@ $( document ).on('turbolinks:load', function() {
             $('#device_organization_select_display_container').addClass('hide').removeClass('show');
         });
 
-        
+
         // Device organization create events
         $('form#new_device_organization').submit(function(event){
           event.preventDefault();
@@ -1061,7 +1094,7 @@ $( document ).on('turbolinks:load', function() {
 
         $('#device-organization-create-close').click(function(event){
           event.preventDefault();
-          
+
           data.setDeviceOrganizationDefaults();
           $('#submission_select_device_organization_section').addClass('show').removeClass('hide');
           $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
@@ -1080,7 +1113,7 @@ $( document ).on('turbolinks:load', function() {
           data.willCreateDeviceOrganization = false;
           $('select[name="submission[device_organization_id]"]').val('');
           self.toggleNoDeviceOrganizationVisibility();
-          
+
           console.log(data);
         });
 
@@ -1094,7 +1127,7 @@ $( document ).on('turbolinks:load', function() {
           $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
           $('#submission_no_device_organization_display_section').addClass('hide').removeClass('show');
           console.log(data);
-        });  
+        });
       }
 
       showDeviceSelectDisplay(selectedOpt) {
@@ -1228,7 +1261,7 @@ $( document ).on('turbolinks:load', function() {
 
         $('#new_media').submit(function(){
           var createParams = ['organizationCreateParams', 'taxonomyCreateParams',
-            'biologicalSpecimenCreateParams', 'culturalHeritageObjectCreateParams', 'deviceCreateParams', 
+            'biologicalSpecimenCreateParams', 'culturalHeritageObjectCreateParams', 'deviceCreateParams',
             'deviceOrganizationCreateParams', 'imagingEventCreateParams',
             'processingEventCreateParams'];
 
@@ -1247,7 +1280,7 @@ $( document ).on('turbolinks:load', function() {
                     self.addParamToForm('#new_media', paramName, createParamField['value']);
                   }
                 }
-              } 
+              }
             } else {
               self.addParamToForm('#new_media', 'submission[' + camelcaseToUnderscore(k) + ']', data[k]);
             }
@@ -1310,21 +1343,21 @@ $( document ).on('turbolinks:load', function() {
         };
 
         this.initializeForm();
-        
+
       }
 
       initializeForm() {
         $('.required').addClass('required-flag');
-        $('.submission_flow input:not(#media_submit)').removeAttr('data-disable-with'); 
+        $('.submission_flow input:not(#media_submit)').removeAttr('data-disable-with');
         this.sidebarEventFuncs();
         this.setMediaPermissionFieldEvent();
 
         // Comment out for debug ability to access any step any time
-        this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);        
+        this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
       }
 
       setMediaPermissionFieldEvent() {
-        $('form#new_media div,a').click(function(event) {
+        $('form#new_media div,form#new_media a').click(function(event) {
           console.log('hi');
           if ($(this).hasClass('permissions-field')) {
             console.log('hi2');
@@ -1335,15 +1368,15 @@ $( document ).on('turbolinks:load', function() {
       }
 
       setDefaultMediaPermissionFields() {
-        let self = this; 
+        let self = this;
 
-        $.get('organization_default_media_fields', 
+        $.get('organization_default_media_fields',
                {
                 'parent_media_list': this.data.parentMediaList,
                 'organization_id': this.data.organizationId,
                 'biological_specimen_id': this.data.biologicalSpecimenId,
                 'cultural_heritage_object_id': this.data.culturalHeritageObjectId
-               }, 
+               },
                function(getData){
                 console.log('Got organization default fields');
                 console.log(getData);
@@ -1378,12 +1411,12 @@ $( document ).on('turbolinks:load', function() {
       }
 
       emptyMediaField(field) {
-        let multiSelector = 
-          "form#new_media select[name='media[" + field + "][]'], " + 
+        let multiSelector =
+          "form#new_media select[name='media[" + field + "][]'], " +
           "form#new_media input[name='media[" + field + "][]']";
-        let selector = 
-          "form#new_media select[name='media[" + field + "]'], " + 
-          "form#new_media input[name='media[" + field + "]'], " + 
+        let selector =
+          "form#new_media select[name='media[" + field + "]'], " +
+          "form#new_media input[name='media[" + field + "]'], " +
           "form#new_media textarea[name='media[" + field + "]']";
 
         switch(field) {
@@ -1418,17 +1451,17 @@ $( document ).on('turbolinks:load', function() {
       }
 
       fillMediaField(field, val) {
-        let multiSelector = 
-          "form#new_media select[name='media[" + field + "][]'], " + 
+        let multiSelector =
+          "form#new_media select[name='media[" + field + "][]'], " +
           "form#new_media input[name='media[" + field + "][]']";
-        let selector = 
-          "form#new_media select[name='media[" + field + "]'], " + 
-          "form#new_media input[name='media[" + field + "]'], " + 
+        let selector =
+          "form#new_media select[name='media[" + field + "]'], " +
+          "form#new_media input[name='media[" + field + "]'], " +
           "form#new_media textarea[name='media[" + field + "]']";
 
         if (Array.isArray(val)) {
           val = val.filter(v => v !== '');
-        }     
+        }
         console.log(val);
         switch(field) {
           case 'download_permission':
@@ -1458,7 +1491,7 @@ $( document ).on('turbolinks:load', function() {
                     $('form#new_media div.media_rights_holder').find('i.tooltip-icon').after(
                       "<i class='fas fa-university'></i>"
                     );
-                  }   
+                  }
                 }
               }
             } else {
@@ -1501,7 +1534,7 @@ $( document ).on('turbolinks:load', function() {
                       "<i class='fas fa-university'></i>"
                     );
                   }
-                    
+
                 }
               }
             } else {
@@ -1597,6 +1630,6 @@ $( document ).on('turbolinks:load', function() {
           .replace('-', '')
           .replace('_', '');
       });
-    };   
+    };
   } // end if the page is submission flow page
 });

@@ -59,6 +59,10 @@ class SolrDocument
     self[Solrizer.solr_name('fileset_visibility', :stored_searchable)]
   end
 
+  def fileset_accessibility
+    self[Solrizer.solr_name('fileset_accessibility', :stored_searchable)]
+  end
+
   def map_type
     self[Solrizer.solr_name('map_type', :stored_searchable)]
   end
@@ -73,6 +77,10 @@ class SolrDocument
 
   def part
     self[Solrizer.solr_name('part', :stored_searchable)]
+  end
+
+  def physical_object_id
+    self[Solrizer.solr_name('physical_object_id', :stored_searchable)]
   end
 
   def rights_holder
@@ -762,6 +770,10 @@ class SolrDocument
 
   def trusted
     self[Solrizer.solr_name('trusted', :stored_searchable)]
+  end
+
+  def gbif_key
+    self[Solrizer.solr_name('gbif_key', :stored_searchable)]
   end
 
   # Download fields

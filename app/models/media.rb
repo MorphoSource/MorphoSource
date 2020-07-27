@@ -129,7 +129,7 @@ class Media < Morphosource::Works::Base
     end
   end
 
-  def mint_doi
+  def mint_doi(target_url)
     if self.doi.empty?
       depositor_user = User.find_by(ms_id: self.depositor)
       depositor_user_name_components = depositor_user.display_name.split(' ')
@@ -137,7 +137,7 @@ class Media < Morphosource::Works::Base
                                                             {'title' => self.title.first,
                                                              'author_first' => depositor_user_name_components.first,
                                                              'author_last' => depositor_user_name_components.drop(1).join(' '),
-                                                             'url' => 'http://example.com',
+                                                             'url' => target_url,
                                                              'resource_type' => self.media_type.first} )
       unless minted_doi.nil?
         self.doi = [minted_doi]

@@ -127,7 +127,7 @@ module Hyrax
       if current_user.admin?
         media_work = Media.find(params[:id])
         if media_work.doi.empty?
-          minted_doi = media_work.mint_doi
+          minted_doi = media_work.mint_doi(main_app.media_showcase_url(id: params[:id]))
           if minted_doi.nil?
             flash[:error] = "Error minting DOI"
           else

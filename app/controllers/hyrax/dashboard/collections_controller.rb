@@ -33,7 +33,8 @@ module Hyrax
                       :single_item_search_builder_class,
                       :membership_service_class
 
-      self.presenter_class = Hyrax::CollectionPresenter
+      #self.presenter_class = Hyrax::CollectionPresenter
+      self.presenter_class = Hyrax::TeamPresenter
 
       self.form_class = Hyrax::Forms::CollectionForm
 
@@ -68,31 +69,41 @@ module Hyrax
       end
 
       def show
+        # if the current user has edit permission, redirect to edit 
+        if current_user and can? :edit, @collection
+          redirect_to '/dashboard/collections/' + @collection.id + '/edit'
+        else          
+          # run the presenter and other methods (same as the team_presenter methods) necessary for
+          # displaying teams and project show page content
+          presenter
+          query_collection_members
+          form
+        end
+      end
+
+      def edit
+        # this is called when user save the collection form on the show action
+        # if needed, redirect show to edit if user has permission to save
+        presenter
+        query_collection_members
+        form
+      end
+
+      # todo: need to add logic to keep the old hyrax view if still needed
+      def show_hyrax
         if request.parameters['hyrax'].present?
           # todo: keep the old show page in case needed.  this param check can be removed later
           if @collection.collection_type.brandable?
             banner_info = CollectionBrandingInfo.where(collection_id: @collection.id.to_s).where(role: "banner")
             @banner_file = "/" + banner_info.first.local_path.split("/")[-4..-1].join("/") unless banner_info.empty?
           end
+          self.presenter_class = Hyrax::CollectionPresenter
           presenter
           query_collection_members
         else
           # redirect dashboard page to edit page when ready
           redirect_to '/dashboard/collections/' + @collection.id + '/edit'
         end
-
-      end
-
-      def edit
-        if collection.team? or collection.project?
-          # run the presenter and other methods (same as the team_presenter methods) necessary for
-          # displaying teams and project show page content
-          self.presenter_class = Hyrax::TeamPresenter
-          presenter
-          query_collection_members
-        end
-
-        form
       end
 
       def after_create

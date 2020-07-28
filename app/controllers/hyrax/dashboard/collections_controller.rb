@@ -47,7 +47,9 @@ module Hyrax
 
       def deny_collection_access(exception)
         if exception.action == :edit
-          redirect_to(url_for(action: 'show'), alert: 'You do not have sufficient privileges to edit this document')
+          #redirect_to(url_for(action: 'show'), alert: 'You do not have sufficient privileges to edit this document')
+          redirect_to root_url, alert: 'You do not have sufficient privileges to edit this collection'
+          # todo: might be better to redirect to /dashboard/collections
         elsif current_user&.persisted?
           redirect_to root_url, alert: exception.message
         else

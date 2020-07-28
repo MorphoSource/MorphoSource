@@ -150,11 +150,14 @@ class Media < Morphosource::Works::Base
         end
       end
       depositor_user = User.find_by(ms_id: self.depositor)
+      depositor_user_name_components = depositor_user.display_name.split(' ')
+      # DataCite metadata expects creator in the form Lastname, Firstname
+      datacite_creator = [depositor_user_name_components.drop(1).join(' '),depositor_user_name_components.first].join(', ')
       ark_metadata = {'_status' => 'reserved',
                       '_target' => Rails.application.routes.url_helpers.media_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id),
                       '_profile' => 'datacite',
                       'datacite.identifiertype' => 'ARK',
-                      'datacite.creator' => depositor_user.display_name,
+                      'datacite.creator' => datacite_creator,
                       'datacite.publisher' => 'MorphoSource.org',
                       'datacite.title' => self.title.first,
                       'datacite.publicationyear' => Time.now.year.to_s,

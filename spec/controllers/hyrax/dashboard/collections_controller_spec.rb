@@ -46,15 +46,15 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
     sign_in user
   end
 
-  scenario 'Team Dashboard collections should redirect to edit page' do
-    get :show, params: { id: team.id }
-    expect(response).to redirect_to "/dashboard/collections/" + team.id + "/edit"
-  end
-
-  scenario 'Project Dashboard collections should redirect to edit page' do
-    get :show, params: { id: project.id }
-    expect(response).to redirect_to "/dashboard/collections/" + project.id + "/edit"
-  end
+  #scenario 'Team Dashboard collections should redirect to edit page' do
+  #  get :show, params: { id: team.id }
+  #  expect(response).to redirect_to "/dashboard/collections/" + team.id + "/edit"
+  #end
+#
+#  #scenario 'Project Dashboard collections should redirect to edit page' do
+#  #  get :show, params: { id: project.id }
+#  #  expect(response).to redirect_to "/dashboard/collections/" + project.id + "/edit"
+  #end
 
   describe '#paginated_bso_item_list' do
     before do

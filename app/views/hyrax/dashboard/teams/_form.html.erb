@@ -19,24 +19,29 @@
   </div>
   <div class="col-xs-3 show-actions text-right">
 
-    <% if can? :edit, @presenter.solr_document %>
-        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Actions <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          <li>
+      <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Actions <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <% if can? :edit, @presenter.solr_document %>
             <% if @collection.persisted? %>
               <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
               <%#= link_to t(:'helpers.action.cancel'), hyrax.dashboard_collection_path(@collection), class: 'btn btn-link' %>
             <% else %>
               <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
               <%#= link_to t(:'helpers.action.cancel'), hyrax.my_collections_path, class: 'btn btn-link' %>
-            <% end %>
+            <% end %>            
+          <% end %>
+
+          <% if can? :deposit, @presenter.solr_document %>
             <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
                         hyrax.my_works_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
                         class: 'btn btn-primary' %>
             <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
+          <% end %>
 
+          <% if can? :edit, @presenter.solr_document %>
             <% if @collection.team? && @presenter.collection_type_is_nestable? %>
 
               <%= link_to t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
@@ -51,23 +56,23 @@
               <% end %>
 
             <% end %>
+          <% end %>
 
-            <% if can? :destroy, @presenter.solr_document %>
-              <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
-                          hyrax.dashboard_collection_path(@presenter),
-                          title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
-                          class: 'btn btn-primary btn-delete-collection',
-                          data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
-                                  method: :delete } %>
-            <% end %>
+          <% if can? :destroy, @presenter.solr_document %>
+            <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                        hyrax.dashboard_collection_path(@presenter),
+                        title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                        class: 'btn btn-primary btn-delete-collection',
+                        data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
+                                method: :delete } %>
+          <% end %>
 
-            <%= link_to t('hyrax.dashboard.collections.actions.public_view.label'),
-                        hyrax.collection_path(@presenter),
-                        class: 'btn btn-primary' %>
+          <%= link_to t('hyrax.dashboard.collections.actions.public_view.label'),
+                      hyrax.collection_path(@presenter),
+                      class: 'btn btn-primary' %>
 
-          </li>
-        </ul>
-    <% end %>
+        </li>
+      </ul>
 
   </div>
 

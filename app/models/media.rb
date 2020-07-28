@@ -1,6 +1,7 @@
 class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
+  after_create :mint_ark
 
   self.work_requires_files = true
 
@@ -137,6 +138,36 @@ class Media < Morphosource::Works::Base
   def organizations_teams
     organizations.each_with_object([]) do |org, teams|
       teams += Collection.find(org.team_id.first)
+    end
+  end
+
+  def mint_ark
+    if self.ark.empty?
+      %w{DEFAULT_SHOULDER USER PASSWORD TARGET_HOST}.each do |required_env_variable|
+        if ENV["EZID_#{required_env_variable}"].blank?
+          Rails.logger.error("Error minting ARK: #{required_env_variable} environment variable not set")
+          return true
+        end
+      end
+      depositor_user = User.find_by(ms_id: self.depositor)
+      ark_metadata = {'_status' => 'reserved',
+                      '_target' => Rails.application.routes.url_helpers.media_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id),
+                      '_profile' => 'datacite',
+                      'datacite.identifiertype' => 'ARK',
+                      'datacite.creator' => depositor_user.display_name,
+                      'datacite.publisher' => 'MorphoSource.org',
+                      'datacite.title' => self.title.first,
+                      'datacite.publicationyear' => Time.now.year.to_s,
+                      'datacite.resourcetype' => self.media_type.first
+      }
+      requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.sub(/^0*/,'')}"
+
+      minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
+      unless minted_ark.nil?
+        self.ark = [minted_ark.id]
+        self.save
+      end
+      return true
     end
   end
 

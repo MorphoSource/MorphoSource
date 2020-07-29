@@ -14,6 +14,7 @@ class Media < Morphosource::Works::Base
 
   attr_accessor :download_permission
   before_destroy :prevent_doi_deletion
+  after_destroy :delete_ark_if_reserved
 
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
@@ -231,6 +232,15 @@ class Media < Morphosource::Works::Base
     def prevent_doi_deletion
       unless self.doi.empty?
         throw(:abort)
+      end
+    end
+
+    def delete_ark_if_reserved
+      unless self.ark.empty?
+        ark_identifier = Ezid::Identifier.find(self.ark.first)
+        if ark_identifier.status == 'reserved'
+          ark_identifier.delete
+        end
       end
     end
 end

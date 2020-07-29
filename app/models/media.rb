@@ -1,6 +1,8 @@
 class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
+  after_create :mint_ark
+  after_update :update_ark_status
 
   self.work_requires_files = true
 
@@ -12,6 +14,7 @@ class Media < Morphosource::Works::Base
 
   attr_accessor :download_permission
   before_destroy :prevent_doi_deletion
+  after_destroy :delete_ark_if_reserved
 
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
@@ -140,6 +143,62 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  # possible ARK status changes:
+  # - reserved->public
+  # - public->unavailable
+  # - unavailable->public
+  def update_ark_status
+    unless self.ark.empty?
+      if self.fileset_accessibility_changed?
+        ark_identifier = Ezid::Identifier.find(self.ark.first)
+        file_visibility = self.fileset_accessibility.first
+        public_visibilities = %w{open restricted_download preview_only hidden}
+        if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(file_visibility)
+          ark_identifier.status = 'public'
+          ark_identifier.save
+        elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(file_visibility))
+          ark_identifier.status = 'unavailable'
+          ark_identifier.save
+        end
+      end
+    end
+  end
+
+  def mint_ark
+    if self.ark.empty?
+      %w{DEFAULT_SHOULDER USER PASSWORD TARGET_HOST}.each do |required_env_variable|
+        if ENV["EZID_#{required_env_variable}"].blank?
+          Rails.logger.error("Error minting ARK: #{required_env_variable} environment variable not set")
+          return true
+        end
+      end
+      depositor_user = User.find_by(ms_id: self.depositor)
+      depositor_user_name_components = depositor_user.display_name.split(' ')
+      # DataCite metadata expects creator in the form Lastname, Firstname
+      datacite_creator = [depositor_user_name_components.drop(1).join(' '),depositor_user_name_components.first].join(', ')
+      public_visibilities = %w{open restricted_download preview_only hidden}
+      ark_status = public_visibilities.include?(self.fileset_accessibility) ? 'public' : 'reserved'
+      ark_metadata = {'_status' => ark_status,
+                      '_target' => Rails.application.routes.url_helpers.media_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id),
+                      '_profile' => 'datacite',
+                      'datacite.identifiertype' => 'ARK',
+                      'datacite.creator' => datacite_creator,
+                      'datacite.publisher' => 'MorphoSource.org',
+                      'datacite.title' => self.title.first,
+                      'datacite.publicationyear' => Time.now.year.to_s,
+                      'datacite.resourcetypegeneral' => self.media_type.first
+      }
+      requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.sub(/^0*/,'')}"
+
+      minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
+      unless minted_ark.nil?
+        self.ark = [minted_ark.id]
+        self.save
+      end
+      return true
+    end
+  end
+
   def mint_doi(target_url)
     if self.doi.empty?
       depositor_user = User.find_by(ms_id: self.depositor)
@@ -173,6 +232,15 @@ class Media < Morphosource::Works::Base
     def prevent_doi_deletion
       unless self.doi.empty?
         throw(:abort)
+      end
+    end
+
+    def delete_ark_if_reserved
+      unless self.ark.empty?
+        ark_identifier = Ezid::Identifier.find(self.ark.first)
+        if ark_identifier.status == 'reserved'
+          ark_identifier.delete
+        end
       end
     end
 end

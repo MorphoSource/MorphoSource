@@ -283,6 +283,9 @@ GEM
     ethon (0.12.0)
       ffi (>= 1.3.0)
     execjs (2.7.0)
+    ezid-client (1.8.0)
+      hashie (~> 3.4, >= 3.4.3)
+      nokogiri
     factory_bot (4.11.0)
       activesupport (>= 3.0.0)
     factory_bot_rails (4.11.0)
@@ -334,6 +337,7 @@ GEM
     hamster (3.0.0)
       concurrent-ruby (~> 1.0)
     hashdiff (0.3.7)
+    hashie (3.6.0)
     hiredis (0.6.3)
     htmlentities (4.3.4)
     http-accept (1.7.0)
@@ -932,6 +936,7 @@ DEPENDENCIES
   devise
   devise-guests (~> 0.6)
   dotenv-rails
+  ezid-client (~> 1.8)
   factory_bot_rails (~> 4.8)
   fcrepo_wrapper
   figaro

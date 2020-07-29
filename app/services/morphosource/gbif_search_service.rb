@@ -29,7 +29,9 @@ module Morphosource
       if correct_synonym && gbif['taxonomicStatus'] == 'SYNONYM' && gbif.has_key?('acceptedKey')
         gbif = Morphosource::Gbif.view(gbif['acceptedKey'])
       end
-      
+
+      return {} if !gbif.present?
+
       taxonomy_params = {}
 
       GBIF_HIGHER_TAXONOMY_MAPPING.each do |key, value|

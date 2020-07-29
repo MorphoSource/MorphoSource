@@ -24,7 +24,7 @@ po_taxonomy = media_extra['po_taxonomy']
   <td><%= document.id %></td>  
   <td><%= document.part&.first %></td>  
   <td class="break-all"><%= po_title %></td>
-  <% if @bso_member_count > 0 %>
+  <% if @po_type == 'bso' %>
     <td><%= po_taxonomy %></td>
   <% else %>
     <td></td>

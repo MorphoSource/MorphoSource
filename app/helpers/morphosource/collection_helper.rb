@@ -62,6 +62,7 @@ module Morphosource
     end
 
     def prepare_docs_and_filters_for_media(collection)
+      @po_type = "" # bso / cho
       @visibility_options = []
       @pub_status_options = []
       @media_type_options = []
@@ -77,11 +78,9 @@ module Morphosource
       @media_extras = get_media_extras(@paged_media_member_docs, extras_for_filter)
       # save the item IDs in the team bucket, for determining the origin  
 
-@media_member_docs = @member_docs
-
-@media_member_count = @member_docs.length
-@bso_member_count = 999
-@cho_member_count = 0
+      @media_member_docs = @member_docs
+      
+      @media_member_count = @member_docs.length
 
       # add items from team bucket
       @team_bucket_media_id_list = @media_member_docs.map{|d| d.id}
@@ -185,13 +184,12 @@ module Morphosource
           po_doc = Morphosource::PhysicalObjectParentSearchService.call({ id: doc.id })&.first
           if po_doc.present?
             this_media_extras['po_title'] = po_doc.title&.first
-
-
-
-
             if po_doc.hydra_model == BiologicalSpecimen
+              @po_type = "bso"
               taxonomy = Morphosource::TaxonomySearchService.call({ 'member_ids' => po_doc.id})&.first
               this_media_extras['po_taxonomy'] = taxonomy.title&.first if taxonomy.present? && taxonomy.title.present?
+            elsif po_doc.hydra_model == CulturalHeritageObject
+              @po_type = "cho"
             end
           end
 

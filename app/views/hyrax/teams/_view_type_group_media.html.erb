@@ -21,14 +21,15 @@
 			    <li><input type="checkbox" class="toggle-vis" data-column="3" checked="checked" /> Part</li>
 			    <% 
 		    	nextIndex = 4 
-		    	if @bso_member_count > 0 
+		    	if @po_type == 'bso'
 			    	%>
 				    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Specimen</li>
 				    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Taxonomy</li>
 				    <% 
 				    nextIndex = nextIndex + 2
 			    end 
-			    if @cho_member_count > 0 %>
+			    if @po_type == 'cho' 
+			    	%>
 				    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> CHO</li>
 			    	<% 
 				    nextIndex = nextIndex + 1

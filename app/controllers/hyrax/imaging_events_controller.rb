@@ -51,7 +51,7 @@ module Hyrax
     private
 
     def update_media_physical_object_ids
-      @curation_concern.descendants.select(&:media?).each { |m| m.update_physical_object_id }
+      @curation_concern.descendants.select { |d| d.class == Media }.each { |m| m.update_physical_object_id }
     end
 
     def imaging_event_modality_valid?

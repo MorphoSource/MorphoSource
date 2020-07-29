@@ -18,8 +18,14 @@ module Morphosource
     end
 
     def self.view(key)
-      response = RestClient.get "#{API_ENDPOINT}/#{key}"
-      JSON.parse(response.body) if response
+      request_url = "#{API_ENDPOINT}/#{key}"
+      begin
+        response = RestClient.get request_url
+        return JSON.parse(response.body) if response
+      rescue RestClient::NotFound => e
+        Rails.logger.error("GBIF returned 404 for: #{request_url}")
+        return {}
+      end
     end
 
     def self.dataset_key

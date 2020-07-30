@@ -78,35 +78,26 @@ module Morphosource
       @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
 
       extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
-
       @paged_media_member_docs = paginated_media_item_list
-
       @media_extras = get_media_extras(@paged_media_member_docs, extras_for_filter)
       # save the item IDs in the team bucket, for determining the origin  
 
-      @media_member_docs = @member_docs
-      
-      @media_member_count = @member_docs.length
-
       # add items from team bucket
-      @team_bucket_media_id_list = @media_member_docs.map{|d| d.id}
+      @team_bucket_media_id_list = @member_docs.map{|d| d.id}
+      if collection.team? 
+        # add items from team projects
+        @subcollection_docs.each do |project_doc|
+          project_media_service = subcollection_media_service(project_doc)
+          project_media_response = project_media_service.available_member_works
+          @member_docs_from_projects = project_media_response.documents
 
-#      if collection.team? 
-#        # add items from team projects
-#        @subcollection_docs.each do |project_doc|
-#          @member_docs_from_projects = media_from_team_project(project_doc)
-#          extras_for_filter = {'source_of_result' => 'team_project', 'team_project_title' => project_doc.title.first}
-#          @media_member_docs_from_projects, @media_extras_from_projects, 
-#            @bso_member_docs_from_projects, @bso_extras_from_projects, 
-#              @cho_member_docs_from_projects, @cho_extras_from_projects = get_medias_and_objects(@member_docs_from_projects, extras_for_filter)
-#
-#          @media_member_docs += @media_member_docs_from_projects
-#          @bso_member_docs += @bso_member_docs_from_projects
-#          @cho_member_docs += @cho_member_docs_from_projects
-#          @media_extras += @media_extras_from_projects
-#          @bso_extras += @bso_extras_from_projects
-#          @cho_extras += @cho_extras_from_projects
-#        end
+          extras_for_filter = {'source_of_result' => 'team_project', 'team_project_title' => project_doc.title.first}
+          @media_extras_from_projects = get_media_extras(@member_docs_from_projects, extras_for_filter)
+
+          @member_docs += @member_docs_from_projects
+          @media_extras += @media_extras_from_projects
+        end
+
 
 #        if collection.organization.present?
 #          # add items from linked org
@@ -124,20 +115,12 @@ module Morphosource
 #          @cho_extras += @cho_extras_from_linked_org
 #        end
 
-#      end        
+      end        
 
-#      @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
-#      @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
+      @member_count = @member_docs.length
+      @media_member_docs = @member_docs      
       @media_member_count = @member_docs.length
-#      @bso_member_count = @bso_member_docs&.length || 0
-#      @cho_member_count = @cho_member_docs&.length || 0
-
-#      @paged_media_member_docs = paginated_media_item_list
-      @media_total_pages = media_total_pages
-#      @paged_bso_member_docs = paginated_bso_item_list
-#      @bso_total_pages = bso_total_pages
-#      @paged_cho_member_docs = paginated_cho_item_list
-#      @cho_total_pages = cho_total_pages
+      @paged_media_member_docs = paginated_media_item_list
 
       @visibility_options = @visibility_options.uniq
       @pub_status_options = @pub_status_options.uniq
@@ -223,12 +206,22 @@ module Morphosource
       @bso_source_options = []
       @cho_visibility_options = []
 
+      if collection.team? 
+        # add items from team projects
+        @subcollection_docs.each do |project_doc|
+          project_media_service = subcollection_media_service(project_doc)
+          project_media_response = project_media_service.available_member_works
+          @member_docs_from_projects = project_media_response.documents
+        end
+      end
+
+      @member_docs += @member_docs_from_projects
       extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
       @bso_member_docs, @bso_extras, 
         @cho_member_docs, @cho_extras = get_objects_from_media(@member_docs, extras_for_filter)
 
-      @bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
-      @cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
+      #@bso_member_docs = dedup(@bso_member_docs) if @bso_member_docs.present?
+      #@cho_member_docs = dedup(@cho_member_docs) if @cho_member_docs.present?
       @bso_member_count = @bso_member_docs&.length || 0
       @cho_member_count = @cho_member_docs&.length || 0
 
@@ -424,18 +417,18 @@ module Morphosource
       display_value
     end
 
-    def media_from_team_project(project_doc)
-      media_list = []
-      # get all media from the project 
-      project = Collection.find(project_doc.id)
-      project.member_works.each do |work| 
-        if work.class == Media
-          media_doc = SolrDocument.new(work.to_solr) 
-          media_list << media_doc
-        end
-      end
-      media_list
-    end
+    #def media_from_team_project(project_doc)
+    #  media_list = []
+    #  # get all media from the project 
+    #  project = Collection.find(project_doc.id)
+    #  project.member_works.each do |work| 
+    #    if work.class == Media
+    #      media_doc = SolrDocument.new(work.to_solr) 
+    #      media_list << media_doc
+    #    end
+    #  end
+    #  media_list
+    #end
 
     def media_from_linked_organization(organization)
       media_list = []

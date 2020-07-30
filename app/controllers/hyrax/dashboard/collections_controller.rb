@@ -462,14 +462,18 @@ module Hyrax
         end
 
         def query_collection_members_for_po
-          member_works # is this still needed?
-          #member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
+          member_works 
+          member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
           prepare_docs_and_filters_for_po(@collection)
         end
 
         # Instantiate the membership query service
         def collection_member_service
           @collection_member_service ||= membership_service_class.new(scope: self, collection: collection, params: params_for_query)
+        end
+
+        def subcollection_media_service(subcollection)
+          membership_service_class.new(scope: self, collection: subcollection, params: params_for_query)
         end
 
         def member_works

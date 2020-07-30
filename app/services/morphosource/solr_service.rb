@@ -47,15 +47,14 @@ module Morphosource
       result["response"]["docs"] if result.present? && result["response"]["docs"].present?
     end
 
+    def count
+      result['response']['numFound'].to_i
+    end
+
     private
     
       def connection
         ActiveFedora::SolrService.instance.conn
-      end
-
-      def count(query)
-        args = { rows: 0 }
-        get(query, **args)['response']['numFound'].to_i
       end
 
       # Wraps ActiveFedora::Base#search_by_id(id, opts)

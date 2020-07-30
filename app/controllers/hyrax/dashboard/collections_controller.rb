@@ -40,7 +40,7 @@ module Hyrax
       # The search builder to find the collection
       self.single_item_search_builder_class = SingleCollectionSearchBuilder
       # The search builder to find the collections' members
-      self.membership_service_class = Collections::CollectionMemberService
+      self.membership_service_class = Morphosource::Collections::CollectionMemberService
 
       load_and_authorize_resource except: [:index, :create], instance_name: :collection
 
@@ -89,6 +89,7 @@ module Hyrax
           # displaying teams and project show page content
           self.presenter_class = Hyrax::TeamPresenter
           presenter
+          query_collection_information
           query_collection_members
         end
 

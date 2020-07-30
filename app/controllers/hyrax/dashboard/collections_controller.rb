@@ -73,7 +73,10 @@ module Hyrax
       def show
         # if the current user has edit permission, redirect to edit 
         if current_user and can? :edit, @collection
-          redirect_to '/dashboard/collections/' + @collection.id + '/edit'
+            tab = request.params[:tab]
+            edit_path = edit_dashboard_collection_url + '&' + request.params.slice!(:action, :id, :controller, :locale, :tab).to_query
+            edit_path += '#' + tab if tab.present?
+            redirect_to edit_path
         else          
           # run the presenter and other methods (same as the team_presenter methods) necessary for
           # displaying teams and project show page content

@@ -44,23 +44,31 @@ Rails.application.routes.draw do
     #end
     get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
+    # media pagination
     get 'team_paging/teams/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/projects/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+    # bso pagination
     get 'team_paging/teams/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/projects/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
 
     get 'projects/:id', to: 'teams#show'
     get 'projects/specimens/:id', to: 'teams#specimens'
+    # media pagination
     get 'project_paging/projects/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
     get 'project_paging/teams/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+    # bso pagination
     get 'project_paging/projects/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
     get 'project_paging/teams/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
 
-    get 'project_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'team_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
     get 'dashboard/collections/specimens/:id', to: 'dashboard/collections#specimens'
-
-# /project_paging/dashboard/collections/specimens/00000C138?locale=en&page=2#biological_specimens
+    # media pagination
+    get 'project_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'team_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'project_paging/dashboard/collections/:id/edit', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'team_paging/dashboard/collections/:id/edit', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
+    # bso pagination
+    get 'project_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
+    get 'team_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
 
     #resources :projects, controller: 'teams'
     

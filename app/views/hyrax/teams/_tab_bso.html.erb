@@ -1,4 +1,10 @@
-<% cache render_async_cache_key(request.path), expires_in: 12.hours, skip_digest: true do %>
+<%# cache render_async_cache_key(request.path), expires_in: 12.hours, skip_digest: true do %>
+            
+
+            <%#= render 'hyrax/dashboard/collections/bso_filters' %>
+            
+
+
             <div class="row">
               <!-- Search bar -->
               <div class="col-xs-6">
@@ -14,6 +20,6 @@
             <div class="hyc-blacklight hyc-bl-pager">
               <%= render 'hyrax/teams/paginate_bso' %>
             </div>
-<% end %>
+<%# end %>
 
 <input type="hidden" name="bso-count" value="<%= @bso_member_count %>" />

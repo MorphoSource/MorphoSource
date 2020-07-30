@@ -84,12 +84,9 @@ module Hyrax
       end
 
       def query_collection_members_for_po
-
-
         member_works # is this still needed?
-#        member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
+        #member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
         prepare_docs_and_filters_for_po(collection)
-
       end
 
       # Instantiate the membership query service

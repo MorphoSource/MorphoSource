@@ -61,6 +61,12 @@ module Morphosource
       '/projects/specimens/' + id + page
     end
 
+    def dashboard_bso_tab_url(id)
+      page = ''
+      page = '?page=' + request_params['page'] if request_params['page'].present?
+      '/dashboard/collections/specimens/' + id + page
+    end
+
     def prepare_docs_and_filters_for_media(collection)
       @po_type = "" # bso / cho
       @visibility_options = []

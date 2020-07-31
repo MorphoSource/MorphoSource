@@ -10,8 +10,9 @@ class SubmissionsController < ApplicationController
   include Morphosource::LinkedTeams::LinkedTeamsManagement
 
   load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, 
-    :save_data, :organization_default_media_fields, :new_organization_submit, 
-    :new_taxonomy_submit, :new_device_submit, :new_processing_event_submit]
+    :save_data, :organization_for_recordset, :organization_default_media_fields, 
+    :new_organization_submit, :new_taxonomy_submit, :new_device_submit, 
+    :new_processing_event_submit]
 
   before_action :instantiate_work_forms
 
@@ -68,6 +69,28 @@ class SubmissionsController < ApplicationController
     render :json => gbif_taxa + ms_taxa
   end
 
+  def organization_for_recordset
+    recordset_id = params[:recordset_id]
+    organization = Organization.where(recordset_id: recordset_id)&.first
+    
+    if organization.present?
+      status = 'OK'
+      organization_found = true
+      organization_id = organization.id
+    else
+      status = 'FAIL'
+      organization_found = false
+      organization_id = nil
+    end
+
+    response_object = {
+      status: status,
+      organization_found: organization_found,
+      organization_id: organization_id
+    }
+    render :json => response_object
+  end
+
   def organization_default_media_fields
     organization = find_ancestor_organization
     if organization.present?
@@ -77,7 +100,6 @@ class SubmissionsController < ApplicationController
       message << ', but no default fields present' if !default_fields.present?
       organization_alert_message = alert(organization)
       organization_title = organization.title
-      
     else
       status = 'FAIL'
       message = 'Organization does not exist'

@@ -982,4 +982,4 @@ DEPENDENCIES
   zipline (~> 1.0)
 
 BUNDLED WITH
-   2.1.4
+   2.0.2

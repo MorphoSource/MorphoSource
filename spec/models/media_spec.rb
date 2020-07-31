@@ -281,32 +281,34 @@ RSpec.describe Media do
     end
 
     describe '#reviewer' do
+      let(:download_reviewer) { double('User', ms_id: 'reviewer') }
+      let(:depositor) { double('User', ms_id: 'depositor') }
       context 'there is no download_reviewer' do
         before do
           subject.download_reviewer = []
-          subject.depositor = 'depositor'
+          subject.depositor = depositor.ms_id
         end
         it 'returns the depositor' do
-          expect(subject.reviewer).to eq('depositor')
+          expect(subject.reviewer).to eq(depositor.ms_id)
         end
       end
       context 'there is a download_reviewer' do
         context 'the download_reviewer exists' do
           before do
-            subject.download_reviewer = ['reviewer']
-            subject.depositor = 'depositor'
-            expect(User).to receive(:find_by).with(ms_id: 'reviewer').and_return('reviewer')
+            subject.download_reviewer = [download_reviewer.ms_id]
+            subject.depositor = depositor.ms_id
+            expect(User).to receive(:find_by).with(ms_id: 'reviewer').and_return(download_reviewer)
           end
           it 'returns the reviewer' do
-            expect(subject.reviewer).to eq('reviewer')
+            expect(subject.reviewer).to eq(download_reviewer.ms_id)
           end
         end
         context 'the download_reviewer does not exist' do
           before do
-            subject.depositor = 'depositor'
+            subject.depositor = depositor.ms_id
           end
           it 'returns the depositor' do
-            expect(subject.reviewer).to eq('depositor')
+            expect(subject.reviewer).to eq(depositor.ms_id)
           end
         end
       end

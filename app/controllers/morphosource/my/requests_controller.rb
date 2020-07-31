@@ -1,8 +1,8 @@
 module Morphosource
   module My
     class RequestsController < Hyrax::MyController
-
       include Morphosource::CartItems
+      include Morphosource::CartItems::ListItems
 
       before_action :get_items_by_id, except: [:index]
       before_action :get_intended_use, only: [:request_item, :request_again, :request_work]

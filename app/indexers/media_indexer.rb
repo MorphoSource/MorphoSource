@@ -15,6 +15,9 @@ class MediaIndexer < Morphosource::WorkIndexer
      solr_doc['fileset_accessibility_ssim'] = object.fileset_accessibility
      solr_doc['download_access_group_ssim'] = object.download_groups
      solr_doc['download_access_person_ssim'] = object.download_users
+     solr_doc['owner_ssim'] = object.owner
+     object.download_reviewer
+     solr_doc['download_reviewer_ssim'] = object.download_reviewer
    end
   end
 end

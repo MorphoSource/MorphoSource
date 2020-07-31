@@ -5,6 +5,7 @@ module Morphosource
   autoload :Derivatives
   autoload :IDigBio
   autoload :Minter
+  autoload :CrossrefDoiMinter
 
   include Morphosource::Configurable
 

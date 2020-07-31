@@ -87,7 +87,7 @@
     <div id="embedded_div_new_processing_event" class="embedded_div persist_with_tab related_form parent-media" data-relationship-control="#parent-relationships-processing-events" data-add-button="#btn-add-processing-event">
       <div class="col-sm-12">
         <div class="content-block">
-          <%= simple_form_for [main_app, @new_processing_event_form], 
+          <%= simple_form_for [main_app, @new_processing_event_form],
                               wrapper: :showcase_default,
                               url: @new_processing_event_submit_submissions_url,
                               html: {
@@ -103,7 +103,7 @@
 
 
 <div id="embedded_div_new_device" class="embedded_div" data-relationship-control="#parent-relationships-devices" data-add-button="#btn-add-device" data-linked-content-blocks="#embedded_div_new_organization" style="display: none">
-    <%= simple_form_for [main_app, @new_device_form], 
+    <%= simple_form_for [main_app, @new_device_form],
                         wrapper: :showcase_default,
                         url: @new_device_submit_submissions_url,
                         html: {
@@ -128,7 +128,7 @@
           <div class="content-block">
           <%= render 'organization_details', presenter: @presenter %>
           </div>
-        </div> 
+        </div>
 
       </div>
 
@@ -138,7 +138,7 @@
 <div id="embedded_div_new_organization" class="embedded_div" data-relationship-control="#parent-relationships-organizations" data-add-button="#btn-add-organization" style="display: none;">
   <div class="col-sm-12">
     <div class="content-block">
-      <%= simple_form_for [main_app, @new_organization_form], 
+      <%= simple_form_for [main_app, @new_organization_form],
                           wrapper: :showcase_default,
                           url: @new_organization_submit_submissions_url,
                           html: {
@@ -155,10 +155,11 @@
 <%= render 'modal_select_parent_media' %>
 <%= render 'modal_select_parent_media_new_processing_event' %>
 
-<script type="text/javascript">
-  Blacklight.onLoad(function() {
+<%# TODO: Commented out when turbolinks removed. Delete if nothing breaks. %>
+<!-- <script type="text/javascript">
+  Blacklight.onLoad(function() { -->
     <%# This causes the page to switch back to the default template if they've
         previously visited the batch download page in this Turbolinks session %>
-    $("#fileupload").fileupload('option', 'downloadTemplateId', 'template-download')
+    <%# $("#fileupload").fileupload('option', 'downloadTemplateId', 'template-download')
   });
-</script>
+</script> %>

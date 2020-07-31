@@ -9,7 +9,9 @@ class SubmissionsController < ApplicationController
   include Morphosource::PermissionsHelper
   include Morphosource::LinkedTeams::LinkedTeamsManagement
 
-  load_and_authorize_resource except: [:search_po_ajax, :save_data, :organization_default_media_fields]
+  load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, 
+    :save_data, :organization_default_media_fields, :new_organization_submit, 
+    :new_taxonomy_submit, :new_device_submit, :new_processing_event_submit]
 
   before_action :instantiate_work_forms
 
@@ -54,6 +56,18 @@ class SubmissionsController < ApplicationController
     end
   end
 
+  def search_taxonomy_ajax
+    @submission = Submission.new()
+    search_term = params[:q]
+    gbif_taxa = Morphosource::GbifSearchService.call({ 'name' => search_term })
+    ms_taxa = Qa::Authorities::FindTaxonomies.new().search_submission(search_term, self)
+
+    gbif_ms_ids = gbif_taxa.map { |t| t[:ms] }
+    ms_taxa = ms_taxa.reject { |t| gbif_ms_ids.include? t[:id] }
+
+    render :json => gbif_taxa + ms_taxa
+  end
+
   def organization_default_media_fields
     organization = find_ancestor_organization
     if organization.present?
@@ -86,38 +100,246 @@ class SubmissionsController < ApplicationController
   end
 
   def create
+    clear_session_submission_settings
     reinstantiate_submission
 
+    @submission.taxonomy_params_array = []
+    @submission.taxonomy_id_array = @submission.taxonomy_id_array.present? ? @submission.taxonomy_id_array.split(',') : []
+    @submission.taxonomy_gbif_key_array = @submission.taxonomy_gbif_key_array.present? ? @submission.taxonomy_gbif_key_array.split(',') : []
+
     if @submission.idigbio_id.present?
-      idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(
-        @submission.idigbio_id)
-      existing_bso = Morphosource::PhysicalObjectsSearchService.call(
-        BiologicalSpecimen, idb_taxonomy_params.clone)
-      if (!existing_bso.nil?) && existing_bso.any?
-        # iDigBio taxonomy already exists
-        if existing_bso.first.canonical_taxonomy.present?
-          @submission.taxonomy_id = existing_bso.first.canonical_taxonomy.first
-        else
-          @submission.taxonomy_id = existing_bso.first.taxonomies.first.id
+      # What taxonomy does this specimen have? Do they exist in MS2 or create them?
+      idb_taxonomy_param_sets = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(@submission.idigbio_id)
+      provider_params = idb_taxonomy_param_sets[:provider]
+      gbif_params = idb_taxonomy_param_sets[:gbif]
+
+      if provider_params.present?
+        prov = Morphosource::TaxonomySearchService.call(provider_params)
+        if prov.present?
+          # Exists, link as canonical
+          @submission.canonical_taxonomy_id = prov.first.id
+          @submission.taxonomy_id_array << prov.first.id unless @submission.taxonomy_id_array.include?(prov.first.id)
+        else 
+          # Is new, must create
+          provider_params[:canonical] = true # to be hooked in later to set canonical taxonomy ID
+          @submission.taxonomy_params_array << ActionController::Parameters.new(provider_params)
         end
-        @submission.canonical_taxonomy_id = @submission.taxonomy_id
-      else
-        # Need to create new taxonomy to match this
-        params[:taxonomy] = ActionController::Parameters.new(idb_taxonomy_params)
-        @submission.canonical_taxonomy_id = 'created_taxonomy'
       end
+
+      if gbif_params.present?
+        gbif = Morphosource::TaxonomySearchService.call(gbif_params)
+        if gbif.present?
+          @submission.taxonomy_id_array << gbif.first.id unless @submission.taxonomy_id_array.include?(gbif.first.id)
+        else
+          @submission.taxonomy_params_array << ActionController::Parameters.new(gbif_params)
+        end
+      end
+
+      # Get specimen params from iDigBio
       params[:biological_specimen] = ActionController::Parameters.new(
         Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(
           @submission.idigbio_id))
+    else
+      # Manual physical object creation, may need to do extra steps
+      if @submission.will_create_taxonomy
+        @submission.taxonomy_params_array << params[:taxonomy]
+      end
+
+
+      @submission.taxonomy_gbif_key_array.each do |gbif_key| # this may be empty
+        gbif = Morphosource::TaxonomySearchService.call({ gbif_key: gbif_key.to_s })
+        if gbif.present?
+          @submission.taxonomy_id_array << gbif.first.id unless @submission.taxonomy_id_array.include?(gbif.first.id)
+        else
+          @submission.taxonomy_params_array << ActionController::Parameters.new(
+            Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key))
+        end
+      end
     end
 
     works.each do |work|
-      puts("Creating #{work} if necessary")
-      create_work_if_needed(work, params)
+      if work == 'taxonomy' && @submission.taxonomy_params_array.present?
+        @submission.taxonomy_params_array.each do |taxon_params|
+          new_taxon_id = prepare_and_create_work('taxonomy', { 'taxonomy' => taxon_params })
+          @submission.taxonomy_id_array << new_taxon_id
+          @submission.canonical_taxonomy_id = new_taxon_id if taxon_params[:canonical]
+        end
+      else
+        puts("Creating #{work} if necessary")
+        create_work_if_needed(work, params)
+      end
     end
 
     # render 'show' # re-enable for debug mode
     redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en') if @submission.media_id
+  end
+
+  # AJAX Physical object and media edit page submission methods
+
+  def new_organization_submit
+    # this method is expected to be called from a form in modal, or an ajax post
+    begin
+      new_organization_id = prepare_and_create_work('organization', { 'organization' => params[:organization] })
+    rescue
+      new_organization_id = nil
+    end
+
+    if new_organization_id.present?
+      status = 'OK'
+      message = 'New organization created'
+      new_organization = Organization.where('id' => new_organization_id).first
+      new_work = {
+        :id => new_organization_id,
+        :title => new_organization.title.first,
+        :institution_code => new_organization.institution_code.first,
+        :institution_name => new_organization.institution_name.first,
+        :collection_code => new_organization.collection_code.first,
+        :description => new_organization.description.first,
+        :address => new_organization.address.first,
+        :city => new_organization.city.first,
+        :state_province => new_organization.state_province.first,
+        :country => new_organization.country.first
+      }
+    else
+      status = 'FAIL'
+      message = 'There is a problem creating the organization.'
+      new_work = {}
+    end
+    response_object = {
+      :work => new_work,
+      :status => status,
+      :message => message
+    }
+    render :json => response_object
+  end
+
+  def new_taxonomy_create(params)
+    # this method is expected to be called from the backend
+    begin
+      prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })
+    rescue
+      nil
+    end
+  end
+
+  def new_taxonomy_submit
+    # this method is expected to be called from a form in modal, or an ajax post
+    begin
+      new_taxonomy_id = prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })
+    rescue
+      new_taxonomy_id = nil
+    end
+
+    if new_taxonomy_id.present?
+      status = 'OK'
+      message = 'New Taxonomy created'
+      new_taxonomy = Taxonomy.where('id' => new_taxonomy_id).first
+      new_work = {
+        :id => new_taxonomy_id,
+        :title => new_taxonomy.title.first,
+        :taxonomy_domain => new_taxonomy.taxonomy_domain.first,
+        :taxonomy_kingdom => new_taxonomy.taxonomy_kingdom.first,
+        :taxonomy_phylum => new_taxonomy.taxonomy_phylum.first,
+        :taxonomy_superclass => new_taxonomy.taxonomy_superclass.first,
+        :taxonomy_class => new_taxonomy.taxonomy_class.first,
+        :taxonomy_subclass => new_taxonomy.taxonomy_subclass.first,
+        :taxonomy_superorder => new_taxonomy.taxonomy_superorder.first,
+        :taxonomy_order => new_taxonomy.taxonomy_order.first,
+        :taxonomy_suborder => new_taxonomy.taxonomy_suborder.first,
+        :taxonomy_superfamily => new_taxonomy.taxonomy_superfamily.first,
+        :taxonomy_family => new_taxonomy.taxonomy_family.first,
+        :taxonomy_subfamily => new_taxonomy.taxonomy_subfamily.first,
+        :taxonomy_tribe => new_taxonomy.taxonomy_tribe.first,
+        :taxonomy_genus => new_taxonomy.taxonomy_genus.first,
+        :taxonomy_subgenus => new_taxonomy.taxonomy_subgenus.first,
+        :taxonomy_species => new_taxonomy.taxonomy_species.first,
+        :taxonomy_subspecies => new_taxonomy.taxonomy_subspecies.first,
+        :depositor => new_taxonomy.depositor
+      }
+    else
+      status = 'FAIL'
+      message = 'There is a problem creating the taxonomy.'
+      new_work = {}
+    end
+    response_object = {
+      :work => new_work,
+      :status => status,
+      :message => message
+    }
+    render :json => response_object
+  end
+
+  def new_device_submit
+    # this method is expected to be called from a form in modal, or an ajax post
+    begin
+      new_device_id = prepare_and_create_work('device', { 'device' => params[:device] })
+    rescue Exception => ex
+      new_device_id = nil
+      exception_message = "Exception: #{ex.class}, #{ex.message}"
+    end
+    if new_device_id.present?
+      status = 'OK'
+      message = 'New device created'
+      new_device = Device.where('id' => new_device_id).first
+      new_work = {
+        :id => new_device_id,
+        :title => new_device.title.first,
+        :creator => new_device.creator.first,
+        :modality => new_device.modality.first,
+        :description => new_device.description.first,
+        :organization_institution => organization_institution(new_device_id)
+      }
+    else
+      status = 'FAIL'
+      message = 'There is a problem creating the device. ' + exception_message
+      new_work = {}
+    end
+    response_object = {
+      :work => new_work,
+      :status => status,
+      :message => message
+    }
+    render :json => response_object
+  end
+
+  def new_processing_event_submit
+    # this method is expected to be called from a form in modal, or an ajax post
+    begin
+      new_processing_event_id = prepare_and_create_work('processing_event', { 'processing_event' => params[:processing_event] })
+    rescue Exception => ex
+      new_processing_event_id = nil
+      exception_message = "Exception: #{ex.class}, #{ex.message}"
+    end
+    if new_processing_event_id.present?
+      if params['child_media_id'].present?
+        # update the child media (by setting this PE as a parent)
+        # child < PE < parent
+        child_media_id = params['child_media_id']
+        child_media = Media.find(child_media_id)
+        processing_event = ::ActiveFedora::Base.find(new_processing_event_id)
+        processing_event.ordered_members << child_media
+        processing_event.save!
+        child_media.save!
+        new_processing_event_updates(child_media)
+      end
+      status = 'OK'
+      message = 'New processing_event created'
+      new_processing_event = ProcessingEvent.where('id' => new_processing_event_id).first
+      new_work = {
+        :id => new_processing_event_id,
+        :title => new_processing_event.title.first
+      }
+    else
+      status = 'FAIL'
+      message = 'There is a problem creating the processing_event. ' + exception_message
+      new_work = {}
+    end
+    response_object = {
+      :work => new_work,
+      :status => status,
+      :message => message
+    }
+    render :json => response_object
   end
 
   private
@@ -158,10 +380,9 @@ class SubmissionsController < ApplicationController
     when 'biological_specimen'
       model_params = assign_model_params_parents(
         model_params, 
-        [@submission.organization_id, @submission.taxonomy_id])
-      if @submission.canonical_taxonomy_id == 'created_taxonomy'
-        model_params.merge!('canonical_taxonomy' => [@submission.taxonomy_id])
-      elsif @submission.canonical_taxonomy_id.present?
+        Array(@submission.organization_id) + @submission.taxonomy_id_array
+      )
+      if @submission.canonical_taxonomy_id.present?
         model_params.merge!('canonical_taxonomy' => [@submission.canonical_taxonomy_id])
       end
       @biospec_create_params = model_params
@@ -296,7 +517,7 @@ class SubmissionsController < ApplicationController
   end
 
   def clear_session_submission_settings
-    session[:submission] = nil
+    session[:submission] = {}
   end
 
   def create_attributes_for_actor(model, form_params)
@@ -352,7 +573,7 @@ class SubmissionsController < ApplicationController
   end
 
   def create_work(model, attributes_for_actor)
-    # TODO: Refactor this to rely on appropriate model methods and not submissions controller
+    # TODO: Refactor this to rely on appropriate model methods and not submissions controller    
     curation_concern = model.new
     env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
     Hyrax::CurationConcern.actor.create(env)
@@ -455,6 +676,8 @@ class SubmissionsController < ApplicationController
                 :will_create_organization,
                 :taxonomy_id,
                 :canonical_taxonomy_id,
+                :taxonomy_id_array,
+                :taxonomy_gbif_key_array,
                 :will_create_taxonomy,
                 :device_id,
                 :will_create_device,
@@ -478,7 +701,9 @@ class SubmissionsController < ApplicationController
                 :cultural_heritage_object_search_institution_code,
                 :cultural_heritage_object_search_occurrence_id,
                 :cultural_heritage_object_search_short_title,
-                :taxonomy_search
+                :taxonomy_search,
+                :organization_search,
+                :taxonomy_params_array
         )
     )
   end

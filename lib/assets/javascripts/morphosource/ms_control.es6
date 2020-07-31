@@ -78,6 +78,8 @@ export default class RelationshipsControl {
           elem.taxonomy_subgenus,
           elem.taxonomy_species,
           elem.taxonomy_subspecies,
+          elem.trusted,
+          elem.gbif_key,
           elem.depositor,
           this.depositorLink(elem.depositor)
          ))
@@ -176,6 +178,21 @@ export default class RelationshipsControl {
     } else if (this.workType == 'device') {
       this.registry.addResource(new DeviceResource(data.id, data.text, data.creator, data.modality, data.description, data.organization_institution));
     } else if (this.workType == 'taxonomy') {
+      console.log(data);
+      // if (data.id == data.gbif_key) {
+      //   console.log('gbif');
+      //   console.log(data);
+
+      //   console.log('Creating new GBIF taxonomy...');
+      //   fetch('/submissions/new_taxonomy_submit', {
+      //     method: 'post',
+      //     body: JSON.stringify( { 'gbif_key': data.gbif_key } )
+      //   }).then(function(response) {
+      //     return response.json();
+      //   }).then(function(new_data) {
+      //     console.log(new_data);
+      //   });
+      // }
       this.registry.addResource(new TaxonomyResource(
         data.id, 
         data.text, 
@@ -196,9 +213,11 @@ export default class RelationshipsControl {
         data.taxonomy_subgenus,
         data.taxonomy_species,
         data.taxonomy_subspecies,
+        data.gbif_key,
         data.depositor,
         data.depositor_link
         ))
+
     } else if (this.workType == 'biological_specimen') {
       this.registry.addResource(new BiologicalSpecimenResource(
         data.id, 

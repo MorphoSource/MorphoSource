@@ -1,6 +1,6 @@
-$(document).on('turbolinks:load', function() {
+$( document ).ready(function() {
   if ($('form[id*="processing_event"]').length) { // if PE form page
-    
+
     // concatenate rights holder name, type to rights holder
     var form = $('form[id*="processing_event"]')[0];
 
@@ -25,7 +25,7 @@ $(document).on('turbolinks:load', function() {
         var hasAdditionalEmptyField = true;
     }
 
-    if (hasAdditionalEmptyField) { 
+    if (hasAdditionalEmptyField) {
       concatFieldCount--;
     }
 
@@ -38,7 +38,7 @@ $(document).on('turbolinks:load', function() {
         setNewProcessingActivityStep();
     });
 
-    // build and validate the Processing Activity fields before submit 
+    // build and validate the Processing Activity fields before submit
     // note: this has been moved out of "    if (hasAdditionalEmptyField) {  " condition block
     form.addEventListener("submit", function(peSubmitEvent) {
       var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
@@ -56,7 +56,7 @@ $(document).on('turbolinks:load', function() {
       var concatFieldValue = concatFields[i].value;
       //console.log('concatFieldValue: '+concatFieldValue);
       var step = concatFieldValue.match(/^Step: ([0-9]+), Type: /)
-      step = (step) ? step[1] : '1'; // if step value cannot be parsed, assume there is no PA, and set the first step to 1 
+      step = (step) ? step[1] : '1'; // if step value cannot be parsed, assume there is no PA, and set the first step to 1
       var type = concatFieldValue.match(/, Type: (.*), Software: /);
       type = (type) ? type[1] : '';
       var software = concatFieldValue.match(/, Software: (.*), Description: /);
@@ -140,7 +140,7 @@ function buildProcessingActivity() {
   console.log('buildProcessingActivity...');
   var targetGroup = document.querySelector('div.processing_event_processing_activity');
   var targetGroupUl = targetGroup.querySelector("ul");
-  
+
   // the three fields are concatenated and inserted into hidden default processing activity field.
   var processingActivityCount = $('select[name="processing_event[processing_activity_type][]"]').length;
   var steps = [];
@@ -169,7 +169,7 @@ function buildProcessingActivity() {
 
   // validate the step values
   if (processingActivity.length == 0) {
-    // no need to validate if there is no processingActivity 
+    // no need to validate if there is no processingActivity
     return true;
   } else if (!stepsValid(steps.sort())) {
     alert('Please select the steps in sequence.');
@@ -201,7 +201,7 @@ var setNewProcessingActivityStep = function() {
     processingActivityStep = parseInt(processingActivityStep);
     steps.push(processingActivityStep);
   }
-  var newStepValue = Math.max.apply(Math, steps) + 1; 
+  var newStepValue = Math.max.apply(Math, steps) + 1;
   // set the last PA step number to the new value
   $('#processing_event_processing_activity_wrapper li.processing_activity_items:last-child select.processing_event_processing_activity_step').val(newStepValue);
 }
@@ -219,7 +219,7 @@ var processingActivityStepChanged = function() {
     alert('Please select the steps in sequence.');
     $('input[type="submit"], button[type="submit"]').attr("disabled", true);
   } else {
-    $('input[type="submit"], button[type="submit"]').attr("disabled", false);    
+    $('input[type="submit"], button[type="submit"]').attr("disabled", false);
   }
 
 };
@@ -242,7 +242,7 @@ Array.prototype.equals = function (array) {
     if (!array)
         return false;
 
-    // compare lengths - can save a lot of time 
+    // compare lengths - can save a lot of time
     if (this.length != array.length)
         return false;
 
@@ -251,13 +251,13 @@ Array.prototype.equals = function (array) {
         if (this[i] instanceof Array && array[i] instanceof Array) {
             // recurse into the nested arrays
             if (!this[i].equals(array[i]))
-                return false;       
-        }           
-        else if (this[i] != array[i]) { 
+                return false;
+        }
+        else if (this[i] != array[i]) {
             // Warning - two different object instances will never be equal: {x:20} != {x:20}
-            return false;   
-        }           
-    }       
+            return false;
+        }
+    }
     return true;
 }
 // Hide method from for-in loops

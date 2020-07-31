@@ -1,6 +1,7 @@
 # helper methods for teams and project collection show and edit pages
 module Morphosource
   module CollectionHelper
+    include MediaFinderHelper
 
     def ms_collection_view_link(id, view)
       current_uri = path_info
@@ -55,7 +56,6 @@ module Morphosource
     end
 
     def prepare_docs_and_filters(collection)
-
       @visibility_options = []
       @pub_status_options = []
       @media_type_options = []
@@ -64,7 +64,7 @@ module Morphosource
       @bso_source_options = []
       @cho_visibility_options = []
       #@team_project_options = @subcollection_docs.map{|p| p.title}.flatten
-      @team_project_options = @subcollection_docs.map(&:title).flatten
+      @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
 
       # add items from team bucket
       extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
@@ -129,6 +129,88 @@ module Morphosource
     end
 
     def get_medias_and_objects(docs, extras)
+      media_documents = []
+      bso_documents = []
+      cho_documents = []
+      media_extras = []
+      bso_extras = []
+      cho_extras = []
+
+      media_filter_params = filter_params('m_', params)
+      bso_filter_params = filter_params('b_', params)
+      cho_filter_params = filter_params('c_', params)
+
+      docs.each do |doc|
+        if doc.hydra_model == Media
+          # if the media comes from linked organization, determine the origin:
+          # origin = team if it’s in the team, and origin = org if it’s not in the team
+          origin = 'Team'
+          if extras['source_of_result'] == 'linked_org'
+            unless @team_bucket_media_id_list.include? doc.id 
+              origin = 'Org.'
+            end
+          end
+          m_visibility_to_compare = media_filter_params['visibility'] || doc.visibility
+          m_publication_status_to_compare = media_filter_params['pub_status'] || correct_fileset_visibility(doc.fileset_visibility)
+          m_media_type_to_compare = media_filter_params['media_type'] || doc.media_type.first
+          m_origin_to_compare = media_filter_params['origin'] || origin
+
+          this_media_extras = { 'id' => doc.id, 'origin' => origin }
+
+          # get BSO and CHO
+          po_doc = Morphosource::PhysicalObjectParentSearchService.call({ id: doc.id })&.first
+          if po_doc.present?
+            this_media_extras['po_title'] = po_doc.title&.first
+            if po_doc.hydra_model == BiologicalSpecimen
+              taxonomy = Morphosource::TaxonomySearchService.call({ 'member_ids' => po_doc.id})&.first
+              this_media_extras['po_taxonomy'] = taxonomy.title&.first if taxonomy.present? && taxonomy.title.present?
+              bso_documents << po_doc unless bso_documents.include? po_doc
+              bso_extras << { 'id' => po_doc.id, 'origin' => origin }.merge(extras) 
+            elsif po_doc.hydra_model == CulturalHeritageObject
+              cho_documents << po_doc unless cho_documents.include? po_doc
+              cho_extras << { 'id' => po_doc.id, 'origin' => origin }.merge(extras) 
+            end
+          end
+
+          # filter media
+          if doc.visibility == m_visibility_to_compare &&
+              correct_fileset_visibility(doc.fileset_visibility) == m_publication_status_to_compare &&
+              doc.media_type.first == m_media_type_to_compare &&
+              origin == m_origin_to_compare
+            
+            media_documents << doc
+            media_extras << this_media_extras.merge(extras)
+            @visibility_options << doc.visibility
+            @pub_status_options << correct_fileset_visibility(doc.fileset_visibility)
+            @media_type_options << doc.media_type.first
+          end 
+          # / filter media
+
+        end
+      end # / docs.each
+
+      return media_documents.compact, media_extras, 
+               bso_documents.compact, bso_extras,
+                 cho_documents.compact, cho_extras
+    end
+
+    def correct_fileset_visibility(status)
+      access = status&.first
+      case
+      when access == "open"
+        "open"
+      when access == "restricted_download"
+        "restricted"
+      when access == "preview_only"
+        "preview"
+      when access == "hidden"
+        "hidden"
+      else
+        "private"
+      end
+    end
+
+    def get_medias_and_objects_bak(docs, extras)
       media_documents = []
       bso_documents = []
       cho_documents = []
@@ -282,7 +364,7 @@ module Morphosource
       media_list
     end
 
-    def physical_object_solr_from_media(media_id)
+    def physical_object_solr_from_media_bak(media_id)
       # this method returns the solr doc (and other details) of a PO associated with the media ID
       bso_work, bso_extra, cho_work, cho_extra = physical_object_from_media(media_id)
       bso_doc = SolrDocument.new(bso_work.to_solr) if bso_work.present?
@@ -290,7 +372,7 @@ module Morphosource
       return bso_doc, bso_extra, cho_doc, cho_extra
     end
 
-    def physical_object_from_media(id)
+    def physical_object_from_media_bak(id)
       #find BSO or CHO assigned to the media id
       media = Media.find(id)
 

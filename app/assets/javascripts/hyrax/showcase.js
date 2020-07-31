@@ -1,4 +1,4 @@
-$(document).on('turbolinks:load', function() {
+$( document ).ready(function() {
 
   if ($('body[class*="showcase"]').length) { // check if the page is showcase page
     // switching icons and button labels for expand / collapse
@@ -105,13 +105,13 @@ $(document).on('turbolinks:load', function() {
         column.visible( ! column.visible() );
       });
 
-      // keep dropdown menu open 
+      // keep dropdown menu open
       $(document).on('click', '.choose-columns .dropdown-menu', function (e) {
         e.stopPropagation();
       });
 
       $(document).on('click', '#add-selected-to-cart', function (e) {
-        // todo: any checked checkboxes? disable button 
+        // todo: any checked checkboxes? disable button
         $('#add-selected-to-cart-hidden').trigger('click');
       });
 
@@ -119,11 +119,11 @@ $(document).on('turbolinks:load', function() {
         var checkedStatus = this.checked;
         $('.batch_add_selector').each(function() {
           $(this).prop('checked', checkedStatus);
-        });        
+        });
       });
 
     } // / end if teams and projects show page
 
-  } // end if the page is showcase page 
+  } // end if the page is showcase page
 
 });

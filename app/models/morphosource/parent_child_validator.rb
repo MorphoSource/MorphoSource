@@ -11,7 +11,7 @@ module Morphosource
       end
 
       return if invalid_children.empty?
-      record.errors[:works] << "valid children for #{record.class} do not include #{invalid_children.uniq.join(', ')}."
+      record.errors[:works] << "valid children for #{record.class} do not include #{invalid_children.uniq.join(', ')}. Valid child concerns are #{record.valid_child_concerns.join(', ')}"
     end
 
   end

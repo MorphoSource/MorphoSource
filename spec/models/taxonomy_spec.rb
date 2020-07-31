@@ -38,6 +38,7 @@ RSpec.describe Taxonomy do
       subject.taxonomy_subspecies = ["subspecies"]
       subject.source = ["some source"]
       subject.trusted = ["true"]
+      subject.gbif_key = ['111111']
       expect(subject).to be_valid
     end
 
@@ -61,6 +62,7 @@ RSpec.describe Taxonomy do
       subject.taxonomy_subspecies = ["subspecies"]
       subject.source = ["some source"]
       subject.trusted = ["true"]
+      subject.gbif_key = ['111111']
       expect(subject).to_not be_valid
     end
 

@@ -53,10 +53,14 @@ class BiologicalSpecimen < Morphosource::Works::Base
     other_taxonomies.select{|taxonomy| taxonomy.trusted == ["Yes"]}
   end
 
+  def gbif_taxonomies
+    other_taxonomies.select{|taxonomy| taxonomy.gbif_key.present? }
+  end
+
   # does not include the canonical taxonomy
-  # any taxonomy that is not trusted
+  # any taxonomy that is not trusted or gbif
   def user_taxonomies
-    other_taxonomies.reject{|taxonomy| taxonomy.trusted == ["Yes"]}
+    other_taxonomies.reject{|taxonomy| taxonomy.trusted == ["Yes"] || taxonomy.gbif_key.present? }
   end
 
   def organizations

@@ -1,8 +1,8 @@
 module Morphosource
   module My
     class DownloadsController < Hyrax::MyController
-
       include Morphosource::CartItems
+      include Morphosource::CartItems::ListItems
 
       def index
         get_items('downloads')

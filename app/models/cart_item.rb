@@ -13,26 +13,20 @@ class CartItem < ApplicationRecord
   end
 
   def request_status
-    if downloadable?
-      if date_approved?
-        "Approved"
-      else
-        "Downloadable"
-      end
+    if date_canceled?
+      "Canceled"
+    elsif date_denied?
+      "Denied"
+    elsif expired?
+      "Expired"
+    elsif date_cleared?
+      "Cleared"
+    elsif date_approved?
+      "Approved"
+    elsif date_requested?
+      "Requested"
     else
-      if date_canceled?
-        "Canceled"
-      elsif date_denied?
-        "Denied"
-      elsif expired?
-        "Expired"
-      elsif date_cleared?
-        "Cleared"
-      elsif date_requested?
-        "Requested"
-      else
-        "Not Requested"
-      end
+      "Not Requested"
     end
   end
 
@@ -53,7 +47,11 @@ class CartItem < ApplicationRecord
   end
 
   def work
-    Media.find(work_id)
+    @work ||= Media.find(work_id)
+  end
+
+  def user
+    @user ||= User.find_by(ms_id: user_id)
   end
 
   def expired?
@@ -68,10 +66,10 @@ class CartItem < ApplicationRecord
   def downloadable?
     case
       when work.open? then true
-      when user.can?(:download, work) then true
       when user.ms_id == work.download_reviewer.first then true
       when user.ms_id == work.user_with_ownership then true
       when approved? then true
+      when user.can?(:download, work) then true
       else false
     end
   end

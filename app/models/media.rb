@@ -36,8 +36,7 @@ class Media < Morphosource::Works::Base
   end
 
   def reviewer
-    r = User.find_by(ms_id: download_reviewer.first)
-    r ? download_reviewer.first : user_with_ownership
+    User.find_by(ms_id: download_reviewer.first).try(:ms_id) || user_with_ownership
   end
 
   # array of all visibilities that apply to the file sets of a Media work

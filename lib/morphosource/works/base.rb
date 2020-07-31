@@ -4,7 +4,7 @@ module Morphosource
   module Works
     class Base < ActiveFedora::Base
       include Morphosource::AccessControls::Permissions
-      
+
       class_attribute :work_parents_attributes
       class_attribute :work_requires_files
       class_attribute :valid_parent_concerns
@@ -57,8 +57,7 @@ module Morphosource
       end
 
       def user_with_ownership
-        o = User.find_by(ms_id: owner)
-        o ? owner : depositor
+        User.find_by(ms_id: owner)&.ms_id || depositor
       end
 
       private

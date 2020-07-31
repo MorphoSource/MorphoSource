@@ -114,7 +114,7 @@ RSpec.describe CartItem, type: :model do
         it { expect(cartItem1.request_status).to eq('Not Requested') }
     end
     context "an unrestricted item's status is downloadable" do
-      it { expect(cartItem2.request_status).to eq('Downloadable') }
+      it { expect(cartItem2.request_status).to eq('Not Requested') }
     end
   end
 

@@ -28,7 +28,7 @@ RSpec.shared_examples '#get_items instance variables' do |page|
                   'previous requests' => "1 Item" } }
 
   it 'retrieves all the correct solr documents' do
-    expect(subject.instance_variable_get(:@solr_docs)).to match_array(docs[page])
+    expect(subject.instance_variable_get(:@solr_docs).map(&:id)).to match_array(docs[page].map(&:id))
   end
 
   it 'retrieves all the correct items' do

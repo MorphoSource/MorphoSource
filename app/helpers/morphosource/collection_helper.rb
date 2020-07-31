@@ -188,7 +188,6 @@ module Morphosource
           end 
           # / filter media
 
-
       end # / docs.each
 
       return media_extras
@@ -205,10 +204,22 @@ module Morphosource
           project_media_service = subcollection_media_service(project_doc)
           project_media_response = project_media_service.available_member_works
           @member_docs_from_projects = project_media_response.documents
+          @member_docs += @member_docs_from_projects #if @member_docs_from_projects.present?
         end
+
+        if collection.organization.present?
+          # add items from linked org. 
+          @member_docs_from_linked_org = media_from_linked_organization(collection.organization)          
+          # todo: need to set source_of_result somewhere
+          #extras_for_filter = {'source_of_result' => 'linked_org'}
+          #@media_extras_from_linked_org = get_media_extras(@member_docs_from_linked_org, extras_for_filter)
+          #@member_docs += @member_docs_from_linked_org
+          #@media_extras += @media_extras_from_linked_org
+          @member_docs += @member_docs_from_linked_org #if @member_docs_from_linked_org.present?
+        end
+
       end
 
-      @member_docs += @member_docs_from_projects if @member_docs_from_projects.present?
       extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
       @bso_member_docs, @bso_extras, 
         @cho_member_docs, @cho_extras = get_objects_from_media(@member_docs, extras_for_filter)

@@ -9,13 +9,61 @@ class CollectionRolesController < ApplicationController
 
   def update_collection_groups
     return unless can? :edit, collection
-
-    update_subcollections
-    update_agent_access
+    if users_are_eligible?
+      update_subcollections
+      update_agent_access
+    else
+      update_notice('user_status')
+    end
     reload_collection_share
   end
 
   private
+
+  # users are eligible if they are being removed from a role, are being added to a downloader or viewer role, or have contributor status.
+  def users_are_eligible?
+    if @remove
+      return true
+    elsif group_is_downloader_or_viewer?
+      return true
+    elsif users_are_contributors?
+      return true
+    else
+      false
+    end
+  end
+
+  # if user is being added or moved to a downlower or viewer role, return true
+  def group_is_downloader_or_viewer?
+    access = params[:collection_roles][:access]
+    new_access = params[:collection_roles][:new_access]
+    roles = ['downloaders', 'viewers']
+    if new_access
+      roles.include? new_access
+    else
+      roles.include? access
+    end
+  end
+
+  # return true if all users have contributor status, otherwise return false and add any non_contributor emails to @non_contributors
+  def users_are_contributors?
+    @non_contributors = []
+    if user?
+      return true if user.contributor?
+      @non_contributors << user.email
+    elsif group?
+      return true if group_members_are_contributors?
+    end
+    false
+  end
+
+  def group_members_are_contributors?
+    @non_contributors = []
+    team.group_members.each do |member|
+      @non_contributors << member.email if !member.contributor?
+    end
+    @non_contributors.empty?
+  end
 
   def update_subcollections
     find_subcollections
@@ -48,7 +96,7 @@ class CollectionRolesController < ApplicationController
   end
 
   def reload_collection_share
-    redirect_to(hyrax.edit_dashboard_collection_path(collection.id, anchor: 'sharing'))
+    redirect_to(hyrax.edit_dashboard_collection_path(collection.id, anchor: 'members'))
   end
 
   def update_user_access
@@ -151,7 +199,10 @@ class CollectionRolesController < ApplicationController
     when 'success'
       flash[:notice] = translate('hyrax.dashboard.collections.form.permission_update_notices.participants')
     when 'fail'
-      flash[:alert] = translate('hyrax.dashboard.collections.form.permission_update_errors')
+      flash[:error] = translate('hyrax.dashboard.collections.form.permission_update_errors')
+    when 'user_status'
+      emails = @non_contributors.join(', ')
+      flash[:error] = "Error - users with email: #{ emails } do not have contributor status. Please contact an administrator."
     end
   end
 

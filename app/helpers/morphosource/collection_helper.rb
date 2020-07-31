@@ -78,8 +78,8 @@ module Morphosource
       @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
 
       extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
-      @paged_media_member_docs = paginated_media_item_list
-      @media_extras = get_media_extras(@paged_media_member_docs, extras_for_filter)
+      #@paged_media_member_docs = paginated_media_item_list
+      @media_extras = get_media_extras(@member_docs, extras_for_filter)
       # save the item IDs in the team bucket, for determining the origin  
 
       # add items from team bucket
@@ -94,30 +94,23 @@ module Morphosource
           extras_for_filter = {'source_of_result' => 'team_project', 'team_project_title' => project_doc.title.first}
           @media_extras_from_projects = get_media_extras(@member_docs_from_projects, extras_for_filter)
 
-          @member_docs += @member_docs_from_projects
+          @member_docs += @member_docs_from_projects if @member_docs_from_projects.present?
           @media_extras += @media_extras_from_projects
         end
 
+        if collection.organization.present?
+          # add items from linked org. todo: optimize when the source_of_result can be set 
+          @member_docs_from_linked_org = media_from_linked_organization(collection.organization)
+          extras_for_filter = {'source_of_result' => 'linked_org'}
+          @media_extras_from_linked_org = get_media_extras(@member_docs_from_linked_org, extras_for_filter)
 
-#        if collection.organization.present?
-#          # add items from linked org
-#          @member_docs_from_linked_org = media_from_linked_organization(collection.organization)
-#          extras_for_filter = {'source_of_result' => 'linked_org'}
-#          @media_member_docs_from_linked_org, @media_extras_from_linked_org, 
-#            @bso_member_docs_from_linked_org, @bso_extras_from_linked_org, 
-#              @cho_member_docs_from_linked_org, @cho_extras_from_linked_org = get_medias_and_objects(@member_docs_from_linked_org, extras_for_filter)
-
-#          @media_member_docs += @media_member_docs_from_linked_org
-#          @bso_member_docs += @bso_member_docs_from_linked_org
-#          @cho_member_docs += @cho_member_docs_from_linked_org
-#          @media_extras += @media_extras_from_linked_org
-#          @bso_extras += @bso_extras_from_linked_org
-#          @cho_extras += @cho_extras_from_linked_org
-#        end
+          @member_docs += @member_docs_from_linked_org
+          @media_extras += @media_extras_from_linked_org
+        end
 
       end        
 
-      @member_count = @member_docs.length
+      @members_count = @member_docs.length
       @media_member_docs = @member_docs      
       @media_member_count = @member_docs.length
       @paged_media_member_docs = paginated_media_item_list
@@ -126,7 +119,7 @@ module Morphosource
       @pub_status_options = @pub_status_options.uniq
       @media_type_options = @media_type_options.uniq
       @organization_options = @organization_options.uniq
- #     @bso_source_options = @bso_source_options.uniq
+      # @bso_source_options = @bso_source_options.uniq
     end
 
     def total_media_count(id)
@@ -215,7 +208,7 @@ module Morphosource
         end
       end
 
-      @member_docs += @member_docs_from_projects
+      @member_docs += @member_docs_from_projects if @member_docs_from_projects.present?
       extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
       @bso_member_docs, @bso_extras, 
         @cho_member_docs, @cho_extras = get_objects_from_media(@member_docs, extras_for_filter)

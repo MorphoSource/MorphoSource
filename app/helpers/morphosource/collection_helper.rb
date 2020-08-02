@@ -24,6 +24,23 @@ module Morphosource
       link.html_safe
     end
 
+    def query_collection_information
+      @collection_information = Morphosource::Collections::CollectionInformationService.call(
+        collection.id, collection.team?
+      )
+      @collection_counts = @collection_information['counts'] ||= {}
+      @collection_media_groups = @collection_information['media_groups'] ||= {}
+      @collection_bso_groups = @collection_information['bso_groups'] ||= {}
+      @collection_cho_groups = @collection_information['cho_groups'] ||= {}
+    end
+
+    def media_filter_params
+      Morphosource::Collections::CollectionFilterService.solrize_filter_params(
+        collection.id,
+        filter_params('m_', params)
+      )
+    end
+
     def filter_params(prefix, params)
       return_params = {}
       temp_params = params.select{ |k,v| k.match(/^#{prefix}/) }.select{ |k,v| v.present? }
@@ -70,12 +87,13 @@ module Morphosource
     def prepare_docs_and_filters_for_media(collection)
       @po_type = "" # bso / cho
       @visibility_options = []
-      @pub_status_options = []
-      @media_type_options = []
       @organization_options = []
 
       #@team_project_options = @subcollection_docs.map{|p| p.title}.flatten
       @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
+      @bso_visibility_options = []
+      @bso_source_options = []
+      @cho_visibility_options = []
 
       extras_for_filter = {'source_of_result' => collection.collection_type.title.downcase}
       #@paged_media_member_docs = paginated_media_item_list
@@ -114,6 +132,7 @@ module Morphosource
       @media_member_docs = @member_docs      
       @media_member_count = @member_docs.length
       @paged_media_member_docs = paginated_media_item_list
+
 
       @visibility_options = @visibility_options.uniq
       @pub_status_options = @pub_status_options.uniq
@@ -155,11 +174,7 @@ module Morphosource
               origin = 'Org.'
             end
           end
-          m_visibility_to_compare = media_filter_params['visibility'] || doc.visibility
-          m_publication_status_to_compare = media_filter_params['pub_status'] || correct_fileset_visibility(doc.fileset_visibility)
-          m_media_type_to_compare = media_filter_params['media_type'] || doc.media_type.first
-          m_origin_to_compare = media_filter_params['origin'] || origin
-
+          
           this_media_extras = { 'id' => doc.id, 'origin' => origin }
 
           # get BSO and CHO
@@ -403,7 +418,7 @@ module Morphosource
       case value
       when 'open'
         display_value = "Open Download"
-      when 'restricted'
+      when 'restricted_download'
         display_value = "Restricted Download"
       when 'preview_only'
         display_value = "No Download"
@@ -421,18 +436,36 @@ module Morphosource
       display_value
     end
 
-    #def media_from_team_project(project_doc)
-    #  media_list = []
-    #  # get all media from the project 
-    #  project = Collection.find(project_doc.id)
-    #  project.member_works.each do |work| 
-    #    if work.class == Media
-    #      media_doc = SolrDocument.new(work.to_solr) 
-    #      media_list << media_doc
-    #    end
-    #  end
-    #  media_list
-    #end
+    def media_type_label(value)
+      case value
+      when 'CTImageSeries'
+        'CT Image Series'
+      else
+        value.underscore.titleize
+      end
+    end
+
+    def origin_label(value)
+      case value
+      when 'team_organization'
+        'Organization Linked To Team'
+      when 'team_collection'
+        'Direct Team Ownership'
+      else
+        ''
+      end
+    end
+
+    def source_label(value)
+      case value
+      when 'idigbio'
+        'iDigBio Aggregator'
+      when 'user'
+        'User Created'
+      else
+        ''
+      end
+    end
 
     def media_from_linked_organization(organization)
       media_list = []
@@ -442,84 +475,6 @@ module Morphosource
         media_list << media_doc
       end
       media_list
-    end
-
-    def physical_object_solr_from_media_bak(media_id)
-      # this method returns the solr doc (and other details) of a PO associated with the media ID
-      bso_work, bso_extra, cho_work, cho_extra = physical_object_from_media(media_id)
-      bso_doc = SolrDocument.new(bso_work.to_solr) if bso_work.present?
-      cho_doc = SolrDocument.new(cho_work.to_solr) if cho_work.present?
-      return bso_doc, bso_extra, cho_doc, cho_extra
-    end
-
-    def physical_object_from_media_bak(id)
-      #find BSO or CHO assigned to the media id
-      media = Media.find(id)
-
-      # Get parent medias (all)
-      # add current media id, then add child media ids.
-      # currently add up to 5 levels in the tree.  Later we should store the child medias in the work
-      # so there is no need to traverse the tree
-      @parent_media_id_list = parent_media_ids(media, 5, []).flatten.uniq
-      @child_media_id_list = child_media_ids(media, 5, []).flatten.uniq
-      @sibling_media_id_list = sibling_media_ids(media, []).flatten.uniq
-      total_media_count = 1 + @parent_media_id_list.length +
-                          @child_media_id_list.length + 
-                          @sibling_media_id_list.length
-
-      # get the top parent
-      direct_parent_id = top_parent_media_id(media)
-      #direct_parent_id_list = parent_media_ids(media, 1, []).flatten.uniq
-      direct_parent_id_list = []
-      if direct_parent_id.present?
-        direct_parent_id_list << direct_parent_id
-      end
-
-      @is_absentee_parent = false
-
-      this_media_list = [] << id
-      # get members for this media combined with parents, ordered in reverse
-      @this_media_and_parents_id_list = @parent_media_id_list << id
-      # get processing event:  media < processing_event
-      # then get processing event data: activity items, child/parent IDs and member presenters
-      @processing_events = ProcessingEvent.where('member_ids_ssim' => @this_media_and_parents_id_list)
-      @processing_event_count = @processing_events.count
-
-      if direct_parent_id_list.length > 0
-        # If a media has a parent work and is derived, then that media’s raw ancestor media work
-        # (whether parent, grandparent, etc) should be connected to an IE from which metadata should be derived.
-        target_media = Media.where('id' => direct_parent_id).first
-      else
-        target_media = media
-        # check if this is a Derived media with "absentee parent" by checking if PE exists
-        if @processing_event_count > 0
-          @is_absentee_parent = true
-        end
-      end
-
-      # Get the physical object type from:
-      # Media < IE < PO
-      # or
-      # media < PE < IE < PO (for media with absentee parent)
-      if @is_absentee_parent == true
-        @imaging_event = ImagingEvent.where('member_ids_ssim' => @processing_events.first.id).first
-      else
-        @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
-      end
-
-      if @imaging_event.present?
-        bso = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
-        cho = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
-      end
-      bso_extra = {}
-      cho_extra = {}
-
-      if bso.present?
-        bso_extra = { 'id' => bso.id, 'media_count' => total_media_count.to_s}
-      elsif cho.present?
-        cho_extra = { 'id' => cho.id, 'media_count' => total_media_count.to_s}
-      end
-      return bso, bso_extra, cho, cho_extra
     end
 
     def organization_from_bso(bso)

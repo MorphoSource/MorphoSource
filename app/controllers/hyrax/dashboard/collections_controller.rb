@@ -90,6 +90,7 @@ module Hyrax
         # this is called when user save the collection form on the show action
         # if needed, redirect show to edit if user has permission to save
         presenter
+        query_collection_information
         query_collection_members
         form
       end

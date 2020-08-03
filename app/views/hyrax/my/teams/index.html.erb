@@ -22,7 +22,7 @@
   <div class="col-xs-3 show-actions text-right">
     <% if can?(:create_any, Collection) && @collection_type_list_presenter.any? %>
       <% # link directly to create collection form with type %>
-      <%= link_to(t('helpers.action.' + @collection_list_type + '.new'), append_collection_type_url(new_dashboard_collection_path, @collection_type_list_presenter.first_collection_type.id), class: 'btn btn-primary') %>
+      <%= link_to(t('helpers.action.' + @collection_list_type + '.new'), append_collection_type_url(new_dashboard_collection_path, @collection_list_type_id), class: 'btn btn-primary') %>
     <% end %>
   </div>
   <% if @collection_count_for_manager > 0 %>

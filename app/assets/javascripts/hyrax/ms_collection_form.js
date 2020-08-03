@@ -1,8 +1,7 @@
 //$(document).on('turbolinks:load', function() {
 $(document).ready(function() {
 
-  if ( $('form[id*="edit_collection"]').length ||
-       $('form[id*="new_collection"]').length ) { // if collection form page (add/edit)
+  if ( $('form[id*="edit_collection"]').length ) { // if collection form page (edit)
 
     setupTooltip();
     removeLastRepeatable();

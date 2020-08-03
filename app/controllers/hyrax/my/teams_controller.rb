@@ -40,9 +40,11 @@ module Hyrax
         @paged_collection_docs_by_type = paginated_item_list
         if page_is_team?
           @collection_list_type = "team"
+          @collection_list_type_id = 1
           add_breadcrumb t(:'hyrax.admin.sidebar.teams'), hyrax.my_collections_path.sub!('collection', 'team')
         elsif page_is_project?
           @collection_list_type = "project"
+          @collection_list_type_id = 2
           add_breadcrumb t(:'hyrax.admin.sidebar.projects'), hyrax.my_collections_path.sub!('collection', 'project')
         else
           @collection_list_type = "collection"

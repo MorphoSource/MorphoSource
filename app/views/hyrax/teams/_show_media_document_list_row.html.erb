@@ -29,9 +29,11 @@ po_taxonomy = media_extra['po_taxonomy']
   <% else %>
     <td></td>
   <% end %>
-  <td><%= document.media_type&.first.underscore.humanize %></td>  
-  <td><%= media_extra["team_project_title"] %></td>
-  <td><%= media_extra["origin"] %></td>
+  <td><%= document.media_type&.first.underscore.humanize %></td> 
+  <% if @is_team %>
+    <td><%= media_extra["team_project_title"] %></td>
+    <td><%= media_extra["origin"] %></td>
+  <% end %>
   <td><%= document.date_uploaded %></td>
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>
   <td class="text-center">

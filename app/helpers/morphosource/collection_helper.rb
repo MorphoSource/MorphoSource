@@ -95,6 +95,7 @@ module Morphosource
 
     def prepare_docs_and_filters_for_media(collection)
       @po_type = "" # bso / cho
+      @is_team = collection.team?
       @visibility_options = []
 
       @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects

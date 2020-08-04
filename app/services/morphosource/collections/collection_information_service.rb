@@ -3,10 +3,10 @@ module Morphosource
     class CollectionInformationService
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
-      attr_reader :solr, :collection_id, :is_org_team,
+      attr_reader :solr, :collection_id, :collection, :is_org_team, 
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
-        :n_idigbio, :collection_project_map, :organizations, :info
+        :n_idigbio, :collection_project_map, :organizations, :info, :subcollection_ids
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
@@ -21,7 +21,9 @@ module Morphosource
       def initialize(collection_id)
         @solr = solr_service.new
         @collection_id = collection_id
-        @is_org_team = Collection.find(collection_id).team?
+        @collection = Collection.find(collection_id)
+        @is_org_team = collection.team?
+
         query_solr_collection_info
       end
 
@@ -98,6 +100,10 @@ module Morphosource
         params.map { |k, v| solrize_param(k, v) }.compact
       end
 
+      def subcollection_ids
+        @subcollection_ids ||= get_subcollection_ids
+      end
+
       private
 
         ### Solr collection queries ###
@@ -121,6 +127,18 @@ module Morphosource
           solr.count
         end
 
+        def get_subcollection_ids
+          query = nil
+          params = {
+            fq: [
+              "#{solrize('nesting_collection__parent_ids', :symbol)}:#{collection_id}",
+              "#{solrize('has_model', :symbol)}:Collection"
+            ]
+          }
+
+          solr.get_docs(query, params).map { |d| d['id'] }
+        end
+
         # Other solr queries #
 
         def media_facet_query
@@ -131,19 +149,29 @@ module Morphosource
             solrize('member_of_collection_ids', :symbol)
           ]
 
-          addl_params = { rows: 0 }
-
-          if is_org_team && collection_organization_id
-            query = nil
-            addl_params[:fq] = [
-              assemble_po_id_or_collection_query(team_org_po_ids, collection_id),
-              "#{solrize('has_model', :symbol)}:Media"
+          params = { 
+            rows: 0,
+            fq: [
+              "#{solrize('has_model', :symbol)}:Media",
             ]
+          }
+
+          # Core query
+          if is_org_team && collection_organization_id
+            params[:fq] << assemble_po_id_or_collection_query(
+              team_org_po_ids, 
+              Array(collection_id) + subcollection_ids
+            )
+          elsif collection.collection_type.nestable?
+            params[:fq] << assemble_or_query(
+              solrize('member_of_collection_ids', :symbol),
+              Array(collection_id) + subcollection_ids
+            )
           else
-            query = "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+            params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
           end
           
-          solr.get_facet_fields(query, facet_fields, addl_params)
+          solr.get_facet_fields(nil, facet_fields, params)
 
           return solr.facet_fields(facet_fields), solr.count
         end
@@ -349,8 +377,8 @@ module Morphosource
           name[0...name.rindex('_')]
         end
 
-        def assemble_po_id_or_collection_query(ids, collection_id)
-          "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) OR (#{solrize('member_of_collection_ids', :symbol)}:#{collection_id})"
+        def assemble_po_id_or_collection_query(ids, collection_ids)
+          "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) OR (#{assemble_or_query(solrize('member_of_collection_ids', :symbol), Array(collection_ids))})"
         end
 
         def assemble_po_id_and_not_collection_query(ids, collection_id)

@@ -1,8 +1,8 @@
 <% 
 id = document.id
 extra = @media_extras.find { |e| e['id'] == document.id }
+doc_presenter = index_presenter(document)
 %>
-<% doc_presenter = index_presenter(document) %>
 <%# default partial to display solr document fields in catalog index view -%>
 
 <dl class="document-metadata dl-horizontal dl-invert">

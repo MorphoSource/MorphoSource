@@ -13,8 +13,9 @@ module Morphosource
       def all_member_media(organization_object_ids = [], fq_params = [])
         core_fq = "(#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id})"
         core_fq += assemble_multiple_collection_query if collection.collection_type.nestable?
-        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present?
-        fq_params << core_fq 
+        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
+        fq_params << core_fq
+        fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"
         available_member_works_filter_query(fq_params: fq_params)
       end
 

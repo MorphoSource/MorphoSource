@@ -14,8 +14,10 @@
       <th></th>
     <% end %>
     <th>Type</th>
-    <th>Project</th>
-    <th>Origin</th>
+    <% if @is_team %>
+      <th>Project</th>
+      <th>Origin</th>
+    <% end %>
     <th>Date Added</th>
     <th>Publication Status</th>
     <th class="remove-column">&nbsp;</th>

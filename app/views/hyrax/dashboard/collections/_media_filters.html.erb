@@ -81,14 +81,11 @@
 
       <div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
       <div class="col-sm-8 col-lg-9">
-        <% if params['m_visibility'].present? %>
-          <p id="m_visibility" class="filter-param">Visibility > <%= params['m_visibility'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_visibility"></i></p>
-        <% end %>
         <% if params['m_pub_status'].present? %>
-          <p id="m_pub_status" class="filter-param">Publication status > <%= params['m_pub_status'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_pub_status"></i></p>
+          <p id="m_pub_status" class="filter-param">Publication status > <%= publication_status_label(params['m_pub_status']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_pub_status"></i></p>
         <% end %>
         <% if params['m_media_type'].present? %>
-          <p id="m_media_type" class="filter-param">Media type > <%= params['m_media_type'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_media_type"></i></p>
+          <p id="m_media_type" class="filter-param">Media type > <%= media_type_label(params['m_media_type']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_media_type"></i></p>
         <% end %>
         <% if params['m_team_project'].present? %>
           <p id="m_team_project" class="filter-param">Project > <%= params['m_team_project'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_team_project"></i></p>
@@ -97,7 +94,7 @@
           <p id="m_organization" class="filter-param">Organization > <%= params['m_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_organization"></i></p>
         <% end %>
         <% if params['m_origin'].present? %>
-          <p id="m_origin" class="filter-param">Origin > <%= params['m_origin'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_origin"></i></p>
+          <p id="m_origin" class="filter-param">Origin > <%= origin_label(params['m_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_origin"></i></p>
         <% end %>
       </div>
       <div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>

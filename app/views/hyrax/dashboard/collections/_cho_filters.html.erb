@@ -43,11 +43,8 @@
 
       <div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
       <div class="col-sm-8 col-lg-9">
-        <% if params['c_visibility'].present? %>
-          <p id="c_visibility" class="filter-param">Visibility > <%= params['c_visibility'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_visibility"></i></p>
-        <% end %>
         <% if params['c_origin'].present? %>
-          <p id="c_origin" class="filter-param">Origin > <%= params['c_origin'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_origin"></i></p>
+          <p id="c_origin" class="filter-param">Origin > <%= origin_label(params['c_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_origin"></i></p>
         <% end %>
       </div>
       <div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>

@@ -55,17 +55,14 @@
 
       <div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
       <div class="col-sm-8 col-lg-9">
-        <% if params['b_visibility'].present? %>
-          <p id="b_visibility" class="filter-param">Visibility > <%= params['b_visibility'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_visibility"></i></p>
-        <% end %>
         <% if params['b_source'].present? %>
-          <p id="b_source" class="filter-param">Source > <%= params['b_source'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_source"></i></p>
+          <p id="b_source" class="filter-param">Source > <%= source_label(params['b_source']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_source"></i></p>
         <% end %>
         <% if params['b_organization'].present? %>
           <p id="b_organization" class="filter-param">Organization > <%= params['b_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_organization"></i></p>
         <% end %>
         <% if params['b_origin'].present? %>
-          <p id="b_origin" class="filter-param">Origin > <%= params['b_origin'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_origin"></i></p>
+          <p id="b_origin" class="filter-param">Origin > <%= origin_label(params['b_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_origin"></i></p>
         <% end %>
       </div>
       <div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>

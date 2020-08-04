@@ -1,19 +1,19 @@
 <% 
 id = document.id 
-media_extra = extra(@media_extras, id)
-po_title = media_extra['po_title']
-if @bso_member_count > 0 
-  po_taxonomy = media_extra['po_taxonomy']
-end
+extra = @media_extras.find { |e| e['id'] == document.id }
 doc_presenter = index_presenter(document) 
 %>
 <dl class="document-metadata dl-horizontal dl-invert">
   <dd><%= document.id %></dd>
-    <dd class="text-truncate"><%= po_title %>&nbsp;</dd>
-    <% if @bso_member_count > 0 %>
-      <dd class="text-truncate"><%= po_taxonomy %>&nbsp;</dd>
-    <% end %>
-		<dd>&nbsp;</dd>  
-		<dd>&nbsp;</dd>  
+  <% if extra['po_title'].present? %>
+    <dd class="text-truncate"><%= extra['po_title'] %>&nbsp;</dd>
+  <% else %>
+    <dd>&nbsp;</dd> 
+  <% end %>
+  <% if extra['po_taxonomy'].present? %>
+    <dd class="text-truncate"><%= extra['po_taxonomy'] %>&nbsp;</dd>
+  <% else %>
+    <dd>&nbsp;</dd> 
+  <% end %>
   <dd class='long-badge'><%= render_publication_status_badge(document) %></dd>
 </dl>

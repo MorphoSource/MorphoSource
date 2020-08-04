@@ -3,27 +3,25 @@ module Morphosource
     class CollectionInformationService
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
-      attr_reader :solr, :collection_id, :is_org_team, :params,
+      attr_reader :solr, :collection_id, :is_org_team,
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
         :n_idigbio, :collection_project_map, :organizations, :info
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
-      def self.call(collection_id, is_org_team = false)
-        new(collection_id, is_org_team).call
+      def self.call(collection_id)
+        new(collection_id).call
       end
 
-      def self.solrize_filter_params(collection_id, params = {})
-        # Used to convert collection page filter params to solr filter query params
-        new(collection_id, false, params).solrize_filter_params if params.present?
+      def self.collection_organization_object_ids(collection_id)
+
       end
 
-      def initialize(collection_id, is_org_team = false, params = {})
+      def initialize(collection_id)
         @solr = solr_service.new
         @collection_id = collection_id
-        @is_org_team = is_org_team
-        @params = params
+        @is_org_team = Collection.find(collection_id).team?
         query_solr_collection_info
       end
 
@@ -56,7 +54,8 @@ module Morphosource
             'po' => physical_object_ids.length,
             'bso' => bso_ids.length,
             'cho' => cho_ids.length
-          }
+          },
+          'collection_object_ids' => physical_object_ids
         }
 
         info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
@@ -86,13 +85,17 @@ module Morphosource
               'team_collection' => cho_ids.length - team_cho_ids.length
             }
           end
+
+          if team_org_po_ids.present?
+            info['organization_object_ids'] = team_org_po_ids
+          end
         end
 
         info     
       end
 
-      def solrize_filter_params
-        params.map { |k, v| solrize_param(k, v) }
+      def solrize_filter_params(params = {})
+        params.map { |k, v| solrize_param(k, v) }.compact
       end
 
       private
@@ -271,15 +274,53 @@ module Morphosource
 
         def solrize_param(name, value)
           case name
-          when 'pub_status'
+          when 'm_pub_status'
             "#{solrize('fileset_accessibility', :stored_searchable)}:#{value}"
-          when 'organization'
+          when 'm_organization'
             assemble_or_query(
               solrize('physical_object_id', :stored_searchable), 
               po_ids_by_collection_organization(value)
             )
+          when 'm_team_project'
+            project_id = Collection.where(title: value)&.first&.id
+            "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
+          when 'm_origin'
+            if value == 'team_collection'
+              "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+            elsif value == 'team_organization' && Collection.find(collection_id).organization.present?
+              organization_title = Collection.find(collection_id).organization.title&.first
+              assemble_po_id_and_not_collection_query(
+                po_ids_by_collection_organization(organization_title),
+                collection_id
+              )
+            end
+          when 'b_source'
+            if value == 'idigbio'
+              "#{solrize('idigbio_uuid', :stored_searchable)}:*"
+            elsif value == 'user'
+              "-#{solrize('idigbio_uuid', :stored_searchable)}:*"
+            end
+          when 'b_organization', 'c_organization'
+            assemble_or_query(
+              'id', 
+              po_ids_by_collection_organization(value)
+            )
+          when 'b_origin', 'c_origin'
+            if Collection.find(collection_id).organization.present?
+              organization_title = Collection.find(collection_id).organization.title&.first
+              organization_po_query = assemble_or_query(
+                'id', 
+                po_ids_by_collection_organization(organization_title)
+              )
+
+              if value == 'team_collection'
+                '-' + organization_po_query
+              elsif value == 'team_organization'
+                organization_po_query
+              end
+            end
           else
-            "#{solrize(name, :stored_searchable)}:#{value}"
+            "#{solrize(name.split('_', 2).last, :stored_searchable)}:#{value}"
           end
         end
 

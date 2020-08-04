@@ -6,8 +6,7 @@
     <span class="fa fa-edit" aria-hidden="true"></span>
     <h1><%= @form.title.first %></h1>
     <span>
-      <%= @media_member_count %> Media ·
-      <span class="bso-count"></span> 
+      <%= @collection_counts['media'] %> Media · <%= @collection_counts['po'] %> Objects
     </span>
   </div>
   <div class="col-xs-3 show-actions text-right">
@@ -202,6 +201,7 @@
               </div>
             <% end %>
 
+            <%= render 'bso_filters' %>
             <%#= render 'hyrax/teams/tab_bso' %>
             <%= render_async dashboard_bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>

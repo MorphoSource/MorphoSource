@@ -197,11 +197,11 @@ module Hyrax
       def after_destroy(_id)
         # leaving id to avoid changing the method's parameters prior to release
         respond_to do |format|
+          format.js {render :js => "location.reload()"}
           format.html do
-            redirect_to my_collections_path,
-                        notice: t('hyrax.dashboard.my.action.collection_delete_success')
+            redirect_to request.referrer
           end
-          format.json { head :no_content, location: my_collections_path }
+          format.json { head :no_content, location: '/dashboard/my/collections' }
         end
       end
 

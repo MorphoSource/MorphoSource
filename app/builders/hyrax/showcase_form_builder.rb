@@ -21,7 +21,7 @@ module Hyrax
       options = @defaults.deep_dup.deep_merge(options) if @defaults
 
       input   = find_input(attribute_name, options)
-byebug
+
       input.html_safe
 
     end

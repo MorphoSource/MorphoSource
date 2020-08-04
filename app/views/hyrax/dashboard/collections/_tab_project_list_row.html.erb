@@ -24,7 +24,7 @@ media_count = project_presenter.total_items
     </div>
   </td>
   <td>
-    <%= link_to document.title_or_label, [hyrax, :dashboard, document], id: "src_copy_link_#{document.id}" %>
+    <%= link_to document.title_or_label, [hyrax, :dashboard, document], target: "_blank", id: "src_copy_link_#{document.id}" %>
   </td>
   <td><%= media_count %></td>
   <td><%= display_date(document.modified_date) %></td>

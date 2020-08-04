@@ -4,7 +4,7 @@ module Hyrax
     include TeamsControllerBehavior
     include BreadcrumbsForCollections
     with_themed_layout :decide_layout
-    load_and_authorize_resource except: [:index, :show, :create], instance_name: :collection
+    load_and_authorize_resource except: [:index, :show, :specimens, :create], instance_name: :collection
 
     # Renders a JSON response with a list of files in this collection
     # This is used by the edit form to populate the thumbnail_id dropdown

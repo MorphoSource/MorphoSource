@@ -45,7 +45,7 @@ module Hyrax
     end
 
     def collection
-      action_name == 'show' ? @presenter : @collection
+      action_name == 'show' || action_name == 'specimens' ? @presenter : @collection
     end
 
     private

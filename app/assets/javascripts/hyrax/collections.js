@@ -1,6 +1,5 @@
 
 Blacklight.onLoad(function () {
-console.log('Blacklight')
   /**
    * Post modal data via Ajax to avoid nesting <forms> in edit collections tabs screen
    * @param  {string} url   URL where to submit the AJAX request

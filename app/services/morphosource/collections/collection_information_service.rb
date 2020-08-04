@@ -378,14 +378,17 @@ module Morphosource
         end
 
         def assemble_po_id_or_collection_query(ids, collection_ids)
+          return "" if !ids.present? || !collection_ids.present? 
           "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) OR (#{assemble_or_query(solrize('member_of_collection_ids', :symbol), Array(collection_ids))})"
         end
 
         def assemble_po_id_and_not_collection_query(ids, collection_id)
+          return "" if !ids.present? || !collection_id.present? 
           "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) AND NOT (#{solrize('member_of_collection_ids', :symbol)}:#{collection_id})"
         end
 
         def assemble_or_query(field, values)
+          return "" if !field.present? || !values.present?
           field + ':(' + values.join(' OR ').upcase + ')'
         end
 

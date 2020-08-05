@@ -41,6 +41,10 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
+      property :recordset_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/recordsetId") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
       property :team_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/team") do |index|
         index.as :stored_searchable
       end

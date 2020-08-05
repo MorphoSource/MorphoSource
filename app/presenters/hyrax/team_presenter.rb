@@ -10,6 +10,7 @@ module Hyrax
       :organization_institution_name,
       :organization_institution_code,
       :organization_collection_code,
+      :organization_recordset_id,
       :organization_description,
       :organization_address,
       :organization_city,
@@ -126,6 +127,7 @@ module Hyrax
         @organization_institution_name = organization.institution_name
         @organization_institution_code = organization.institution_code
         @organization_collection_code = organization.collection_code
+        @organization_recordset_id = organization.recordset_id
         @organization_description = organization.description
         @organization_address = organization.address
         @organization_city = organization.city

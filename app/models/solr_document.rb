@@ -473,6 +473,10 @@ class SolrDocument
     self[Solrizer.solr_name('institution_name', :stored_searchable)]
   end
 
+  def recordset_id
+    self[Solrizer.solr_name('recordset_id', :stored_searchable)]
+  end
+
   def contact_person
     self[Solrizer.solr_name('contact_person', :stored_searchable)]
   end

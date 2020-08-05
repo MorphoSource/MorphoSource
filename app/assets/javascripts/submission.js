@@ -511,17 +511,42 @@ $( document ).ready(function() {
 
         $('#submission_po_search_results_container').on(
           'click', '.import-idigbio-object', function(event){
-            event.preventDefault();
+          event.preventDefault();
           console.log('View 3 import idigbio object');
 
           data.setPhysicalObjectDefaults();
           data.idigbioId = $(this).attr('id');
+          var recordsetId = $(this).data('recordset');
 
-          if (data.idigbioId) {
-            data.savedStep = 3;
-            self.form.setSidebarViewCheck([3, 5, 6]);
-            self.form.setSidebarViewFade([3, 5, 6]);
-            self.form.setVisibleView(4); // view 4 select organization
+          if (data.idigbioId && recordsetId) {
+            // Is there a MS organization that matches this recordset?
+            $.get('organization_for_recordset',
+              { 'recordset_id': recordsetId },
+              function(getData){
+                console.log(getData);
+                if (getData.organization_found && getData.organization_id) {
+                  // Set organization data
+                  data.setOrganizationDefaults();
+                  data.organizationId = getData.organization_id;
+                  data.noOrganization = false;
+                  data.willCreateOrganization = false;
+                  
+                  // Set organization-related default media permission fields
+                  self.form.setDefaultMediaPermissionFields();
+
+                  // Proceed
+                  data.savedStep = 3;
+                  self.form.setSidebarViewCheck([3, 4, 5, 6]);
+                  self.form.setSidebarViewFade([3, 4, 5, 6]);
+                  self.form.setVisibleView(7); // view 7 select device
+                } else {
+                  data.savedStep = 3;
+                  self.form.setSidebarViewCheck([3, 5, 6]);
+                  self.form.setSidebarViewFade([3, 5, 6]);
+                  self.form.setVisibleView(4); // view 4 select organization
+                }
+              }
+            );  
           }
 
           console.log(data);
@@ -1371,37 +1396,37 @@ $( document ).ready(function() {
         let self = this;
 
         $.get('organization_default_media_fields',
-               {
-                'parent_media_list': this.data.parentMediaList,
-                'organization_id': this.data.organizationId,
-                'biological_specimen_id': this.data.biologicalSpecimenId,
-                'cultural_heritage_object_id': this.data.culturalHeritageObjectId
-               },
-               function(getData){
-                console.log('Got organization default fields');
-                console.log(getData);
-                if (getData.default_fields) {
-                  console.log($('form#new_media div#submission-media-ownership'));
-                  // Add loading to media page
-                  $('form#new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
+         {
+          'parent_media_list': this.data.parentMediaList,
+          'organization_id': this.data.organizationId,
+          'biological_specimen_id': this.data.biologicalSpecimenId,
+          'cultural_heritage_object_id': this.data.culturalHeritageObjectId
+         },
+         function(getData){
+          console.log('Got organization default fields');
+          console.log(getData);
+          if (getData.default_fields) {
+            console.log($('form#new_media div#submission-media-ownership'));
+            // Add loading to media page
+            $('form#new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
 
-                  // Remove previous settings, if present
-                  $('form#new_media div#submission-media-ownership div').removeClass('permissions-field');
-                  $('form#new_media div#submission-media-ownership i.fa-university').remove();
-                  self.emptyMediaFields(getData.default_fields);
+            // Remove previous settings, if present
+            $('form#new_media div#submission-media-ownership div').removeClass('permissions-field');
+            $('form#new_media div#submission-media-ownership i.fa-university').remove();
+            self.emptyMediaFields(getData.default_fields);
 
-                  // Set up text
-                  $('#organization-alert-message').text(getData.organization_alert_message);
-                  $('#organization-name').text(getData.organization_title);
-                  $('#ownership-section-header-text').addClass('show').removeClass('hide');
+            // Set up text
+            $('#organization-alert-message').text(getData.organization_alert_message);
+            $('#organization-name').text(getData.organization_title);
+            $('#ownership-section-header-text').addClass('show').removeClass('hide');
 
-                  // Add new settings
-                  self.fillMediaFields(getData.default_fields);
+            // Add new settings
+            self.fillMediaFields(getData.default_fields);
 
-                  // Remove loading
-                  $('form#new_media div#submission-media-ownership').removeClass('ui-loading-whole-page');
-                }
-               });
+            // Remove loading
+            $('form#new_media div#submission-media-ownership').removeClass('ui-loading-whole-page');
+          }
+         });
       }
 
       emptyMediaFields(defaultFields) {

@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Hyrax::OrganizationForm do
   subject { Hyrax::OrganizationForm }
 
-  let(:terms)                     { [:organization_type, :institution_name, :title, :institution_code, :address, :city, :state_province, :country, :contact_person, :collection_code, :description, :download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as] }
+  let(:terms)                     { [:organization_type, :institution_name, :title, :institution_code, :address, :city, :state_province, :country, :contact_person, :collection_code, :recordset_id, :description, :download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as] }
 
   let(:required_fields)           { [:organization_type, :institution_name, :title, :institution_code] }
 
@@ -13,7 +13,7 @@ RSpec.describe Hyrax::OrganizationForm do
 
   let(:media_permissions_fields)  { [:download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as] }
 
-  let(:secondary_terms)           { [:description, :address, :city, :state_province, :country, :contact_person, :collection_code] }
+  let(:secondary_terms)           { [:description, :address, :city, :state_province, :country, :contact_person, :collection_code, :recordset_id] }
 
   it "has expected metadata terms" do
     expect(subject.terms).to match_array(terms)

@@ -29,6 +29,16 @@ module Hyrax
       set_organization_data 
     end
 
+    def membership(current_user)
+      if @collection.managers.include?(current_user)
+        'Manager'
+      elsif @collection.editors.include?(current_user)
+        'Editor'
+      elsif @collection.viewers.include?(current_user)
+        'Viewer'
+      end
+    end
+
     def manager_list(managers)
       ml = []
       managers.each do |m|

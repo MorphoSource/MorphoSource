@@ -79,8 +79,8 @@ Rails.application.routes.draw do
       get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
     end
 
-    #get 'dashboard/my/teams', controller: 'my/teams', action: :index
-    #get 'dashboard/my/projects', controller: 'my/teams', action: :index
+    get 'dashboard/my/teams', controller: 'my/teams', action: :index
+    get 'dashboard/my/projects', controller: 'my/teams', action: :index
 
   end
 

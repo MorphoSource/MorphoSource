@@ -1,0 +1,81 @@
+<% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
+<% provide :page_title, t("hyrax.admin.sidebar.collections") %>
+<%# provide :head do %>
+  <%#= rss_feed_link_tag route_set: hyrax %>
+  <%#= atom_feed_link_tag route_set: hyrax %>
+<%# end %>
+
+<script>
+//<![CDATA[
+
+  <%#= render partial: 'scripts', formats: [:js] %>
+
+//]]>
+</script>
+
+<% icon_class = @collection_list_type == 'team' ? "fa-users" : "fa-folder-open" %>
+<% provide :page_header do %>
+  <div class="col-xs-9 title">
+
+    <h1><span class="fa <%= icon_class %>" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar." + @collection_list_type.pluralize) %></h1>
+  </div>
+  <div class="col-xs-3 show-actions text-right">
+    <% if can?(:create_any, Collection) && @collection_type_list_presenter.any? %>
+      <% # link directly to create collection form with type %>
+      <%= link_to(t('helpers.action.' + @collection_list_type + '.new'), append_collection_type_url(new_dashboard_collection_path, @collection_list_type_id), class: 'btn btn-primary') %>
+    <% end %>
+  </div>
+  <% if @collection_count_for_manager > 0 %>
+  <div class="row collection-count">
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Manager</span> <span><%= collection_count_for(@collection_count_for_manager) %></span></div>
+  </div>
+  <% end %>
+  <% if @collection_count_for_editor > 0 %>
+  <div class="row collection-count">
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Editor</span> <span><%= collection_count_for(@collection_count_for_editor) %></span></div>
+  </div>
+  <% end %>
+  <% if @collection_count_for_depositor > 0 %>
+  <div class="row collection-count">
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Depositor</span> <span><%= collection_count_for(@collection_count_for_depositor) %></span></div>
+  </div>
+  <% end %>
+  <% if @collection_count_for_viewer > 0 %>
+  <div class="row collection-count">
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Viewer</span> <span><%= collection_count_for(@collection_count_for_viewer) %></span></div>
+  </div>
+  <% end %>
+  <% if @collection_count_for_downloader > 0 %>
+  <div class="row collection-count">
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Downloader</span> <span><%= collection_count_for(@collection_count_for_downloader) %></span></div>
+  </div>
+  <% end %>
+<% end %>
+<div class="collections-wrapper">
+  <%# Collections list %>
+  <div class="panel panel-default collections-panel-wrapper">
+    <div class="panel-body">
+      <h2 class="sr-only">Collections listing</h2>
+      <%= render 'search_header' %>
+      <%= render 'document_list' %>
+      <%= render 'results_pagination' %>
+    </div>
+  </div>
+
+  <!-- Render Modals 
+    todo: some of the modals might not be needed and can be removed from here
+  -->
+  <%#= render 'modal_add_to_collection', source: "my" %>
+  <%#= render 'modal_add_to_collection_deny' %>
+  <%#= render 'modal_add_to_collection_permission_deny' %>
+  <%#= render 'modal_collection_types_to_create' %>
+  <%= render 'hyrax/my/collections/modal_delete_admin_set_deny' %>
+  <%= render 'modal_delete_collection' %>
+  <%= render 'hyrax/my/collections/modal_delete_collection_deny' %>
+  <%= render 'hyrax/my/collections/modal_delete_collections_deny' %>
+  <%= render 'hyrax/my/collections/modal_delete_deny' %>
+  <%= render 'modal_delete_empty_collection' %>
+  <%= render 'hyrax/my/collections/modal_delete_selected_collections' %>
+  <%= render 'hyrax/my/collections/modal_edit_deny' %>
+
+</div><!-- /collections-wrapper -->

@@ -1,23 +1,19 @@
 <% 
 id = document.id 
-bso, bso_media_count, cho, cho_media_count = physical_object_from_media(id)
+extra = @media_extras.find { |e| e['id'] == document.id }
+doc_presenter = index_presenter(document) 
 %>
-<% doc_presenter = index_presenter(document) %>
-<%# default partial to display solr document fields in catalog index view -%>
-
 <dl class="document-metadata dl-horizontal dl-invert">
   <dd><%= document.id %></dd>
-  <% if bso.present? %>
-    <dd class="text-truncate"><%= bso.title&.first %>&nbsp;</dd>
-    <dd class="text-truncate"><%= bso.taxonomies&.first&.taxonomy_genus&.first %>&nbsp;</dd>
+  <% if extra['po_title'].present? %>
+    <dd class="text-truncate"><%= extra['po_title'] %>&nbsp;</dd>
+  <% else %>
+    <dd>&nbsp;</dd> 
   <% end %>
-  <% if cho.present? %>
-    <dd class="text-truncate"><%= cho.title&.first %>&nbsp;</dd>
-    <dd class="text-truncate">&nbsp;</dd>    
-  <% end %>
-  <% if bso.nil? and cho.nil? %>
-		<dd>&nbsp;</dd>  
-		<dd>&nbsp;</dd>  
+  <% if extra['po_taxonomy'].present? %>
+    <dd class="text-truncate"><%= extra['po_taxonomy'] %>&nbsp;</dd>
+  <% else %>
+    <dd>&nbsp;</dd> 
   <% end %>
   <dd class='long-badge'><%= render_publication_status_badge(document) %></dd>
 </dl>

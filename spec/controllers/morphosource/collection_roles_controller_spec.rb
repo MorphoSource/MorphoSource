@@ -42,27 +42,65 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager adds another user as a manager' do
         before do
-          params[:collection_roles][:access] = 'managers'
+          set_access_params('managers')
         end
-        it "adds the user to the collection's manager role" do
-          post :update_collection_groups, params: params
-          expect(team.managers).to include(another_user)
+
+        context 'user is a contributor' do
+          before do
+            is_contributor(another_user)
+          end
+          it "adds the user to the collection's manager role" do
+            post :update_collection_groups, params: params
+            expect(team.managers).to include(another_user)
+          end
+        end
+
+        context 'user is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            post :update_collection_groups, params: params
+          end
+          it "does not add the user to the collection's manager role" do
+            expect(team.managers).not_to include(another_user)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
         end
       end
 
       context 'manager adds another user as a depositor' do
         before do
-          params[:collection_roles][:access] = 'depositors'
+          set_access_params('depositors')
         end
-        it "adds the user to the collection's depositor role" do
-          post :update_collection_groups, params: params
-          expect(team.depositors).to include(another_user)
+
+        context 'user is a contributor' do
+          before do
+            is_contributor(another_user)
+          end
+          it "adds the user to the collection's depositor role" do
+            post :update_collection_groups, params: params
+            expect(team.depositors).to include(another_user)
+          end
+        end
+
+        context 'user is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            post :update_collection_groups, params: params
+          end
+          it "does not add the user to the collection's depositor role" do
+            expect(team.depositors).not_to include(another_user)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
         end
       end
 
       context 'manager adds another user as a viewer' do
         before do
-          params[:collection_roles][:access] = 'viewers'
+          set_access_params('viewers')
         end
         it "adds the user to the collection's viewer role" do
           post :update_collection_groups, params: params
@@ -72,8 +110,9 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'the user already has a role in the collection' do
         before do
-          params[:collection_roles][:access] = 'depositors'
+          set_access_params('depositors')
           params[:collection_roles][:agent_id] = manager.ms_id
+          is_contributor(manager)
         end
         it "does not add the user to the collection's group members" do
           post :update_collection_groups, params: params
@@ -95,7 +134,7 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager removes another user as a manager' do
         before do
-          params[:collection_roles][:access] = 'managers'
+          set_access_params('managers')
         end
         it 'removes the user from the managers group' do
           post :update_collection_groups, params: params
@@ -105,7 +144,7 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager removes another user as a depositor' do
         before do
-          params[:collection_roles][:access] = 'depositors'
+          set_access_params('depositors')
         end
         it 'removes the user from the depositors group' do
           post :update_collection_groups, params: params
@@ -115,7 +154,7 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager removes another user as a viewer' do
         before do
-          params[:collection_roles][:access] = 'viewers'
+          set_access_params('viewers')
         end
         it 'removes the user from the viewers group' do
           post :update_collection_groups, params: params
@@ -132,21 +171,39 @@ RSpec.describe CollectionRolesController, type: :controller do
       end
       context 'manager moves a user from manager to depositor' do
         before do
-          params[:collection_roles][:access] = 'managers'
-          params[:collection_roles][:new_access] = 'depositors'
+          set_access_params('managers')
+          set_new_access_params('depositors')
           team.managers_group.users << another_user
           team.save
         end
-        it 'moves the user to the correct group' do
-          post :update_collection_groups, params: params
-          expect(team.managers).not_to include(another_user)
-          expect(team.depositors).to include(another_user)
+        context 'user is a contributor' do
+          before do
+            is_contributor(another_user)
+          end
+          it 'moves the user to the correct group' do
+            post :update_collection_groups, params: params
+            expect(team.managers).not_to include(another_user)
+            expect(team.depositors).to include(another_user)
+          end
+        end
+        context 'user is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            post :update_collection_groups, params: params
+          end
+          it 'does not move the user to the new group' do
+            expect(team.managers).to include(another_user)
+            expect(team.depositors).not_to include(another_user)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
         end
       end
       context 'manager moves a user from manager to viewer' do
         before do
-          params[:collection_roles][:access] = 'managers'
-          params[:collection_roles][:new_access] = 'viewers'
+          set_access_params('managers')
+          set_new_access_params('viewers')
           team.managers_group.users << another_user
           team.save
         end
@@ -158,21 +215,39 @@ RSpec.describe CollectionRolesController, type: :controller do
       end
       context 'manager moves a user from depositor to manager' do
         before do
-          params[:collection_roles][:access] = 'depositors'
-          params[:collection_roles][:new_access] = 'managers'
+          set_access_params('depositors')
+          set_new_access_params('managers')
           team.depositors_group.users << another_user
           team.save
         end
-        it 'moves the user to the correct group' do
-          post :update_collection_groups, params: params
-          expect(team.depositors).not_to include(another_user)
-          expect(team.managers).to include(another_user)
+        context 'user is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            post :update_collection_groups, params: params
+          end
+          it 'does not move the user to the new group' do
+            expect(team.depositors).to include(another_user)
+            expect(team.managers).not_to include(another_user)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+        end
+        context 'user is a contributor' do
+          before do
+            is_contributor(another_user)
+          end
+          it 'moves the user to the correct group' do
+            post :update_collection_groups, params: params
+            expect(team.depositors).not_to include(another_user)
+            expect(team.managers).to include(another_user)
+          end
         end
       end
       context 'manager moves a user from depositor to viewer' do
         before do
-          params[:collection_roles][:access] = 'depositors'
-          params[:collection_roles][:new_access] = 'viewers'
+          set_access_params('depositors')
+          set_new_access_params('viewers')
           team.depositors_group.users << another_user
           team.save
         end
@@ -184,33 +259,69 @@ RSpec.describe CollectionRolesController, type: :controller do
       end
       context 'manager moves a user from viewer to manager' do
         before do
-          params[:collection_roles][:access] = 'viewers'
-          params[:collection_roles][:new_access] = 'managers'
+          set_access_params('viewers')
+          set_new_access_params('managers')
           team.viewers_group.users << another_user
           team.save
         end
-        it 'moves the user to the correct group' do
-          post :update_collection_groups, params: params
-          expect(team.viewers).not_to include(another_user)
-          expect(team.managers).to include(another_user)
+        context 'user is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            post :update_collection_groups, params: params
+          end
+          it 'does not move the user to the new group' do
+            expect(team.viewers).to include(another_user)
+            expect(team.managers).not_to include(another_user)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+        end
+        context 'user is a contributor' do
+          before do
+            is_contributor(another_user)
+          end
+          it 'moves the user to the correct group' do
+            post :update_collection_groups, params: params
+            expect(team.viewers).not_to include(another_user)
+            expect(team.managers).to include(another_user)
+          end
         end
       end
       context 'manager moves a user from viewer to depositor' do
         before do
-          params[:collection_roles][:access] = 'viewers'
-          params[:collection_roles][:new_access] = 'depositors'
+          set_access_params('viewers')
+          set_new_access_params('depositors')
           team.viewers_group.users << another_user
           team.save
         end
-        it 'moves the user to the correct group' do
-          post :update_collection_groups, params: params
-          expect(team.viewers).not_to include(another_user)
-          expect(team.depositors).to include(another_user)
+        context 'user is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            post :update_collection_groups, params: params
+          end
+          it 'does not move the user' do
+            expect(team.viewers).to include(another_user)
+            expect(team.depositors).not_to include(another_user)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+        end
+        context 'user is a contributor' do
+          before do
+            is_contributor(another_user)
+          end
+          it 'moves the user to the correct group' do
+            post :update_collection_groups, params: params
+            expect(team.viewers).not_to include(another_user)
+            expect(team.depositors).to include(another_user)
+          end
         end
       end
     end
 
-    context 'adding annother team' do
+    context 'adding another team' do
       let(:params)  { { collection_roles: { agent_type: 'group', access: '', team_collection_id: team2.id }, id: team.id } }
       let(:user3)   { User.create(email: 'blah@blah.com', password: 'password') }
 
@@ -225,7 +336,7 @@ RSpec.describe CollectionRolesController, type: :controller do
       context 'collection manager does not manage the other team' do
         before do
           allow(subject).to receive(:can?).with(:edit, team2).and_return(false)
-          params[:collection_roles][:access] = 'viewers'
+          set_access_params('viewers')
         end
         it "does not add the other team's members to the collection" do
           post :update_collection_groups, params: params
@@ -235,27 +346,66 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager adds another team as a managers' do
         before do
-          params[:collection_roles][:access] = 'managers'
+          set_access_params('managers')
         end
-        it "adds the other team's members to the collection" do
-          post :update_collection_groups, params: params
-          expect(team.managers).to include(another_user, user3)
+        context 'one of the team members is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            is_contributor(user3)
+            post :update_collection_groups, params: params
+          end
+          it "does not add the other team's members to the collection" do
+            expect(team.managers).not_to include(another_user, user3)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
         end
+        context 'all the team members are contributors' do
+          before do
+            is_contributor(another_user)
+            is_contributor(user3)
+          end
+          it "adds the other team's members to the collection" do
+            post :update_collection_groups, params: params
+            expect(team.managers).to include(another_user, user3)
+          end
+        end
+
       end
 
       context 'manager adds another team as a depositors' do
         before do
-          params[:collection_roles][:access] = 'depositors'
+          set_access_params('depositors')
         end
-        it "adds the other team's members to the collection" do
-          post :update_collection_groups, params: params
-          expect(team.depositors).to include(another_user, user3)
+        context 'one of the team members is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            is_contributor(user3)
+            post :update_collection_groups, params: params
+          end
+          it "does not add the other team's members to the collection" do
+            expect(team.depositors).not_to include(another_user, user3)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+        end
+        context 'all the team members are contributors' do
+          before do
+            is_contributor(another_user)
+            is_contributor(user3)
+          end
+          it "adds the other team's members to the collection" do
+            post :update_collection_groups, params: params
+            expect(team.depositors).to include(another_user, user3)
+          end
         end
       end
 
       context 'manager adds another team as a viewers' do
         before do
-          params[:collection_roles][:access] = 'viewers'
+          set_access_params('viewers')
         end
         it "adds the other team's members to the collection" do
           post :update_collection_groups, params: params
@@ -265,7 +415,7 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'some team members already have a collection role' do
         before do
-          params[:collection_roles][:access] = 'viewers'
+          set_access_params('viewers')
           allow(team).to receive(:group_members).and_return([manager, another_user])
         end
         it "adds only the other team's members that don't already belong to the collection's group members to the collection" do
@@ -297,29 +447,65 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager adds another user as a manager' do
         before do
-          params[:collection_roles][:access] = 'managers'
+          set_access_params('managers')
         end
-        it "adds the user to the subcollections' manager role" do
-          post :update_collection_groups, params: params
-          expect(project_a.managers).to include(another_user)
-          expect(project_b.managers).to include(another_user)
+        context 'user is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            post :update_collection_groups, params: params
+          end
+          it "does not add the user to the subcollections' manager role" do
+            expect(project_a.managers).not_to include(another_user)
+            expect(project_b.managers).not_to include(another_user)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+        end
+        context 'user is a contributor' do
+          before do
+            is_contributor(another_user)
+          end
+          it "adds the user to the subcollections' manager role" do
+            post :update_collection_groups, params: params
+            expect(project_a.managers).to include(another_user)
+            expect(project_b.managers).to include(another_user)
+          end
         end
       end
 
       context 'manager adds another user as a depositor' do
         before do
-          params[:collection_roles][:access] = 'depositors'
+          set_access_params('depositors')
         end
-        it "adds the user to the subcollections' depositor role" do
-          post :update_collection_groups, params: params
-          expect(project_a.depositors).to include(another_user)
-          expect(project_b.depositors).to include(another_user)
+        context 'user is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            post :update_collection_groups, params: params
+          end
+          it "does not add the user to the subcollections' depositor role" do
+            expect(project_a.depositors).not_to include(another_user)
+            expect(project_b.depositors).not_to include(another_user)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+        end
+        context 'user is a contributor' do
+          before do
+            is_contributor(another_user)
+          end
+          it "adds the user to the subcollections' depositor role" do
+            post :update_collection_groups, params: params
+            expect(project_a.depositors).to include(another_user)
+            expect(project_b.depositors).to include(another_user)
+          end
         end
       end
 
       context 'manager adds another user as a viewer' do
         before do
-          params[:collection_roles][:access] = 'viewers'
+          set_access_params('viewers')
         end
         it "adds the user to the subcollections' viewer role" do
           post :update_collection_groups, params: params
@@ -330,8 +516,8 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager removes a user from the manager role' do
         before do
-          params[:collection_roles][:access] = 'managers'
-          params[:collection_roles][:new_access] = 'remove'
+          set_access_params('managers')
+          set_new_access_params('remove')
           [team, project_a, project_b].each do |collection|
             collection.managers << another_user
             collection.managers_group.save
@@ -346,8 +532,8 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager removes a user from the depositor role' do
         before do
-          params[:collection_roles][:access] = 'depositors'
-          params[:collection_roles][:new_access] = 'remove'
+          set_access_params('depositors')
+          set_new_access_params('remove')
           [team, project_a, project_b].each do |collection|
             collection.depositors << another_user
             collection.depositors_group.save
@@ -362,8 +548,8 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager removes a user from the viewer role' do
         before do
-          params[:collection_roles][:access] = 'viewers'
-          params[:collection_roles][:new_access] = 'remove'
+          set_access_params('viewers')
+          set_new_access_params('remove')
           [team, project_a, project_b].each do |collection|
             collection.viewers << another_user
             collection.viewers_group.save
@@ -378,20 +564,40 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       context 'manager adds a user to the depositor role, one subcollection has the user already as a manager, the other has the user already as a viewer' do
         before do
-          params[:collection_roles][:access] = 'depositors'
+          set_access_params('depositors')
           project_a.managers << another_user
           project_a.managers_group.save
           project_b.viewers << another_user
           project_b.viewers_group.save
         end
-
-        it 'adds the user to the team, and moves the user to depositor access for each subcollection' do
-          post :update_collection_groups, params: params
-          expect(team.depositors).to include(another_user)
-          expect(project_a.depositors).to include(another_user)
-          expect(project_a.managers).not_to include(another_user)
-          expect(project_b.depositors).to include(another_user)
-          expect(project_b.viewers).not_to include(another_user)
+        context 'user is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            post :update_collection_groups, params: params
+          end
+          it 'does not add the user to the team, and does not move the user to depositor access for each subcollection' do
+            expect(team.depositors).not_to include(another_user)
+            expect(project_a.depositors).not_to include(another_user)
+            expect(project_a.managers).to include(another_user)
+            expect(project_b.depositors).not_to include(another_user)
+            expect(project_b.viewers).to include(another_user)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+        end
+        context 'user is a contributor' do
+          before do
+            is_contributor(another_user)
+          end
+          it 'adds the user to the team, and moves the user to depositor access for each subcollection' do
+            post :update_collection_groups, params: params
+            expect(team.depositors).to include(another_user)
+            expect(project_a.depositors).to include(another_user)
+            expect(project_a.managers).not_to include(another_user)
+            expect(project_b.depositors).to include(another_user)
+            expect(project_b.viewers).not_to include(another_user)
+          end
         end
       end
 
@@ -403,17 +609,41 @@ RSpec.describe CollectionRolesController, type: :controller do
         let(:all_users) { [manager, another_user, user3, user4] }
 
         before do
-          params[:collection_roles][:access] = 'managers'
+          set_access_params('managers')
           allow(subject).to receive(:can?).with(:edit, team).and_return(true)
           allow(subject).to receive(:can?).with(:edit, team2).and_return(true)
           allow(team2).to receive(:group_members).and_return(team_2_members)
         end
 
-        it 'adds the other team members to subcollection managers' do
-          post :update_collection_groups, params: params
-          expect(team.managers).to match_array(all_users)
-          expect(project_a.managers).to match_array(all_users)
-          expect(project_b.managers).to match_array(all_users)
+        context 'one team member is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            is_contributor(user3)
+            is_contributor(user4)
+            post :update_collection_groups, params: params
+          end
+          it 'does not add the other team members to subcollection managers' do
+            expect(team.managers).not_to include(another_user, user3, user4)
+            expect(project_a.managers).not_to include(another_user, user3, user4)
+            expect(project_b.managers).not_to include(another_user, user3, user4)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+        end
+
+        context 'all team members are contributors' do
+          before do
+            all_users.each do |user|
+              is_contributor(user)
+            end
+          end
+          it 'adds the other team members to subcollection managers' do
+            post :update_collection_groups, params: params
+            expect(team.managers).to match_array(all_users)
+            expect(project_a.managers).to match_array(all_users)
+            expect(project_b.managers).to match_array(all_users)
+          end
         end
       end
 
@@ -425,17 +655,41 @@ RSpec.describe CollectionRolesController, type: :controller do
         let(:all_users) { [manager, another_user, user3, user4] }
 
         before do
-          params[:collection_roles][:access] = 'depositors'
+          set_access_params('depositors')
           allow(subject).to receive(:can?).with(:edit, team).and_return(true)
           allow(subject).to receive(:can?).with(:edit, team2).and_return(true)
           allow(team2).to receive(:group_members).and_return(team_2_members)
         end
 
-        it 'adds the other team members to subcollection managers' do
-          post :update_collection_groups, params: params
-          expect(team.depositors).to match_array(team_2_members)
-          expect(project_a.depositors).to match_array(team_2_members)
-          expect(project_b.depositors).to match_array(team_2_members)
+        context 'one of the other team members is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            is_contributor(user3)
+            is_contributor(user4)
+            post :update_collection_groups, params: params
+          end
+          it 'does not add the other team members to subcollection managers' do
+            expect(team.depositors).not_to include(another_user, user3, user4)
+            expect(project_a.depositors).not_to include(another_user, user3, user4)
+            expect(project_b.depositors).not_to include(another_user, user3, user4)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+        end
+
+        context 'all the team members are contributors' do
+          before do
+            team_2_members.each do |member|
+              is_contributor(member)
+            end
+          end
+          it 'adds the other team members to subcollection managers' do
+            post :update_collection_groups, params: params
+            expect(team.depositors).to match_array(team_2_members)
+            expect(project_a.depositors).to match_array(team_2_members)
+            expect(project_b.depositors).to match_array(team_2_members)
+          end
         end
       end
 
@@ -447,7 +701,7 @@ RSpec.describe CollectionRolesController, type: :controller do
         let(:all_users) { [manager, another_user, user3, user4] }
 
         before do
-          params[:collection_roles][:access] = 'viewers'
+          set_access_params('viewers')
           allow(subject).to receive(:can?).with(:edit, team).and_return(true)
           allow(subject).to receive(:can?).with(:edit, team2).and_return(true)
           allow(team2).to receive(:group_members).and_return(team_2_members)
@@ -469,7 +723,7 @@ RSpec.describe CollectionRolesController, type: :controller do
         let(:all_users) { [manager, another_user, user3, user4] }
 
         before do
-          params[:collection_roles][:access] = 'depositors'
+          set_access_params('depositors')
           allow(subject).to receive(:can?).with(:edit, team).and_return(true)
           allow(subject).to receive(:can?).with(:edit, team2).and_return(true)
           allow(team2).to receive(:group_members).and_return(team_2_members)
@@ -479,15 +733,58 @@ RSpec.describe CollectionRolesController, type: :controller do
           project_b.viewers_group.save
         end
 
-        it 'adds the other team members to subcollection depositors, and removes their previous access roles' do
-          post :update_collection_groups, params: params
-          expect(team.depositors).to include(user3, user4)
-          expect(project_a.depositors).to include(user3, user4)
-          expect(project_a.managers).not_to include(user3, user4)
-          expect(project_b.depositors).to include(user3, user4)
-          expect(project_b.viewers).not_to include(user3, user4)
+        context 'one of the team members is not a contributor' do
+          before do
+            is_not_contributor(another_user)
+            is_contributor(user3)
+            is_contributor(user4)
+            post :update_collection_groups, params: params
+          end
+          it 'does not add the other team members to subcollection depositors, and does not remove their previous access roles' do
+            expect(team.depositors).not_to include(another_user, user3, user4)
+            expect(project_a.depositors).not_to include(another_user, user3, user4)
+            expect(project_a.managers).to include(user3, user4)
+            expect(project_b.depositors).not_to include(another_user, user3, user4)
+            expect(project_b.viewers).to include(user3, user4)
+          end
+          it 'creates a flash message with the user name' do
+            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+          end
+
+        end
+        context 'all of the team members are contributors' do
+          before do
+            team_2_members.each do |member|
+              is_contributor(member)
+            end
+          end
+          it 'adds the other team members to subcollection depositors, and removes their previous access roles' do
+            post :update_collection_groups, params: params
+            expect(team.depositors).to include(user3, user4)
+            expect(project_a.depositors).to include(user3, user4)
+            expect(project_a.managers).not_to include(user3, user4)
+            expect(project_b.depositors).to include(user3, user4)
+            expect(project_b.viewers).not_to include(user3, user4)
+          end
         end
       end
     end
+  end
+
+  # test helper methods
+  def is_contributor(user)
+    allow(user).to receive(:contributor?).and_return(true)
+  end
+
+  def is_not_contributor(user)
+    allow(user).to receive(:contributor?).and_return(false)
+  end
+
+  def set_access_params(access)
+    params[:collection_roles][:access] = access
+  end
+
+  def set_new_access_params(access)
+    params[:collection_roles][:new_access] = access
   end
 end

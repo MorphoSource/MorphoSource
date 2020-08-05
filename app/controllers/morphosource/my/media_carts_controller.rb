@@ -3,6 +3,7 @@ module Morphosource
     class MediaCartsController < Hyrax::MyController
       helper CartItemHelper
       include Morphosource::CartItems
+      include Morphosource::CartItems::ListItems
 
       def index
         get_items('cart')

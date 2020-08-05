@@ -70,31 +70,41 @@ module Morphosource::CartItemHelper
   # provide action button
   # arguments: item, button text, button class, http method, style
   def item_action_button(item)
-    case item.request_status
-    when 'Approved'
-      if !item.in_cart
-        make_button(item,"Add to Cart",:move_to_cart_path,"btn btn-success",:put,'')
+    if item.downloadable?
+      if item.request_status == "Approved"
+        if !item.in_cart
+          make_button(item,"Add to Cart",:move_to_cart_path,"btn btn-success",:put,'')
+        else
+          content_tag(:button, 'Item in Cart', class: "btn btn-success", disabled: true)
+        end
       else
-        content_tag(:button, 'Item in Cart', class: "btn btn-success", disabled: true)
+        make_button(item,"Download Item",:download_items_path,"btn btn-info",:get,'')
       end
-    when 'Canceled'
-      button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
-    when 'Denied'
-      if item.in_cart
-        make_button(item,"Remove from Cart",:remove_items_path,"btn btn-danger",:delete,'')
-      else
-        content_tag(:span)
-      end
-    when 'Expired'
-      make_button(item,"Request Again",:request_again_path,"btn btn-primary",:get,'')
-    when 'Cleared'
-     make_button(item,"Request Download",:request_item_path,"btn btn-info",:put,'')
-    when 'Requested'
-      make_button(item,"Cancel Request",:cancel_request_path,"btn btn-danger",:put,"background-color: gray;")
-    when 'Downloadable'
-      make_button(item,"Download Item",:download_items_path,"btn btn-info",:get,'')
     else
-      button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
+      case item.request_status
+      when 'Approved'
+        if !item.in_cart
+          make_button(item,"Add to Cart",:move_to_cart_path,"btn btn-success",:put,'')
+        else
+          content_tag(:button, 'Item in Cart', class: "btn btn-success", disabled: true)
+        end
+      when 'Canceled'
+        button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
+      when 'Denied'
+        if item.in_cart
+          make_button(item,"Remove from Cart",:remove_items_path,"btn btn-danger",:delete,'')
+        else
+          content_tag(:span)
+        end
+      when 'Expired'
+        make_button(item,"Request Again",:request_again_path,"btn btn-primary",:get,'')
+      when 'Cleared'
+       make_button(item,"Request Download",:request_item_path,"btn btn-info",:put,'')
+      when 'Requested'
+        make_button(item,"Cancel Request",:cancel_request_path,"btn btn-danger",:put,"background-color: gray;")
+      else
+        button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
+      end
     end
   end
 
@@ -127,6 +137,10 @@ module Morphosource::CartItemHelper
 
   def use_requests(items,use)
     items.select{|item| item.use == use }
+  end
+
+  def find_document(docs,item)
+    docs.find{ |doc| doc[:id] == item.work_id }
   end
 
   def editable_use_requests(items,use)

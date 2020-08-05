@@ -6,16 +6,18 @@
     <th>&nbsp;<!-- thumbnail column --></th>
     <th>ID</th>
     <th>Part</th>
-    <% if @bso_member_count > 0 %>
+    <% if @po_type == 'bso' %>
       <th>Specimen</th>
       <th>Taxonomy</th>
-    <% end %>
-    <% if @cho_member_count > 0 %>
+    <% elsif @po_type == 'cho' %>
       <th>CHO</th>
+      <th></th>
     <% end %>
     <th>Type</th>
-    <th>Project</th>
-    <th>Origin</th>
+    <% if @is_team %>
+      <th>Project</th>
+      <th>Origin</th>
+    <% end %>
     <th>Date Added</th>
     <th>Publication Status</th>
     <th class="remove-column">&nbsp;</th>

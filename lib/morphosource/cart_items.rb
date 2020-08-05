@@ -1,6 +1,5 @@
 module Morphosource
   module CartItems
-    include Morphosource::CartItems::ListItems
     include Morphosource::CartItems::RequestItems
 
     # Used for Item counts at top of page and for flash messages
@@ -139,6 +138,6 @@ module Morphosource
       items.select{|item| !item.downloadable? }
     end
 
-    delegate :downloaded_work_ids, :cart_items, :items_in_cart, :my_active_requests, :my_active_requests_work_ids, :requested_items, :previously_requested_items, :newly_requested_items, :requested_item_ids,   :requested_items_work_ids, :downloadable_item_work_ids, :my_cleared_requests_work_ids, to: :current_user
+    delegate :downloaded_work_ids, :cart_items, :items_in_cart, :my_active_requests, :my_active_requests_work_ids, :requested_items, :previously_requested_items, :newly_requested_items, :requested_item_ids, :requested_items_work_ids, :downloadable_item_work_ids, :my_cleared_requests_work_ids, :work_already_in_cart, to: :current_user
   end
 end

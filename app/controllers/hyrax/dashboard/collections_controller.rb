@@ -31,7 +31,8 @@ module Hyrax
       class_attribute :presenter_class,
                       :form_class,
                       :single_item_search_builder_class,
-                      :membership_service_class
+                      :membership_service_class,
+                      :information_service_class
 
       #self.presenter_class = Hyrax::CollectionPresenter
       self.presenter_class = Hyrax::TeamPresenter
@@ -41,7 +42,8 @@ module Hyrax
       # The search builder to find the collection
       self.single_item_search_builder_class = SingleCollectionSearchBuilder
       # The search builder to find the collections' members
-      self.membership_service_class = Collections::CollectionMemberService
+      self.membership_service_class = Morphosource::Collections::CollectionMemberService
+      self.information_service_class = Morphosource::Collections::CollectionInformationService
 
       load_and_authorize_resource except: [:index, :create], instance_name: :collection
 
@@ -73,11 +75,15 @@ module Hyrax
       def show
         # if the current user has edit permission, redirect to edit 
         if current_user and can? :edit, @collection
-          redirect_to '/dashboard/collections/' + @collection.id + '/edit'
+            tab = request.params[:tab]
+            edit_path = edit_dashboard_collection_url + '&' + request.params.slice!(:action, :id, :controller, :locale, :tab).to_query
+            edit_path += '#' + tab if tab.present?
+            redirect_to edit_path
         else          
           # run the presenter and other methods (same as the team_presenter methods) necessary for
           # displaying teams and project show page content
           presenter
+          query_collection_information
           query_collection_members
           form
         end
@@ -87,8 +93,16 @@ module Hyrax
         # this is called when user save the collection form on the show action
         # if needed, redirect show to edit if user has permission to save
         presenter
+        query_collection_information
         query_collection_members
         form
+      end
+
+      def specimens
+        presenter
+        query_collection_information
+        query_collection_members_for_po
+        render partial: "hyrax/teams/tab_bso"
       end
 
       # todo: need to add logic to keep the old hyrax view if still needed
@@ -445,10 +459,17 @@ module Hyrax
         end
 
         def query_collection_members
-          member_works
-          member_subcollections if collection.collection_type.nestable?
-          parent_collections if collection.collection_type.nestable? && action_name == 'show'
-          prepare_docs_and_filters(@collection)
+          member_works # 15.7, 9.5, 53.0, 97.2 ms
+          member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
+          # parent collection should not be needed.  remove below later
+          #parent_collections if collection.collection_type.nestable? && action_name == 'show' # 7 - 14 ms for project
+          prepare_docs_and_filters_for_media(@collection)
+        end
+
+        def query_collection_members_for_po
+          member_works_objects
+          member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
+          prepare_docs_and_filters_for_po(@collection)
         end
 
         # Instantiate the membership query service
@@ -456,20 +477,49 @@ module Hyrax
           @collection_member_service ||= membership_service_class.new(scope: self, collection: collection, params: params_for_query)
         end
 
+        # Instantiate the information query service
+        def collection_information_service
+          @collection_information_service ||= information_service_class.new(collection.id)
+        end
+
+        def subcollection_media_service(subcollection)
+          membership_service_class.new(scope: self, collection: subcollection, params: params_for_query)
+        end
+
         def member_works
-          @response = collection_member_service.available_member_works
+          @response = collection_member_service.all_member_media(
+            @collection_organization_object_ids, media_filter_params)
           @member_docs = @response.documents
           @members_count = @response.total
+        end
+
+        def member_works_objects
+          all_object_ids = @collection_object_ids + @collection_organization_object_ids
+
+          @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
+          @bso_member_docs = @bso_response.documents
+          @bso_member_count = @bso_response.total
+
+          @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
+          @cho_member_docs = @bso_response.documents
+          @cho_member_count = @bso_response.total
+
+          if !@bso_member_count.present? && @cho_member_count.present?
+            @response = @cho_response
+          else
+            @response = @bso_response
+          end
         end
 
         # media pagination methods
         def paginated_media_item_list
           # Uses kaminari to paginate an array to avoid need for solr documents for items here
-          Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
+          #Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
+          Kaminari.paginate_array(@member_docs, total_count: @member_docs.size).page(media_current_page).per(rows_from_params)
         end
 
         def media_total_items
-          @media_member_count
+          @members_count
         end
 
         def media_current_page

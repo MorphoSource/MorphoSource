@@ -35,22 +35,53 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    resources :teams do # public landing team/project show page
-      member do
-        get 'page/:page', action: :index
-        get 'facet/:id', action: :facet, as: :dashboard_facet
-        get :files
-      end
-    end
-    #    get 'projects/:id', to: 'teams#show'
-    #    get 'projects/:id/page/:page(.:format)', to: 'teams#index'
-    resources :projects, controller: 'teams'
+    #resources :teams do # public landing team/project show page
+    #  member do
+    #    get 'page/:page', action: :index
+    #    get 'facet/:id', action: :facet, as: :dashboard_facet
+    #    get :files
+    #  end
+    #end
+    get 'teams/:id', to: 'teams#show'
+    get 'teams/specimens/:id', to: 'teams#specimens'
+    # media pagination
+    get 'team_paging/teams/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'team_paging/projects/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+    # bso pagination
+    get 'team_paging/teams/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'team_paging/projects/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+
+    get 'projects/:id', to: 'teams#show'
+    get 'projects/specimens/:id', to: 'teams#specimens'
+    # media pagination
+    get 'project_paging/projects/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'project_paging/teams/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+    # bso pagination
+    get 'project_paging/projects/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'project_paging/teams/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+
+    get 'dashboard/collections/specimens/:id', to: 'dashboard/collections#specimens'
+    # media pagination
+    get 'project_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'team_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'project_paging/dashboard/collections/:id/edit', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'team_paging/dashboard/collections/:id/edit', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
+    # bso pagination
+    get 'project_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
+    get 'team_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
+
+    #resources :projects, controller: 'teams'
+    
     # Note: the following route might effect pagination links
     namespace :dashboard do
       resources :collections, controller: 'collections'
 
       get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
     end
+
+    #get 'dashboard/my/teams', controller: 'my/teams', action: :index
+    #get 'dashboard/my/projects', controller: 'my/teams', action: :index
+
   end
 
   # override ProfilesController

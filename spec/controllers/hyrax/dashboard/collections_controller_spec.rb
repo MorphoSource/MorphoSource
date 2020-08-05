@@ -80,17 +80,17 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
     end
   end
 
-  describe '#paginated_media_item_list' do
-    before do
-      doc = SolrDocument.new(media.to_solr)
-      docs = [doc]
-      controller.instance_variable_set(:@media_member_docs, docs)
-    end
-    it 'returns a paginated array' do
-      result = controller.send(:paginated_media_item_list)
-      expect(result.count).to eq(1)
-    end
-  end
+  #describe '#paginated_media_item_list' do
+  #  before do
+  #    doc = SolrDocument.new(media.to_solr)
+  #    docs = [doc]
+  #    controller.instance_variable_set(:@media_member_docs, docs)
+  #  end
+  #  it 'returns a paginated array' do
+  #    result = controller.send(:paginated_media_item_list)
+  #    expect(result.count).to eq(1)
+  #  end
+  #end
 
   describe '#edit' do
     before do

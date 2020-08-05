@@ -74,10 +74,6 @@ module Morphosource
       def update_imaging_event(work)
         field_map_for_imaging_event.each do |work_field, file_set_field|
           field_value_found = file_set.send(file_set_field)&.first
-          #if file_set_field == :pixel_spacing_calibration_type
-          #  field_value_found = "geometry"
-          #  byebug
-          #end
           if field_value_found
             transformed_value = field_transform_for_imaging_event[work_field]
             work.send(work_field.to_s + "=", transformed_value)

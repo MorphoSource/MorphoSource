@@ -9,6 +9,7 @@ module Hyrax
       def create(env)
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['physical_object_id'] = find_physical_object_parents(env)
+        env.attributes['keyword'] = split_keywords(env)
         add_team_access(env)
         super
       end
@@ -16,6 +17,7 @@ module Hyrax
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['physical_object_id'] = find_physical_object_parents(env)
+        env.attributes['keyword'] = split_keywords(env)
         super
       end
 
@@ -43,10 +45,10 @@ module Hyrax
           # Updating work, not updating parents
           imaging_event = Media.find(id).imaging_event
           ie_modality << imaging_event.ie_modality&.first if imaging_event.present?
-        else 
+        else
           ie_modality = []
         end
-        
+
         # MorphosourceHelper's generated_media_title method is shared by different actors
         # (e.g. media actor, IE actor)
         updated_title = generated_media_title(part, media_type, ie_modality)
@@ -66,11 +68,11 @@ module Hyrax
       def find_physical_object_parents(env)
         attrs = env.attributes
         id = attrs['id'].presence || env.curation_concern.id.presence || ''
-        
+
         physical_object_parents = []
 
         if attrs['work_parents_attributes'].present?
-          parents = attrs['work_parents_attributes'].map do |key, wp|  
+          parents = attrs['work_parents_attributes'].map do |key, wp|
             wp['id'] if [ImagingEvent, ProcessingEvent].include?(
               Morphosource::Works::Base.find(wp['id']).class
             )
@@ -106,6 +108,12 @@ module Hyrax
       def find_parent(env)
         parent_id = env.attributes[:work_parents_attributes].values.first['id']
         @parent = ActiveFedora::Base.find(parent_id)
+      end
+
+      def split_keywords(env)
+        return unless env.attributes[:tags]
+        tags = env.attributes[:tags]
+        tags.split(',')
       end
     end
   end

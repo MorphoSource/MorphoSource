@@ -1,0 +1,18 @@
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th><%= t("hyrax.dashboard.my.heading.title") %></th>
+    <th>Object</th>
+    <th>Taxonomy</th>
+    <th>Type</th>
+    <th>Tags</th>
+    <th>Visibility</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% docs.each_with_index do |document, counter| %>
+    <% get_media_info(document) %>
+    <%= render 'list_works', document: document, counter: counter %>
+  <% end %>
+  </tbody>
+</table>

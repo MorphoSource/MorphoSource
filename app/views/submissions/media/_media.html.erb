@@ -7,7 +7,7 @@
       <h4><%= t('morphosource.submission.header_text.media_details') %></h4>
     </div>
 
-    <%= simple_form_for media_form, 
+    <%= simple_form_for media_form,
     wrapper: :showcase_default,
     url: { controller: 'submissions', action: 'create' },
     html: { data: { behavior: 'work-form', 'param-key' => 'media' } } do |f| %>
@@ -47,7 +47,7 @@
                   <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
                 </div>
                 <div class="col-xs-6 showcase-value">
-                  <div class="m-0 p-0 text-nowrap">            
+                  <div class="m-0 p-0 text-nowrap">
                   <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
                   <% if f.object.embargo_release_date %>
                     <span class="label label-warning">Embargo</span>
@@ -157,15 +157,7 @@
             <div class="row showcase-section-header">
               <span class="h2">MEDIA TAGS</span>
             </div>
-
-            <div class="row content-block">
-              <div class="col-xs-6 showcase-label">
-            Not yet implemented
-              </div>
-              <div class="col-xs-6 showcase-value">
-            Not yet implemented
-              </div>
-            </div>
+            <%= render 'submissions/media/tags', f: f %>
           </div>
 
           <div class="block showcase-edit showcase-section">
@@ -188,8 +180,8 @@
 
       <div class="row mt-1">
         <%= f.submit 'Submit Media', class: "btn btn-primary btn-continue", input_html: {id: :media_submit } %>
-      </div>      
-  
+      </div>
+
     <% end %>
   </div>
 </div>

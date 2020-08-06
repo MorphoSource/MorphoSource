@@ -1,0 +1,29 @@
+<table id="datatable-media-list" class="table table-striped teams-projects">
+  <caption class="sr-only">List of media items in this team</caption>
+  <thead>
+  <tr>
+    <th class="checkbox no-sort"><input type="checkbox" id="select-all-for-download" /></th>
+    <th>&nbsp;<!-- thumbnail column --></th>
+    <th>ID</th>
+    <th>Part</th>
+    <% if @po_type == 'bso' %>
+      <th>Specimen</th>
+      <th>Taxonomy</th>
+    <% elsif @po_type == 'cho' %>
+      <th>CHO</th>
+      <th></th>
+    <% end %>
+    <th>Type</th>
+    <% if @is_team %>
+      <th>Project</th>
+      <th>Origin</th>
+    <% end %>
+    <th>Date Added</th>
+    <th>Publication Status</th>
+    <th class="remove-column">&nbsp;</th>
+  </tr>
+  </thead>
+  <tbody>
+    <%= render partial: 'show_media_document_list_row', collection: @document_list, as: :document %>
+  </tbody>
+</table>

@@ -765,7 +765,7 @@ html {
       color: $font-color;
       border-color: transparent;
     }
-    input {
+    input:not([type=checkbox]) {
       width: 100%;
     }
   }

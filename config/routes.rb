@@ -84,6 +84,14 @@ Rails.application.routes.draw do
 
     #resources :projects, controller: 'teams'
 
+<<<<<<< HEAD
+=======
+
+    
+
+
+    
+>>>>>>> setup routes, controller, service
     # Note: the following route might effect pagination links
     namespace :dashboard do
       resources :collections, controller: 'collections'
@@ -93,6 +101,15 @@ Rails.application.routes.draw do
 
     get 'dashboard/my/teams', controller: 'my/teams', action: :index
     get 'dashboard/my/projects', controller: 'my/teams', action: :index
+
+    get 'dashboard/my/media', controller: 'my/media_works', action: :index
+
+#    scope :dashboard do
+#      namespace :my do
+#        resources :media, only: :index
+#        get '/media/page/:page', controller: 'media', action: :index
+#      end
+#    end
 
   end
 
@@ -173,16 +190,25 @@ Rails.application.routes.draw do
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
+<<<<<<< HEAD
   resources :submissions, only: [ :new, :create, :search_bso_ajax,
     :search_taxonomy_ajax, :organization_for_recordset, :organization_default_media_fields,
     :new_organization_submit, :new_taxonomy_submit, :new_device_submit,
+=======
+  resources :submissions, only: [ :new, :create, :search_bso_ajax, 
+    :search_taxonomy_ajax, :organization_default_media_fields, 
+    :new_organization_submit, :new_taxonomy_submit, :new_device_submit, 
+>>>>>>> setup routes, controller, service
     :new_processing_event_submit] do
     collection do
       # AJAX in-submission-flow methods
       post 'search_po_ajax'
       post 'save_data'
+<<<<<<< HEAD
       get 'search_taxonomy_ajax'
       get 'organization_for_recordset'
+=======
+>>>>>>> setup routes, controller, service
       get 'organization_default_media_fields'
       # AJAX physical object or media edit page submission methods
       post 'new_organization_submit'

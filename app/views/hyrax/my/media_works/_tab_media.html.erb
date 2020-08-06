@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="col-xs-12 col-sm-5 col-md-4">
+  <% if @media_member_count > 0 %>
+      <a id="add-selected-to-cart" class="btn btn-sm btn-default col-xs-12 col-sm-8" href="javascript:void(0)">Add <i class="material-icons">check_box</i> to download</a>
+  <% end %>
+  </div>
+  <!-- Search bar -->
+  <div class="col-xs-12 col-sm-4 col-md-5">
+
+    <%#= render 'hyrax/teams/search_form', presenter: @presenter, url: @presenter.search_form_url %>
+  </div>
+  <div class="col-xs-12 col-sm-3 col-md-3">
+    <%#= render 'hyrax/teams/sort_and_per_page_media', collection: @presenter %>
+  </div>
+</div>
+
+<% if @media_member_count > 0 %>
+  <% if document_index_view_type == :gallery %>
+  <div class="col-xs-12 text-muted">
+    <input type="checkbox" id="select-all-for-download" /> Select all
+  </div>
+  <% end %>
+<% end %>
+
+<% if @media_member_count > 0 %>
+  <!-- Works -->
+  <div class="hyc-blacklight hyc-bl-results">
+    <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
+      <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
+
+      <%= render_document_index @paged_media_member_docs, work_type: 'media' %>
+
+    <% end # / form_tag %>
+  </div>
+  <div class="hyc-blacklight hyc-bl-pager">
+    <%#= render 'hyrax/teams/paginate_media' %>
+  </div>
+<% else %>
+  <div class="row">
+    <div class="no-result">
+      No media found.
+    </div>
+  </div>
+<% end # if @media_member_count > 0 %>
+

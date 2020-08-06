@@ -1,0 +1,57 @@
+<% content_for :body_css_classes do %>showcase<% end %>
+
+
+<div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
+
+
+  <div class="panel panel-default tabs" role="main">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active">
+        <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
+        <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
+          <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+        </a>
+      </li>
+        <!--li role="presentation">
+          <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
+            <i class="fas fa-frog" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
+          </a>
+        </li-->
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+
+      <div role="tabpanel" class="tab-pane active" id="media">
+        <div class="form-tab-content">
+          <%= render 'tab_media', presenter: @presenter %>
+        </div>
+      </div>
+
+      <% if @po_type == 'bso' %>
+        <div role="tabpanel" class="tab-pane" id="biological_specimens">
+          <div class="form-tab-content">
+            <%#= render 'tab_bso' %>
+            <%= render_async bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
+          </div>
+        </div>
+      <% elsif @po_type == 'cho' %>
+        <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
+          <div class="form-tab-content">
+            <%= render 'tab_cho' %>
+          </div>
+        </div>
+      <% end %>
+
+    </div><!-- /tab-content -->
+
+  </div><!-- /panel panel-default tabs -->
+
+</div><!-- div hyc-container -->

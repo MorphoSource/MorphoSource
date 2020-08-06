@@ -43,6 +43,9 @@
 
       <div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
       <div class="col-sm-8 col-lg-9">
+        <% if params['c_organization'].present? %>
+          <p id="c_organization" class="filter-param">Organization > <%= params['c_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_organization"></i></p>
+        <% end %>
         <% if params['c_origin'].present? %>
           <p id="c_origin" class="filter-param">Origin > <%= origin_label(params['c_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_origin"></i></p>
         <% end %>

@@ -116,16 +116,19 @@ provide :page_title, construct_page_title(@presenter.title)
         <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
         </a>
       </li>
-      <li role="presentation">
-        <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
-          <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
-        </a>
-      </li>
-        <!--li role="presentation">
+      <% if @po_type == 'bso' %>
+        <li role="presentation">
+          <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
+            <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+          </a>
+        </li>
+      <% elsif @po_type == 'cho' %>
+        <li role="presentation">
           <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
             <i class="fas fa-frog" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
           </a>
-        </li-->
+        </li>
+      <% end %>
       <li role="presentation">
         <a href="#about" aria-controls="about" role="tab" data-toggle="tab" aria-expanded="true">
           <i class="fa fa-newspaper" aria-hidden="true"></i> ABOUT
@@ -154,7 +157,10 @@ provide :page_title, construct_page_title(@presenter.title)
       <% elsif @po_type == 'cho' %>
         <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
           <div class="form-tab-content">
-            <%= render 'tab_cho' %>
+            <%#= render 'tab_cho' %>
+            <%= render_async cho_tab_url(@presenter.id), event_name: "cho-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
           </div>
         </div>
       <% end %>

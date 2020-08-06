@@ -122,11 +122,18 @@ $(document).ready(function() {
         });
       });
 
-      // populate PO counts when the tab has been loaded
+      // populate PO BSO counts when the tab has been loaded
       document.addEventListener("bso-loaded", function(event) {
         //console.log("bso have loaded!", event.container);
         $('span.bso-count').html($('input[name="bso-count"]').val() + ' Specimens · ');
         $('.tab-bso-count').html($('input[name="bso-count"]').val());
+      });
+
+      // populate PO CHO counts when the tab has been loaded
+      document.addEventListener("cho-loaded", function(event) {
+        //console.log("bso have loaded!", event.container);
+        $('span.bso-count').html($('input[name="cho-count"]').val() + ' Objects · ');
+        $('.tab-bso-count').html($('input[name="cho-count"]').val());
       });
 
     } // / end if teams and projects show page

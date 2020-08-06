@@ -44,23 +44,32 @@ Rails.application.routes.draw do
     #end
     get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
+    get 'teams/chos/:id', to: 'teams#chos'
     # media pagination
     get 'team_paging/teams/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/projects/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     # bso pagination
     get 'team_paging/teams/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/projects/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+    # cho pagination
+    get 'team_paging/teams/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'team_paging/projects/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
 
     get 'projects/:id', to: 'teams#show'
     get 'projects/specimens/:id', to: 'teams#specimens'
+    get 'projects/chos/:id', to: 'teams#chos'
     # media pagination
     get 'project_paging/projects/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
     get 'project_paging/teams/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
     # bso pagination
     get 'project_paging/projects/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
     get 'project_paging/teams/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+    # cho pagination
+    get 'project_paging/projects/chos/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'project_paging/teams/chos/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
 
     get 'dashboard/collections/specimens/:id', to: 'dashboard/collections#specimens'
+    get 'dashboard/collections/chos/:id', to: 'dashboard/collections#chos'
     # media pagination
     get 'project_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
@@ -69,6 +78,9 @@ Rails.application.routes.draw do
     # bso pagination
     get 'project_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
     get 'team_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
+    # cho pagination
+    get 'project_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
+    get 'team_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
 
     #resources :projects, controller: 'teams'
     

@@ -115,12 +115,28 @@ module Morphosource
       "/projects/specimens/#{id}?#{url_params}"
     end
 
+    def cho_tab_url(id)
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/projects/chos/#{id}?#{url_params}"
+    end
+
     def dashboard_bso_tab_url(id)
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/dashboard/collections/specimens/#{id}?#{url_params}"
+    end
+
+    def dashboard_cho_tab_url(id)
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/dashboard/collections/chos/#{id}?#{url_params}"
     end
 
     def prepare_docs_and_filters_for_media(collection)
@@ -178,7 +194,7 @@ module Morphosource
       @bso_source_options = @bso_source_options.uniq
 
       @bso_extras = get_po_extras(@paged_bso_member_docs)
-      @cho_extra = get_po_extras(@paged_cho_member_docs)
+      @cho_extras = get_po_extras(@paged_cho_member_docs)
     end
 
     def get_po_extras(docs)

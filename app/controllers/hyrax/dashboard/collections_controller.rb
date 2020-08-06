@@ -105,6 +105,13 @@ module Hyrax
         render partial: "hyrax/teams/tab_bso"
       end
 
+      def chos
+        presenter
+        query_collection_information
+        query_collection_members_for_po
+        render partial: "hyrax/teams/tab_cho"
+      end
+
       # todo: need to add logic to keep the old hyrax view if still needed
       def show_hyrax
         if request.parameters['hyrax'].present?
@@ -501,8 +508,8 @@ module Hyrax
           @bso_member_count = @bso_response.total
 
           @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
-          @cho_member_docs = @bso_response.documents
-          @cho_member_count = @bso_response.total
+          @cho_member_docs = @cho_response.documents
+          @cho_member_count = @cho_response.total
 
           if !@bso_member_count.present? && @cho_member_count.present?
             @response = @cho_response

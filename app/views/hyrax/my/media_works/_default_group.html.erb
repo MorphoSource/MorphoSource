@@ -6,11 +6,10 @@
     <th>&nbsp;<!-- thumbnail column --></th>
     <th>ID</th>
     <th>Part</th>
+    <th>Object</th>
     <% if @po_type == 'bso' %>
-      <th>Specimen</th>
       <th>Taxonomy</th>
-    <% elsif @po_type == 'cho' %>
-      <th>CHO</th>
+    <% else %>
       <th></th>
     <% end %>
     <th>Type</th>

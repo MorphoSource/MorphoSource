@@ -1,8 +1,8 @@
 <% 
 id = document.id 
-#media_extra = extra(@media_extras, id)
-po_title =  'x' # media_extra['po_title']
-po_taxonomy = 'x' # #media_extra['po_taxonomy']
+media_extra = extra(@media_extras, id)
+po_title = media_extra['po_title']
+po_taxonomy = media_extra['po_taxonomy']
 %>
 <tr id="document_<%= id %>">
   <td class="checkbox">

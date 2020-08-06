@@ -87,18 +87,21 @@ byebug
           @_prefixes ||= super + ['catalog', 'hyrax/base']
         end
 
+
+
+
         def query_collection_members
-          member_works # 15.7, 9.5, 53.0, 97.2 ms
-          member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
-          # parent collection should not be needed.  remove below later
-          #parent_collections if collection.collection_type.nestable? && action_name == 'show' # 7 - 14 ms for project
-          prepare_docs_and_filters_for_media(collection)
+          member_works
+          prepare_docs_and_filters_for_media
         end
 
+
+
+
         def query_collection_members_for_po
-          member_works_objects 
+          member_works_objects
           member_subcollections if collection.collection_type.nestable? # 7 - 21 ms
-          prepare_docs_and_filters_for_po(collection)
+          prepare_docs_and_filters_for_po(@collection)
         end
 
         # Instantiate the membership query service
@@ -118,12 +121,16 @@ byebug
 
 
 
+
         def member_works
           @response = collection_member_service.all_member_media(current_user)
           @member_docs = @response.documents
           @members_count = @response.total
           @media_member_count = @members_count
+
+
         end
+
 
 
 

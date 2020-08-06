@@ -1,5 +1,11 @@
-<% content_for :body_css_classes do %>showcase<% end %>
+<% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
+<% provide :page_title, "Teams and Objects" %>
 
+<% provide :page_header do %>
+  <div class="col-xs-9 title">
+    <h1><span class="fa fa-cube %>" aria-hidden="true"></span> Media and Objects</h1>
+  </div>
+<% end %>
 
 <div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
 
@@ -37,9 +43,9 @@
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
             <%#= render 'tab_bso' %>
-            <%= render_async bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
+            <%#= render_async bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>
-            <% end %>
+            <%# end %>
           </div>
         </div>
       <% elsif @po_type == 'cho' %>

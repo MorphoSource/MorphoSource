@@ -4,9 +4,6 @@ module Morphosource
     include MediaFinderHelper
 
 
-
-
-
     def query_collection_information
       @collection_information = collection_information_service.collection_information
       @collection_counts = @collection_information['counts'] ||= {}
@@ -14,7 +11,7 @@ module Morphosource
       @collection_bso_groups = @collection_information['bso_groups'] ||= {}
       @collection_cho_groups = @collection_information['cho_groups'] ||= {}
       @collection_object_ids = @collection_information['collection_object_ids'] ||= []
-      @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
+      #@collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
     end
 
     def media_filter_params
@@ -60,16 +57,23 @@ module Morphosource
       request.env['PATH_INFO']
     end
 
+    def bso_tab_url
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/dashboard/my/media/specimens/?#{url_params}"
+    end
 
     def prepare_docs_and_filters_for_media
       @po_type = "" # bso / cho
 #      @is_team = collection.team?
-#      @visibility_options = []
-#
+      @visibility_options = []
+
 #      @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
-#      @bso_visibility_options = []
-#      @bso_source_options = []
-#      @cho_visibility_options = []
+      @bso_visibility_options = []
+      @bso_source_options = []
+      @cho_visibility_options = []
 
       @members_count = @member_docs.length
       @media_member_docs = @member_docs      
@@ -78,7 +82,6 @@ module Morphosource
       @paged_media_member_docs = paginated_media_item_list
       @document_list = @paged_media_member_docs
       @media_extras = get_media_extras(@paged_media_member_docs)
-byebug
     end
 
     def get_media_extras(docs)
@@ -104,7 +107,7 @@ byebug
       end
     end
 
-    def prepare_docs_and_filters_for_po(collection)
+    def prepare_docs_and_filters_for_po
       @bso_visibility_options = []
       @bso_source_options = []
       @cho_visibility_options = []

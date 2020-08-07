@@ -43,9 +43,9 @@
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
             <%#= render 'tab_bso' %>
-            <%#= render_async bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
+            <%= render_async bso_tab_url, event_name: "bso-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>
-            <%# end %>
+            <% end %>
           </div>
         </div>
       <% elsif @po_type == 'cho' %>

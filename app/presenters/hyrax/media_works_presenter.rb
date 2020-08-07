@@ -1,14 +1,17 @@
 module Hyrax
-  class MediaWorksPresenter # < CollectionPresenter
+  class MediaWorksPresenter < CollectionPresenter
     #include MorphosourceHelper
     #include Morphosource::MediaWorksHelper
 
     attr_reader :search_form_url
 
 
-    def initialize(current_user, current_ability, request = nil)
-      @search_form_url = '' 
-    end
+    #todo:  need to get rid of CollectionPresenter later
+
+    
+#    def initialize(current_user, current_ability, request = nil)
+#      @search_form_url = '' 
+#    end
 
 
     # Metadata Methods

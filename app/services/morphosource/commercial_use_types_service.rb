@@ -1,6 +1,6 @@
-# app/services/morphosource/series_types_service.rb
+# app/services/morphosource/commercial_use_types_service.rb
 module Morphosource
-  # Provide select options for the series types field
+  # Provide select options for the permits_commercial_use field
   class CommercialUseTypesService < Hyrax::QaSelectService
     def initialize(_authority_name = nil)
       super('commercial_use_types')

@@ -100,7 +100,7 @@ html {
   padding: 5px;
 }
 
-.showcase.teams { /* / teams and projects show page styles */
+.showcase.teams, .showcase.media-works { /* / teams and projects show page styles */
 
   .flex { /* setting column with same height */
     display: flex;
@@ -207,7 +207,7 @@ html {
     }
   }
 
-  table.teams-projects {
+  table.teams-projects, table.media-works {
     th, td {
       text-align: center;
     }

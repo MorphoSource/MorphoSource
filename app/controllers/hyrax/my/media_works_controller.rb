@@ -35,7 +35,7 @@ module Hyrax
 @collection = Collection.find('00000C138') #'00000C144')
 
         presenter
-#        query_collection_information
+        query_collection_information
         query_collection_members
         prepare_instance_variables_for_batch_control_display
         respond_to do |format|
@@ -61,6 +61,13 @@ module Hyrax
         query_collection_members_for_po
 #        prepare_instance_variables_for_batch_control_display
         render :partial => 'tab_bso'
+      end
+
+      def chos
+        presenter
+        query_collection_information
+        query_collection_members_for_po
+        render partial: "hyrax/teams/tab_cho"
       end
      
 #      private

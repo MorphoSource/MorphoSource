@@ -1,4 +1,4 @@
-<% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
+<% content_for :body_css_classes do %>showcase showcase-edit media-works<% end %>
 <% provide :page_title, "Teams and Objects" %>
 
 <% provide :page_header do %>
@@ -18,16 +18,19 @@
         <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
         </a>
       </li>
-      <li role="presentation">
-        <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
-          <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
-        </a>
-      </li>
-        <!--li role="presentation">
-          <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
-            <i class="fas fa-frog" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
+      <% if @po_type == 'bso' %>
+        <li role="presentation">
+          <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
+            <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
           </a>
-        </li-->
+        </li>
+      <% elsif @po_type == 'cho' %>
+        <!li role="presentation">
+          <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
+            <i class="fas fa-frog" aria-hidden="true"></i> OBJECTS
+          </a>
+        </li>
+      <% end %>
     </ul>
 
     <!-- Tab panes -->
@@ -35,6 +38,7 @@
 
       <div role="tabpanel" class="tab-pane active" id="media">
         <div class="form-tab-content">
+          <%= render 'media_filters' %>
           <%= render 'tab_media', presenter: @presenter %>
         </div>
       </div>
@@ -42,6 +46,16 @@
       <% if @po_type == 'bso' %>
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
+            <%= render 'bso_filters' %>
+            <div class="row">
+              <!-- Search bar -->
+              <div class="col-xs-6">
+                <%= render 'search_form', tab: "biological_specimens" %>
+              </div>
+              <div class="col-xs-6">
+                <%= render 'sort_and_per_page_bso' %>
+              </div>
+            </div>
             <%#= render 'tab_bso' %>
             <%= render_async bso_tab_url, event_name: "bso-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>
@@ -51,7 +65,10 @@
       <% elsif @po_type == 'cho' %>
         <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
           <div class="form-tab-content">
-            <%= render 'tab_cho' %>
+            <%#= render 'tab_cho' %>
+            <%= render_async cho_tab_url, event_name: "cho-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
           </div>
         </div>
       <% end %>

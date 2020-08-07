@@ -1,0 +1,53 @@
+<% show_filter_by = false %>
+<%= form_tag @presenter.media_works_url("biological_specimens"), method: :get, class: "filters", id: "bso-filters", name: "bso-filters" do %>
+  <%= hidden_params_for_filters('b_') %>
+  <div class="filters row">
+
+    <div class="col-sm-2 col-lg-1 filter-label">Filter:</div>
+    <div class="col-sm-10 col-lg-11">
+
+      <% if params['b_source'].present? 
+        show_filter_by = true %>
+        <input type="hidden" name="b_source" value="<%= params['b_source'] %>" class="filter-param" />
+      <% else %>
+        <select name="b_source" data-form="bso-filters" style='width: 150px;'>
+          <option value="">Source</option>
+          <% Array(@collection_bso_groups['source']).each do |v, n| %>
+            <option value="<%= v %>"><%= "#{source_label(v)} (#{n})" %></option>
+          <% end %>
+        </select>
+      <% end %>
+
+      <% if params['b_organization'].present? 
+        show_filter_by = true %>
+        <input type="hidden" name="b_organization" value="<%= params['b_organization'] %>" class="filter-param" />
+      <% else %>
+        <select name="b_organization" data-form="bso-filters" style='width: 150px;'>
+          <option value="">Organization</option>
+          <% Array(@collection_bso_groups['organization']).each do |v, n| %>
+            <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
+          <% end %>
+        </select>
+      <% end %>
+
+    </div>
+
+  </div>
+
+  <% if show_filter_by == true %>
+    <div class="filter-by row">
+
+      <div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
+      <div class="col-sm-8 col-lg-9">
+        <% if params['b_source'].present? %>
+          <p id="b_source" class="filter-param">Source > <%= source_label(params['b_source']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_source"></i></p>
+        <% end %>
+        <% if params['b_organization'].present? %>
+          <p id="b_organization" class="filter-param">Organization > <%= params['b_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_organization"></i></p>
+        <% end %>
+      </div>
+      <div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>
+    </div>
+  <% end %>
+
+<% end %>

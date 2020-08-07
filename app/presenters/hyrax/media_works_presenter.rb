@@ -3,8 +3,11 @@ module Hyrax
     #include MorphosourceHelper
     #include Morphosource::MediaWorksHelper
 
-    attr_reader :search_form_url
+    attr_reader :media_works_url
 
+    def media_works_url(tab)
+      '/dashboard/my/media#' + tab
+    end
 
     #todo:  need to get rid of CollectionPresenter later
 

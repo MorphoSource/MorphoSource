@@ -62,7 +62,15 @@ module Morphosource
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
-      "/dashboard/my/media/specimens/?#{url_params}"
+      "/dashboard/my/media/specimens?#{url_params}"
+    end
+
+    def cho_tab_url
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/dashboard/my/media/chos?#{url_params}"
     end
 
     def prepare_docs_and_filters_for_media
@@ -120,7 +128,7 @@ module Morphosource
       @bso_source_options = @bso_source_options.uniq
 
       @bso_extras = get_po_extras(@paged_bso_member_docs)
-      @cho_extra = get_po_extras(@paged_cho_member_docs)
+      @cho_extras = get_po_extras(@paged_cho_member_docs)
     end
 
     def get_po_extras(docs)

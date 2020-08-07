@@ -129,9 +129,9 @@ module Hyrax
           @bso_member_docs = @bso_response.documents
           @bso_member_count = @bso_response.total
 
-          @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject)
-          @cho_member_docs = @bso_response.documents
-          @cho_member_count = @bso_response.total
+          @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
+          @cho_member_docs = @cho_response.documents
+          @cho_member_count = @cho_response.total
 
           if !@bso_member_count.present? && @cho_member_count.present?
             @response = @cho_response

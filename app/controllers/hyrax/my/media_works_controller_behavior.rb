@@ -117,7 +117,7 @@ module Hyrax
 
 
         def member_works
-          @response = collection_member_service.all_member_media(current_user)
+          @response = collection_member_service.all_member_media(current_user, media_filter_params)
           @member_docs = @response.documents
           @members_count = @response.total
           @media_member_count = @members_count
@@ -125,7 +125,7 @@ module Hyrax
 
         def member_works_objects
           all_object_ids = @collection_object_ids # + @collection_organization_object_ids
-          @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen)
+          @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
           @bso_member_docs = @bso_response.documents
           @bso_member_count = @bso_response.total
 

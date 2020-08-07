@@ -1,22 +1,25 @@
   <li class="h5"><%= t('hyrax.admin.sidebar.repository_objects') %></li>
 
-  <%# todo: need to setup the my teams/projects paths using helper %>
-  <%= menu.nav_link('/dashboard/my/teams',
-                    also_active_for: hyrax.dashboard_collections_path) do %>
-    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.teams') %></span>
-  <% end %>
-
   <%= menu.nav_link('/dashboard/my/projects',
                     also_active_for: hyrax.dashboard_collections_path) do %>
     <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.projects') %></span>
   <% end %>
 
-  <%= menu.nav_link(hyrax.my_collections_path,
+  <%= menu.nav_link('/dashboard/my/teams',
                     also_active_for: hyrax.dashboard_collections_path) do %>
-    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.collections') %></span>
+    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.teams') %></span>
   <% end %>
 
-  <%= menu.nav_link(hyrax.my_works_path,
-                    also_active_for: hyrax.dashboard_works_path) do %>
-    <span class="fa fa-file" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.works') %></span>
+  <%= menu.nav_link('/dashboard/my/media') do %>
+    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media') %></span>
   <% end %>
+
+  <%#= menu.nav_link(hyrax.my_collections_path,
+                    also_active_for: hyrax.dashboard_collections_path) do % >
+    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.collections') % ></span>
+  <%# end %>
+
+  <%#= menu.nav_link(hyrax.my_works_path,
+                    also_active_for: hyrax.dashboard_works_path) do % >
+    <span class="fa fa-file" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.works') %></span>
+  <%# end %>

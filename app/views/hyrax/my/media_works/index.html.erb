@@ -5,6 +5,18 @@
   <div class="col-xs-9 title">
     <h1><span class="fa fa-cube %>" aria-hidden="true"></span> Media and Objects</h1>
   </div>
+  <div class="col-xs-3 show-actions text-right">
+    <% if can?(:create_any, Media) %>
+      <%= link_to 'New media', main_app.new_submission_path(restart: true), class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+
+  <%# if @collection_count_for_manager > 0 %>
+  <div class="row collection-count">
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Manager</span> <span><%#= collection_count_for(@collection_count_for_manager) %></span></div>
+  </div>
+  <%# end %>
+
 <% end %>
 
 <div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">

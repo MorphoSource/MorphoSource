@@ -26,6 +26,9 @@ module Hyrax
       def index
         # The user's collections for the "add to collection" form
         @user_collections = collections_service.search_results(:deposit)
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+
 #        managed_works_count
 #        @create_work_presenter = create_work_presenter_class.new(current_user) # this is needed for solr query in member service
         # taken from my_controller
@@ -67,7 +70,7 @@ module Hyrax
         presenter
         query_collection_information
         query_collection_members_for_po
-        render partial: "hyrax/teams/tab_cho"
+        render :partial => "tab_cho"
       end
      
 #      private

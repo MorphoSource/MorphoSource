@@ -3,30 +3,29 @@ module Morphosource
     class MediaWorksMemberService < Hyrax::Collections::CollectionMemberService
       
       def all_member_media(current_user, fq_params = [])
-#        core_fq = "(#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id})"
-#        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
-
-        clauses = [
+        role_clauses = [
           ActiveFedora::SolrQueryBuilder.construct_query_for_rel(depositor: current_user.user_key),
           ActiveFedora::SolrQueryBuilder.construct_query_for_rel(has_model: ::AdminSet.to_s, creator: current_user.user_key)
         ]
-        core_fq = "(#{clauses.join(' OR ')})"
+        joined_clauses = "(#{role_clauses.join(' OR ')}) AND " + 
+          ActiveFedora::SolrQueryBuilder.construct_query_for_rel(has_model: 'Media')
+ 
+        fq_params << joined_clauses
 
-#        fq_params << core_fq
-
-        fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"
-
-
-        available_member_works_filter_query(fq_params: fq_params)
+        response = available_member_works_filter_query(fq_params: fq_params)
+#byebug
+        return response
       end
 
       # @api public
       #
       def all_member_media_objects(object_ids = [], object_model = nil, fq_params = [])
         core_fq = "(id:(#{object_ids.join(' OR ')}))"
-        core_fq += "AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
+        core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
         fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params)
+        temp = available_member_works_filter_query(fq_params: fq_params)
+#byebug
+        return temp
       end
 
       # @api public

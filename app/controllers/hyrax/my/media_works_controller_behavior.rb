@@ -94,9 +94,9 @@ module Hyrax
           prepare_docs_and_filters_for_media
         end
 
-        def query_collection_members_for_po
-          member_works_objects
-          prepare_docs_and_filters_for_po
+        def query_collection_members_for_po(obj_type)
+          member_works_objects(obj_type)
+          prepare_docs_and_filters_for_po(obj_type)
         end
 
         # Instantiate the membership query service
@@ -123,21 +123,23 @@ module Hyrax
           @media_member_count = @members_count
         end
 
-        def member_works_objects
-          all_object_ids = @collection_object_ids # + @collection_organization_object_ids
-          @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
-          @bso_member_docs = @bso_response.documents
-          @bso_member_count = @bso_response.total
-
-          @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
-          @cho_member_docs = @cho_response.documents
-          @cho_member_count = @cho_response.total
-
-          if !@bso_member_count.present? && @cho_member_count.present?
-            @response = @cho_response
-          else
+        def member_works_objects(obj_type)
+          all_object_ids = @collection_object_ids # + @collection_organization_object_ids          
+          case obj_type
+          when 'bso'
+            @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
+            @bso_member_docs = @bso_response.documents
+            @bso_member_count = @bso_response.total
             @response = @bso_response
+          when 'cho'
+            @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
+            @cho_member_docs = @cho_response.documents
+            @cho_member_count = @cho_response.total
+            @response = @cho_response
           end
+#          if !@bso_member_count.present? && @cho_member_count.present?
+#          else
+#          end
         end
 
         # media pagination methods
@@ -190,7 +192,8 @@ module Hyrax
 
         # cho pagination methods
         def paginated_cho_item_list
-          Kaminari.paginate_array(@cho_member_docs, total_count: @cho_member_docs.size).page(cho_current_page).per(cho_rows_from_params)
+          temp = Kaminari.paginate_array(@cho_member_docs, total_count: @cho_member_docs.size).page(cho_current_page).per(cho_rows_from_params)
+          return temp 
         end
 
         def cho_total_items

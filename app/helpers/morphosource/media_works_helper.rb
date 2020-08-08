@@ -115,20 +115,21 @@ module Morphosource
       end
     end
 
-    def prepare_docs_and_filters_for_po
-      @bso_visibility_options = []
-      @bso_source_options = []
-      @cho_visibility_options = []
-
-      @paged_bso_member_docs = paginated_bso_item_list
-      @bso_total_pages = bso_total_pages
-      @paged_cho_member_docs = paginated_cho_item_list
-      @cho_total_pages = cho_total_pages
-
-      @bso_source_options = @bso_source_options.uniq
-
-      @bso_extras = get_po_extras(@paged_bso_member_docs)
-      @cho_extras = get_po_extras(@paged_cho_member_docs)
+    def prepare_docs_and_filters_for_po(obj_type)
+      case obj_type
+      when 'bso'
+        @bso_visibility_options = []
+        @bso_source_options = []
+        @paged_bso_member_docs = paginated_bso_item_list
+        @bso_total_pages = bso_total_pages
+        @bso_source_options = @bso_source_options.uniq
+        @bso_extras = get_po_extras(@paged_bso_member_docs)
+      when 'cho'
+        @cho_visibility_options = []
+        @paged_cho_member_docs = paginated_cho_item_list
+        @cho_total_pages = cho_total_pages
+        @cho_extras = get_po_extras(@paged_cho_member_docs)
+      end
     end
 
     def get_po_extras(docs)

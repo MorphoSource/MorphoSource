@@ -19,7 +19,7 @@
 
 <% end %>
 
-<div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
+<div class="hyc-container" >
 
 
   <div class="panel panel-default tabs" role="main">
@@ -30,19 +30,16 @@
         <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
         </a>
       </li>
-      <% if @po_type == 'bso' %>
-        <li role="presentation">
-          <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
-            <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
-          </a>
-        </li>
-      <% elsif @po_type == 'cho' %>
-        <!li role="presentation">
-          <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
-            <i class="fas fa-frog" aria-hidden="true"></i> OBJECTS
-          </a>
-        </li>
-      <% end %>
+      <li role="presentation">
+        <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
+          <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
+          <i class="fas fa-frog" aria-hidden="true"></i> OBJECTS
+        </a>
+      </li>
     </ul>
 
     <!-- Tab panes -->
@@ -55,7 +52,6 @@
         </div>
       </div>
 
-      <% if @po_type == 'bso' %>
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
             <%= render 'bso_filters' %>
@@ -74,16 +70,25 @@
             <% end %>
           </div>
         </div>
-      <% elsif @po_type == 'cho' %>
+
         <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
           <div class="form-tab-content">
+            <%= render 'cho_filters' %>
+            <div class="row">
+              <!-- Search bar -->
+              <div class="col-xs-6">
+                <%= render 'search_form', tab: "cultural_heritage_objects" %>
+              </div>
+              <div class="col-xs-6">
+                <%= render 'sort_and_per_page_bso' %>
+              </div>
+            </div>
             <%#= render 'tab_cho' %>
             <%= render_async cho_tab_url, event_name: "cho-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>
             <% end %>
           </div>
         </div>
-      <% end %>
 
     </div><!-- /tab-content -->
 

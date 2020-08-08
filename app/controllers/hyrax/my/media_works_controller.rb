@@ -61,15 +61,18 @@ module Hyrax
 
         presenter
         query_collection_information
-        query_collection_members_for_po
+        query_collection_members_for_po('bso')
 #        prepare_instance_variables_for_batch_control_display
         render :partial => 'tab_bso'
       end
 
       def chos
+        @user = current_user
+        #(@response, @document_list) = query_solr
+@collection = Collection.find('00000C138') #'00000C144')
         presenter
         query_collection_information
-        query_collection_members_for_po
+        query_collection_members_for_po('cho')
         render :partial => "tab_cho"
       end
      

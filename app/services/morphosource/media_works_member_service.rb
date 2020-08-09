@@ -3,9 +3,10 @@ module Morphosource
     class MediaWorksMemberService < Hyrax::Collections::CollectionMemberService
       
       def all_member_media(current_user, fq_params = [])
+        # filter media by depositor and creator
         role_clauses = [
           ActiveFedora::SolrQueryBuilder.construct_query_for_rel(depositor: current_user.user_key),
-          ActiveFedora::SolrQueryBuilder.construct_query_for_rel(has_model: ::AdminSet.to_s, creator: current_user.user_key)
+          ActiveFedora::SolrQueryBuilder.construct_query_for_rel(creator: current_user.user_key)
         ]
         joined_clauses = "(#{role_clauses.join(' OR ')}) AND " + 
           ActiveFedora::SolrQueryBuilder.construct_query_for_rel(has_model: 'Media')

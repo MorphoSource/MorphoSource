@@ -10,19 +10,20 @@ module Morphosource
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
-      def self.call(collection_id)
-        new(collection_id).call
+      def self.call(user)
+        new(user).call
       end
 
       def self.collection_organization_object_ids(collection_id)
 
       end
 
-      def initialize(collection_id)
+      def initialize(user)
         @solr = solr_service.new
-        @collection_id = collection_id
-        @collection = Collection.find(collection_id)
-        @is_org_team = collection.team?
+        @user = user
+#        @collection_id = collection_id
+#        @collection = Collection.find(collection_id)
+#        @is_org_team = collection.team?
 
         query_solr_collection_info
       end
@@ -32,11 +33,11 @@ module Morphosource
       end
 
       def query_solr_collection_info
-        if is_org_team && Collection.find(collection_id).organization.present?
-          @collection_organization_id = Collection.find(collection_id).organization.id
-          @team_org_po_ids = organization_po_ids
-          @n_media_team_organization = team_org_origin_count if is_org_team
-        end
+ #       if is_org_team && Collection.find(collection_id).organization.present?
+ #         @collection_organization_id = Collection.find(collection_id).organization.id
+ #         @team_org_po_ids = organization_po_ids
+ #         @n_media_team_organization = team_org_origin_count if is_org_team
+ #       end
 
         @facet_results, @media_count = media_facet_query
 
@@ -145,8 +146,8 @@ module Morphosource
           facet_fields = [
             solrize('media_type', :stored_searchable),
             solrize('fileset_accessibility', :stored_searchable),
-            solrize('physical_object_id', :stored_searchable),
-            solrize('member_of_collection_ids', :symbol)
+            solrize('physical_object_id', :stored_searchable)
+#            solrize('member_of_collection_ids', :symbol)
           ]
 
           params = { 
@@ -157,20 +158,29 @@ module Morphosource
           }
 
           # Core query
-          if is_org_team && collection_organization_id
-            params[:fq] << assemble_po_id_or_collection_query(
-              team_org_po_ids, 
-              Array(collection_id) + subcollection_ids
-            )
-          elsif collection.collection_type.nestable?
-            params[:fq] << assemble_or_query(
-              solrize('member_of_collection_ids', :symbol),
-              Array(collection_id) + subcollection_ids
-            )
-          else
-            params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
-          end
-          
+          #if is_org_team && collection_organization_id
+          #  params[:fq] << assemble_po_id_or_collection_query(
+          #    team_org_po_ids, 
+          #    Array(collection_id) + subcollection_ids
+          #  )
+          #elsif collection.collection_type.nestable?
+          #  params[:fq] << assemble_or_query(
+          #    solrize('member_of_collection_ids', :symbol),
+          #    Array(collection_id) + subcollection_ids
+          #  )
+          #else
+          #  params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+          #end
+
+          # filter media by depositor and creator
+          role_clauses = [
+            ActiveFedora::SolrQueryBuilder.construct_query_for_rel(depositor: @user.user_key),
+            ActiveFedora::SolrQueryBuilder.construct_query_for_rel(creator: @user.user_key)
+          ]
+          joined_clauses = "(#{role_clauses.join(' OR ')}) AND " + 
+            ActiveFedora::SolrQueryBuilder.construct_query_for_rel(has_model: 'Media')
+   
+          params[:fq] << joined_clauses
           solr.get_facet_fields(nil, facet_fields, params)
 
           return solr.facet_fields(facet_fields), solr.count

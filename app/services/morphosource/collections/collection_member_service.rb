@@ -23,7 +23,7 @@ module Morphosource
       #
       def all_member_media_objects(object_ids = [], object_model = nil, fq_params = [])
         core_fq = "(id:(#{object_ids.join(' OR ')}))"
-        core_fq += "AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
+        core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
         fq_params << core_fq 
         available_member_works_filter_query(fq_params: fq_params)
       end

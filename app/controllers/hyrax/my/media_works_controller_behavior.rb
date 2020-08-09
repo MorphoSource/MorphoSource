@@ -106,7 +106,8 @@ module Hyrax
 
         # Instantiate the information query service
         def collection_information_service
-@collection_information_service ||= information_service_class.new( '00000C138' )
+#@collection_information_service ||= information_service_class.new( '00000C138' )
+          @collection_information_service ||= information_service_class.new(current_user)
         end
 
         #def subcollection_media_service(subcollection)

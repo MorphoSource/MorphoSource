@@ -229,6 +229,10 @@ Hyrax.config do |config|
   # If you use a multi-server architecture, this MUST be a shared volume
   config.derivatives_path = ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives"))
 
+  # Location on local file system where attachments will be stored
+  # If you use a multi-server architecture, this MUST be a shared volume
+  config.attachments_path = ENV.fetch("ATTACHMENTS_PATH", Rails.root.join("tmp", "attachments"))
+
   # Should schema.org microdata be displayed?
   # config.display_microdata = true
 

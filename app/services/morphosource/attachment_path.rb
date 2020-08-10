@@ -21,7 +21,7 @@ module Morphosource
     # @param [ActiveFedora::Base or String] object either the AF object or its id
     # @param [String] field_name, metadata field associated
     # @param [String] type_name, one of docx, pdf, or txt
-    def initialize(object, field_name, type_name)
+    def initialize(object, field_name = nil, type_name = nil)
       @id = object.is_a?(String) ? object : object.id
       @field_name = field_name
       @type_name = type_name

@@ -60,6 +60,10 @@ module Morphosource
         User.find_by(ms_id: owner)&.ms_id || depositor
       end
 
+      def attachment(field_name)
+        Morphosource::AttachmentService.get(self, field_name)
+      end
+
       private
 
       def get_all_children(objects)

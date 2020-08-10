@@ -2,13 +2,14 @@
  * Represents a Child work or related Collection
  */
 export default class OrganizationResource {
-    constructor(id, title, organization_type, institution_code, institution_name, collection_code, description, address, city, state_province, country, contact_person) {
+    constructor(id, title, organization_type, institution_code, institution_name, collection_code, recordset_id, description, address, city, state_province, country, contact_person) {
         this.id = id
         this.title = title
         this.organization_type = organization_type
         this.institution_code = institution_code
         this.institution_name = institution_name
         this.collection_code = collection_code
+        this.recordset_id = recordset_id
         this.description = description
         this.address = address
         this.city = city

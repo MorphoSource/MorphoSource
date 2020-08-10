@@ -10,6 +10,10 @@ module Morphosource
       new(params).call
     end
 
+    def self.total_media_count(physical_object_id)
+      new( { id: physical_object_id } ).total_media_count_for_po
+    end
+
     def initialize(params={})
       @params = params
       @id = params[:id]
@@ -19,6 +23,11 @@ module Morphosource
     def call
       find_physical_object_ids(id)
       find_physical_objects
+    end
+
+    def total_media_count_for_po
+      query = "#{Solrizer.solr_name('physical_object_id', :stored_searchable)}:#{id}"
+      search_solr(query).length
     end
 
     private

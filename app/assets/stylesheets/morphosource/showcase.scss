@@ -42,6 +42,28 @@ html {
 .pb-0 {
   padding-bottom: 0 !important;
 }
+.d-block {
+  display: block;
+}
+.d-inline {
+  display: inline;
+}
+.d-inline-block {
+  display: inline-block;
+}
+.w-100 {
+  width: 100%;
+}
+.w-75 {
+  width: 75%;
+}
+.w-50 {
+  width: 50%;
+}
+.w-25 {
+  width: 25%;
+}
+
 .no-gutter > [class*='col-'] {
   padding-right:0 !important;
   padding-left:0 !important;
@@ -87,11 +109,13 @@ html {
   .paginate-wrapper > [class*='col-'] {
     text-align: center;
     white-space: nowrap;
+    font-size: 11px;
     div {
       white-space: nowrap;
       padding: 6px 12px;
     }
     .pagination {
+      margin:0;
       text-align: center;
       li {
         display: inline-block;
@@ -100,7 +124,7 @@ html {
   } 
 
   .team-logo img {
-    width: 80px;
+    width: 60px;
     margin-right:16px;
     margin-bottom: 8px;
   }  
@@ -299,7 +323,7 @@ html {
       a {
         margin-top: 6px;
         span {
-          width:70%;
+          width:80%;
         }
       }
     }
@@ -313,6 +337,10 @@ html {
       -webkit-flex: inherit;
     }
 
+  }
+
+  .collection-count .label {
+    width: 77px;
   }
 
 } /* / teams and projects show page styles */
@@ -723,14 +751,22 @@ html {
   }
 
   .dropdown-menu {
-    background-color: $button-color;
+    background-color: #fff;
     min-width: 82px;
     right: 0;
     left: unset;
     top: 80%;
-    .btn-default:hover {
-      color : $button-font-color;
+    .btn:hover {
+      color : $font-color;
       background-color: $button-color;
+    }
+    .btn {
+      background-color: transparent;
+      color: $font-color;
+      border-color: transparent;
+    }
+    input {
+      width: 100%;
     }
   }
 
@@ -740,6 +776,10 @@ html {
     list-style-type: none;
     padding: 2px 8px;
     white-space: nowrap;    
+  }
+
+  i.dropdown-toggle:hover {
+    cursor: pointer;    
   }
 
   div.preview {

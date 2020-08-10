@@ -50,19 +50,6 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
     end
   end
 
-  describe '#media_from_team_project(project_doc)' do
-    it 'returns media from project' do
-      project_doc = SolrDocument.new(project.to_solr) 
-      expect(helper.media_from_team_project(project_doc).count).to eq (1)
-    end
-  end
-
-  describe '#media_from_linked_organization' do
-    it 'returns a media from linked org' do
-      expect(helper.media_from_linked_organization(org1).count).to eq (1)
-    end
-  end
-
   describe '#hidden_params_for_filters' do
     let(:params) { { 'view' => 'gallery' } }
     before do

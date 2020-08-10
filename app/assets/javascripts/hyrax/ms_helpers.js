@@ -93,6 +93,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
 					institution_name: data.work.institution_name,
 					institution_code: data.work.institution_code,
 					collection_code: data.work.collection_code,
+					recordset_id: data.work.recordset_id,
 	        		description: data.work.description,
 	        		address: data.work.address, 
 	        		city: data.work.city, 

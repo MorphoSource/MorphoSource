@@ -103,6 +103,7 @@ module Morphosource
           institution_name: parent.institution_name.first.to_s,
           institution_code: parent.institution_code.first.to_s,
           collection_code: parent.collection_code.first.to_s,
+          recordset_id: parent.recordset_id.first.to_s,
           description: parent.description.first.to_s,
           address: parent.address.first.to_s,
           city: parent.city.first.to_s,

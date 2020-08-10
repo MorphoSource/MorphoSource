@@ -35,15 +35,8 @@ provide :page_title, construct_page_title(@presenter.title)
               <%= @presenter.permission_badge %>
             </div>
             <div class="text-muted">
-              <% if @media_member_count > 0 %>
-                <%= @media_member_count %> <%= 'Media'.pluralize(@media_member_count) %> ·
-              <% end %>
-              <% if @bso_member_count > 0 %>
-                <%= @bso_member_count %> <%= 'Specimen'.pluralize(@bso_member_count) %> ·
-              <% end %>
-              <% if @cho_member_count > 0 %>
-                <%= @cho_member_count %> CHO ·
-              <% end %>
+              <%= @media_member_count %> Media ·
+              <span class="bso-count"></span> 
               Managed by: <%= @presenter.collection_managers %>
             </div>
         </h1>
@@ -118,21 +111,18 @@ provide :page_title, construct_page_title(@presenter.title)
   <div class="panel panel-default tabs" role="main">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-      <%# if @media_member_count > 0 %>
-        <li role="presentation" class="active">
-          <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
-          <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
-          </a>
-        </li>
-      <%# end %>
-      <% if @bso_member_count > 0 %>
+      <li role="presentation" class="active">
+        <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
+        <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
+        </a>
+      </li>
+      <% if @po_type == 'bso' %>
         <li role="presentation">
           <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
             <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
           </a>
         </li>
-      <% end %>
-      <% if @cho_member_count > 0 %>
+      <% elsif @po_type == 'cho' %>
         <li role="presentation">
           <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
             <i class="fas fa-frog" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
@@ -155,21 +145,25 @@ provide :page_title, construct_page_title(@presenter.title)
           </div>
         </div>
 
-      <% if @bso_member_count > 0 %>
+      <% if @po_type == 'bso' %>
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
-            <%= render 'tab_bso' %>
+            <%#= render 'tab_bso' %>
+            <%= render_async bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
           </div>
         </div>
-      <% end # if @bso_member_count > 0 %>
-
-      <% if @cho_member_count > 0 %>
+      <% elsif @po_type == 'cho' %>
         <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
           <div class="form-tab-content">
-            <%= render 'tab_cho' %>
+            <%#= render 'tab_cho' %>
+            <%= render_async cho_tab_url(@presenter.id), event_name: "cho-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
           </div>
         </div>
-      <% end # if @cho_member_count > 0 %>
+      <% end %>
 
       <div role="tabpanel" class="tab-pane" id="about">
         <div class="form-tab-content">

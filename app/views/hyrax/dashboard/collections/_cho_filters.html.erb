@@ -1,54 +1,57 @@
 <% show_filter_by = false %>
 
 <%= simple_form_for @form, url: edit_dashboard_collection_url + '#cultural_heritage_objects', html: { class: 'filters', id: "cho-filters", name: "cho-filters", method: "get" } do |cf| %>
-	<%= hidden_params_for_filters('c_') %>
+  <%= hidden_params_for_filters('c_') %>
 
-	<div class="filters row">
+  <div class="filters row">
 
-		<div class="col-sm-2 col-lg-1 filter-label">Filter:</div>
-		<div class="col-sm-10 col-lg-11">
+    <div class="col-sm-2 col-lg-1 filter-label">Filter:</div>
+    <div class="col-sm-10 col-lg-11">
 
-			<% if params['c_visibility'].present? 
-					 show_filter_by = true %>
-				<input type="hidden" name="c_visibility" value="<%= params['c_visibility'] %>" class="filter-param" />
-			<% else %>
-		  	<select name="c_visibility" data-form="cho-filters">
-		  		<option value="">Visibility</option>
-		  		<% @visibility_options.each do |v| %>
-			  		<option><%= v %></option>
-		  		<% end %>
-		  	</select>
-		  <% end %>
+      <% if params['c_organization'].present? 
+        show_filter_by = true %>
+        <input type="hidden" name="c_organization" value="<%= params['c_organization'] %>" class="filter-param" />
+      <% else %>
+        <select name="c_organization" data-form="cho-filters" style='width: 150px;'>
+          <option value="">Organization</option>
+          <% Array(@collection_cho_groups['organization']).each do |v, n| %>
+            <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
+          <% end %>
+        </select>
+      <% end %>
 
-		 	<% if params['c_origin'].present? 
-					 show_filter_by = true %>
-				<input type="hidden" name="c_origin" value="<%= params['c_origin'] %>" class="filter-param" />
-			<% else %>
-		  	<select name="c_origin" data-form="cho-filters">
-		  		<option value="">Origin</option>
-		  		<option>Team</option>
-		  		<option>Org.</option>
-		  	</select>
-		  <% end %>
+      <% if @collection.team? %>
+        <% if params['c_origin'].present? 
+             show_filter_by = true %>
+          <input type="hidden" name="c_origin" value="<%= params['c_origin'] %>" class="filter-param" />
+        <% else %>
+          <select name="c_origin" data-form="cho-filters" style='width: 150px;'>
+            <option value="">Origin</option>
+            <% Array(@collection_cho_groups['origin']).each do |v, n| %>
+              <option value="<%= v %>"><%= "#{origin_label(v)} (#{n})" %></option>
+            <% end %>
+          </select>
+        <% end %>
+      <% end %>
 
-		</div>
+    </div>
 
-	</div>
+  </div>
 
-	<% if show_filter_by == true %>
-		<div class="filter-by row">
+  <% if show_filter_by == true %>
+    <div class="filter-by row">
 
-			<div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
-			<div class="col-sm-8 col-lg-9">
-				<% if params['c_visibility'].present? %>
-					<p id="c_visibility" class="filter-param">Visibility > <%= params['c_visibility'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_visibility"></i></p>
-				<% end %>
-				<% if params['c_origin'].present? %>
-					<p id="c_origin" class="filter-param">Origin > <%= params['c_origin'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_origin"></i></p>
-				<% end %>
-			</div>
-			<div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>
-		</div>
-	<% end %>
+      <div class="col-sm-2 col-lg-1 filter-label">Filtering by:</div>
+      <div class="col-sm-8 col-lg-9">
+        <% if params['c_organization'].present? %>
+          <p id="c_organization" class="filter-param">Organization > <%= params['c_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_organization"></i></p>
+        <% end %>
+        <% if params['c_origin'].present? %>
+          <p id="c_origin" class="filter-param">Origin > <%= origin_label(params['c_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_origin"></i></p>
+        <% end %>
+      </div>
+      <div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>
+    </div>
+  <% end %>
 
 <% end %>

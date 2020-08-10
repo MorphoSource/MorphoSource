@@ -6,15 +6,7 @@
     <span class="fa fa-edit" aria-hidden="true"></span>
     <h1><%= @form.title.first %></h1>
     <span>
-      <% if @media_member_count > 0 %>
-        <%= @media_member_count %> <%= 'Media'.pluralize(@media_member_count) %>
-      <% end %>
-      <% if @bso_member_count > 0 %>
-         · <%= @bso_member_count %> <%= 'Specimen'.pluralize(@bso_member_count) %>
-      <% end %>
-      <% if @cho_member_count > 0 %>
-         · <%= @cho_member_count %> CHO
-      <% end %>
+      <%= @collection_counts['media'] %> Media · <%= @collection_counts['po'] %> Objects
     </span>
   </div>
   <div class="col-xs-3 show-actions text-right">
@@ -85,20 +77,19 @@
         <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
         </a>
       </li>
-      <%# if @bso_member_count > 0 %>
+      <% if @po_type == 'bso' %>
         <li role="presentation">
           <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
             <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
           </a>
         </li>
-      <%# end %>
-      <%# if @cho_member_count > 0 %>
+      <% elsif @po_type == 'cho' %>
         <li role="presentation">
           <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
-            <i class="fas fa-frog" aria-hidden="true"></i> CHO
+            <i class="fas fa-frog" aria-hidden="true"></i> OBJECTS
           </a>
         </li>
-      <%# end %>
+      <% end %>
       <% if @current_user.can?(:edit, @collection) %>
         <li role="presentation">
           <a href="#details" aria-controls="details" role="tab" data-toggle="tab" aria-expanded="true">
@@ -196,7 +187,8 @@
         </div>
       </div>
 
-      <%# if @bso_member_count > 0 %>
+      <% if @po_type == 'bso' %>
+
         <div id="biological_specimens" role="tabpanel" class="tab-pane">
           <div class="form-tab-content">
 
@@ -210,12 +202,15 @@
             <% end %>
 
             <%= render 'bso_filters' %>
-            <%= render 'hyrax/teams/tab_bso' %>
+            <%#= render 'hyrax/teams/tab_bso' %>
+            <%= render_async dashboard_bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
           </div>
         </div>
-      <%# end # if @bso_member_count > 0 %>
 
-      <%# if @cho_member_count > 0 %>
+      <% elsif @po_type == 'cho' %>
+
         <div id="cultural_heritage_objects" role="tabpanel" class="tab-pane">
           <div class="form-tab-content">
 
@@ -229,10 +224,14 @@
             <% end %>
 
             <%= render 'cho_filters' %>
-            <%= render 'hyrax/teams/tab_cho' %>
+            <%#= render 'hyrax/teams/tab_cho' %>
+            <%= render_async dashboard_cho_tab_url(@presenter.id), event_name: "cho-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
           </div>
         </div>
-      <%# end # if @cho_member_count > 0 %>
+      
+      <% end %>
 
       <% if @collection.team? && @presenter.collection_type_is_nestable? %>
         <div id="team_projects" role="tabpanel" class="tab-pane">

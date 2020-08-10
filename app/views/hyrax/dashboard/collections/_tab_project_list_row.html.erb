@@ -24,14 +24,17 @@ media_count = project_presenter.total_items
     </div>
   </td>
   <td>
-    <%= link_to document.title_or_label, [hyrax, :dashboard, document], id: "src_copy_link_#{document.id}" %>
+    <%= link_to document.title_or_label, [hyrax, :dashboard, document], target: "_blank", id: "src_copy_link_#{document.id}" %>
   </td>
   <td><%= media_count %></td>
   <td><%= display_date(document.modified_date) %></td>
   <td><%= permission_badge_by_value(document.visibility) %></td>
   <td>
     <% if can? :edit, parent_id %>
-    <button type="button" class="btn btn-xs btn-danger remove-subcollection-button"><%= t('hyrax.collections.show.buttons.remove_this_sub_collection') %></button>
+    <button type="button" class="btn btn-xs btn-danger remove-subcollection-button" 
+    data-id="<%= document.id %>"
+    data-parent-id="<%= parent_id %>"
+    data-post-url="<%= hyrax.dashboard_remove_child_relationship_under_path(parent_id, document.id) %>"><%= t('hyrax.collections.show.buttons.remove_this_sub_collection') %></button>
     <% end %>
   </td>
 </tr>

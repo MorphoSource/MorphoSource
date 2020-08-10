@@ -6,7 +6,7 @@ class Organization < Morphosource::Works::Base
 
   self.indexer = OrganizationIndexer
   # Change this to restrict which works can be added as a child.
-  self.valid_child_concerns = [Device, BiologicalSpecimen, CulturalHeritageObject, Attachment]
+  self.valid_child_concerns = [Device, BiologicalSpecimen, CulturalHeritageObject]
 
   validates :title, presence: { message: 'Your work must have a title.' }
 

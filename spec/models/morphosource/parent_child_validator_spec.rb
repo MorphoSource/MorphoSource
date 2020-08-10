@@ -7,7 +7,7 @@ require 'rails_helper'
     let(:invalid_child) { Organization.new( { title: ["Sample Organization"]} )}
     let(:invalid_child2) { BiologicalSpecimen.new( { title: ["Sample BiologicalSpecimen"] } ) }
     let(:valid_parent) { ImagingEvent.new( { title: ["Sample Imaging Event"]} )}
-    let(:invalid_parent) { Attachment.new( { title: ["Sample Attachment"]} )}
+    let(:invalid_parent) { Media.new( { title: ["Sample Parent Media"]} )}
     let(:invalid_parent2) { CulturalHeritageObject.new( { title: ["Sample CHO"]} )}
 
 
@@ -19,7 +19,7 @@ require 'rails_helper'
       end
 
       it "raises an error" do
-        expect( record.errors[:works] ).to match_array( ['valid children for Media do not include Organization. Valid child concerns are ProcessingEvent, Attachment'] )
+        expect( record.errors[:works] ).to match_array( ['valid children for Media do not include Organization. Valid child concerns are ProcessingEvent'] )
       end
     end
 
@@ -31,7 +31,7 @@ require 'rails_helper'
       end
 
       it "raises an error" do
-        expect( invalid_parent.errors[:works] ).to match_array( ["valid children for Attachment do not include Media. Valid child concerns are "] )
+        expect( invalid_parent.errors[:works] ).to match_array( ["valid children for Media do not include Media. Valid child concerns are ProcessingEvent"] )
       end
     end
 
@@ -64,8 +64,8 @@ require 'rails_helper'
 
       it "raises errors" do
         expect( record.errors[:works][0] ).to include("valid children for Media do not include", "BiologicalSpecimen", "Organization" )
-        expect( invalid_parent.errors[:works] ).to match_array( ["valid children for Attachment do not include Media. Valid child concerns are "])
-        expect( invalid_parent2.errors[:works] ).to match_array( ["valid children for CulturalHeritageObject do not include Media. Valid child concerns are ImagingEvent, Attachment"])
+        expect( invalid_parent.errors[:works] ).to match_array( ["valid children for Media do not include Media. Valid child concerns are ProcessingEvent"])
+        expect( invalid_parent2.errors[:works] ).to match_array( ["valid children for CulturalHeritageObject do not include Media. Valid child concerns are ImagingEvent"])
       end
     end
 

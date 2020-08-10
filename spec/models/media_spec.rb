@@ -10,8 +10,8 @@ RSpec.describe Media do
       expect(subject.valid_parent_concerns).to match_array([ProcessingEvent, ImagingEvent])
     end
 
-    it "has ProcessingEvent, and Attachment as valid children" do
-      expect(subject.valid_child_concerns).to match_array([ProcessingEvent, Attachment])
+    it "has ProcessingEvent as valid child" do
+      expect(subject.valid_child_concerns).to match_array([ProcessingEvent])
     end
 
   end
@@ -84,8 +84,8 @@ RSpec.describe Media do
         expect(subject.valid_parent_concerns).to match_array([ProcessingEvent, ImagingEvent])
       end
 
-      it "has ProcessingEvent, and Attachment as valid children" do
-        expect(subject.valid_child_concerns).to match_array([ProcessingEvent, Attachment])
+      it "has ProcessingEvent as valid child" do
+        expect(subject.valid_child_concerns).to match_array([ProcessingEvent])
       end
 
     end

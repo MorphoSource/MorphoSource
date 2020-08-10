@@ -18,8 +18,8 @@ RSpec.describe Device do
       expect(subject.valid_parent_concerns).to match_array([Organization])
     end
 
-    it "has ImagingEvent and Attachment as valid child concerns" do
-      expect(subject.valid_child_concerns).to match_array([ImagingEvent, Attachment])
+    it "has ImagingEvent as valid child concern" do
+      expect(subject.valid_child_concerns).to match_array([ImagingEvent])
     end
 
   end
@@ -51,8 +51,8 @@ RSpec.describe Device do
         expect(subject.valid_parent_concerns).to match_array([Organization])
       end
 
-      it "has ImagingEvent and Attachment as valid child concerns" do
-        expect(subject.valid_child_concerns).to match_array([ImagingEvent, Attachment])
+      it "has ImagingEvent as valid child concerns" do
+        expect(subject.valid_child_concerns).to match_array([ImagingEvent])
       end
 
     end

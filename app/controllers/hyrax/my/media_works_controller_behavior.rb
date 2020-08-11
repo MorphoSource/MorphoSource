@@ -26,8 +26,8 @@ module Hyrax
         # The search builder to find the collection
         self.single_item_search_builder_class = SingleCollectionSearchBuilder
         # The search builder to find the collections' members
-        self.membership_service_class = Morphosource::MediaWorksMemberService
-        self.information_service_class = Morphosource::MediaWorksInformationService
+        self.membership_service_class = Morphosource::Collections::CollectionSetMemberService
+        self.information_service_class = Morphosource::Collections::CollectionSetInformationService
       end
 
       #def show
@@ -101,13 +101,13 @@ module Hyrax
 
         # Instantiate the membership query service
         def collection_member_service 
-           membership_service_class.new(scope: self, collection: collection, params: params_for_query)
+           membership_service_class.new(scope: self, collections: @user_collections, params: params_for_query)
         end
 
         # Instantiate the information query service
         def collection_information_service
-#@collection_information_service ||= information_service_class.new( '00000C138' )
-          @collection_information_service ||= information_service_class.new(current_user)
+          @collection_information_service ||= information_service_class.new(@user_collections) 
+  #        @collection_information_service ||= information_service_class.new(current_user)
         end
 
         #def subcollection_media_service(subcollection)
@@ -118,7 +118,9 @@ module Hyrax
 
 
         def member_works
-          @response = collection_member_service.all_member_media(current_user, media_filter_params)
+#          @response = collection_member_service.all_member_media(current_user, media_filter_params)
+          @response = collection_member_service.all_member_media(
+            @collection_organization_object_ids, media_filter_params)
           @member_docs = @response.documents
           @members_count = @response.total
           @media_member_count = @members_count

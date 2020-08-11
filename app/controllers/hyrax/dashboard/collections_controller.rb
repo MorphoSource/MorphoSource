@@ -105,6 +105,13 @@ module Hyrax
         render partial: "hyrax/teams/tab_bso"
       end
 
+      def chos
+        presenter
+        query_collection_information
+        query_collection_members_for_po
+        render partial: "hyrax/teams/tab_cho"
+      end
+
       # todo: need to add logic to keep the old hyrax view if still needed
       def show_hyrax
         if request.parameters['hyrax'].present?
@@ -197,11 +204,11 @@ module Hyrax
       def after_destroy(_id)
         # leaving id to avoid changing the method's parameters prior to release
         respond_to do |format|
+          format.js {render :js => "location.reload()"}
           format.html do
-            redirect_to my_collections_path,
-                        notice: t('hyrax.dashboard.my.action.collection_delete_success')
+            redirect_to request.referrer
           end
-          format.json { head :no_content, location: my_collections_path }
+          format.json { head :no_content, location: '/dashboard/my/collections' }
         end
       end
 
@@ -501,8 +508,8 @@ module Hyrax
           @bso_member_count = @bso_response.total
 
           @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
-          @cho_member_docs = @bso_response.documents
-          @cho_member_count = @bso_response.total
+          @cho_member_docs = @cho_response.documents
+          @cho_member_count = @cho_response.total
 
           if !@bso_member_count.present? && @cho_member_count.present?
             @response = @cho_response

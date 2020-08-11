@@ -10,6 +10,7 @@ module Hyrax
       :organization_institution_name,
       :organization_institution_code,
       :organization_collection_code,
+      :organization_recordset_id,
       :organization_description,
       :organization_address,
       :organization_city,
@@ -27,6 +28,16 @@ module Hyrax
       @collection = Collection.find(id)
       @collection_managers = manager_list(@collection.managers)
       set_organization_data 
+    end
+
+    def membership(current_user)
+      if @collection.managers.include?(current_user)
+        'Manager'
+      elsif @collection.editors.include?(current_user)
+        'Editor'
+      elsif @collection.viewers.include?(current_user)
+        'Viewer'
+      end
     end
 
     def manager_list(managers)
@@ -116,6 +127,7 @@ module Hyrax
         @organization_institution_name = organization.institution_name
         @organization_institution_code = organization.institution_code
         @organization_collection_code = organization.collection_code
+        @organization_recordset_id = organization.recordset_id
         @organization_description = organization.description
         @organization_address = organization.address
         @organization_city = organization.city

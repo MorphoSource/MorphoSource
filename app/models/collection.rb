@@ -129,6 +129,16 @@ class Collection < ActiveFedora::Base
     work.download_groups -= [downloaders_group.name]
   end
 
+  def membership_of(user)
+    membership_list = []
+    membership_list << 'Manager' if managers.include?(user)
+    membership_list << 'Editor' if editors.include?(user)
+    membership_list << 'Depositor' if depositors.include?(user)
+    membership_list << 'Viewer' if viewers.include?(user)
+    membership_list << 'Downloader' if downloaders.include?(user)
+    membership_list
+  end
+
   private
 
     def add_depositor_to_managers

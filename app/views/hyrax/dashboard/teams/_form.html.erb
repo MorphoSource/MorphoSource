@@ -86,7 +86,7 @@
       <% elsif @po_type == 'cho' %>
         <li role="presentation">
           <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
-            <i class="fas fa-frog" aria-hidden="true"></i> CHO
+            <i class="fas fa-frog" aria-hidden="true"></i> OBJECTS
           </a>
         </li>
       <% end %>
@@ -224,7 +224,10 @@
             <% end %>
 
             <%= render 'cho_filters' %>
-            <%= render 'hyrax/teams/tab_cho' %>
+            <%#= render 'hyrax/teams/tab_cho' %>
+            <%= render_async dashboard_cho_tab_url(@presenter.id), event_name: "cho-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
           </div>
         </div>
       

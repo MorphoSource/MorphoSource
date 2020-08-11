@@ -44,23 +44,32 @@ Rails.application.routes.draw do
     #end
     get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
+    get 'teams/chos/:id', to: 'teams#chos'
     # media pagination
     get 'team_paging/teams/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/projects/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     # bso pagination
     get 'team_paging/teams/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/projects/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+    # cho pagination
+    get 'team_paging/teams/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'team_paging/projects/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
 
     get 'projects/:id', to: 'teams#show'
     get 'projects/specimens/:id', to: 'teams#specimens'
+    get 'projects/chos/:id', to: 'teams#chos'
     # media pagination
     get 'project_paging/projects/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
     get 'project_paging/teams/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
     # bso pagination
     get 'project_paging/projects/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
     get 'project_paging/teams/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+    # cho pagination
+    get 'project_paging/projects/chos/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'project_paging/teams/chos/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
 
     get 'dashboard/collections/specimens/:id', to: 'dashboard/collections#specimens'
+    get 'dashboard/collections/chos/:id', to: 'dashboard/collections#chos'
     # media pagination
     get 'project_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
@@ -69,6 +78,9 @@ Rails.application.routes.draw do
     # bso pagination
     get 'project_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
     get 'team_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
+    # cho pagination
+    get 'project_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
+    get 'team_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
 
     #resources :projects, controller: 'teams'
     
@@ -79,8 +91,8 @@ Rails.application.routes.draw do
       get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
     end
 
-    #get 'dashboard/my/teams', controller: 'my/teams', action: :index
-    #get 'dashboard/my/projects', controller: 'my/teams', action: :index
+    get 'dashboard/my/teams', controller: 'my/teams', action: :index
+    get 'dashboard/my/projects', controller: 'my/teams', action: :index
 
   end
 
@@ -158,13 +170,14 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   resources :submissions, only: [ :new, :create, :search_bso_ajax, 
-    :search_taxonomy_ajax, :organization_default_media_fields, 
+    :search_taxonomy_ajax, :organization_for_recordset, :organization_default_media_fields, 
     :new_organization_submit, :new_taxonomy_submit, :new_device_submit, 
     :new_processing_event_submit] do
     collection do
       # AJAX in-submission-flow methods
       post 'search_po_ajax'
       post 'save_data'
+      get 'organization_for_recordset'
       get 'organization_default_media_fields'
       # AJAX physical object or media edit page submission methods
       post 'new_organization_submit'

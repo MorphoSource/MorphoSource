@@ -3,6 +3,36 @@ module Morphosource
   module CollectionHelper
     include MediaFinderHelper
 
+    def page_is_team?
+      path_info.include?("teams")      
+    end
+
+    def page_is_project?
+      path_info.include?("projects")      
+    end
+
+    def collection_type
+      if page_is_team?
+        'team'
+      elsif page_is_project?
+        'project'
+      end
+    end
+
+    def collection_count_for(count)
+      count.to_s + ' ' + @collection_list_type.pluralize(count)
+    end
+
+    def ms_dashboard_my_collection_link
+      if page_is_team?
+        "/dashboard/my/teams"
+      elsif page_is_project?
+        "/dashboard/my/projects"
+      else
+        ""
+      end          
+    end
+
     def ms_collection_view_link(id, view)
       current_uri = path_info
       if current_uri.include?("dashboard/collections")
@@ -85,12 +115,28 @@ module Morphosource
       "/projects/specimens/#{id}?#{url_params}"
     end
 
+    def cho_tab_url(id)
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/projects/chos/#{id}?#{url_params}"
+    end
+
     def dashboard_bso_tab_url(id)
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/dashboard/collections/specimens/#{id}?#{url_params}"
+    end
+
+    def dashboard_cho_tab_url(id)
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/dashboard/collections/chos/#{id}?#{url_params}"
     end
 
     def prepare_docs_and_filters_for_media(collection)
@@ -148,7 +194,7 @@ module Morphosource
       @bso_source_options = @bso_source_options.uniq
 
       @bso_extras = get_po_extras(@paged_bso_member_docs)
-      @cho_extra = get_po_extras(@paged_cho_member_docs)
+      @cho_extras = get_po_extras(@paged_cho_member_docs)
     end
 
     def get_po_extras(docs)
@@ -167,6 +213,20 @@ module Morphosource
       else
         'Team'
       end
+    end
+
+    def visibility_label(value)
+      case value
+      when 'open'
+        display_value = "Public"
+      when 'authenticated'
+        display_value = "Duke University"
+      when 'restricted'
+        display_value = "Private"
+      else
+        display_value = value
+      end
+      display_value
     end
 
     def publication_status_label(value)

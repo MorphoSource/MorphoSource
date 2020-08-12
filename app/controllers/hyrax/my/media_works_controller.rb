@@ -23,10 +23,18 @@ module Hyrax
       end
 
       def index
-        # The user's collections for the "add to collection" form
-        @user_collections = collections_service.search_results(:deposit)
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+
+        @user_collections_for_view = collections_service.search_results(:view)
+#byebug
+        view_count = @user_collections_for_view.length
+
+        @view_only_count = view_count
+
+        # The user's collections for the "add to collection" form
+        #@user_collections = collections_service.search_results(:deposit)
+
 
         managed_works_count
         @create_work_presenter = create_work_presenter_class.new(current_user)
@@ -34,11 +42,12 @@ module Hyrax
         @user = current_user
         #(@response, @document_list) = query_solr
 
-#@collection = Collection.find('00000C138') #'00000C144')
-#
+
         presenter
-        query_collection_information
-        query_collection_members
+        if @user_collections_for_view.length > 0
+          query_collection_information
+          query_collection_members
+        end
 
 #        prepare_instance_variables_for_batch_control_display
         respond_to do |format|
@@ -47,24 +56,23 @@ module Hyrax
           format.atom { render layout: false }
         end
       end
-
-      def specimens
-        # The user's collections for the "add to collection" form
-        @user_collections = collections_service.search_results(:deposit)
-        presenter
-        query_collection_information
-        query_collection_members_for_po('bso')
-        render :partial => 'tab_bso'
-      end
-
-      def chos
-        @user_collections = collections_service.search_results(:deposit)
-        presenter
-        query_collection_information
-        query_collection_members_for_po('cho')
-        render :partial => "tab_cho"
-      end
-
+#
+#      def specimens
+#        @user_collections_for_view = collections_service.search_results(:read)
+#        presenter
+#        query_collection_information
+#        query_collection_members_for_po('bso')
+#        render :partial => 'tab_bso'
+#      end
+#
+#      def chos
+#        @user_collections_for_view = collections_service.search_results(:read)
+#        presenter
+#        query_collection_information
+#        query_collection_members_for_po('cho')
+#        render :partial => "tab_cho"
+#      end
+#
       private
 
         def collections_service

@@ -13,7 +13,7 @@
 
   <%# if @collection_count_for_manager > 0 %>
   <div class="row collection-count">
-    <div class="col-xs-12"><span class="label label-info d-inline-block">Manager</span> <span><%#= collection_count_for(@collection_count_for_manager) %></span></div>
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Viewable</span> <span><%#= @collection_counts["media"] %></span></div>
   </div>
   <%# end %>
 
@@ -47,13 +47,16 @@
 
       <div role="tabpanel" class="tab-pane active" id="media">
         <div class="form-tab-content">
+          <% if @collection_media_groups.present? %>
           <%= render 'media_filters' %>
           <%= render 'tab_media', presenter: @presenter %>
+          <% end %>
         </div>
       </div>
 
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
+          <% if @collection_bso_groups.present? %>
             <%= render 'bso_filters' %>
             <div class="row">
               <!-- Search bar -->
@@ -68,11 +71,13 @@
             <%= render_async bso_tab_url, event_name: "bso-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>
             <% end %>
+          <% end %>
           </div>
         </div>
 
         <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
           <div class="form-tab-content">
+          <% if @collection_cho_groups.present? %>
             <%= render 'cho_filters' %>
             <div class="row">
               <!-- Search bar -->
@@ -87,6 +92,7 @@
             <%= render_async cho_tab_url, event_name: "cho-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>
             <% end %>
+          <% end %>
           </div>
         </div>
 

@@ -11,7 +11,7 @@ module Morphosource
       @collection_bso_groups = @collection_information['bso_groups'] ||= {}
       @collection_cho_groups = @collection_information['cho_groups'] ||= {}
       @collection_object_ids = @collection_information['collection_object_ids'] ||= []
-      #@collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
+      @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
     end
 
     def media_filter_params

@@ -101,13 +101,12 @@ module Hyrax
 
         # Instantiate the membership query service
         def collection_member_service 
-           membership_service_class.new(scope: self, collections: @user_collections, params: params_for_query)
+           membership_service_class.new(scope: self, collections: @user_collections_for_view, params: params_for_query)
         end
 
         # Instantiate the information query service
         def collection_information_service
-          @collection_information_service ||= information_service_class.new(@user_collections) 
-  #        @collection_information_service ||= information_service_class.new(current_user)
+          @collection_information_service ||= information_service_class.new(@user_collections_for_view) 
         end
 
         #def subcollection_media_service(subcollection)
@@ -118,7 +117,6 @@ module Hyrax
 
 
         def member_works
-#          @response = collection_member_service.all_member_media(current_user, media_filter_params)
           @response = collection_member_service.all_member_media(
             @collection_organization_object_ids, media_filter_params)
           @member_docs = @response.documents
@@ -127,7 +125,7 @@ module Hyrax
         end
 
         def member_works_objects(obj_type)
-          all_object_ids = @collection_object_ids # + @collection_organization_object_ids          
+          all_object_ids = @collection_object_ids + @collection_organization_object_ids          
           case obj_type
           when 'bso'
             @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
@@ -140,9 +138,6 @@ module Hyrax
             @cho_member_count = @cho_response.total
             @response = @cho_response
           end
-#          if !@bso_member_count.present? && @cho_member_count.present?
-#          else
-#          end
         end
 
         # media pagination methods

@@ -30,23 +30,8 @@ module Hyrax
         self.information_service_class = Morphosource::Collections::CollectionSetInformationService
       end
 
-      #def show
-      #  @curation_concern ||= ActiveFedora::Base.find(params[:id])
-      #  presenter
-      #  query_collection_information
-      #  query_collection_members
-      #end
-#
-#      #def specimens
-#      #  @curation_concern ||= ActiveFedora::Base.find(params[:id])
-#      #  presenter
-#      #  query_collection_information
-#      #  query_collection_members_for_po
-#      #  render partial: "tab_bso"
-      #end
-
       def collection
-        action_name == 'show' || action_name == 'specimens' ? @presenter : @collection
+        action_name == 'show' || action_name == 'specimens' || action_name == 'chos' ? @presenter : @collection
       end
 
       private

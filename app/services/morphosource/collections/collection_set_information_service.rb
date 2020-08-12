@@ -10,16 +10,17 @@ module Morphosource
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
-      def self.call(collections)
-        new(collections).call
+      def self.call(user, collections)
+        new(user, collections).call
       end
 
       def self.collection_organization_object_ids(collection_id)
 
       end
 
-      def initialize(collections)
+      def initialize(user, collections)
         @solr = solr_service.new
+        @user = user
         @collections = collections
         query_solr_collection_info
       end
@@ -176,22 +177,35 @@ module Morphosource
 
           # Core query
           if is_org_team && collection_organization_id
-            params[:fq] << assemble_po_id_or_collection_query(
+            core_query = assemble_po_id_or_collection_query(
               team_org_po_ids, 
               Array(collection_id) + subcollection_ids
             )
           elsif collection.collection_type.nestable?
-            params[:fq] << assemble_or_query(
+            core_query = assemble_or_query(
               solrize('member_of_collection_ids', :symbol),
               Array(collection_id) + subcollection_ids
             )
           else
-            params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+            core_query = "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
           end
-          
+
+          params[:fq] << core_query += assemble_user_media_query
+byebug
           solr.get_facet_fields(nil, facet_fields, params)
 
           return solr.facet_fields(facet_fields), solr.count
+        end
+
+
+        def assemble_user_media_query
+          # add media by depositor and creator (not thru collections)
+          role_clauses = [
+            ActiveFedora::SolrQueryBuilder.construct_query_for_rel(depositor: @user.user_key),
+            ActiveFedora::SolrQueryBuilder.construct_query_for_rel(creator: @user.user_key)
+          ]
+          joined_clauses = " OR (#{role_clauses.join(' OR ')})"
+          return joined_clauses
         end
 
         def collection_id_to_project_title_map

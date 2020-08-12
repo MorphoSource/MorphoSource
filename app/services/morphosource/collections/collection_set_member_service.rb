@@ -6,8 +6,9 @@ module Morphosource
       attr_reader :scope, :params, :collections, :collection
       delegate :repository, to: :scope
       
-      def initialize(scope:, collections:, params:)
+      def initialize(scope:, user:, collections:, params:)
         @scope = scope
+        @user = user
         @collections = collections
         @collection = Collection.find(@collections.first.id) # todo: need to figure out why collection is still needed
         @params = params
@@ -29,10 +30,21 @@ module Morphosource
         core_fq = "(#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{collection_ids.join(' OR ')}))"
         core_fq += assemble_multiple_collection_query if collection.collection_type.nestable?
         core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
+        core_fq += assemble_user_media_query
         fq_params << core_fq
         fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"
         response = available_member_works_filter_query(fq_params: fq_params)
         return response
+      end
+
+      def assemble_user_media_query
+        # add media by depositor and creator (not thru collections)
+        role_clauses = [
+          ActiveFedora::SolrQueryBuilder.construct_query_for_rel(depositor: @user.user_key),
+          ActiveFedora::SolrQueryBuilder.construct_query_for_rel(creator: @user.user_key)
+        ]
+        joined_clauses = " OR (#{role_clauses.join(' OR ')}) "
+        return joined_clauses
       end
 
       # @api public

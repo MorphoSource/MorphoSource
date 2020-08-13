@@ -42,6 +42,12 @@ $( document ).ready(function() {
   };
 
   var licenseChange = function(media_or_organization) {
+    if ( /\/by-nc/.test($(`select#${media_or_organization}_license`).val()) ) {
+      setCommercialUsePermitted(media_or_organization, false);
+    }
+    else {
+      setCommercialUsePermitted(media_or_organization, true);
+    }
   };
 
   var setCommercialUsePermitted = function(media_or_organization, commercial_use_permitted) {
@@ -83,5 +89,16 @@ $( document ).ready(function() {
   $('select[name="organization[rights_statement]"]').change(function() {
     event.preventDefault();
     rightsStatementChange('organization');
+  });
+
+  // When a license statement is selected, prune commercial use options
+  $('select[name="media[license][]"]').change(function() {
+    event.preventDefault();
+    licenseChange('media');
+  });
+
+  $('select[name="organization[license][]"]').change(function() {
+    event.preventDefault();
+    licenseChange('organization');
   });
 });

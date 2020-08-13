@@ -29,23 +29,19 @@ module Morphosource
       # 3) media representing physical objects from collection-linked media
       def all_member_media(organization_object_ids = [], fq_params = [])
         collection_ids = []
+        subcoll_fq = ""
         collections.each do |collection_doc|
           collection_ids << collection_doc.id
           collection = Collection.find(collection_doc.id)
-          subcoll_fq = assemble_multiple_collection_query_for(collection) if collection.collection_type.nestable?
-#          core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
-
+          subcoll_fq += assemble_multiple_collection_query_for(collection) if collection.collection_type.nestable?
         end
         core_fq = assemble_user_media_query
         core_fq += " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{collection_ids.join(' OR ')}))" if collection_ids.length > 0
-
-#        core_fq += subcoll_fq
-
-#        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
-
+        core_fq += subcoll_fq if subcoll_fq.present?
+        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
         fq_params << core_fq
         fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"
-byebug
+
         response = available_member_works_filter_query(fq_params: fq_params)
         return response
       end

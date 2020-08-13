@@ -47,11 +47,11 @@ module Morphosource
           @collection_id = collection_doc.id
           @collection = Collection.find(@collection_id)
           @is_org_team = @collection.team?
- #         if is_org_team && Collection.find(collection_id).organization.present?
- #           @collection_organization_id = Collection.find(collection_id).organization.id
- #           @team_org_po_ids += organization_po_ids
- #           @n_media_team_organization += team_org_origin_count if is_org_team
- #         end
+          if is_org_team && Collection.find(collection_id).organization.present?
+            @collection_organization_id = Collection.find(collection_id).organization.id
+            @team_org_po_ids += organization_po_ids
+            @n_media_team_organization += team_org_origin_count if is_org_team
+          end
           this_facet_results, this_media_count = media_facet_query
           @facet_results = @facet_results.merge(this_facet_results)
           @media_count += this_media_count
@@ -61,7 +61,6 @@ module Morphosource
           @n_idigbio += bso_idigbio_count
 
           @collection_project_map.merge(collection_id_to_project_title_map)
-
           @organizations += organization_docs
 
         end
@@ -83,35 +82,35 @@ module Morphosource
         info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
         info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
 
-#        organization_groups
-#
-#        if is_org_team && collection_organization_id.present?
-#          info['media_groups']['origin'] = {
-#            'team_organization' => n_media_team_organization,
-#            'team_collection' => media_count - n_media_team_organization
-#          }
-#
-#          if bso_ids.present?
-#            team_bso_ids = team_org_po_ids.select { |x| bso_ids.include? x }
-#            info['bso_groups']['origin'] = {
-#              'team_organization' => team_bso_ids.length,
-#              'team_collection' => bso_ids.length - team_bso_ids.length
-#            }
-#          end
-#
-#          if cho_ids.present?
-#            team_cho_ids = team_org_po_ids.select { |x| cho_ids.include? x }
-#            info['cho_groups']['origin'] = {
-#              'team_organization' => team_cho_ids.length,
-#              'team_collection' => cho_ids.length - team_cho_ids.length
-#            }
-#          end
-#
-#          if team_org_po_ids.present?
-#            info['organization_object_ids'] = team_org_po_ids
-#          end
-#        end
-#
+        organization_groups
+
+        if is_org_team && collection_organization_id.present?
+          info['media_groups']['origin'] = {
+            'team_organization' => n_media_team_organization,
+            'team_collection' => media_count - n_media_team_organization
+          }
+
+          if bso_ids.present?
+            team_bso_ids = team_org_po_ids.select { |x| bso_ids.include? x }
+            info['bso_groups']['origin'] = {
+              'team_organization' => team_bso_ids.length,
+              'team_collection' => bso_ids.length - team_bso_ids.length
+            }
+          end
+
+          if cho_ids.present?
+            team_cho_ids = team_org_po_ids.select { |x| cho_ids.include? x }
+            info['cho_groups']['origin'] = {
+              'team_organization' => team_cho_ids.length,
+              'team_collection' => cho_ids.length - team_cho_ids.length
+            }
+          end
+
+          if team_org_po_ids.present?
+            info['organization_object_ids'] = team_org_po_ids
+          end
+        end
+
         info     
       end
 

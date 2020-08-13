@@ -2,7 +2,7 @@
 module Morphosource
   module Collections
     # Responsible for retrieving collection members
-    class CollectionSetMemberService < Hyrax::Collections::CollectionMemberService
+    class CollectionSetMemberService 
       attr_reader :scope, :params, :collections, :collection
       delegate :repository, to: :scope
       
@@ -10,8 +10,15 @@ module Morphosource
         @scope = scope
         @user = user
         @collections = collections
-        @collection = Collection.find(@collections.first.id) # todo: need to figure out why collection is still needed
         @params = params
+      end
+
+      # @api public
+      #
+      # Collections which are members of the given collection
+      # @return [Blacklight::Solr::Response] {up to 50 solr documents}
+      def available_member_subcollections(coll)
+        query_solr(query_builder: subcollections_search_builder(coll), query_params: params_for_subcollections)
       end
 
       # @api public
@@ -24,15 +31,21 @@ module Morphosource
         collection_ids = []
         collections.each do |collection_doc|
           collection_ids << collection_doc.id
-#          core_fq += assemble_multiple_collection_query if collection.collection_type.nestable?
+          collection = Collection.find(collection_doc.id)
+          subcoll_fq = assemble_multiple_collection_query_for(collection) if collection.collection_type.nestable?
 #          core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
+
         end
-        core_fq = "(#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{collection_ids.join(' OR ')}))"
-        core_fq += assemble_multiple_collection_query if collection.collection_type.nestable?
-        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
-        core_fq += assemble_user_media_query
+        core_fq = assemble_user_media_query
+        core_fq += " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{collection_ids.join(' OR ')}))" if collection_ids.length > 0
+
+#        core_fq += subcoll_fq
+
+#        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
+
         fq_params << core_fq
         fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"
+byebug
         response = available_member_works_filter_query(fq_params: fq_params)
         return response
       end
@@ -43,7 +56,7 @@ module Morphosource
           ActiveFedora::SolrQueryBuilder.construct_query_for_rel(depositor: @user.user_key),
           ActiveFedora::SolrQueryBuilder.construct_query_for_rel(creator: @user.user_key)
         ]
-        joined_clauses = " OR (#{role_clauses.join(' OR ')}) "
+        joined_clauses = "(#{role_clauses.join(' OR ')}) "
         return joined_clauses
       end
 
@@ -68,8 +81,17 @@ module Morphosource
 
       # @api private
       #
-      def assemble_multiple_collection_query
-        subcollection_ids = available_member_subcollections.documents.map { |s| s['id'] }
+#      def assemble_multiple_collection_query
+#        subcollection_ids = available_member_subcollections.documents.map { |s| s['id'] }
+#        if subcollection_ids.present?
+#          " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
+#        else
+#          ""
+#        end
+#      end
+
+      def assemble_multiple_collection_query_for(coll)
+        subcollection_ids = available_member_subcollections(coll).documents.map { |s| s['id'] }
         if subcollection_ids.present?
           " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
         else
@@ -97,6 +119,58 @@ module Morphosource
           query_builder.merge(rows: initial_rows)
         end
       end
+
+
+
+      # from app/services/hyrax/collections/collection_member_service.rb
+
+        # @api private
+        #
+        # set up a member search builder for works only
+        # @return [CollectionMemberSearchBuilder] new or existing
+        def works_search_builder
+          @works_search_builder ||= Hyrax::CollectionSetMemberSearchBuilder.new(scope: scope, collections: collections, search_includes_models: :works)
+        end
+
+        # @api private
+        #
+        # set up a member search builder for collections only
+        # @return [CollectionMemberSearchBuilder] new or existing
+        def subcollections_search_builder(collection)
+          @subcollections_search_builder ||= Hyrax::CollectionMemberSearchBuilder.new(scope: scope, collection: collection, search_includes_models: :collections)
+        end
+
+        # @api private
+        #
+        # set up a member search builder for returning work ids only
+        # @return [CollectionMemberSearchBuilder] new or existing
+        def work_ids_search_builder
+          @work_ids_search_builder ||= Hyrax::CollectionSetMemberSearchBuilder.new(scope: scope, collections: collections, search_includes_models: :works)
+        end
+
+        # @api private
+        #
+        def query_solr(query_builder:, query_params:)
+          repository.search(query_builder.with(query_params).query)
+        end
+
+        # @api private
+        #
+        def query_solr_with_field_selection(query_builder:, fl:)
+          repository.search(query_builder.merge(fl: fl).query)
+        end
+
+        # @api private
+        #
+        # Blacklight pagination still needs to be overridden and set up for the subcollections.
+        # @return <Hash> the additional inputs required for the subcollection member search builder
+        def params_for_subcollections
+          # To differentiate current page for works vs subcollections, we have to use a sub_collection_page
+          # param. Map this to the page param before querying for subcollections, if it's present
+          params[:page] = params.delete(:sub_collection_page)
+          params
+        end
+
     end
   end
 end

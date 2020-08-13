@@ -191,7 +191,6 @@ module Morphosource
           end
 
           params[:fq] << core_query += assemble_user_media_query
-byebug
           solr.get_facet_fields(nil, facet_fields, params)
 
           return solr.facet_fields(facet_fields), solr.count

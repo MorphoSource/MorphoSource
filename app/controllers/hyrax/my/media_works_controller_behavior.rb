@@ -72,8 +72,6 @@ module Hyrax
         end
 
 
-
-
         def query_collection_members
           member_works
           prepare_docs_and_filters_for_media
@@ -94,9 +92,9 @@ module Hyrax
           @collection_information_service ||= information_service_class.new(current_user, @user_collections_for_view) 
         end
 
-        #def subcollection_media_service(subcollection)
-        #  membership_service_class.new(scope: self, collection: subcollection, params: params_for_query)
-        #end
+        def subcollection_member_service(subcollection)
+          membership_service_class.new(scope: self, user: current_user, collection: subcollection, params: params_for_query)
+        end
 
         def member_works
           @response = collection_member_service.all_member_media(

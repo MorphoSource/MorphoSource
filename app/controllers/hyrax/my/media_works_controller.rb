@@ -27,20 +27,16 @@ module Hyrax
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
 
         @user_collections_for_view = collections_service.search_results(:view)
-#byebug
-        view_count = @user_collections_for_view.length
+#        view_count = @user_collections_for_view.length
 
         # The user's collections for the "add to collection" form
         #@user_collections = collections_service.search_results(:deposit)
         managed_works_count
         @create_work_presenter = create_work_presenter_class.new(current_user)
         @user = current_user
-        #(@response, @document_list) = query_solr
         presenter
-        if @user_collections_for_view.length > 0
-          query_collection_information
-          query_collection_members
-        end
+        query_collection_information
+        query_collection_members
         # prepare_instance_variables_for_batch_control_display
         respond_to do |format|
           format.html {}

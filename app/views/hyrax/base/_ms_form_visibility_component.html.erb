@@ -100,7 +100,7 @@
 
     <script>
       <!-- add alert if default permissions set -->
-      <% if @media_form.model.download_permission %>
+      <% if defined?(@media_form) && @media_form.model.download_permission %>
         $('#publication-options').one( "click", function() {
           alert( "<%= alert(@organization) %>" );
         });

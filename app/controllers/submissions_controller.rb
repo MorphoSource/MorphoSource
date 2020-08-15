@@ -125,6 +125,8 @@ class SubmissionsController < ApplicationController
     clear_session_submission_settings
     reinstantiate_submission
 
+    byebug
+
     @submission.taxonomy_params_array = []
     @submission.taxonomy_id_array = @submission.taxonomy_id_array.present? ? @submission.taxonomy_id_array.split(',') : []
     @submission.taxonomy_gbif_key_array = @submission.taxonomy_gbif_key_array.present? ? @submission.taxonomy_gbif_key_array.split(',') : []
@@ -374,7 +376,9 @@ class SubmissionsController < ApplicationController
   def create_work_if_needed(work, params)
     if !@submission.public_send(to_id(work)).present? && params[work]
       puts("Creating #{work}")
-      @submission.public_send(to_id(work) + '=', prepare_and_create_work(work, params))
+      new_work_id = prepare_and_create_work(work, params)
+      @submission.public_send(to_id(work) + '=', new_work_id)
+      create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
     end
   end
 
@@ -520,6 +524,24 @@ class SubmissionsController < ApplicationController
     end
 
     model_params.merge!(new_params)
+  end
+
+  def create_attachment_if_needed(work, id)
+    byebug
+    field = attachment_fields[work]
+    return if field == 'agreement' && params[:media][:agreement_uri].present?
+    if params[field].present? && Morphosource.attachment_formats.include?(File.extname(params[field].original_filename))
+      Morphosource::AttachmentService.create(id, field, params[field])
+      params.delete(field)
+    end
+  end
+
+  def attachment_fields
+    { 
+      'imaging_event' => 'ie_description', 
+      'processing_event' => 'pe_description',
+      'media' => 'agreement' 
+    }
   end
 
   # Utility functions

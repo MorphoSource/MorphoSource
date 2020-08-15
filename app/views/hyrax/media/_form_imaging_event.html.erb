@@ -14,6 +14,13 @@
     </div>
     <%= render_edit_field_partial('software', f: i) %>
     <%= render_edit_field_partial('description', f: i) %>
+    <%= render_edit_field_partial(
+      'attachment', 
+      f: i, 
+      field: 'ie_description', 
+      label: 'Description attachment file',
+      curation_concern: @imaging_event_form.model
+    ) %>
 
     <div class="ie_xray_ct">
     <%= render_edit_field_partial('exposure_time', f: i) %>

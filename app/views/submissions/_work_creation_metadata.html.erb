@@ -7,6 +7,15 @@
           <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
         </div>
       </div>
+    <% elsif term == :description && f.object.model.class == ImagingEvent %>
+      <%= render_edit_field_partial(term, f: f) %>
+      <%= render_edit_field_partial(
+        'attachment', 
+        f: f, 
+        field: 'ie_description', 
+        label: 'Description attachment file',
+        curation_concern: nil
+      ) %>
     <% else %>
       <%= render_edit_field_partial(term, f: f) %>
     <% end %>

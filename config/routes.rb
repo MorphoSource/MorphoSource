@@ -123,7 +123,10 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     resources :downloads, only: :show
+    get '/attachments/:id', to: 'attachments#show', as: 'attachment'
   end
+
+  
 
   mount Hyrax::Engine, at: '/'
   resources :welcome, only: 'index'

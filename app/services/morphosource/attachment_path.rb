@@ -16,6 +16,10 @@ module Morphosource
       def attachments_for_reference(object)
         new(object).all_paths
       end
+
+      def attachment_for_field(object, field_name)
+        new(object).all_paths.find { |p| p.include? field_name }
+      end
     end
 
     # @param [ActiveFedora::Base or String] object either the AF object or its id

@@ -65,7 +65,7 @@ module Hyrax
 
     self.required_fields = [:media_type]
 
-    self.single_valued_fields = [:short_description, :media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :series_type, :unit, :identifier, :related_url, :terms_of_use, :download_reviewer, :permits_3d_use, :permits_commercial_use]
+    self.single_valued_fields = [:short_description, :media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :series_type, :unit, :identifier, :related_url, :terms_of_use, :download_reviewer, :agreement_uri, :permits_3d_use, :permits_commercial_use]
 
     self.permissions_terms = [ :download_reviewer, :agreement_uri, :license, :rights_statement, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as]
 

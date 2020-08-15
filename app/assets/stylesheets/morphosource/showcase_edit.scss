@@ -171,6 +171,16 @@ input.disabled {
     }
   }
 
+  .file-field-input {
+    width: 100%;
+  }
+
+  .attachment-link {
+    border: 1px solid #DDDDDD;
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+  }
+
   .media-showcase .show-actions, 
   .show-actions {
     padding: 3.5vw 0;

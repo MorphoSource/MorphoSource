@@ -1311,6 +1311,21 @@ $( document ).ready(function() {
             }
           }
 
+          // Add IE and PE attachments, if necessary
+          if ($('input#pe_description').val()) {
+            var fileField = $('input#pe_description');
+            fileField.addClass('hide');
+            var clone = fileField.clone();
+            fileField.after(clone).appendTo('#new_media');
+          }
+
+          if ($('input#ie_description').val()) {
+            var fileField = $('input#ie_description');
+            fileField.addClass('hide');
+            var clone = fileField.clone();
+            fileField.after(clone).appendTo('#new_media');
+          }
+
           console.log($('#new_media').serializeArray());
           return true;
         });
@@ -1378,7 +1393,7 @@ $( document ).ready(function() {
         this.setMediaPermissionFieldEvent();
 
         // Comment out for debug ability to access any step any time
-        this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        // this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
       }
 
       setMediaPermissionFieldEvent() {

@@ -92,9 +92,15 @@ module Hyrax
 
     def update
       # Handle possible attachment upload
-      if params[:agreement] && Morphosource.attachment_formats.include?(File.extname(params[:agreement].original_filename))
+      if params[:media][:agreement_uri].present? && Morphosource::AttachmentService.get(curation_concern.id, 'agreement').present?
+        Morphosource::AttachmentService.delete(curation_concern.id, 'agreement')
+      elsif params[:agreement] && Morphosource.attachment_formats.include?(File.extname(params[:agreement].original_filename))
         Morphosource::AttachmentService.create(curation_concern.id, 'agreement', params[:agreement])
         params.delete(:agreement)
+        params[:media][:agreement_uri] = ''
+      elsif params[:media_attachment_delete] == 'delete'
+        Morphosource::AttachmentService.delete(curation_concern.id, 'agreement')
+        params.delete(:media_attachment_delete)
       end
 
       if file_formats_valid? && actor.update(actor_environment)

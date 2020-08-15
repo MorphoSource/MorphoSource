@@ -10,7 +10,14 @@
         </div>
     </div>
     <%= p.input :software, as: :multi_value %>
-    <%= p.input :description, label: 'Full description' %>
+    <%= render_edit_field_partial('description', f: p) %>
+    <%= render_edit_field_partial(
+      'attachment', 
+      f: p, 
+      field: 'pe_description', 
+      label: 'Description attachment file',
+      curation_concern: @processing_event_form.model
+    ) %>
 	</div>
 </div>
 <div class="col-sm-6">

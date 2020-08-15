@@ -10,6 +10,10 @@ module Morphosource
       def get(object, field_name)
         new(object, field_name).get
       end
+
+      def delete(object, field_name)
+        new(object, field_name).delete_all_attachments
+      end
     end
 
     def initialize(object, field_name)
@@ -34,6 +38,12 @@ module Morphosource
       else
         raise 'Unacceptable file format for attachment creation'
       end
+    end
+
+    def delete_all_attachments
+      Morphosource::AttachmentPath.attachments_for_reference(id).
+        select { |p| p.include? field_name }.
+        each { |p| FileUtils.rm p }
     end
 
     def get

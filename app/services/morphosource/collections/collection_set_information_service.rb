@@ -6,7 +6,8 @@ module Morphosource
       attr_reader :solr, :collection_id, :collection, :is_org_team, 
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
-        :n_idigbio, :collection_project_map, :organizations, :info, :subcollection_ids
+        :n_idigbio, :collection_project_map, :organizations, :info, :subcollection_ids,
+        :manager_media_count, :editor_media_count, :depositor_media_count, :downloader_media_count, :viewer_media_count
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
@@ -42,6 +43,12 @@ module Morphosource
         @collection_project_map = {}
         @organizations = []
 
+        @manager_media_count = 0
+        @editor_media_count = 0
+        @depositor_media_count = 0
+        @viewer_media_count = 0
+        @downloader_media_count = 0
+
         @collections.each do |collection_doc|
 
           @collection_id = collection_doc.id
@@ -63,7 +70,21 @@ module Morphosource
           @collection_project_map.merge(collection_id_to_project_title_map)
           @organizations += organization_docs
 
+
+          if collection.membership_of(@user).include?('Manager')
+            @manager_media_count = @manager_media_count + this_media_count
+          elsif collection.membership_of(@user).include?('Editor')
+            @editor_media_count = @editor_media_count + this_media_count
+          elsif collection.membership_of(@user).include?('Depositor')
+            @depositor_media_count = @depositor_media_count + this_media_count
+          elsif collection.membership_of(@user).include?('Viewer')
+            @viewer_media_count = @viewer_media_count + this_media_count
+          elsif collection.membership_of(@user).include?('Downloader')
+            @downloader_media_count = @downloader_media_count + this_media_count
+          end
+
         end
+#byebug
 
       end
 
@@ -73,7 +94,12 @@ module Morphosource
             'media' => media_count,
             'po' => physical_object_ids.length,
             'bso' => bso_ids.length,
-            'cho' => cho_ids.length
+            'cho' => cho_ids.length,
+            'manager_media_count' => manager_media_count,
+            'editor_media_count' => editor_media_count,
+            'depositor_media_count' => depositor_media_count,
+            'editor_media_count' => editor_media_count,
+            'viewer_media_count' => viewer_media_count
           },
           'collection_object_ids' => physical_object_ids
         }
@@ -158,7 +184,6 @@ module Morphosource
         end
 
         # Other solr queries #
-
         def media_facet_query
           facet_fields = [
             solrize('media_type', :stored_searchable),
@@ -314,10 +339,9 @@ module Morphosource
           # Todo: This may be not as efficient as is needed. Should index parents on children.
           organizations.map do |o|
             objs = o['member_ids_ssim'].select { |x| physical_object_ids.include? x }
-
             if objs.present?
               info['media_groups']['organization'][o['title_tesim']&.first] = 
-                objs.reduce(0) { |sum, n| sum + po_media_counts[n] } if po_media_counts.present?
+                objs.reduce(0) { |sum, n| sum + po_media_counts[n] if po_media_counts[n].present? }  
 
               info['bso_groups']['organization'][o['title_tesim']&.first] = 
                 objs.select { |x| bso_ids.include? x }.length if bso_ids.present?

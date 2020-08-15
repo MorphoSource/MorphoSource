@@ -13,7 +13,9 @@
 
   <%# if @collection_count_for_manager > 0 %>
   <div class="row collection-count">
-    <div class="col-xs-12"><span class="label label-info d-inline-block">Viewable</span> <span><%#= @collection_counts["media"] %></span></div>
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Managable</span> <span><%= @collection_counts["manager_media_count"] %></span></div>
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Editable</span> <span><%= @collection_counts["editor_media_count"] %></span></div>
+    <div class="col-xs-12"><span class="label label-info d-inline-block">Viewable</span> <span><%= @collection_counts["viewer_media_count"] %></span></div>
   </div>
   <%# end %>
 

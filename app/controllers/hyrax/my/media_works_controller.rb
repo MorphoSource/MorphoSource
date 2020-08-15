@@ -22,21 +22,47 @@ module Hyrax
         Hyrax::My::WorksSearchBuilder
       end
 
+#    def media_and_object_count
+#
+#      #@media_count_for_manager = 0
+#      #@member_docs.each do |doc|
+#      #  media = Media.find(doc.id)
+#      #  if media.membership_of(current_user).include?('Manager')
+#      #    @media_count_for_manager = @media_count_for_manager + 1
+#      #  end
+#      #end
+#
+#      # get viewable count
+#      @user_collections_for_view.each do |doc|
+#        collection = Collection.find(doc.id)
+#        byebug
+#
+#        if collection.membership_of(current_user).include?('Manager')
+#          @collection_count_for_manager = @collection_count_for_manager + 1
+#        end
+#      end      
+#    end
+
       def index
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
 
         @user_collections_for_view = collections_service.search_results(:view)
-#        view_count = @user_collections_for_view.length
-
         # The user's collections for the "add to collection" form
         #@user_collections = collections_service.search_results(:deposit)
-        managed_works_count
         @create_work_presenter = create_work_presenter_class.new(current_user)
         @user = current_user
         presenter
         query_collection_information
         query_collection_members
+
+
+#        media_and_object_count
+
+
+
+
+        #managed_works_count
         # prepare_instance_variables_for_batch_control_display
         respond_to do |format|
           format.html {}

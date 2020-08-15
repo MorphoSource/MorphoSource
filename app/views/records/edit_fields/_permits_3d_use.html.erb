@@ -1,0 +1,9 @@
+<% # app/views/records/edit_fields/_permits_3d_use.html.erb %>
+<% three_d_use_types_service = Morphosource::ThreeDUseTypesService.new %>
+<%= f.input :permits_3d_use, as: :select,
+    collection: three_d_use_types_service.select_all_options,
+    include_blank: false,
+    item_helper: three_d_use_types_service.method(:include_current_value),
+    input_html: { class: 'form-control' },
+    label_wrapper_html: { class: 'parsed' }
+%>

@@ -43,13 +43,13 @@
       </div>
 
       <%= render_edit_field_partial('download_reviewer', f: f) %>
-      <%= render_edit_field_partial('license', f: f) %>
       <%= render_edit_field_partial('rights_statement', f: f) %>
+      <%= render_edit_field_partial('license', f: f) %>
 
       <%= render_edit_field_partial('agreement_uri', f: f) %>
 
-      <div class="row"><div class="col-xs-6 showcase-label">Commercial use permitted</div><div class="col-xs-6 showcase-value">No</div></div>
-      <div class="row"><div class="col-xs-6 showcase-label">3D printing permitted</div><div class="col-xs-6 showcase-value">Not yet implemented</div></div>
+      <%= render_edit_field_partial('permits_commercial_use', f: f) %>
+      <%= render_edit_field_partial('permits_3d_use', f: f) %>
 
       <%= f.input :rights_holder, as: :multi_value %>
       <div class="row">

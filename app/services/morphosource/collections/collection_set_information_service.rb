@@ -7,7 +7,8 @@ module Morphosource
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
         :n_idigbio, :collection_project_map, :organizations, :info, :subcollection_ids,
-        :manager_media_count, :editor_media_count, :depositor_media_count, :downloader_media_count, :viewer_media_count
+        :manager_media_count, :editor_media_count, :depositor_media_count, :downloader_media_count, :viewer_media_count,
+        :manager_po_count, :editor_po_count, :depositor_po_count, :downloader_po_count, :viewer_po_count
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
@@ -32,7 +33,10 @@ module Morphosource
 
       def query_solr_collection_info
 
-        @facet_results, @media_count, @manager_media_count, @editor_media_count, @viewer_media_count = media_facet_query_for_collections
+        @facet_results, @media_count, 
+        @manager_media_count, @editor_media_count, @depositor_media_count, @downloader_media_count, @viewer_media_count, 
+          @manager_po_count, @editor_po_count, @depositor_po_count, @downloader_po_count, @viewer_po_count = media_facet_query_for_collections
+        @manager_media_count += user_managed_media_count
 
         @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
         @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
@@ -55,7 +59,12 @@ module Morphosource
             'editor_media_count' => editor_media_count,
             'depositor_media_count' => depositor_media_count,
             'editor_media_count' => editor_media_count,
-            'viewer_media_count' => viewer_media_count
+            'viewer_media_count' => viewer_media_count,
+            'manager_po_count' => manager_po_count,
+            'editor_po_count' => editor_po_count,
+            'depositor_po_count' => depositor_po_count,
+            'editor_po_count' => editor_po_count,
+            'viewer_po_count' => viewer_po_count
           },
           'collection_object_ids' => physical_object_ids
         }
@@ -108,7 +117,7 @@ module Morphosource
 
         ### Solr collection queries ###
 
-        def single_collection_media_count(collection_id)
+        def media_and_po_count(collection_id)
           query = nil
           params = {
             fq: [
@@ -116,12 +125,28 @@ module Morphosource
               "#{solrize('has_model', :symbol)}:Media"
             ]
           }
+          solr.get(query, params)
+          # also get the PO counts 
+          po_count = 0
+          if solr.docs.present?
+            solr.docs.each do |doc|
+              po_list = doc[solrize('physical_object_id', :stored_searchable)]
+              po_count += po_list.length if po_list.present?
+            end
+          end
+          return solr.count, po_count
+        end
 
+        def user_managed_media_count
+          query = nil
+          params = {
+            fq: [
+              assemble_user_media_query,
+              "#{solrize('has_model', :symbol)}:Media"
+            ]
+          }
           solr.get(query, params)
           solr.count
-
-# also get the PO counts here
-
         end
 
         # Team-specific #
@@ -170,13 +195,6 @@ module Morphosource
             ]
           }
 
-          params_for_user_media = { 
-            rows: 0,
-            fq: [
-              "#{solrize('has_model', :symbol)}:Media",
-            ]
-          }
-
           collection_ids = []
           @team_org_po_ids = []
           @collection_organization_ids = []
@@ -189,6 +207,11 @@ module Morphosource
           depositor_media_count = 0
           viewer_media_count = 0
           downloader_media_count = 0
+          manager_po_count = 0
+          editor_po_count = 0
+          depositor_po_count = 0
+          viewer_po_count = 0
+          downloader_po_count = 0
 
           @collections.each do |collection_doc|
 
@@ -210,19 +233,22 @@ module Morphosource
               is_nestable = true
             end
 
-
-            this_media_count = single_collection_media_count(collection_id)
-byebug
+            this_media_count, this_po_count = media_and_po_count(collection_id)
             if collection.membership_of(@user).include?('Manager')
               manager_media_count += this_media_count
+              manager_po_count += this_po_count
             elsif collection.membership_of(@user).include?('Editor')
               editor_media_count += this_media_count
+              editor_po_count += this_po_count
             elsif collection.membership_of(@user).include?('Depositor')
               depositor_media_count += this_media_count
-            elsif collection.membership_of(@user).include?('Viewer')
-              viewer_media_count += this_media_count
+              depositor_po_count += this_po_count
             elsif collection.membership_of(@user).include?('Downloader')
               downloader_media_count += this_media_count
+              downloader_po_count += this_po_count
+            elsif collection.membership_of(@user).include?('Viewer')
+              viewer_media_count += this_media_count
+              viewer_po_count += this_po_count
             end
 
           end
@@ -244,13 +270,11 @@ byebug
           combined_query += " OR " + assemble_user_media_query
           params[:fq] << combined_query
 
-          params_for_user_media[:fq] << assemble_user_media_query
-          solr.get_facet_fields(nil, facet_fields, params_for_user_media)
-          manager_media_count = solr.count
-
           solr.get_facet_fields(nil, facet_fields, params)
 
-          return solr.facet_fields(facet_fields), solr.count, manager_media_count, editor_media_count, viewer_media_count
+          return solr.facet_fields(facet_fields), solr.count, 
+            manager_media_count, editor_media_count, depositor_media_count, downloader_media_count, viewer_media_count, 
+            manager_po_count, editor_po_count, depositor_po_count, downloader_po_count, viewer_po_count
         end
 
         def assemble_user_media_query

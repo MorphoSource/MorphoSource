@@ -312,7 +312,12 @@ module Hyrax
       if @is_absentee_parent == true
         @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
       else
+        # It's still possible to have an ImagingEvent through the ProcessingEvent, but we prioritize
+        # those directly on the target media
         @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
+        if @imaging_event.nil? && (@processing_event_count > 0)
+          @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
+        end
       end
 
       if @imaging_event.present?

@@ -111,7 +111,8 @@ module Morphosource
         # Team-specific #
 
         def organization_po_ids
-          solr.get_docs('id:'+collection_organization_id, { rows: 1 })&.first[solrize('member_ids', :symbol)]
+          solr_result = solr.get_docs('id:'+@collection_organization_id, { rows: 1 }).first
+          solr_result.present? ? solr_result[solrize('member_ids', :symbol)] : []
         end
 
         def team_org_origin_count

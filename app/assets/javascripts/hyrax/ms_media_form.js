@@ -61,20 +61,7 @@ $( document ).ready(function() {
     $(document).on('change', '#media_media_type', function() {
       adjust_form_media_type();
     });
-
-    // Attachment behavior (in addition to app/assets/javascripts/hyrax/attachments.js)
-    $('.btn-remove-attachment').click(function() {
-      $('input[name="media[agreement_uri]"]').removeAttr('disabled');
-    });
-
-    $('input.file-field-input.agreement-attachment').change(function() {
-      if ($(this).val()) {
-        $('input[name="media[agreement_uri]"]').val('');
-        $('input[name="media[agreement_uri]"]').attr('disabled', 'disabled');
-      } else {
-        $('input[name="media[agreement_uri]"]').removeAttr('disabled');
-      }
-    });
+    
 
     // debug: click save button in standalone form to submit related work form
     $(".btn-save.debug").click(function() {

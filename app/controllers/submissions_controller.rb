@@ -112,7 +112,8 @@ class SubmissionsController < ApplicationController
       message: message,
       default_fields: default_fields,
       organization_alert_message: organization_alert_message,
-      organization_title: organization_title
+      organization_title: organization_title,
+      organization_id: organization.id
     }
     render :json => response_object
   end
@@ -124,8 +125,6 @@ class SubmissionsController < ApplicationController
   def create
     clear_session_submission_settings
     reinstantiate_submission
-
-    byebug
 
     @submission.taxonomy_params_array = []
     @submission.taxonomy_id_array = @submission.taxonomy_id_array.present? ? @submission.taxonomy_id_array.split(',') : []
@@ -527,12 +526,13 @@ class SubmissionsController < ApplicationController
   end
 
   def create_attachment_if_needed(work, id)
-    byebug
     field = attachment_fields[work]
     return if field == 'agreement' && params[:media][:agreement_uri].present?
     if params[field].present? && Morphosource.attachment_formats.include?(File.extname(params[field].original_filename))
       Morphosource::AttachmentService.create(id, field, params[field])
       params.delete(field)
+    elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
+      Morphosource::AttachmentService.create_copy(id, field, submission_params[:organization_for_attachment])
     end
   end
 
@@ -747,7 +747,8 @@ class SubmissionsController < ApplicationController
                 :cultural_heritage_object_search_short_title,
                 :taxonomy_search,
                 :organization_search,
-                :taxonomy_params_array
+                :taxonomy_params_array,
+                :organization_for_attachment
         )
     )
   end
@@ -793,10 +794,21 @@ class SubmissionsController < ApplicationController
       funding: organization.funding,
       publisher: organization.publisher,
       cite_as: organization.cite_as,
-      download_permission: organization.download_permission.first
+      download_permission: organization.download_permission.first,
+      attachment_url: attachment_url(organization)
     }
 
     fields.select {|k, v| v.present? }
   end
 
+  def attachment_url(organization)
+    if organization.attachment('agreement')
+      Rails.application.routes.url_helpers.attachment_path(
+        id: organization.id, 
+        field: 'agreement'
+      )
+    else
+      nil
+    end
+  end
 end

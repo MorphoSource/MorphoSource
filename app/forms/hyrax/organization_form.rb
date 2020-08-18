@@ -30,7 +30,6 @@ module Hyrax
       :agreement_uri,
       :license,
       :rights_statement,
-      :terms_of_use,
       :permits_commercial_use,
       :permits_3d_use,
       :rights_holder,
@@ -40,9 +39,9 @@ module Hyrax
 
     self.required_fields = [:organization_type, :institution_name, :title, :institution_code]
 
-    self.single_valued_fields = [:organization_type, :title, :description, :address, :city, :state_province, :country, :institution_name, :terms_of_use, :cite_as]
+    self.single_valued_fields = [:organization_type, :title, :description, :address, :city, :state_province, :country, :institution_name, :terms_of_use, :cite_as, :download_permission, :download_reviewer, :agreement_uri, :rights_statement, :permits_commercial_use, :permits_3d_use, :cite_as]
 
-    self.media_permissions_fields = [:download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as]
+    self.media_permissions_fields = [:download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as]
 
     def secondary_terms
       terms - primary_terms - media_permissions_fields -

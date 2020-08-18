@@ -180,6 +180,7 @@ Rails.application.routes.draw do
       # AJAX in-submission-flow methods
       post 'search_po_ajax'
       post 'save_data'
+      get 'search_taxonomy_ajax'
       get 'organization_for_recordset'
       get 'organization_default_media_fields'
       # AJAX physical object or media edit page submission methods

@@ -39,21 +39,17 @@ function set_visibility(val) {
       display_class = "label-info";
       break;
     default:
-      display_value = null;
-      display_class = null;
+      display_value = "Private";
+      display_class = "label-danger";
   }
 
   if (current_visibility_value.length) {
-    if (display_value) {
-      current_visibility_value.text(display_value);
-    }
-    if (display_class) {
-      current_visibility_value
-        .removeClass('label-success')
-        .removeClass('label-info')
-        .removeClass('label-danger');
-      current_visibility_value.addClass(display_class);
-    }
+    current_visibility_value.text(display_value);
+    current_visibility_value
+      .removeClass('label-success')
+      .removeClass('label-info')
+      .removeClass('label-danger');
+    current_visibility_value.addClass(display_class);
   }
 }
 
@@ -63,13 +59,11 @@ function select_visibility(visibility) {
 
 $( document ).ready(function() {
   if ( $('form[id*="edit_media"]').length ||
-       $('form[id*="new_media"]').length ||
-       $('form[id*="edit_organization"]').length
-  ) { // if media form page (add/edit)
+       $('form[id*="new_media"]').length ) { // if media form page (add/edit)
     set_initial_value();
 
 
-    $('input[name="media[visibility]"], input[name="organization[visibility]"]').change(function(event){
+    $('input[name="media[visibility]"]').change(function(event){
       console.log('Radio visibility changed');
 
       if ($(this).val()){
@@ -78,10 +72,5 @@ $( document ).ready(function() {
         set_visibility($(this).val());
       }
     });
-  }
-
-  if ( $('form[id*="edit_organization"]').length ) {
-    console.log('hi!');
-    $('form[id*="edit_organization"] input:radio').prop('checked', false);
   }
 });

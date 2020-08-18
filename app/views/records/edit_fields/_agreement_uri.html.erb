@@ -1,6 +1,6 @@
 <div class="form-group row string optional media_agreement_uri attachment-container">
   <div class="col-xs-6 showcase-label">
-    <label class="control-label string optional" for="media_agreement_uri">Additional Usage Agreement</label>
+    <label class="control-label string optional" for="media_agreement_uri">Additional usage agreement</label>
     <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
   </div>
   <div class="col-xs-6 showcase-value">
@@ -17,7 +17,7 @@
     <div class='attachment'>
       <% if curation_concern.present? && curation_concern.attachment('agreement').present? %>
         <div class='attachment-link'>
-          <%= link_to main_app.attachment_path(field: 'agreement') do %>
+          <%= link_to main_app.attachment_path(id: curation_concern.id, field: 'agreement') do %>
             <span>Agreement File</span>
           <% end %>
           <span class='input-group-btn field-controls' style='display: inline;'>

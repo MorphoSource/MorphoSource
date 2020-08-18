@@ -69,9 +69,8 @@
               <%= render_edit_field_partial('license', f: f) %>
               <%= render_edit_field_partial('rights_statement', f: f) %>
               <%= render_edit_field_partial('terms_of_use', f: f) %>
-              <%= render_edit_field_partial('agreement_uri', f: f) %>
-              <%= f.input :permits_commercial_use, as: :select, class: 'form-control' %>
-              <%= f.input :permits_3d_use, as: :select, class: 'form-control' %>
+              <%= render_edit_field_partial('permits_commercial_use', f: f) %>
+              <%= render_edit_field_partial('permits_3d_use', f: f) %>
               <%= render_edit_field_partial('download_reviewer', f: f) %>
 
               <%= f.input :rights_holder, as: :multi_value %>
@@ -98,6 +97,28 @@
               <%= render_edit_field_partial('funding', f: f) %>
               <%= render_edit_field_partial('publisher', f: f) %>
               <%= render_edit_field_partial('cite_as', f: f) %>
+
+              <div>
+                <div id='organization-attachment-section' class='hide'>
+                  <div id='organization-attachment-row' class="row">
+                    <div class="col-xs-6 showcase-label">
+                      <label class="control-label optional" for="organization_attachment"><span>Additional usage agreement </span></label>
+                    </div>
+                    <div class="col-xs-6 showcase-value" id="organization_attachment">
+                      An <a href='#' id='organization-attachment-url'>agreement file</a> has been suggested by physical object organization. <a href='#' id='organization-attachment-remove'>Remove or replace.</a>
+                    </div>
+                  </div>
+                </div>
+                <div id='work-attachment-section'>
+                  <%= render_edit_field_partial('agreement_uri', f: f) %>
+                  <div id='organization-attachment-replace-row' class="row hide">
+                    <div class="col-xs-6 showcase-label"></div>
+                    <div class="col-xs-6 showcase-value">
+                      <a href='#' id='organization-attachment-replace'>Use suggested organization usage agreement</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
           </div>

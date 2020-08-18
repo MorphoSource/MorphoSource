@@ -78,16 +78,39 @@ module Morphosource
 
         def update_organization
           @params = params[:organization]
+          create_attachment_if_needed
           format_update_params
           @params.permit!
           @organization.update(@params)
         end
 
+        def create_attachment_if_needed
+          # Handle possible attachment upload
+          if @params[:agreement_uri].present? && Morphosource::AttachmentService.get(@organization.id, 'agreement').present?
+            Morphosource::AttachmentService.delete(@organization.id, 'agreement')
+          elsif params[:agreement] && Morphosource.attachment_formats.include?(File.extname(params[:agreement].original_filename))
+            Morphosource::AttachmentService.create(@organization.id, 'agreement', params[:agreement])
+            params.delete(:agreement)
+            @params[:agreement_uri] = ''
+          elsif params[:media_attachment_delete] == 'delete'
+            Morphosource::AttachmentService.delete(@organization.id, 'agreement')
+            params.delete(:media_attachment_delete)
+          end
+        end
+
         def format_update_params
+          format_download_permission
           format_rights_holder
-          multi_value_fields = [:download_permission, :download_reviewer, :cite_as, :permits_3d_use, :permits_commercial_use, :rights_statement, :terms_of_use]
+          multi_value_fields = [:download_permission, :download_reviewer, :cite_as, :permits_3d_use, :permits_commercial_use, :rights_statement, :terms_of_use, :agreement_uri]
           multi_value_fields.each do |field|
             @params[field] = Array(@params[field])
+          end
+        end
+
+        def format_download_permission
+          if @params[:visibility].present?
+            @params[:download_permission] = @params[:visibility]
+            @params.delete(:visibility)
           end
         end
 

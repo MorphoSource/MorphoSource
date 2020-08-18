@@ -291,11 +291,24 @@ html {
     padding-right: 6px;
   }
 
-  .batch-action-buttons .btn {
-    margin-right: 4px;
-    font-size: 11px;
+  .batch-action-buttons {
+    .btn {
+      margin-right: 4px;
+      font-size: 11px;
+    }
+    margin-bottom: 4px;
   }
-
+  @media (max-width: 768px) {
+    .batch-action-buttons {
+      .btn, form {
+        width: 100%;
+      }
+      .btn {
+        margin: 0 0 3px;
+      }
+    }
+  }
+  
   #add-selected-to-cart {
     font-size: 11px;
     @media (min-width: 768px) {

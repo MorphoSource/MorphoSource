@@ -6,7 +6,7 @@
     <h1><span class="fa fa-cube %>" aria-hidden="true"></span> Media and Objects</h1>
   </div>
   <div class="col-xs-3 show-actions text-right">
-    <% if can?(:create_any, Media) %>
+    <% if can?(:create, Media) %>
       <%= link_to 'New media', main_app.new_submission_path(restart: true), class: 'btn btn-primary' %>
     <% end %>
   </div>

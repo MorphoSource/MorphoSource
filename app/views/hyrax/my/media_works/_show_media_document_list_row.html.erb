@@ -5,11 +5,11 @@ po_title = media_extra['po_title']
 po_taxonomy = media_extra['po_taxonomy']
 %>
 <tr id="document_<%= id %>">
-  <td class="checkbox">
+  <td class="checkbox" data-behavior="batch-add-button">
     <%= check_box_tag "batch_work_ids[]", id, false, class:"batch_add_selector", id: "batch_work_#{id}" %>
 
-    <%= render 'hyrax/batch_select/add_button', document: document %>&nbsp;
 
+  <%= check_box_tag "batch_document_ids[]", document.id, false, class:"batch_document_selector", id: "batch_document_#{document.id}" %>
 
   </td>
   <td>

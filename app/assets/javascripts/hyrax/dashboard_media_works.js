@@ -120,6 +120,23 @@ $(document).ready(function() {
       
       });
 
+
+      // handle checkbox for both add to cart and add media to collections
+      $('input.batch_add_selector').on('change', function(e){
+        id = $(this).attr('id').split('batch_work_')[1];
+        $('input#'+'batch_document_'+id).prop('checked', $(this).prop('checked'));
+        // might need to show/hide the buttons here
+      });
+
+      $(document).on('click', '#select-all-for-download', function (e) {
+        var checkedStatus = this.checked;
+        // select/de-select both set of checkboxes
+        $('.batch_add_selector, .batch_document_selector').each(function() {
+          $(this).prop('checked', checkedStatus);
+        });
+      });
+
+
     } // / end if dashboard media works
 
 });

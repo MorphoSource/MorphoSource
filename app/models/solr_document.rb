@@ -794,4 +794,9 @@ class SolrDocument
     self["download_reviewer_ssim"].first || self["owner_ssim"] || self["depositor_ssim"]
   end
 
+  # Tags
+  def specimen?
+    self["has_model_ssim"] == ["BiologicalSpecimen"]
+  end
+
 end

@@ -6,7 +6,7 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::Actors::MediaActor do
   let(:next_actor) { double(create: true, update: true) }
-  
+
   subject { described_class.new(next_actor) }
 
   describe '#create' do
@@ -18,9 +18,13 @@ RSpec.describe Hyrax::Actors::MediaActor do
       allow(subject).to receive(:generated_title) { 'Spiffy Generated Title' }
       allow(subject).to receive(:save) { true }
       allow(subject).to receive(:run_callbacks) { true }
+      allow(subject).to receive(:split_keywords) { ['one','two','three'] }
     end
     it 'changes the title attribute' do
       expect { subject.create(env) }.to change{env.attributes['title']}.to([ 'Spiffy Generated Title' ])
+    end
+    it 'changes the keyword attribute' do
+      expect { subject.create(env) }.to change{env.attributes['keyword']}.to([ 'one','two','three' ])
     end
 
     describe 'adding view access to linked teams' do
@@ -120,6 +124,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
     let(:env) { Hyrax::Actors::Environment.new(work, ability, attrs) }
     before do
       allow(subject).to receive(:generated_title) { 'Spiffy Generated Title' }
+      allow(subject).to receive(:split_keywords) { ['one','two','three'] }
       allow(subject).to receive(:save) { true }
       allow(subject).to receive(:run_callbacks) { true }
     end
@@ -128,9 +133,13 @@ RSpec.describe Hyrax::Actors::MediaActor do
     context 'the user updates the work from the work edit page' do
       before do
         allow(env).to receive(:attributes).and_return({ "title" => ['title'] })
+        allow(env).to receive(:attributes).and_return({ "keyword" => ['keyword'] })
       end
       it 'changes the title attribute' do
         expect { subject.update(env) }.to change{env.attributes['title']}.to([ 'Spiffy Generated Title' ])
+      end
+      it 'changes the keyword attribute' do
+        expect { subject.update(env) }.to change{ env.attributes["keyword"]}.to([ 'one','two','three' ])
       end
     end
   end
@@ -193,4 +202,21 @@ RSpec.describe Hyrax::Actors::MediaActor do
     end
   end
 
+  describe '#split_keywords' do
+    let(:work) { Media.new }
+    let(:ability) { Ability.new(User.new) }
+    let(:env) { Hyrax::Actors::Environment.new(work, ability, attrs) }
+    context 'there is no tags attribute' do
+      let(:attrs) { {} }
+      it 'returns nil' do
+        expect(subject.send(:split_keywords, env)).to be(nil)
+      end
+    end
+    context 'there are tags' do
+      let(:attrs) { {'tags' => 'one,two,three'} }
+      it 'splits a string on the commas' do
+        expect(subject.send(:split_keywords, env)).to eq(['one','two','three'])
+      end
+    end
+  end
 end

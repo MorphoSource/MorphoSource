@@ -497,7 +497,7 @@ module Hyrax
     end
 
     def showcase_tags_partial
-      '/hyrax/physical_objects/showcase_tags'
+      '/hyrax/media/showcase_tags'
     end
 
     def showcase_citation_and_download_partial

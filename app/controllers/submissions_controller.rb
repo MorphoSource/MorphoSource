@@ -100,12 +100,14 @@ class SubmissionsController < ApplicationController
       message << ', but no default fields present' if !default_fields.present?
       organization_alert_message = alert(organization)
       organization_title = organization.title
+      organization_id = organization.id
     else
       status = 'FAIL'
       message = 'Organization does not exist'
       default_fields = {}
       organization_alert_message = ''
       organization_title = ''
+      organization_id = nil
     end
     response_object = {
       status: status,
@@ -113,7 +115,7 @@ class SubmissionsController < ApplicationController
       default_fields: default_fields,
       organization_alert_message: organization_alert_message,
       organization_title: organization_title,
-      organization_id: organization.id
+      organization_id: organization_id
     }
     render :json => response_object
   end

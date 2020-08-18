@@ -10,6 +10,8 @@ module Hyrax
 
     class_attribute :single_value_fields, :permissions_terms
 
+    delegate :tags=, :tags, to: :model
+
     # Customizing field terms
 
     self.terms = [
@@ -71,6 +73,10 @@ module Hyrax
 
     def other_terms
       secondary_terms - permissions_terms
+    end
+
+    def self.build_permitted_params
+      super + [:tags]
     end
 
   end

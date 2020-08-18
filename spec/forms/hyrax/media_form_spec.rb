@@ -37,4 +37,10 @@ RSpec.describe Hyrax::MediaForm do
       expect(described_class.new(media, nil, nil).other_terms).to match_array(other_terms)
     end
   end
+
+  describe '.build_permitted_params' do
+    it 'includes tags' do
+      expect(described_class.build_permitted_params).to include(:tags)
+    end
+  end
 end

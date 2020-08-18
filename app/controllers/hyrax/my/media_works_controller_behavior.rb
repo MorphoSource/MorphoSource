@@ -21,7 +21,7 @@ module Hyrax
                         :membership_service_class,
                         :information_service_class
 
-        self.presenter_class = Hyrax::MediaWorksPresenter
+        #self.presenter_class = Hyrax::MediaWorksPresenter
 
         # The search builder to find the collection
         self.single_item_search_builder_class = SingleCollectionSearchBuilder
@@ -36,11 +36,11 @@ module Hyrax
 
       private
 
-        def presenter
-          @presenter ||= begin
-            presenter_class.new(current_user, current_ability)
-          end
-        end
+        #def presenter
+        #  @presenter ||= begin
+        #    presenter_class.new(current_user, current_ability)
+        #  end
+        #end
 
         #def presenter
         #  @presenter ||= begin

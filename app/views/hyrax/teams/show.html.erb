@@ -149,7 +149,7 @@ provide :page_title, construct_page_title(@presenter.title)
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
             <%#= render 'tab_bso' %>
-            <%= render_async bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
+            <%= render_async bso_tab_url_for_collections(@presenter.id), event_name: "bso-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>
             <% end %>
           </div>
@@ -158,7 +158,7 @@ provide :page_title, construct_page_title(@presenter.title)
         <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
           <div class="form-tab-content">
             <%#= render 'tab_cho' %>
-            <%= render_async cho_tab_url(@presenter.id), event_name: "cho-loaded" do %>
+            <%= render_async cho_tab_url_for_collections(@presenter.id), event_name: "cho-loaded" do %>
               <div class="ui-loading-whole-page" style="height:200px"></div>
             <% end %>
           </div>

@@ -1,5 +1,5 @@
 <% show_filter_by = false %>
-<%= form_tag @presenter.media_works_url("cultural_heritage_objects"), method: :get, class: "filters", id: "cho-filters", name: "cho-filters" do %>
+<%= form_tag media_works_url("cultural_heritage_objects"), method: :get, class: "filters", id: "cho-filters", name: "cho-filters" do %>
   <%= hidden_params_for_filters('c_') %>
 
   <div class="filters row">

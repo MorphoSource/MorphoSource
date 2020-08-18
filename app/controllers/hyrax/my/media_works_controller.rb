@@ -30,7 +30,7 @@ module Hyrax
         @user_collections = collections_service.search_results(:deposit)
         @create_work_presenter = create_work_presenter_class.new(current_user)
         @user = current_user
-        presenter
+        #presenter
         query_collection_information
         query_collection_members
         prepare_instance_variables_for_batch_control_display
@@ -43,7 +43,7 @@ module Hyrax
 
       def specimens
         @user_collections_for_view = collections_service.search_results(:view)
-        presenter
+        #presenter
         query_collection_information
         query_collection_members_for_po('bso')
         render :partial => 'tab_bso'
@@ -51,7 +51,7 @@ module Hyrax
 
       def chos
         @user_collections_for_view = collections_service.search_results(:view)
-        presenter
+        #presenter
         query_collection_information
         query_collection_members_for_po('cho')
         render :partial => "tab_cho"

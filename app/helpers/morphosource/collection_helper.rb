@@ -107,7 +107,7 @@ module Morphosource
       request.env['PATH_INFO']
     end
 
-    def bso_tab_url(id)
+    def bso_tab_url_for_collections(id)
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
@@ -115,7 +115,7 @@ module Morphosource
       "/projects/specimens/#{id}?#{url_params}"
     end
 
-    def cho_tab_url(id)
+    def cho_tab_url_for_collections(id)
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.

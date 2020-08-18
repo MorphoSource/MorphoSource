@@ -3,6 +3,9 @@ module Morphosource
   module MediaWorksHelper
     include MediaFinderHelper
 
+    def media_works_url(tab)
+      Rails.application.routes.url_helpers.my_media_index_path + "#" + tab
+    end
 
     def query_collection_information
       @collection_information = collection_information_service.collection_information

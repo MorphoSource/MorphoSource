@@ -357,9 +357,14 @@ html {
 
   }
 
-  .collection-count .label {
-    width: 77px;
-  }
+  .collection-count {
+    span {font-size: 12px}
+    span.label {
+      width: 77px;
+      font-size: 11px;
+      margin-right: 4px;
+    }
+  } 
 
 } /* / teams and projects show page styles */
 
@@ -407,7 +412,8 @@ html {
     border-radius: 0;
   }
 
-  .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big {
+  .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big,
+  .btn-primary:hover, .btn-default:hover, .btn-sm:hover, .btn-xs:hover, .btn-big:hover {
     background-color: $button-color;
     color: $button-font-color;
     border-color: $button-border-color;

@@ -5,7 +5,7 @@ $(document).ready(function() {
       var mediaTable = $('#datatable-media-list').DataTable({
         responsive: {
           details: {
-            type: 'none' // hide the details and button in responsive
+            type: 'column' // hide the details and button in responsive
           }
         },
         //order: [[ 2, "asc" ]],  // if sorting is needed, we might need to sort the same way in gallery view
@@ -61,7 +61,7 @@ $(document).ready(function() {
         var bsoTable = $('#datatable-bso-list').DataTable({
           responsive: {
             details: {
-              type: 'none'
+              type: 'column'
             }
           },
           //order: [[ 1, "asc" ]],
@@ -95,7 +95,7 @@ $(document).ready(function() {
         var choTable = $('#datatable-cho-list').DataTable({
           responsive: {
             details: {
-              type: 'none'
+              type: 'column'
             }
           },
           //order: [[ 1, "asc" ]],
@@ -120,12 +120,15 @@ $(document).ready(function() {
       
       });
 
-
       // handle checkbox for both add to cart and add media to collections
       $('input.batch_add_selector').on('change', function(e){
         id = $(this).attr('id').split('batch_work_')[1];
         $('input#'+'batch_document_'+id).prop('checked', $(this).prop('checked'));
-        // might need to show/hide the buttons here
+        if ($('input.batch_add_selector:checked').length) {
+          $('.batch-action-buttons .btn').removeAttr('disabled').removeClass('disabled');
+        } else {
+          $('.batch-action-buttons .btn').attr('disabled', 'disabled').addClass('disabled');
+        }
       });
 
       $(document).on('click', '#select-all-for-download', function (e) {
@@ -134,6 +137,11 @@ $(document).ready(function() {
         $('.batch_add_selector, .batch_document_selector').each(function() {
           $(this).prop('checked', checkedStatus);
         });
+        if ($('input.batch_add_selector:checked').length) {
+          $('.batch-action-buttons .btn').removeAttr('disabled').removeClass('disabled');
+        } else {
+          $('.batch-action-buttons .btn').attr('disabled', 'disabled').addClass('disabled');
+        }
       });
 
 

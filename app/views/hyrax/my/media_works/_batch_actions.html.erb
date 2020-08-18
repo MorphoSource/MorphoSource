@@ -3,9 +3,9 @@
 <%= form_tag(hyrax.batch_edits_path, method: :delete, class: "batch-select-all button_to-inline", "data-behavior" => 'batch-select-all') do -%>
     <%= hidden_field_tag('update_type', 'delete_all') %>
     <%= hidden_field_tag('return_controller', params[:controller]) %>
-  <%= submit_tag("Delete Selected", class: 'batch-all-button btn btn-sm btn-default submits-batches', data: { confirm: "Deleting a file from #{application_name} is permanent. Click OK to delete this file from #{application_name}, or Cancel to cancel this operation" }) %>
+  <%= submit_tag("Delete Selected", class: 'batch-all-button btn btn-sm btn-default submits-batches disabled', disabled: 'disabled', data: { confirm: "Deleting a file from #{application_name} is permanent. Click OK to delete this file from #{application_name}, or Cancel to cancel this operation" }) %>
 <% end %>
 
 <%= button_tag t('hyrax.dashboard.my.action.add_to_collection'),
-    class: 'btn btn-sm btn-default submits-batches submits-batches-add',
+    class: 'btn btn-sm btn-default submits-batches submits-batches-add disabled', disabled: 'disabled',
     data: { toggle: "modal", target: "#collection-list-container" } %>

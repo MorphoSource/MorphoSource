@@ -28,7 +28,7 @@
 
           <% if can? :deposit, @presenter.solr_document %>
             <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
-                        hyrax.my_works_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
+                        Rails.application.routes.url_helpers.my_media_index_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
                         class: 'btn btn-primary' %>
             <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
           <% end %>
@@ -175,7 +175,7 @@
           <% if can? :deposit, @presenter.solr_document %>
             <div class="row tab-action-buttons">
               <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
-                          hyrax.my_works_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
+                          Rails.application.routes.url_helpers.my_media_index_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
                           class: 'btn btn-primary' %>
 
               <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>

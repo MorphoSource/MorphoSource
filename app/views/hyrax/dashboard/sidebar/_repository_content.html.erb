@@ -1,17 +1,15 @@
   <li class="h5"><%= t('hyrax.admin.sidebar.repository_objects') %></li>
 
-  <%= menu.nav_link('/dashboard/my/projects',
-                    also_active_for: hyrax.dashboard_collections_path) do %>
+  <%= menu.nav_link(Rails.application.routes.url_helpers.my_projects_path) do %>
     <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.projects') %></span>
   <% end %>
 
-  <%= menu.nav_link('/dashboard/my/teams',
-                    also_active_for: hyrax.dashboard_collections_path) do %>
-    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.teams') %></span>
+  <%= menu.nav_link(Rails.application.routes.url_helpers.my_teams_path) do %>
+    <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.teams') %></span>
   <% end %>
 
-  <%= menu.nav_link('/dashboard/my/media') do %>
-    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media') %></span>
+  <%= menu.nav_link(Rails.application.routes.url_helpers.my_media_index_path) do %>
+    <span class="fa fa-cube" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media') %></span>
   <% end %>
 
   <%#= menu.nav_link(hyrax.my_collections_path,

@@ -31,7 +31,7 @@ module Morphosource
 
       # Used by Batch Add to Cart button on Work showcase page
       def batch_create
-        work_ids = params[:batch_work_ids]
+        work_ids = params[:batch_work_ids] || []
         success_count = 0
         already_count = 0
         requested_count = 0

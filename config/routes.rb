@@ -83,7 +83,7 @@ Rails.application.routes.draw do
     get 'team_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
 
     #resources :projects, controller: 'teams'
-    
+
     # Note: the following route might effect pagination links
     namespace :dashboard do
       resources :collections, controller: 'collections'
@@ -123,6 +123,7 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     resources :downloads, only: :show
+    resources :tags, param: :tag, only: [:index, :show]
     get '/attachments/:id', to: 'attachments#show', as: 'attachment'
   end
 
@@ -172,9 +173,9 @@ Rails.application.routes.draw do
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  resources :submissions, only: [ :new, :create, :search_bso_ajax, 
-    :search_taxonomy_ajax, :organization_for_recordset, :organization_default_media_fields, 
-    :new_organization_submit, :new_taxonomy_submit, :new_device_submit, 
+  resources :submissions, only: [ :new, :create, :search_bso_ajax,
+    :search_taxonomy_ajax, :organization_for_recordset, :organization_default_media_fields,
+    :new_organization_submit, :new_taxonomy_submit, :new_device_submit,
     :new_processing_event_submit] do
     collection do
       # AJAX in-submission-flow methods

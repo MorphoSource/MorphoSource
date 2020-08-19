@@ -1,5 +1,5 @@
 import Default from 'hyrax/autocomplete/default'
-import MorphosourceResource from './autocomplete/ms_resource'
+import MorphosourceResource from './autocomplete/resource'
 import Autocomplete from 'hyrax/autocomplete'
 import LinkedData from 'hyrax/autocomplete/linked_data'
 

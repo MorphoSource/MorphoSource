@@ -44,7 +44,7 @@ export default class RegistryEntry {
       // handle the case when event is not passed
       if (evt) {
         evt.preventDefault();
-        let button = $(evt.target);        
+        let button = $(evt.target);
       }
       this.view.addClass('hidden'); // do not show the block
       this.destroyed = true

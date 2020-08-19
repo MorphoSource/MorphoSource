@@ -1,11 +1,11 @@
 //import Registry from 'hyrax/relationships/registry'
-import Registry from './ms_registry'
+import Registry from './registry'
 import Resource from 'hyrax/relationships/resource'
-import OrganizationResource from './ms_organization_resource'
-import TaxonomyResource from './ms_taxonomy_resource'
-import DeviceResource from './ms_device_resource'
-import BiologicalSpecimenResource from './ms_biological_specimen_resource'
-import CulturalHeritageObjectResource from './ms_cultural_heritage_object_resource'
+import OrganizationResource from './organization_resource'
+import TaxonomyResource from './taxonomy_resource'
+import DeviceResource from './device_resource'
+import BiologicalSpecimenResource from './biological_specimen_resource'
+import CulturalHeritageObjectResource from './cultural_heritage_object_resource'
 
 /**
  * This depends on the passed in element containing `data-autocomplete="work'"`
@@ -20,9 +20,9 @@ export default class RelationshipsControl {
    * @param {String} paramKey the key for the type of object we're submitting (e.g. 'generic_work')
    * @param {String} property the property to submit
    * @param {String} templateId the template identifier for new rows
-   * @param {String}  indexStart : (Customized) when creating the input hidden field, start the index using this number.  This 
+   * @param {String}  indexStart : (Customized) when creating the input hidden field, start the index using this number.  This
    *                      will prevent Hyrax to overwrite a property (e.g. work_parents_attributes) which is used
-   *                      in more than one form element 
+   *                      in more than one form element
    */
   constructor(element, members, paramKey, property, templateId, indexStart = 0) {
     this.element = $(element)
@@ -38,7 +38,7 @@ export default class RelationshipsControl {
 
   init() {
     this.bindAddButton();
-    this.displayMembers();      
+    this.displayMembers();
   }
 
   validate() {
@@ -51,17 +51,17 @@ export default class RelationshipsControl {
     if (this.workType == 'organization') {
       this.members.forEach((elem) =>
         this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.organization_type, elem.institution_code, elem.institution_name, elem.collection_code, elem.recordset_id, elem.description, elem.address, elem.city, elem.state_province, elem.country, elem.contact_person))
-      )      
+      )
     } else if (this.workType == 'device') {
       this.members.forEach((elem) =>
         this.registry.addResource(new DeviceResource(elem.id, elem.label, elem.creator, elem.modality, elem.description, elem.organization_institution))
-      )      
+      )
     } else if (this.workType == 'taxonomy') {
       this.members.forEach((elem) =>
         this.registry.addResource(new TaxonomyResource(
-          elem.id, 
-          elem.label, 
-          elem.taxonomy_domain, 
+          elem.id,
+          elem.label,
+          elem.taxonomy_domain,
           elem.taxonomy_kingdom,
           elem.taxonomy_phylum,
           elem.taxonomy_superclass,
@@ -83,12 +83,12 @@ export default class RelationshipsControl {
           elem.depositor,
           this.depositorLink(elem.depositor)
          ))
-      )      
+      )
     } else if (this.workType == 'biological_specimen') {
       this.members.forEach((elem) =>
         this.registry.addResource(new BiologicalSpecimenResource(
-          elem.id, 
-          elem.label, 
+          elem.id,
+          elem.label,
           elem.bibliographic_citation,
           elem.catalog_number,
           elem.collection_code,
@@ -107,12 +107,12 @@ export default class RelationshipsControl {
           elem.source_of_record,
           elem.sex
          ))
-      )      
+      )
     } else if (this.workType == 'cultural_heritage_object') {
       this.members.forEach((elem) =>
         this.registry.addResource(new CulturalHeritageObjectResource(
-          elem.id, 
-          elem.label, 
+          elem.id,
+          elem.label,
           elem.bibliographic_citation,
           elem.catalog_number,
           elem.collection_code,
@@ -127,7 +127,7 @@ export default class RelationshipsControl {
           elem.material,
           elem.short_title
          ))
-      )      
+      )
     } else {
       this.members.forEach((elem) =>
         this.registry.addResource(new Resource(elem.id, elem.label))
@@ -194,9 +194,9 @@ export default class RelationshipsControl {
       //   });
       // }
       this.registry.addResource(new TaxonomyResource(
-        data.id, 
-        data.text, 
-        data.taxonomy_domain, 
+        data.id,
+        data.text,
+        data.taxonomy_domain,
         data.taxonomy_kingdom,
         data.taxonomy_phylum,
         data.taxonomy_superclass,
@@ -220,8 +220,8 @@ export default class RelationshipsControl {
 
     } else if (this.workType == 'biological_specimen') {
       this.registry.addResource(new BiologicalSpecimenResource(
-        data.id, 
-        data.text, 
+        data.id,
+        data.text,
         data.bibliographic_citation,
         data.catalog_number,
         data.collection_code,
@@ -242,8 +242,8 @@ export default class RelationshipsControl {
         ))
     } else if (this.workType == 'cultural_heritage_object') {
       this.registry.addResource(new CulturalHeritageObjectResource(
-        data.id, 
-        data.text, 
+        data.id,
+        data.text,
         data.bibliographic_citation,
         data.catalog_number,
         data.collection_code,

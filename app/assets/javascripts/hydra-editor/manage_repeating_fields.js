@@ -29,7 +29,7 @@
 
     $.fn.manage_fields = function(option) {
         //var hydra_editor = require('hydra-editor/field_manager')
-        var hydra_editor = require('morphosource/field_manager')
+        var hydra_editor = require('morphosource/editor/field_manager')
         return this.each(function() {
             var $this = $(this);
             var data  = $this.data('manage_fields');

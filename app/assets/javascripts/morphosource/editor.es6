@@ -1,10 +1,11 @@
+
 import Editor from 'hyrax/editor'
 //import RelationshipsControl from 'hyrax/relationships/control'
-import RelationshipsControl from './ms_control'
-import MorphosourceSaveWorkControl from './ms_save_work_control'
+import RelationshipsControl from './relationships/control'
+import MorphosourceSaveWorkControl from './save_work/save_work_control'
 //import MorphosourceControlledVocabulary from 'hyrax/editor/controlled_vocabulary'
-import MorphosourceControlledVocabulary from './ms_controlled_vocabulary'
-import MorphosourceAutocomplete from './ms_autocomplete'
+import MorphosourceControlledVocabulary from './controlled_vocabulary'
+import MorphosourceAutocomplete from './autocomplete/autocomplete'
 
 export default class MorphosourceEditor extends Editor {
 

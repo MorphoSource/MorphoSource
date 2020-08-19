@@ -1,4 +1,4 @@
-//= require handlebars-v4.0.5
+// require handlebars-v4.0.5
 
 //import { FieldManager } from 'hydra-editor/field_manager'
 import { FieldManager } from './field_manager'

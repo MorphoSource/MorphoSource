@@ -1,5 +1,5 @@
 //import RegistryEntry from 'hyrax/relationships/registry_entry'
-import RegistryEntry from './ms_registry_entry'
+import RegistryEntry from './registry_entry'
 export default class Registry {
   /**
    * Initialize the registry
@@ -7,9 +7,9 @@ export default class Registry {
    *                         must be a table with a tbody element.
    * @param {String} object_name the name of the object, for constructing form fields (e.g. 'generic_work')
    * @param {String} templateId the the identifier of the template for the added elements
-   * @param {String}  indexStart : (Customized) when creating the input hidden field, start the index using this number.  This 
+   * @param {String}  indexStart : (Customized) when creating the input hidden field, start the index using this number.  This
    *                      will prevent Hyrax to overwrite a property (e.g. work_parents_attributes) which is used
-   *                      in more than one form element 
+   *                      in more than one form element
    */
   constructor(element, objectName, propertyName, templateId, indexStart) {
     this.objectName = objectName
@@ -35,7 +35,7 @@ export default class Registry {
   }
 
   serializeToForm() {
-      // (Customized) See explanation of the indexStart param above    
+      // (Customized) See explanation of the indexStart param above
       this.export().forEach((item, index) => {
           this.addHiddenField(this.indexStart+index, 'id', item.id)
           this.addHiddenField(this.indexStart+index, '_destroy', item['_destroy'])

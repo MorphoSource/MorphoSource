@@ -2,10 +2,7 @@
 # URI for terms list: https://www.idigbio.org/wiki/index.php/3D_Scan_Modality_Subtypes
 terms:
   - id: MicroNanoXRayComputedTomography
-    term: Micro/Nano X-Ray Computed Tomography (micro/nanoCT)
-    active: true
-  - id: MedicalXRayComputedTomography
-    term: Medical X-Ray Computed Tomography (CT)
+    term: X-Ray Computed Tomography (CT/microCT)
     active: true
   - id: MagneticResonanceImaging
     term: Magnetic Resonance Imaging (MRI)
@@ -15,9 +12,6 @@ terms:
     active: true
   - id: SynchrotronImaging
     term: Synchrotron Imaging
-    active: true
-  - id: NeutrinoImaging
-    term: Neutrino Imaging
     active: true
   - id: Photogrammetry
     term: Photogrammetry

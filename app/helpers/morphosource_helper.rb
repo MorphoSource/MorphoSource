@@ -213,8 +213,6 @@ module MorphosourceHelper
   def modality_abbrev(m)
     case m
     when 'MicroNanoXRayComputedTomography'
-      'μCT'
-    when 'MedicalXRayComputedTomography'
       'CT'
     when 'MagneticResonanceImaging'
       'MRI'

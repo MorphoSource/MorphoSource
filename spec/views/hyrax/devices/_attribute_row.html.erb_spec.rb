@@ -7,7 +7,7 @@ RSpec.describe 'hyrax/devices/_attribute_rows.html.erb', type: :view do
 		Device.new({
         title: ['XTekCT 100'],
         creator: ['Nikon'],
-        modality: ['MedicalXRayComputedTomography'],
+        modality: ['MicroNanoXRayComputedTomography'],
         description: ['A sample description']
     })
 	end
@@ -21,7 +21,7 @@ RSpec.describe 'hyrax/devices/_attribute_rows.html.erb', type: :view do
 
   it "shows modality info" do
   	expect(page).to have_content("Modality")
-  	expect(page).to have_content("MedicalXRayComputedTomography")
+  	expect(page).to have_content("MicroNanoXRayComputedTomography")
   end
 
 end

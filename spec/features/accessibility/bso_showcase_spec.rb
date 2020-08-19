@@ -27,7 +27,7 @@ RSpec.feature "Showcase pages accessibility check", :skiptravis => true, :access
     ie = ImagingEvent.create(
     	title: ["Test ImagingEvent"], 
     	id: "ie123", 
-    	ie_modality: ['MedicalXRayComputedTomography'],
+    	ie_modality: ['MicroNanoXRayComputedTomography'],
         visibility: public
   	)
     ie.members = [pe]

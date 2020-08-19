@@ -65,7 +65,7 @@ RSpec.describe ::SolrDocument, type: :model do
       Device.new({
         title: ['XTekCT 100'],
         creator: ['Nikon'],
-        modality: ['MedicalXRayComputedTomography'],
+        modality: ['MicroNanoXRayComputedTomography'],
         description: ['A sample description']
       })
     end
@@ -73,7 +73,7 @@ RSpec.describe ::SolrDocument, type: :model do
     subject { SolrDocument.new(work.to_solr) }
 
     it "return modality" do
-      expect(subject.modality.first).to eq('MedicalXRayComputedTomography')
+      expect(subject.modality.first).to eq('MicroNanoXRayComputedTomography')
     end
   end
 

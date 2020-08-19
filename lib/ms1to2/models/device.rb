@@ -13,11 +13,9 @@ module Ms1to2
         {
           :modality => {
             'MicroNanoXRayComputedTomography' => 'MicroNanoXRayComputedTomography',
-            'MedicalXRayComputedTomography' => 'MedicalXRayComputedTomography',
             'MagneticResonanceImaging' => 'MagneticResonanceImaging',
             'PositronEmissionTomography' => 'PositronEmissionTomography',
             'SynchrotronImaging' => 'SynchrotronImaging',
-            'NeutrinoImaging' => 'NeutrinoImaging',
             'Photogrammetry' => 'Photogrammetry',
             'StructuredLight' => 'StructuredLight',
             'LaserScan' => 'LaserScan',

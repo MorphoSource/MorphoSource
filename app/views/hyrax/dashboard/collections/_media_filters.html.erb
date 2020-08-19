@@ -71,6 +71,10 @@
         <% end %>
       <% end %>
 
+      <% if params['cq'].present? 
+        show_filter_by = true %>
+        <input type="hidden" name="cq" value="<%= params['cq'] %>" class="filter-param" />
+      <% end %>
 
     </div>
 
@@ -95,6 +99,10 @@
         <% end %>
         <% if params['m_origin'].present? %>
           <p id="m_origin" class="filter-param">Origin > <%= origin_label(params['m_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_origin"></i></p>
+        <% end %>
+
+        <% if params['cq'].present? %>
+          <p id="search_param" class="filter-param">Search > <%= params['cq'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="cq"></i></p>
         <% end %>
       </div>
       <div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>

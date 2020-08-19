@@ -228,7 +228,7 @@ module Hyrax
           #params.merge(q: params[:cq])
 
           # setting higher collection limit for paginating the array       
-          params.merge(q: params[:cq]).merge({ 'rows' => '999999', 'page' => '1' })
+          params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
         end
     end
   end

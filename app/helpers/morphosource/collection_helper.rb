@@ -23,6 +23,14 @@ module Morphosource
       count.to_s + ' ' + @collection_list_type.pluralize(count)
     end
 
+    def showpage_url(id, tab)
+      if page_is_team?
+        Rails.application.routes.url_helpers.teams_path + "/#{id}\##{tab}"
+      elsif page_is_project?
+        Rails.application.routes.url_helpers.projects_path + "/#{id}\##{tab}"
+      end
+    end
+
     def ms_dashboard_my_collection_link
       if page_is_team?
         "/dashboard/my/teams"

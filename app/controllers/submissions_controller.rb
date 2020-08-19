@@ -405,19 +405,27 @@ class SubmissionsController < ApplicationController
   def finalize_model_params(work, model_params, addl_params={})
     case work
     when 'biological_specimen'
-      model_params = assign_model_params_parents(
-        model_params, 
-        Array(@submission.organization_id) + @submission.taxonomy_id_array
-      )
+      if @submission.organization_id.present? && !@submission.no_organization 
+        parents = Array(@submission.organization_id)
+      else
+        parents = []
+      end
+
+      parents = parents + @submission.taxonomy_id_array if @submission.taxonomy_id_array.present?
+      model_params = assign_model_params_parents(model_params, parents) if parents.present?
       if @submission.canonical_taxonomy_id.present?
         model_params.merge!('canonical_taxonomy' => [@submission.canonical_taxonomy_id])
       end
       @biospec_create_params = model_params
 
     when 'cultural_heritage_object'
-      model_params = assign_model_params_parents(
-        model_params, 
-        [@submission.organization_id])
+      if @submission.organization_id.present? && !@submission.no_organization 
+        model_params = assign_model_params_parents(
+          model_params, 
+          [@submission.organization_id]
+        )
+      end
+      
       @cho_create_params = model_params
 
     when 'device'

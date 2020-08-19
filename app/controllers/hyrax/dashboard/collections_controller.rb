@@ -37,7 +37,7 @@ module Hyrax
       #self.presenter_class = Hyrax::CollectionPresenter
       self.presenter_class = Hyrax::TeamPresenter
 
-      self.form_class = Morphosource::CollectionForm
+      self.form_class = Hyrax::Forms::CollectionForm
 
       # The search builder to find the collection
       self.single_item_search_builder_class = SingleCollectionSearchBuilder

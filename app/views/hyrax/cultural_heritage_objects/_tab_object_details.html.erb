@@ -15,6 +15,7 @@
       <%= f.input :institution_code, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :collection_code, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
+      <%= f.input :short_title, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :identifier, as: :multi_value %>
       <%= f.input :related_url, as: :multi_value %>
     </div>
@@ -23,7 +24,6 @@
       <h2>GENERAL DETAILS</h2>
       
       <%= f.input :description, label: 'Description' %>
-      <%= f.input :short_title, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :cho_type, as: :multi_value %>
       <%= f.input :material, as: :multi_value %>
       <%# todo: render date_field in simple_form_bootstrap %>
@@ -56,12 +56,7 @@
       <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
       <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
       <%= f.input :numeric_time, label: 'Absolute Age' %>
-    </div>
-
-    <div class="content-block">
-      <h2>BIBLIOGRAPHIC CITATIONS FOR THIS PHYSICAL OBJECT</h2>
-      <%= @presenter.attribute_to_html(:bibliographic_citation, render_as: :showcase_doi_link_with_citation, include_empty: true, html_dl: false) %>
-    </div>    
+    </div>  
   
   </div>
   <!-- /left column  -->
@@ -73,30 +68,6 @@
 
     <div class="content-block">
       <%= render 'form_member_of_collections', f: f %>
-    </div>
-
-    <div class="content-block">
-      <h2>PHYSICAL OBJECT TAGS</h2>
-      <div class="row">
-        <div class="col-xs-6 showcase-label">
-      Not yet implemented
-        </div>
-        <div class="col-xs-6 showcase-value">
-      Not yet implemented
-        </div>
-      </div>
-    </div>
-
-    <div class="content-block">
-      <h2> CITATION AND DOWNLOAD HISTORY OF PHYSICAL OBJECT MEDIA </h2>
-      <div class="row">
-        <div class="col-xs-6 showcase-label">
-      Number of downloads
-        </div>
-        <div class="col-xs-6 showcase-value">
-      Not yet implemented
-        </div>
-      </div>
     </div>
 
   </div>

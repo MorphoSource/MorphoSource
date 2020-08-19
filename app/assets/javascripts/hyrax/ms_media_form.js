@@ -61,6 +61,7 @@ $( document ).ready(function() {
     $(document).on('change', '#media_media_type', function() {
       adjust_form_media_type();
     });
+    
 
     // debug: click save button in standalone form to submit related work form
     $(".btn-save.debug").click(function() {
@@ -71,8 +72,8 @@ $( document ).ready(function() {
       }
       //      targetForm.submit();
       targetForm.submitRelatedWork();
-    })
-
+    });
+    
     function prepareFieldsBeforeSubmit() {
       // Before submit, name and type fields are concatenated and inserted into hidden default rights holder field.
       $(targetGroupUl).empty(); // remove all items and re-build
@@ -321,17 +322,26 @@ $( document ).ready(function() {
       var relatedFormId = $(this).attr('id');
       console.log('submitting '+ relatedFormId );
       // replace with ajax form post to trigger other actions
-      var postdata = $(this).serializeArray(); // convert form to array
+      var postData = new FormData($(this)[0]);
       //postdata.push({name: "NonFormValue", value: 'foo'});
       //console.log("postdata: " + postdata );
-      $.post($(this).attr('action'), $.param(postdata), function(data){
-        //console.log("submitted work ID: " + data.id );
-        if (relatedFormId.indexOf('imaging_event') != -1)
-          IsImagingEventOK = true;
-        else if (relatedFormId.indexOf('processing_event') != -1)
-          IsProcessingEventOK = true;
-        if (callback) callback();
-      }, "json").fail(function(data) {
+
+      $.ajax({
+        type: "POST",
+        url: $(this).attr('action'),
+        data: postData,
+        processData: false,
+        contentType: false,
+        dataType: "json",
+        success: function(data){
+          //console.log("submitted work ID: " + data.id );
+          if (relatedFormId.indexOf('imaging_event') != -1)
+            IsImagingEventOK = true;
+          else if (relatedFormId.indexOf('processing_event') != -1)
+            IsProcessingEventOK = true;
+          if (callback) callback();
+        }
+      }).fail(function(data) {
         console.log("getting a fail status ", data );
         var errors = data.responseJSON.errors;
         var msg = "";

@@ -13,7 +13,7 @@
 <% else %>
 
   <% provide :page_header do %>
-    <h1><span class="fa fa-edit" aria-hidden="true"></span><%= t('.header', type_title: @collection.collection_type.title, title: @form.title.first) %></h1>
+    <h1><span class="fa fa-edit" aria-hidden="true"></span><%= t('.header', type_title: @collection.collection_type.title, title: @form.title) %></h1>
   <% end %>
 
   <div class="row">

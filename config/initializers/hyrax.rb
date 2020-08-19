@@ -11,8 +11,6 @@ Hyrax.config do |config|
   config.register_curation_concern :biological_specimen
   # Injected via `rails g hyrax:work CulturalHeritageObject`
   config.register_curation_concern :cultural_heritage_object
-  # Injected via `rails g hyrax:work Attachment`
-  config.register_curation_concern :attachment
   # Injected via `rails g hyrax:work ImagingEvent`
   config.register_curation_concern :imaging_event
   # Injected via `rails g hyrax:work Taxonomy`
@@ -228,6 +226,10 @@ Hyrax.config do |config|
   # Location on local file system where derivatives will be stored
   # If you use a multi-server architecture, this MUST be a shared volume
   config.derivatives_path = ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives"))
+
+  # Location on local file system where attachments will be stored
+  # If you use a multi-server architecture, this MUST be a shared volume
+  config.attachments_path = ENV.fetch("ATTACHMENTS_PATH", Rails.root.join("tmp", "attachments"))
 
   # Should schema.org microdata be displayed?
   # config.display_microdata = true

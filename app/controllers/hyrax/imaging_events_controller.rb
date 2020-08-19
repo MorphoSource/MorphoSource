@@ -33,6 +33,15 @@ module Hyrax
     end
 
     def update
+      # Handle possible attachment upload
+      if params[:ie_description] && Morphosource.attachment_formats.include?(File.extname(params[:ie_description].original_filename))
+        Morphosource::AttachmentService.create(curation_concern.id, 'ie_description', params[:ie_description])
+        params.delete(:ie_description)
+      elsif params[:ie_description_attachment_delete] == 'delete'
+        Morphosource::AttachmentService.delete(curation_concern.id, 'ie_description')
+        params.delete(:ie_description_attachment_delete)
+      end
+
       if imaging_event_modality_valid? && actor.update(actor_environment)
         update_media_team_access
         update_media_physical_object_ids

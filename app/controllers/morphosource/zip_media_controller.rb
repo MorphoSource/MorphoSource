@@ -46,7 +46,7 @@ module Morphosource
       end
 
       def output_prefix
-        "morphosource-#{Time.now.strftime("%Y-%m-%d-%H%M%S")}"
+        @output_prefix ||= "morphosource-#{Time.now.strftime("%Y-%m-%d-%H%M%S")}"
       end
 
       def output_dirname(m)
@@ -74,6 +74,7 @@ module Morphosource
 
       def prepare_files_to_zip
         add_aup_to_file_list
+        add_media_usage_agreements_to_file_list
         prepare_file_mappings
       end
 
@@ -87,6 +88,24 @@ module Morphosource
 
       def add_aup_to_file_list
         @files.unshift([aup_path, "#{output_prefix}/#{aup_filename}", modification_time: Time.now])
+      end
+
+      def add_media_usage_agreements_to_file_list
+        @files.unshift(*media_usage_agreements)
+      end
+
+      def media_usage_agreements
+        @media_ids.
+          map { |id| Morphosource::AttachmentService.get(id, 'agreement') }.
+          compact.
+          uniq.
+          map.with_index do |item, index|
+            [item, "#{output_prefix}/#{agreement_filename(item, index + 1)}", modification_time: Time.now]
+          end
+      end
+
+      def agreement_filename(item, idx)
+        "Media_Contributor_Usage_Agreement_#{idx}#{File.extname(item).downcase}"
       end
 
       def prepare_file_mappings

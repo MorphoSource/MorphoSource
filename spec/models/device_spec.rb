@@ -18,8 +18,8 @@ RSpec.describe Device do
       expect(subject.valid_parent_concerns).to match_array([Organization])
     end
 
-    it "has ImagingEvent and Attachment as valid child concerns" do
-      expect(subject.valid_child_concerns).to match_array([ImagingEvent, Attachment])
+    it "has ImagingEvent as valid child concern" do
+      expect(subject.valid_child_concerns).to match_array([ImagingEvent])
     end
 
   end
@@ -28,7 +28,7 @@ RSpec.describe Device do
     subject { Device.new({
         title: ['XTekCT 100'],
         creator: ['Nikon'],
-        modality: ['MedicalXRayComputedTomography'],
+        modality: ['MicroNanoXRayComputedTomography'],
         description: ['A sample description']
       })
     }
@@ -39,7 +39,7 @@ RSpec.describe Device do
       expect(subject.creator.first).to eq('Nikon')
     end
     it "creates with correct modality" do
-      expect(subject.modality.first).to eq('MedicalXRayComputedTomography')
+      expect(subject.modality.first).to eq('MicroNanoXRayComputedTomography')
     end
     it "creates with correct description" do
       expect(subject.description.first).to eq('A sample description')
@@ -51,8 +51,8 @@ RSpec.describe Device do
         expect(subject.valid_parent_concerns).to match_array([Organization])
       end
 
-      it "has ImagingEvent and Attachment as valid child concerns" do
-        expect(subject.valid_child_concerns).to match_array([ImagingEvent, Attachment])
+      it "has ImagingEvent as valid child concerns" do
+        expect(subject.valid_child_concerns).to match_array([ImagingEvent])
       end
 
     end

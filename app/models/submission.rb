@@ -49,7 +49,8 @@ class Submission
                 :cultural_heritage_object_search_short_title,
                 :taxonomy_search,
                 :organization_search,
-                :taxonomy_params_array
+                :taxonomy_params_array,
+                :organization_for_attachment
 
                 
   MEDIA_DERIVED = 'Derived'

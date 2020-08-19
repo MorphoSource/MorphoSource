@@ -84,7 +84,7 @@ $(function(){
     },
     source: function (request, response) {
       $.ajax({
-        url: "<%= find_taxonomy_autocomplete_url %>" + request.term,
+        url: "<%= find_taxonomy_submission_autocomplete_url %>" + request.term,
         type: 'GET',
         dataType: 'json',
         complete: function (xhr, status) {

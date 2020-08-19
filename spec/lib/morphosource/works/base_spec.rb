@@ -15,8 +15,7 @@ RSpec.describe Morphosource::Works::Base do
   let(:imagingEvent)    { ImagingEvent.new(title: ['title']) }
   let(:imagingEvent2)   { ImagingEvent.new(title: ['title']) }
   let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
-  let(:attachment)      { Attachment.new(title: ['title']) }
-  let(:works)           { [organization, specimen1, specimen2, media1, media2, media3, imagingEvent, imagingEvent2, processingEvent, attachment, file_set1, file_set2, file_set3] }
+  let(:works)           { [organization, specimen1, specimen2, media1, media2, media3, imagingEvent, imagingEvent2, processingEvent, file_set1, file_set2, file_set3] }
 
   describe '#descendants' do
     let(:org_desc)      { works - [organization] }
@@ -24,7 +23,7 @@ RSpec.describe Morphosource::Works::Base do
     let(:spec2_desc)    { [imagingEvent2, media3, file_set3] }
 
     before do
-      organization.ordered_members << specimen1 << specimen2 << attachment
+      organization.ordered_members << specimen1 << specimen2
       specimen1.ordered_members << imagingEvent
       imagingEvent.ordered_members << media1
       media1.ordered_members << processingEvent << file_set1

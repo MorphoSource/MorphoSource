@@ -5,12 +5,12 @@ module Morphosource
   module PermissionsHelper
 
     PUBLICATION_OPTIONS = [
-      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC,
-      "restricted_download",
-      "preview_only",
-      "hidden", Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE,
-      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO,
-      Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE]
+      ["Publish with Open Download", Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC],
+      ["Publish with Restricted Download", "restricted_download"],
+      ["Publish with No Download", "preview_only"],
+      ["Publish with Hidden File", "hidden"],
+      ["Private", Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
+    ]
 
     MULTI_VALUE = ['license', 'agreement_uri', 'funding', 'publisher']
 

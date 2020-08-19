@@ -5,7 +5,17 @@
 
 <%= presenter.attribute_to_html(:license, label: 'Creative Common licenses', render_as: :showcase_license_link, include_empty: true, html_dl: false) %>
 
-<div class="row"><div class="col-xs-6 showcase-label">Custom terms of use</div><div class="col-xs-6 showcase-value">Not yet implemented</div></div>
+<%= presenter.attribute_to_html(
+	:agreement_uri, 
+  label: 'Additional Usage Agreement', 
+  render_as: :showcase_agreement_uri_file, 
+  include_empty: true, 
+  text_if_empty: 'None',
+  attachment_path: curation_concern.attachment('agreement') || '',
+  attachment_file_url: main_app.attachment_path(field: 'agreement'),
+  html_dl: false) 
+%>
+
 <div class="row"><div class="col-xs-6 showcase-label">Commercial use permitted</div><div class="col-xs-6 showcase-value">No</div></div>
 <div class="row"><div class="col-xs-6 showcase-label">3D printing permitted</div><div class="col-xs-6 showcase-value">Not yet implemented</div></div>
 

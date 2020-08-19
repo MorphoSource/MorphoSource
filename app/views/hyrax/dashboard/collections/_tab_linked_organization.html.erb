@@ -44,11 +44,16 @@
   <% else %>
     <p>No organization linked</p>
   <% end %>
+
+  <% if @collection.organization %>
+    <h2>ORGANIZATION PERMISSION DEFAULTS</h2>
+    <%= render 'ms_form_organization' %>
+  <% end %>
 <% end %>
 </div>
 
 <div class="col-sm-6">
-  <h2>STATISTICS</h2>
+  <h2>TEAM STATISTICS</h2>
   <div class="row">
     <div class="col-xs-6 showcase-label">Number of media</div>
     <div class="col-xs-6 showcase-value "><%= @media_member_count %></div>

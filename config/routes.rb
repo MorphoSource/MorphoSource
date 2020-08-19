@@ -124,7 +124,10 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     resources :downloads, only: :show
     resources :tags, param: :tag, only: [:index, :show]
+    get '/attachments/:id', to: 'attachments#show', as: 'attachment'
   end
+
+  
 
   mount Hyrax::Engine, at: '/'
   resources :welcome, only: 'index'
@@ -178,6 +181,7 @@ Rails.application.routes.draw do
       # AJAX in-submission-flow methods
       post 'search_po_ajax'
       post 'save_data'
+      get 'search_taxonomy_ajax'
       get 'organization_for_recordset'
       get 'organization_default_media_fields'
       # AJAX physical object or media edit page submission methods

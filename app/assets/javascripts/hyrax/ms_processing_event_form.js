@@ -102,7 +102,7 @@ $( document ).ready(function() {
       row.className = "row";
       var label = document.createElement('div');
       label.className = "col-xs-6 showcase-label";
-      label.innerHTML = "Description/Parameter settings";
+      label.innerHTML = "Activity description and parameter settings";
       var value = document.createElement('div');
       value.className = "col-xs-6 showcase-value";
       value.appendChild(descriptionInput);

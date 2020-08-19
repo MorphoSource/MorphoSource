@@ -3,7 +3,6 @@
 status:
   Image:
     MicroNanoXRayComputedTomography: derived
-    MedicalXRayComputedTomography: derived
     MagneticResonanceImaging: derived
     Photogrammetry: derived
     StructuredLight: derived
@@ -11,7 +10,6 @@ status:
     Photography: any
   Video:
     MicroNanoXRayComputedTomography: derived
-    MedicalXRayComputedTomography: derived
     MagneticResonanceImaging: derived
     Photogrammetry: derived
     StructuredLight: derived
@@ -19,7 +17,6 @@ status:
     Photography: any
   CTImageSeries:
     MicroNanoXRayComputedTomography: any
-    MedicalXRayComputedTomography: any
     MagneticResonanceImaging: any
     Photogrammetry: none
     StructuredLight: none
@@ -27,7 +24,6 @@ status:
     Photography: none
   PhotogrammetryImageSeries:
     MicroNanoXRayComputedTomography: none
-    MedicalXRayComputedTomography: none
     MagneticResonanceImaging: none
     Photogrammetry: any
     StructuredLight: none
@@ -35,7 +31,6 @@ status:
     Photography: none
   Mesh:
     MicroNanoXRayComputedTomography: derived
-    MedicalXRayComputedTomography: derived
     MagneticResonanceImaging: derived
     Photogrammetry: derived
     StructuredLight: any
@@ -56,12 +51,6 @@ examples:
         - Video with filter or processing applied
   CTImageSeries:
     MicroNanoXRayComputedTomography:
-      raw:
-        - Projection data produced by scanner software
-      derived:
-        - Reconstruction data
-        - Projection data with subsequent processing
-    MedicalXRayComputedTomography:
       raw:
         - Projection data produced by scanner software
       derived:

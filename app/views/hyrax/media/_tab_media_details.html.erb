@@ -11,7 +11,7 @@
       <%= render_edit_field_partial('side', f: f) %>
       <%= f.input :orientation, as: :multi_value %>
       <%= f.input :short_description, label: 'Short description' %>
-      <%= f.input :description, label: 'Full description', as: :multi_value %>
+      <%= render_edit_field_partial('description', f: f) %>
 
       <input class="form-control hidden" type="hidden" value="foobar" name="ie_modality_for_title" id="ie_modality_for_title">
     </div>
@@ -46,10 +46,6 @@
       <%= render_edit_field_partial('rights_statement', f: f) %>
       <%= render_edit_field_partial('license', f: f) %>
 
-      <div class="row"><div class="col-xs-6 showcase-label">Custom terms of use</div><div class="col-xs-6 showcase-value">Not yet implemented</div></div>
-
-      <%= render_edit_field_partial('agreement_uri', f: f) %>
-
       <%= render_edit_field_partial('permits_commercial_use', f: f) %>
       <%= render_edit_field_partial('permits_3d_use', f: f) %>
 
@@ -73,6 +69,7 @@
       <%= render_edit_field_partial('funding', f: f) %>
       <%= render_edit_field_partial('publisher', f: f) %>
       <%= render_edit_field_partial('cite_as', f: f) %>
+      <%= render_edit_field_partial('agreement_uri', f: f) %>
     </div>
 
     <div class="content-block">
@@ -108,18 +105,6 @@
     </div>
 
     <%= render 'edit_media_tags', f: f %>
-
-    <div class="content-block">
-      <h2> CITATION AND DOWNLOAD HISTORY OF PHYSICAL OBJECT MEDIA </h2>
-      <div class="row">
-        <div class="col-xs-6 showcase-label">
-      Number of downloads
-        </div>
-        <div class="col-xs-6 showcase-value">
-      Not yet implemented
-        </div>
-      </div>
-    </div>
 
   </div>
   <!-- / right column -->

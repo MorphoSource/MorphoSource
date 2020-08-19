@@ -20,6 +20,7 @@
             <%= f.input :institution_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :collection_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
+            <%= f.input :short_title, label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :identifier, as: :multi_value %>
             <%= f.input :related_url, as: :multi_value %>
           </div>
@@ -61,7 +62,6 @@
           
           <div class="content-block">
             <%= f.input :description, label: 'Description' %>
-            <%= f.input :short_title, label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :cho_type, as: :multi_value %>
             <%= f.input :material, as: :multi_value %>
             <%# todo: render date_field in simple_form_bootstrap %>
@@ -74,36 +74,6 @@
             <%= f.input :creator, as: :multi_value %>
             <%= f.input :contributor, as: :multi_value %>
             <%= f.input :publisher %>
-          </div>
-        </div>
-
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">PHYSICAL OBJECT TAGS</span>
-          </div>
-          
-          <div class="row content-block">
-            <div class="col-xs-6 showcase-label">
-          Not yet implemented
-            </div>
-            <div class="col-xs-6 showcase-value">
-          Not yet implemented
-            </div>
-          </div>
-        </div>
-
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">BIBLIOGRAPHIC CITATIONS FOR THIS PHYSICAL OBJECT</span>
-          </div>
-
-          <div class="row content-block">
-            <div class="col-xs-6 showcase-label">
-          Not yet implemented
-            </div>
-            <div class="col-xs-6 showcase-value">
-          Not yet implemented
-            </div>
           </div>
         </div>
 

@@ -29,7 +29,7 @@
               <%= render_edit_field_partial('side', f: f) %>
               <%= f.input :orientation, as: :multi_value %>
               <%= f.input :short_description, label: 'Short description' %>
-              <%= f.input :description, label: 'Full description', as: :multi_value %>
+              <%= render_edit_field_partial('description', f: f) %>
             </div>
           </div>
 

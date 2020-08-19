@@ -62,11 +62,6 @@
       <%= f.input :numeric_time, label: 'Absolute Age' %>
     </div>
 
-    <div class="content-block">
-      <h2>BIBLIOGRAPHIC CITATIONS FOR THIS PHYSICAL OBJECT</h2>
-      <%= @presenter.attribute_to_html(:bibliographic_citation, render_as: :showcase_doi_link_with_citation, include_empty: true, html_dl: false) %>
-    </div>    
-  
   </div>
   <!-- /left column  -->
 
@@ -77,30 +72,6 @@
 
     <div class="content-block">
       <%= render 'form_member_of_collections', f: f %>
-    </div>
-
-    <div class="content-block">
-      <h2>PHYSICAL OBJECT TAGS</h2>
-      <div class="row">
-        <div class="col-xs-6 showcase-label">
-      Not yet implemented
-        </div>
-        <div class="col-xs-6 showcase-value">
-      Not yet implemented
-        </div>
-      </div>
-    </div>
-
-    <div class="content-block">
-      <h2> CITATION AND DOWNLOAD HISTORY OF PHYSICAL OBJECT MEDIA </h2>
-      <div class="row">
-        <div class="col-xs-6 showcase-label">
-      Number of downloads
-        </div>
-        <div class="col-xs-6 showcase-value">
-      Not yet implemented
-        </div>
-      </div>
     </div>
 
   </div>

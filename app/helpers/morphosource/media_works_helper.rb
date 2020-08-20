@@ -1,65 +1,10 @@
 # helper methods for teams and project collection show and edit pages
 module Morphosource
-  module CollectionHelper
+  module MediaWorksHelper
     include MediaFinderHelper
 
-    def page_is_team?
-      path_info.include?("teams")      
-    end
-
-    def page_is_project?
-      path_info.include?("projects")      
-    end
-
-    def collection_type
-      if page_is_team?
-        'team'
-      elsif page_is_project?
-        'project'
-      end
-    end
-
-    def collection_count_for(count)
-      count.to_s + ' ' + @collection_list_type.pluralize(count)
-    end
-
-    def showpage_url(id, tab)
-      if page_is_team?
-        Rails.application.routes.url_helpers.teams_path + "/#{id}\##{tab}"
-      elsif page_is_project?
-        Rails.application.routes.url_helpers.projects_path + "/#{id}\##{tab}"
-      end
-    end
-
-    def ms_dashboard_my_collection_link
-      if page_is_team?
-        "/dashboard/my/teams"
-      elsif page_is_project?
-        "/dashboard/my/projects"
-      else
-        ""
-      end          
-    end
-
-    def ms_collection_view_link(id, view)
-      current_uri = path_info
-      if current_uri.include?("dashboard/collections")
-        if action_name == 'edit'
-          link = edit_dashboard_collection_path(id, view)
-        else
-          link = dashboard_collection_path(id, view)
-        end
-      else
-        link = collection_path(id, view)
-        if current_uri.include?("teams")
-          # todo: fix team_path route 
-          # link = team_path(id)
-          link["collections"] = "teams" # replace "collection' with "teams"
-        elsif current_uri.include?("projects")
-          link["collections"] = "projects"
-        end
-      end
-      link.html_safe
+    def media_works_url(tab)
+      Rails.application.routes.url_helpers.my_media_index_path + "#" + tab
     end
 
     def query_collection_information
@@ -115,44 +60,28 @@ module Morphosource
       request.env['PATH_INFO']
     end
 
-    def bso_tab_url_for_collections(id)
+    def bso_tab_url
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
-      "/projects/specimens/#{id}?#{url_params}"
+      "/dashboard/my/media/specimens?#{url_params}"
     end
 
-    def cho_tab_url_for_collections(id)
+    def cho_tab_url
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
-      "/projects/chos/#{id}?#{url_params}"
+      "/dashboard/my/media/chos?#{url_params}"
     end
 
-    def dashboard_bso_tab_url(id)
-      url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
-        compact.
-        join('&')
-      "/dashboard/collections/specimens/#{id}?#{url_params}"
-    end
-
-    def dashboard_cho_tab_url(id)
-      url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
-        compact.
-        join('&')
-      "/dashboard/collections/chos/#{id}?#{url_params}"
-    end
-
-    def prepare_docs_and_filters_for_media(collection)
+    def prepare_docs_and_filters_for_media
       @po_type = "bso" # bso / cho
-      @is_team = collection.team?
+#      @is_team = collection.team?
       @visibility_options = []
 
-      @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
+#      @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
       @bso_visibility_options = []
       @bso_source_options = []
       @cho_visibility_options = []
@@ -162,14 +91,14 @@ module Morphosource
       @media_member_count = @member_docs.length
       
       @paged_media_member_docs = paginated_media_item_list
+      @document_list = @paged_media_member_docs
       @media_extras = get_media_extras(@paged_media_member_docs)
     end
 
     def get_media_extras(docs)
       docs.map do |doc|
         this_media_extras = { 
-          'id' => doc.id,
-          'origin' => doc.member_of_collection_ids.include?(collection.id) ? 'Team' : 'Org.'
+          'id' => doc.id
         }
 
         # get BSO and CHO
@@ -189,20 +118,21 @@ module Morphosource
       end
     end
 
-    def prepare_docs_and_filters_for_po(collection)
-      @bso_visibility_options = []
-      @bso_source_options = []
-      @cho_visibility_options = []
-
-      @paged_bso_member_docs = paginated_bso_item_list
-      @bso_total_pages = bso_total_pages
-      @paged_cho_member_docs = paginated_cho_item_list
-      @cho_total_pages = cho_total_pages
-
-      @bso_source_options = @bso_source_options.uniq
-
-      @bso_extras = get_po_extras(@paged_bso_member_docs)
-      @cho_extras = get_po_extras(@paged_cho_member_docs)
+    def prepare_docs_and_filters_for_po(obj_type)
+      case obj_type
+      when 'bso'
+        @bso_visibility_options = []
+        @bso_source_options = []
+        @paged_bso_member_docs = paginated_bso_item_list
+        @bso_total_pages = bso_total_pages
+        @bso_source_options = @bso_source_options.uniq
+        @bso_extras = get_po_extras(@paged_bso_member_docs)
+      when 'cho'
+        @cho_visibility_options = []
+        @paged_cho_member_docs = paginated_cho_item_list
+        @cho_total_pages = cho_total_pages
+        @cho_extras = get_po_extras(@paged_cho_member_docs)
+      end
     end
 
     def get_po_extras(docs)

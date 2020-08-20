@@ -35,14 +35,10 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    #resources :teams do # public landing team/project show page
-    #  member do
-    #    get 'page/:page', action: :index
-    #    get 'facet/:id', action: :facet, as: :dashboard_facet
-    #    get :files
-    #  end
-    #end
-    get 'teams/:id', to: 'teams#show'
+    resources :teams, controller: 'teams'
+    resources :projects, controller: 'teams'
+    
+    #get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
     get 'teams/chos/:id', to: 'teams#chos'
     # media pagination
@@ -55,7 +51,7 @@ Rails.application.routes.draw do
     get 'team_paging/teams/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/projects/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
 
-    get 'projects/:id', to: 'teams#show'
+    #get 'projects/:id', to: 'teams#show'
     get 'projects/specimens/:id', to: 'teams#specimens'
     get 'projects/chos/:id', to: 'teams#chos'
     # media pagination
@@ -81,8 +77,10 @@ Rails.application.routes.draw do
     # cho pagination
     get 'project_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
     get 'team_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
-
-    #resources :projects, controller: 'teams'
+    # dashboard media/object paging
+    get 'media_works_paging/dashboard/my/media', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=biological_specimens" }
+    get 'media_works_paging/dashboard/my/media/specimens', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=biological_specimens" }
+    get 'media_works_paging/dashboard/my/media/chos', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=cultural_heritage_objects" }
 
     # Note: the following route might effect pagination links
     namespace :dashboard do
@@ -91,8 +89,20 @@ Rails.application.routes.draw do
       get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
     end
 
-    get 'dashboard/my/teams', controller: 'my/teams', action: :index
-    get 'dashboard/my/projects', controller: 'my/teams', action: :index
+    #get 'dashboard/my/teams', controller: 'my/teams', action: :index
+    #get 'dashboard/my/projects', controller: 'my/teams', action: :index
+
+    # Rails.application.routes.url_helpers.my_media_index_path
+    scope :dashboard do
+      namespace :my do
+        resources :teams, only: [:index], controller: 'teams'
+        resources :projects, only: [:index], controller: 'teams'
+        resources :media, only: [:index], controller: 'media_works'
+      end
+    end
+    #get 'dashboard/my/media', controller: 'my/media_works', action: :index
+    get 'dashboard/my/media/specimens', to: 'my/media_works#specimens'
+    get 'dashboard/my/media/chos', to: 'my/media_works#chos'
 
   end
 

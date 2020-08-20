@@ -2,7 +2,7 @@
   <%= render_document_index @paged_bso_member_docs, work_type: 'biological_specimen' %> 
 </div>
 <div class="hyc-blacklight hyc-bl-pager">
-  <%= render 'hyrax/teams/paginate_bso' %>
+  <%= render 'paginate_bso' %>
 </div>
 
 <input type="hidden" name="bso-count" value="<%= @bso_member_count %>" />

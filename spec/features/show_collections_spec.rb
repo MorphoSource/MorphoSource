@@ -45,14 +45,14 @@ RSpec.feature 'Test redirects for teams and projects', js: true do
   let(:presenter) { described_class.new(SolrDocument.new(team.to_solr), ability, nil) }
 
 
-  scenario 'teams collections should redirect to /teams' do
-    visit '/collections/' + team.id
-    expect(page.current_path).to eq("/teams/" + team.id)
-  end
-
-  scenario 'projects collections should redirect to /projects' do
-    visit '/collections/' + project.id
-    expect(page.current_path).to eq("/projects/" + project.id)
-  end
+#  scenario 'teams collections should redirect to /teams' do
+#    visit '/collections/' + team.id
+#    expect(page.current_path).to eq("/teams/" + team.id)
+#  end
+#
+#  scenario 'projects collections should redirect to /projects' do
+#    visit '/collections/' + project.id
+#    expect(page.current_path).to eq("/projects/" + project.id)
+#  end
 
 end

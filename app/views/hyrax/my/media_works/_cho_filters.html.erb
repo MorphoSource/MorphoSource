@@ -1,6 +1,5 @@
 <% show_filter_by = false %>
-
-<%= simple_form_for @form, url: edit_dashboard_collection_url + '#cultural_heritage_objects', html: { class: 'filters', id: "cho-filters", name: "cho-filters", method: "get" } do |cf| %>
+<%= form_tag media_works_url("cultural_heritage_objects"), method: :get, class: "filters", id: "cho-filters", name: "cho-filters" do %>
   <%= hidden_params_for_filters('c_') %>
 
   <div class="filters row">
@@ -20,23 +19,21 @@
         </select>
       <% end %>
 
-      <% if @collection.team? %>
-        <% if params['c_origin'].present? 
-             show_filter_by = true %>
-          <input type="hidden" name="c_origin" value="<%= params['c_origin'] %>" class="filter-param" />
-        <% else %>
-          <select name="c_origin" data-form="cho-filters" style='width: 150px;'>
-            <option value="">Origin</option>
-            <% Array(@collection_cho_groups['origin']).each do |v, n| %>
-              <option value="<%= v %>"><%= "#{origin_label(v)} (#{n})" %></option>
-            <% end %>
-          </select>
-        <% end %>
+      <% if params['c_origin'].present? 
+           show_filter_by = true %>
+        <input type="hidden" name="c_origin" value="<%= params['c_origin'] %>" class="filter-param" />
+      <% else %>
+        <select name="c_origin" data-form="cho-filters" style='width: 150px;'>
+          <option value="">Origin</option>
+          <% Array(@collection_cho_groups['origin']).each do |v, n| %>
+            <option value="<%= v %>"><%= "#{origin_label(v)} (#{n})" %></option>
+          <% end %>
+        </select>
       <% end %>
 
-      <% if params['cq'].present? 
+      <% if params['q'].present? 
         show_filter_by = true %>
-        <input type="hidden" name="cq" value="<%= params['cq'] %>" class="filter-param" />
+        <input type="hidden" name="q" value="<%= params['q'] %>" class="filter-param" />
       <% end %>
 
     </div>
@@ -55,8 +52,8 @@
           <p id="c_origin" class="filter-param">Origin > <%= origin_label(params['c_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="c_origin"></i></p>
         <% end %>
 
-        <% if params['cq'].present? %>
-          <p id="search_param" class="filter-param">Search > <%= params['cq'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="cq"></i></p>
+        <% if params['q'].present? %>
+          <p id="search_param" class="filter-param">Search > <%= params['q'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="q"></i></p>
         <% end %>
       </div>
       <div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="cho-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>

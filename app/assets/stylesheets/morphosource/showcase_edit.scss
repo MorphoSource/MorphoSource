@@ -235,33 +235,6 @@ input.disabled {
     }
   } */
 
-  div.filters, div.filter-by {
-    background-color: $block-background-color;
-    border: 1px solid $block-border-color;
-    padding: 6px;
-    margin: 0 -10px 6px -10px;
-
-    .filter-label {
-      font-weight: bold;
-      font-size: 12px;
-      color: $font-color;
-      padding-right: 0;
-    }
-    select, p {
-      background-color: #fff;
-      border: 1px solid $block-border-color;
-      padding: 4px 6px;
-      font-size: 11px;
-    }
-    p {
-      width: max-content;
-    }
-    .remove-filter-all {
-      font-size: 11px;
-      color: $font-color;
-    }
-  }
-
   .panel {
     border: none;
     margin-left: -15px;

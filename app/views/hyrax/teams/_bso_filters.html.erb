@@ -1,6 +1,5 @@
 <% show_filter_by = false %>
-
-<%= simple_form_for @form, url: edit_dashboard_collection_url + '#biological_specimens', html: { class: 'filters', id: "bso-filters", name: "bso-filters", method: "get" } do |bf| %>
+<%= form_tag showpage_url(@presenter.id, "biological_specimens"), method: :get, class: "filters", id: "bso-filters", name: "bso-filters" do %>
   <%= hidden_params_for_filters('b_') %>
 
   <div class="filters row">
@@ -32,7 +31,7 @@
         </select>
       <% end %>
 
-      <% if @collection.team? %>
+      <% if page_is_team? %>
         <% if params['b_origin'].present? 
              show_filter_by = true %>
           <input type="hidden" name="b_origin" value="<%= params['b_origin'] %>" class="filter-param" />

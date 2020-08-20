@@ -1,5 +1,5 @@
 <% show_filter_by = false %>
-<%= simple_form_for @form, url: edit_dashboard_collection_url + '#media', html: { class: 'filters', id: "media-filters", name: "media-filters", method: "get" } do |mf| %>
+<%= form_tag media_works_url("media"), method: :get, class: "filters", id: "media-filters", name: "media-filters" do %>
   <%= hidden_params_for_filters('m_') %>
   
   <div class="filters row">
@@ -31,20 +31,6 @@
         </select>
       <% end %>
 
-      <% if @collection.team? %>
-        <% if params['m_team_project'].present? 
-          show_filter_by = true %>
-          <input type="hidden" name="m_team_project" value="<%= params['m_team_project'] %>" class="filter-param" />
-        <% else %>
-          <select name="m_team_project" data-form="media-filters" style='width: 150px;'>
-            <option value="">Project</option>
-            <% Array(@collection_media_groups['project']).each do |v, n| %>
-              <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
-            <% end %>
-          </select>
-        <% end %>
-      <% end %>
-
       <% if params['m_organization'].present? 
         show_filter_by = true %>
         <input type="hidden" name="m_organization" value="<%= params['m_organization'] %>" class="filter-param" />
@@ -57,23 +43,9 @@
         </select>
       <% end %>
 
-      <% if @collection.team? %>
-        <% if params['m_origin'].present? 
-          show_filter_by = true %>
-          <input type="hidden" name="m_origin" value="<%= params['m_origin'] %>" class="filter-param" />
-        <% else %>
-          <select name="m_origin" data-form="media-filters" style='width: 150px;'>
-            <option value="">Origin</option>
-            <% Array(@collection_media_groups['origin']).each do |v, n| %>
-              <option value="<%= v %>"><%= "#{origin_label(v)} (#{n})" %></option>
-            <% end %>
-          </select>
-        <% end %>
-      <% end %>
-
-      <% if params['cq'].present? 
+      <% if params['q'].present? 
         show_filter_by = true %>
-        <input type="hidden" name="cq" value="<%= params['cq'] %>" class="filter-param" />
+        <input type="hidden" name="q" value="<%= params['q'] %>" class="filter-param" />
       <% end %>
 
     </div>
@@ -91,18 +63,12 @@
         <% if params['m_media_type'].present? %>
           <p id="m_media_type" class="filter-param">Media type > <%= media_type_label(params['m_media_type']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_media_type"></i></p>
         <% end %>
-        <% if params['m_team_project'].present? %>
-          <p id="m_team_project" class="filter-param">Project > <%= params['m_team_project'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_team_project"></i></p>
-        <% end %>
         <% if params['m_organization'].present? %>
           <p id="m_organization" class="filter-param">Organization > <%= params['m_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_organization"></i></p>
         <% end %>
-        <% if params['m_origin'].present? %>
-          <p id="m_origin" class="filter-param">Origin > <%= origin_label(params['m_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="m_origin"></i></p>
-        <% end %>
 
-        <% if params['cq'].present? %>
-          <p id="search_param" class="filter-param">Search > <%= params['cq'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="cq"></i></p>
+        <% if params['q'].present? %>
+          <p id="search_param" class="filter-param">Search > <%= params['q'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="q"></i></p>
         <% end %>
       </div>
       <div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>

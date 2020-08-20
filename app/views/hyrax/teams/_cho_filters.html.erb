@@ -1,6 +1,5 @@
 <% show_filter_by = false %>
-
-<%= simple_form_for @form, url: edit_dashboard_collection_url + '#cultural_heritage_objects', html: { class: 'filters', id: "cho-filters", name: "cho-filters", method: "get" } do |cf| %>
+<%= form_tag showpage_url(@presenter.id, "cultural_heritage_objects"), method: :get, class: "filters", id: "cho-filters", name: "cho-filters" do %>
   <%= hidden_params_for_filters('c_') %>
 
   <div class="filters row">
@@ -20,7 +19,7 @@
         </select>
       <% end %>
 
-      <% if @collection.team? %>
+      <% if page_is_team? %>
         <% if params['c_origin'].present? 
              show_filter_by = true %>
           <input type="hidden" name="c_origin" value="<%= params['c_origin'] %>" class="filter-param" />

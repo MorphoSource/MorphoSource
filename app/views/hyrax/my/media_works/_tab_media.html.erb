@@ -1,25 +1,31 @@
 <div class="row">
-  <div class="col-xs-12 col-sm-5 col-md-4 batch-action-buttons">
+
   <% if @media_member_count > 0 %>
-      <a id="add-selected-to-cart" class="btn btn-sm btn-default col-xs-12 col-sm-8 disabled" href="javascript:void(0)">Add <i class="material-icons">check_box</i> to download</a>
+  <div class="col-xs-12 col-sm-12 col-md-7 batch-action-buttons">
+    <div class="row">
+      <a id="add-selected-to-cart" class="btn btn-sm btn-default disabled" href="javascript:void(0)">Add <i class="material-icons">check_box</i> to download</a>
+      
+      <%= render 'batch_actions' %>
+    </div>
+  </div>
   <% end %>
-  </div>
+
   <!-- Search bar -->
-  <div class="col-xs-12 col-sm-4 col-md-5">
-    <%= render 'hyrax/teams/search_form', presenter: @presenter, url: @presenter.search_form_url %>
+  <div class="col-xs-12 col-sm-9 col-md-4">
+    <%= render 'search_form', tab: "media" %>
   </div>
-  <div class="col-xs-12 col-sm-3 col-md-3">
-    <%= render 'hyrax/teams/sort_and_per_page_media', collection: @presenter %>
+  <div class="col-xs-12 col-sm-3 col-md-1">
+    <%= render 'sort_and_per_page_media' %>
   </div>
 </div>
 
-<% if @media_member_count > 0 %>
-  <% if document_index_view_type == :gallery %>
-  <div class="col-xs-12 text-muted">
+<%# if @media_member_count > 0 %>
+  <%# if document_index_view_type == :gallery %>
+  <%#div class="col-xs-12 text-muted">
     <input type="checkbox" id="select-all-for-download" /> Select all
   </div>
   <% end %>
-<% end %>
+<%# end %>
 
 <% if @media_member_count > 0 %>
   <!-- Works -->
@@ -32,7 +38,7 @@
     <% end # / form_tag %>
   </div>
   <div class="hyc-blacklight hyc-bl-pager">
-    <%= render 'hyrax/teams/paginate_media' %>
+    <%= render 'paginate_media' %>
   </div>
 <% else %>
   <div class="row">

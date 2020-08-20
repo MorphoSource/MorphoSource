@@ -1,8 +1,6 @@
 <% show_filter_by = false %>
-
-<%= simple_form_for @form, url: edit_dashboard_collection_url + '#biological_specimens', html: { class: 'filters', id: "bso-filters", name: "bso-filters", method: "get" } do |bf| %>
+<%= form_tag media_works_url("biological_specimens"), method: :get, class: "filters", id: "bso-filters", name: "bso-filters" do %>
   <%= hidden_params_for_filters('b_') %>
-
   <div class="filters row">
 
     <div class="col-sm-2 col-lg-1 filter-label">Filter:</div>
@@ -32,23 +30,9 @@
         </select>
       <% end %>
 
-      <% if @collection.team? %>
-        <% if params['b_origin'].present? 
-             show_filter_by = true %>
-          <input type="hidden" name="b_origin" value="<%= params['b_origin'] %>" class="filter-param" />
-        <% else %>
-          <select name="b_origin" data-form="bso-filters" style='width: 150px;'>
-            <option value="">Origin</option>
-            <% Array(@collection_bso_groups['origin']).each do |v, n| %>
-              <option value="<%= v %>"><%= "#{origin_label(v)} (#{n})" %></option>
-            <% end %>
-          </select>
-        <% end %>
-      <% end %>
-
-      <% if params['cq'].present? 
+      <% if params['q'].present? 
         show_filter_by = true %>
-        <input type="hidden" name="cq" value="<%= params['cq'] %>" class="filter-param" />
+        <input type="hidden" name="q" value="<%= params['q'] %>" class="filter-param" />
       <% end %>
 
     </div>
@@ -66,12 +50,9 @@
         <% if params['b_organization'].present? %>
           <p id="b_organization" class="filter-param">Organization > <%= params['b_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_organization"></i></p>
         <% end %>
-        <% if params['b_origin'].present? %>
-          <p id="b_origin" class="filter-param">Origin > <%= origin_label(params['b_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_origin"></i></p>
-        <% end %>
 
-        <% if params['cq'].present? %>
-          <p id="search_param" class="filter-param">Search > <%= params['cq'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="cq"></i></p>
+        <% if params['q'].present? %>
+          <p id="search_param" class="filter-param">Search > <%= params['q'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="media-filters" data-param="q"></i></p>
         <% end %>
       </div>
       <div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>

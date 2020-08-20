@@ -20,11 +20,9 @@ class Morphosource::My::MsCollectionsSearchBuilder < ::SearchBuilder
   # todo: might need to figure out a way to search for collections that the current user has any 
   # access to (manager, editor, depositor, viewer, downloader)
   def show_all_collections(solr_parameters)
-    clauses = [
-      ActiveFedora::SolrQueryBuilder.construct_query_for_rel(has_model: 'Collection')
-    ]
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] += ["(#{clauses.join(' OR ')})"]
+    solr_parameters[:fq] += [ActiveFedora::SolrQueryBuilder.construct_query_for_rel(has_model: 'Collection')]
+#    solr_parameters[:fq] += ["collection_type_gid_ssim:\"gid://morpho-source-sf/hyrax-collectiontype/2\""]
   end
 
   # This overrides the models in FilterByType

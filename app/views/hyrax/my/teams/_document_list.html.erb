@@ -1,4 +1,5 @@
 <% # container for all documents in index view -%>
 <div class="table-responsive" id="documents">
-  <%= render 'default_group', docs: @paged_collection_docs_by_type %>
+  <%#= render 'default_group', docs: @paged_collection_docs_by_type %>
+  <%= render 'default_group', docs: @response.docs %>
 </div>

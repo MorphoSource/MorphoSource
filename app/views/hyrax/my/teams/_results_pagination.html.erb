@@ -9,11 +9,15 @@
 		</div>
 
 		<div class="col-md-12 col-lg-2">
-			<div>Showing <%= page_entries_info @paged_collection_docs_by_type %></div>
+			<div>Showing <%= page_entries_info @response %></div>
 		</div>
 
 		<div class="col-md-12 col-lg-8">
-		  <%= paginate @paged_collection_docs_by_type, outer_window: 2, theme: 'blacklight', param_name: :tpage, route_set: main_app %>
+			<% if @collection_list_type == 'project' %>
+		  	<%= paginate @response, outer_window: 2, theme: 'blacklight', param_name: :page, route_set: main_app, :params => { script_name: "/my_projects_paging" } %>
+		  <% else %>
+		  	<%= paginate @response, outer_window: 2, theme: 'blacklight', param_name: :page, route_set: main_app, :params => { script_name: "/my_teams_paging" } %>
+			<% end %>		  
 		</div>
 
 	</div><!-- /row -->

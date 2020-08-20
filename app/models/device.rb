@@ -6,7 +6,7 @@ class Device < Morphosource::Works::Base
 
   self.indexer = DeviceIndexer
   # Change this to restrict which works can be added as a child.
-  self.valid_child_concerns = [ImagingEvent, Attachment]
+  self.valid_child_concerns = [ImagingEvent]
 
   validates :title, presence: { message: 'Your device must have a model name.' }
 

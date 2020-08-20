@@ -54,6 +54,12 @@ module Hyrax
       @derivatives_path ||= Rails.root.join('tmp', 'derivatives')
     end
 
+    # Path on the local file system where attachments will be stored
+    attr_writer :attachments_path
+    def attachments_path
+      @attachments_path ||= Rails.root.join('tmp', 'attachments')
+    end
+
     # Path on the local file system where originals will be staged before being ingested into Fedora.
     attr_writer :working_path
     def working_path

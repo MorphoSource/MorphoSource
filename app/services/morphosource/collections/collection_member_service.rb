@@ -23,7 +23,7 @@ module Morphosource
       #
       def all_member_media_objects(object_ids = [], object_model = nil, fq_params = [])
         core_fq = "(id:(#{object_ids.join(' OR ')}))"
-        core_fq += "AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
+        core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
         fq_params << core_fq 
         available_member_works_filter_query(fq_params: fq_params)
       end
@@ -33,7 +33,7 @@ module Morphosource
       # Works which are members of the given collection
       # @return [Blacklight::Solr::Response]
       def available_member_works_filter_query(fq_params: [])
-        query_solr_with_fq(query_builder: works_search_builder, query_params: {}, fq_params: fq_params)
+        query_solr_with_fq(query_builder: works_search_builder, query_params: params[:cq], fq_params: fq_params)
       end
 
       private
@@ -58,13 +58,17 @@ module Morphosource
       # @api private
       #
       def query_solr_with_fq(query_builder:, query_params:, fq_params:)
+        initial_q = query_builder[:q]
         initial_fq = query_builder[:fq]
         initial_rows = query_builder[:rows]
         begin
+          query_builder.merge(q: query_params)
           query_builder.merge(fq: fq_params)
           query_builder.merge(rows: 99999)
-          repository.search(query_builder.with(query_params).query)
+          #repository.search(query_builder.with(query_params).query)
+          repository.search(query_builder.query)
         ensure
+          query_builder.merge(q: initial_q)
           query_builder.merge(fq: initial_fq)
           query_builder.merge(rows: initial_rows)
         end

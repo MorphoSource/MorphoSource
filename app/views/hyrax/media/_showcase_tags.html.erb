@@ -1,9 +1,6 @@
-<h2>PHYSICAL OBJECT TAGS</h2>
-<div class="row">
-	<div class="col-xs-6 showcase-label">
-Not yet implemented
-	</div>
-	<div class="col-xs-6 showcase-value">
-Not yet implemented
-	</div>
+<h2>MEDIA TAGS</h2>
+<div class="row tags">
+  <div id="tags-list">
+    <%= safe_join(@presenter.keyword.map { |tag| link_to(tag, main_app.tag_path(tag)) }, " |  ".html_safe) %>
+  </div>
 </div>

@@ -6,3 +6,7 @@ en:
       cultural_heritage_object:
         description:        "Cultural heritage object works"
         name:               "Cultural Heritage Object"
+  simple_form:
+    labels:
+      cultural_heritage_object:
+        short_title: Short description

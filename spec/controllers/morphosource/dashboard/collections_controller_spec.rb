@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 require 'rails_helper'
 require 'morphosource/dashboard/collections_controller'
+require 'hyrax/dashboard/collections_controller'
+require 'hyrax/forms/collection_form'
 
 RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller do
 
@@ -10,7 +12,7 @@ RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller
   let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 'project') }
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another') }
-  let(:collection_params) { { collection: { title: ['New Collection'] } } }
+  let(:collection_params) { { collection: { title: 'New Collection' } } }
 
   before do
     contributors.users += [user]

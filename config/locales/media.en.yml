@@ -12,9 +12,9 @@ en:
         media_type: Media Type
         part: Element or Part
         funding: Funding Attribution
-        description: Notes
+        description: Full Description
         rights_statement: Copyright Statement
-        agreement_uri: Additional Usage Agreement URL
+        agreement_uri: Additial Usage Agreement URL
         rights_holder: Rights Holder
         cite_as: Cite As
 

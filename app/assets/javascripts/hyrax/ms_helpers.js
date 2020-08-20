@@ -256,10 +256,7 @@ function removeLastRepeatable() {
 function modalityAbbrev(m) {
   switch(m) {
     case 'MicroNanoXRayComputedTomography':
-      return 'μCT';
-      break;
-    case 'MedicalXRayComputedTomography':
-      return 'CT'
+      return 'CT';
       break;
     case 'MagneticResonanceImaging':
       return 'MRI'
@@ -269,9 +266,6 @@ function modalityAbbrev(m) {
       break;
     case 'SynchrotronImaging':
       return 'Synchro'
-      break;
-    case 'NeutrinoImaging':
-      return 'Neutrino'
       break;
     case 'Photogrammetry':
       return 'Photogram'

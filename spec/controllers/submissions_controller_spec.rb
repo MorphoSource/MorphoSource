@@ -48,8 +48,9 @@ RSpec.describe SubmissionsController, type: :controller do
         organization_id: '012345678'
       }}
 
-      it 'returns JSON organization response' do
-        allow(subject).to receive(:find_ancestor_organization).and_return(double("Organization",
+      let(:organization_double) { 
+        double("Organization",
+          :id => '123456789',
           :title => ['Test Title'],
           :download_reviewer => ['012345'],
           :agreement_uri => ['http://agreement.uri'],
@@ -63,7 +64,12 @@ RSpec.describe SubmissionsController, type: :controller do
           :publisher => ['Publisher'],
           :cite_as => ['Citation'],
           :download_permission => ['restricted_download']
-        ))
+        )
+      }
+
+      it 'returns JSON organization response' do
+        allow(organization_double).to receive(:attachment) { 'test/url/path/attachment.pdf' }
+        allow(subject).to receive(:find_ancestor_organization).and_return(organization_double)
 
         post :organization_default_media_fields, params: form_params
 

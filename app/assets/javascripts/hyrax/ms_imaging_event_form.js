@@ -10,10 +10,6 @@ var showFieldsByModality = function() {
     $('.ie_xray_ct').addClass('show').removeClass('hide');
     $('.ie_photogrammetry, .ie_photography').children('input, select').val('');
     break;
-  case 'MedicalXRayComputedTomography':
-    $('.ie_xray_ct').addClass('show').removeClass('hide');
-    $('.ie_photogrammetry, .ie_photography').children('input, select').val('');
-    break;
   case 'Photogrammetry':
     $('.ie_photogrammetry').addClass('show').removeClass('hide');
     $('.ie_xray_ct').children('input, select').val('');
@@ -140,8 +136,7 @@ $( document ).ready(function() {
 
       // If X-ray modality is selected, submit filter fields. Otherwise, submit an empty filter.
       var selectedModality = $('select[name="imaging_event[ie_modality]"]').val();
-      if (selectedModality === 'MicroNanoXRayComputedTomography' ||
-            selectedModality === 'MedicalXRayComputedTomography' ) {
+      if (selectedModality === 'MicroNanoXRayComputedTomography') {
 
         var filterCount = $('select[name="imaging_event[filter_material][]"]').length;
         for (i = 0; i < filterCount; i++) {

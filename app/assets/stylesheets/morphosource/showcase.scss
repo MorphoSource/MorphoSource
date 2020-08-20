@@ -90,7 +90,7 @@ html {
 .text-truncate {
   text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;  
+  overflow: hidden;
 }
 .no-result {
   text-align: center;
@@ -100,7 +100,7 @@ html {
   padding: 5px;
 }
 
-.showcase.teams { /* / teams and projects show page styles */
+.showcase.teams, .showcase.media-works { /* / teams and projects show page styles */
 
   .flex { /* setting column with same height */
     display: flex;
@@ -121,13 +121,13 @@ html {
         display: inline-block;
       }
     }
-  } 
+  }
 
   .team-logo img {
     width: 60px;
     margin-right:16px;
     margin-bottom: 8px;
-  }  
+  }
   .team-title {
 
     .label, td.status span {
@@ -153,7 +153,7 @@ html {
   @media (max-width: 768px) {
     #showcase-title {
       font-size: 4.5vw;
-    }  
+    }
     .text-muted {
       font-size: 2.4vw;
     }
@@ -207,7 +207,7 @@ html {
     }
   }
 
-  table.teams-projects {
+  table.teams-projects, table.media-works {
     th, td {
       text-align: center;
     }
@@ -216,7 +216,7 @@ html {
       padding-left: 10px;
       padding-right: 10px;
       vertical-align: top;
-    } 
+    }
     th.no-sort.sorting_asc:after,
     th.no-sort.sorting_desc:after {
       /* remove the sorting arrows in the checkbox column */
@@ -276,7 +276,7 @@ html {
     h3 {
       text-overflow: ellipsis;
       white-space: nowrap;
-      overflow: hidden; 
+      overflow: hidden;
       padding: 0 4px;
       margin: 0 !important;
     }
@@ -291,10 +291,55 @@ html {
     padding-right: 6px;
   }
 
+  .batch-action-buttons {
+    .btn {
+      margin-right: 4px;
+      font-size: 11px;
+    }
+    margin-bottom: 4px;
+  }
+  @media (max-width: 768px) {
+    .batch-action-buttons {
+      .btn, form {
+        width: 100%;
+      }
+      .btn {
+        margin: 0 0 3px;
+      }
+    }
+  }
+  
   #add-selected-to-cart {
     font-size: 11px;
     @media (min-width: 768px) {
-      max-width: 155px;
+      max-width: 144px;
+    }
+  }
+
+  div.filters, div.filter-by {
+    background-color: $block-background-color;
+    border: 1px solid $block-border-color;
+    padding: 6px;
+    margin: 0 -10px 6px -10px;
+
+    .filter-label {
+      font-weight: bold;
+      font-size: 12px;
+      color: $font-color;
+      padding-right: 0;
+    }
+    select, p {
+      background-color: #fff;
+      border: 1px solid $block-border-color;
+      padding: 4px 6px;
+      font-size: 11px;
+    }
+    p {
+      width: max-content;
+    }
+    .remove-filter-all {
+      font-size: 11px;      
+      color: $font-color;
     }
   }
   
@@ -339,9 +384,14 @@ html {
 
   }
 
-  .collection-count .label {
-    width: 77px;
-  }
+  .collection-count {
+    span {font-size: 12px}
+    span.label {
+      width: 77px;
+      font-size: 11px;
+      margin-right: 4px;
+    }
+  } 
 
 } /* / teams and projects show page styles */
 
@@ -369,14 +419,14 @@ html {
     li {
       border-bottom: 3px solid transparent;
       a, a:hover {
-        border-top: none;      
-      }      
+        border-top: none;
+      }
     }
     li.active {
       border-bottom: 3px solid $line-color;
       a, a:hover {
         margin-right: 0;
-        border-top: none;      
+        border-top: none;
       }
     }
   }
@@ -389,7 +439,8 @@ html {
     border-radius: 0;
   }
 
-  .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big {
+  .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big,
+  .btn-primary:hover, .btn-default:hover, .btn-sm:hover, .btn-xs:hover, .btn-big:hover {
     background-color: $button-color;
     color: $button-font-color;
     border-color: $button-border-color;
@@ -404,12 +455,12 @@ html {
   .link-disabled {
     color: $link-disabled-font-color;
   }
-  
+
   .input-group-btn.field-controls .btn {
     /* mainly applies to button wrapper around add and remove glyphicons */
     background-color: transparent;
     color: $font-color;
-    border-color: transparent;  
+    border-color: transparent;
   }
 
   .show-actions {
@@ -564,7 +615,7 @@ html {
     padding:4px 15px;
   }
 
-  #taxonomy-accordion-group { 
+  #taxonomy-accordion-group {
     div {
       color: #000;
     }
@@ -616,7 +667,7 @@ html {
     }
     /* this is breaking the collapse functionality. remove later if not needed
     .row.table{
-      display: table; 
+      display: table;
     } */
     /* set the columns to same height */
     .table-cell {
@@ -678,7 +729,7 @@ html {
   }
   .circle.last:before{
     bottom:auto;
-    top:100%; 
+    top:100%;
   }
   .circle.last {
       position: absolute;
@@ -708,12 +759,12 @@ html {
   .showcase-label, .showcase-value,
   .content-block-lg .row > div,
   .content-block .row > div {
-    font-size: 12px; 
+    font-size: 12px;
     @media (min-width: 414px) {
-      font-size: 2.4vw; 
+      font-size: 2.4vw;
     }
     @media (min-width: 768px) {
-      font-size: 1.3vw; 
+      font-size: 1.3vw;
     }
     @media (min-width: 1200px) {
       font-size: 16px;
@@ -724,12 +775,12 @@ html {
   .content-block .media-block .row > div,
   .content-block-lg .row.media-block > div,
   .content-block .row.media-block > div {
-    font-size: 11px; 
+    font-size: 11px;
     @media (min-width: 414px) {
-      font-size: 2.2vw; 
+      font-size: 2.2vw;
     }
     @media (min-width: 768px) {
-      font-size: 1.1vw; 
+      font-size: 1.1vw;
     }
     @media (min-width: 1200px) {
       font-size: 12px;
@@ -737,13 +788,13 @@ html {
   }
 
   .content-block-lg {
-    border: 2px solid #efefef; 
+    border: 2px solid #efefef;
   }
   .content-block-lg.row {
     padding-right: 0;
   }
   .panel-collapse.row {
-    padding: 4px 0 4px 8px;    
+    padding: 4px 0 4px 8px;
   }
 
   .showcase-link, .break-all {
@@ -765,7 +816,7 @@ html {
       color: $font-color;
       border-color: transparent;
     }
-    input {
+    input:not([type=checkbox]) {
       width: 100%;
     }
   }
@@ -775,11 +826,11 @@ html {
     background-color: #fff;
     list-style-type: none;
     padding: 2px 8px;
-    white-space: nowrap;    
+    white-space: nowrap;
   }
 
   i.dropdown-toggle:hover {
-    cursor: pointer;    
+    cursor: pointer;
   }
 
   div.preview {
@@ -809,7 +860,7 @@ html {
     }
   }
 
-  .row.indent {padding-left: 32px}   
+  .row.indent {padding-left: 32px}
 
   .visibility-link .label, .visibility-link td.status span, td.status .visibility-link span {
     font-size: .65em;
@@ -849,7 +900,7 @@ html {
       margin-top: 0;
       background-color: transparent;
       border: 1px solid transparent;
-    
+
       .viewer-wrapper {
         margin-top: 10px;
         background-color: transparent;
@@ -857,6 +908,12 @@ html {
     }
 
   }
+  /* tags specific styles */
+  #tags-list {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
   /* /media showcase specific styles */
 
 }

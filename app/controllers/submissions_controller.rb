@@ -100,19 +100,22 @@ class SubmissionsController < ApplicationController
       message << ', but no default fields present' if !default_fields.present?
       organization_alert_message = alert(organization)
       organization_title = organization.title
+      organization_id = organization.id
     else
       status = 'FAIL'
       message = 'Organization does not exist'
       default_fields = {}
       organization_alert_message = ''
       organization_title = ''
+      organization_id = nil
     end
     response_object = {
       status: status,
       message: message,
       default_fields: default_fields,
       organization_alert_message: organization_alert_message,
-      organization_title: organization_title
+      organization_title: organization_title,
+      organization_id: organization_id
     }
     render :json => response_object
   end
@@ -374,7 +377,9 @@ class SubmissionsController < ApplicationController
   def create_work_if_needed(work, params)
     if !@submission.public_send(to_id(work)).present? && params[work]
       puts("Creating #{work}")
-      @submission.public_send(to_id(work) + '=', prepare_and_create_work(work, params))
+      new_work_id = prepare_and_create_work(work, params)
+      @submission.public_send(to_id(work) + '=', new_work_id)
+      create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
     end
   end
 
@@ -400,19 +405,27 @@ class SubmissionsController < ApplicationController
   def finalize_model_params(work, model_params, addl_params={})
     case work
     when 'biological_specimen'
-      model_params = assign_model_params_parents(
-        model_params, 
-        Array(@submission.organization_id) + @submission.taxonomy_id_array
-      )
+      if @submission.organization_id.present? && !@submission.no_organization 
+        parents = Array(@submission.organization_id)
+      else
+        parents = []
+      end
+
+      parents = parents + @submission.taxonomy_id_array if @submission.taxonomy_id_array.present?
+      model_params = assign_model_params_parents(model_params, parents) if parents.present?
       if @submission.canonical_taxonomy_id.present?
         model_params.merge!('canonical_taxonomy' => [@submission.canonical_taxonomy_id])
       end
       @biospec_create_params = model_params
 
     when 'cultural_heritage_object'
-      model_params = assign_model_params_parents(
-        model_params, 
-        [@submission.organization_id])
+      if @submission.organization_id.present? && !@submission.no_organization 
+        model_params = assign_model_params_parents(
+          model_params, 
+          [@submission.organization_id]
+        )
+      end
+      
       @cho_create_params = model_params
 
     when 'device'
@@ -520,6 +533,25 @@ class SubmissionsController < ApplicationController
     end
 
     model_params.merge!(new_params)
+  end
+
+  def create_attachment_if_needed(work, id)
+    field = attachment_fields[work]
+    return if field == 'agreement' && params[:media][:agreement_uri].present?
+    if params[field].present? && Morphosource.attachment_formats.include?(File.extname(params[field].original_filename))
+      Morphosource::AttachmentService.create(id, field, params[field])
+      params.delete(field)
+    elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
+      Morphosource::AttachmentService.create_copy(id, field, submission_params[:organization_for_attachment])
+    end
+  end
+
+  def attachment_fields
+    { 
+      'imaging_event' => 'ie_description', 
+      'processing_event' => 'pe_description',
+      'media' => 'agreement' 
+    }
   end
 
   # Utility functions
@@ -725,7 +757,8 @@ class SubmissionsController < ApplicationController
                 :cultural_heritage_object_search_short_title,
                 :taxonomy_search,
                 :organization_search,
-                :taxonomy_params_array
+                :taxonomy_params_array,
+                :organization_for_attachment
         )
     )
   end
@@ -771,10 +804,21 @@ class SubmissionsController < ApplicationController
       funding: organization.funding,
       publisher: organization.publisher,
       cite_as: organization.cite_as,
-      download_permission: organization.download_permission.first
+      download_permission: organization.download_permission.first,
+      attachment_url: attachment_url(organization)
     }
 
     fields.select {|k, v| v.present? }
   end
 
+  def attachment_url(organization)
+    if organization.attachment('agreement')
+      Rails.application.routes.url_helpers.attachment_path(
+        id: organization.id, 
+        field: 'agreement'
+      )
+    else
+      nil
+    end
+  end
 end

@@ -1284,6 +1284,20 @@ $( document ).ready(function() {
           }
         });
 
+        $('a#organization-attachment-remove').click(function(event){
+          event.preventDefault();
+          $('div#organization-attachment-section').addClass('hide').removeClass('show');
+          $('div#work-attachment-section').addClass('show').removeClass('hide');
+          data.organizationForAttachment = null;
+        });
+
+        $('a#organization-attachment-replace').click(function(event){
+          event.preventDefault();
+          $('div#organization-attachment-section').addClass('show').removeClass('hide');
+          $('div#work-attachment-section').addClass('hide').removeClass('show');
+          data.organizationForAttachment = data.organizationId;
+        });
+
         $('#new_media').submit(function(){
           var createParams = ['organizationCreateParams', 'taxonomyCreateParams',
             'biologicalSpecimenCreateParams', 'culturalHeritageObjectCreateParams', 'deviceCreateParams',
@@ -1309,6 +1323,21 @@ $( document ).ready(function() {
             } else {
               self.addParamToForm('#new_media', 'submission[' + camelcaseToUnderscore(k) + ']', data[k]);
             }
+          }
+
+          // Add IE and PE attachments, if necessary
+          if ($('input#pe_description').val()) {
+            var fileField = $('input#pe_description');
+            fileField.addClass('hide');
+            var clone = fileField.clone();
+            fileField.after(clone).appendTo('#new_media');
+          }
+
+          if ($('input#ie_description').val()) {
+            var fileField = $('input#ie_description');
+            fileField.addClass('hide');
+            var clone = fileField.clone();
+            fileField.after(clone).appendTo('#new_media');
           }
 
           console.log($('#new_media').serializeArray());
@@ -1423,6 +1452,21 @@ $( document ).ready(function() {
             // Add new settings
             self.fillMediaFields(getData.default_fields);
 
+            // Organization agreement attachment
+            if (getData.default_fields.attachment_url && getData.organization_id) {
+              self.data.organizationForAttachment = getData.organization_id;
+              $('#organization-attachment-url').attr('href', getData.default_fields.attachment_url);
+              $('#organization-attachment-section').addClass('show').removeClass('hide');
+              $('div#organization-attachment-replace-row').addClass('show').removeClass('hide');
+              $('#work-attachment-section').addClass('hide').removeClass('show');
+            } else {
+              self.data.organizationForAttachment = null;
+              $('#organization-attachment-url').attr('href', '#');
+              $('#organization-attachment-section').addClass('hide').removeClass('show');
+              $('div#organization-attachment-replace-row').addClass('hide').removeClass('show');
+              $('#work-attachment-section').addClass('show').removeClass('hide');
+            }
+
             // Remove loading
             $('form#new_media div#submission-media-ownership').removeClass('ui-loading-whole-page');
           }
@@ -1471,7 +1515,11 @@ $( document ).ready(function() {
 
       fillMediaFields(defaultFields) {
         for (const f in defaultFields) {
-          this.fillMediaField(f, defaultFields[f]);
+          if (defaultFields[f] && defaultFields[f] != []) {
+            console.log(f);
+            console.log(defaultFields[f]);
+            this.fillMediaField(f, defaultFields[f]);
+          }
         }
       }
 
@@ -1487,6 +1535,11 @@ $( document ).ready(function() {
         if (Array.isArray(val)) {
           val = val.filter(v => v !== '');
         }
+
+        if ( !val || (Array.isArray(val) && ( !val.length || val[0] == 'Name: , Type: ') ) ) {
+          return;
+        }
+
         console.log(val);
         switch(field) {
           case 'download_permission':
@@ -1569,6 +1622,12 @@ $( document ).ready(function() {
                 "<i class='fas fa-university'></i>"
               );
             }
+            break;
+          case 'attachment_url':
+            $('div#organization-attachment-row').addClass('permissions-field');
+            $('div#organization-attachment-row label span').after(
+              "<i class='fas fa-university'></i>"
+            );
             break;
           default: // single-value fields
             $(selector).val(val);

@@ -8,11 +8,11 @@ class Media < Morphosource::Works::Base
 
   self.indexer = MediaIndexer
   # Change this to restrict which works can be added as a child.
-  self.valid_child_concerns = [ProcessingEvent, Attachment]
+  self.valid_child_concerns = [ProcessingEvent]
 
   validates :title, presence: { message: 'Your work must have a title.' }
 
-  attr_accessor :download_permission
+  attr_accessor :download_permission, :tags
   before_destroy :prevent_doi_deletion
   after_destroy :delete_ark_if_reserved
 

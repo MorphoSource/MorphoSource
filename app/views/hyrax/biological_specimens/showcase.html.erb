@@ -5,9 +5,6 @@
 
 <div class="row">
 	<div class="col-sm-6 col-sm-push-6">
-		<div class="content-block preview">
-			<%= render @presenter.showcase_preview_image_partial, presenter: @presenter %>
-		</div>
 		<div class="content-block">
 			<%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
 		</div>
@@ -15,13 +12,6 @@
 		<div class="content-block">
 			<%= render @presenter.showcase_collections_partial, presenter: @presenter %>
 		</div>
-		<div class="content-block">
-			<%= render @presenter.showcase_tags_partial, presenter: @presenter %>
-		</div>
-		<div class="content-block">
-			<%= render @presenter.showcase_citation_and_download_partial, presenter: @presenter %>
-		</div>
-
 	</div>
 
 	<div class="col-sm-6 col-sm-pull-6">
@@ -36,9 +26,6 @@
 		</div>
 		<div class="content-block">
 			<%= render @presenter.showcase_time_and_place_details_partial, presenter: @presenter %>
-		</div>
-		<div class="content-block">
-			<%= render @presenter.showcase_bibliographic_citations_partial, presenter: @presenter %>
 		</div>
 	</div>
 </div>

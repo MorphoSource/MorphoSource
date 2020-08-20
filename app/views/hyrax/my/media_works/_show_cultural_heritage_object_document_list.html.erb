@@ -1,0 +1,18 @@
+<table id="datatable-cho-list" class="table table-striped teams-projects">
+  <caption class="sr-only">List of items in this team</caption>
+  <thead>
+  <tr>
+    <th class="no-sort">&nbsp;<!-- thumbnail column --></th>
+    <th>Identifier</th>
+    <th>Material</th>
+    <th>CHO Type</th>
+    <th>Vouchered</th>
+    <th>Total Media</th>
+    <th>Date Added</th>
+    <th>Origin</th>
+  </tr>
+  </thead>
+  <tbody>
+    <%= render partial: 'show_cultural_heritage_object_document_list_row', collection: documents, as: :document %>
+  </tbody>
+</table>

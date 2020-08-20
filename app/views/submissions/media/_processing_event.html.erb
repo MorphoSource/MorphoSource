@@ -25,7 +25,14 @@
                   </div>
               </div>
               <%= f.input :software, as: :multi_value %>
-              <%= f.input :description, label: 'Full description' %>
+              <%= render_edit_field_partial('description', f: f) %>
+              <%= render_edit_field_partial(
+                'attachment', 
+                f: f, 
+                field: 'pe_description', 
+                label: 'Description attachment file',
+                curation_concern: nil
+              ) %>
             </div>
           </div>
         </div>

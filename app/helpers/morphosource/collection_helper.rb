@@ -23,6 +23,14 @@ module Morphosource
       count.to_s + ' ' + @collection_list_type.pluralize(count)
     end
 
+    def showpage_url(id, tab)
+      if page_is_team?
+        Rails.application.routes.url_helpers.teams_path + "/#{id}\##{tab}"
+      elsif page_is_project?
+        Rails.application.routes.url_helpers.projects_path + "/#{id}\##{tab}"
+      end
+    end
+
     def ms_dashboard_my_collection_link
       if page_is_team?
         "/dashboard/my/teams"
@@ -107,7 +115,7 @@ module Morphosource
       request.env['PATH_INFO']
     end
 
-    def bso_tab_url(id)
+    def bso_tab_url_for_collections(id)
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
@@ -115,7 +123,7 @@ module Morphosource
       "/projects/specimens/#{id}?#{url_params}"
     end
 
-    def cho_tab_url(id)
+    def cho_tab_url_for_collections(id)
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
@@ -140,7 +148,7 @@ module Morphosource
     end
 
     def prepare_docs_and_filters_for_media(collection)
-      @po_type = "" # bso / cho
+      @po_type = "bso" # bso / cho
       @is_team = collection.team?
       @visibility_options = []
 

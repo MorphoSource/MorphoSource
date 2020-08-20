@@ -3,7 +3,7 @@
 /*    .hide {display: block !important} */
 
 /* NOTE: the styles below are shared between
-   showcase edit page and hyrax edit page.  These styles will effect both pages 
+   showcase edit page and hyrax edit page.  These styles will effect both pages
    TODO: might need to move these to global style sheet later */
 
 .btn.btn-link.add,
@@ -32,9 +32,9 @@ input.disabled {
 .showcase-edit {
 
   /* temporarily use fix font size */
-  .showcase-label, 
-  .showcase-value, 
-  .content-block-lg .row > div, 
+  .showcase-label,
+  .showcase-value,
+  .content-block-lg .row > div,
   .content-block .row > div {
     font-size: 14px;
   }
@@ -51,7 +51,7 @@ input.disabled {
   h2:not(.required-flag) {
     span {
       padding:0;
-    }    
+    }
   }
   .tooltip-inner {
     text-align: left;
@@ -62,7 +62,7 @@ input.disabled {
   }
 
   .form-group {
-    margin-bottom: 0; 
+    margin-bottom: 0;
   }
 
   .controls-remove-text {
@@ -77,7 +77,7 @@ input.disabled {
     color: #ffffff;
   }
 
-  .field-controls .add, 
+  .field-controls .add,
   .field-controls .remove {
     width: auto;
     text-align: left;
@@ -133,7 +133,7 @@ input.disabled {
   .material-icons.tooltip-icon:before {
     content: 'help_outline';
   }
-  
+
   .material-icons.tooltip-icon {
     color: $font-color;
     font-size: 11px;
@@ -171,7 +171,32 @@ input.disabled {
     }
   }
 
-  .media-showcase .show-actions, 
+  .file-field-input {
+    width: 100%;
+  }
+
+  .attachment-link {
+    border: 1px solid #DDDDDD;
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+  }
+
+  // styling for media tags
+  // hide label for keyword input
+  .single-input .showcase-label {
+    display: none;
+  }
+
+  .single-input .showcase-value {
+    width: 100%;
+  }
+
+  // remove extra border around tags select
+  .media-tags {
+    border: none;
+  }
+
+  .media-showcase .show-actions,
   .show-actions {
     padding: 3.5vw 0;
     > .btn {
@@ -210,33 +235,6 @@ input.disabled {
     }
   } */
 
-  div.filters, div.filter-by {
-    background-color: $block-background-color;
-    border: 1px solid $block-border-color;
-    padding: 6px;
-    margin: 0 -10px 6px -10px;
-
-    .filter-label {
-      font-weight: bold;
-      font-size: 12px;
-      color: $font-color;
-      padding-right: 0;
-    }
-    select, p {
-      background-color: #fff;
-      border: 1px solid $block-border-color;
-      padding: 4px 6px;
-      font-size: 11px;
-    }
-    p {
-      width: max-content;
-    }
-    .remove-filter-all {
-      font-size: 11px;      
-      color: $font-color;
-    }
-  }
-
   .panel {
     border: none;
     margin-left: -15px;
@@ -266,7 +264,7 @@ input.disabled {
 
   /*
   .listing li:not(.processing_activity_items) {
-    width: 200px !important; 
+    width: 200px !important;
   } */
 
   .processing_activity_items {
@@ -314,7 +312,7 @@ input.disabled {
     .content-block {
       table, tbody {
         width: 100%;
-      }    
+      }
     }
   }
 
@@ -339,8 +337,8 @@ input.disabled {
 
   [class*="wrapper_for_"] {
     li {
-      display:flex; 
-      flex-direction:row; 
+      display:flex;
+      flex-direction:row;
       justify-content:left;
     }
     input, select {
@@ -415,7 +413,7 @@ input.disabled {
       font-size: 48px;
       float: left;
       margin-right: 8px;
-    }    
+    }
   }
 
   .show-actions {
@@ -446,7 +444,7 @@ input.disabled {
     padding-right: 0;
     h2 {
       margin-left: 10px;
-      margin-right: 0;      
+      margin-right: 0;
     }
   }
 
@@ -459,8 +457,8 @@ input.disabled {
       span {
         box-sizing: border-box;
         flex-grow: 1;
-        width: 100%;  
-        overflow: hidden; 
+        width: 100%;
+        overflow: hidden;
         list-style: none;
       }
       input {
@@ -502,7 +500,7 @@ input.disabled {
       }
       th, td {
         width:auto;
-      } 
+      }
       th.icon, td.icon {
         width:40px;
       }

@@ -13,7 +13,8 @@ module Hyrax
       :physical_object_title, :physical_object_link, :physical_object_id,
       :device_and_facility, :device_link, :device, :device_manufacturer, :device_description,
       :device_organization_institution,
-      :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_modality,
+      :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software, 
+      :imaging_event_description, :imaging_event_description_attachment, :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list, :parent_media_members,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
       :this_media_and_parents_id_list, :this_media_and_parents_members,
@@ -259,13 +260,25 @@ module Hyrax
         parent_ids = []
         parent_ids = pe.in_work_ids.select { |m_id| parent_media_id_list.include? m_id }
 
+        if Morphosource::AttachmentService.get(pe.id, 'pe_description').present?
+          pe_description_attachment = 
+            [Rails.application.routes.url_helpers.attachment_path(id: pe.id, field: 'pe_description')]
+        else
+          pe_description_attachment = []
+        end
+
         @processing_events_data << {
           :id => pe.id,
           :processing_activity_items => processing_activity_items,
           :child_ids => pe.member_ids,
           :child_members => this_media_and_parents_members.select { |m| pe.member_ids.include? m.id },
           :parent_ids => parent_ids,
-          :parent_members => this_media_and_parents_members.select { |m| parent_ids.include? m.id }
+          :parent_members => this_media_and_parents_members.select { |m| parent_ids.include? m.id },
+          :creator => pe.creator,
+          :date_created => pe.date_created,
+          :software => pe.software,
+          :description => pe.description,
+          :description_attachment => pe_description_attachment
         }
       end
 
@@ -312,7 +325,12 @@ module Hyrax
       if @is_absentee_parent == true
         @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
       else
+        # It's still possible to have an ImagingEvent through the ProcessingEvent, but we prioritize
+        # those directly on the target media
         @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
+        if @imaging_event.nil? && (@processing_event_count > 0)
+          @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
+        end
       end
 
       if @imaging_event.present?
@@ -400,6 +418,14 @@ module Hyrax
         end
         @imaging_event_creator = @imaging_event.creator
         @imaging_event_date_created = @imaging_event.date_created
+        @imaging_event_software = @imaging_event.software
+        @imaging_event_description = @imaging_event.description
+        if Morphosource::AttachmentService.get(@imaging_event.id, 'ie_description').present?
+          @imaging_event_description_attachment = 
+            [Rails.application.routes.url_helpers.attachment_path(id: @imaging_event.id, field: 'ie_description')]
+        else
+          @imaging_event_description_attachment = []
+        end
       else
         imaging_event_exist = false
       end # end if imaging_event present?
@@ -492,7 +518,7 @@ module Hyrax
     end
 
     def showcase_tags_partial
-      '/hyrax/physical_objects/showcase_tags'
+      '/hyrax/media/showcase_tags'
     end
 
     def showcase_citation_and_download_partial

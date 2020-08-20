@@ -10,8 +10,8 @@ RSpec.describe ImagingEvent do
       expect(subject.valid_parent_concerns).to match_array([Device, BiologicalSpecimen, CulturalHeritageObject])
     end
 
-    it "has Media, ProcessingEvent and Attachment as valid child concerns" do
-      expect(subject.valid_child_concerns).to match_array([Media, ProcessingEvent, Attachment])
+    it "has Media and ProcessingEvent as valid child concerns" do
+      expect(subject.valid_child_concerns).to match_array([Media, ProcessingEvent])
     end
 
   end
@@ -109,8 +109,8 @@ RSpec.describe ImagingEvent do
         expect(subject.valid_parent_concerns).to match_array([Device, BiologicalSpecimen, CulturalHeritageObject])
       end
 
-      it "has Media, ProcessingEvent and Attachment as valid child concerns" do
-        expect(subject.valid_child_concerns).to match_array([Media, ProcessingEvent, Attachment])
+      it "has Media and ProcessingEvent as valid child concerns" do
+        expect(subject.valid_child_concerns).to match_array([Media, ProcessingEvent])
       end
 
     end

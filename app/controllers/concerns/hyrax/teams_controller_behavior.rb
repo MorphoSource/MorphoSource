@@ -116,7 +116,7 @@ module Hyrax
       end
 
       def member_works # 24ms
-        @response = collection_member_service.all_member_media(@collection_organization_object_ids)
+        @response = collection_member_service.all_member_media(@collection_organization_object_ids, media_filter_params)
         @member_docs = @response.documents
         @members_count = @response.total
       end
@@ -124,11 +124,11 @@ module Hyrax
       def member_works_objects
         all_object_ids = @collection_object_ids + @collection_organization_object_ids
 
-        @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen)
+        @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
         @bso_member_docs = @bso_response.documents
         @bso_member_count = @bso_response.total
 
-        @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject)
+        @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
         @cho_member_docs = @cho_response.documents
         @cho_member_count = @cho_response.total
 

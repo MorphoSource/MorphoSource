@@ -1,19 +1,47 @@
 <% org_form = Hyrax::OrganizationForm.new(@collection.organization, @current_ability, controller) %>
-<%= simple_form_for org_form, :url => main_app.update_default_permissions_path(@collection), html: { class: 'editor' } do |f| %>
-  <div id="organization-permissions">
-    <%= f.input :download_permission, as: :select, multiple: true, collection: Morphosource::PermissionsHelper::PUBLICATION_OPTIONS, class: 'form-control' %>
-    <%= f.input :download_reviewer, as: :select, collection: @collection.group_members, value_method: :user_key, multiple: true, class: 'form-control' %>
-    <%= render_edit_field_partial('license', f: f) %>
-    <%= render_edit_field_partial('rights_statement', f: f) %>
-    <%= f.input :terms_of_use, as: :text, input_html: { rows: '4' }, class: 'form-control' %>
-    <%= render_edit_field_partial('agreement_uri', f: f) %>
-    <%= f.input :permits_commercial_use, as: :select, class: 'form-control' %>
-    <%= f.input :permits_3d_use, as: :select, class: 'form-control' %>
-    <%= render_edit_field_partial('rights_holder', f: f) %>
-    <%= render 'records/edit_fields/rights_holder_organization', f: f %>
-    <%= render_edit_field_partial('funding', f: f) %>
-    <%= render_edit_field_partial('publisher', f: f) %>
-    <%= render_edit_field_partial('cite_as', f: f) %>
-    <%= f.submit 'Save Default Permissions' %>
-  </div>
+<%= simple_form_for org_form, 
+	wrapper: :showcase_default,
+	:url => main_app.update_default_permissions_path(@collection), 
+	html: { 
+		class: 'editor',
+		multipart: true
+	} do |f| 
+%>
+
+	<div id="organization-permissions">
+		
+		<%= f.input :download_permission, as: :select, multiple: true, collection: Morphosource::PermissionsHelper::PUBLICATION_OPTIONS, class: 'form-control' %>
+		<%= render_edit_field_partial('download_reviewer', f: f) %>
+		
+		<%= render_edit_field_partial('rights_statement', f: f) %>
+		<%= render_edit_field_partial('license', f: f) %>
+		
+		<%= render_edit_field_partial('agreement_uri', f: f, curation_concern: org_form.model ) %>
+		
+		<%= render_edit_field_partial('permits_commercial_use', f: f) %>
+    <%= render_edit_field_partial('permits_3d_use', f: f) %>
+
+		<%= f.input :rights_holder, as: :multi_value %>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">IP holder(s) (Name, Type)</div>
+      <div class="col-xs-6 showcase-value form-group multi_value optional managed ie_xray_ct wrapper_for_2" id="organization_rights_holder_wrapper">
+        <ul class="listing rights_holder_listing" aria-live="polite">
+          <li class="field-wrapper input-group input-append">
+            <input class="string multi_value optional form-control organization_rights_holder_name form-control multi-text-field" name="organization[rights_holder_name][]" value="" id="organization_rights_holder_name" type="text">
+            <select class="form-control select optional form-control" name="organization[rights_holder_type][]" id="organization_rights_holder_type">
+              <option value=""></option>
+              <option value="Copyright and License">Copyright and License</option>
+              <option value="Copyright">Copyright</option>
+              <option value="License">License</option>
+            </select>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+		<%= render_edit_field_partial('funding', f: f) %>
+		<%= render_edit_field_partial('publisher', f: f) %>
+		<%= render_edit_field_partial('cite_as', f: f) %>
+		<%= f.submit 'Save Default Permissions' %>
+	</div>
 <% end %>

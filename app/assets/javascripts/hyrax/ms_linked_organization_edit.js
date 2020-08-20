@@ -4,10 +4,10 @@ $( document ).ready(function() {
   if ($('form[id*="edit_organization"]').length) { // if team organization edit form tab
 
     // TODO: investigate why extra media rights holder wrapper is showing up. Just delete for now.
-    mediaRightsHolder = document.getElementById('media_rights_holder_wrapper')
-    mediaRightsHolder.parentNode.removeChild(mediaRightsHolder);
+    // mediaRightsHolder = document.getElementById('media_rights_holder_wrapper')
+    // mediaRightsHolder.parentNode.removeChild(mediaRightsHolder);
 
-    form = $('form[id*="edit_organization"]')[0];
+    // form = $('form[id*="edit_organization"]')[0];
 
     // concatenate rights holder name, type to rights holder
     // Check the rightsHolder Field (will be hidden)

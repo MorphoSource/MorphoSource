@@ -61,8 +61,8 @@ RSpec.describe Organization do
       expect(subject.valid_parent_concerns).to match_array([])
     end
 
-    it "has Device, BiologicalSpecimen, CulturalHeritageObject, and Attachment as valid children" do
-      expect(subject.valid_child_concerns).to match_array([Device, BiologicalSpecimen, CulturalHeritageObject, Attachment])
+    it "has Device, BiologicalSpecimen, and CulturalHeritageObject as valid children" do
+      expect(subject.valid_child_concerns).to match_array([Device, BiologicalSpecimen, CulturalHeritageObject])
     end
   end
 
@@ -117,8 +117,8 @@ RSpec.describe Organization do
         expect(subject.valid_parent_concerns).to match_array([])
       end
 
-      it "has Device, BiologicalSpecimen, CulturalHeritageObject, and Attachment as valid children" do
-        expect(subject.valid_child_concerns).to match_array([Device, BiologicalSpecimen, CulturalHeritageObject, Attachment])
+      it "has Device, BiologicalSpecimen, and CulturalHeritageObject as valid children" do
+        expect(subject.valid_child_concerns).to match_array([Device, BiologicalSpecimen, CulturalHeritageObject])
       end
     end
 
@@ -128,7 +128,6 @@ RSpec.describe Organization do
 
       let(:specimen1)             { BiologicalSpecimen.create(title: ['title'], vouchered: [true]) }
       let(:specimen2)             { BiologicalSpecimen.create(title: ['title'], vouchered: [false]) }
-      let(:attachment)            { Attachment.create(title: ['title']) }
 
       before do
         subject.team_id = [team.id]
@@ -144,7 +143,7 @@ RSpec.describe Organization do
 
       describe '#specimens, #outside_specimens' do
         before do
-          subject.ordered_members << specimen1 << specimen2 << attachment
+          subject.ordered_members << specimen1 << specimen2
           subject.save
           specimen1.member_of_collections << team
           team.save
@@ -166,10 +165,9 @@ RSpec.describe Organization do
         let(:imagingEvent)    { ImagingEvent.create(title: ['title']) }
         let(:imagingEvent2)   { ImagingEvent.create(title: ['title']) }
         let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
-        let(:attachment)      { Attachment.create(title: ['title']) }
 
         before do
-          subject.ordered_members << specimen1 << specimen2 << attachment
+          subject.ordered_members << specimen1 << specimen2
           subject.save
           specimen1.ordered_members << imagingEvent
           specimen1.save

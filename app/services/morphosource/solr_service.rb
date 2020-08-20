@@ -30,6 +30,11 @@ module Morphosource
       get(query, args)
     end
 
+    # autocomplete for tags
+    def search_terms(field, query)
+      connection.get("terms", params: { "terms.fl" => field, "terms.prefix" => query, "omitHeader" => true } )
+    end
+
     def facet_fields(field_names)
       if result.present? and result["facet_counts"]["facet_fields"].present?
         facet_hash = {}
@@ -52,7 +57,7 @@ module Morphosource
     end
 
     private
-    
+
       def connection
         ActiveFedora::SolrService.instance.conn
       end

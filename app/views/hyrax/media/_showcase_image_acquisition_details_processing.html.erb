@@ -1,79 +1,108 @@
 <div class="row">
 
-	<% if upstream %>
-		<div class="indicators line table-cell">
-			<span class="glyphicon glyphicon-flash"></span>
-			<p><span class="circle first"></span></p>
-			<p><span class="circle last"></span></p>
-		</div>
-	<% else %>
-		<div class="indicators table-cell">
-			<span class="glyphicon glyphicon-flash"></span>
-		</div>
-	<% end %>
+  <% if upstream %>
+    <div class="indicators line table-cell">
+      <span class="glyphicon glyphicon-flash"></span>
+      <p><span class="circle first"></span></p>
+      <p><span class="circle last"></span></p>
+    </div>
+  <% else %>
+    <div class="indicators table-cell">
+      <span class="glyphicon glyphicon-flash"></span>
+    </div>
+  <% end %>
 
-	<div class="content-block-lg row table-cell">
+  <div class="content-block-lg row table-cell">
 
-		<h3>Image Processing</h3>
+    <h3>Image Processing</h3>
 
-		<div class="col-sm-6">
-			<div class="content-block-intro">
+    <div class="col-sm-6">
+      <div class="content-block-intro">
 
-				<%
-				this_media_member = processing_member
-				%>
-				
-				<%= presenter.raw_or_derived %> media 
-		    <%= link_to(this_media_member.link_name, contextual_path(this_media_member, @presenter)) %> 
-			 	(this media) was created by processing raw media 
-				<% if @presenter.is_absentee_parent == true || !parent_member.present? %>
-				 	(unavailable)
-				<% else %>
-				 	<%= link_to(parent_member.link_name, contextual_path(parent_member, @presenter)) %>
-			 	<% end %>
-				<% if processing_activity_items.present?  %>
-					in <%= pluralize(processing_activity_items.count, 'step') %>
-			 	<% end %>
-			</div>
-			<div class="content-block">
-				<% if processing_activity_items.present? %>
-					<!--div id="collapse-block-image-acquisition-processing-activities" class="panel-collapse collapse collapse-block" -->		
-					<% processing_activity_items.map do |item| %>
-						<h4>Step <%= item["Step"] %>: </b><%= item["Type"] %> </h4>
-						<div class="row indent">
-							<div class="col-xs-6 showcase-label">Software</div>
-							<div class="col-xs-6 showcase-value"><%= item["Software"] %></div>
-						</div>
-						<div class="row indent">
-							<div class="col-xs-6 showcase-label">Description</div>
-							<div class="col-xs-6 showcase-value"><%= item["Description"] %></div>
-						</div>
-					<% end %>
-					<!--/div -->
-					<%#= collapse_expand_panel("collapse-block-image-acquisition-processing-activities") %>
-				<% end %>
-			</div>
-		</div>
+        <%
+        this_media_member = processing_member
+        %>
+        
+        <%= presenter.raw_or_derived %> media 
+        <%= link_to(this_media_member.link_name, contextual_path(this_media_member, @presenter)) %> 
+        (this media) was created by processing raw media 
+        <% if @presenter.is_absentee_parent == true || !parent_member.present? %>
+          (unavailable)
+        <% else %>
+          <%= link_to(parent_member.link_name, contextual_path(parent_member, @presenter)) %>
+        <% end %>
+        <% if processing_activity_items.present?  %>
+          in <%= pluralize(processing_activity_items.count, 'step') %>
+        <% end %>
+      </div>
+      <div class="content-block" style="margin-bottom: 30px">
+        <h4>Processing Details</h4>
+          <div class="row indent">
+            <div class="col-xs-6 showcase-label">Creator</div>
+            <div class="col-xs-6 showcase-value"><%= creator ? creator : '--' %></div>
+          </div>
+          <div class="row indent">
+            <div class="col-xs-6 showcase-label">Date processed</div>
+            <div class="col-xs-6 showcase-value"><%= date_created ? date_created : '--' %></div>
+          </div>
+          <div class="row indent">
+            <div class="col-xs-6 showcase-label">Software</div>
+            <div class="col-xs-6 showcase-value"><%= software ? software : '--' %></div>
+          </div>
+          <div class="row indent">
+            <div class="col-xs-6 showcase-label">Description</div>
+            <div class="col-xs-6 showcase-value"><%= description ? description : '--' %></div>
+          </div>
+          <div class="row indent">
+            <div class="col-xs-6 showcase-label">Description attachment</div>
+            <div class="col-xs-6 showcase-value">
+              <% if description_attachment.present? %>
+                <span class='showcase-link'><%= link_to('Agreement File', description_attachment) %></span>
+              <% else %>
+                <%= 'None' %>
+              <% end %>
+            </div>
+          </div>
+      </div>
+      <div class="content-block" style="margin-bottom: 30px">
+        <% if processing_activity_items.present? %>
+          <!--div id="collapse-block-image-acquisition-processing-activities" class="panel-collapse collapse collapse-block" -->    
+          <% processing_activity_items.map do |item| %>
+            <h4>Step <%= item["Step"] %>: </b><%= item["Type"] %> </h4>
+            <div class="row indent">
+              <div class="col-xs-6 showcase-label">Software</div>
+              <div class="col-xs-6 showcase-value"><%= item["Software"] %></div>
+            </div>
+            <div class="row indent">
+              <div class="col-xs-6 showcase-label">Description</div>
+              <div class="col-xs-6 showcase-value"><%= item["Description"] %></div>
+            </div>
+          <% end %>
+          <!--/div -->
+          <%#= collapse_expand_panel("collapse-block-image-acquisition-processing-activities") %>
+        <% end %>
+      </div>
+    </div>
 
-		<div class="col-sm-6">
-			<div class="content-block-intro media">
-				Media produced by this event on MorphoSource
-			</div>
-			<div class="content-block">
-				<% if this_media_member.present? %>
-					<div class="row media-block">
+    <div class="col-sm-6">
+      <div class="content-block-intro media">
+        Media produced by this event on MorphoSource
+      </div>
+      <div class="content-block">
+        <% if this_media_member.present? %>
+          <div class="row media-block">
 
-						 	<div class="thumbnail col-xs-4">
-						    <%= render_thumbnail_tag this_media_member %><br>
-						    <%= link_to(this_media_member.link_name, contextual_path(this_media_member, @presenter)) %><br>
-						    <%= this_media_member.file_format %><br>
-						  </div>
+              <div class="thumbnail col-xs-4">
+                <%= render_thumbnail_tag this_media_member %><br>
+                <%= link_to(this_media_member.link_name, contextual_path(this_media_member, @presenter)) %><br>
+                <%= this_media_member.file_format %><br>
+              </div>
 
-					</div>							
-				<% end %>
-			</div>
-		</div>
+          </div>              
+        <% end %>
+      </div>
+    </div>
 
-	</div><!-- /content-block-lg -->
+  </div><!-- /content-block-lg -->
 
 </div><!-- /row -->

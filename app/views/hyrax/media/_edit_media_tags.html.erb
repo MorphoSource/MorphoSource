@@ -1,0 +1,6 @@
+<div class="content-block">
+  <h2>MEDIA TAGS</h2>
+  <div class="row single-input">
+    <%= f.input :tags, as: :text, input_html: { value: @curation_concern.keyword.join(','), class: 'media-tags', placeholder: 'Add tags' } %>
+  </div>
+</div>

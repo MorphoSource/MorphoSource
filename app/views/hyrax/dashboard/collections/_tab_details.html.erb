@@ -4,12 +4,18 @@
     <div class="content-block">
       
       <h2>GENERAL DETAILS</h2>
-      <%= f.input :title, as: :multi_value, label_wrapper_html: { class: 'required-flag' } %>
-      <%= f.input :description, as: :multi_value, label: "Full description" %>
-      <%= f.input :creator, as: :multi_value %>
-      <%= f.input :contributor, as: :multi_value %>
-      <%= f.input :based_near, as: :multi_value %>
-      <%= f.input :related_url, as: :multi_value %>
+      <%= render_edit_field_partial('title', f: f) %>
+      <%= render_edit_field_partial('description', f: f) %>
+      <%= render_edit_field_partial('creator', f: f) %>
+      <%= render_edit_field_partial('contributor', f: f) %>
+      <%= render_edit_field_partial('based_near', f: f) %>
+      <%= render_edit_field_partial('related_url', f: f) %>
+      <%#= f.input :title, as: :multi_value, label_wrapper_html: { class: 'required-flag' } %>
+      <%#= f.input :description, as: :multi_value, label: "Full description" %>
+      <%#= f.input :creator, as: :multi_value %>
+      <%#= f.input :contributor, as: :multi_value %>
+      <%#= f.input :based_near, as: :multi_value %>
+      <%#= f.input :related_url, as: :multi_value %>
 
       <h2>THUMBNAIL</h2>
       <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>

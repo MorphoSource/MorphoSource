@@ -3,7 +3,6 @@
 status:
   Image:
     MicroNanoXRayComputedTomography: derived
-    MedicalXRayComputedTomography: derived
     MagneticResonanceImaging: derived
     SynchrotronImaging: derived
     Photogrammetry: derived
@@ -12,7 +11,6 @@ status:
     Photography: any
   Video:
     MicroNanoXRayComputedTomography: derived
-    MedicalXRayComputedTomography: derived
     MagneticResonanceImaging: derived
     SynchrotronImaging: derived
     Photogrammetry: derived
@@ -21,7 +19,6 @@ status:
     Photography: any
   CTImageSeries:
     MicroNanoXRayComputedTomography: any
-    MedicalXRayComputedTomography: any
     MagneticResonanceImaging: any
     SynchrotronImaging: any
     Photogrammetry: none
@@ -30,7 +27,6 @@ status:
     Photography: none
   PhotogrammetryImageSeries:
     MicroNanoXRayComputedTomography: none
-    MedicalXRayComputedTomography: none
     MagneticResonanceImaging: none
     SynchrotronImaging: none
     Photogrammetry: any
@@ -39,7 +35,6 @@ status:
     Photography: none
   Mesh:
     MicroNanoXRayComputedTomography: derived
-    MedicalXRayComputedTomography: derived
     MagneticResonanceImaging: derived
     SynchrotronImaging: derived
     Photogrammetry: derived
@@ -62,28 +57,22 @@ examples:
   CTImageSeries:
     MicroNanoXRayComputedTomography:
       raw:
-        - Projection data produced by scanner software
+        - X-ray projection images produced by scanner software
       derived:
-        - Reconstruction data
-        - Projection data with subsequent processing
-    MedicalXRayComputedTomography:
-      raw:
-        - Projection data produced by scanner software
-      derived:
-        - Reconstruction data
-        - Projection data with subsequent processing
+        - Reconstructed image slices
+        - X-ray projection images with subsequent processing
     MagneticResonanceImaging:
       raw:
-        - Projection data produced by scanner software
+        - X-ray projection images produced by scanner software
       derived:
-        - Reconstruction data
-        - Projection data with subsequent processing
+        - Reconstructed image slices
+        - X-ray projection images with subsequent processing
     SynchrotronImaging:
       raw:
-        - Projection data produced by scanner software
+        - X-ray projection images produced by scanner software
       derived:
-        - Reconstruction data
-        - Projection data with subsequent processing
+        - Reconstructed image slices
+        - X-ray projection images with subsequent processing
   PhotogrammetryImageSeries:
     Photogrammetry:
       raw:

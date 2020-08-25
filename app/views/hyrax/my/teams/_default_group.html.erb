@@ -17,12 +17,8 @@
   </thead>
   <tbody>
   <% docs.each_with_index do |document, counter| %>
-    <% collection_presenter = if document.admin_set?
-                                Hyrax::AdminSetPresenter.new(document, current_ability, nil)
-                              else
-                                Hyrax::TeamPresenter.new(document, current_ability, nil)
-                              end %>
-    <%= render 'list_collections', collection_presenter: collection_presenter, counter: counter, is_admin_set: document.admin_set? %>
+    <% collection_presenter = Hyrax::TeamPresenter.new(document, current_ability, nil) %>
+    <%= render 'list_collections', collection_presenter: collection_presenter, counter: counter, document: document %>
   <% end %>
   </tbody>
 </table>

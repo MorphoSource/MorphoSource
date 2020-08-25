@@ -53,7 +53,8 @@ module Hyrax
 
         query_collection_information
         #query_collection_members
-        @response = collection_member_service.all_collections_by_type(@collection_list_type_id, collection_filter_params)
+byebug
+        @response = teams_service.all_collections_by_type(@collection_list_type_id, collection_filter_params)
         @document_list = @response.documents
 
         @paginated_document_list = paginated_item_list
@@ -82,7 +83,7 @@ module Hyrax
 
 
       def query_collection_information
-        @collection_information = collection_information_service.collection_information
+        @collection_information = teams_information_service.collection_information
         @collection_counts = @collection_information['counts'] ||= {}
         @collection_groups = @collection_information['collection_groups'] ||= {}
 #        @collection_bso_groups = @collection_information['bso_groups'] ||= {}
@@ -93,7 +94,8 @@ module Hyrax
 
 
       def collection_filter_params
-        collection_information_service.solrize_filter_params(filter_params('k_', params))
+byebug
+        teams_information_service.solrize_filter_params(filter_params('k_', params))
       end
 
       def filter_params(prefix, params)

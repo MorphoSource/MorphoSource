@@ -2,8 +2,8 @@
 module Morphosource
   module Collections
     # Responsible for retrieving collection members
-    class TeamsMemberService 
-      attr_reader :scope, :params, :collections, :collection
+    class TeamsService 
+      attr_reader :scope, :params
       delegate :repository, to: :scope
       
       def initialize(scope:, user:, params:)
@@ -28,6 +28,10 @@ module Morphosource
         fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Collection}"
         fq_params << "(#{Solrizer.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
 byebug
+
+
+
+
         response = available_member_works_filter_query(fq_params: fq_params)
         return response
       end

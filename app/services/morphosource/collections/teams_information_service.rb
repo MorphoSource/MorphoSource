@@ -30,7 +30,7 @@ module Morphosource
       def query_solr_collection_info
         @facet_results, @media_count, 
         @manager_media_count, @editor_media_count, @depositor_media_count, @downloader_media_count, @viewer_media_count = facet_query_for_collections
-byebug
+#byebug
 
 #        @manager_media_count += user_managed_media_count
 #
@@ -56,8 +56,11 @@ byebug
           }
         }
 
-        info['collection_groups'] = facet_collection_groups
+        info['collection_groups'] = { 'organization' => {} }.merge(facet_collection_groups)
+
+
 byebug
+
 #        info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
 #        info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
 #        info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
@@ -152,7 +155,8 @@ byebug
 
         def facet_query_for_collections
           facet_fields = [
-            "visibility_ssi"
+            solrize('visibility', :stored_sortable)
+
 #            solrize('physical_object_id', :stored_searchable),
 #            solrize('collection_type_gid', :symbol)
           ]
@@ -265,19 +269,33 @@ byebug
         end
 
         def organization_docs(organization_title = '')
-          return [] if !physical_object_ids.present?
+          return [] if !organization_title.present?
 
           params = { 
-            fl: ['id', solrize('title', :stored_searchable), solrize('member_ids', :symbol)].join(','),
+            fl: ['id', solrize('title', :stored_searchable), solrize('team_id', :stored_searchable)].join(','),
             fq: [
-              solrize('has_model', :symbol) + ':Organization', 
-              assemble_or_query(solrize('member_ids', :symbol), physical_object_ids.map { |id| id.upcase } )
+              solrize('has_model', :symbol) + ':Organization'
             ]
           }
           params[:fq] += ["#{solrize('title', :stored_searchable)}:#{prepare_value(organization_title)}"] if organization_title.present?
 
           solr.get_docs(nil, params)
         end
+
+#        def organization_docs(organization_title = '')
+#          return [] if !physical_object_ids.present?
+#
+#          params = { 
+#            fl: ['id', solrize('title', :stored_searchable), solrize('member_ids', :symbol)].join(','),
+#            fq: [
+#              solrize('has_model', :symbol) + ':Organization', 
+#              assemble_or_query(solrize('member_ids', :symbol), physical_object_ids.map { |id| id.upcase } )
+#            ]
+#          }
+#          params[:fq] += ["#{solrize('title', :stored_searchable)}:#{prepare_value(organization_title)}"] if #organization_title.present?#
+#
+#          solr.get_docs(nil, params)
+#        end
 
         def po_ids_by_model(po_ids, model)
           return [] if !po_ids.present?
@@ -381,56 +399,76 @@ byebug
 
         ### Collection solrize filter params ###
 
+
         def solrize_param(name, value)
           case name
-          when 'm_pub_status'
-            "#{solrize('fileset_accessibility', :stored_searchable)}:#{value}"
-          when 'm_organization'
-            assemble_or_query(
-              solrize('physical_object_id', :stored_searchable), 
-              po_ids_by_collection_organization(value)
-            )
-          when 'm_team_project'
-            project_id = Collection.where(title: value)&.first&.id
-            "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
-          when 'm_origin'
-            if value == 'team_collection'
-              "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
-            elsif value == 'team_organization' && Collection.find(collection_id).organization.present?
-              organization_title = Collection.find(collection_id).organization.title&.first
-              assemble_po_id_and_not_collection_query(
-                po_ids_by_collection_organization(organization_title),
-                collection_id
-              )
-            end
-          when 'b_source'
-            if value == 'idigbio'
-              "#{solrize('idigbio_uuid', :stored_searchable)}:*"
-            elsif value == 'user'
-              "-#{solrize('idigbio_uuid', :stored_searchable)}:*"
-            end
-          when 'b_organization', 'c_organization'
-            assemble_or_query(
-              'id', 
-              po_ids_by_collection_organization(value)
-            )
-          when 'b_origin', 'c_origin'
-            if Collection.find(collection_id).organization.present?
-              organization_title = Collection.find(collection_id).organization.title&.first
-              organization_po_query = assemble_or_query(
-                'id', 
-                po_ids_by_collection_organization(organization_title)
-              )
+          when 'k_visibility'
+            "#{solrize('visibility', :stored_sortable)}:#{value}"
+          when 'k_organization'
+#            "id:(000200085 OR 000200047)"
+byebug
+            assemble_or_query('id', team_ids_by_collection_organization("Duke University"))
 
-              if value == 'team_collection'
-                '-' + organization_po_query
-              elsif value == 'team_organization'
-                organization_po_query
-              end
-            end
+
+#          when 'm_organization'
+#            assemble_or_query(
+#              solrize('physical_object_id', :stored_searchable), 
+#              po_ids_by_collection_organization(value)
+#            )
+#          when 'm_team_project'
+#            project_id = Collection.where(title: value)&.first&.id
+#            "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
+#          when 'm_origin'
+#            if value == 'team_collection'
+#              "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+#            elsif value == 'team_organization' && Collection.find(collection_id).organization.present?
+#              organization_title = Collection.find(collection_id).organization.title&.first
+#              assemble_po_id_and_not_collection_query(
+#                po_ids_by_collection_organization(organization_title),
+#                collection_id
+#              )
+#            end
+#          when 'b_source'
+#            if value == 'idigbio'
+#              "#{solrize('idigbio_uuid', :stored_searchable)}:*"
+#            elsif value == 'user'
+#              "-#{solrize('idigbio_uuid', :stored_searchable)}:*"
+#            end
+#          when 'b_organization', 'c_organization'
+#            assemble_or_query(
+#              'id', 
+#              po_ids_by_collection_organization(value)
+#            )
+#          when 'b_origin', 'c_origin'
+#            if Collection.find(collection_id).organization.present?
+#              organization_title = Collection.find(collection_id).organization.title&.first
+#              organization_po_query = assemble_or_query(
+#                'id', 
+#                po_ids_by_collection_organization(organization_title)
+#              )
+#
+#              if value == 'team_collection'
+#                '-' + organization_po_query
+#              elsif value == 'team_organization'
+#                organization_po_query
+#              end
+#            end
           else
             "#{solrize(name.split('_', 2).last, :stored_searchable)}:#{value}"
           end
+        end
+
+        def team_ids_by_collection_organization(title)
+          return [] if !title.present?
+
+          organizations = organization_docs(title)
+
+          filtered_org_team_ids = organizations.
+            map { |o| o[solrize('team_id', :stored_searchable)] }.
+            flatten.uniq.map(&:upcase)
+byebug
+          filtered_org_team_ids
+#          physical_object_ids.select { |po_id| filtered_org_po_ids.include? po_id }
         end
 
         def po_ids_by_collection_organization(title)

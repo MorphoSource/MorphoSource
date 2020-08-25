@@ -18,7 +18,7 @@ module Hyrax
         class_attribute :presenter_class,
 #                        :form_class,
 #                        :single_item_search_builder_class,
-                        :membership_service_class,
+                        :teams_service_class,
                         :information_service_class
 
         #self.presenter_class = Hyrax::MediaWorksPresenter
@@ -26,7 +26,7 @@ module Hyrax
         # The search builder to find the collection
 #        self.single_item_search_builder_class = SingleCollectionSearchBuilder
         # The search builder to find the collections' members
-        self.membership_service_class = Morphosource::Collections::TeamsMemberService
+        self.teams_service_class = Morphosource::Collections::TeamsService
         self.information_service_class = Morphosource::Collections::TeamsInformationService
       end
 
@@ -77,12 +77,12 @@ module Hyrax
 #          prepare_docs_and_filters_for_media
 #        end
 
-        def collection_member_service 
-           membership_service_class.new(scope: self, user: current_user, params: params_for_query)
+        def teams_service 
+           teams_service_class.new(scope: self, user: current_user, params: params_for_query)
         end
 
-        def collection_information_service
-          @collection_information_service ||= information_service_class.new(current_user, @collection_list_type_id) 
+        def teams_information_service
+          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id) 
         end
 
         def paginated_item_list
@@ -117,7 +117,7 @@ module Hyrax
 #        end
 
 #        def subcollection_member_service(subcollection)
-#          membership_service_class.new(scope: self, user: current_user, collection: subcollection, params: params_for_query)
+#          teams_service_class.new(scope: self, user: current_user, collection: subcollection, params: params_for_query)
 #        end
 
 

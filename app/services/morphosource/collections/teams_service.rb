@@ -27,12 +27,9 @@ module Morphosource
 #        fq_params << core_fq
         fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Collection}"
         fq_params << "(#{Solrizer.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
-byebug
+#byebug
 
-
-
-
-        response = available_member_works_filter_query(fq_params: fq_params)
+        response = available_collections_filter_query(fq_params: fq_params)
         return response
       end
 
@@ -40,20 +37,20 @@ byebug
       #
       # Works which are members of the given collection
       # @return [Blacklight::Solr::Response]
-      def available_member_works_filter_query(fq_params: [])
+      def available_collections_filter_query(fq_params: [])
         query_solr_with_fq(query_builder: ms_collections_search_builder, query_params: params[:q], fq_params: fq_params)
       end
 
       private
 
-      def assemble_multiple_collection_query_for(coll)
-        subcollection_ids = available_member_subcollections(coll).documents.map { |s| s['id'] }
-        if subcollection_ids.present?
-          " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
-        else
-          ""
-        end
-      end
+#      def assemble_multiple_collection_query_for(coll)
+#        subcollection_ids = available_member_subcollections(coll).documents.map { |s| s['id'] }
+#        if subcollection_ids.present?
+#          " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
+#        else
+#          ""
+#        end
+#      end
 
 
       # @api private

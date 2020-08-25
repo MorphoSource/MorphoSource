@@ -53,7 +53,7 @@ module Hyrax
 
         query_collection_information
         #query_collection_members
-byebug
+
         @response = teams_service.all_collections_by_type(@collection_list_type_id, collection_filter_params)
         @document_list = @response.documents
 
@@ -94,7 +94,6 @@ byebug
 
 
       def collection_filter_params
-byebug
         teams_information_service.solrize_filter_params(filter_params('k_', params))
       end
 

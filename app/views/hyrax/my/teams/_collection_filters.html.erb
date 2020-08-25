@@ -25,9 +25,8 @@
 		  	<select name="k_organization" data-form="collection-filters">
 		  		<option value="">Organization</option>
           <% Array(@collection_groups['organization']).each do |v, n| %>
-			  		<option><%= v %></option>
+            <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
 		  		<% end %>
-		  		<option>test</option>
 		  	</select>
 		  <% end %>
 
@@ -42,6 +41,9 @@
 			<div class="col-sm-8 col-lg-9">
 				<% if params['k_visibility'].present? %>
 					<p id="k_visibility" class="filter-param">Visibility > <%= visibility_label(params['k_visibility']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="k_visibility"></i></p>
+				<% end %>
+				<% if params['k_organization'].present? %>
+					<p id="k_organization" class="filter-param">Organization > <%= params['k_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="k_organization"></i></p>
 				<% end %>
 
 

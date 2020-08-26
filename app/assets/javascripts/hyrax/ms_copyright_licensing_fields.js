@@ -18,23 +18,23 @@ $( document ).ready(function() {
     switch (conditionMatch) {
       case '0':
         disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/', 'http://creativecommons.org/publicdomain/zero/1.0/', 'http://creativecommons.org/publicdomain/mark/1.0/', 'http://www.morphosource.org/terms/licenseUnknown/']);
-        setCommercialUsePermitted(media_or_organization, true);
+        setCommercialUsePermitted(media_or_organization, true, false);
         break;
       case '1':
         disableLicense(media_or_organization, ['http://creativecommons.org/publicdomain/mark/1.0/']);
-        setCommercialUsePermitted(media_or_organization, true);
+        setCommercialUsePermitted(media_or_organization, true, false);
         break;
       case '2':
         disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'http://creativecommons.org/publicdomain/zero/1.0/', 'http://creativecommons.org/publicdomain/mark/1.0/']);
-        setCommercialUsePermitted(media_or_organization, false);
+        setCommercialUsePermitted(media_or_organization, false, false);
         break;
       case '3':
         disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/']);
-        setCommercialUsePermitted(media_or_organization, true);
+        setCommercialUsePermitted(media_or_organization, true, false);
         break;
       case '4':
         disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/']);
-        setCommercialUsePermitted(media_or_organization, false);
+        setCommercialUsePermitted(media_or_organization, false, false);
         break;
       default:
         break;
@@ -42,23 +42,31 @@ $( document ).ready(function() {
   };
 
   var licenseChange = function(media_or_organization) {
-    if ( /\/by-nc/.test($(`select#${media_or_organization}_license`).val()) ) {
-      setCommercialUsePermitted(media_or_organization, false);
+    var selected_license = $(`select#${media_or_organization}_license`).val();
+    if ( /\/by-nc/.test(selected_license) ) {
+      setCommercialUsePermitted(media_or_organization, false, false);
+    }
+    else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == '')) {
+      setCommercialUsePermitted(media_or_organization, true, false);
     }
     else {
-      setCommercialUsePermitted(media_or_organization, true);
+      setCommercialUsePermitted(media_or_organization, true, true);
     }
   };
 
-  var setCommercialUsePermitted = function(media_or_organization, commercial_use_permitted) {
+  var setCommercialUsePermitted = function(media_or_organization, commercial_use_permitted, force_commercial_use_permitted) {
     var commercial_use_permitted_option = $(`select[name="${media_or_organization}[permits_commercial_use]"] option[value="CommercialUsePermitted"]`);
+    var commercial_use_not_permitted_option = $(`select[name="${media_or_organization}[permits_commercial_use]"] option[value="CommercialUseNotPermitted"]`);
     if (commercial_use_permitted) {
       commercial_use_permitted_option.removeAttr('disabled');
+      if (force_commercial_use_permitted) {
+        $(`select[name="${media_or_organization}[permits_commercial_use]"]`).val('CommercialUsePermitted');
+        commercial_use_not_permitted_option.attr('disabled','disabled');
+      }
     }
     else {
-      if ($(`select[name="${media_or_organization}[permits_commercial_use]"]`).val() == commercial_use_permitted_option.val()) {
-        $(`select[name="${media_or_organization}[permits_commercial_use]"]`).val('CommercialUseNotPermitted');
-      }
+      commercial_use_not_permitted_option.removeAttr('disabled');
+      $(`select[name="${media_or_organization}[permits_commercial_use]"]`).val('CommercialUseNotPermitted');
       commercial_use_permitted_option.attr('disabled', 'disabled');
     }
   };

@@ -56,6 +56,7 @@ module Hyrax
       :download_reviewer,
       :agreement_uri,
       :license,
+      :morphosource_use_agreement_type,
       :rights_statement,
       :terms_of_use,
       :permits_commercial_use,

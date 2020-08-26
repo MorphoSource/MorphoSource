@@ -5,8 +5,6 @@ module Hyrax
       extend ActiveSupport::Concern
       include Blacklight::AccessControls::Catalog
       include Blacklight::Base
-#      include MorphosourceHelper
-#      include Morphosource::MediaWorksHelper
 
       included do
         # include the display_trophy_link view helper method
@@ -33,6 +31,7 @@ module Hyrax
       def collection
         action_name == 'show' ? @presenter : @collection
       end
+
 
       private
 

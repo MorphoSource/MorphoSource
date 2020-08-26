@@ -1,6 +1,6 @@
 <% show_filter_by = false %>
 <form action="<%= ms_dashboard_my_collection_link %>" class='filters' id="collection-filters" name="collection-filters" method="get">
-	<%= hidden_params_for_filters('k_') %>
+	<%= hidden_params_for_filters_with_no_view('k_') %>
 	<div class="filters row">
 
 		<div class="col-sm-2 col-lg-1 filter-label">Filter:</div>
@@ -30,6 +30,18 @@
 		  	</select>
 		  <% end %>
 
+		 	<% if params['k_membership'].present? 
+					 show_filter_by = true %>
+				<input type="hidden" name="k_membership" value="<%= params['k_membership'] %>" class="filter-param" />
+			<% else %>
+		  	<select name="k_membership" data-form="collection-filters">
+		  		<option value="">Membership</option>
+          <% Array(@collection_counts).each do |v, n| %>
+            <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
+		  		<% end %>
+		  	</select>
+		  <% end %>
+
 		</div>
 
 	</div>
@@ -45,9 +57,9 @@
 				<% if params['k_organization'].present? %>
 					<p id="k_organization" class="filter-param">Organization > <%= params['k_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="k_organization"></i></p>
 				<% end %>
-
-
-
+				<% if params['k_membership'].present? %>
+					<p id="k_membership" class="filter-param">Membership > <%= params['k_membership'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="k_membership"></i></p>
+				<% end %>
 			</div>
 			<div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>
 

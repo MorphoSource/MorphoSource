@@ -92,9 +92,13 @@ module Hyrax
 #        @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
       end
 
-
       def collection_filter_params
-        teams_information_service.solrize_filter_params(filter_params('k_', params))
+        returned_solrize_filter_params = teams_information_service.solrize_filter_params(filter_params('k_', params))
+        unless params['k_membership'].present?
+          # if no membership criteria, get collections with any membership value
+          returned_solrize_filter_params << teams_information_service.default_membership_params          
+        end
+        returned_solrize_filter_params
       end
 
       def filter_params(prefix, params)
@@ -106,19 +110,6 @@ module Hyrax
         return_params
       end
 
-      def hidden_params_for_filters(prefix)
-        hidden_params = {}
-        params = request_params
-        view =  params['view'] || 'list'
-        #todo: might also merge the filter params here later.  For now just add the view param
-        #filters = filter_params(prefix, params)
-        hidden_params.merge!({'view' => view })
-        html = ''
-        hidden_params.map do |k,v|
-          html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
-        end
-        html.html_safe
-      end
 
 #      def request_params
 #        request.params

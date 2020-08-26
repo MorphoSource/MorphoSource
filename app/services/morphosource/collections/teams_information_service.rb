@@ -8,7 +8,10 @@ module Morphosource
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
         :n_idigbio, :collection_project_map, :organizations, :info, :subcollection_ids,
         :manager_media_count, :editor_media_count, :depositor_media_count, :downloader_media_count, :viewer_media_count,
-        :manager_po_count, :editor_po_count, :depositor_po_count, :downloader_po_count, :viewer_po_count
+        :manager_po_count, :editor_po_count, :depositor_po_count, :downloader_po_count, :viewer_po_count,
+
+        :collection_count_for_manager, :collection_count_for_editor, :collection_count_for_depositor,
+        :collection_count_for_viewer, :collection_count_for_downloader, :ids_by_membership
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
@@ -20,6 +23,12 @@ module Morphosource
         @solr = solr_service.new
         @user = user
         @collection_list_type_id = collection_list_type_id
+        @collection_count_for_manager = 0
+        @collection_count_for_editor = 0
+        @collection_count_for_depositor = 0
+        @collection_count_for_viewer = 0
+        @collection_count_for_downloader = 0
+        @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
         query_solr_collection_info
       end
 
@@ -44,16 +53,15 @@ module Morphosource
       end
 
       def collection_information
+        membership_info
         @info = { 
-          'counts' => {
-            'media' => media_count,
-            'manager_media_count' => manager_media_count,
-            'editor_media_count' => editor_media_count,
-            'depositor_media_count' => depositor_media_count,
-            'editor_media_count' => editor_media_count,
-            'viewer_media_count' => viewer_media_count
-          }
+          'counts' => {}
         }
+        info['counts']['Manager'] = @collection_count_for_manager if @collection_count_for_manager > 0
+        info['counts']['Editor'] = @collection_count_for_editor if @collection_count_for_editor > 0
+        info['counts']['Depositor'] = @collection_count_for_depositor if @collection_count_for_depositor > 0
+        info['counts']['Downloader'] = @collection_count_for_downloader if @collection_count_for_downloader > 0
+        info['counts']['Viewer'] = @collection_count_for_viewer if @collection_count_for_viewer > 0
 
         info['collection_groups'] = { 'organization' => {} }.merge(facet_collection_groups)
         organization_groups
@@ -65,9 +73,10 @@ module Morphosource
         params.map { |k, v| solrize_param(k, v) }.compact
       end
 
-#      def subcollection_ids(collection_ids)
-#        @subcollection_ids ||= get_subcollection_ids(collection_ids)
-#      end
+      def default_membership_params
+        assemble_or_query('id', ids_by_membership['any'])
+      end
+
 
       private
 
@@ -153,12 +162,6 @@ module Morphosource
             ]
           }
 
-          manager_media_count = 0
-          editor_media_count = 0
-          depositor_media_count = 0
-          viewer_media_count = 0
-          downloader_media_count = 0
-
           solr.get_facet_fields(nil, facet_fields, params)
           if solr.docs.present? 
             coll_ids = solr.docs.map{|x| x['id']}
@@ -169,6 +172,7 @@ module Morphosource
           return solr.facet_fields(facet_fields), coll_ids, #solr.count, 
             manager_media_count, editor_media_count, depositor_media_count, downloader_media_count, viewer_media_count
         end
+
 
         def assemble_user_media_query
           # add media by depositor and creator (not thru collections)
@@ -207,6 +211,42 @@ module Morphosource
 
           solr.get(nil, params)
           solr.count
+        end
+
+        def membership_info
+          collection_ids.each do |id|
+            begin
+              membership = Collection.find(id).membership_of(@user)
+            rescue Exception => e  
+              # some collections end up with an exception below.
+              # undefined method `users' for nil:NilClass
+              # todo: remove the exception catching later if not needed
+              membership = []
+              Rails.logger.debug("Error in membership_info, #{e}, collection id: #{id}")
+            end
+            if membership.include?('Manager')
+              @collection_count_for_manager += 1
+              @ids_by_membership['Manager'] << id
+              @ids_by_membership['any'] << id
+            elsif membership.include?('Editor')
+              @collection_count_for_editor += 1
+              @ids_by_membership['Editor'] << id
+              @ids_by_membership['any'] << id
+            elsif membership.include?('Depositor')
+              @collection_count_for_depositor += 1
+              @ids_by_membership['Depositor'] << id
+              @ids_by_membership['any'] << id
+            elsif membership.include?('Viewer')
+              @collection_count_for_viewer += 1
+              @ids_by_membership['Viewer'] << id
+              @ids_by_membership['any'] << id
+            elsif membership.include?('Downloader')
+              @collection_count_for_downloader += 1
+              @ids_by_membership['Downloader'] << id
+              @ids_by_membership['any'] << id
+            else
+            end          
+          end
         end
 
         def organization_docs(organization_title = '')
@@ -366,6 +406,8 @@ module Morphosource
             "#{solrize('visibility', :stored_sortable)}:#{value}"
           when 'k_organization'
             assemble_or_query('id', team_ids_by_collection_organization(value))
+          when 'k_membership'
+            assemble_or_query('id', ids_by_membership[value])
 
 
 

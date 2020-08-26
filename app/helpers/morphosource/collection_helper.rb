@@ -107,6 +107,16 @@ module Morphosource
       html.html_safe
     end
 
+    def hidden_params_for_filters_with_no_view(prefix)
+      hidden_params = {}
+      params = request_params
+      html = ''
+      hidden_params.map do |k,v|
+        html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
+      end
+      html.html_safe
+    end
+
     def request_params
       request.params
     end

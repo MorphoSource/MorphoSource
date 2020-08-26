@@ -27,15 +27,11 @@ module Morphosource
 #        fq_params << core_fq
         fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Collection}"
         fq_params << "(#{Solrizer.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
-#byebug
 
         response = available_collections_filter_query(fq_params: fq_params)
         return response
       end
 
-      # @api public
-      #
-      # Works which are members of the given collection
       # @return [Blacklight::Solr::Response]
       def available_collections_filter_query(fq_params: [])
         query_solr_with_fq(query_builder: ms_collections_search_builder, query_params: params[:q], fq_params: fq_params)

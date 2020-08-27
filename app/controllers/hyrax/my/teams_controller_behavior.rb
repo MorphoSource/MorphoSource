@@ -126,16 +126,16 @@ module Hyrax
 #        end
 #
 #
-#        # You can override this method if you need to provide additional inputs to the search
-#        # builder. For example:
-#        #   search_field: 'all_fields'
-#        # @return <Hash> the inputs required for the collection member query service
-#        def params_for_query
-#          #params.merge(q: params[:cq])
-#
-#          # setting higher collection limit for paginating the array       
-#          params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
-#        end
+        # You can override this method if you need to provide additional inputs to the search
+        # builder. For example:
+        #   search_field: 'all_fields'
+        # @return <Hash> the inputs required for the collection member query service
+        def params_for_query
+          #params.merge(q: params[:cq])
+
+          # setting higher collection limit for paginating the array       
+          params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
+        end
     end
   end
 end

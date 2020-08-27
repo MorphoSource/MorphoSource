@@ -42,6 +42,11 @@
 		  	</select>
 		  <% end %>
 
+      <% if params['q'].present? 
+        show_filter_by = true %>
+        <input type="hidden" name="q" value="<%= params['q'] %>" class="filter-param" />
+      <% end %>
+
 		</div>
 
 	</div>
@@ -60,6 +65,10 @@
 				<% if params['k_membership'].present? %>
 					<p id="k_membership" class="filter-param">Membership > <%= params['k_membership'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="k_membership"></i></p>
 				<% end %>
+
+        <% if params['q'].present? %>
+          <p id="search_param" class="filter-param">Search > <%= params['q'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="q"></i></p>
+        <% end %>
 			</div>
 			<div class="col-sm-2 col-lg-2 text-right"><a href="javascript:void(0)" class="remove-filter-all" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="all">Remove all <i class="fa fa-times-circle"></i></a></div>
 

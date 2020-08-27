@@ -21,11 +21,8 @@ module Hyrax
                                  limit: 5, show: false
         end
       end
-      configure_facets
 
-      #def search_builder_class
-      #  @ms_collection_search_builder ||= Morphosource::My::MsCollectionsSearchBuilder.new(scope: self, collection_type: '2')
-      #end
+      configure_facets
 
       def index
         add_breadcrumb t(:'hyrax.controls.home'), root_path
@@ -35,32 +32,24 @@ module Hyrax
         managed_collections_count
         #super
         @user = current_user 
-#        (@response, @document_list) = query_solr
 
-
-        #@paged_collection_docs_by_type = paginated_item_list
-        if page_is_team?
-          @collection_list_type = "team"
-          @collection_list_type_id = 1
-          add_breadcrumb t(:'hyrax.admin.sidebar.teams'), hyrax.my_collections_path.sub!('collection', 'team')
-        elsif page_is_project?
+        if page_is_project?
           @collection_list_type = "project"
           @collection_list_type_id = 2
           add_breadcrumb t(:'hyrax.admin.sidebar.projects'), hyrax.my_collections_path.sub!('collection', 'project')
+        elsif page_is_team?
+          @collection_list_type = "team"
+          @collection_list_type_id = 1
+          add_breadcrumb t(:'hyrax.admin.sidebar.teams'), hyrax.my_collections_path.sub!('collection', 'team')
         else
           @collection_list_type = "collection"
         end
 
         query_collection_information
-        #query_collection_members
 
         @response = teams_service.all_collections_by_type(@collection_list_type_id, collection_filter_params)
         @document_list = @response.documents
-
         @paginated_document_list = paginated_item_list
-        #@member_docs = @response.documents
-        #@members_count = @response.total
-
 
         prepare_instance_variables_for_batch_control_display
 
@@ -69,8 +58,6 @@ module Hyrax
         @collection_count_for_depositor = 0
         @collection_count_for_viewer = 0
         @collection_count_for_downloader = 0
-#        @collection_docs_by_type = docs_by_collection_type(@response.docs)
-        #@collection_docs_count = @collection_docs_by_type.count
         @collection_docs_count = @document_list.length
 
         respond_to do |format|
@@ -81,15 +68,10 @@ module Hyrax
 
       end
 
-
       def query_collection_information
         @collection_information = teams_information_service.collection_information
         @collection_counts = @collection_information['counts'] ||= {}
         @collection_groups = @collection_information['collection_groups'] ||= {}
-#        @collection_bso_groups = @collection_information['bso_groups'] ||= {}
-#        @collection_cho_groups = @collection_information['cho_groups'] ||= {}
-#        @collection_object_ids = @collection_information['collection_object_ids'] ||= []
-#        @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
       end
 
       def collection_filter_params
@@ -111,61 +93,16 @@ module Hyrax
       end
 
 
-#      def request_params
-#        request.params
-#      end
-#
-#      def path_info 
-#        request.env['PATH_INFO']
-#      end
-
-
-      def docs_by_collection_type(docs)
-        filtered_docs = []
-        @visibility_options = []
-        @organization_options = []
-        @membership_options = []
-        collection_filter_params = filter_params('k_', request.params)
-
-#        docs.each do |doc|
-#          collection = Collection.find(doc.id)
-#          if (page_is_team? and collection.team?) or (page_is_project? and collection.project?)
-#            if collection.membership_of(current_user).include?('Manager')
-#              @collection_count_for_manager = @collection_count_for_manager + 1
-#            elsif collection.membership_of(current_user).include?('Editor')
-#              @collection_count_for_editor = @collection_count_for_editor + 1
-#            elsif collection.membership_of(current_user).include?('Depositor')
-#              @collection_count_for_depositor = @collection_count_for_depositor + 1
-#            elsif collection.membership_of(current_user).include?('Viewer')
-#              @collection_count_for_viewer = @collection_count_for_viewer + 1
-#            elsif collection.membership_of(current_user).include?('Downloader')
-#              @collection_count_for_downloader = @collection_count_for_downloader + 1
-#            else
-#              # should not be here
-#            end          
-#            visibility_to_compare = collection_filter_params['visibility'] || collection.visibility
-#            organization_to_compare = collection_filter_params['organization'] || collection.organization
-#            membership_to_compare = collection_filter_params['membership'] || collection.membership_of(current_user).first
-#            if collection.visibility == visibility_to_compare &&
-#              collection.organization == organization_to_compare &&
-#              collection.membership_of(current_user).first == membership_to_compare
-#              filtered_docs << doc 
-#              @visibility_options << collection.visibility
-#              @organization_options << collection.organization if collection.organization.present?
-#              @membership_options << collection.membership_of(current_user).first if collection.membership_of(current_user).first.present?
-#            end
-#          end
-#        end
-#        @visibility_options = @visibility_options.uniq
-#        @organization_options = @organization_options.uniq
-#        @membership_options = @membership_options.uniq
-        filtered_docs
-      end
-
       private
 
-        def search_action_url(*args)
-          hyrax.my_collections_url(*args)
+        def search_action_url(collection_list_type, *args)
+          if collection_list_type == 'project'
+            Rails.application.routes.url_helpers.my_projects_path(*args)
+          elsif collection_list_type == 'team'
+            Rails.application.routes.url_helpers.my_teams_path(*args)
+          else
+            hyrax.my_collections_url(*args)
+          end
         end
 
         # The url of the "more" link for additional facet values

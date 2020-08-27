@@ -1,18 +1,5 @@
 <% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
-<% provide :page_title, t("hyrax.admin.sidebar.collections") %>
-<%# provide :head do %>
-  <%#= rss_feed_link_tag route_set: hyrax %>
-  <%#= atom_feed_link_tag route_set: hyrax %>
-<%# end %>
-
-<script>
-//<![CDATA[
-
-  <%#= render partial: 'scripts', formats: [:js] %>
-
-//]]>
-</script>
-
+<% provide :page_title, t("hyrax.admin.sidebar.#{@collection_list_type}s") %>
 <% icon_class = @collection_list_type == 'team' ? "fa-users" : "fa-folder-open" %>
 <% provide :page_header do %>
   <div class="col-xs-9 title">

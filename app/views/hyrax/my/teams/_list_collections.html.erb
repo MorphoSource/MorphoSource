@@ -37,7 +37,7 @@
           <strong><%= t("hyrax.dashboard.my.collection_list.description") %></strong>
           <br /><%= collection_presenter.description&.first %>
         </p>
-        <p>
+        <p class="hidden">
           <strong><%= t("hyrax.dashboard.my.collection_list.edit_access") %></strong>
           <br />
           <% if collection_presenter.edit_groups.present? %>

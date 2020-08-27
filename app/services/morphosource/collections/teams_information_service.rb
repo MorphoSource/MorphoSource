@@ -1,15 +1,7 @@
 module Morphosource
   module Collections
-    class TeamsInformationService
-      # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
-    
-      attr_reader :solr, :collection_list_type_id, :collection_id, :collection_ids, :collection, :is_org_team, 
-        :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
-        :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
-        :n_idigbio, :collection_project_map, :organizations, :info, :subcollection_ids,
-        :manager_media_count, :editor_media_count, :depositor_media_count, :downloader_media_count, :viewer_media_count,
-        :manager_po_count, :editor_po_count, :depositor_po_count, :downloader_po_count, :viewer_po_count,
-
+    class TeamsInformationService    
+      attr_reader :solr, :collection_list_type_id, :collection_ids, :info, :facet_results, :organizations, 
         :collection_count_for_manager, :collection_count_for_editor, :collection_count_for_depositor,
         :collection_count_for_viewer, :collection_count_for_downloader, :ids_by_membership
 
@@ -37,18 +29,7 @@ module Morphosource
       end
 
       def query_solr_collection_info
-        @facet_results, @collection_ids, 
-        @manager_media_count, @editor_media_count, @depositor_media_count, @downloader_media_count, @viewer_media_count = facet_query_for_collections
-#byebug
-
-#        @manager_media_count += user_managed_media_count
-#
-#        @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
-#        @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
-#        @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
-#        @n_idigbio = bso_idigbio_count
-#
-#        @collection_project_map = collection_id_to_project_title_map
+        @facet_results, @collection_ids = facet_query_for_collections
         @organizations = organization_docs
       end
 
@@ -82,75 +63,9 @@ module Morphosource
 
         ### Solr collection queries ###
 
-#        def media_and_po_count(collection_id)
-#          query = nil
-#          params = {
-#            fq: [
-#              "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}",
-#              "#{solrize('has_model', :symbol)}:Media"
-#            ]
-#          }
-#          solr.get(query, params)
-#          # also get the PO counts 
-#          po_count = 0
-#          if solr.docs.present?
-#            solr.docs.each do |doc|
-#              po_list = doc[solrize('physical_object_id', :stored_searchable)]
-#              po_count += po_list.length if po_list.present?
-#            end
-#          end
-#          return solr.count, po_count
-#        end
-#
-#        def user_managed_media_count
-#          query = nil
-#          params = {
-#            fq: [
-#              assemble_user_media_query,
-#              "#{solrize('has_model', :symbol)}:Media"
-#            ]
-#          }
-#          solr.get(query, params)
-#          solr.count
-#        end
-#
-#        # Team-specific #
-#
-#        def organization_po_ids
-#          solr.get_docs('id:'+collection_organization_id, { rows: 1 })&.first[solrize('member_ids', :symbol)]
-#        end
-#
-#        def team_org_origin_count
-#          query = nil
-#          params = {
-#            fq: [
-#              assemble_po_id_and_not_collection_query(team_org_po_ids, collection_id),
-#              "#{solrize('has_model', :symbol)}:Media"
-#            ]
-#          }
-#
-#          solr.get(query, params)
-#          solr.count
-#        end
-#
-#        def get_subcollection_ids(collection_ids)
-#          query = nil
-#          params = {
-#            fq: [
-#              "#{solrize('nesting_collection__parent_ids', :symbol)}:(#{collection_ids.join(' OR ')})",
-#              "#{solrize('has_model', :symbol)}:Collection"
-#            ]
-#          }
-#          solr.get_docs(query, params).map { |d| d['id'] }
-#        end
-#
-
         def facet_query_for_collections
           facet_fields = [
             solrize('visibility', :stored_sortable)
-
-#            solrize('physical_object_id', :stored_searchable),
-#            solrize('collection_type_gid', :symbol)
           ]
 
           params = { 
@@ -169,48 +84,11 @@ module Morphosource
             coll_ids = []
           end
 
-          return solr.facet_fields(facet_fields), coll_ids, #solr.count, 
-            manager_media_count, editor_media_count, depositor_media_count, downloader_media_count, viewer_media_count
-        end
-
-
-        def assemble_user_media_query
-          # add media by depositor and creator (not thru collections)
-          role_clauses = [
-            ActiveFedora::SolrQueryBuilder.construct_query_for_rel(depositor: @user.user_key),
-            ActiveFedora::SolrQueryBuilder.construct_query_for_rel(creator: @user.user_key)
-          ]
-          joined_clauses = "(#{role_clauses.join(' OR ')})"
-          return joined_clauses
-        end
-
-        def collection_id_to_project_title_map
-          return {} if !facet_results[solrize('member_of_collection_ids', :symbol)].present?
-
-          collection_ids = facet_results[solrize('member_of_collection_ids', :symbol)].keys
-          solr.get_docs(query = nil, params = { fq: assemble_or_query('id', collection_ids)} ).
-            select { |d| is_project? d['collection_type_gid_ssim']&.first }.
-            map { |d| [ d['id'], d[ solrize('title', :stored_searchable) ]&.first ] }.
-            to_h
+          return solr.facet_fields(facet_fields), coll_ids
         end
 
         def is_project?(collection_type)
           collection_type.split('/').last == '2'
-        end
-
-        def bso_idigbio_count
-          return 0 if !bso_ids.present?
-
-          params = {
-            rows: 0,
-            fq: [
-              assemble_or_query('id', bso_ids.map { |id| prepare_value(id) } ),
-              "#{solrize('idigbio_uuid', :stored_searchable)}:*"
-            ] 
-          }
-
-          solr.get(nil, params)
-          solr.count
         end
 
         def membership_info
@@ -268,6 +146,7 @@ module Morphosource
             rows: 0,
             fq: [
               solrize('has_model', :symbol) + ':Organization',
+              assemble_or_query(solrize('team_id', :stored_searchable), collection_ids),
               "#{solrize('title', :stored_searchable)}:#{prepare_value(organization_title)}"
             ]
           }
@@ -275,100 +154,14 @@ module Morphosource
           solr.count
         end
 
-#        def organization_docs(organization_title = '')
-#          return [] if !physical_object_ids.present?
-#
-#          params = { 
-#            fl: ['id', solrize('title', :stored_searchable), solrize('member_ids', :symbol)].join(','),
-#            fq: [
-#              solrize('has_model', :symbol) + ':Organization', 
-#              assemble_or_query(solrize('member_ids', :symbol), physical_object_ids.map { |id| id.upcase } )
-#            ]
-#          }
-#          params[:fq] += ["#{solrize('title', :stored_searchable)}:#{prepare_value(organization_title)}"] if #organization_title.present?#
-#
-#          solr.get_docs(nil, params)
-#        end
-
-        def po_ids_by_model(po_ids, model)
-          return [] if !po_ids.present?
-
-          params = {
-            fl: 'id',
-            fq: [
-              assemble_or_query('id', po_ids),
-              "#{solrize('has_model', :symbol)}:#{model}"
-            ]
-          }
-
-          solr.get_docs(nil, params).map(&:values).flatten
-        end
 
         ### Collection information parsing ###
 
         def facet_collection_groups
           facet_results.map do |key, value|
             clean_key = desolrize(key)
-            case clean_key
-#            when 'media_type'
-#              [ clean_key, value.transform_keys { |k| map_media_type(k) } ]
-#            when 'member_of_collection_ids'
-#              [
-#                'project',
-#                value.
-#                  map { |sub_k, sub_v| [collection_project_map[sub_k], sub_v] if collection_project_map.include? sub_k }.
-#                  compact.
-#                  to_h
-#              ]
-            when 'physical_object_id'
-              nil
-            else
-              [ clean_key, value ]
-            end
+            [ clean_key, value ]
           end.compact.to_h
-        end
-
-
-        # Convert solr facet results to media groups
- #       def facet_media_groups
- #         facet_results.map do |key, value|
- #           clean_key = desolrize(key)
- #           case clean_key
- #           when 'media_type'
- #             [ clean_key, value.transform_keys { |k| map_media_type(k) } ]
- #           when 'member_of_collection_ids'
- #             [
- #               'project',
- #               value.
- #                 map { |sub_k, sub_v| [collection_project_map[sub_k], sub_v] if collection_project_map.include? sub_k }.
- #                 compact.
- #                 to_h
- #             ]
- #           when 'physical_object_id'
- #             nil
- #           else
- #             [ clean_key, value ]
- #           end
- #         end.compact.to_h
- #       end
-
-        def map_media_type(t)
-          case t
-            when 'ctimagesery' then 'CTImageSeries'
-            when 'photogrammetryimagesery' then 'PhotogrammetryImageSeries'
-            else t.titleize
-          end
-        end
-
-        def bso_source_groups
-          if n_idigbio.present?
-            { 'source' => { 
-              'idigbio' => n_idigbio, 
-              'user' => physical_object_ids.length - n_idigbio
-            } }
-          else 
-            {}
-          end
         end
 
         def organization_groups
@@ -378,27 +171,7 @@ module Morphosource
           end
         end
 
-#        def organization_groups
-#          po_media_counts = facet_results['physical_object_id_tesim'].transform_keys(&:upcase)
-#          
-#          # Todo: This may be not as efficient as is needed. Should index parents on children.
-#          organizations.map do |o|
-#            objs = o['member_ids_ssim'].select { |x| physical_object_ids.include? x }
-#            if objs.present?
-#              info['media_groups']['organization'][o['title_tesim']&.first] = 
-#                objs.reduce(0) { |sum, n| sum + po_media_counts[n] if po_media_counts[n].present? }  
-#
-#              info['bso_groups']['organization'][o['title_tesim']&.first] = 
-#                objs.select { |x| bso_ids.include? x }.length if bso_ids.present?
-#
-#              info['cho_groups']['organization'][o['title_tesim']&.first] = 
-#                objs.select { |x| cho_ids.include? x }.length if cho_ids.present?
-#            end
-#          end
-#        end
-
         ### Collection solrize filter params ###
-
 
         def solrize_param(name, value)
           case name
@@ -408,54 +181,6 @@ module Morphosource
             assemble_or_query('id', team_ids_by_collection_organization(value))
           when 'k_membership'
             assemble_or_query('id', ids_by_membership[value])
-
-
-
-
-
-#          when 'm_organization'
-#            assemble_or_query(
-#              solrize('physical_object_id', :stored_searchable), 
-#              po_ids_by_collection_organization(value)
-#            )
-#          when 'm_team_project'
-#            project_id = Collection.where(title: value)&.first&.id
-#            "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
-#          when 'm_origin'
-#            if value == 'team_collection'
-#              "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
-#            elsif value == 'team_organization' && Collection.find(collection_id).organization.present?
-#              organization_title = Collection.find(collection_id).organization.title&.first
-#              assemble_po_id_and_not_collection_query(
-#                po_ids_by_collection_organization(organization_title),
-#                collection_id
-#              )
-#            end
-#          when 'b_source'
-#            if value == 'idigbio'
-#              "#{solrize('idigbio_uuid', :stored_searchable)}:*"
-#            elsif value == 'user'
-#              "-#{solrize('idigbio_uuid', :stored_searchable)}:*"
-#            end
-#          when 'b_organization', 'c_organization'
-#            assemble_or_query(
-#              'id', 
-#              po_ids_by_collection_organization(value)
-#            )
-#          when 'b_origin', 'c_origin'
-#            if Collection.find(collection_id).organization.present?
-#              organization_title = Collection.find(collection_id).organization.title&.first
-#              organization_po_query = assemble_or_query(
-#                'id', 
-#                po_ids_by_collection_organization(organization_title)
-#              )
-#
-#              if value == 'team_collection'
-#                '-' + organization_po_query
-#              elsif value == 'team_organization'
-#                organization_po_query
-#              end
-#            end
           else
             "#{solrize(name.split('_', 2).last, :stored_searchable)}:#{value}"
           end
@@ -471,17 +196,6 @@ module Morphosource
           filtered_org_team_ids
         end
 
-#        def po_ids_by_collection_organization(title)
-#          return [] if !title.present?
-#
-#          organizations = organization_docs(title)
-#          filtered_org_po_ids = organizations.
-#            map { |o| o[solrize('member_ids', :symbol)] }.
-#            flatten.uniq.map(&:upcase)
-#
-#          physical_object_ids.select { |po_id| filtered_org_po_ids.include? po_id }
-#        end
-
         ### Solr utility methods ###
 
         def solr_service
@@ -496,16 +210,6 @@ module Morphosource
           name[0...name.rindex('_')]
         end
 
-        def assemble_po_id_or_collection_query(ids, collection_ids)
-          return "" if !ids.present? || !collection_ids.present? 
-          "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) OR (#{assemble_or_query(solrize('member_of_collection_ids', :symbol), Array(collection_ids))})"
-        end
-
-        def assemble_po_id_and_not_collection_query(ids, collection_id)
-          return "" if !ids.present? || !collection_id.present? 
-          "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) AND NOT (#{solrize('member_of_collection_ids', :symbol)}:#{collection_id})"
-        end
-
         def assemble_or_query(field, values)
           return "" if !field.present? || !values.present?
           field + ':(' + values.join(' OR ').upcase + ')'
@@ -514,10 +218,6 @@ module Morphosource
         def assemble_query
           query_clauses = [ model_clause ] + param_clauses
           query_clauses.join(' AND ')
-        end
-
-        def model_clause
-          "#{Solrizer.solr_name('has_model', :symbol)}:Taxonomy"
         end
 
         def param_clauses

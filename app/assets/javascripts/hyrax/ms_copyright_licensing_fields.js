@@ -65,8 +65,8 @@ $( document ).ready(function() {
     var selected_agreement = $(`select#${media_or_organization}_morphosource_use_agreement_type`).val();
     if (selected_agreement == 'Standard') {
       setCommercialUsePermitted(media_or_organization, true, false);
-      unrestrictRequiredArchival();
-      unrestrict3DUse();
+      unrestrictRequiredArchival(media_or_organization);
+      unrestrict3DUse(media_or_organization);
     }
     else if (selected_agreement == 'Permissive') {
       setCommercialUsePermitted(media_or_organization, true, true);
@@ -84,6 +84,7 @@ $( document ).ready(function() {
     else {
       permissive_option.removeAttr('disabled');
     }
+    morphoSourceUseAgreementChange(media_or_organization);
   };
 
   var limitRequiredArchival = function(media_or_organization, required_archival_value) {

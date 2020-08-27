@@ -61,6 +61,20 @@ $( document ).ready(function() {
     }
   };
 
+  var morphoSourceUseAgreementChange = function(media_or_organization) {
+    var selected_agreement = $(`select#${media_or_organization}_morphosource_use_agreement_type`).val();
+    if (selected_agreement == 'Standard') {
+      setCommercialUsePermitted(media_or_organization, true, false);
+      unrestrictRequiredArchival();
+      unrestrict3DUse();
+    }
+    else if (selected_agreement == 'Permissive') {
+      setCommercialUsePermitted(media_or_organization, true, true);
+      limit3DUse(media_or_organization, '3DPrintingPermitted');
+      limitRequiredArchival(media_or_organization, 'EncouragedButNotRequired');
+    }
+  };
+
   var limitMorphoSourceUseAgreementToStandard = function(media_or_organization, limit_morphosource_use_agreement_to_standard) {
     var permissive_option = $(`#${media_or_organization}_morphosource_use_agreement_type option[value="Permissive"]`)
     if (limit_morphosource_use_agreement_to_standard) {
@@ -72,6 +86,24 @@ $( document ).ready(function() {
     }
   };
 
+  var limitRequiredArchival = function(media_or_organization, required_archival_value) {
+    $(`select#${media_or_organization}_required_archival_of_published_derivatives`).val(required_archival_value);
+    $(`select#${media_or_organization}_required_archival_of_published_derivatives option[value!="${required_archival_value}"]`).attr('disabled','disabled');
+  };
+
+  var unrestrictRequiredArchival = function(media_or_organization) {
+    $(`select#${media_or_organization}_required_archival_of_published_derivatives option`).removeAttr('disabled');
+  };
+
+  var limit3DUse = function(media_or_organization, required_3d_use_value) {
+    $(`select#${media_or_organization}_permits_3d_use`).val(required_3d_use_value);
+    $(`select#${media_or_organization}_permits_3d_use option[value!="${required_3d_use_value}"]`).attr('disabled','disabled');
+  };
+
+  var unrestrict3DUse = function(media_or_organization) {
+    $(`select#${media_or_organization}_permits_3d_use option`).removeAttr('disabled');
+  };
+
   var setCommercialUsePermitted = function(media_or_organization, commercial_use_permitted, force_commercial_use_permitted) {
     var commercial_use_permitted_option = $(`select[name="${media_or_organization}[permits_commercial_use]"] option[value="CommercialUsePermitted"]`);
     var commercial_use_not_permitted_option = $(`select[name="${media_or_organization}[permits_commercial_use]"] option[value="CommercialUseNotPermitted"]`);
@@ -80,6 +112,9 @@ $( document ).ready(function() {
       if (force_commercial_use_permitted) {
         $(`select[name="${media_or_organization}[permits_commercial_use]"]`).val('CommercialUsePermitted');
         commercial_use_not_permitted_option.attr('disabled','disabled');
+      }
+      else {
+        commercial_use_not_permitted_option.removeAttr('disabled');
       }
     }
     else {
@@ -126,5 +161,16 @@ $( document ).ready(function() {
   $('select[name="organization[license][]"]').change(function() {
     event.preventDefault();
     licenseChange('organization');
+  });
+
+  // When a MorphoSource Use Agreement is selected, prune commercial/3D/rearchival options
+  $('select[name="media[morphosource_use_agreement_type]"]').change(function() {
+    event.preventDefault();
+    morphoSourceUseAgreementChange('media');
+  });
+
+  $('select[name="organization[morphosource_use_agreement_type]"]').change(function() {
+    event.preventDefault();
+    morphoSourceUseAgreementChange('organization');
   });
 });

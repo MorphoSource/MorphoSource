@@ -2,7 +2,7 @@ module Hyrax
   module My
     class TeamsController < MyController
       include Morphosource::CollectionHelper
-      include CollectionsControllerBehavior
+#      include CollectionsControllerBehavior
       include TeamsControllerBehavior
 
       with_themed_layout 'morphosource_dashboard'

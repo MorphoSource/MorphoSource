@@ -223,7 +223,7 @@ module Morphosource
             if is_org_team && collection.organization.present?
               @collection_organization_id = collection.organization.id
               @collection_organization_ids << collection.organization.id
-              @team_org_po_ids << organization_po_ids
+              @team_org_po_ids << organization_po_ids if organization_po_ids.present?
               @n_media_team_organization += team_org_origin_count if is_org_team
             end
 

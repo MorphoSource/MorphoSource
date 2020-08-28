@@ -18,23 +18,27 @@ $( document ).ready(function() {
     switch (conditionMatch) {
       case '0':
         disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/', 'http://creativecommons.org/publicdomain/zero/1.0/', 'http://creativecommons.org/publicdomain/mark/1.0/', 'http://www.morphosource.org/terms/licenseUnknown/']);
-        setCommercialUsePermitted(media_or_organization, true);
+        setCommercialUsePermitted(media_or_organization, true, false);
         break;
       case '1':
         disableLicense(media_or_organization, ['http://creativecommons.org/publicdomain/mark/1.0/']);
-        setCommercialUsePermitted(media_or_organization, true);
+        limitMorphoSourceUseAgreementToStandard(media_or_organization, false);
+        setCommercialUsePermitted(media_or_organization, true, false);
         break;
       case '2':
         disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'http://creativecommons.org/publicdomain/zero/1.0/', 'http://creativecommons.org/publicdomain/mark/1.0/']);
-        setCommercialUsePermitted(media_or_organization, false);
+        limitMorphoSourceUseAgreementToStandard(media_or_organization, true);
+        setCommercialUsePermitted(media_or_organization, false, false);
         break;
       case '3':
         disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/']);
-        setCommercialUsePermitted(media_or_organization, true);
+        limitMorphoSourceUseAgreementToStandard(media_or_organization, false);
+        setCommercialUsePermitted(media_or_organization, true, false);
         break;
       case '4':
         disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/']);
-        setCommercialUsePermitted(media_or_organization, false);
+        limitMorphoSourceUseAgreementToStandard(media_or_organization, true);
+        setCommercialUsePermitted(media_or_organization, false, false);
         break;
       default:
         break;
@@ -42,23 +46,81 @@ $( document ).ready(function() {
   };
 
   var licenseChange = function(media_or_organization) {
-    if ( /\/by-nc/.test($(`select#${media_or_organization}_license`).val()) ) {
-      setCommercialUsePermitted(media_or_organization, false);
+    var selected_license = $(`select#${media_or_organization}_license`).val();
+    if ( /\/by-nc/.test(selected_license) ) {
+      limitMorphoSourceUseAgreementToStandard(media_or_organization, true);
+      setCommercialUsePermitted(media_or_organization, false, false);
+    }
+    else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == '')) {
+        limitMorphoSourceUseAgreementToStandard(media_or_organization, false);
+      setCommercialUsePermitted(media_or_organization, true, false);
     }
     else {
-      setCommercialUsePermitted(media_or_organization, true);
+      limitMorphoSourceUseAgreementToStandard(media_or_organization, false);
+      setCommercialUsePermitted(media_or_organization, true, true);
     }
   };
 
-  var setCommercialUsePermitted = function(media_or_organization, commercial_use_permitted) {
-    var commercial_use_permitted_option = $(`select[name="${media_or_organization}[permits_commercial_use]"] option[value="CommercialUsePermitted"]`);
-    if (commercial_use_permitted) {
-      commercial_use_permitted_option.removeAttr('disabled');
+  var morphoSourceUseAgreementChange = function(media_or_organization) {
+    var selected_agreement = $(`select#${media_or_organization}_morphosource_use_agreement_type`).val();
+    if (selected_agreement == 'Standard') {
+      setCommercialUsePermitted(media_or_organization, true, false);
+      unrestrictRequiredArchival(media_or_organization);
+      unrestrict3DUse(media_or_organization);
+    }
+    else if (selected_agreement == 'Permissive') {
+      setCommercialUsePermitted(media_or_organization, true, true);
+      limit3DUse(media_or_organization, '3DPrintingPermitted');
+      limitRequiredArchival(media_or_organization, 'EncouragedButNotRequired');
+    }
+  };
+
+  var limitMorphoSourceUseAgreementToStandard = function(media_or_organization, limit_morphosource_use_agreement_to_standard) {
+    var permissive_option = $(`#${media_or_organization}_morphosource_use_agreement_type option[value="Permissive"]`)
+    if (limit_morphosource_use_agreement_to_standard) {
+      $(`#${media_or_organization}_morphosource_use_agreement_type`).val('Standard');
+      permissive_option.attr('disabled','disabled');
     }
     else {
-      if ($(`select[name="${media_or_organization}[permits_commercial_use]"]`).val() == commercial_use_permitted_option.val()) {
-        $(`select[name="${media_or_organization}[permits_commercial_use]"]`).val('CommercialUseNotPermitted');
+      permissive_option.removeAttr('disabled');
+    }
+    morphoSourceUseAgreementChange(media_or_organization);
+  };
+
+  var limitRequiredArchival = function(media_or_organization, required_archival_value) {
+    $(`select#${media_or_organization}_required_archival_of_published_derivatives`).val(required_archival_value);
+    $(`select#${media_or_organization}_required_archival_of_published_derivatives option[value!="${required_archival_value}"]`).attr('disabled','disabled');
+  };
+
+  var unrestrictRequiredArchival = function(media_or_organization) {
+    $(`select#${media_or_organization}_required_archival_of_published_derivatives option`).removeAttr('disabled');
+  };
+
+  var limit3DUse = function(media_or_organization, required_3d_use_value) {
+    $(`select#${media_or_organization}_permits_3d_use`).val(required_3d_use_value);
+    $(`select#${media_or_organization}_permits_3d_use option[value!="${required_3d_use_value}"]`).attr('disabled','disabled');
+  };
+
+  var unrestrict3DUse = function(media_or_organization) {
+    $(`select#${media_or_organization}_permits_3d_use option`).removeAttr('disabled');
+  };
+
+  var setCommercialUsePermitted = function(media_or_organization, commercial_use_permitted, force_commercial_use_permitted) {
+    var commercial_use_permitted_option = $(`select[name="${media_or_organization}[permits_commercial_use]"] option[value="CommercialUsePermitted"]`);
+    var commercial_use_not_permitted_option = $(`select[name="${media_or_organization}[permits_commercial_use]"] option[value="CommercialUseNotPermitted"]`);
+    if (commercial_use_permitted) {
+      commercial_use_permitted_option.removeAttr('disabled');
+      if (force_commercial_use_permitted) {
+        $(`select[name="${media_or_organization}[permits_commercial_use]"]`).val('CommercialUsePermitted');
+        commercial_use_not_permitted_option.attr('disabled','disabled');
       }
+      else {
+        commercial_use_not_permitted_option.removeAttr('disabled');
+      }
+    }
+    else {
+      commercial_use_not_permitted_option.removeAttr('disabled');
+      $(`select[name="${media_or_organization}[permits_commercial_use]"]`).val('CommercialUseNotPermitted');
       commercial_use_permitted_option.attr('disabled', 'disabled');
     }
   };
@@ -100,5 +162,16 @@ $( document ).ready(function() {
   $('select[name="organization[license][]"]').change(function() {
     event.preventDefault();
     licenseChange('organization');
+  });
+
+  // When a MorphoSource Use Agreement is selected, prune commercial/3D/rearchival options
+  $('select[name="media[morphosource_use_agreement_type]"]').change(function() {
+    event.preventDefault();
+    morphoSourceUseAgreementChange('media');
+  });
+
+  $('select[name="organization[morphosource_use_agreement_type]"]').change(function() {
+    event.preventDefault();
+    morphoSourceUseAgreementChange('organization');
   });
 });

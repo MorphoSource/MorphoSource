@@ -73,21 +73,61 @@ module Morphosource
       end
 
       def prepare_files_to_zip
-        add_aup_to_file_list
+        add_aups_to_file_list
         add_media_usage_agreements_to_file_list
         prepare_file_mappings
       end
 
-      def aup_filename
-        'MorphoSource_Download_Use_Agreement.pdf'
+      def media_permissions_string(media_id)
+        if media_id.present?
+          media = ::Media.find(media_id)
+          permissions_string = ''
+          if media.morphosource_use_agreement_type == ['Permissive']
+            permissions_string = 'permissive'
+          else
+            permissions_string += 'std_'
+            if media.permits_commercial_use == ['CommercialUsePermitted']
+              permissions_string += 'comm_yes_'
+            else
+              permissions_string += 'comm_no_'
+            end
+            if media.required_archival_of_published_derivatives == ['OnAnyRepository']
+              permissions_string += 'rearc_any_'
+            elsif media.required_archival_of_published_derivatives == ['OnMorphoSource']
+              permissions_string += 'rearc_ms_'
+            else
+              permissions_string += 'rearc_no_'
+            end
+            if media.permits_3d_use == ['3DPrintingPermitted']
+              permissions_string += '3d_yes'
+            elsif media.permits_3d_use == ['3DPrintingLimited']
+              permissions_string += '3d_limited'
+            else
+              permissions_string += '3d_no'
+            end
+          end
+          return permissions_string
+        end
       end
 
-      def aup_path
-        File.join(Rails.root, %w{app assets documents}, aup_filename)
+      def aup_filenames
+        @media_ids.
+          map { |id| media_permissions_string(id) }.
+          compact.
+          uniq.
+          map { |permission| "ms_usage_#{permission}.pdf" }
       end
 
-      def add_aup_to_file_list
-        @files.unshift([aup_path, "#{output_prefix}/#{aup_filename}", modification_time: Time.now])
+      def aup_paths
+        aup_filenames.map do |aup_filename|
+          File.join(Rails.root, %w{app assets documents}, aup_filename)
+        end
+      end
+
+      def add_aups_to_file_list
+        aup_paths.each do |aup_path|
+          @files.unshift([aup_path, "#{output_prefix}/#{File.basename(aup_path)}", modification_time: Time.now])
+        end
       end
 
       def add_media_usage_agreements_to_file_list

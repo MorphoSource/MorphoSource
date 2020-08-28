@@ -45,6 +45,14 @@ module Morphosource
         index.as :stored_searchable
       end
 
+      property :morphosource_use_agreement_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/morphosourceUseAgreementType") do |index|
+        index.as :stored_searchable
+      end
+
+      property :required_archival_of_published_derivatives, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/requiredArchivalOfPublishedDerivatives") do |index|
+        index.as :stored_searchable
+      end
+
       # Commercial Use Permitted
       property :permits_commercial_use, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/permitsCommercialUse") do |index|
         index.as :stored_searchable

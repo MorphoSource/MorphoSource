@@ -64,7 +64,12 @@ $( document ).ready(function() {
   var morphoSourceUseAgreementChange = function(media_or_organization) {
     var selected_agreement = $(`select#${media_or_organization}_morphosource_use_agreement_type`).val();
     if (selected_agreement == 'Standard') {
-      setCommercialUsePermitted(media_or_organization, true, false);
+      if ( /\/by-nc/.test($(`select#${media_or_organization}_license`).val()) ) {
+        setCommercialUsePermitted(media_or_organization, false, false);
+      }
+      else {
+        setCommercialUsePermitted(media_or_organization, true, false);
+      }
       unrestrictRequiredArchival(media_or_organization);
       unrestrict3DUse(media_or_organization);
     }
@@ -173,5 +178,18 @@ $( document ).ready(function() {
   $('select[name="organization[morphosource_use_agreement_type]"]').change(function() {
     event.preventDefault();
     morphoSourceUseAgreementChange('organization');
+  });
+
+  $( document ).ready(function() {
+    if($('select[name="media[rights_statement]"]').length) {
+      rightsStatementChange('media');
+      licenseChange('media');
+      morphoSourceUseAgreementChange('media');
+    }
+    else if($('select[name="organization[rights_statement]"]').length) {
+      rightsStatementChange('organization');
+      licenseChange('organization');
+      morphoSourceUseAgreementChange('organization');
+    }
   });
 });

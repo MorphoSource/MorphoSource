@@ -54,21 +54,18 @@ module Morphosource
             'media' => media_count,
             'po' => physical_object_ids.length,
             'bso' => bso_ids.length,
-            'cho' => cho_ids.length,
-            'manager_media_count' => manager_media_count,
-            'editor_media_count' => editor_media_count,
-            'depositor_media_count' => depositor_media_count,
-            'editor_media_count' => editor_media_count,
-            'viewer_media_count' => viewer_media_count,
-            'manager_po_count' => manager_po_count,
-            'editor_po_count' => editor_po_count,
-            'depositor_po_count' => depositor_po_count,
-            'editor_po_count' => editor_po_count,
-            'viewer_po_count' => viewer_po_count
+            'cho' => cho_ids.length
           },
+          'membership_counts' => {},
           'collection_object_ids' => physical_object_ids
         }
-
+        
+        info['membership_counts']["Manager"] = { "media_count" => manager_media_count, "po_count" => manager_po_count } if manager_media_count > 0
+        info['membership_counts']["Editor"] = { "media_count" => editor_media_count, "po_count" => editor_po_count } if editor_media_count > 0
+        info['membership_counts']["Depositor"] = { "media_count" => depositor_media_count, "po_count" => depositor_po_count } if depositor_media_count > 0
+        info['membership_counts']["Downloader"] = { "media_count" => downloader_media_count, "po_count" => downloader_po_count } if downloader_media_count > 0
+        info['membership_counts']["Viewer"] = { "media_count" => viewer_media_count, "po_count" => viewer_po_count } if viewer_media_count > 0
+      
         info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
         info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
         info['cho_groups'] = { 'organization' => {} } if cho_ids.present?

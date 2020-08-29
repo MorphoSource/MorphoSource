@@ -21,6 +21,7 @@ module Morphosource
         @collection_count_for_viewer = 0
         @collection_count_for_downloader = 0
         @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
+        membership_info(all_collection_ids)
         query_solr_collection_info
       end
 
@@ -29,12 +30,11 @@ module Morphosource
       end
 
       def query_solr_collection_info
-        @facet_results, @collection_ids = facet_query_for_collections
+        @facet_results = facet_query_for_collections
         @organizations = organization_docs
       end
 
       def collection_information
-        membership_info
         @info = { 
           'counts' => {}
         }
@@ -63,6 +63,23 @@ module Morphosource
 
         ### Solr collection queries ###
 
+        def all_collection_ids
+          params = { 
+            fl: ['id'],
+            fq: [
+              "#{solrize('has_model', :symbol)}:Collection",
+              "(#{solrize('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{@collection_list_type_id}\")"
+            ]
+          }
+          solr.get(nil, params)        
+          if solr.docs.present? 
+            coll_ids = solr.docs.map{|x| x['id']}
+          else
+            coll_ids = []
+          end
+          coll_ids          
+        end
+
         def facet_query_for_collections
           facet_fields = [
             solrize('visibility', :stored_sortable)
@@ -73,26 +90,22 @@ module Morphosource
             fl: ['id'],
             fq: [
               "#{solrize('has_model', :symbol)}:Collection",
-              "(#{solrize('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{@collection_list_type_id}\")"
+              "(#{solrize('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{@collection_list_type_id}\")",
+              assemble_or_query('id', collection_ids)
             ]
           }
 
           solr.get_facet_fields(nil, facet_fields, params)
-          if solr.docs.present? 
-            coll_ids = solr.docs.map{|x| x['id']}
-          else
-            coll_ids = []
-          end
 
-          return solr.facet_fields(facet_fields), coll_ids
+          return solr.facet_fields(facet_fields)
         end
 
         def is_project?(collection_type)
           collection_type.split('/').last == '2'
         end
 
-        def membership_info
-          collection_ids.each do |id|
+        def membership_info(all_collection_ids)
+          all_collection_ids.each do |id|
             begin
               membership = Collection.find(id).membership_of(@user)
             rescue Exception => e  
@@ -125,6 +138,7 @@ module Morphosource
             else
             end          
           end
+          @collection_ids = @ids_by_membership['any']
         end
 
         def organization_docs(organization_title = '')

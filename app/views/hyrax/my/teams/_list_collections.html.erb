@@ -1,4 +1,3 @@
-<% # used by Your Collections tab %>
 <% id = collection_presenter.id %>
 <%# Data attributes referenced by the javascript for submitting nested forms. %>
 <tr id="document_<%= id %>"
@@ -6,7 +5,7 @@
   data-id="<%= id %>"
   data-colls-hash="<%= collection_presenter.available_parent_collections(scope: controller) %>"
   data-post-url="<%= hyrax.dashboard_create_nest_collection_within_path(id) %>"
-  data-post-delete-url="<%= is_admin_set ? hyrax.admin_admin_set_path(id) : hyrax.dashboard_collection_path(id) %>">
+  data-post-delete-url="<%= hyrax.dashboard_collection_path(id) %>">
 
   <td>
       <div class="team-logo">
@@ -38,7 +37,7 @@
           <strong><%= t("hyrax.dashboard.my.collection_list.description") %></strong>
           <br /><%= collection_presenter.description&.first %>
         </p>
-        <p>
+        <p class="hidden">
           <strong><%= t("hyrax.dashboard.my.collection_list.edit_access") %></strong>
           <br />
           <% if collection_presenter.edit_groups.present? %>
@@ -58,11 +57,5 @@
   <td class="date"><%= collection_presenter.modified_date.try(:to_formatted_s, :standard) %> </td>
   <td><%= collection_presenter.membership(current_user) %></td>
   <td><%= collection_presenter.permission_badge %></td>
-  <td>
-    <% if collection_presenter.solr_document.admin_set? %>
-      <%= render '/hyrax/my/admin_set_action_menu', admin_set_presenter: collection_presenter %>
-    <% else %>
-      <%= render 'collection_action_menu', collection_presenter: collection_presenter %>
-    <% end %>
-   </td>
+  <td><%= render 'collection_action_menu', collection_presenter: collection_presenter %></td>
 </tr>

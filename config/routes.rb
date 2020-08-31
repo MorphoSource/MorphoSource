@@ -107,6 +107,11 @@ Rails.application.routes.draw do
     get 'dashboard/my/media/specimens', to: 'my/media_works#specimens'
     get 'dashboard/my/media/chos', to: 'my/media_works#chos'
 
+    scope :browse do
+      resources :teams, only: [:index], controller: 'browse_teams'
+    
+    end
+
   end
 
   # override ProfilesController

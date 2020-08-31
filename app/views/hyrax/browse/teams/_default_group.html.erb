@@ -1,0 +1,23 @@
+<table id="collections-list-table" class="table table-striped collections-list-table">
+  <caption class="sr-only"><%= t("hyrax.dashboard.my.sr.listing") %> <%= application_name %></caption>
+  <thead>
+  <tr>
+    <th><%= t("hyrax.dashboard.my.heading.title") %></th>
+    <% if page_is_team? %>
+      <th><%= t("hyrax.dashboard.my.heading.organization") %></th>
+    <% end %>
+    <th><%= t("hyrax.dashboard.my.heading.media") %></th>
+    <%#= t("hyrax.dashboard.my.heading.items") %>
+    <th><%= t("hyrax.dashboard.my.heading.last_modified") %></th>
+    <th><%= t("hyrax.dashboard.my.heading.membership") %></th>
+    <th><%= t("hyrax.dashboard.my.heading.Visibility") %></th>
+    <th class="no-sort">&nbsp;<!-- actions --></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% docs.each_with_index do |document, counter| %>
+    <% collection_presenter = Hyrax::TeamPresenter.new(document, current_ability, nil) %>
+    <%= render 'hyrax/browse/teams/list_collections', collection_presenter: collection_presenter, counter: counter, document: document %>
+  <% end %>
+  </tbody>
+</table>

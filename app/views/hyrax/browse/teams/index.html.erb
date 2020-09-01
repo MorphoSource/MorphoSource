@@ -6,6 +6,9 @@
     <h1><span class="fa <%= icon_class %>" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar." + @collection_list_type.pluralize) %></h1>
   </div>
 <% end %>
+<div>
+  <p><%= t("hyrax.browse.page_description.#{@collection_list_type.pluralize}") %></p>
+</div>
 <div class="collections-wrapper">
   <div class="panel panel-default collections-panel-wrapper">
     <div class="panel-body">

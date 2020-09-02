@@ -10,7 +10,7 @@
     <%= simple_form_for media_form,
     wrapper: :showcase_default,
     url: { controller: 'submissions', action: 'create' },
-    html: { 
+    html: {
       data: { behavior: 'work-form', 'param-key' => 'media' },
       multipart: true
     } do |f| %>
@@ -69,7 +69,6 @@
               <%= render_edit_field_partial('download_reviewer', f: f) %>
               <%= render_edit_field_partial('rights_statement', f: f) %>
               <%= render_edit_field_partial('license', f: f) %>
-              <%= render_edit_field_partial('terms_of_use', f: f) %>
               <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
               <%= render_edit_field_partial('permits_commercial_use', f: f) %>
               <%= render_edit_field_partial('permits_3d_use', f: f) %>

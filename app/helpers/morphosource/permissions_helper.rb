@@ -14,7 +14,7 @@ module Morphosource
 
     MULTI_VALUE = ['license', 'agreement_uri', 'funding', 'publisher']
 
-    SINGLE_VALUE = ['rights_statement', 'terms_of_use', 'permits_commercial_use', 'permits_3d_use', 'cite_as']
+    SINGLE_VALUE = ['rights_statement', 'permits_commercial_use', 'permits_3d_use', 'cite_as']
 
 
     def alert(organization)

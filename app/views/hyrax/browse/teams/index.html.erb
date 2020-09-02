@@ -1,20 +1,27 @@
-<% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
+<% content_for :body_css_classes do %>showcase teams<% end %>
 <% provide :page_title, t("hyrax.admin.sidebar.#{@collection_list_type}s") %>
 <% icon_class = @collection_list_type == 'team' ? "fa-users" : "fa-folder-open" %>
-<% provide :page_header do %>
-  <div class="col-xs-9 title">
-    <h1><span class="fa <%= icon_class %>" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar." + @collection_list_type.pluralize) %></h1>
-  </div>
-<% end %>
-<div>
-  <p><%= t("hyrax.browse.page_description.#{@collection_list_type.pluralize}") %></p>
-</div>
-<div class="collections-wrapper">
-  <div class="panel panel-default collections-panel-wrapper">
-    <div class="panel-body">
-      <%= render 'hyrax/browse/teams/search_header' %>
-      <%= render 'hyrax/browse/teams/document_list' %>
-      <%= render 'results_pagination' %>
+<div class="browse">
+
+  <% provide :page_header do %>
+    <div class="col-xs-9 title browse">
+      <h1><span class="fa <%= icon_class %>" aria-hidden="true"></span> 
+        <%= t("hyrax.admin.sidebar." + @collection_list_type.pluralize) %><br/>
+        <span class="counts"><%= render 'hyrax/browse/teams/counts_for_' + @collection_list_type %></span>
+      </h1>
     </div>
+  <% end %>
+  <div class="col-xs-12 page_description">
+    <p><%= t("hyrax.browse.page_description.#{@collection_list_type.pluralize}") %></p>
   </div>
-</div><!-- /collections-wrapper -->
+  <div class="collections-wrapper">
+    <div class="panel panel-default collections-panel-wrapper">
+      <div class="panel-body">
+        <%= render 'hyrax/browse/teams/search_header' %>
+        <%= render 'hyrax/browse/teams/document_list' %>
+        <%= render 'hyrax/browse/teams/results_pagination' %>
+      </div>
+    </div>
+  </div><!-- /collections-wrapper -->
+
+</div>

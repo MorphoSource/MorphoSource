@@ -50,6 +50,15 @@ module Morphosource
         info     
       end
 
+      def browse_information
+        @browse_info = { 
+          'counts' => {}
+        }
+        browse_info['counts']['user_teams'] = 42
+        browse_info['counts']['org_teams'] = 4211
+        browse_info
+      end
+
       def solrize_filter_params(params = {})
         params.map { |k, v| solrize_param(k, v) }.compact
       end

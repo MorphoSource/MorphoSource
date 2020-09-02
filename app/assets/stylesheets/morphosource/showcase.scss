@@ -101,6 +101,30 @@ html {
 }
 
 .showcase.teams, .showcase.media-works { /* / teams and projects show page styles */
+  .title.browse {
+    margin-top:30px;
+  }
+  .browse {
+    h1 {
+      font-size: 24px;
+      line-height: .8;
+      .fa {
+        font-size: 38px;
+        vertical-align: top;
+        float: left;
+        margin-right: 8px;        
+      }
+      .counts { 
+        font-weight: normal;
+        font-size: 12px;
+      }
+    }
+    .page_description {
+      border-bottom: 1px solid #ddd;
+      margin: -20px auto 20px;
+      padding-bottom: 15px;
+    }
+  }
 
   .flex { /* setting column with same height */
     display: flex;

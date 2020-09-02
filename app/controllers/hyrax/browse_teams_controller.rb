@@ -63,9 +63,9 @@ module Hyrax
 
       def search_action_url(collection_list_type, *args)
         if collection_list_type == 'project'
-          Rails.application.routes.url_helpers.my_projects_path(*args)
+          Rails.application.routes.url_helpers.browse_projects_path(*args)
         elsif collection_list_type == 'team'
-          Rails.application.routes.url_helpers.my_teams_path(*args)
+          Rails.application.routes.url_helpers.browse_teams_path(*args)
         else
           hyrax.my_collections_url(*args)
         end

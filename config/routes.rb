@@ -84,6 +84,9 @@ Rails.application.routes.draw do
     # my teams/projects paging
     get 'my_projects_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/projects/?#{request.params.to_query}" }
     get 'my_teams_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/teams/?#{request.params.to_query}" }
+    # browse teams/projects paging
+    get 'browse_projects_paging/browse/teams', to: redirect { |params, request| "/browse/projects/?#{request.params.to_query}" }
+    get 'browse_teams_paging/browse/teams', to: redirect { |params, request| "/browse/teams/?#{request.params.to_query}" }
 
     # Note: the following route might effect pagination links
     namespace :dashboard do

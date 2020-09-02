@@ -138,6 +138,14 @@ module Hyrax
       end
     end
 
+    def total_media
+      ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media").count
+    end
+
+    def total_po
+      ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media AND -physical_object_id_tesim:nil").count
+    end
+
     # Metadata Methods
     delegate :title, :description, :creator, :contributor, :subject, :publisher, :keyword, :language, :embargo_release_date,
              :lease_expiration_date, :license, :date_created, :resource_type, :based_near, :related_url, :identifier, :thumbnail_path,

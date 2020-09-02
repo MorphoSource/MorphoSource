@@ -13,15 +13,9 @@
       <%= collection_presenter.title_or_label %>
     <% end %>
   </td>
-  <% if page_is_project? %>
-    <td><%= collection_presenter.description&.first %></td>
-    <td></td>
-    <td><%= collection_presenter.creator&.first %></td>
-  <% elsif page_is_team? %>
-    <td><%= collection_presenter.organization&.title&.first %></td>
-  <% end %>
+  <td><%= collection_presenter.organization&.title&.first %></td>
+  <td><%= collection_presenter.creator&.first %></td>
+  <td><%= collection_presenter.total_team_projects %></td>
   <td><%= collection_presenter.total_media %></td>
   <td><%= collection_presenter.total_po %></td>
-  <td class="date"><%= collection_presenter.modified_date.try(:to_formatted_s, :standard) %> </td>
-  <td><%= collection_presenter.permission_badge %></td>
 </tr>

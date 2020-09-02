@@ -146,6 +146,18 @@ module Hyrax
       ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media AND -physical_object_id_tesim:nil").count
     end
 
+    def total_team_projects
+      ActiveFedora::Base.where("member_of_collection_ids_ssim:#{000200012} AND has_model_ssim:Collection").count
+    end
+
+    def project_team_title
+      if @collection.first_parent.present?
+        @collection.first_parent.title&.first
+      else
+        ""
+      end
+    end
+
     # Metadata Methods
     delegate :title, :description, :creator, :contributor, :subject, :publisher, :keyword, :language, :embargo_release_date,
              :lease_expiration_date, :license, :date_created, :resource_type, :based_near, :related_url, :identifier, :thumbnail_path,

@@ -7,31 +7,34 @@ module Morphosource
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
-      def self.call(user, collection_list_type_id)
-        new(user, collection_list_type_id).call
+      def self.call(user, collection_list_type_id, page = "my")
+        new(user, collection_list_type_id, browse).call
       end
 
-      def initialize(user, collection_list_type_id)
+      def initialize(user, collection_list_type_id, page = "my")
         @solr = solr_service.new
         @user = user
-        @collection_list_type_id = collection_list_type_id
-        @collection_count_for_manager = 0
-        @collection_count_for_editor = 0
-        @collection_count_for_depositor = 0
-        @collection_count_for_viewer = 0
-        @collection_count_for_downloader = 0
-        @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
-        membership_info(all_collection_ids)
-        query_solr_collection_info
+        if page == "my"
+          @collection_list_type_id = collection_list_type_id
+          @collection_count_for_manager = 0
+          @collection_count_for_editor = 0
+          @collection_count_for_depositor = 0
+          @collection_count_for_viewer = 0
+          @collection_count_for_downloader = 0
+          @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
+
+          membership_info(all_collection_ids)
+          query_solr_collection_info
+        end
+        @organizations = organization_docs
       end
 
-      def call
-        collection_information
-      end
+      #def call
+      #  collection_information
+      #end
 
       def query_solr_collection_info
         @facet_results = facet_query_for_collections
-        @organizations = organization_docs
       end
 
       def collection_information
@@ -50,13 +53,16 @@ module Morphosource
         info     
       end
 
-      def browse_information
-        @browse_info = { 
-          'counts' => {}
+      # for browse pages
+      def collection_information_for_browse
+        @info = { 
+          'counts_for_team_type' => {}
         }
-        browse_info['counts']['user_teams'] = 42
-        browse_info['counts']['org_teams'] = 4211
-        browse_info
+
+        info['counts_for_team_type']['org_teams'] = @organizations.length
+        #info['counts_for_team_type']['user_teams'] = 
+
+        info     
       end
 
       def solrize_filter_params(params = {})
@@ -67,6 +73,9 @@ module Morphosource
         assemble_or_query('id', ids_by_membership['any'])
       end
 
+      def browse_collection_params
+        "#{solrize('visibility', :stored_sortable)}:open"
+      end
 
       private
 

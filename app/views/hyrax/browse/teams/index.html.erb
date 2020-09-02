@@ -7,7 +7,7 @@
     <div class="col-xs-9 title browse">
       <h1><span class="fa <%= icon_class %>" aria-hidden="true"></span> 
         <%= t("hyrax.admin.sidebar." + @collection_list_type.pluralize) %><br/>
-        <span class="counts"><%= render 'hyrax/browse/teams/counts_for_' + @collection_list_type %></span>
+        <span class="counts"><%= render 'hyrax/browse/teams/counts_for_' + @collection_list_type.pluralize %></span>
       </h1>
     </div>
   <% end %>

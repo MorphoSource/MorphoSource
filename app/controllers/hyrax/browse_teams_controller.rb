@@ -22,9 +22,14 @@ module Hyrax
 
       query_collection_information
 
-      @response = teams_service.all_collections_by_type(@collection_list_type_id, collection_filter_params)
+      #@response = teams_service.all_collections_by_type(@collection_list_type_id, collection_filter_params)
+      @response = teams_service.all_collections_by_type(@collection_list_type_id, browse_collection_params)
       @document_list = @response.documents
+      @document_count = @document_list.length
       @paginated_document_list = paginated_item_list
+
+      @org_teams_count = @collection_information['counts_for_team_type']['org_teams'].to_int
+      @user_teams_count = @document_count - @org_teams_count
 
       respond_to do |format|
         format.html { render 'hyrax/browse/teams/index'}
@@ -35,27 +40,11 @@ module Hyrax
     end
 
     def query_collection_information
-      @collection_information = teams_information_service.collection_information
-      @collection_counts = @collection_information['counts'] ||= {}
-      @collection_groups = @collection_information['collection_groups'] ||= {}
+      @collection_information = browse_teams_information_service.collection_information_for_browse
     end
 
-    def collection_filter_params
-      returned_solrize_filter_params = teams_information_service.solrize_filter_params(filter_params('k_', params))
-      unless params['k_membership'].present?
-        # if no membership criteria, get collections with any membership value
-        returned_solrize_filter_params << teams_information_service.default_membership_params          
-      end
-      returned_solrize_filter_params
-    end
-
-    def filter_params(prefix, params)
-      return_params = {}
-      temp_params = params.select{ |k,v| k.match(/^#{prefix}/) }.select{ |k,v| v.present? }
-      temp_params.each do |k,v|
-        return_params[k] = v
-      end
-      return_params
+    def browse_collection_params
+      return [browse_teams_information_service.browse_collection_params]
     end
 
 

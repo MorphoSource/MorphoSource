@@ -1,3 +1,3 @@
 <div class="table-responsive" id="documents">
-  <%= render 'hyrax/browse/teams/default_group', docs: @paginated_document_list %>
+  <%= render 'hyrax/browse/teams/default_group_' + @collection_list_type.pluralize, docs: @paginated_document_list %>
 </div>

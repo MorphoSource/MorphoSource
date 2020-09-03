@@ -1,6 +1,7 @@
 class BiologicalSpecimen < Morphosource::Works::Base
 
   include ::Hyrax::WorkBehavior
+  include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
 
   self.indexer = BiologicalSpecimenIndexer
@@ -61,14 +62,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # any taxonomy that is not trusted or gbif
   def user_taxonomies
     other_taxonomies.reject{|taxonomy| taxonomy.trusted == ["Yes"] || taxonomy.gbif_key.present? }
-  end
-
-  def organizations
-    member_of.select{|work| work.class == Organization}
-  end
-
-  def media
-    descendants.select{ |d| d.class == Media }
   end
 
   private

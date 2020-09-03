@@ -6,6 +6,5 @@ module Morphosource
         solr_doc[Solrizer.solr_name('title', :stored_sortable)] = object.title.first
       end
     end
-
   end
 end

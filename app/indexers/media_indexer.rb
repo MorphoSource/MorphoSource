@@ -16,8 +16,19 @@ class MediaIndexer < Morphosource::WorkIndexer
      solr_doc['download_access_group_ssim'] = object.download_groups
      solr_doc['download_access_person_ssim'] = object.download_users
      solr_doc['owner_ssim'] = object.owner
-     object.download_reviewer
      solr_doc['download_reviewer_ssim'] = object.download_reviewer
+     # add media type facet
+     solr_doc['human_readable_media_type_tesim'] = object.human_readable_media_type
+     solr_doc['human_readable_media_type_sim'] = object.human_readable_media_type
+     # add modality facet
+     solr_doc['media_modality_tesim'] = object.modality
+     solr_doc['media_modality_sim'] = object.modality
+     # add physical object facet
+     solr_doc['media_physical_object_type_tesim'] = object.physical_object_type
+     solr_doc['media_physical_object_type_sim'] = object.physical_object_type
+     # add organization facet
+     solr_doc['media_organization_tesim'] = object.organization_titles
+     solr_doc['media_organization_sim'] = object.organization_titles
    end
   end
 end

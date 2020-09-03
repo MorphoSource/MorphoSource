@@ -4,10 +4,8 @@ en:
       fields:
         facet:
           based_near_label_sim: Location
-          creator_sim: Creator
           file_format_sim: Format
           generic_type_sim: Type
-          keyword_sim: Keyword
           language_sim: Language
           publisher_sim: Publisher
           subject_sim: Subject
@@ -128,7 +126,7 @@ en:
           view_project: View project
           edit_project: Edit project
           delete_project: Delete project
-          
+
         heading:
           visibility: visibility
           collection_type: collection type

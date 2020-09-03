@@ -39,6 +39,48 @@ class Media < Morphosource::Works::Base
     User.find_by(ms_id: download_reviewer.first).try(:ms_id) || user_with_ownership
   end
 
+  def human_readable_media_type
+    case media_type.first
+    when "CTImageSeries"
+      ["CT Image Series"]
+    when "PhotogrammetryImageSeries"
+      ["Photogrammetry Image Series"]
+    else
+      media_type
+    end
+  end
+
+  def modality
+    case imaging_event&.ie_modality&.first
+    when "MicroNanoXRayComputedTomography"
+      "X-Ray Computed Tomography (CT/microCT)"
+    when "MagneticResonanceImaging"
+      "Magnetic Resonance Imaging (MRI)"
+    when "PositronEmissionTomography"
+      "Positron Emission Tomography (PET)"
+    when "SynchrotronImaging"
+      "Synchrotron Imaging"
+    when "Photogrammetry"
+      "Photogrammetry"
+    when "StructuredLight"
+      "Structured Light"
+    when "LaserScan"
+      "Laser Scan"
+    when "ConfocalImageStacking"
+      "Confocal Image Stacking"
+    when "Infrared"
+      "Infrared"
+    when "ReflectanceTransformationImaging"
+      "Reflectance Transformation Imaging"
+    when "Photography"
+      "Photography"
+    when "ScanningElectronMicroscopy"
+      "Scanning Electron Microscopy"
+    else
+      imaging_event&.ie_modality&.first
+    end
+  end
+
   # array of all visibilities that apply to the file sets of a Media work
   # used to populate File Visibility column in dashboard works list
   def file_set_visibilities
@@ -126,14 +168,24 @@ class Media < Morphosource::Works::Base
     ancestors.select(&:physical_object?)
   end
 
+  def physical_object_type
+    return if physical_objects.empty?
+    object = physical_objects.first
+    object.specimen? ? "Biological Specimen" : "Cultural Heritage Object"
+  end
+
   def imaging_event
     ancestors.find(&:imaging_event?)
   end
 
   def organizations
-    specimens.each_with_object([]) do |s, orgs|
-      s.organizations.each { |o| orgs << o }
+    physical_objects.each_with_object([]) do |obj, orgs|
+      obj.organizations.each { |org| orgs << org }
     end
+  end
+
+  def organization_titles
+    organizations.map{ |o| o.title.first }
   end
 
   def organizations_teams

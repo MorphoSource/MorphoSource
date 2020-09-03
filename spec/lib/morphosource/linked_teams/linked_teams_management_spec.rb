@@ -7,16 +7,16 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
     let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
     let(:team)                  { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
     let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-    let(:organization)          { Organization.new(title: ['new organization']) }
-    let(:old_organization)      { Organization.new(title: ['old organization'], team_id: [old_team.id]) }
-    let(:specimen)              { BiologicalSpecimen.new(title: ['new specimen'], vouchered: [true]) }
-    let(:old_specimen)          { BiologicalSpecimen.new(title: ['old_specimen'], vouchered: [true]) }
-    let(:imaging_event)         { ImagingEvent.new(title: ['new imaging event']) }
-    let(:old_imaging_event)     { ImagingEvent.new(title: ['old imaging event']) }
-    let(:processing_event)      { ProcessingEvent.new(title: ['new processing event']) }
-    let(:child_processing_event){ ProcessingEvent.new(title: ['child processing event']) }
-    let(:media)                 { Media.new(title: ['media']) }
-    let(:child_media)           { Media.new(title: ['child media']) }
+    let(:organization)          { Organization.create(title: ['new organization']) }
+    let(:old_organization)      { Organization.create(title: ['old organization'], team_id: [old_team.id]) }
+    let(:specimen)              { BiologicalSpecimen.create(title: ['new specimen'], vouchered: [true]) }
+    let(:old_specimen)          { BiologicalSpecimen.create(title: ['old_specimen'], vouchered: [true]) }
+    let(:imaging_event)         { ImagingEvent.create(title: ['new imaging event']) }
+    let(:old_imaging_event)     { ImagingEvent.create(title: ['old imaging event']) }
+    let(:processing_event)      { ProcessingEvent.create(title: ['new processing event']) }
+    let(:child_processing_event){ ProcessingEvent.create(title: ['child processing event']) }
+    let(:media)                 { Media.create(title: ['media'], media_type: ['Image']) }
+    let(:child_media)           { Media.create(title: ['child media'], media_type: ['Image']) }
 
     before do
       # set up work relationships

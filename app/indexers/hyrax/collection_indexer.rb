@@ -18,6 +18,9 @@ module Hyrax
           (solr_doc['member_of_collection_ids_ssim'] ||= []) << col.id
           (solr_doc['member_of_collections_ssim'] ||= []) << col.to_s
         end
+        # linked organization facet
+        solr_doc['linked_organization_sim'] = object.organization_name
+        solr_doc['linked_organization_tesim'] = object.organization_name
       end
     end
   end

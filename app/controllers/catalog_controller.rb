@@ -1,6 +1,13 @@
+# facets moved to work-specific catalog controllers
+# all_catalog displays all works, but is only available to admins
+
 class CatalogController < ApplicationController
   include Hydra::Catalog
   include Hydra::Controller::ControllerBehavior
+
+  helper Morphosource::CatalogHelper
+
+  layout "catalog"
 
   # This filter applies the hydra access controls
   before_action :enforce_show_permissions, only: :show
@@ -40,18 +47,9 @@ class CatalogController < ApplicationController
     config.index.thumbnail_field = 'thumbnail_path_ss'
 
     # solr fields that will be treated as facets by the blacklight application
-    #   The ordering of the field names is the order of the display
-    config.add_facet_field solr_name("human_readable_type", :facetable), label: "Type", limit: 5
-    config.add_facet_field solr_name("resource_type", :facetable), label: "Resource Type", limit: 5
-    config.add_facet_field solr_name("creator", :facetable), limit: 5
-    config.add_facet_field solr_name("contributor", :facetable), label: "Contributor", limit: 5
-    config.add_facet_field solr_name("keyword", :facetable), limit: 5
-    config.add_facet_field solr_name("subject", :facetable), limit: 5
-    config.add_facet_field solr_name("language", :facetable), limit: 5
-    config.add_facet_field solr_name("based_near_label", :facetable), limit: 5
-    config.add_facet_field solr_name("publisher", :facetable), limit: 5
-    config.add_facet_field solr_name("file_format", :facetable), limit: 5
-    config.add_facet_field solr_name('member_of_collections', :symbol), limit: 5, label: 'Collections'
+    # The ordering of the field names is the order of the display
+
+    # MorphoSource facets are located underneath individual work type catalog controllers
 
     # The generic_type isn't displayed on the facet list
     # It's used to give a label to the filter that comes from the user profile
@@ -150,7 +148,7 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name('cho_type', :stored_searchable)
     config.add_show_field solr_name('material', :stored_searchable)
     config.add_show_field solr_name('short_title', :stored_searchable)
-    
+
     # Processing Events
     config.add_show_field solr_name('processing_activity', :stored_searchable)
 

@@ -150,12 +150,16 @@ module Hyrax
       ActiveFedora::Base.where("member_of_collection_ids_ssim:#{000200012} AND has_model_ssim:Collection").count
     end
 
-    def project_team_title
+    def project_team_title_link
       if @collection.first_parent.present?
-        @collection.first_parent.title&.first
+        renderer = Hyrax::Renderers::ShowcaseCollectionLinkRenderer.new(nil,nil)
+        return renderer.collection_link(@collection.first_parent)
+        #return @collection.first_parent.title&.first, @collection.first_parent.id
       else
-        ""
+        return ""
       end
+
+
     end
 
     # Metadata Methods

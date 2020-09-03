@@ -35,8 +35,8 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    resources :teams, controller: 'teams'
-    resources :projects, controller: 'teams'
+    resources :teams, controller: 'teams', only: [:show]
+    resources :projects, controller: 'teams', only: [:show]
     
     #get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'

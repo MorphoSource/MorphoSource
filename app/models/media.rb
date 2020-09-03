@@ -142,6 +142,26 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def ark_resource_type
+    # Valid ARK resource types:
+    # 'Audiovisual', 'Collection', 'DataPaper', 'Dataset', 'Event', 'Image',
+    # 'InteractiveResource', 'Model', 'PhysicalObject', 'Service', 'Software',
+    # 'Sound', 'Text', 'Workflow', 'Other'
+    # These are defined in resourceTypeGeneral in the DataCite Metadata Schema:
+    # http://schema.datacite.org/meta/kernel-4.3/
+    ark_resource_type_mappings = {
+      'Video' => 'Audiovisual',
+      'Mesh' => 'Image',
+      'CTImageSeries' => 'Collection',
+      'PhotogrammetryImageSeries' => 'Collection'
+    }
+    if ark_resource_type_mappings.key?(self.media_type.first)
+      return ark_resource_type_mappings[self.media_type.first]
+    else
+      return self.media_type.first
+    end
+  end
+
   # possible ARK status changes:
   # - reserved->public
   # - public->unavailable
@@ -185,7 +205,7 @@ class Media < Morphosource::Works::Base
                       'datacite.publisher' => 'MorphoSource.org',
                       'datacite.title' => self.title.first,
                       'datacite.publicationyear' => Time.now.year.to_s,
-                      'datacite.resourcetypegeneral' => self.media_type.first
+                      'datacite.resourcetypegeneral' => self.ark_resource_type
       }
       requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.sub(/^0*/,'')}"
 

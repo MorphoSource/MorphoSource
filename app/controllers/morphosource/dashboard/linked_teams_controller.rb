@@ -101,7 +101,7 @@ module Morphosource
         def format_update_params
           format_download_permission
           format_rights_holder
-          multi_value_fields = [:download_permission, :download_reviewer, :cite_as, :permits_3d_use, :permits_commercial_use, :rights_statement, :terms_of_use, :agreement_uri]
+          multi_value_fields = [:download_permission, :download_reviewer, :cite_as, :permits_3d_use, :permits_commercial_use, :rights_statement, :agreement_uri]
           multi_value_fields.each do |field|
             @params[field] = Array(@params[field])
           end

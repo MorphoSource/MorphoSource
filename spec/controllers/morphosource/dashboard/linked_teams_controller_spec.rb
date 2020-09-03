@@ -117,7 +117,6 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
     let(:download_reviewer)       { [admin.ms_id] }
     let(:license)                 { ['license'] }
     let(:rights_statement)        { ['rights statement'] }
-    let(:terms_of_use)            { ['terms of use'] }
     let(:agreement_uri)           { ['agreement uri'] }
     let(:permits_commercial_use)  { ['true'] }
     let(:permits_3d_use)          { ['true'] }
@@ -132,7 +131,6 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
                                         download_reviewer: download_reviewer.first,
                                         license: license,
                                         rights_statement: rights_statement.first,
-                                        terms_of_use: terms_of_use.first,
                                         agreement_uri: agreement_uri,
                                         permits_commercial_use: permits_commercial_use.first,
                                         permits_3d_use: permits_3d_use.first,
@@ -166,7 +164,6 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
         expect(org2.download_reviewer).to eq(download_reviewer)
         expect(org2.license).to eq(license)
         expect(org2.rights_statement).to eq(rights_statement)
-        expect(org2.terms_of_use).to eq(terms_of_use)
         expect(org2.agreement_uri).to eq(agreement_uri)
         expect(org2.permits_commercial_use).to eq(permits_commercial_use)
         expect(org2.permits_3d_use).to eq(permits_3d_use)

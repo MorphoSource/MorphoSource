@@ -797,7 +797,6 @@ class SubmissionsController < ApplicationController
       agreement_uri: organization.agreement_uri,
       license: organization.license,
       rights_statement: organization.rights_statement,
-      terms_of_use: organization.terms_of_use,
       permits_commercial_use: organization.permits_commercial_use,
       permits_3d_use: organization.permits_3d_use,
       rights_holder: organization.rights_holder,
@@ -814,7 +813,7 @@ class SubmissionsController < ApplicationController
   def attachment_url(organization)
     if organization.attachment('agreement')
       Rails.application.routes.url_helpers.attachment_path(
-        id: organization.id, 
+        id: organization.id,
         field: 'agreement'
       )
     else

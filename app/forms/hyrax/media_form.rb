@@ -59,7 +59,6 @@ module Hyrax
       :morphosource_use_agreement_type,
       :required_archival_of_published_derivatives,
       :rights_statement,
-      :terms_of_use,
       :permits_commercial_use,
       :permits_3d_use,
       :rights_holder,
@@ -69,9 +68,9 @@ module Hyrax
 
     self.required_fields = [:media_type]
 
-    self.single_valued_fields = [:short_description, :description, :media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :series_type, :unit, :identifier, :related_url, :terms_of_use, :download_reviewer, :agreement_uri, :permits_3d_use, :permits_commercial_use, :required_archival_of_published_derivatives, :morphosource_use_agreement_type]
+    self.single_valued_fields = [:short_description, :description, :media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :series_type, :unit, :identifier, :related_url, :download_reviewer, :agreement_uri, :permits_3d_use, :permits_commercial_use, :required_archival_of_published_derivatives, :morphosource_use_agreement_type]
 
-    self.permissions_terms = [ :download_reviewer, :agreement_uri, :license, :rights_statement, :terms_of_use, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :morphosource_use_agreement_type, :required_archival_of_published_derivatives ]
+    self.permissions_terms = [ :download_reviewer, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :morphosource_use_agreement_type, :required_archival_of_published_derivatives ]
 
     def other_terms
       secondary_terms - permissions_terms

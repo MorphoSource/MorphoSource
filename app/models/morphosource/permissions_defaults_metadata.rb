@@ -40,11 +40,6 @@ module Morphosource
       # Included in Basic Metadata
       # property :rights_statement, predicate: ::RDF::Vocab::EDM.rights
 
-      # Custom Terms of Use
-      property :terms_of_use, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/termsOfUse") do |index|
-        index.as :stored_searchable
-      end
-
       property :morphosource_use_agreement_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/morphosourceUseAgreementType") do |index|
         index.as :stored_searchable
       end

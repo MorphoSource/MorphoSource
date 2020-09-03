@@ -122,10 +122,10 @@ module Hyrax
 
       @download_permission = get_download_permission(media)
 
-      @permits_commercial_use = media.permits_commercial_use.first
-      @permits_3d_use = media.permits_3d_use.first
-      @required_archival_of_published_derivatives = media.required_archival_of_published_derivatives.first
-      @morphosource_use_agreement_type = media.morphosource_use_agreement_type.first
+      @permits_commercial_use = Morphosource::CommercialUseTypesService.new.label(media.permits_commercial_use.first)
+      @permits_3d_use = Morphosource::ThreeDUseTypesService.new.label(media.permits_3d_use.first)
+      @required_archival_of_published_derivatives = Morphosource::RequiredArchivalOfPublishedDerivativesTypesService.new.label(media.required_archival_of_published_derivatives.first)
+      @morphosource_use_agreement_type = Morphosource::MorphosourceUseAgreementTypesService.new.label(media.morphosource_use_agreement_type.first)
       @download_reviewer = media.download_reviewer.first
       @rights_statement = media.rights_statement.first
 

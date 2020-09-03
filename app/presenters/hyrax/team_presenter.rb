@@ -154,12 +154,9 @@ module Hyrax
       if @collection.first_parent.present?
         renderer = Hyrax::Renderers::ShowcaseCollectionLinkRenderer.new(nil,nil)
         return renderer.collection_link(@collection.first_parent)
-        #return @collection.first_parent.title&.first, @collection.first_parent.id
       else
         return ""
       end
-
-
     end
 
     # Metadata Methods

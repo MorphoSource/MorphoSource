@@ -8,7 +8,7 @@
   data-post-delete-url="<%= hyrax.dashboard_collection_path(id) %>">
 
   <td>
-    <%= link_to collection_presenter.show_path, id: "src_copy_link#{id}" do %>
+    <%= link_to Rails.application.routes.url_helpers.team_path(id) do %>
       <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>
       <%= collection_presenter.title_or_label %>
     <% end %>

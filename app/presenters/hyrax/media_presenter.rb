@@ -13,7 +13,7 @@ module Hyrax
       :physical_object_title, :physical_object_link, :physical_object_id,
       :device_and_facility, :device_link, :device, :device_manufacturer, :device_description,
       :device_organization_institution,
-      :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software, 
+      :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software,
       :imaging_event_description, :imaging_event_description_attachment, :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list, :parent_media_members,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
@@ -24,6 +24,9 @@ module Hyrax
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
       :file_size, :mime_type, :this_media_type, :file_set_list,
+      # Permissions
+      :permits_commercial_use, :permits_3d_use, :required_archival_of_published_derivatives,
+      :morphosource_use_agreement_type, :download_reviewer,
       # BSO fields
       :collection_code, :institution_code, :catalog_number, :occurrence_id, :idigbio_uuid,
       :user_taxonomies, :canonical_taxonomy_object, :trusted_taxonomies,
@@ -118,6 +121,12 @@ module Hyrax
       @data_managed_by = solr_document.depositor
 
       @download_permission = get_download_permission(media)
+
+      @permits_commercial_use = Morphosource::CommercialUseTypesService.new.label(media.permits_commercial_use.first) if media.permits_commercial_use.present?
+      @permits_3d_use = Morphosource::ThreeDUseTypesService.new.label(media.permits_3d_use.first) if media.permits_3d_use.present?
+      @required_archival_of_published_derivatives = Morphosource::RequiredArchivalOfPublishedDerivativesTypesService.new.label(media.required_archival_of_published_derivatives.first) if media.required_archival_of_published_derivatives.present?
+      @morphosource_use_agreement_type = Morphosource::MorphosourceUseAgreementTypesService.new.label(media.morphosource_use_agreement_type.first) if media.morphosource_use_agreement_type.present?
+      @download_reviewer = media.download_reviewer.first
 
       @ark = media.ark
       @doi = media.doi

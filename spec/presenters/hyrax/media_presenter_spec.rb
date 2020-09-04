@@ -142,6 +142,10 @@ RSpec.describe Hyrax::MediaPresenter do
     let(:visibility)        { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
     let(:user)              { 'test@example.com' }
     let(:fileset_accessibility) {['open']}
+    let(:permits_3d_use) {['3DPrintingPermitted']}
+    let(:permits_commercial_use) {['CommercialUsePermitted']}
+    let(:morphosource_use_agreement_type) {['Permissive']}
+    let(:required_archival_of_published_derivatives) {['OnAnyRepository']}
 
     let :work do
       Media.create(id:               id,
@@ -152,6 +156,10 @@ RSpec.describe Hyrax::MediaPresenter do
                    date_created:     date_created,
                    related_url:      related_url,
                    rights_statement: rights_statement,
+                   permits_3d_use:   permits_3d_use,
+                   permits_commercial_use: permits_commercial_use,
+                   morphosource_use_agreement_type: morphosource_use_agreement_type,
+                   required_archival_of_published_derivatives: required_archival_of_published_derivatives,
                    agreement_uri:    agreement_uri,
                    cite_as:          cite_as,
                    funding:          funding,

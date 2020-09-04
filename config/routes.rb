@@ -81,6 +81,9 @@ Rails.application.routes.draw do
     get 'media_works_paging/dashboard/my/media', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=biological_specimens" }
     get 'media_works_paging/dashboard/my/media/specimens', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=biological_specimens" }
     get 'media_works_paging/dashboard/my/media/chos', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=cultural_heritage_objects" }
+    # my teams/projects paging
+    get 'my_projects_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/projects/?#{request.params.to_query}" }
+    get 'my_teams_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/teams/?#{request.params.to_query}" }
 
     # Note: the following route might effect pagination links
     namespace :dashboard do

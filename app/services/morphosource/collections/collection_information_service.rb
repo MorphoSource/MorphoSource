@@ -72,7 +72,7 @@ module Morphosource
             'team_collection' => media_count - n_media_team_organization
           }
 
-          if bso_ids.present?
+          if bso_ids.present? && team_org_po_ids.present?
             team_bso_ids = team_org_po_ids.select { |x| bso_ids.include? x }
             info['bso_groups']['origin'] = {
               'team_organization' => team_bso_ids.length,
@@ -80,7 +80,7 @@ module Morphosource
             }
           end
 
-          if cho_ids.present?
+          if cho_ids.present? && team_org_po_ids.present?
             team_cho_ids = team_org_po_ids.select { |x| cho_ids.include? x }
             info['cho_groups']['origin'] = {
               'team_organization' => team_cho_ids.length,

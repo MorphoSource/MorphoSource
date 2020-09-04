@@ -21,7 +21,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
   end
 
   describe 'SINGLE_VALUE' do
-    it { expect(subject::SINGLE_VALUE).to match_array(['rights_statement', 'terms_of_use', 'permits_commercial_use', 'permits_3d_use', 'cite_as']) }
+    it { expect(subject::SINGLE_VALUE).to match_array(['rights_statement', 'permits_commercial_use', 'permits_3d_use', 'cite_as']) }
   end
 
   describe 'alert' do

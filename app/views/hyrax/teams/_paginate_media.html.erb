@@ -2,7 +2,7 @@
 
 		<div class="col-md-12 col-lg-2">
 		  <%= form_tag '', method: :get, :id => 'mda_rows_per_page' do %>
-		  <%= hidden_field_tag 'view', document_index_view_type %>
+			<%= hidden_params_for_pagination('m_') %>
 		    <div class="select-tag">
 		      Rows per page <%= select_tag :rows, options_for_select(Hyrax.config.teams_rows_per_page_range, selected: params[:rows] || Hyrax.config.teams_show_work_item_rows), onchange: "$('#mda_rows_per_page').submit();" %> 
 		    </div>

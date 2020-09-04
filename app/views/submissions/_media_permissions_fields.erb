@@ -1,15 +1,16 @@
 
-<%= render_edit_field_partial('license', f: f) %>
+<%= render_edit_field_partial('download_reviewer', f: f) %>
 <%= render_edit_field_partial('rights_statement', f: f) %>
-<%= render_edit_field_partial('terms_of_use', f: f) %>
-<%= render_edit_field_partial('agreement_uri', f: f) %>
+<%= render_edit_field_partial('license', f: f) %>
+<%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
 <%= f.input :permits_commercial_use, as: :select, class: 'form-control' %>
 <%= f.input :permits_3d_use, as: :select, class: 'form-control' %>
-<%= render_edit_field_partial('download_reviewer', f: f) %>
+<%= render_edit_field_partial('required_archival_of_published_derivatives', f: f) %>
 <%= render_edit_field_partial('rights_holder', f: f) %>
 <%= render_edit_field_partial('funding', f: f) %>
 <%= render_edit_field_partial('publisher', f: f) %>
 <%= render_edit_field_partial('cite_as', f: f) %>
+<%= render_edit_field_partial('agreement_uri', f: f) %>
 
 <script>
   // If a field has default permissions filled in, warn users when they click on it.

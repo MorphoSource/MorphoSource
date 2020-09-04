@@ -1,18 +1,5 @@
 <% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
-<% provide :page_title, t("hyrax.admin.sidebar.collections") %>
-<%# provide :head do %>
-  <%#= rss_feed_link_tag route_set: hyrax %>
-  <%#= atom_feed_link_tag route_set: hyrax %>
-<%# end %>
-
-<script>
-//<![CDATA[
-
-  <%#= render partial: 'scripts', formats: [:js] %>
-
-//]]>
-</script>
-
+<% provide :page_title, t("hyrax.admin.sidebar.#{@collection_list_type}s") %>
 <% icon_class = @collection_list_type == 'team' ? "fa-users" : "fa-folder-open" %>
 <% provide :page_header do %>
   <div class="col-xs-9 title">
@@ -25,31 +12,11 @@
       <%= link_to(t('helpers.action.' + @collection_list_type + '.new'), append_collection_type_url(new_dashboard_collection_path, @collection_list_type_id), class: 'btn btn-primary') %>
     <% end %>
   </div>
-  <% if @collection_count_for_manager > 0 %>
-  <div class="row collection-count">
-    <div class="col-xs-12"><span class="label label-info d-inline-block">Manager</span> <span><%= collection_count_for(@collection_count_for_manager) %></span></div>
-  </div>
+
+  <% @collection_counts.each do |membership, count| %>
+    <%= render 'membership_count', membership: membership, count: count %>
   <% end %>
-  <% if @collection_count_for_editor > 0 %>
-  <div class="row collection-count">
-    <div class="col-xs-12"><span class="label label-info d-inline-block">Editor</span> <span><%= collection_count_for(@collection_count_for_editor) %></span></div>
-  </div>
-  <% end %>
-  <% if @collection_count_for_depositor > 0 %>
-  <div class="row collection-count">
-    <div class="col-xs-12"><span class="label label-info d-inline-block">Depositor</span> <span><%= collection_count_for(@collection_count_for_depositor) %></span></div>
-  </div>
-  <% end %>
-  <% if @collection_count_for_viewer > 0 %>
-  <div class="row collection-count">
-    <div class="col-xs-12"><span class="label label-info d-inline-block">Viewer</span> <span><%= collection_count_for(@collection_count_for_viewer) %></span></div>
-  </div>
-  <% end %>
-  <% if @collection_count_for_downloader > 0 %>
-  <div class="row collection-count">
-    <div class="col-xs-12"><span class="label label-info d-inline-block">Downloader</span> <span><%= collection_count_for(@collection_count_for_downloader) %></span></div>
-  </div>
-  <% end %>
+
 <% end %>
 <div class="collections-wrapper">
   <%# Collections list %>

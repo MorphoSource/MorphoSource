@@ -33,6 +33,7 @@ module Hyrax
     end
 
     def showcase
+      byebug
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       render 'showcase', presenter: @presenter
     end

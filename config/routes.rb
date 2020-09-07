@@ -32,6 +32,8 @@ Rails.application.routes.draw do
     get 'concern/media/show/:id', to: 'media#show'
     get 'concern/biological_specimens/show/:id', to: 'biological_specimens#show'
     get 'concern/cultural_heritage_objects/show/:id', to: 'cultural_heritage_objects#show'
+    # ms1 routes
+    get 'Detail/SpecimenDetail/Show/specimen_id/:id', to: 'biological_specimens#show'
   end
 
   scope module: :hyrax do

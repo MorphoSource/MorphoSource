@@ -1,0 +1,27 @@
+<% content_for :body_css_classes do %>showcase organizations browse<% end %>
+<% provide :page_title, t("hyrax.browse.title.organizations") %>
+<% icon_class = @collection_list_type == 'team' ? "fa-users" : "fa-folder-open" %>
+<div class="browse">
+
+  <% provide :page_header do %>
+    <div class="col-xs-9 title browse">
+      <h1><span class="fa <%= icon_class %>" aria-hidden="true"></span> 
+        <%= t("hyrax.browse.title.organizations") %><br/>
+        <span class="counts"><%#= render 'hyrax/browse/teams/counts_for_' + @collection_list_type.pluralize %></span>
+      </h1>
+    </div>
+  <% end %>
+  <div class="col-xs-12 page_description">
+    <p><%= t("hyrax.browse.page_description.organizations") %></p>
+  </div>
+  <div class="collections-wrapper">
+    <div class="panel panel-default collections-panel-wrapper">
+      <div class="panel-body">
+        <%= render 'search_header' %>
+        <%= render 'document_list' %>
+        <%= render 'results_pagination' %>
+      </div>
+    </div>
+  </div><!-- /collections-wrapper -->
+
+</div>

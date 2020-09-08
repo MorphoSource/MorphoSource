@@ -1,0 +1,20 @@
+<table id="collections-list-table" class="table table-striped collections-list-table">
+  <caption class="sr-only"><%= t("hyrax.dashboard.my.sr.listing") %> <%= application_name %></caption>
+  <thead>
+  <tr>
+    <th><%= t("hyrax.dashboard.my.heading.name") %></th>
+    <th><%= t("hyrax.dashboard.my.heading.institution_codes") %></th>
+    <th><%= t("hyrax.dashboard.my.heading.collection_codes") %></th>
+    <th><%= t("hyrax.dashboard.my.heading.type") %></th>
+    <th><%= t("hyrax.dashboard.my.heading.media") %></th>
+    <th><%= t("hyrax.dashboard.my.heading.objects") %></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% docs.each_with_index do |document| %>
+    <% organization_presenter = Hyrax::OrganizationPresenter.new(document, current_ability, nil) %>
+    <%#= render 'hyrax/browse/teams/list_teams', collection_presenter: collection_presenter, counter: counter, document: document %>
+    <%= render 'list_items', document: document, presenter: organization_presenter %>
+  <% end %>
+  </tbody>
+</table>

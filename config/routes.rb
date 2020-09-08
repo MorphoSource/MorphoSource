@@ -113,6 +113,8 @@ Rails.application.routes.draw do
     scope :browse do
       resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'
       resources :projects, only: [:index], controller: 'browse_teams', as: 'browse_projects'
+      resources :organizations, only: [:index], controller: 'browse_organizations', as: 'browse_organizations'
+
       resources :physical_object_types, only: [:index], controller: 'browse_physical_object_types', as: 'browse_physical_object_types'
     end
 

@@ -1,0 +1,56 @@
+module Hyrax
+
+	class BrowseOrganizationsController < My::WorksController
+
+			with_themed_layout 'morphosource_1_column'
+      
+      def search_builder_class
+        Morphosource::OrganizationsSearchBuilder
+      end
+
+      def index 
+				(@response, @document_list) = query_solr
+byebug
+        @paginated_document_list = paginated_item_list
+
+				respond_to do |format|
+				format.html {}
+				format.rss  { render layout: false }
+				format.atom { render layout: false }
+				end
+      end
+
+      private
+
+        def search_action_url(*args)
+          hyrax.my_works_url(*args)
+        end
+
+        def paginated_item_list
+          # Uses kaminari to paginate an array to avoid need for solr documents for items here
+byebug
+          Kaminari.paginate_array(@document_list, total_count: @document_list.size).page(current_page).per(rows_from_params)
+        end
+
+        def total_items
+          @document_list.size
+        end
+
+        def current_page
+          page = request.params[:page].nil? ? 1 : request.params[:page].to_i
+          page > total_pages ? total_pages : page
+        end
+
+        # @return [Integer] total number of pages of viewable items
+        def total_pages
+          (total_items.to_f / rows_from_params.to_f).ceil
+        end
+
+        def rows_from_params
+          request.params[:rows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:rows].to_i
+        end
+
+
+    end
+  
+end

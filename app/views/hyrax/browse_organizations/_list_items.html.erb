@@ -1,0 +1,13 @@
+<tr>
+  <td>
+    <%= link_to Rails.application.routes.url_helpers.hyrax_organization_path(document.id) do %>
+      <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>
+      <%= presenter.title.first %>
+    <% end %>
+  </td>
+  <td><%= presenter.institution_code&.join(', ') %></td>
+  <td><%= presenter.collection_code&.join(', ') %></td>
+  <td><%= presenter.organization_type&.first %></td>
+  <td><%#= collection_presenter.total_media %></td>
+  <td><%= presenter.total_po %></td>
+</tr>

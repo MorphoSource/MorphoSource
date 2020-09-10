@@ -38,6 +38,7 @@ Rails.application.routes.draw do
     resources :teams, controller: 'teams'
     resources :projects, controller: 'teams'
     
+    get 'organizations/:id', to: 'organizations#show'
     #get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
     get 'teams/chos/:id', to: 'teams#chos'

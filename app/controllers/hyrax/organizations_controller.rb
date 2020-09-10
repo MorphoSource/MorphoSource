@@ -12,6 +12,11 @@ module Hyrax
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::OrganizationPresenter
 
+    def show
+      presenter
+      # if organization.team_id.present? redirect to Hyrax::TeamsController#show
+    end
+
     def update
       if update_work
         after_update_response

@@ -1,5 +1,3 @@
-# Generated via
-#  `rails generate hyrax:work Organization`
 module Hyrax
   class OrganizationPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
@@ -8,21 +6,23 @@ module Hyrax
 
 
     def total_media
-#      ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media").count
+			if member_ids.present?
+	      return ActiveFedora::Base.where("physical_object_id_tesim:(#{po_ids_by_org.join(' OR ')}) AND has_model_ssim:Media").count
+			else
+				return 0
+			end
     end
 
     def total_po
-#      ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media AND -physical_object_id_tesim:nil").count
 			if member_ids.present?
-				member_ids.length
-#				member_ids.each do |id|
-#					work = Works.find(id)
-#byebug
-#				end
-#	      ActiveFedora::Base.where("id:(#{member_ids.join(',')}) ").count
+	      return po_ids_by_org.length
 			else
-				0
+				return 0
 			end
+    end
+
+    def po_ids_by_org
+      return ActiveFedora::Base.where("id:(#{member_ids.join(' OR ')}) AND (has_model_ssim:BiologicalSpecimen OR has_model_ssim:CulturalHeritageObject)").map { |m| m.id }
     end
 
   end

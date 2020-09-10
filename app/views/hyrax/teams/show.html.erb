@@ -45,33 +45,10 @@ provide :page_title, construct_page_title(@presenter.title)
     <div class="col-sm-9 col-md-4 flex">
       <% if @presenter.collection_type.machine_id == 'team' %>
         <% if @presenter.collection.organization %>
-          <div class="represents-organization">
-
-            <div class="col-xs-2 flex icon">
-              <i class="fa fa-university"></i>
-              <sup><i class="fa fa-check-circle"></i></sup>
-            </div>
-
-            <div class="col-xs-7 flex title">
-              <div class="clearfix">
-                <b>REPRESENTS ORGANIZATION</b><br />
-                <%= @presenter.organization_title.first %><br />
-                <% if @presenter.organization_media_count > 0 %>
-                  <%= @presenter.organization_media_count %> <%= 'Media'.pluralize(@presenter.organization_media_count) %>
-                <% end %>
-                <% if @presenter.organization_bso_count > 0 %>
-                · <%= @presenter.organization_bso_count %> <%= 'Specimen'.pluralize(@presenter.organization_bso_count) %>
-                <% end %>
-                <% if @presenter.organization_cho_count > 0 %>
-                · <%= @presenter.organization_cho_count %> CHO
-                <% end %>
-              </div>
-            </div>
-
-          </div><!-- /represents-organization -->
+          <% organization_presenter = Hyrax::OrganizationPresenter.new(@presenter.collection.organization, current_ability, nil) %>
+          <%= render 'counts_for_organization', presenter: organization_presenter %>
         <% end %>
       <% end %>
-
     </div>
 
     <div class="col-xs-12 col-sm-3 col-md-2 flex text-right">

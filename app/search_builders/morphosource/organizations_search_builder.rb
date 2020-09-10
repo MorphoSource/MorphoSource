@@ -1,6 +1,5 @@
 module Morphosource
 
-
   class OrganizationsSearchBuilder < ::SearchBuilder
     include Hyrax::FilterByType
 
@@ -22,10 +21,6 @@ module Morphosource
     def show_only_organizations(solr_parameters)
       solr_parameters[:fq] ||= ["#{solrize('visibility', :stored_sortable)}:open"]
       solr_parameters[:rows] = 999999
-byebug
-#      solr_parameters[:fq] += [
-#        "keyword_tesim:(#{keyword})"
-#      ]
     end
 
   end

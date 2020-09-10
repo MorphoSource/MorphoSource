@@ -54,7 +54,11 @@ en:
         new: "New Collection"
   hyrax:
     browse:
+      title:
+        organizations: Organizations
       page_description:
+        organizations:
+          "Organizations represent institutions, departments, collections, facilities, labs, and other groups that manage, house, and curate physical objects or imaging devices. An organization describes whatever bureaucratic entity is responsible for setting policies for access to physical objects or devices. Typically, organizations are collections or departments within an institution, but in some cases they can also be an entire larger institution or a specific smaller lab within a collection or department. A user team can be linked to an organization, enabling some level of access control over physical objects housed in that organization. Please contact the MorphoSource admins to discuss linking your user team to an organization."
         projects:
           "A project is a themed assortment of media and specimens. Projects can be used to share media ownership and access between project members, and projects can also be used to publish assortments of media and specimens for access and discovery by the public. Examples of projects could include the 3D data used in a single research paper or a collections digitization project. If you want to share media ownership and access with multiple users across multiple projects, consider creating a user team. Projects can be managed by teams, and users with access to that team also gain access to any projects managed by that team."
         teams:

@@ -10,7 +10,6 @@ module Hyrax
 
       def index 
 				(@response, @document_list) = query_solr
-byebug
         @paginated_document_list = paginated_item_list
 
 				respond_to do |format|
@@ -20,6 +19,7 @@ byebug
 				end
       end
 
+
       private
 
         def search_action_url(*args)
@@ -28,7 +28,6 @@ byebug
 
         def paginated_item_list
           # Uses kaminari to paginate an array to avoid need for solr documents for items here
-byebug
           Kaminari.paginate_array(@document_list, total_count: @document_list.size).page(current_page).per(rows_from_params)
         end
 
@@ -37,7 +36,7 @@ byebug
         end
 
         def current_page
-          page = request.params[:page].nil? ? 1 : request.params[:page].to_i
+          page = request.params[:tpage].nil? ? 1 : request.params[:tpage].to_i
           page > total_pages ? total_pages : page
         end
 

@@ -100,7 +100,7 @@ html {
   padding: 5px;
 }
 
-.showcase.teams, .showcase.media-works { /* / teams and projects show page styles */
+.showcase.teams, .showcase.media-works, .showcase.browse { /* / teams and projects show page styles */
   .title.browse {
     margin-top:30px;
   }
@@ -109,7 +109,7 @@ html {
       font-size: 24px;
       line-height: .8;
       .fa {
-        font-size: 38px;
+        font-size: 40px;
         vertical-align: top;
         float: left;
         margin-right: 8px;        

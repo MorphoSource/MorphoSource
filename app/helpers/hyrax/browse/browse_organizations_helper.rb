@@ -12,4 +12,8 @@ module Hyrax::Browse::BrowseOrganizationsHelper
     return browse_service.organization_count_by_type("Collection and Scanning Facility")
   end
 
+  def total_collections
+  	return @document_list.map { |org| org["team_id_tesim"] }.compact.length
+  end
+
 end

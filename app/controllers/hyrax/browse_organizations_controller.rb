@@ -23,7 +23,7 @@ module Hyrax
       private
 
         def search_action_url(*args)
-          hyrax.my_works_url(*args)
+          Rails.application.routes.url_helpers.browse_organizations_path(*args)
         end
 
         def paginated_item_list

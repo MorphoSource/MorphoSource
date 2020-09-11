@@ -237,6 +237,12 @@ html {
     }
   }
 
+  table[class*=list-table] {
+    th {
+      white-space: nowrap;
+    }
+  }
+
   table.teams-projects, table.media-works {
     th, td {
       text-align: center;

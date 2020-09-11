@@ -60,7 +60,7 @@ provide :page_title, construct_page_title(@presenter.title)
           <ul class="dropdown-menu">
             <% if can?(:edit, @presenter.solr_document) %>
               <li>
-                <%= link_to t('hyrax.collection.actions.edit.label'), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary' %>
+                <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary' %>
               </li>
             <% end %>
             <% if can?(:deposit, @presenter.solr_document) %>

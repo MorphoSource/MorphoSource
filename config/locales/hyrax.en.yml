@@ -53,6 +53,11 @@ en:
       collection:
         new: "New Collection"
   hyrax:
+    collection:
+      actions:
+        edit:
+          project: Edit project
+          team: Edit team
     browse:
       title:
         organizations: Organizations

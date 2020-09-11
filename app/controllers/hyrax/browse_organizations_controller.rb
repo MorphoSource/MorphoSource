@@ -2,8 +2,8 @@ module Hyrax
 
 	class BrowseOrganizationsController < My::WorksController
 
-			with_themed_layout 'morphosource_1_column'
-      
+			with_themed_layout 'morphosource_1_column'      
+
       def search_builder_class
         Morphosource::OrganizationsSearchBuilder
       end

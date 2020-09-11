@@ -10,6 +10,8 @@
 
       <li class="divider"></li>
       <li><%= link_to t("hyrax.toolbar.browse.teams"), Rails.application.routes.url_helpers.browse_teams_path %></li>
+      <li class="divider"></li>
+      <li><%= link_to t("hyrax.toolbar.browse.organizations"), Rails.application.routes.url_helpers.browse_organizations_path %></li>
     </ul>
   </li><!-- /.btn-group -->
   <% if user_signed_in? %>

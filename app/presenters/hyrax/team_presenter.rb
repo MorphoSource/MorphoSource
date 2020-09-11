@@ -101,16 +101,20 @@ module Hyrax
       end
     end
 
+    def browse_service
+      @browse_service ||= Morphosource::BrowseService.new
+    end
+
     def total_media
-      ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media").count
+      browse_service.total_media_by_collection(id)
     end
 
     def total_po
-      ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media AND -physical_object_id_tesim:nil").count
+      browse_service.total_po_by_collection(id)
     end
 
     def total_team_projects
-      ActiveFedora::Base.where("member_of_collection_ids_ssim:#{000200012} AND has_model_ssim:Collection").count
+      browse_service.total_team_projects_by_collection(id)
     end
 
     def project_team_title_link

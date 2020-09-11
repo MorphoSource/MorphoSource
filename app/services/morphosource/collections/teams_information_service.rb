@@ -14,16 +14,15 @@ module Morphosource
       def initialize(user, collection_list_type_id, page = "my")
         @solr = solr_service.new
         @user = user
+        @collection_list_type_id = collection_list_type_id
+        @collection_count_for_manager = 0
+        @collection_count_for_editor = 0
+        @collection_count_for_depositor = 0
+        @collection_count_for_viewer = 0
+        @collection_count_for_downloader = 0
+        @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
+        membership_info(all_collection_ids)
         if page == "my"
-          @collection_list_type_id = collection_list_type_id
-          @collection_count_for_manager = 0
-          @collection_count_for_editor = 0
-          @collection_count_for_depositor = 0
-          @collection_count_for_viewer = 0
-          @collection_count_for_downloader = 0
-          @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
-
-          membership_info(all_collection_ids)
           query_solr_collection_info
         end
         @organizations = organization_docs
@@ -58,10 +57,8 @@ module Morphosource
         @info = { 
           'counts_for_team_type' => {}
         }
-
-        info['counts_for_team_type']['org_teams'] = @organizations.length
-        #info['counts_for_team_type']['user_teams'] = 
-
+        info['counts_for_team_type']['org_teams'] = total_organization_teams
+        info['counts_for_team_type']['user_teams'] = @ids_by_membership['any'].length - total_organization_teams
         info     
       end
 
@@ -169,8 +166,7 @@ module Morphosource
           }
           params[:fq] += ["#{solrize('title', :stored_searchable)}:#{prepare_value(organization_title)}"] if organization_title.present?
 
-          results = solr.get_docs(nil, params)
-          return results
+          return solr.get_docs(nil, params)
         end
 
         def organization_title_count(organization_title)
@@ -186,6 +182,18 @@ module Morphosource
           solr.count
         end
 
+        def total_organization_teams
+          return 0 unless ids_by_membership['any'].present?
+          params = { 
+            rows: 0,
+            fq: [
+              solrize('has_model', :symbol) + ':Organization',
+              assemble_or_query(solrize('team_id', :stored_searchable), ids_by_membership['any'])
+            ]
+          }
+          solr.get(nil, params)
+          solr.count
+        end
 
         ### Collection information parsing ###
 

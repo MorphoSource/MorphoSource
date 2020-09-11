@@ -1,13 +1,15 @@
 module Hyrax::Browse::BrowseOrganizationsHelper
 
-    delegate :organization_type, to: :solr_document
+  def browse_service
+    @browse_service ||= Morphosource::BrowseService.new
+  end
 
-    def total_scanning_facilities
-      return ActiveFedora::Base.where(" has_model_ssim:Organization AND #{Solrizer.solr_name('organization_type', :stored_searchable)}:\"Scanning Facility\"").count
-    end
+  def total_scanning_facilities
+    return browse_service.organization_count_by_type("Scanning Facility")
+  end
 
-    def total_collection_and_scanning_facilities
-      return ActiveFedora::Base.where(" has_model_ssim:Organization AND #{Solrizer.solr_name('organization_type', :stored_searchable)}:\"Collection and Scanning Facility\"").count
-    end
+  def total_collection_and_scanning_facilities
+    return browse_service.organization_count_by_type("Collection and Scanning Facility")
+  end
 
 end

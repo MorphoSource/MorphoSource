@@ -53,6 +53,21 @@ en:
       collection:
         new: "New Collection"
   hyrax:
+    collection:
+      actions:
+        edit:
+          project: Edit project
+          team: Edit team
+    browse:
+      title:
+        organizations: Organizations
+      page_description:
+        organizations:
+          "Organizations represent institutions, departments, collections, facilities, labs, and other groups that manage, house, and curate physical objects or imaging devices. An organization describes whatever bureaucratic entity is responsible for setting policies for access to physical objects or devices. Typically, organizations are collections or departments within an institution, but in some cases they can also be an entire larger institution or a specific smaller lab within a collection or department. A user team can be linked to an organization, enabling some level of access control over physical objects housed in that organization. Please contact the MorphoSource admins to discuss linking your user team to an organization."
+        projects:
+          "A project is a themed assortment of media and specimens. Projects can be used to share media ownership and access between project members, and projects can also be used to publish assortments of media and specimens for access and discovery by the public. Examples of projects could include the 3D data used in a single research paper or a collections digitization project. If you want to share media ownership and access with multiple users across multiple projects, consider creating a user team. Projects can be managed by teams, and users with access to that team also gain access to any projects managed by that team."
+        teams:
+          "Teams are groups of MorphoSource users that can share media ownership and access between team members. Teams can also contain projects, and media for team projects can be viewed both at the project and team levels. The chief difference between teams and projects is that projects provide a group of users with access to a single assortment of media and specimens, like a single individual research paper or one collections project. Teams provide a group of users with access to multiple themed assortments of media and specimens, like a lab group with multiple research paper projects. Additionally, if you are an official representative of an organization represented in MorphoSource, your team can be linked to that organization, which enables some level of access control over media representing specimens from that organization. Contact the MorphoSource admins to discuss this further. "
     admin:
       sidebar:
         teams: 'Teams'
@@ -229,3 +244,7 @@ en:
     placeholders:
       defaults:
         find_parent_work: Search...
+  toolbar:
+    browse:
+      projects: Projects
+      teams: Teams

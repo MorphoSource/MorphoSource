@@ -39,6 +39,10 @@ div.controls .navbar {
   .pull-right-sm {
     float: right;
   }
+
+  ul#user_utility_links li ul.dropdown-menu a {
+    color: #333333;
+  }
 }
 
 div.controls .navbar-nav {

@@ -15,7 +15,7 @@
     </ul>
   </li><!-- /.btn-group -->
   <% if user_signed_in? %>
-    <li>
+    <li class='notifications'>
       <%= render_notifications(user: current_user) %>
     </li>
     <!-- Show shopping cart icon if user signed in -->

@@ -35,9 +35,8 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    resources :teams, controller: 'teams'
-    resources :projects, controller: 'teams'
-
+    resources :teams, controller: 'teams', only: [:show]
+    resources :projects, controller: 'teams', only: [:show]
     #get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
     get 'teams/chos/:id', to: 'teams#chos'
@@ -84,6 +83,9 @@ Rails.application.routes.draw do
     # my teams/projects paging
     get 'my_projects_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/projects/?#{request.params.to_query}" }
     get 'my_teams_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/teams/?#{request.params.to_query}" }
+    # browse teams/projects paging
+    get 'browse_projects_paging/browse/teams', to: redirect { |params, request| "/browse/projects/?#{request.params.to_query}" }
+    get 'browse_teams_paging/browse/teams', to: redirect { |params, request| "/browse/teams/?#{request.params.to_query}" }
 
     # Note: the following route might effect pagination links
     namespace :dashboard do
@@ -106,6 +108,14 @@ Rails.application.routes.draw do
     #get 'dashboard/my/media', controller: 'my/media_works', action: :index
     get 'dashboard/my/media/specimens', to: 'my/media_works#specimens'
     get 'dashboard/my/media/chos', to: 'my/media_works#chos'
+
+    scope :browse do
+      resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'
+      resources :projects, only: [:index], controller: 'browse_teams', as: 'browse_projects'
+      resources :organizations, only: [:index], controller: 'browse_organizations', as: 'browse_organizations'
+
+      resources :physical_object_types, only: [:index], controller: 'browse_physical_object_types', as: 'browse_physical_object_types'
+    end
 
   end
 

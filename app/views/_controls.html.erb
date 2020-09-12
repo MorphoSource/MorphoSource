@@ -11,9 +11,6 @@
         <li <%= 'class=active' if current_page?(hyrax.about_path) %>>
           <%= link_to t(:'hyrax.controls.resources'), hyrax.about_path, aria: current_page?(hyrax.about_path) ? {current: 'page'} : nil %>
         </li>
-        <li <%= 'class=active' if current_page?(hyrax.about_path) %>>
-          <%= link_to t(:'hyrax.controls.browse'), hyrax.about_path, aria: current_page?(hyrax.about_path) ? {current: 'page'} : nil %>
-        </li>
       </ul><!-- /.nav -->
       <div class="searchbar-right navbar-right col-sm-7">
         <%= render partial: 'catalog/search_form' %>

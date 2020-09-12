@@ -1,8 +1,14 @@
 <ul id="user_utility_links" class="nav navbar-nav navbar-right">
   <%#= render 'shared/locale_picker' if available_translations.size > 1 %>
   <% if user_signed_in? %>
-    <li>
+    <li class='notifications'>
       <%= render_notifications(user: current_user) %>
+    </li>
+    <!-- Show shopping cart icon if user signed in -->
+    <li>
+      <%= link_to main_app.my_cart_path do %>
+        <span class="fa fa-shopping-cart" aria-hidden="true"></span>
+      <% end %>
     </li>
     <li class="dropdown">
       <%= link_to hyrax.dashboard_profile_path(current_user), role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'user-util-links' } do %>
@@ -18,12 +24,6 @@
         <li class="divider"></li>
         <li><%= link_to t("hyrax.toolbar.profile.logout"), main_app.destroy_user_session_path %></li>
       </ul>
-    </li><!-- /.btn-group -->
-    <!-- Show shopping cart icon if user signed in -->
-    <li>
-      <%= link_to main_app.my_cart_path do %>
-        <span class="fa fa-shopping-cart" aria-hidden="true"></span>
-      <% end %>
     </li>
   <% else %>
     <li>

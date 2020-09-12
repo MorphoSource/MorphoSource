@@ -35,9 +35,8 @@ Rails.application.routes.draw do
   end
 
   scope module: :hyrax do
-    resources :teams, controller: 'teams'
-    resources :projects, controller: 'teams'
-    
+    resources :teams, controller: 'teams', only: [:show]
+    resources :projects, controller: 'teams', only: [:show]
     #get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
     get 'teams/chos/:id', to: 'teams#chos'
@@ -84,6 +83,9 @@ Rails.application.routes.draw do
     # my teams/projects paging
     get 'my_projects_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/projects/?#{request.params.to_query}" }
     get 'my_teams_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/teams/?#{request.params.to_query}" }
+    # browse teams/projects paging
+    get 'browse_projects_paging/browse/teams', to: redirect { |params, request| "/browse/projects/?#{request.params.to_query}" }
+    get 'browse_teams_paging/browse/teams', to: redirect { |params, request| "/browse/teams/?#{request.params.to_query}" }
 
     # Note: the following route might effect pagination links
     namespace :dashboard do
@@ -107,6 +109,14 @@ Rails.application.routes.draw do
     get 'dashboard/my/media/specimens', to: 'my/media_works#specimens'
     get 'dashboard/my/media/chos', to: 'my/media_works#chos'
 
+    scope :browse do
+      resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'
+      resources :projects, only: [:index], controller: 'browse_teams', as: 'browse_projects'
+      resources :organizations, only: [:index], controller: 'browse_organizations', as: 'browse_organizations'
+
+      resources :physical_object_types, only: [:index], controller: 'browse_physical_object_types', as: 'browse_physical_object_types'
+    end
+
   end
 
   # override ProfilesController
@@ -123,9 +133,27 @@ Rails.application.routes.draw do
 
     concern :searchable, Blacklight::Routes::Searchable.new
 
-  resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
+  # send to all_catalog controller in order to restrict access to admins only
+  resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'all_catalog' do
     concerns :searchable
   end
+
+  # ms catalog controllers
+  # media
+  get 'catalog/media', to: 'media_catalog#index', as: 'media_search'
+  get 'media_catalog/facet/:id', to: 'media_catalog#facet'
+  # physical objects
+  get 'catalog/objects', to: 'objects_catalog#index', as: 'object_search'
+  get 'objects_catalog/facet/:id', to: 'objects_catalog#facet'
+  # organizations
+  get 'catalog/organizations', to: 'organizations_catalog#index', as: 'organization_search'
+  get 'organizations_catalog/facet/:id', to: 'organizations_catalog#facet'
+  # teams/projects
+  get 'catalog/teams_projects', to: 'collections_catalog#index', as: 'collection_search'
+  get 'collections_catalog/facet/:id', to: 'collections_catalog#facet'
+  # all
+  get 'catalog/all', to: 'all_catalog#index', as: 'all_search'
+  get 'all_catalog/facet/:id', to: 'all_catalog#facet'
 
   devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'
@@ -140,7 +168,7 @@ Rails.application.routes.draw do
     get '/attachments/:id', to: 'attachments#show', as: 'attachment'
   end
 
-  
+
 
   mount Hyrax::Engine, at: '/'
   resources :welcome, only: 'index'

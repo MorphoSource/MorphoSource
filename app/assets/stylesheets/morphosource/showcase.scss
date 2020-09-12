@@ -100,7 +100,37 @@ html {
   padding: 5px;
 }
 
-.showcase.teams, .showcase.media-works { /* / teams and projects show page styles */
+.showcase.teams, .showcase.media-works, .showcase.browse { /* / teams and projects show page styles */
+  .title.browse {
+    margin-top:30px;
+  }
+  .browse {
+    h1 {
+      font-size: 24px;
+      line-height: .9;
+      .fa {
+        font-size: 44px;
+        vertical-align: top;
+        float: left;
+        margin-right: 8px;        
+      }
+      .counts { 
+        font-weight: normal;
+        font-size: 12px;
+      }
+    }
+    .page_description {
+      border-bottom: 1px solid #ddd;
+      margin: -20px auto 20px;
+      padding-bottom: 15px;
+      p {
+        font-size: 11px;
+      }
+    }
+    .paginate-wrapper {
+      margin-top: 15px;
+    }
+  }
 
   .flex { /* setting column with same height */
     display: flex;
@@ -207,6 +237,12 @@ html {
     }
   }
 
+  table[class*=list-table] {
+    th {
+      white-space: nowrap;
+    }
+  }
+
   table.teams-projects, table.media-works {
     th, td {
       text-align: center;
@@ -287,8 +323,23 @@ html {
   }
 
   .show-actions {
-    padding-left: 10px;
-    padding-right: 6px;
+    padding: .5vw 1vw;
+    .btn {
+      margin-bottom: 1px;
+      padding: 5px 10px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .btn:hover {
+      color: $button-hover-font-color;
+      background-color: $button-hover-color;
+      border-color: $button-hover-border-color;
+    }
+    .dropdown-menu {
+      .btn {
+        text-align: left;
+      }
+    }
   }
 
   .batch-action-buttons {
@@ -855,7 +906,8 @@ html {
       border: none;
       margin-bottom: 4px;
       img {
-        max-width: 90%;
+        width: 100px;
+        height: 100px;
       }
     }
   }

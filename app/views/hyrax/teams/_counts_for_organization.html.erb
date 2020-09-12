@@ -1,0 +1,21 @@
+<div class="represents-organization">
+
+  <div class="col-xs-2 flex icon">
+    <i class="fa fa-university"></i>
+    <sup><i class="fa fa-check-circle"></i></sup>
+  </div>
+
+  <div class="col-xs-7 flex title">
+    <div class="clearfix">
+      <b>REPRESENTS ORGANIZATION</b><br />
+      <%= presenter.title.first %><br />
+      <% if presenter.total_media > 0 %>
+        <%= presenter.total_media %> <%= 'Media'.pluralize(presenter.total_media) %>
+      <% end %>
+      <% if presenter.total_po > 0 %>
+      · <%= presenter.total_po %> <%= 'Object'.pluralize(presenter.total_po) %>
+      <% end %>
+    </div>
+  </div>
+
+</div><!-- /represents-organization -->

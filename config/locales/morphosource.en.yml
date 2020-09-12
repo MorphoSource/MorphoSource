@@ -96,10 +96,23 @@ en:
         text: "Embargo"
       lease:
         text: "Lease"
-    upload:
-      change_access_message_html: "<p>You have changed the access level on work <i>%{curation_concern}</i>, making it accessible to other users or groups to view or edit.</p><p>All attached files are now being updated with the same access level.</p>"
-      change_access_yes_message: Yes please.
-      change_access_no_message: No. I want to go back.
+    search:
+      form:
+        catalog:
+          refine:
+            placeholder: "Refine your search"
+        option:
+          media:
+            label: "Media"
+          physical_objects:
+            label_long: "Physical Objects"
+            label_short: "Objects"
+          organizations:
+            label_long: "Organizations"
+            label_short: "Organizations"
+          collections:
+            label_long: "Teams & Projects"
+            label_short: "Teams/Projects"
     taxonomy:
       labels:
         canonical: "Organizational"
@@ -107,6 +120,10 @@ en:
         trusted: "MorphoSource Inferred"
         user: "User Supplied"
         gbif: "GBIF"
+    upload:
+      change_access_message_html: "<p>You have changed the access level on work <i>%{curation_concern}</i>, making it accessible to other users or groups to view or edit.</p><p>All attached files are now being updated with the same access level.</p>"
+      change_access_yes_message: Yes please.
+      change_access_no_message: No. I want to go back.
     visibility:
       open:
         note_html: "<p>Anyone can view the page and download the associated file(s)</p>"

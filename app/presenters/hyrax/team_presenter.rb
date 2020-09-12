@@ -79,41 +79,6 @@ module Hyrax
       filtered_docs
     end
 
-    def organization_object_counts(org)
-      # get the media count, bso count, cho count
-      # bso / cho count:
-      # organization > bso/cho  
-      # media count:
-      # organization > bso/cho > IE > media 
-      # todo: handle absentee parents?
-      bso_count = 0
-      cho_count = 0
-      media_count = 0
-      bso_works = BiologicalSpecimen.where('id' => org.member_ids)
-      cho_works = CulturalHeritageObject.where('id' => org.member_ids)
-      imaging_event_works = []
-      if bso_works.present?
-        bso_count = bso_works.length 
-        bso_works.each do |po|
-          imaging_event_works = (imaging_event_works + ImagingEvent.where('id' => po.member_ids)&.to_ary).uniq
-        end
-      end
-      if cho_works.present?
-        cho_count = cho_works.length 
-        cho_works.each do |po|
-          imaging_event_works = (imaging_event_works + ImagingEvent.where('id' => po.member_ids)&.to_ary).uniq
-        end
-      end
-      if imaging_event_works.present?
-        imaging_event_works.each do |ie|
-          imaging_event = ImagingEvent.find(ie.id)
-          media_work = Media.where('id' => imaging_event.member_ids)
-          media_count += media_work.length if media_work.present?
-        end
-      end
-      return media_count, bso_count, cho_count
-    end
-
     def organization
       @collection.organization
     end
@@ -133,8 +98,31 @@ module Hyrax
         @organization_city = organization.city
         @organization_state_province = organization.state_province
         @organization_country = organization.country
-        @organization_media_count, @organization_bso_count, @organization_cho_count =
-          organization_object_counts(organization)
+      end
+    end
+
+    def browse_service
+      @browse_service ||= Morphosource::BrowseService.new
+    end
+
+    def total_media
+      browse_service.total_media_by_collection(id)
+    end
+
+    def total_po
+      browse_service.total_po_by_collection(id)
+    end
+
+    def total_team_projects
+      browse_service.total_team_projects_by_collection(id)
+    end
+
+    def project_team_title_link
+      if @collection.first_parent.present?
+        renderer = Hyrax::Renderers::ShowcaseCollectionLinkRenderer.new(nil,nil)
+        return renderer.collection_link(@collection.first_parent)
+      else
+        return ""
       end
     end
 

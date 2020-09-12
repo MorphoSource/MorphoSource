@@ -36,6 +36,16 @@ RSpec.describe Collection, type: :model do
     end
   end
 
+  describe '#human_readable_type' do
+    let(:another_collection)  { Collection.create(title: ['Another'], collection_type_gid: another_collection_type.gid, depositor: user.ms_id) }
+
+    it 'returns team and project' do
+      expect(team.human_readable_type).to eq "Team"
+      expect(project.human_readable_type).to eq "Project"
+      expect(another_collection.human_readable_type).to eq "Collection"
+    end
+  end
+
   describe '#create_collection_groups' do
 
     it 'creates manager, depositor, editor, downloader, and viewer groups' do

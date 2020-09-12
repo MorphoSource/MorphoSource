@@ -37,7 +37,6 @@ Rails.application.routes.draw do
   scope module: :hyrax do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]
-    
     #get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
     get 'teams/chos/:id', to: 'teams#chos'
@@ -134,9 +133,27 @@ Rails.application.routes.draw do
 
     concern :searchable, Blacklight::Routes::Searchable.new
 
-  resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
+  # send to all_catalog controller in order to restrict access to admins only
+  resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'all_catalog' do
     concerns :searchable
   end
+
+  # ms catalog controllers
+  # media
+  get 'catalog/media', to: 'media_catalog#index', as: 'media_search'
+  get 'media_catalog/facet/:id', to: 'media_catalog#facet'
+  # physical objects
+  get 'catalog/objects', to: 'objects_catalog#index', as: 'object_search'
+  get 'objects_catalog/facet/:id', to: 'objects_catalog#facet'
+  # organizations
+  get 'catalog/organizations', to: 'organizations_catalog#index', as: 'organization_search'
+  get 'organizations_catalog/facet/:id', to: 'organizations_catalog#facet'
+  # teams/projects
+  get 'catalog/teams_projects', to: 'collections_catalog#index', as: 'collection_search'
+  get 'collections_catalog/facet/:id', to: 'collections_catalog#facet'
+  # all
+  get 'catalog/all', to: 'all_catalog#index', as: 'all_search'
+  get 'all_catalog/facet/:id', to: 'all_catalog#facet'
 
   devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'
@@ -151,7 +168,7 @@ Rails.application.routes.draw do
     get '/attachments/:id', to: 'attachments#show', as: 'attachment'
   end
 
-  
+
 
   mount Hyrax::Engine, at: '/'
   resources :welcome, only: 'index'

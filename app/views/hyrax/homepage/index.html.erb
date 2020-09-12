@@ -1,7 +1,7 @@
 <% provide :page_title, application_name %>
 <div id="front-banner" class="row equal">
   <div class="col-xs-12 col-sm-6 col-sm-push-6">
-    <% if Hyrax.config.front_page_media.present? %>
+    <% if Hyrax.config.front_page_media.present? && Media.exists?(Hyrax.config.front_page_media) %>
       <iframe
         height="100%" 
         width="100%" 

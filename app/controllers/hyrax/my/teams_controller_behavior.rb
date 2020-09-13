@@ -33,7 +33,11 @@ module Hyrax
         end
 
         def teams_information_service
-          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id) 
+          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "my") 
+        end
+
+        def browse_teams_information_service
+          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "browse") 
         end
 
         def paginated_item_list

@@ -22,6 +22,16 @@ class Collection < ActiveFedora::Base
     [::Ability.registered_group_name, ::Ability.public_group_name]
   end
 
+  def human_readable_type
+    if team?
+      "Team"
+    elsif project?
+      "Project"
+    else
+      super
+    end
+  end
+
   def type_assigns_groups?
     team? || project?
   end
@@ -72,12 +82,25 @@ class Collection < ActiveFedora::Base
     id ? Collection.find(id) : nil
   end
 
+  def parent_id
+    member_of_collection_ids.first
+  end
+
   def parent?
     !member_of_collections.empty?
   end
 
   def organization
-    Organization.where(team_id: id).first
+    if parent_id
+      Organization.where(team_id: parent_id).first
+    else
+      Organization.where(team_id: id).first
+    end
+  end
+
+  def organization_name
+    return nil if organization.nil?
+    organization.title.first
   end
 
   # Create manager/depositor/viewer roles for each Team/Project collection

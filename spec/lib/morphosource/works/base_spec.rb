@@ -3,18 +3,18 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::Works::Base do
-  let(:organization)    { Organization.new(title: ['organization title']) }
-  let(:specimen1)       { BiologicalSpecimen.new(title: ['title'], vouchered: [true]) }
-  let(:specimen2)       { BiologicalSpecimen.new(title: ['title'], vouchered: [false]) }
-  let(:media1)          { Media.new(title: ['title']) }
-  let(:media2)          { Media.new(title: ['title']) }
-  let(:media3)          { Media.new(title: ['title']) }
-  let(:file_set1)       { FileSet.new }
-  let(:file_set2)       { FileSet.new }
-  let(:file_set3)       { FileSet.new }
-  let(:imagingEvent)    { ImagingEvent.new(title: ['title']) }
-  let(:imagingEvent2)   { ImagingEvent.new(title: ['title']) }
-  let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
+  let(:organization)    { Organization.create(title: ['organization title']) }
+  let(:specimen1)       { BiologicalSpecimen.create(title: ['title'], vouchered: [true]) }
+  let(:specimen2)       { BiologicalSpecimen.create(title: ['title'], vouchered: [false]) }
+  let(:media1)          { Media.create(title: ['title']) }
+  let(:media2)          { Media.create(title: ['title']) }
+  let(:media3)          { Media.create(title: ['title']) }
+  let(:file_set1)       { FileSet.create }
+  let(:file_set2)       { FileSet.create }
+  let(:file_set3)       { FileSet.create }
+  let(:imagingEvent)    { ImagingEvent.create(title: ['title']) }
+  let(:imagingEvent2)   { ImagingEvent.create(title: ['title']) }
+  let(:processingEvent) { ProcessingEvent.create(title: ['title']) }
   let(:works)           { [organization, specimen1, specimen2, media1, media2, media3, imagingEvent, imagingEvent2, processingEvent, file_set1, file_set2, file_set3] }
 
   describe '#descendants' do

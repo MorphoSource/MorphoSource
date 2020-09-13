@@ -4,6 +4,9 @@ en:
       about_html: 'Welcome to MorphoSource 2.0, alpha! We hope you enjoy the new look and functionality.  Please be patient as this version is only meant to showcase specimen record pages, media file pages, and new improved 3D previews with measurement and annotation support. Even this home page is just a place holder. Only a small subset of the media available on MorphoSource 1.0 is currently available here and the only way to explore it is by visiting the collections page. That is, search and browse utilities are not yet available. Finally, file uploading and editing is not yet enabled. We look forward to your feedback on the features we have implemented so far! We are aiming for a more fully featured beta version by October 2019.'
       share_button: 'Share Your Work'
       my_works_button: 'My Works'
+      banner_text_1: 'Find, view, and download 3D data representing the world''s natural history, cultural heritage, and scientific collections.'
+      banner_text_2: 'Data are contributed by museums, researchers, and scholars to share findings, increase impact, and improve access to material critical for scientific discovery and the advancement of human knowledge.'
+      meshsource_text: 'MorphoSource has approximately 27,000 published 3D models of biological specimens (largely skeletal material). You can view all of these in your browser with no required software. Around 13,000 of these can be freely downloaded for further visualization and measurement. The remaining 14,000 can usually be downloaded after a simple request process. We have an easily sortable Google Spreadsheet listing all of these web-viewable models parsed by element, species, and more. Find it here:'
     admin:
       sidebar:
         downloads: 'Downloads'
@@ -93,10 +96,23 @@ en:
         text: "Embargo"
       lease:
         text: "Lease"
-    upload:
-      change_access_message_html: "<p>You have changed the access level on work <i>%{curation_concern}</i>, making it accessible to other users or groups to view or edit.</p><p>All attached files are now being updated with the same access level.</p>"
-      change_access_yes_message: Yes please.
-      change_access_no_message: No. I want to go back.
+    search:
+      form:
+        catalog:
+          refine:
+            placeholder: "Refine your search"
+        option:
+          media:
+            label: "Media"
+          physical_objects:
+            label_long: "Physical Objects"
+            label_short: "Objects"
+          organizations:
+            label_long: "Organizations"
+            label_short: "Organizations"
+          collections:
+            label_long: "Teams & Projects"
+            label_short: "Teams/Projects"
     taxonomy:
       labels:
         canonical: "Organizational"
@@ -104,6 +120,10 @@ en:
         trusted: "MorphoSource Inferred"
         user: "User Supplied"
         gbif: "GBIF"
+    upload:
+      change_access_message_html: "<p>You have changed the access level on work <i>%{curation_concern}</i>, making it accessible to other users or groups to view or edit.</p><p>All attached files are now being updated with the same access level.</p>"
+      change_access_yes_message: Yes please.
+      change_access_no_message: No. I want to go back.
     visibility:
       open:
         note_html: "<p>Anyone can view the page and download the associated file(s)</p>"

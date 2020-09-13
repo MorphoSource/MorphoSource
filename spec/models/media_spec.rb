@@ -89,6 +89,62 @@ RSpec.describe Media do
 
     end
 
+    describe '#human_readable_media_type' do
+      context 'media type is CTImageSeries' do
+        before do
+          subject.media_type = ['CTImageSeries']
+        end
+        it 'returns CT Image Series' do
+          expect(subject.human_readable_media_type).to eq ["CT Image Series"]
+        end
+      end
+      context 'media type is PhotogrammetryImageSeries' do
+        before do
+          subject.media_type = ['PhotogrammetryImageSeries']
+        end
+        it 'returns CT Image Series' do
+          expect(subject.human_readable_media_type).to eq ["Photogrammetry Image Series"]
+        end
+      end
+      context 'media type is anything else' do
+        before do
+          subject.media_type = ['Anything Else']
+        end
+        it 'returns CT Image Series' do
+          expect(subject.human_readable_media_type).to eq ["Anything Else"]
+        end
+      end
+    end
+
+    describe '#modality' do
+      let!(:imaging_event) { ImagingEvent.new(ie_modality: ['modality']) }
+      let(:modality_values) { {
+        "MicroNanoXRayComputedTomography": "X-Ray Computed Tomography (CT/microCT)",
+        "MagneticResonanceImaging": "Magnetic Resonance Imaging (MRI)",
+        "PositronEmissionTomography": "Positron Emission Tomography (PET)",
+        "SynchrotronImaging": "Synchrotron Imaging",
+        "Photogrammetry": "Photogrammetry",
+        "StructuredLight": "Structured Light",
+        "LaserScan": "Laser Scan",
+        "ConfocalImageStacking": "Confocal Image Stacking",
+        "Infrared": "Infrared",
+        "ReflectanceTransformationImaging": "Reflectance Transformation Imaging",
+        "Photography": "Photography",
+        "ScanningElectronMicroscopy": "Scanning Electron Microscopy"
+        }
+      }
+      before do
+        allow(subject).to receive(:imaging_event).and_return(imaging_event)
+      end
+
+      it 'returns the imaging event modality' do
+        modality_values.each do |k,v|
+          imaging_event.ie_modality = [k.to_s]
+          expect(subject.modality).to eq v
+        end
+      end
+    end
+
     describe "#file_set_visibilities" do
       subject { described_class.new(title: ["Test Media Work"]) }
 
@@ -309,6 +365,52 @@ RSpec.describe Media do
           it 'returns the depositor' do
             expect(subject.reviewer).to eq(depositor.ms_id)
           end
+        end
+      end
+    end
+
+    describe 'ancestor physical objects' do
+      let(:media)         { Media.create(title: ['title'], media_type: ['Image'])}
+      let(:organization)  { Organization.create(title: ['organization'])}
+      let(:specimen)      { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'])}
+      let(:cho)           { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes'])}
+      let(:imaging_event) { ImagingEvent.create(title: ['imaging event'])}
+
+      context 'object is a specimen' do
+        let(:works) {[organization, specimen, imaging_event, media]}
+
+        before do
+          organization.ordered_members << specimen
+          specimen.ordered_members << imaging_event
+          imaging_event.ordered_members << media
+          works.each(&:save)
+          works.each(&:reload)
+        end
+
+        it 'returns info about the specimen' do
+          expect(media.physical_objects).to match_array([specimen])
+          expect(media.physical_object_type).to eq("Biological Specimen")
+          expect(media.organizations).to match_array([organization])
+          expect(media.organization_titles).to match_array(organization.title)
+        end
+      end
+
+      context 'object is a cultural heritage object' do
+        let(:works) {[organization, cho, imaging_event, media]}
+
+        before do
+          organization.ordered_members << cho
+          cho.ordered_members << imaging_event
+          imaging_event.ordered_members << media
+          works.each(&:save)
+          works.each(&:reload)
+        end
+
+        it 'returns info about the specimen' do
+          expect(media.physical_objects).to match_array([cho])
+          expect(media.physical_object_type).to eq("Cultural Heritage Object")
+          expect(media.organizations).to match_array([organization])
+          expect(media.organization_titles).to match_array(organization.title)
         end
       end
     end

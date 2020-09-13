@@ -1,5 +1,6 @@
 class CulturalHeritageObject < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
+  include ::Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
 
   self.indexer = CulturalHeritageObjectIndexer
@@ -15,9 +16,4 @@ class CulturalHeritageObject < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
-
-  def organizations
-    member_of.select{|work| work.class == Organization}
-  end
-
 end

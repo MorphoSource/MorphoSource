@@ -71,6 +71,10 @@ class SolrDocument
     self[Solrizer.solr_name('media_type', :stored_searchable)]
   end
 
+  def human_readable_media_type
+    self[Solrizer.solr_name('human_readable_media_type', :stored_searchable)].first
+  end
+
   def orientation
     self[Solrizer.solr_name('orientation', :stored_searchable)]
   end
@@ -117,6 +121,18 @@ class SolrDocument
 
   def z_spacing
     self[Solrizer.solr_name('z_spacing', :stored_searchable)]
+  end
+
+  def media_modality
+    self[Solrizer.solr_name('media_modality', :stored_searchable)]
+  end
+
+  def media_physical_object_type
+    self[Solrizer.solr_name('media_physical_object_type', :stored_searchable)]
+  end
+
+  def media_organization
+    self[Solrizer.solr_name('media_organization', :stored_searchable)]
   end
 
   # Physical Object Fields

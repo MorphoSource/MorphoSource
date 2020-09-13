@@ -12,34 +12,14 @@ module Hyrax
 
         # This is needed as of BL 3.7
         copy_blacklight_config_from(::CatalogController)
-
-        class_attribute :presenter_class,
-                        :teams_service_class,
-                        :information_service_class
-
-        self.teams_service_class = Morphosource::Collections::TeamsService
-        self.information_service_class = Morphosource::Collections::TeamsInformationService
       end
 
       def collection
         action_name == 'show' ? @presenter : @collection
       end
 
-
       private
-
-        def teams_service 
-           teams_service_class.new(scope: self, user: current_user, params: params_for_query)
-        end
-
-        def teams_information_service
-          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "my") 
-        end
-
-        def browse_teams_information_service
-          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "browse") 
-        end
-
+      
         def paginated_item_list
           # Uses kaminari to paginate an array to avoid need for solr documents for items here
           Kaminari.paginate_array(@document_list, total_count: @document_list.size).page(current_page).per(rows_from_params)

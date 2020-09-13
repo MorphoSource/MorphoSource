@@ -276,6 +276,11 @@ module Hyrax
       @banner_image ||= 'https://user-images.githubusercontent.com/101482/29949206-ffa60d2c-8e67-11e7-988d-4910b8787d56.jpg'
     end
 
+    attr_writer :front_page_media
+    def front_page_media
+      @front_page_media ||= nil
+    end
+
     attr_writer :persistent_hostpath
     def persistent_hostpath
       @persistent_hostpath ||= "http://localhost/files/"

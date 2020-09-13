@@ -1,9 +1,141 @@
 <% provide :page_title, application_name %>
-<div id="homepage-about-text" style="padding-bottom:15px;">
-  <span><%= t('morphosource.homepage.about_html') %></span>
+<div id="front-banner" class="row equal">
+  <div class="col-xs-12 col-sm-6 col-sm-push-6">
+    <% if Hyrax.config.front_page_media.present? && Media.exists?(Hyrax.config.front_page_media) %>
+      <iframe
+        height="100%" 
+        width="100%" 
+        src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= main_app.manifest_hyrax_media_path(Hyrax.config.front_page_media) %>&config=/universalviewer/front/uvconfig.json"
+        allowfullscreen
+        frameborder="0">
+      </iframe>
+    <% end %>
+    <!-- <a href="#">Dummy media text: Genus species. Created by Ed Stanley.</a> -->
+  </div>
+  <div class="col-xs-12 col-sm-6 col-sm-pull-6" style='text-align: left;'>
+    <p style='font-size: 26px; font-weight: 300;'><%= t('morphosource.homepage.banner_text_1') %></p>
+    <p style='font-size: 18px; font-weight: 300;'><%= t('morphosource.homepage.banner_text_2') %></p>
+    <div class="row" style='text-align: center;'>
+      <div class="col-xs-12 col-md-6 no-padding">
+        <a href='#' class='btn' style='text-align: left;'>
+          <div class="row">
+            <div class="col-xs-3 col-align col-align--center">
+              <div class="row"><i class="fas fa-book-open fa-2x"></i></div>
+            </div>
+            <div class="col-xs-9 col-align col-align--center">
+              <div class="row">Want to find data?</div>
+              <div class="row">Browse categories</div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-xs-12 col-md-6 no-padding">
+        <a href='#' class='btn' style='text-align: left;'>
+          <div class="row">
+            <div class="col-xs-3 col-align col-align--center">
+              <div class="row"><i class="fas fa-feather-alt fa-2x"></i></div>
+            </div>
+            <div class="col-xs-9 col-align col-align--center">
+              <div class="row">Want to contribute?</div>
+              <div class="row">Learn more</div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
+
+
+<div class="row stats-and-projects showcase">
+  <div class="col-xs-12 col-sm-6 stats">
+    <h2>Repository Statistics</h2>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Media Files</div>
+      <div class="col-xs-6 showcase-value">
+        <%= number_with_delimiter(Media.count, :delimiter => ',') %>    
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Physical Objects Represented</div>
+      <div class="col-xs-6 showcase-value">
+        <%= number_with_delimiter(BiologicalSpecimen.count + CulturalHeritageObject.count, :delimiter => ',') %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Data Projects</div>
+      <div class="col-xs-6 showcase-value">
+        <%= number_with_delimiter(
+          Morphosource::SolrService.new.get_count(
+            'has_model_ssim:Collection AND collection_type_gid_ssim:gid://morpho-source-sf/hyrax-collectiontype/2'
+          ), 
+          :delimiter => ','
+        ) %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Taxonomic Names</div>
+      <div class="col-xs-6 showcase-value">
+        <%= number_with_delimiter(Taxonomy.count, :delimiter => ',') %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Collections and Facilities</div>
+      <div class="col-xs-6 showcase-value">
+        <%= number_with_delimiter(Organization.count, :delimiter => ',') %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Users</div>
+      <div class="col-xs-6 showcase-value">
+        <%= number_with_delimiter(User.count, :delimiter => ',') %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Contributors</div>
+      <div class="col-xs-6 showcase-value">
+        <%= number_with_delimiter(
+          Role.find_by(name: 'contributor').users.count, 
+          :delimiter => ','
+        ) %>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-12 col-sm-6 projects">
+    <h2>Featured Projects</h2>
+      <table class="table table-striped collection-highlights">
+        <tbody>
+          <% @presenter.collections.each do |collection| %>
+            <tr>
+              <td>
+                <div class="media">
+                  <div class="media-body">
+                    <div class="media-heading">
+                      <%= link_to [hyrax, collection] do %>
+                        <%= render_thumbnail_tag(collection, { class: 'hidden-xs file_listing_thumbnail' },
+                                                 { suppress_link: true }) + collection.title_or_label %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+  </div>
+</div>
+
+<div class="row covid-sheet showcase">
+  <div class="col-xs-12 col-sm-6 col-sm-offset-3 mesh-source-box">
+    <h2 style='margin-top: 0;'>Educators Organizing Online Courses Using Biological Specimens</h2>
+    <p style='text-align: justify;'><%= t('morphosource.homepage.meshsource_text') %></p>
+    <a href='https://bit.ly/MeshSource' style='font-size: large;'>bit.ly/MeshSource</a>
+  </div>
+</div>
+
 <% if @presenter.display_share_button? %>
-<div class="home-share-work text-center">
+<div class="home-share-work text-center" style='margin-top: 30px;'>
   <% if signed_in? && current_user.admin? %>
     <%= link_to '/submissions/new', class: "btn btn-primary btn-lg" do %>
       <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('morphosource.homepage.share_button') %>
@@ -12,9 +144,3 @@
   <% end %>  
 </div>
 <% end %>
-
-<div class="row home-content">
-  <%= render 'home_content' %>
-</div>
-
-<%= render '/shared/select_work_type_modal', create_work_presenter: @presenter.create_work_presenter if @presenter.draw_select_work_modal? %>

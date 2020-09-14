@@ -64,7 +64,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'member of collections' do
-        subject { facet_fields['member_of_collections_ssim'] }
+        subject { facet_fields['member_of_collection_ids_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Team / Project")
           expect(subject.limit).to eq(5)

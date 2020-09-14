@@ -32,6 +32,7 @@ module Morphosource
     end
 
     def total_media_by_po_ids(po_ids)
+      return 0 unless po_ids.present?
       query = nil
       params = {
         fq: [

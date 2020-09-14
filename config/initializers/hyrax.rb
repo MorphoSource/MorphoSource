@@ -219,7 +219,7 @@ Hyrax.config do |config|
   config.banner_image = 'banner_image.png'
 
   # ID of a media work to be used as the front page preview
-  config.front_page_media = '000200100'
+  config.front_page_media = '000200404'
 
   # Temporary paths to hold uploads before they are ingested into FCrepo
   # These must be lambdas that return a Pathname. Can be configured separately

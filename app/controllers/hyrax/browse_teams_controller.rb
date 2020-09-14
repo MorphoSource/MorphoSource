@@ -1,7 +1,7 @@
 module Hyrax
   class BrowseTeamsController < My::TeamsController
     include Morphosource::CollectionHelper
-    include My::TeamsControllerBehavior
+    include My::MyTeamsControllerBehavior
 
     with_themed_layout 'morphosource_1_column'
 
@@ -46,7 +46,6 @@ module Hyrax
     def browse_collection_params
       return [browse_teams_information_service.browse_collection_params]
     end
-
 
     private
 

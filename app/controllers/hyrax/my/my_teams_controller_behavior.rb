@@ -1,7 +1,7 @@
 # Cloned from CollectionsControllerBehavior to set TeamPresenter
 module Hyrax
   module My
-    module TeamsControllerBehavior
+    module MyTeamsControllerBehavior
       extend ActiveSupport::Concern
       include Blacklight::AccessControls::Catalog
       include Blacklight::Base
@@ -19,7 +19,7 @@ module Hyrax
       end
 
       private
-      
+
         def paginated_item_list
           # Uses kaminari to paginate an array to avoid need for solr documents for items here
           Kaminari.paginate_array(@document_list, total_count: @document_list.size).page(current_page).per(rows_from_params)

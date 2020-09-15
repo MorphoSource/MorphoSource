@@ -12,6 +12,66 @@ class CatalogController < ApplicationController
   # This filter applies the hydra access controls
   before_action :enforce_show_permissions, only: :show
 
+  class_attribute :access_controlled_facets
+
+  # get search results from the solr index
+  def index
+    (@response, @document_list) = search_results(params)
+    remove_hidden_facet_items
+    respond_to do |format|
+      format.html { store_preferred_view }
+      format.rss  { render :layout => false }
+      format.atom { render :layout => false }
+      format.json do
+        @presenter = Blacklight::JsonPresenter.new(@response,
+                                                   @document_list,
+                                                   facets_from_request,
+                                                   blacklight_config)
+      end
+      additional_response_formats(format)
+      document_export_formats(format)
+    end
+  end
+
+  def remove_hidden_facet_items
+    access_controlled_facets.each do |facet|
+      safe_list = safe_list(facet)
+      next if safe_list.nil?
+      facet = @response.aggregations[facet]
+      values = facet.items.map(&:value)
+      hidden_values = values - safe_list
+      hidden_values.each do |value|
+        item = facet.items.find{|i| i.value == value}
+        facet.items.delete(item)
+      end
+    end
+  end
+
+  def safe_list(facet)
+    facet = @response["responseHeader"]["params"]["f.#{facet}.facet.matches"]
+  end
+
+  # Keeping these here for now, may want to benchmark regex vs array
+  
+  # def remove_hidden_facet_items
+  #   access_controlled_facets.each do |facet|
+  #     safe_list = safe_list(facet)
+  #     next if safe_list.nil?
+  #     facet = @response.aggregations[facet]
+  #     facet.items.each do |item|
+  #       unless safe_list.match? item.value
+  #         facet.items.delete(item)
+  #       end
+  #     end
+  #   end
+  # end
+
+  # def safe_list(facet)
+  #   facet = @response["responseHeader"]["params"]["f.#{facet}.facet.matches"]
+  #   return unless facet
+  #   Regexp.new(facet)
+  # end
+
   def self.uploaded_field
     solr_name('system_create', :stored_sortable, type: :date)
   end

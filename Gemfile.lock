@@ -610,6 +610,8 @@ GEM
       rails (~> 5.0)
       rdf
     rack (2.2.2)
+    rack-mini-profiler (2.1.0)
+      rack (>= 1.2.0)
     rack-protection (2.0.3)
       rack
     rack-test (1.1.0)
@@ -954,6 +956,7 @@ DEPENDENCIES
   pg
   pul_uv_rails!
   puma (~> 3.12)
+  rack-mini-profiler
   rails (~> 5.1.4)
   rails-controller-testing
   redis

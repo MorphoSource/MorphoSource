@@ -3,6 +3,8 @@
 # catalog/all redirects here for non-admins
 class MediaCatalogController < CatalogController
 
+  self.access_controlled_facets = ['member_of_collection_ids_ssim']
+
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder
 

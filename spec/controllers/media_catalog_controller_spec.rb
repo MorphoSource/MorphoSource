@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe MediaCatalogController, :type => :controller do
 
+  describe 'access_controlled_facets' do
+    it { expect(controller.access_controlled_facets).to match_array(['member_of_collection_ids_ssim']) }
+  end
+
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
     describe 'search_builder_class' do

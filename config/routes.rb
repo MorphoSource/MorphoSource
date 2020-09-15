@@ -115,8 +115,8 @@ Rails.application.routes.draw do
       resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'
       resources :projects, only: [:index], controller: 'browse_teams', as: 'browse_projects'
       resources :organizations, only: [:index], controller: 'browse_organizations', as: 'browse_organizations'
-
-      resources :physical_object_types, only: [:index], controller: 'browse_physical_object_types', as: 'browse_physical_object_types'
+      resources :media_types_and_modalities, action: :media_types_and_modalities, controller: 'browse', as: 'browse_media_types_and_modalities'
+      resources :physical_object_types, action: :physical_object_types, controller: 'browse', as: 'browse_physical_object_types'
     end
 
   end

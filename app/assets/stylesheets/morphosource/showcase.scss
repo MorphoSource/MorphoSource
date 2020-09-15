@@ -119,16 +119,37 @@ html {
         font-size: 12px;
       }
     }
-    .page_description {
+    h2 {
+      border-bottom: none;
+      font-size: 18px;
+      line-height: .9;
+      .fa {
+        font-size: 33px;
+        vertical-align: top;
+        float: left;
+        margin-right: 8px;        
+      }
+      .counts { 
+        font-weight: normal;
+        font-size: 12px;
+      }
+    }
+    p {
+      font-size: 14px;
+    }
+    .page-description {
       border-bottom: 1px solid #ddd;
       margin: -20px auto 20px;
       padding-bottom: 15px;
       p {
-        font-size: 11px;
+        font-size: 14px;
       }
     }
     .paginate-wrapper {
       margin-top: 15px;
+    }
+    .body-wrapper {
+      margin: 0 20px;
     }
   }
 

@@ -1,0 +1,32 @@
+<% content_for :body_css_classes do %>showcase browse<% end %>
+<% provide :page_title, t("hyrax.browse.title.physical_object_types") %>
+<div class="browse">
+
+  <% provide :page_header do %>
+    <div class="col-xs-9 title browse">
+      <h1><span class="fa fa-frog" aria-hidden="true"></span> 
+        <%= t("hyrax.browse.title.physical_object_types") %><br/>
+        <span class="counts">25,687 Physical Objects · 101,967 Media</span>
+      </h1>
+    </div>
+  <% end %>
+  <div class="col-xs-12 page-description">
+    <p><%= t("hyrax.browse.page_description.physical_object_types") %></p>
+  </div>
+  <div class="col-xs-12 body-wrapper">
+
+    <h2><span class="fa fa-frog" aria-hidden="true"></span> 
+      <%= t("hyrax.browse.title.biological_specimen_objects") %><br/>
+      <span class="counts">25,687 Physical Objects · 101,967 Media</span>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.biological_specimen_objects") %></p>
+
+    <h2><span class="fa fa-frog" aria-hidden="true"></span> 
+      <%= t("hyrax.browse.title.cultural_heritage_objects") %><br/>
+      <span class="counts">25,687 Physical Objects · 101,967 Media</span>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.cultural_heritage_objects") %></p>
+
+  </div><!-- /collections-wrapper -->
+
+</div>

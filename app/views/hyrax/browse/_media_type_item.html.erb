@@ -1,0 +1,7 @@
+<h2>
+	<%= link_to t("hyrax.browse.title."+media_type), main_app.object_search_path("f[human_readable_type_sim][]" => "Biological Specimen") %><br/>
+  <span class="counts">
+  	<%#= "#{total_bso_media} Media".pluralize(total_bso_media) %>
+	</span>
+</h2>
+<p><%= t("hyrax.browse.page_description."+media_type) %></p>

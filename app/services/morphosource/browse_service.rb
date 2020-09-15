@@ -7,6 +7,26 @@ module Morphosource
       @solr = solr_service.new
     end
 
+    def bso_ids
+      params = {
+        fl: 'id',
+        fq: [
+          "(has_model_ssim:BiologicalSpecimen)"
+        ]
+      }
+      return solr.get_docs(nil, params).map(&:values).flatten
+    end
+
+    def cho_ids
+      params = {
+        fl: 'id',
+        fq: [
+          "(has_model_ssim:CulturalHeritageObject)"
+        ]
+      }
+      return solr.get_docs(nil, params).map(&:values).flatten
+    end
+
     def organization_count_by_type(type)
       query = nil
       params = {

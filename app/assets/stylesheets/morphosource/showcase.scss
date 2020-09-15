@@ -116,26 +116,40 @@ html {
       }
       .counts { 
         font-weight: normal;
-        font-size: 12px;
+        font-size: 14px;
       }
     }
     h2 {
       border-bottom: none;
-      font-size: 18px;
-      line-height: .9;
+      font-size: 20px;
+      line-height: 1.2;
       .fa {
         font-size: 33px;
         vertical-align: top;
         float: left;
         margin-right: 8px;        
       }
+      .po-image {
+        width: auto;
+        float: left;
+        margin-right: 12px;
+      }
       .counts { 
         font-weight: normal;
-        font-size: 12px;
+        font-size: 14px;
+      }
+    }
+    @media (max-width: 460px) { 
+      h1 {
+        font-size: 20px;
+      }
+      h2 {
+        font-size: 16px;
       }
     }
     p {
       font-size: 14px;
+      clear: both;
     }
     .page-description {
       border-bottom: 1px solid #ddd;

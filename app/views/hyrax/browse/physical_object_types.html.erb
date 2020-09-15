@@ -3,10 +3,13 @@
 <div class="browse">
 
   <% provide :page_header do %>
-    <div class="col-xs-9 title browse">
+    <div class="col-xs-12 title browse">
       <h1><span class="fa fa-frog" aria-hidden="true"></span> 
         <%= t("hyrax.browse.title.physical_object_types") %><br/>
-        <span class="counts">25,687 Physical Objects · 101,967 Media</span>
+        <span class="counts">
+        	<%= "#{total_po} Physical Object".pluralize(total_po) %> · 
+        	<%= "#{total_media} Media".pluralize(total_media) %>
+				</span>
       </h1>
     </div>
   <% end %>
@@ -15,15 +18,23 @@
   </div>
   <div class="col-xs-12 body-wrapper">
 
-    <h2><span class="fa fa-frog" aria-hidden="true"></span> 
+    <h2>
+    	<%= image_tag("bso_preview_small.png", alt: "Biological specimen", class: "po-image") %>
       <%= t("hyrax.browse.title.biological_specimen_objects") %><br/>
-      <span class="counts">25,687 Physical Objects · 101,967 Media</span>
+      <span class="counts">
+      	<%= "#{total_bso} Physical Object".pluralize(total_bso) %> · 
+      	<%= "#{total_bso_media} Media".pluralize(total_bso_media) %>
+			</span>
     </h2>
     <p><%= t("hyrax.browse.page_description.biological_specimen_objects") %></p>
 
-    <h2><span class="fa fa-frog" aria-hidden="true"></span> 
+    <h2>
+    	<%= image_tag("cho_preview_small.png", alt: "Cultural heritage object", class: "po-image") %>
       <%= t("hyrax.browse.title.cultural_heritage_objects") %><br/>
-      <span class="counts">25,687 Physical Objects · 101,967 Media</span>
+      <span class="counts">
+      	<%= "#{total_cho} Physical Object".pluralize(total_cho) %> · 
+      	<%= "#{total_cho_media} Media".pluralize(total_cho_media) %>
+			</span>
     </h2>
     <p><%= t("hyrax.browse.page_description.cultural_heritage_objects") %></p>
 

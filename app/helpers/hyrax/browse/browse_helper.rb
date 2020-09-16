@@ -44,10 +44,25 @@ module Hyrax::Browse::BrowseHelper
     end
   end
 
+  def media_count_by_media_type
+    browse_service.media_count_by_media_type
+  end
 
   def total_media
 
     total_bso_media + total_cho_media
+  end
+
+  def modalities
+    modalities_service = Morphosource::ModalitiesService.new
+    modalities_service.select_all_options.map do |label, value|
+      value
+    end
+  end
+
+  def media_count_by_modality(modality)
+#$    browse_service.media_count_by_modality("MicroNanoXRayComputedTomography")
+    browse_service.media_count_by_modality(modality)
   end
 
 end

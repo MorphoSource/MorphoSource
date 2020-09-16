@@ -1,0 +1,6 @@
+<h2>
+	<%= link_to t("hyrax.browse.title."+modality), main_app.object_search_path("f[human_readable_type_sim][]" => modality) %><br/>
+  <span class="counts">
+  	<%= "#{media_count_by_modality(modality)} Media".pluralize(media_count_by_modality(modality)) %>
+	</span>
+</h2>

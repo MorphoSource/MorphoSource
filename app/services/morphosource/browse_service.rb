@@ -101,6 +101,76 @@ module Morphosource
       solr.count
     end
 
+    # ---  methods for media types and modality ---
+
+    def media_count_by_modality(modality)
+      member_ids = member_ids_by_modality(modality)
+      return 0 unless member_ids.present?
+      params = {
+        rows: 0,
+        fq: [
+          assemble_or_query('id', member_ids),
+          "has_model_ssim:Media"
+        ] 
+      }
+      solr.get(nil, params)
+      solr.count
+    end
+
+    def member_ids_by_modality(modality)
+      # media < IE 
+      # or
+      # media < PE < IE
+      ie_member_ids = imaging_event_member_ids_by_modality(modality)
+      pe_member_ids = processing_event_member_ids_by_imaging_events(ie_member_ids)
+      return ie_member_ids + pe_member_ids
+    end
+
+    def imaging_event_member_ids_by_modality(modality)
+      params = {
+        fl: 'member_ids_ssim',
+        fq: [
+          "#{Solrizer.solr_name('ie_modality', :stored_searchable)}:#{modality}",
+          "#{Solrizer.solr_name('has_model', :symbol)}:ImagingEvent"
+        ]
+      }
+      solr.get_docs(nil, params).map(&:values).flatten
+    end
+
+    def processing_event_member_ids_by_imaging_events(ie_member_ids)
+      return [] unless ie_member_ids.present?
+      params = {
+        fl: 'member_ids_ssim',
+        fq: [
+          assemble_or_query('id', ie_member_ids),
+          "#{Solrizer.solr_name('has_model', :symbol)}:ProcessingEvent"
+        ]
+      }
+      tmp = solr.get_docs(nil, params).map(&:values).flatten
+      return tmp
+    end
+
+
+    def media_count_by_media_type
+      facet_fields = [
+        "media_type_tesim"
+      ]
+      params = {
+        fl: 'id',
+        fq: ["has_model_ssim:Media"]
+
+      }
+      solr.get_facet_fields(nil, facet_fields, params)
+#byebug
+      return solr.facet_fields(facet_fields)
+    end
+
+    def assemble_or_query(field, values)
+      return "" if !field.present? || !values.present?
+      field + ':(' + values.join(' OR ').upcase + ')'
+    end
+
+
     private
 
       ### Solr utility methods ###

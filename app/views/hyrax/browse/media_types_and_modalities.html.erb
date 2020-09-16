@@ -7,8 +7,10 @@
       <h1><span class="fa fa-cube" aria-hidden="true"></span> 
         <%= t("hyrax.browse.title.browse_media_types_and_modalities") %><br/>
         <span class="counts">
-        	<%= "#{total_po} Physical Object".pluralize(total_po) %> · 
+        	<%= "#{media_count_by_media_type}" %> · 
         	<%= "#{total_media} Media".pluralize(total_media) %>
+
+
 				</span>
       </h1>
     </div>
@@ -30,7 +32,8 @@
     <p><%= t("hyrax.browse.page_description.modalities") %></p>
   </div>
   <div class="col-xs-12 body-wrapper">
-    <%#= render partial: 'media_type_item', collection: media_types, as: :media_type %>
+    <%= render partial: 'modality_item', collection: modalities, as: :modality %>
   </div>
+
 
 </div>

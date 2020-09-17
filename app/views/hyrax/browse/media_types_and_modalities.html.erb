@@ -1,22 +1,19 @@
 <% content_for :body_css_classes do %>showcase browse<% end %>
-<% provide :page_title, t("hyrax.browse.title.browse_media_types_and_modalities") %>
+<% provide :page_title, t("hyrax.browse.title.media_types_and_modalities") %>
 <div class="browse">
 
   <% provide :page_header do %>
     <div class="col-xs-12 title browse">
       <h1><span class="fa fa-cube" aria-hidden="true"></span> 
-        <%= t("hyrax.browse.title.browse_media_types_and_modalities") %><br/>
+        <%= t("hyrax.browse.title.media_types_and_modalities") %><br/>
         <span class="counts">
-        	<%= "#{media_count_by_media_type}" %> · 
         	<%= "#{total_media} Media".pluralize(total_media) %>
-
-
 				</span>
       </h1>
     </div>
   <% end %>
   <div class="col-xs-12 page-description">
-    <p><%= t("hyrax.browse.page_description.browse_media_types_and_modalities") %></p>
+    <p><%= t("hyrax.browse.page_description.media_types_and_modalities") %></p>
   </div>
 
   <div class="col-xs-12">
@@ -34,6 +31,5 @@
   <div class="col-xs-12 body-wrapper">
     <%= render partial: 'modality_item', collection: modalities, as: :modality %>
   </div>
-
 
 </div>

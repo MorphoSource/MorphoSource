@@ -36,6 +36,7 @@ module Hyrax::Browse::BrowseHelper
     total_bso_media + total_cho_media
   end
 
+  # ---  methods for media types and modality ---
 
   def media_types
     media_types_service = Morphosource::MediaTypesService.new
@@ -44,25 +45,47 @@ module Hyrax::Browse::BrowseHelper
     end
   end
 
-  def media_count_by_media_type
-    browse_service.media_count_by_media_type
-  end
-
-  def total_media
-
-    total_bso_media + total_cho_media
-  end
-
   def modalities
     modalities_service = Morphosource::ModalitiesService.new
     modalities_service.select_all_options.map do |label, value|
-      value
+      label
+    end
+  end
+
+  def map_media_type(t)
+    case t
+      when 'CTImageSeries' then 'ctimagesery'
+      when 'PhotogrammetryImageSeries' then 'photogrammetryimagesery'
+      else t.downcase
+    end
+  end
+
+  def get_media_type_info
+    @media_facets, @total_media = browse_service.media_facets
+    @media_type_facets = @media_facets["media_type_tesim"]
+    @modality_facets = @media_facets["media_modality_sim"]
+  end  
+
+  def total_media
+    @total_media
+  end
+
+  def media_count_by_media_type(type)
+    count = @media_type_facets[map_media_type(type)]
+    if count.present?
+      return count.to_int
+    else
+      return 0
     end
   end
 
   def media_count_by_modality(modality)
-#$    browse_service.media_count_by_modality("MicroNanoXRayComputedTomography")
-    browse_service.media_count_by_modality(modality)
+    count = @modality_facets[modality]
+    if count.present?
+      return count.to_int
+    else
+      return 0
+    end
   end
 
 end

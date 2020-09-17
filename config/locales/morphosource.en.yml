@@ -60,6 +60,21 @@ en:
           twitter_handle: "Twitter Handle"
           volume_file_type: "What File Type (If Any) Do You<br>Prefer To Use For 3D Volume Files?"
           website: "Website"
+    docs:
+      about:
+        title: "About MorphoSource"
+      api:
+        title: "MorphoSource API"
+      citation:
+        title: "Citing MorphoSource"
+      contributors:
+        title: "Information for Contributors"
+      glossary:
+        title: "Glossary of Terms"
+      rss:
+        title: "RSS Data Reporting"
+      user_guide:
+        title: "User Guide"
     validation:
       missing:
         title: 'Your work must have a title.'

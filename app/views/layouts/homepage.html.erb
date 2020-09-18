@@ -1,9 +1,7 @@
 <%# Changes to include a custom banner image. Disables the marketing text partial, we will need to rework css if we keep this design and want to use the marketing text in the future.  %>
 
 <% content_for(:navbar) do %>
-  <div class="controls">
-    <%= render '/controls' %>
-  </div>
+  <%= render '/controls' %>
 <% end %>
 
 <% content_for(:precontainer_content) do %>

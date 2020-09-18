@@ -110,6 +110,8 @@ Rails.application.routes.draw do
     get 'dashboard/my/media/chos', to: 'my/media_works#chos'
 
     scope :browse do
+      resources :categories, only: [:index], controller: 'browse_categories', as: 'browse_categories'
+
       resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'
       resources :projects, only: [:index], controller: 'browse_teams', as: 'browse_projects'
       resources :organizations, only: [:index], controller: 'browse_organizations', as: 'browse_organizations'
@@ -235,6 +237,18 @@ Rails.application.routes.draw do
 
   get '/submissions', to: 'submissions#new'
 
+  resources :docs do
+    collection do
+      get 'about'
+      get 'api'
+      get 'citation'
+      get 'contributors'
+      get 'glossary'
+      get 'guide'
+      get 'rss'
+    end
+  end
+
   scope module: :morphosource do
     scope module: :my do
 
@@ -291,4 +305,24 @@ Rails.application.routes.draw do
       patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
     end
   end
+
+  # MS1 Static Redirects
+  get '/About/home', to: redirect('/docs/about', status: 301)
+  get '/About/contact', to: redirect('/docs/about', status: 301)
+  get '/About/userInfo', to: redirect('/docs/guide', status: 301)
+  get '/About/userGuide', to: redirect('/docs/guide', status: 301)
+  get '/About/contributorInfo', to: redirect('/docs/contributors', status: 301)
+  get '/About/terms', to: redirect('/docs/glossary', status: 301)
+  get '/About/howToCite', to: redirect('/docs/citation', status: 301)
+  get '/About/API', to: redirect('/docs/api', status: 301)
+  get '/About/report', to: redirect('/docs/rss', status: 301)
+  get '/About/termsAndConditions', to: redirect('/terms', status: 301)
+
+  # MS1 Core Redirects
+  get '/Stats/dashboard', to: redirect('/', status: 301) 
+  get '/LoginReg/form', to: redirect('/users/sign_in', status: 301)
+  get '/LoginReg/logout', to: redirect('/users/sign_out', status: 301)
+  get '/MyProjects/Dashboard/projectList', to: redirect('/dashboard', status: 301)
+  get '/Browse/Index', to: redirect('/browse', status: 301)
+  get '/Search/Index', to: redirect('/catalog/media', status: 301)
 end

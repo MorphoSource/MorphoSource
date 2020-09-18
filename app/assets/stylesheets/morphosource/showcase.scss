@@ -112,7 +112,7 @@ html {
         font-size: 44px;
         vertical-align: top;
         float: left;
-        margin-right: 8px;        
+        margin-right: 12px;        
       }
       .counts { 
         font-weight: normal;
@@ -121,9 +121,6 @@ html {
     }
     h1.categories {
       line-height: 1.6;
-      .fa {
-        margin-right: 12px;
-      }
     }
 
     div.categories {
@@ -166,7 +163,7 @@ html {
     }
     .page-description {
       border-bottom: 1px solid #ddd;
-      margin: -20px auto 20px;
+      margin: -20px 10px 20px;
       padding-bottom: 15px;
       p {
         font-size: 14px;

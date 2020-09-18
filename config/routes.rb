@@ -110,8 +110,6 @@ Rails.application.routes.draw do
     get 'dashboard/my/media/chos', to: 'my/media_works#chos'
 
     scope :browse do
-      resources :categories, only: [:index], controller: 'browse_categories', as: 'browse_categories'
-
       resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'
       resources :projects, only: [:index], controller: 'browse_teams', as: 'browse_projects'
       resources :organizations, only: [:index], controller: 'browse_organizations', as: 'browse_organizations'

@@ -4,36 +4,37 @@ module Hyrax::Browse::BrowseHelper
     @browse_service ||= Morphosource::BrowseService.new
   end
 
-  def bso_ids
-    @bso_ids ||= browse_service.bso_ids
-  end
+  # ---  methods for physical object types ---
 
-  def cho_ids
-    @cho_ids ||= browse_service.cho_ids
-  end
-
-  def total_bso
-    bso_ids.length
-  end
-
-  def total_cho
-    cho_ids.length
-  end
-
-  def total_po
-    total_bso + total_cho
-  end
+  def get_media_po_type_info
+    facets, @total_media = browse_service.media_po_type_facets
+    po_type_facets = facets["media_physical_object_type_sim"]
+    @total_bso_media = po_type_facets["Biological Specimen"]
+    @total_cho_media = po_type_facets["Cultural Heritage Object"]
+  end  
 
   def total_bso_media
-    @total_bso_media ||= browse_service.total_media_by_po_ids(bso_ids)
+    @total_bso_media 
   end
 
   def total_cho_media
-    @total_cho_media ||= browse_service.total_media_by_po_ids(cho_ids)
+    @total_cho_media 
   end
 
   def total_media_by_po
     total_bso_media + total_cho_media
+  end
+
+  def total_bso
+    @total_bso ||= browse_service.total_bso
+  end
+
+  def total_cho
+    @total_cho ||= browse_service.total_cho
+  end
+
+  def total_po
+    total_bso + total_cho
   end
 
   # ---  methods for media types and modality ---
@@ -60,10 +61,10 @@ module Hyrax::Browse::BrowseHelper
     end
   end
 
-  def get_media_type_info
-    @media_facets, @total_media = browse_service.media_facets
-    @media_type_facets = @media_facets["media_type_tesim"]
-    @modality_facets = @media_facets["media_modality_sim"]
+  def get_media_type_and_modality_info
+    facets, @total_media = browse_service.media_type_and_modality_facets
+    @media_type_facets = facets["media_type_tesim"]
+    @modality_facets = facets["media_modality_sim"]
   end  
 
   def total_media

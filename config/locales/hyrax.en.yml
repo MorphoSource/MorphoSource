@@ -65,6 +65,7 @@ en:
         media_types_and_modalities: Media Types and Modalities
     browse:
       title:
+        categories: Browse Categories
         organizations: Organizations
         physical_object_types: Physical Object Types
         media_types_and_modalities: Media Types and Modalities
@@ -77,6 +78,19 @@ en:
         Other: Other 
         modalities: Modalities
       page_description:
+        categories:
+          header:
+            "MorphoSource is a repository for media (3D and 2D) that represent physical objects. There are many ways to browse media and physical objects in the repository. It is also possible to search the repository using the search bar above, and to explore the data holdings using category facets associated with search results."
+          media_types_and_modalities:
+            "Media types include 3D meshes, 3D volumes, 2D images, and videos. Media modalities include CT/MRI, photogrammetry, laser scans, and others."
+          physical_object_types:
+            "Physical objects associated with media are separated into two categories: biological specimen objects and cultural heritage objects."
+          projects:
+            "Media are grouped by projects created by users. Projects tend to contain media tied together by a theme. A project might represent the dataset for a single peer-reviewed paper or data for a digital lesson plan."
+          teams:
+            "Teams are groups of users. A team can managed multiple projects. Alternately, a team can contain media in a similar way to projects. A team might represent a lab group with multiple research paper projects or the staff of a museum collection uploading digital data representing their specimens."
+          organizations:
+            "Organizations are museum collections, university laboratories, departments, facilities, or other groups that house and manage physical objects or imaging devices. Some organizations are officially linked to MorphoSource user teams, where the individuals responsible for a given organization have created a team to manage that organization on MorphoSource."
         organizations:
           "Organizations represent institutions, departments, collections, facilities, labs, and other groups that manage, house, and curate physical objects or imaging devices. An organization describes whatever bureaucratic entity is responsible for setting policies for access to physical objects or devices. Typically, organizations are collections or departments within an institution, but in some cases they can also be an entire larger institution or a specific smaller lab within a collection or department. A user team can be linked to an organization, enabling some level of access control over physical objects housed in that organization. Please contact the MorphoSource admins to discuss linking your user team to an organization."
         projects:

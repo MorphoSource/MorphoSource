@@ -119,6 +119,19 @@ html {
         font-size: 14px;
       }
     }
+    h1.categories {
+      line-height: 1.6;
+      .fa {
+        margin-right: 12px;
+      }
+    }
+
+    div.categories {
+      h2 {
+        line-height: 2;
+        font-size: 16px;
+      }
+    }
     h2 {
       border-bottom: none;
       font-size: 20px;

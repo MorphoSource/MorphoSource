@@ -30,28 +30,6 @@
         </li>
         <li class="radio">
           <label>
-            <%= f.radio_button :visibility, "preview", data: { 'target': '#collapsePreview', 'toggle':'collapse' } %>
-            <span class="label label-info">Publish with No Download</span>
-            <br />
-            <%= t('morphosource.visibility.preview.note_html', type: f.object.human_readable_type) %>
-            <div class="collapse" id="collapsePreview" data-parent="#publication-options">
-              <%= t('morphosource.visibility.preview.warning_html') %>
-            </div>
-          </label>
-        </li>
-        <li class="radio">
-          <label>
-            <%= f.radio_button :visibility, "hidden", data: { 'target': '#collapseHidden', 'toggle':'collapse' } %>
-            <span class="label label-info">Publish with Hidden File</span>
-            <br />
-            <%= t('morphosource.visibility.hidden.note_html', type: f.object.human_readable_type) %>
-            <div class="collapse" id="collapseHidden" data-parent="#publication-options">
-              <%= t('morphosource.visibility.hidden.warning_html') %>
-            </div>
-          </label>
-        </li>
-        <li class="radio">
-          <label>
             <%= f.radio_button :visibility, Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE %>
             <%= visibility_badge(Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE) %>
             <br />

@@ -9,8 +9,8 @@ module Hyrax::Browse::BrowseHelper
   def get_media_po_type_info
     facets, @total_media = browse_service.media_po_type_facets
     po_type_facets = facets["media_physical_object_type_sim"]
-    @total_bso_media = po_type_facets["Biological Specimen"]
-    @total_cho_media = po_type_facets["Cultural Heritage Object"]
+    @total_bso_media = po_type_facets["Biological Specimen"] || 0
+    @total_cho_media = po_type_facets["Cultural Heritage Object"] || 0
   end  
 
   def total_bso_media

@@ -322,6 +322,6 @@ Rails.application.routes.draw do
   get '/LoginReg/form', to: redirect('/users/sign_in', status: 301)
   get '/LoginReg/logout', to: redirect('/users/sign_out', status: 301)
   get '/MyProjects/Dashboard/projectList', to: redirect('/dashboard', status: 301)
-  get '/Browse/Index', to: redirect('/browse', status: 301)
+  get '/Browse/Index', to: redirect('/browse/categories', status: 301)
   get '/Search/Index', to: redirect('/catalog/media', status: 301)
 end

@@ -7,16 +7,16 @@ module Morphosource
       @solr = solr_service.new
     end
 
-    def organization_count_by_type(type)
+    def organization_facets
+      facet_fields = [
+        Solrizer.solr_name('organization_type', :facetable)
+      ]
       params = {
-        rows: 0,
-        fq: [
-          "has_model_ssim:Organization",
-          "#{Solrizer.solr_name('organization_type', :stored_searchable)}:\"#{type}\""
-        ]
+        fl: 'id',
+        fq: ["has_model_ssim:Organization"]
       }
-      solr.get(nil, params)
-      solr.count
+      solr.get_facet_fields(nil, facet_fields, params)
+      return solr.facet_fields(facet_fields)
     end
 
     def po_ids_by_org(org)
@@ -85,7 +85,7 @@ module Morphosource
 
     def media_po_type_facets
       facet_fields = [
-        "media_physical_object_type_sim"
+        Solrizer.solr_name('media_physical_object_type', :facetable)
       ]
       params = {
         fl: 'id',
@@ -121,8 +121,8 @@ module Morphosource
 
     def media_type_and_modality_facets
       facet_fields = [
-        Solrizer.solr_name("media_type", :stored_searchable),
-        "media_modality_sim"
+        Solrizer.solr_name("media_type", :facetable),
+        Solrizer.solr_name("media_modality", :facetable)
       ]
       params = {
         fl: 'id',

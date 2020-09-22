@@ -17,17 +17,15 @@ RSpec.describe Hyrax::Browse::BrowseOrganizationsHelper, type: :helper do
 
   before do
     allow(helper).to receive(:browse_service) { Morphosource::BrowseService.new }
+    get_organization_count_by_type
   end
 
-#  describe 'total_scanning_facilities' do
-#    it 'returns org count with Scanning Facilities' do
-#      expect(total_scanning_facilities).to eq(1)
-#    end
-#
-#    it 'returns org count with Collection & Scanning Facilities' do
-#      expect(total_collection_and_scanning_facilities).to eq(1)
-#    end
-#  end
+  describe '@org_type_and_count' do
+    it 'returns org type and count' do
+      expect(@org_type_and_count["Scanning Facility"]).to eq(1)
+      expect(@org_type_and_count["Collection and Scanning Facility"]).to eq(1)
+    end
+  end
 
 end
 

@@ -4,12 +4,13 @@ module Hyrax::Browse::BrowseOrganizationsHelper
     @browse_service ||= Morphosource::BrowseService.new
   end
 
-  def total_scanning_facilities
-    return browse_service.organization_count_by_type("Scanning Facility")
+  def org_type_and_count
+    @org_type_and_count
   end
 
-  def total_collection_and_scanning_facilities
-    return browse_service.organization_count_by_type("Collection and Scanning Facility")
+  def get_organization_count_by_type
+    facets = browse_service.organization_facets
+    @org_type_and_count = facets[Solrizer.solr_name('organization_type', :facetable)] 
   end
 
   def total_collections

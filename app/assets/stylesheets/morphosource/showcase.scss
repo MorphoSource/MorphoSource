@@ -494,6 +494,54 @@ html {
 
 .showcase {
 
+  @media (min-width: 320px) and (max-width: 374px) {
+    li.browse-links {
+      width: 150px;
+    }
+  }
+  @media (min-width: 375px) and (max-width: 767px) {
+    li.browse-links {
+      width: 200px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .navbar-header {
+      margin-left:0;
+      margin-right:0;
+      .logo {
+        text-align: center;
+        margin: 10px auto;
+      }
+      .navbar-brand {
+        float: none;
+      }
+      .navbar-toggle {
+        float: none;
+      }
+      > div {
+        white-space: nowrap;
+        padding-right: 0;
+      }
+    }
+    .nav > li {
+      display: inline-block;
+      vertical-align: top;
+    }
+    .dropdown-menu li {
+      margin-left: -12px;      
+    }
+    #top-navbar-collapse {
+      margin-left: 20px;
+    }
+    #user-util-links {
+      margin-left: -50px;
+    }
+    .divider {
+      margin: 1px 0;
+    }
+  }
+
   .content-wrapper.fixed-width {
     max-width: 1200px;
     border: 2px solid #efefef;

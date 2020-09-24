@@ -10,16 +10,17 @@
           <%= render partial: 'catalog/search_form' %>
         </div>
         <div class="col-xs-2 pull-right">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-navbar-collapse" aria-expanded="false">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-          </div>
+          <!-- mobile hamburger menu -->
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-navbar-collapse" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
       </div>
 
-      <div class="col-xs-12 collapse navbar-collapse" id="top-navbar-collapse">
+      <div class="collapse navbar-collapse col-xs-12 col-sm-3 navbar-right" id="top-navbar-collapse">
         <%= render '/user_util_links' %>
       </div>
 

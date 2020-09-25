@@ -19,8 +19,8 @@ class CatalogController < ApplicationController
   # get search results from the solr index
   def index
     (@response, @document_list) = search_results(params)
-    # remove_hidden_facet_items
-    remove_hidden_child_facet_items
+    remove_hidden_facet_items
+    # remove_hidden_child_facet_items
     respond_to do |format|
       format.html { store_preferred_view }
       format.rss  { render :layout => false }

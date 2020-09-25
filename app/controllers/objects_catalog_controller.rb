@@ -1,7 +1,7 @@
 # catalog/objects
 class ObjectsCatalogController < CatalogController
 
-  self.access_controlled_facets = ['media_member_of_collection_ids_ssim', 'media_type_ids_ssim', 'media_keyword_ids_ssim']
+  # self.access_controlled_facets = ['media_member_of_collection_ids_ssim', 'media_type_ids_ssim', 'media_keyword_ids_ssim']
 
   # displays values and pagination links for a single facet field
     def facet

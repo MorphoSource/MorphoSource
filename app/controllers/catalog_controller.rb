@@ -147,6 +147,11 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name('x_spacing', :stored_searchable)
     config.add_show_field solr_name('y_spacing', :stored_searchable)
     config.add_show_field solr_name('z_spacing', :stored_searchable)
+    config.add_show_field solr_name('object_title', :stored_searchable)
+    config.add_show_field solr_name('institution_code', :stored_searchable)
+    config.add_show_field solr_name('collection_code', :stored_searchable)
+    config.add_show_field solr_name('catalog_number', :stored_searchable)
+
 
     # Processing Events
     config.add_show_field solr_name('processing_activity', :stored_searchable)
@@ -182,6 +187,38 @@ class CatalogController < ApplicationController
 
     config.add_search_field('taxonomy') do |field|
       solr_name = solr_name("taxonomy", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('object_title') do |field|
+      solr_name = solr_name("object_title", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('institution_code') do |field|
+      solr_name = solr_name("institution_code", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('collection_code') do |field|
+      solr_name = solr_name("collection_code", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
+      }
+    end
+
+    config.add_search_field('catalog_number') do |field|
+      solr_name = solr_name("catalog_number", :stored_searchable)
       field.solr_local_parameters = {
         qf: solr_name,
         pf: solr_name

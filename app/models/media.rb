@@ -168,6 +168,22 @@ class Media < Morphosource::Works::Base
     ancestors.select(&:physical_object?)
   end
 
+  def physical_objects_titles
+    physical_objects.map{ |o| o.title.first }
+  end
+
+  def physical_objects_catalog_number
+    physical_objects.map{ |o| o.catalog_number.first }
+  end
+
+  def physical_objects_taxonomies
+    specimens.each_with_object([]) do |s, taxonomies|
+      s.taxonomies_titles.each do |title|
+        taxonomies << title
+      end
+    end
+  end
+
   def physical_object_type
     return if physical_objects.empty?
     object = physical_objects.first
@@ -181,6 +197,24 @@ class Media < Morphosource::Works::Base
   def organizations
     physical_objects.each_with_object([]) do |obj, orgs|
       obj.organizations.each { |org| orgs << org }
+    end
+  end
+
+  def institution_code
+    # organizations.map{ |o| o.institution_code }
+    organizations.each_with_object([]) do |org, codes|
+      org.institution_code.each do |code|
+        codes << code
+      end
+    end
+  end
+
+  def collection_code
+    organizations.map{ |o| o.collection_code }
+    organizations.each_with_object([]) do |org, codes|
+      org.collection_code.each do |code|
+        codes << code
+      end
     end
   end
 

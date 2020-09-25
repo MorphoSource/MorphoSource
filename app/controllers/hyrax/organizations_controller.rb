@@ -7,15 +7,15 @@ module Hyrax
     include Hyrax::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
+
+    include TeamsControllerBehavior
+    self.presenter_class = Hyrax::OrganizationPresenter
+    self.information_service_class = Morphosource::Organizations::OrganizationInformationService
+
     self.curation_concern_type = ::Organization
 
-    # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::OrganizationPresenter
-
-    def show
-      presenter
-      # if organization.team_id.present? redirect to Hyrax::TeamsController#show
-    end
+    with_themed_layout 'morphosource_1_column'
 
     def update
       if update_work

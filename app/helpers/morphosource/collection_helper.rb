@@ -4,11 +4,15 @@ module Morphosource
     include MediaFinderHelper
 
     def page_is_team?
-      path_info.include?("teams")      
+      path_info.include?("teams")
+    end
+
+    def page_is_organization?
+      path_info.include?("organizations")
     end
 
     def page_is_project?
-      path_info.include?("projects")      
+      path_info.include?("projects")
     end
 
     def collection_type
@@ -26,6 +30,8 @@ module Morphosource
     def showpage_url(id, tab)
       if page_is_team?
         Rails.application.routes.url_helpers.teams_path + "/#{id}\##{tab}"
+      elsif page_is_organization?
+        Rails.application.routes.url_helpers.show_organization_path(id) + "\##{tab}"
       elsif page_is_project?
         Rails.application.routes.url_helpers.projects_path + "/#{id}\##{tab}"
       end
@@ -52,7 +58,7 @@ module Morphosource
       else
         link = collection_path(id, view)
         if current_uri.include?("teams")
-          # todo: fix team_path route 
+          # todo: fix team_path route
           # link = team_path(id)
           link["collections"] = "teams" # replace "collection' with "teams"
         elsif current_uri.include?("projects")
@@ -129,6 +135,22 @@ module Morphosource
       request.env['PATH_INFO']
     end
 
+    def bso_tab_url_for_organizations(id)
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/organizations/specimens/#{id}?#{url_params}"
+    end
+
+    def cho_tab_url_for_organizations(id)
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/organizations/chos/#{id}?#{url_params}"
+    end
+
     def bso_tab_url_for_collections(id)
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
@@ -163,10 +185,10 @@ module Morphosource
 
     def prepare_docs_and_filters_for_media(collection)
       @po_type = "bso" # bso / cho
-      @is_team = collection.team?
+      @is_team = collection.respond_to?(:team?) ? collection.team? : false
       @visibility_options = []
 
-      @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
+      @team_project_options = @subcollection_docs.map(&:title).flatten unless @subcollection_docs.nil? # [] for projects
       @bso_visibility_options = []
       @bso_source_options = []
       @cho_visibility_options = []

@@ -18,4 +18,12 @@ module Morphosource::CatalogHelper
       search_form_action
     end
   end
+
+  def media_type_by_id(id)
+    solr_docs = controller.repository.find(id).docs
+    return nil if solr_docs.empty?
+    solr_field = solr_docs.first["human_readable_media_type_tesim"]
+    return nil if solr_field.nil?
+    solr_field.first
+  end
 end

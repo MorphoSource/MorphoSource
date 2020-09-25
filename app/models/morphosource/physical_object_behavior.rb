@@ -8,8 +8,13 @@ module Morphosource::PhysicalObjectBehavior
     organizations.map{ |o| o.title.first }
   end
 
+  # TODO: solr query?
   def media
     descendants.select{ |d| d.class == Media }
+  end
+
+  def media_ids
+    media.map(&:id)
   end
 
   def media_types
@@ -38,9 +43,13 @@ module Morphosource::PhysicalObjectBehavior
 
   def media_collections
     media.each_with_object([]) do |m, collections|
-      m.member_of_collections.each do |c|
-        collections << c.title.first
+      m.member_of_collections.each do |collection|
+        collections << collection
       end
     end
+  end
+
+  def media_collections_ids
+    media_collections.map(&:id)
   end
 end

@@ -148,33 +148,11 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name('y_spacing', :stored_searchable)
     config.add_show_field solr_name('z_spacing', :stored_searchable)
 
-    # Physical Object Fields
-
-    config.add_show_field solr_name('physical_object_type', :stored_searchable)
-    config.add_show_field solr_name('bibliographic_citation', :stored_searchable)
-    config.add_show_field solr_name('catalog_number', :stored_searchable)
-    config.add_show_field solr_name('collection_code', :stored_searchable)
-    config.add_show_field solr_name('institution_code', :stored_searchable)
-    config.add_show_field solr_name('current_location', :stored_searchable)
-    config.add_show_field solr_name('numeric_time', :stored_searchable)
-    config.add_show_field solr_name('original_location', :stored_searchable)
-    config.add_show_field solr_name('periodic_time', :stored_searchable)
-    config.add_show_field solr_name('vouchered', :stored_searchable)
-
-    # Biological Specimens
-    config.add_show_field solr_name('idigbio_recordset_id', :stored_searchable)
-    config.add_show_field solr_name('idigbio_uuid', :stored_searchable)
-    config.add_show_field solr_name('is_type_specimen', :stored_searchable)
-    config.add_show_field solr_name('occurrence_id', :stored_searchable)
-    config.add_show_field solr_name('sex', :stored_searchable)
-
-    # CHOs
-    config.add_show_field solr_name('cho_type', :stored_searchable)
-    config.add_show_field solr_name('material', :stored_searchable)
-    config.add_show_field solr_name('short_title', :stored_searchable)
-
     # Processing Events
     config.add_show_field solr_name('processing_activity', :stored_searchable)
+
+    config.add_show_field solr_name('taxonomy', :stored_searchable)
+
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -199,6 +177,14 @@ class CatalogController < ApplicationController
       field.solr_parameters = {
         qf: "#{all_names} file_format_tesim all_text_timv",
         pf: title_name.to_s
+      }
+    end
+
+    config.add_search_field('taxonomy') do |field|
+      solr_name = solr_name("taxonomy", :stored_searchable)
+      field.solr_local_parameters = {
+        qf: solr_name,
+        pf: solr_name
       }
     end
 

@@ -494,9 +494,41 @@ html {
 
 .showcase {
 
+  .navbar {
+    min-height: 30px !important;    
+  }
+
+  .navbar-inverse-dark {
+    background-color: $ms-dark-blue;
+  }
+
+  .secondary-nav {
+    font-size: 14px;
+  }
+  .controls {
+    .navbar {
+      background-color: transparent;
+      height: 30px !important;
+      margin-bottom: 0;
+    }    
+    .navbar-nav > li > a {
+      color: #fff;
+      height: 30px;
+      padding-top: 5px;
+    }
+  }
+
+  .logo {
+        white-space: nowrap;
+
+  }
+
   @media (min-width: 320px) and (max-width: 374px) {
     li.browse-links {
       width: 150px;
+    }
+    .secondary-nav {
+      font-size: 11px;
     }
   }
   @media (min-width: 375px) and (max-width: 767px) {

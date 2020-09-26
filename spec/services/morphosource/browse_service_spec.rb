@@ -57,13 +57,6 @@ RSpec.describe Morphosource::BrowseService do
     project1.save
   end
 
-  describe 'organization_count_by_type(type)' do
-    it 'returns an org count with type' do
-      results = subject.organization_count_by_type('foobar')
-      expect(results).to eq(1)
-    end
-  end
-
   describe 'po_ids_by_org(org)' do
     it 'returns po ids by org' do
       results = subject.po_ids_by_org(org1)
@@ -110,7 +103,7 @@ RSpec.describe Morphosource::BrowseService do
   describe 'media_type_and_modality_facets' do
     it 'returns media_type_and_modality_facets, media count' do
       facets, total_media = subject.media_type_and_modality_facets
-      expect(facets["media_type_tesim"]["xyz"]).to eq(1)
+      expect(facets["media_type_sim"]["xyz"]).to eq(1)
       expect(facets["media_modality_sim"]["modality abc"]).to eq(1)
       expect(total_media).to eq(1)
     end

@@ -3,10 +3,6 @@ stages:
   - test
   - deploy
 
-variables:
-  # RAKE_COMMAND is for deploy jobs
-  RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-
 build_job:
   stage: build
   before_script:
@@ -30,7 +26,7 @@ build_job:
   tags:
     - build
 
-.test_job_template: &test_job_def
+.test:
   stage: test
   variables:
     RAILS_ENV: test
@@ -50,42 +46,55 @@ build_job:
     - test
 
 test_job:
-  <<: *test_job_def
+  extends: .test
   script:
     - bin/rake ci:wrapped_spec[~accessibility]
 
 accessibility_job:
-  <<: *test_job_def
+  extends: .test
   allow_failure: true
   script:
     - bin/rake ci:wrapped_spec[accessibility]
 
-deploy_dev:
-  environment:
-    name: development
-    url: https://morphosource-dev.lib.duke.edu/
+.deploy:
   stage: deploy
-  script: &deploy_script
+  variables:
+    RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+  script:
     - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
     - '$RAKE_COMMAND db:setup || true'
     - $RAKE_COMMAND db:migrate
     - $RAKE_COMMAND tmp:cache:clear
     - $RAKE_COMMAND hyrax:workflow:load
-  after_script: &after_deploy
+  after_script:
     - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
+
+deploy_dev:
+  extends: .deploy
+  environment:
+    name: development
+    url: https://morphosource-dev.lib.duke.edu/
   only:
     - dev
   tags:
     - development
 
 deploy_demo:
-  stage: deploy
+  extends: .deploy
   environment:
     name: demo
     url: https://morphosource-demo.lib.duke.edu/
-  script: *deploy_script
-  after_script: *after_deploy
   only:
     - master
   tags:
     - demo
+
+deploy_prod:
+  extends: .deploy
+  environment:
+    name: production
+    url: https://morphosource.lib.duke.edu/
+  only:
+    - master
+  tags:
+    - production

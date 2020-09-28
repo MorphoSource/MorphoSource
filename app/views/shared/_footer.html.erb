@@ -1,13 +1,40 @@
-<footer class="navbar navbar-inverse site-footer">
+<footer class="navbar navbar-inverse site-footer no-horizontal-padding" style='border: none'>
   <div class="container-fluid">
-    <div class="navbar-text text-left">
-        <p><%= t('hyrax.footer.service_html') %></p>
-        <p><%= t('hyrax.product_name') %> v<%= Morphosource::VERSION %></p>
-    </div>
-    <div class="navbar-right">
-      <div class="navbar-text text-right">
-        <p><%= t('hyrax.footer.copyright_html') %></p>
-        <p><%= t('hyrax.background_attribution_html') %></p>
+    <div class="row no-horizontal-padding">
+      <div class="col-md-2 col-sm-6 col-xs-12 col-align col-align--top footer-section copyright">
+        <span><%= t('hyrax.footer.copyright_html') %></span>
+      </div>
+      <div class="col-md-4 col-sm-6 col-xs-12 col-align col-align--center footer-section footer-links">
+        <div class="row">
+          <div class="col-xs-3 no-horizontal-padding">
+            <%= link_to t(:'hyrax.controls.about'), Rails.application.routes.url_helpers.about_docs_path, aria: current_page?(Rails.application.routes.url_helpers.about_docs_path) ? {current: 'page'} : nil %>
+          </div>
+          <div class="col-xs-3 no-horizontal-padding">
+            <div class="row" style='padding-top: 0;'><span class='footer-label'><%= t(:'hyrax.controls.docs.short_title') %></span></div>
+            <div class="row footer-sublink"><%= link_to t("hyrax.controls.docs.guide"), Rails.application.routes.url_helpers.guide_docs_path %></div>
+            <div class="row footer-sublink"><%= link_to t("hyrax.controls.resources.glossary"), Rails.application.routes.url_helpers.glossary_docs_path %></div>
+            <div class="row footer-sublink"><%= link_to t("hyrax.controls.resources.contributors"), Rails.application.routes.url_helpers.contributors_docs_path %></div>
+            <div class="row footer-sublink"><%= link_to t("hyrax.controls.resources.citation"), Rails.application.routes.url_helpers.citation_docs_path %></div>
+          </div>
+          <div class="col-xs-3 no-horizontal-padding">
+            <div class="row" style='padding-top: 0;'><span class='footer-label'><%= t(:'hyrax.controls.resources.title') %></span></div>
+            <div class="row footer-sublink"><%= link_to t("hyrax.controls.resources.api"), Rails.application.routes.url_helpers.api_docs_path %></div>
+            <div class="row footer-sublink"><%= link_to t("hyrax.controls.resources.rss"), Rails.application.routes.url_helpers.rss_docs_path %></div>
+          </div>
+          <div class="col-xs-3 no-horizontal-padding">
+            <%= link_to t(:'hyrax.controls.terms_of_use'), hyrax.terms_path, aria: current_page?(hyrax.terms_path) ? {current: 'page'} : nil %>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6 col-xs-12 col-align col-align--center footer-section support">
+        <span>Support From: </span>
+        <span id='duke-logo' style='margin-left: 10px;'><a href='https://www.duke.edu/'><%= image_tag('duke_logo.png') %></a></span>
+        <span id='nsf-logo' style='margin-left: 10px;'><a href='https://www.nsf.gov/'><%= image_tag('nsf_logo.png') %></a></span>
+      </div>
+      <div class="col-md-2 col-sm-6 col-xs-12 col-align col-align--center footer-section icons">   
+        <a href="https://github.com/MorphoSource"><i class="fab fa-github fa-lg"></i></a>
+        <a href="https://twitter.com/MorphoSource"><i class="fab fa-twitter fa-lg"></i></a>
+        <a href="mailto:info@morphosource.org"><i class="fas fa-envelope fa-lg"></i></a>
       </div>
     </div>
   </div>

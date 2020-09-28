@@ -1,6 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work BiologicalSpecimen`
-class BiologicalSpecimenIndexer < Morphosource::WorkIndexer
+class BiologicalSpecimenIndexer < Morphosource::PhysicalObjectIndexer
   # This indexes the default metadata. You can remove it if you want to
   # provide your own metadata and indexing.
   include Hyrax::IndexesBasicMetadata

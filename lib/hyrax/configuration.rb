@@ -276,6 +276,11 @@ module Hyrax
       @banner_image ||= 'https://user-images.githubusercontent.com/101482/29949206-ffa60d2c-8e67-11e7-988d-4910b8787d56.jpg'
     end
 
+    attr_writer :front_page_media
+    def front_page_media
+      @front_page_media ||= nil
+    end
+
     attr_writer :persistent_hostpath
     def persistent_hostpath
       @persistent_hostpath ||= "http://localhost/files/"
@@ -391,6 +396,16 @@ module Hyrax
     attr_writer :teams_rows_per_page_range
     def teams_rows_per_page_range
       [2, 5, 10, 20, 40, 60, 80, 100] # rows per page that users can choose
+    end
+
+    attr_writer :browse_page_item_rows
+    def browse_page_item_rows
+      @browse_page_item_rows ||= 100 # default rows per page on browse pages
+    end
+
+    attr_writer :browse_page_rows_per_page_range
+    def browse_page_rows_per_page_range
+      [100, 500, 1000, 2000] # rows per page that users can choose
     end
 
     attr_writer :batch_user_key

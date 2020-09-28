@@ -16,6 +16,11 @@ module Morphosource
       @result = connection.get('select', params: args)
     end
 
+    def get_count(query = nil, args = {})
+      get(query, args)
+      count
+    end
+
     def get_docs(query = nil, args = {})
       get(query, args)
       result["response"]["docs"]

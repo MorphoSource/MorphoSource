@@ -4,10 +4,8 @@ en:
       fields:
         facet:
           based_near_label_sim: Location
-          creator_sim: Creator
           file_format_sim: Format
           generic_type_sim: Type
-          keyword_sim: Keyword
           language_sim: Language
           publisher_sim: Publisher
           subject_sim: Subject
@@ -53,6 +51,88 @@ en:
       collection:
         new: "New Collection"
   hyrax:
+    collection:
+      actions:
+        edit:
+          project: Edit project
+          team: Edit team
+    toolbar:
+      browse:
+        projects: Projects
+        teams: Teams
+        organizations: Organizations
+        physical_object_types: Physical Object Types
+        media_types_and_modalities: Media Types and Modalities
+    browse:
+      title:
+        categories: Browse Categories
+        organizations: Organizations
+        physical_object_types: Physical Object Types
+        media_types_and_modalities: Media Types and Modalities
+        media_types: Media Types
+        Mesh: Mesh or Point Cloud 
+        CTImageSeries: CT Image Series 
+        PhotogrammetryImageSeries: Photogrammetry Image Series
+        Image: Image
+        Video: Video
+        Other: Other 
+        modalities: Modalities
+      page_description:
+        categories:
+          header:
+            "MorphoSource is a repository for media (3D and 2D) that represent physical objects. There are many ways to browse media and physical objects in the repository. It is also possible to search the repository using the search bar above, and to explore the data holdings using category facets associated with search results."
+          media_types_and_modalities:
+            "Media types include 3D meshes, 3D volumes, 2D images, and videos. Media modalities include CT/MRI, photogrammetry, laser scans, and others."
+          physical_object_types:
+            "Physical objects associated with media are separated into two categories: biological specimen objects and cultural heritage objects."
+          projects:
+            "Media are grouped by projects created by users. Projects tend to contain media tied together by a theme. A project might represent the dataset for a single peer-reviewed paper or data for a digital lesson plan."
+          teams:
+            "Teams are groups of users. A team can managed multiple projects. Alternately, a team can contain media in a similar way to projects. A team might represent a lab group with multiple research paper projects or the staff of a museum collection uploading digital data representing their specimens."
+          organizations:
+            "Organizations are museum collections, university laboratories, departments, facilities, or other groups that house and manage physical objects or imaging devices. Some organizations are officially linked to MorphoSource user teams, where the individuals responsible for a given organization have created a team to manage that organization on MorphoSource."
+        organizations:
+          "Organizations represent institutions, departments, collections, facilities, labs, and other groups that manage, house, and curate physical objects or imaging devices. An organization describes whatever bureaucratic entity is responsible for setting policies for access to physical objects or devices. Typically, organizations are collections or departments within an institution, but in some cases they can also be an entire larger institution or a specific smaller lab within a collection or department. A user team can be linked to an organization, enabling some level of access control over physical objects housed in that organization. Please contact the MorphoSource admins to discuss linking your user team to an organization."
+        projects:
+          "A project is a themed assortment of media and specimens. Projects can be used to share media ownership and access between project members, and projects can also be used to publish assortments of media and specimens for access and discovery by the public. Examples of projects could include the 3D data used in a single research paper or a collections digitization project. If you want to share media ownership and access with multiple users across multiple projects, consider creating a user team. Projects can be managed by teams, and users with access to that team also gain access to any projects managed by that team."
+        teams:
+          "Teams are groups of MorphoSource users that can share media ownership and access between team members. Teams can also contain projects, and media for team projects can be viewed both at the project and team levels. The chief difference between teams and projects is that projects provide a group of users with access to a single assortment of media and specimens, like a single individual research paper or one collections project. Teams provide a group of users with access to multiple themed assortments of media and specimens, like a lab group with multiple research paper projects. Additionally, if you are an official representative of an organization represented in MorphoSource, your team can be linked to that organization, which enables some level of access control over media representing specimens from that organization. Contact the MorphoSource admins to discuss this further. "
+        physical_object_types:
+          "Media represent physical objects. Physical objects are divided into two categories, described below."
+        biological_specimen_objects:
+          "Biological specimens include skeletons, whole or partial bodies, fossils, fossil trackways, and other related objects that in some way preserve an element of or representation of a living creature."
+        cultural_heritage_objects:
+          "These include any object that is a physical artifact of some group, society, or culture."
+        media_types_and_modalities:
+          "Media are 3D and 2D representations of physical objects. In MorphoSource, media are principally sorted by two factors: media type and modality, as described below."
+        media_types:
+          "This is the broad type category that describes the media file or files."
+        Mesh:
+          "A 3D model or collection of 3D XYZ coordinate points. File types include PLY, STL, OBJ, X3D, GLB, GLTF, BIN, and WRL. This also includes ZIP files for mesh files with associated material and texture files, such as a combination of OBJ, MTL, and PNG files."
+        CTImageSeries:
+          "A collection of 2D image files that together comprise a CT/micro-CT volumetric stack. Files are ZIP archives with collections of images of file types DCM, TIFF, PNG, JPEG, or BMP. "
+        PhotogrammetryImageSeries:
+          "A collection of 2D image files that together comprise a photogrammetry image set. Files are ZIP archives with collections of images of file types TIFF, PNG, JPEG, or BMP. "
+        Image:
+          "A single 2D image file. File types include DCM, TIFF, PNG, JPEG, BMP, GIF, DNG, NEF, CRW, CR2, CR3, IIQ, ARW, RAW, and RW2."
+        Video:
+          "A single 2D video file. File types include WMV, MOV, AVI, MPEG, and M4V."
+        Other:
+          ""
+        modalities:
+          "This describes the method used to image a physical object in order to create media."
+    controls:
+      docs:
+        short_title: "Docs"
+        title: "Documentation"
+        guide: "User Guide"
+        glossary: "Glossary of Terms"
+        contributors: "For Contributors"
+        citation: "Citation"
+      resources:
+        title: "Resources"
+        api: "API"
+        rss: "Data Reporting"
     admin:
       sidebar:
         teams: 'Teams'
@@ -61,7 +141,7 @@ en:
     directory:
       suffix:               "@example.org"
     footer:
-      copyright_html: "<strong>Copyright &copy; 2019 MorphoSource</strong>"
+      copyright_html: "Copyright &copy; 2020 MorphoSource"
       service_html: A <a href="https://hyrax.samvera.org/" class="navbar-link" target="_blank">Hyrax</a> Digital Repository.
     institution_name:       "Duke University"
     institution_name_full:  "Duke University"
@@ -128,7 +208,7 @@ en:
           view_project: View project
           edit_project: Edit project
           delete_project: Delete project
-          
+
         heading:
           visibility: visibility
           collection_type: collection type

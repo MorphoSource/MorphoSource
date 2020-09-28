@@ -20,7 +20,8 @@
       reviewerSelect.append(option)
       reviewerSelect.val(data.user_key); // Select the newly created option
       reviewerSelect.trigger('change'); // Notify any JS components that the value changed
-      label = $('#select2-chosen-1');
+      //label = $('#select2-chosen-1');
+      label = $('.media_download_reviewer .select2-chosen')
       label.text(data.text); // update the label on the select to be the user key
     };
 

@@ -218,6 +218,9 @@ Hyrax.config do |config|
   # The banner image. Should be 5000px wide by 1000px tall
   config.banner_image = 'banner_image.png'
 
+  # ID of a media work to be used as the front page preview
+  config.front_page_media = nil # this should not be merged into master!
+
   # Temporary paths to hold uploads before they are ingested into FCrepo
   # These must be lambdas that return a Pathname. Can be configured separately
   #  config.upload_path = ->() { Rails.root + 'tmp' + 'uploads' }

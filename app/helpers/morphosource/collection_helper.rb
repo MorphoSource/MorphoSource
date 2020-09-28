@@ -29,11 +29,11 @@ module Morphosource
 
     def showpage_url(id, tab)
       if page_is_team?
-        Rails.application.routes.url_helpers.teams_path + "/#{id}\##{tab}"
+        Rails.application.routes.url_helpers.team_path(id) + "\##{tab}"
       elsif page_is_organization?
         Rails.application.routes.url_helpers.show_organization_path(id) + "\##{tab}"
       elsif page_is_project?
-        Rails.application.routes.url_helpers.projects_path + "/#{id}\##{tab}"
+        Rails.application.routes.url_helpers.project_path(id) + "\##{tab}"
       end
     end
 

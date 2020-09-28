@@ -1,4 +1,5 @@
 <tr>
+  <td><%= presenter.institution_name&.first %></td>
   <td>
     <%= link_to Rails.application.routes.url_helpers.hyrax_organization_path(document.id) do %>
       <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>

@@ -245,9 +245,18 @@ $( document ).ready(function() {
       for (i = 0; i < concatFieldCount; i++) {
         var concatFieldValue = concatFields[i].value;
         //console.log('concatFieldValue: '+concatFieldValue);
-
-        var name = concatFieldValue.match(/Name: (.*?), Type: /)[1];
-        var type = concatFieldValue.match(/Type: (.*)/)[1];
+        if (concatFieldValue.match(/Name: (.*?), Type: /)) {
+          var name = concatFieldValue.match(/Name: (.*?), Type: /)[1];
+          var type = concatFieldValue.match(/Type: (.*)/)[1];          
+        } else if (concatFieldValue.match(/Name: (.*?)/)) {
+          // foung "Name" but no "Type"
+          var name = concatFieldValue.match(/Name: (.*?)/)[1];
+          var type = "";
+        } else {
+          // just assume the value is the Name (no type) 
+          var name = concatFieldValue;
+          var type = "";        
+        }
 
         // Fill in values for first line
         if (i == 0) {

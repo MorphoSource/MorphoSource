@@ -110,13 +110,12 @@ Rails.application.routes.draw do
     get 'dashboard/my/media/chos', to: 'my/media_works#chos'
 
     scope :browse do
-      resources :categories, only: [:index], controller: 'browse_categories', as: 'browse_categories'
-
       resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'
       resources :projects, only: [:index], controller: 'browse_teams', as: 'browse_projects'
       resources :organizations, only: [:index], controller: 'browse_organizations', as: 'browse_organizations'
-
-      resources :physical_object_types, only: [:index], controller: 'browse_physical_object_types', as: 'browse_physical_object_types'
+      resources :media_types_and_modalities, only: [:index], action: :media_types_and_modalities, controller: 'browse', as: 'browse_media_types_and_modalities'
+      resources :physical_object_types, only: [:index], action: :physical_object_types, controller: 'browse', as: 'browse_physical_object_types'
+      resources :categories, only: [:index], action: :categories, controller: 'browse', as: 'browse_categories'
     end
 
   end
@@ -323,6 +322,6 @@ Rails.application.routes.draw do
   get '/LoginReg/form', to: redirect('/users/sign_in', status: 301)
   get '/LoginReg/logout', to: redirect('/users/sign_out', status: 301)
   get '/MyProjects/Dashboard/projectList', to: redirect('/dashboard', status: 301)
-  get '/Browse/Index', to: redirect('/browse', status: 301)
+  get '/Browse/Index', to: redirect('/browse/categories', status: 301)
   get '/Search/Index', to: redirect('/catalog/media', status: 301)
 end

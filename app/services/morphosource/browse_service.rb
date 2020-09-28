@@ -7,16 +7,16 @@ module Morphosource
       @solr = solr_service.new
     end
 
-    def organization_count_by_type(type)
-      query = nil
+    def organization_facets
+      facet_fields = [
+        Solrizer.solr_name('organization_type', :facetable)
+      ]
       params = {
-        fq: [
-          "has_model_ssim:Organization",
-          "#{Solrizer.solr_name('organization_type', :stored_searchable)}:\"#{type}\""
-        ]
+        fl: 'id',
+        fq: ["has_model_ssim:Organization"]
       }
-      solr.get(query, params)
-      solr.count
+      solr.get_facet_fields(nil, facet_fields, params)
+      return solr.facet_fields(facet_fields)
     end
 
     def po_ids_by_org(org)
@@ -33,53 +33,110 @@ module Morphosource
 
     def total_media_by_po_ids(po_ids)
       return 0 unless po_ids.present?
-      query = nil
       params = {
+        rows: 0,
         fq: [
           "physical_object_id_tesim:(#{po_ids.join(' OR ')})", 
           "has_model_ssim:Media"
         ]
       }
-      solr.get(query, params)
+      solr.get(nil, params)
       solr.count
     end
 
     def total_media_by_collection(collection_id)
-      query = nil
       params = {
+        rows: 0,
         fq: [
           "member_of_collection_ids_ssim:#{collection_id}",
           "has_model_ssim:Media"
         ]
       }
-      solr.get(query, params)
+      solr.get(nil, params)
       solr.count
     end
 
     def total_po_by_collection(collection_id)
-      query = nil
       params = {
+        rows: 0,
         fq: [
           "member_of_collection_ids_ssim:#{collection_id}",
           "has_model_ssim:Media",
           "-physical_object_id_tesim:nil"
         ]
       }
-      solr.get(query, params)
+      solr.get(nil, params)
       solr.count
     end
 
     def total_team_projects_by_collection(collection_id)
-      query = nil
       params = {
+        rows: 0,
         fq: [
           "member_of_collection_ids_ssim:#{collection_id}",
           "has_model_ssim:Collection"
         ]
       }
-      solr.get(query, params)
+      solr.get(nil, params)
       solr.count
     end
+
+    # ---  methods for physical object types ---
+
+    def media_po_type_facets
+      facet_fields = [
+        Solrizer.solr_name('media_physical_object_type', :facetable)
+      ]
+      params = {
+        fl: 'id',
+        fq: ["has_model_ssim:Media"]
+      }
+      solr.get_facet_fields(nil, facet_fields, params)
+      return solr.facet_fields(facet_fields), solr.count
+    end
+
+    def total_bso
+      params = {
+        rows: 0,
+        fq: [
+          "(has_model_ssim:BiologicalSpecimen)"
+        ]
+      }
+      solr.get(nil, params)
+      solr.count
+    end
+
+    def total_cho
+      params = {
+        rows: 0,
+        fq: [
+          "(has_model_ssim:CulturalHeritageObject)"
+        ]
+      }
+      solr.get(nil, params)
+      solr.count
+    end
+
+    # ---  methods for media types and modality ---
+
+    def media_type_and_modality_facets
+      facet_fields = [
+        Solrizer.solr_name("media_type", :facetable),
+        Solrizer.solr_name("media_modality", :facetable)
+      ]
+      params = {
+        fl: 'id',
+        fq: ["has_model_ssim:Media"]
+      }
+      solr.get_facet_fields(nil, facet_fields, params)
+      return solr.facet_fields(facet_fields), solr.count
+    end
+
+    def assemble_or_query(field, values)
+      return "" if !field.present? || !values.present?
+      field + ':(' + values.join(' OR ').upcase + ')'
+    end
+
 
     private
 

@@ -117,6 +117,7 @@ module Morphosource
         def media_and_po_count(collection_id)
           query = nil
           params = {
+            fl: [solrize('physical_object_id', :stored_searchable)],
             fq: [
               "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}",
               "#{solrize('has_model', :symbol)}:Media"
@@ -135,14 +136,14 @@ module Morphosource
         end
 
         def user_managed_media_count
-          query = nil
           params = {
+            rows: 0,
             fq: [
               assemble_user_media_query,
               "#{solrize('has_model', :symbol)}:Media"
             ]
           }
-          solr.get(query, params)
+          solr.get(nil, params)
           solr.count
         end
 
@@ -153,27 +154,27 @@ module Morphosource
         end
 
         def team_org_origin_count
-          query = nil
           params = {
+            rows: 0,
             fq: [
               assemble_po_id_and_not_collection_query(team_org_po_ids, collection_id),
               "#{solrize('has_model', :symbol)}:Media"
             ]
           }
 
-          solr.get(query, params)
+          solr.get(nil, params)
           solr.count
         end
 
         def get_subcollection_ids(collection_ids)
-          query = nil
           params = {
+            fl: ['id'],
             fq: [
               "#{solrize('nesting_collection__parent_ids', :symbol)}:(#{collection_ids.join(' OR ')})",
               "#{solrize('has_model', :symbol)}:Collection"
             ]
           }
-          solr.get_docs(query, params).map { |d| d['id'] }
+          solr.get_docs(nil, params).map { |d| d['id'] }
         end
 
 

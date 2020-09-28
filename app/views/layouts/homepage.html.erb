@@ -1,11 +1,15 @@
 <%# Changes to include a custom banner image. Disables the marketing text partial, we will need to rework css if we keep this design and want to use the marketing text in the future.  %>
 
 <% content_for(:navbar) do %>
-  <%= render '/controls' %>
+	<nav class="navbar navbar-inverse-dark secondary-nav navbar-static-top" role="navigation">
+	  <div class="container">
+	  <%= render '/controls' %>
+	  </div>
+	</nav>
 <% end %>
 
 <% content_for(:precontainer_content) do %>
   <%= render 'hyrax/homepage/announcement' if controller_name == 'homepage' %>
 <% end %>
 
-<%= render template: 'layouts/hyrax' %>
+<%= render template: 'layouts/hyrax/morphosource_1_column' %>

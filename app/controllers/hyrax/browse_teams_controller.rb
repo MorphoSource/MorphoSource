@@ -39,6 +39,11 @@ module Hyrax
 
     end
 
+    # overriding the default rows per page in controllers/hyrax/my/teams_controller.rb
+    def rows_from_params
+      request.params[:rows].nil? ? Hyrax.config.browse_page_item_rows : request.params[:rows].to_i
+    end
+
     def query_collection_information
       @collection_information = browse_teams_information_service.collection_information_for_browse
     end

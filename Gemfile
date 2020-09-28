@@ -6,8 +6,6 @@ git_source(:github) do |repo_name|
 end
 
 gem 'rails', '~> 5.2.4', '>= 5.2.4.3'
-
-#gem 'rails', '~> 5.2'
 gem 'rdf-vocab', '3.1.4'
 #gem 'active-fedora', '12.1.1'
 #gem 'activesupport', '5.2.4.4'
@@ -79,7 +77,7 @@ group :development, :test do
   gem 'rspec-its'
   gem 'rails-controller-testing'
   gem 'factory_bot_rails', '~> 4.8'
-  gem 'webmock'
+  gem 'webmock', '~> 3.5.0'
   gem 'geckodriver-helper'
   gem 'shoulda-callback-matchers', '~> 1.1.1'
   gem 'shoulda-matchers', '~> 3.1'

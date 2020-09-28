@@ -9,7 +9,7 @@ module Ms1to2
           :scanner_calibration_flux_normalization => :flux_normalization,
           :scanner_calibration_geometric_calibration => :geometric_calibration,
           :scanner_calibration_shading_correction => :shading_correction,
-          :normalized_filter => :filter,
+          :normalized_filter => :ie_filter,
           :scanner_frame_averaging => :frame_averaging,
           :scanner_projections => :projections,
           :scanner_voltage => :voltage,

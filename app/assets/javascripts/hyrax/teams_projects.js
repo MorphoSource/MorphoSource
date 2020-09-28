@@ -68,7 +68,7 @@ $(document).ready(function() {
       // populate PO BSO counts when the tab has been loaded
       document.addEventListener("bso-loaded", function(event) {
         //console.log("bso have loaded!", event.container);
-        $('span.bso-count').html($('input[name="bso-count"]').val() + ' Specimens · ');
+        $('span.bso-count').html(' · ' + $('input[name="bso-count"]').val() + ' Specimens');
         $('.tab-bso-count').html($('input[name="bso-count"]').val());
 
         var bsoTable = $('#datatable-bso-list').DataTable({

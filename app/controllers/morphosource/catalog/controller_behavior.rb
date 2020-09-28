@@ -7,6 +7,7 @@ module Morphosource
       end
 
       def remove_hidden_child_facet_items
+        # (@media_response, @media_document_list) = media_search_results(params)
         # ids of media user is allowed to see
         safe_media_list = safe_list('child_media_ids_ssim')
         # return if safe list doesn't exist (admin)
@@ -18,16 +19,22 @@ module Morphosource
 
         media_ids = ids_facet.items.map(&:value)
         # ids returned by the search that the user does not have access to
-        hidden_ids = media_ids - safe_media_list
+        @child_media_ids = safe_media_list & media_ids
         byebug
+        (@media_response, @media_document_list) = media_search_results(params)
+        byebug
+        hidden_ids = media_ids - safe_media_list
         keyword_facet = @response.aggregations['media_keyword_sim']
+        facet_keywords = keyword_facet.items.map(&:value)
+
         hidden_ids.each do |id|
-          byebug
           # objects that have the media as a child
           objects = @document_list.select{ |object| object["child_media_ids_ssim"]&.include? id }
 
           # media solr document keywords that will need to be removed
-          hidden_keywords = SolrDocument.find(id)["keyword_tesim"]
+          private_keywords = SolrDocument.find(id)["keyword_tesim"]
+
+          hidden_keywords = facet_keywords & private_keywords
 
           objects.each do |object|
             # all the child media keywords
@@ -44,7 +51,6 @@ module Morphosource
                   # find the facet item
                   item = keyword_facet.items.find{|i| i.value == keyword}
                   # remove one of the hits or delete the item if there is only one hit left.
-
                   if item && item.hits == 1
                     keyword_facet.items.delete(item)
                   elsif item && item.hits > 1
@@ -74,6 +80,43 @@ module Morphosource
 
       def safe_list(facet)
         facet = @response["responseHeader"]["params"]["f.#{facet}.facet.matches"]
+      end
+
+      def search_results(user_params)
+        byebug
+        builder = search_builder.with(user_params)
+        builder.page = user_params[:page] if user_params[:page]
+        builder.rows = (user_params[:per_page] || user_params[:rows]) if user_params[:per_page] || user_params[:rows]
+
+        builder = yield(builder) if block_given?
+        response = repository.search(builder)
+
+        if response.grouped? && grouped_key_for_results
+          [response.group(grouped_key_for_results), []]
+        elsif response.grouped? && response.grouped.length == 1
+          [response.grouped.first, []]
+        else
+          [response, response.documents]
+        end
+      end
+
+      def media_search_results(user_params)
+        @child_media_ids =
+        search_builder = Morphosource::Catalog::ChildMediaSearchBuilder.new(self)
+        builder = search_builder.with(user_params)
+        builder.page = user_params[:page] if user_params[:page]
+        builder.rows = (user_params[:per_page] || user_params[:rows]) if user_params[:per_page] || user_params[:rows]
+
+        builder = yield(builder) if block_given?
+        response = repository.search(builder)
+
+        if response.grouped? && grouped_key_for_results
+          [response.group(grouped_key_for_results), []]
+        elsif response.grouped? && response.grouped.length == 1
+          [response.grouped.first, []]
+        else
+          [response, response.documents]
+        end
       end
 
       # Keeping these here for now, may want to benchmark regex vs array

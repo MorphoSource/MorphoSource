@@ -3,6 +3,27 @@ class ObjectsCatalogController < CatalogController
 
   # self.access_controlled_facets = ['media_member_of_collection_ids_ssim', 'media_type_ids_ssim', 'media_keyword_ids_ssim']
 
+  # get search results from the solr index
+  def index
+    (@response, @document_list) = search_results(params)
+    byebug
+    # remove_hidden_facet_items
+    remove_hidden_child_facet_items
+    respond_to do |format|
+      format.html { store_preferred_view }
+      format.rss  { render :layout => false }
+      format.atom { render :layout => false }
+      format.json do
+        @presenter = Blacklight::JsonPresenter.new(@response,
+                                                   @document_list,
+                                                   facets_from_request,
+                                                   blacklight_config)
+      end
+      additional_response_formats(format)
+      document_export_formats(format)
+    end
+  end
+
   # displays values and pagination links for a single facet field
     def facet
       byebug

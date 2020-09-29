@@ -335,4 +335,12 @@ Rails.application.routes.draw do
   get '/MyProjects/Dashboard/projectList', to: redirect('/dashboard', status: 301)
   get '/Browse/Index', to: redirect('/browse/categories', status: 301)
   get '/Search/Index', to: redirect('/catalog/media', status: 301)
+
+  scope module: :morphosource do
+    # ms1 object routes
+    get 'Detail/SpecimenDetail/Show/specimen_id/:id', to: 'ms1#biological_specimens'
+    get 'Detail/MediaDetail/Show/media_id/:id', to: 'ms1#media'
+    get 'Detail/ProjectDetail/Show/project_id/:id', to: 'ms1#projects'
+  end
+
 end

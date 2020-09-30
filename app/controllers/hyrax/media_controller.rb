@@ -154,11 +154,12 @@ module Hyrax
       redirect_to(main_app.media_showcase_path(id: params[:id])) and return
     end
 
-    private
+    # disable manifest method since we are using a separate controller now
+    def manifest
+      redirect_to(main_app.media_showcase_path(id: params[:id])) and return
+    end
 
-      def manifest_builder
-        ::IIIFManifest::V3::ManifestFactory.new(presenter)
-      end
+    private
 
       # Checks that uploaded files are the correct format for selected media type.
       def validate_file_formats

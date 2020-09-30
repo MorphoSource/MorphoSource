@@ -29,6 +29,21 @@ class MediaIndexer < Morphosource::WorkIndexer
      # add organization facet
      solr_doc['media_organization_tesim'] = object.organization_titles
      solr_doc['media_organization_sim'] = object.organization_titles
+     # object title
+     solr_doc['object_title_tesim'] = object.physical_objects_titles
+     solr_doc['object_title_ssim'] = object.physical_objects_titles
+     # institution code
+     solr_doc['institution_code_tesim'] = object.institution_code
+     solr_doc['institution_code_ssim'] = object.institution_code
+     # collection code
+     solr_doc['collection_code_tesim'] = object.collection_code
+     solr_doc['collection_code_ssim'] = object.collection_code
+     # catalog number
+     solr_doc['catalog_number_tesim'] = object.physical_objects_catalog_number
+     solr_doc['catalog_number_ssim'] = object.physical_objects_catalog_number
+     # taxonomy
+     solr_doc['taxonomy_tesim'] = object.physical_objects_taxonomies
+     solr_doc['taxonomy_ssim'] = object.physical_objects_taxonomies
    end
   end
 end

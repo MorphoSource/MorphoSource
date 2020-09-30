@@ -174,6 +174,38 @@ class Media < Morphosource::Works::Base
     object.specimen? ? "Biological Specimen" : "Cultural Heritage Object"
   end
 
+  def physical_objects_titles
+    physical_objects.map{ |o| o.title.first }
+  end
+
+  def physical_objects_catalog_number
+    physical_objects.map{ |o| o.catalog_number.first }
+  end
+
+  def institution_code
+    physical_objects.each_with_object([]) do |obj, codes|
+      obj.institution_code.each do |code|
+        codes << code
+      end
+    end
+  end
+
+  def collection_code
+    physical_objects.each_with_object([]) do |obj, codes|
+      obj.collection_code.each do |code|
+        codes << code
+      end
+    end
+  end
+
+  def physical_objects_taxonomies
+    specimens.each_with_object([]) do |s, taxonomies|
+      s.taxonomies_titles.each do |title|
+        taxonomies << title
+      end
+    end
+  end
+
   def imaging_event
     ancestors.find(&:imaging_event?)
   end

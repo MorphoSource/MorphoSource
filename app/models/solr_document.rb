@@ -523,8 +523,8 @@ class SolrDocument
       self[Solrizer.solr_name('shading_correction', :stored_searchable)]
   end
 
-  def filter
-      self[Solrizer.solr_name('filter', :stored_searchable)]
+  def ie_filter
+      self[Solrizer.solr_name('ie_filter', :stored_searchable)]
   end
 
   def frame_averaging

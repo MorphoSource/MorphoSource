@@ -30,8 +30,8 @@ function buildFilter(filter, filterGroupUl) {
   var li = document.createElement('li');
 
   var input = document.createElement('input');
-  input.className = 'string multi_value optional imaging_event_filter form-control multi-text-field';
-  input.setAttribute("id", "imaging_event_filter");
+  input.className = 'string multi_value optional imaging_event_ie_filter form-control multi-text-field';
+  input.setAttribute("id", "imaging_event_ie_filter");
   input.setAttribute("name", "imaging_event[filter][]");
   input.value = filter;
 
@@ -50,13 +50,13 @@ $( document ).ready(function() {
     var form = $('form[id*="imaging_event"]')[0];
 
     // Check the Filter Field (will be hidden)
-    var filterGroup = document.querySelector('div.imaging_event_filter');
+    var filterGroup = document.querySelector('div.imaging_event_ie_filter');
     var filterGroupUl = filterGroup.querySelector("ul");
     var concatFilters = filterGroup.querySelectorAll("input");
     var concatFilterCount = (filterGroup.querySelectorAll("input").length) - 1;
 
     // Two part filter entry
-    var filterWrapper = document.getElementById("imaging_event_filter_wrapper");
+    var filterWrapper = document.getElementById("imaging_event_ie_filter_wrapper");
     var filterWrapperUl = filterWrapper.querySelector('ul');
     var filterWrapperLi = filterWrapper.querySelector('li');
 

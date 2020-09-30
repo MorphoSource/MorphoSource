@@ -39,8 +39,8 @@ Rails.application.configure do
     port: '587',
     enable_starttls_auto: true
   }
-  # todo: pull the host from env variable later (see http://samvera.github.io/email_notifications.html)
-  config.action_mailer.default_url_options = { host: "morphosource-dev.lib.duke.edu" }
+  # pull the host from env variable later (see http://samvera.github.io/email_notifications.html)
+  config.action_mailer.default_url_options = { host: ENV["HOST_NAME"] }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

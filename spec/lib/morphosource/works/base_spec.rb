@@ -84,4 +84,21 @@ RSpec.describe Morphosource::Works::Base do
       end
     end
   end
+
+  describe 'member_of_public_collection_ids' do
+    let(:user)  { User.new(ms_id: 'abcdef') }
+    let(:work)  { Media.create(title: ['media title']) }
+    let(:collection_type) { Hyrax::CollectionType.create(title: 'Project') }
+    let(:public_collection_1) { Collection.create(title: ['Public Collection 1'], collection_type_gid: collection_type.gid, depositor: user.ms_id, visibility: 'open') }
+    let(:public_collection_2) { Collection.create(title: ['Public Collection 2'], collection_type_gid: collection_type.gid, depositor: user.ms_id, visibility: 'open') }
+    let(:private_collection) { Collection.create(title: ['Private Collection'], collection_type_gid: collection_type.gid, depositor: user.ms_id, visibility: 'restricted') }
+
+    before do
+      work.member_of_collections += [public_collection_1, public_collection_2, private_collection]
+    end
+
+    it 'returns only public collection ids' do
+      expect(work.member_of_public_collection_ids).to match_array([public_collection_1.id, public_collection_2.id])
+    end
+  end
 end

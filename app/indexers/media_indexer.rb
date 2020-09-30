@@ -29,6 +29,8 @@ class MediaIndexer < Morphosource::WorkIndexer
      # add organization facet
      solr_doc['media_organization_tesim'] = object.organization_titles
      solr_doc['media_organization_sim'] = object.organization_titles
+     # add public collection membership facet
+     solr_doc['member_of_public_collection_ids_ssim'] = object.member_of_public_collection_ids
    end
   end
 end

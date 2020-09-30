@@ -64,6 +64,10 @@ module Morphosource
         Morphosource::AttachmentService.get(self, field_name)
       end
 
+      def member_of_public_collection_ids
+        member_of_collections.select { |c| c.visibility == 'open' }.map(&:id)
+      end
+
       private
 
       def get_all_children(objects)

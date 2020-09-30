@@ -77,8 +77,8 @@ Rails.application.configure do
     port: '587',
     enable_starttls_auto: true
   }
-  # todo: pull the host from env variable later (see http://samvera.github.io/email_notifications.html)
-  config.action_mailer.default_url_options = { host: "morphosource-dev.lib.duke.edu" }
+  # pull the host from env variable later (see http://samvera.github.io/email_notifications.html)
+  config.action_mailer.default_url_options = { host: ENV["HOST_NAME"] }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

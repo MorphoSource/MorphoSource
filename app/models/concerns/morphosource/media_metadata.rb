@@ -114,6 +114,11 @@ module Morphosource
       property :map_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mapType") do |index|
         index.as :stored_searchable, :facetable
       end
+
+      property :preview_in_3d, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/previewIn3D") do |index|
+        index.as :stored_searchable
+      end
+
     end
   end
 end

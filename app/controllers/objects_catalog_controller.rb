@@ -12,12 +12,10 @@ class ObjectsCatalogController < CatalogController
     # organization
     config.add_facet_field solr_name("organization", :facetable), label: "Organization", limit: 5
     # media types
-    config.add_facet_field solr_name("media_type", :facetable), label: "Media Type", limit: 5
-    # media collection
-    config.add_facet_field solr_name("media_collections", :facetable), label: "Media Team / Project", limit: 5
+    config.add_facet_field "public_media_type_ssim", label: "Media Type", limit: 5
     # media tag
-    config.add_facet_field solr_name("media_keyword", :facetable), label: "Media Tag", limit: 5
-
+    config.add_facet_field "public_media_keyword_ssim", label: "Media Tag", limit: 5
+    # media collection
+    config.add_facet_field solr_name('media_member_of_public_collection_ids', :symbol), limit: 5, label: 'Media Team / Project', helper_method: :collection_title_by_id
   end
-
 end

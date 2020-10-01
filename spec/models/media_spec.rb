@@ -372,15 +372,17 @@ RSpec.describe Media do
     describe 'ancestor physical objects' do
       let(:media)         { Media.create(title: ['title'], media_type: ['Image'])}
       let(:organization)  { Organization.create(title: ['organization'])}
-      let(:specimen)      { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'])}
-      let(:cho)           { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes'])}
+      let(:taxonomy)      { Taxonomy.create(title: ['taxonomy title'])}
+      let(:specimen)      { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], catalog_number: ['abc123'], institution_code: ['xyz333'], collection_code: ['888yyy']) }
+      let(:cho)           { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes'], catalog_number: ['ghi345'], institution_code: ['lmn789'], collection_code: ['999ggg'])}
       let(:imaging_event) { ImagingEvent.create(title: ['imaging event'])}
 
       context 'object is a specimen' do
-        let(:works) {[organization, specimen, imaging_event, media]}
+        let(:works) {[organization, taxonomy, specimen, imaging_event, media]}
 
         before do
           organization.ordered_members << specimen
+          taxonomy.ordered_members << specimen
           specimen.ordered_members << imaging_event
           imaging_event.ordered_members << media
           works.each(&:save)
@@ -390,6 +392,11 @@ RSpec.describe Media do
         it 'returns info about the specimen' do
           expect(media.physical_objects).to match_array([specimen])
           expect(media.physical_object_type).to eq("Biological Specimen")
+          expect(media.physical_objects_titles).to match_array(specimen.title)
+          expect(media.physical_objects_catalog_number).to match_array(specimen.catalog_number)
+          expect(media.institution_code).to match_array(specimen.institution_code)
+          expect(media.collection_code).to match_array(specimen.collection_code)
+          expect(media.physical_objects_taxonomies).to match_array(specimen.taxonomies_titles)
           expect(media.organizations).to match_array([organization])
           expect(media.organization_titles).to match_array(organization.title)
         end
@@ -409,6 +416,10 @@ RSpec.describe Media do
         it 'returns info about the specimen' do
           expect(media.physical_objects).to match_array([cho])
           expect(media.physical_object_type).to eq("Cultural Heritage Object")
+          expect(media.physical_objects_titles).to match_array(cho.title)
+          expect(media.physical_objects_catalog_number).to match_array(cho.catalog_number)
+          expect(media.institution_code).to match_array(cho.institution_code)
+          expect(media.collection_code).to match_array(cho.collection_code)
           expect(media.organizations).to match_array([organization])
           expect(media.organization_titles).to match_array(organization.title)
         end

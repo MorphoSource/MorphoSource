@@ -38,6 +38,16 @@ RSpec.describe CatalogController, :type => :controller do
           end
         end
       end
+      describe 'media' do
+        describe 'object_title' do
+          subject { show_fields['object_title_tesim'] }
+          it 'has the correct attributes' do
+            expect(subject.key).to eq("object_title_tesim")
+            expect(subject.field).to eq("object_title_tesim")
+            expect(subject.label).to eq("Object Title Tesim")
+          end
+        end
+      end
     end
 
     describe 'search fields' do
@@ -46,6 +56,18 @@ RSpec.describe CatalogController, :type => :controller do
         subject { search_fields['all_fields'] }
         it 'includes taxonomy' do
           expect(subject.solr_parameters[:qf]).to include('taxonomy_tesim')
+        end
+        it 'includes object_title' do
+          expect(subject.solr_parameters[:qf]).to include('object_title_tesim')
+        end
+        it 'includes institution_code' do
+          expect(subject.solr_parameters[:qf]).to include('institution_code_tesim')
+        end
+        it 'includes collection_code' do
+          expect(subject.solr_parameters[:qf]).to include('collection_code_tesim')
+        end
+        it 'includes catalog_number' do
+          expect(subject.solr_parameters[:qf]).to include('catalog_number_tesim')
         end
       end
     end

@@ -123,14 +123,16 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name('x_spacing', :stored_searchable)
     config.add_show_field solr_name('y_spacing', :stored_searchable)
     config.add_show_field solr_name('z_spacing', :stored_searchable)
+    config.add_show_field solr_name('object_title', :stored_searchable)
 
-    # Physical Object Fields
-
-    config.add_show_field solr_name('physical_object_type', :stored_searchable)
-    config.add_show_field solr_name('bibliographic_citation', :stored_searchable)
+    # Media and Physical Object fields
     config.add_show_field solr_name('catalog_number', :stored_searchable)
     config.add_show_field solr_name('collection_code', :stored_searchable)
     config.add_show_field solr_name('institution_code', :stored_searchable)
+
+    # Physical Object Fields
+    config.add_show_field solr_name('physical_object_type', :stored_searchable)
+    config.add_show_field solr_name('bibliographic_citation', :stored_searchable)
     config.add_show_field solr_name('current_location', :stored_searchable)
     config.add_show_field solr_name('numeric_time', :stored_searchable)
     config.add_show_field solr_name('original_location', :stored_searchable)

@@ -13,7 +13,12 @@ RSpec.describe MediaIndexer do
       human_readable_media_type: 'Image',
       modality: "Scanning Electron Microscopy",
       physical_object_type: "Cultural Heritage Object",
-      organization_titles: ["Organization 1", "Organization 2"]
+      organization_titles: ["Organization 1", "Organization 2"],
+      physical_objects_titles: ['Title1', 'Title2'],
+      institution_code: ['abc'],
+      collection_code: ['def'],
+      physical_objects_catalog_number: ['112233'],
+      physical_objects_taxonomies: ['Genus1 > Species1', 'Genus2 > Species2']
     } }
 
     before do
@@ -49,6 +54,26 @@ RSpec.describe MediaIndexer do
     it 'indexes media_organization' do
       expect(subject['media_organization_tesim']).to eq field_values[:organization_titles]
       expect(subject['media_organization_sim']).to eq field_values[:organization_titles]
+    end
+    it 'indexes physical_objects_titles' do
+      expect(subject['object_title_tesim']).to eq field_values[:physical_objects_titles]
+      expect(subject['object_title_ssim']).to eq field_values[:physical_objects_titles]
+    end
+    it 'indexes institution_code' do
+      expect(subject['institution_code_tesim']).to eq field_values[:institution_code]
+      expect(subject['institution_code_ssim']).to eq field_values[:institution_code]
+    end
+    it 'indexes collection_code' do
+      expect(subject['collection_code_tesim']).to eq field_values[:collection_code]
+      expect(subject['collection_code_ssim']).to eq field_values[:collection_code]
+    end
+    it 'indexes physical_objects_catalog_number' do
+      expect(subject['catalog_number_tesim']).to eq field_values[:physical_objects_catalog_number]
+      expect(subject['catalog_number_ssim']).to eq field_values[:physical_objects_catalog_number]
+    end
+    it 'indexes physical_objects_taxonomies' do
+      expect(subject['taxonomy_tesim']).to eq field_values[:physical_objects_taxonomies]
+      expect(subject['taxonomy_ssim']).to eq field_values[:physical_objects_taxonomies]
     end
   end
 end

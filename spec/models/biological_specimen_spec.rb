@@ -64,6 +64,12 @@ RSpec.describe BiologicalSpecimen do
         end
       end
 
+      describe "#taxonomies_titles" do
+        it 'returns all its parent taxonomy titles' do
+          expect(subject.taxonomies_titles).to match_array([taxonomy1.title.first, taxonomy2.title.first, taxonomy3.title.first])
+        end
+      end
+
       describe "#canonical_taxonomy_object" do
         it 'returns the Taxonomy for its canonical_taxonomy' do
           expect(subject.canonical_taxonomy_object).to eq(taxonomy1)

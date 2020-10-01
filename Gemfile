@@ -5,10 +5,9 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+#gem 'rails', '~> 5.2'
 gem 'rails', '~> 5.2.4', '>= 5.2.4.3'
 gem 'rdf-vocab', '3.1.4'
-#gem 'active-fedora', '12.1.1'
-#gem 'activesupport', '5.2.4.4'
 
 # Use postgresql for all environments, not just production
 gem 'pg'

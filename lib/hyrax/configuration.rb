@@ -398,6 +398,16 @@ module Hyrax
       [2, 5, 10, 20, 40, 60, 80, 100] # rows per page that users can choose
     end
 
+    attr_writer :browse_page_item_rows
+    def browse_page_item_rows
+      @browse_page_item_rows ||= 100 # default rows per page on browse pages
+    end
+
+    attr_writer :browse_page_rows_per_page_range
+    def browse_page_rows_per_page_range
+      [100, 500, 1000, 2000] # rows per page that users can choose
+    end
+
     attr_writer :batch_user_key
     def batch_user_key
       @batch_user_key ||= 'batchuser@example.com'

@@ -1,4 +1,5 @@
 
-<%= "#{total_collections} Collections".pluralize(total_collections) %> · 
-<%= "#{total_scanning_facilities} Scanning Facility".pluralize(total_scanning_facilities) %> · 
-<%= "#{total_collection_and_scanning_facilities} Collection and Scanning Facility".pluralize(total_collection_and_scanning_facilities) %>
+<%= "#{total_collections} Collections".pluralize(total_collections) %>
+<% org_type_and_count.each do |key, val| %>
+	<%= render partial: 'counts_for_organization_types', :locals => { :type => key, :count => val } %>
+<% end %>

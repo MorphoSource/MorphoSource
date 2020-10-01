@@ -1,0 +1,10 @@
+<div class="hyc-blacklight hyc-bl-results">
+  <% if @paged_bso_member_docs.present? %>
+    <%= render_document_index @paged_bso_member_docs, work_type: 'biological_specimen' %>
+  <% end %>
+</div>
+<div class="hyc-blacklight hyc-bl-pager">
+  <%= render 'hyrax/organizations/paginate_bso' %>
+</div>
+
+<input type="hidden" name="bso-count" value="<%= @bso_member_count %>" />

@@ -16,7 +16,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
     let(:flux_normalization)  {['test']}
     let(:pixel_spacing_calibration)  {['test']}
     let(:shading_correction)  {['test']}
-    let(:filter)  {['test']}
+    let(:ie_filter)  {['test']}
     let(:frame_averaging)  {['test']}
     let(:projections)  {['test']}
     let(:voltage)  {['test']}
@@ -62,7 +62,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
             flux_normalization: flux_normalization,
             pixel_spacing_calibration: pixel_spacing_calibration,
             shading_correction: shading_correction,
-            filter: filter,
+            ie_filter: ie_filter,
             frame_averaging: frame_averaging,
             projections: projections,
             voltage: voltage,
@@ -105,7 +105,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
             flux_normalization: flux_normalization,
             pixel_spacing_calibration: pixel_spacing_calibration,
             shading_correction: shading_correction,
-            filter: filter,
+            ie_filter: ie_filter,
             frame_averaging: frame_averaging,
             projections: projections,
             voltage: voltage,

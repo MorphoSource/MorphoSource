@@ -14,7 +14,7 @@ module Hyrax
             :flux_normalization,
             :pixel_spacing_calibration,
             :shading_correction,
-            :filter,
+            :ie_filter,
             :frame_averaging,
             :projections,
             :voltage,

@@ -1,0 +1,42 @@
+<% content_for :body_css_classes do %>showcase browse<% end %>
+<% provide :page_title, t("hyrax.browse.title.physical_object_types") %>
+<div class="browse">
+
+  <% provide :page_header do %>
+    <div class="col-xs-12 title browse">
+      <h1><span class="fa fa-frog" aria-hidden="true"></span> 
+        <%= t("hyrax.browse.title.physical_object_types") %><br/>
+        <span class="counts">
+        	<%= "#{total_po} Physical Object".pluralize(total_po) %> · 
+        	<%= "#{total_media_by_po} Media".pluralize(total_media_by_po) %>
+				</span>
+      </h1>
+    </div>
+  <% end %>
+  <div class="col-xs-12 page-description">
+    <p><%= t("hyrax.browse.page_description.physical_object_types") %></p>
+  </div>
+  <div class="col-xs-12 body-wrapper">
+    <h2>
+    	<%= image_tag("bso_preview_small.png", alt: "Biological specimen", class: "po-image") %>
+			<%= link_to t("hyrax.browse.title.biological_specimen_objects"), main_app.object_search_path("f[human_readable_type_sim][]" => "Biological Specimen") %><br/>
+      <span class="counts">
+      	<%= "#{total_bso} Physical Object".pluralize(total_bso) %> · 
+      	<%= "#{total_bso_media} Media".pluralize(total_bso_media) %>
+			</span>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.biological_specimen_objects") %></p>
+
+    <h2>
+    	<%= image_tag("cho_preview_small.png", alt: "Cultural heritage object", class: "po-image") %>
+			<%= link_to t("hyrax.browse.title.cultural_heritage_objects"), main_app.object_search_path("f[human_readable_type_sim][]" => "Cultural Heritage Object") %><br/>
+      <span class="counts">
+      	<%= "#{total_cho} Physical Object".pluralize(total_cho) %> · 
+      	<%= "#{total_cho_media} Media".pluralize(total_cho_media) %>
+			</span>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.cultural_heritage_objects") %></p>
+
+  </div>
+
+</div>

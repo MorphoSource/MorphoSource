@@ -116,28 +116,26 @@ module Morphosource
         end
 
         def team_org_origin_count
-          query = nil
           params = {
+            rows: 0,
             fq: [
               assemble_po_id_and_not_collection_query(team_org_po_ids, collection_id),
               "#{solrize('has_model', :symbol)}:Media"
             ]
           }
-
-          solr.get(query, params)
+          solr.get(nil, params)
           solr.count
         end
 
         def get_subcollection_ids
-          query = nil
           params = {
+            fl: ['id'],
             fq: [
               "#{solrize('nesting_collection__parent_ids', :symbol)}:#{collection_id}",
               "#{solrize('has_model', :symbol)}:Collection"
             ]
           }
-
-          solr.get_docs(query, params).map { |d| d['id'] }
+          solr.get_docs(nil, params).map { |d| d['id'] }
         end
 
         # Other solr queries #
@@ -161,12 +159,12 @@ module Morphosource
           if is_org_team && collection_organization_id
             params[:fq] << assemble_po_id_or_collection_query(
               team_org_po_ids, 
-              Array(collection_id) + subcollection_ids
+              Array(collection_id) + Array(subcollection_ids)
             )
           elsif collection.collection_type.nestable?
             params[:fq] << assemble_or_query(
               solrize('member_of_collection_ids', :symbol),
-              Array(collection_id) + subcollection_ids
+              Array(collection_id) + Array(subcollection_ids)
             )
           else
             params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"

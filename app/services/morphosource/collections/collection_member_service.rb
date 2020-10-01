@@ -12,7 +12,7 @@ module Morphosource
       # 3) media representing physical objects from collection-linked media
       def all_member_media(organization_object_ids = [], fq_params = [])
         core_fq = "(#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id})"
-        core_fq += assemble_multiple_collection_query if collection.collection_type.nestable?
+        core_fq += assemble_multiple_collection_query if collection.respond_to?(:collection_type) && collection.collection_type.nestable?
         core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
         fq_params << core_fq
         fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"

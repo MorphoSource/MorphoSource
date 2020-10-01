@@ -1,0 +1,44 @@
+<% content_for :body_css_classes do %>showcase browse<% end %>
+<% provide :page_title, t("hyrax.browse.title.categories") %>
+<div class="browse">
+
+  <% provide :page_header do %>
+    <div class="col-xs-12 title browse">
+      <h1 class="categories"><span class="fa fa-book-open" aria-hidden="true"></span> 
+        <%= t("hyrax.browse.title.categories") %><br/>
+      </h1>
+    </div>
+  <% end %>
+  <div class="col-xs-12 page-description">
+    <p><%= t("hyrax.browse.page_description.categories.header") %></p>
+  </div>
+
+  <div class="col-xs-12 body-wrapper categories">
+    <h2><span class="fa fa-cube" aria-hidden="true"></span> 
+      <%= link_to t("hyrax.toolbar.browse.media_types_and_modalities"), main_app.browse_media_types_and_modalities_path %>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.categories.media_types_and_modalities") %></p>
+
+    <h2><span class="fa fa-frog" aria-hidden="true"></span> 
+      <%= link_to t("hyrax.toolbar.browse.physical_object_types"), main_app.browse_physical_object_types_path %>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.categories.physical_object_types") %></p>
+
+    <h2><span class="fa fa-folder" aria-hidden="true"></span> 
+      <%= link_to t("hyrax.toolbar.browse.projects"), main_app.browse_projects_path %>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.categories.projects") %></p>
+
+    <h2><span class="fa fa-users" aria-hidden="true"></span> 
+      <%= link_to t("hyrax.toolbar.browse.teams"), main_app.browse_teams_path %>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.categories.teams") %></p>
+
+    <h2><span class="fa fa-university" aria-hidden="true"></span> 
+      <%= link_to t("hyrax.toolbar.browse.organizations"), main_app.browse_organizations_path %>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.categories.organizations") %></p>
+
+  </div>
+
+</div>

@@ -31,7 +31,7 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
-      property :filter, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/filter") do |index|
+      property :ie_filter, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/filter") do |index|
         index.as :stored_searchable
       end
 

@@ -37,6 +37,17 @@ Rails.application.routes.draw do
   scope module: :hyrax do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]
+    
+    get 'organizations/:id', to: 'organizations#show', as: :show_organization
+    get 'organizations/specimens/:id', to: 'organizations#specimens'
+    get 'organizations/chos/:id', to: 'organizations#chos'
+    # media pagination
+    get 'organization_paging/organizations/:id', to: redirect { |params, request| "/organizations/#{request.params[:id]}?#{request.params.to_query}" }
+    # bso pagination
+    get 'organization_paging/organizations/specimens/:id', to: redirect { |params, request| "/organizations/#{request.params[:id]}?#{request.params.to_query}" }
+    # cho pagination
+    get 'organization_paging/organizations/chos/:id', to: redirect { |params, request| "/organizations/#{request.params[:id]}?#{request.params.to_query}" }
+
     #get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
     get 'teams/chos/:id', to: 'teams#chos'
@@ -113,8 +124,9 @@ Rails.application.routes.draw do
       resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'
       resources :projects, only: [:index], controller: 'browse_teams', as: 'browse_projects'
       resources :organizations, only: [:index], controller: 'browse_organizations', as: 'browse_organizations'
-
-      resources :physical_object_types, only: [:index], controller: 'browse_physical_object_types', as: 'browse_physical_object_types'
+      resources :media_types_and_modalities, only: [:index], action: :media_types_and_modalities, controller: 'browse', as: 'browse_media_types_and_modalities'
+      resources :physical_object_types, only: [:index], action: :physical_object_types, controller: 'browse', as: 'browse_physical_object_types'
+      resources :categories, only: [:index], action: :categories, controller: 'browse', as: 'browse_categories'
     end
 
   end
@@ -235,6 +247,18 @@ Rails.application.routes.draw do
 
   get '/submissions', to: 'submissions#new'
 
+  resources :docs do
+    collection do
+      get 'about'
+      get 'api'
+      get 'citation'
+      get 'contributors'
+      get 'glossary'
+      get 'guide'
+      get 'rss'
+    end
+  end
+
   scope module: :morphosource do
     scope module: :my do
 
@@ -291,4 +315,24 @@ Rails.application.routes.draw do
       patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
     end
   end
+
+  # MS1 Static Redirects
+  get '/About/home', to: redirect('/docs/about', status: 301)
+  get '/About/contact', to: redirect('/docs/about', status: 301)
+  get '/About/userInfo', to: redirect('/docs/guide', status: 301)
+  get '/About/userGuide', to: redirect('/docs/guide', status: 301)
+  get '/About/contributorInfo', to: redirect('/docs/contributors', status: 301)
+  get '/About/terms', to: redirect('/docs/glossary', status: 301)
+  get '/About/howToCite', to: redirect('/docs/citation', status: 301)
+  get '/About/API', to: redirect('/docs/api', status: 301)
+  get '/About/report', to: redirect('/docs/rss', status: 301)
+  get '/About/termsAndConditions', to: redirect('/terms', status: 301)
+
+  # MS1 Core Redirects
+  get '/Stats/dashboard', to: redirect('/', status: 301) 
+  get '/LoginReg/form', to: redirect('/users/sign_in', status: 301)
+  get '/LoginReg/logout', to: redirect('/users/sign_out', status: 301)
+  get '/MyProjects/Dashboard/projectList', to: redirect('/dashboard', status: 301)
+  get '/Browse/Index', to: redirect('/browse/categories', status: 301)
+  get '/Search/Index', to: redirect('/catalog/media', status: 301)
 end

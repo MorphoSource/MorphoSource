@@ -7,8 +7,6 @@ module Morphosource
     PUBLICATION_OPTIONS = [
       ["Publish with Open Download", Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC],
       ["Publish with Restricted Download", "restricted_download"],
-      ["Publish with No Download", "preview_only"],
-      ["Publish with Hidden File", "hidden"],
       ["Private", Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE]
     ]
 

@@ -1,3 +1,5 @@
+@import 'shared';
+
 .footer-section {
 	margin: 0px;
 	margin-left: -2px;
@@ -22,6 +24,10 @@
 	max-width: 60px;
 }
 
+.site-footer .container-fluid {
+	background-color: $ms-blue;
+}
+
 .site-footer #duke-logo img {
 	margin-bottom: 5px;
 }
@@ -29,6 +35,14 @@
 .copyright, .footer-links, .support, .icons {
   text-align: center;
   margin-bottom: 15px;
+}
+
+.footer-label {
+	color: #d5d5d5;
+}
+
+.footer-sublink {
+	font-size: smaller;
 }
 
 /* Small devices (tablets, 768px and up) [Bootstrap 3 breakpoint] */
@@ -54,11 +68,12 @@
 @media (min-width: 992px) {
   .copyright {
     text-align: left;
+    vertical-align: middle !important;
   }
 
-	.footer-links {
-		text-align: center;
-	}
+  .footer-links {
+  	text-align: center;
+  }
 
   .support {
     text-align: right;

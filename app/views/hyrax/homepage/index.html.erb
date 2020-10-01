@@ -1,3 +1,4 @@
+<% content_for :body_css_classes do %>showcase<% end %>
 <% provide :page_title, application_name %>
 <div id="front-banner" class="row equal">
   <div class="col-xs-12 col-sm-6 col-sm-push-6">
@@ -17,8 +18,8 @@
     <p style='font-size: 18px; font-weight: 300;'><%= t('morphosource.homepage.banner_text_2') %></p>
     <div class="row" style='text-align: center;'>
       <div class="col-xs-12 col-md-6 no-padding">
-        <a href='#' class='btn' style='text-align: left;'>
-          <div class="row">
+        <%= link_to Rails.application.routes.url_helpers.browse_categories_path, class: 'btn' do %>
+          <div class="row" style='text-align: left;'>
             <div class="col-xs-3 col-align col-align--center">
               <div class="row"><i class="fas fa-book-open fa-2x"></i></div>
             </div>
@@ -27,11 +28,11 @@
               <div class="row">Browse categories</div>
             </div>
           </div>
-        </a>
+        <% end %>
       </div>
       <div class="col-xs-12 col-md-6 no-padding">
-        <a href='#' class='btn' style='text-align: left;'>
-          <div class="row">
+        <%= link_to Rails.application.routes.url_helpers.guide_docs_path, class: 'btn' do %>
+          <div class="row" style='text-align: left;'>
             <div class="col-xs-3 col-align col-align--center">
               <div class="row"><i class="fas fa-feather-alt fa-2x"></i></div>
             </div>
@@ -40,7 +41,7 @@
               <div class="row">Learn more</div>
             </div>
           </div>
-        </a>
+        <% end %>
       </div>
     </div>
   </div>

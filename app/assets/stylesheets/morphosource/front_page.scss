@@ -64,9 +64,9 @@ div.controls .navbar-nav li {
 /* Navbar menu specific styles */
 
 div.controls .navbar-nav > li > a {
-  color: #fff;
-  height: 50px;
-  padding-top: 15px;
+  color: #fff !important;
+  height: 50px !important;
+  padding-top: 15px !important;
 }
 
 div.controls .navbar-nav > li.open > a {
@@ -108,6 +108,8 @@ div#front-banner {
 	border: 1px solid #000;
 	border-radius: 5px;
 	padding: 30px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 div#front-banner .btn {

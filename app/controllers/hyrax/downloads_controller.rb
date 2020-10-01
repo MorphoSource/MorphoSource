@@ -1,12 +1,11 @@
 require_dependency Hyrax::Engine.config.root.join('app','controllers','hyrax','downloads_controller.rb').to_s
 class Hyrax::DownloadsController
-  # Renders derivatives only. Original downloads are disabled.
+  # Renders derivatives by access_control_id only. Original downloads are disabled.
   def show
     case file
     when ActiveFedora::File
       # For original files that are stored in fedora
-      unauthorized_image = Rails.root.join("app", "assets", "images", "unauthorized.png")
-      send_file unauthorized_image, status: :unauthorized
+      redirect_to '/'
     when String
       # For derivatives stored on the local file system
       send_local_content
@@ -30,8 +29,13 @@ class Hyrax::DownloadsController
 
     def load_file
       file_reference = params[:file]
-      return default_file unless file_reference
-      file_path = Morphosource::DerivativePath.derivative_path_for_reference(params[asset_param_key], file_reference)
+      file_set = file_set_from_access_control_id(params[asset_param_key])
+      return default_file unless file_reference && file_set && file_set.id
+      file_path = Morphosource::DerivativePath.derivative_path_for_reference(file_set.id, file_reference)
       File.exist?(file_path) ? file_path : nil
+    end
+
+    def file_set_from_access_control_id(access_control_id)
+      FileSet.where(accessControl_ssim: access_control_id)&.first
     end
 end

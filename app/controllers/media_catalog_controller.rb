@@ -18,6 +18,7 @@ class MediaCatalogController < CatalogController
     # tags
     config.add_facet_field solr_name("keyword", :facetable), label: "Tag", limit: 5
     # project/team
-    config.add_facet_field solr_name('member_of_collection_ids', :symbol), limit: 5, label: 'Team / Project', helper_method: :collection_title_by_id
+    # config.add_facet_field solr_name('member_of_collection_ids', :symbol), limit: 5, label: 'Team / Project', helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('member_of_public_collection_ids', :symbol), limit: 5, label: 'Team / Project', helper_method: :collection_title_by_id
   end
 end

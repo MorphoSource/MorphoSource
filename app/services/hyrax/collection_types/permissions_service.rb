@@ -1,3 +1,5 @@
+# This file was copied over from Hyrax 3.0 pre-release to resolve dangerous query warnings after upgrading ruby/rails: https://duldev.atlassian.net/browse/MR-861
+# If no modifications have been made to this file, it can be removed after upgrading to Hyrax 3.0.
 module Hyrax
   module CollectionTypes
     class PermissionsService

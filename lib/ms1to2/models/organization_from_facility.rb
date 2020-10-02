@@ -5,6 +5,7 @@ module Ms1to2
         {
           :institution => :title,
           :city => :city,
+          :related_url => :website,
           :state_province => :stateprov,
           :country => :country,
           :created_on => :date_uploaded

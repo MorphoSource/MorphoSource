@@ -50,7 +50,7 @@ export default class RelationshipsControl {
   displayMembers() {
     if (this.workType == 'organization') {
       this.members.forEach((elem) =>
-        this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.organization_type, elem.institution_code, elem.institution_name, elem.collection_code, elem.recordset_id, elem.description, elem.address, elem.city, elem.state_province, elem.country, elem.contact_person))
+        this.registry.addResource(new OrganizationResource(elem.id, elem.label, elem.organization_type, elem.institution_code, elem.institution_name, elem.collection_code, elem.recordset_id, elem.description, elem.related_url, elem.address, elem.city, elem.state_province, elem.country, elem.contact_person))
       )      
     } else if (this.workType == 'device') {
       this.members.forEach((elem) =>
@@ -174,7 +174,7 @@ export default class RelationshipsControl {
       })
     }
     if (this.workType == 'organization') {
-      this.registry.addResource(new OrganizationResource(data.id, data.text, data.organization_type, data.institution_code, data.institution_name, data.collection_code, data.recordset_id, data.description, data.address, data.city, data.state_province, data.country, data.contact_person));
+      this.registry.addResource(new OrganizationResource(data.id, data.text, data.organization_type, data.institution_code, data.institution_name, data.collection_code, data.recordset_id, data.description, data.related_url, data.address, data.city, data.state_province, data.country, data.contact_person));
     } else if (this.workType == 'device') {
       this.registry.addResource(new DeviceResource(data.id, data.text, data.creator, data.modality, data.description, data.organization_institution));
     } else if (this.workType == 'taxonomy') {

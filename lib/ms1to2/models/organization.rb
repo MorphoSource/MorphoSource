@@ -6,6 +6,7 @@ module Ms1to2
           :name => :title,
           :description => :description,
           :city => :location_city,
+          :related_url => :website,
           :state_province => :location_state,
           :country => :location_country,
           :created_on => :date_uploaded

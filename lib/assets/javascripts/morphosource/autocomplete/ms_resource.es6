@@ -18,7 +18,7 @@ export default class MorphosourceResource extends Resource {
     // TODO: need a better way to pass the work type or attribute list to here
     if (this.url.indexOf('organizations') != -1) {
       results = data.map((obj) => {
-                               return { id: obj.id, text: obj.label[0], organization_type: obj.organization_type, institution_code: obj.institution_code, institution_name: obj.institution_name, collection_code: obj.collection_code, recordset_id: obj.recordset_id, description: obj.description, address: obj.address, city: obj.city, state_province: obj.state_province, country: obj.country, contact_person: obj.contact_person };
+                               return { id: obj.id, text: obj.label[0], organization_type: obj.organization_type, institution_code: obj.institution_code, institution_name: obj.institution_name, collection_code: obj.collection_code, recordset_id: obj.recordset_id, description: obj.description, related_url: obj.related_url, address: obj.address, city: obj.city, state_province: obj.state_province, country: obj.country, contact_person: obj.contact_person };
                             })
     } else if (this.url.indexOf('devices') != -1) {
       results = data.map((obj) => {

@@ -4,7 +4,7 @@ module Hyrax
 
     attr_reader :total_po, :po_ids_by_org
 
-    delegate :organization_type, :institution_name, :institution_code, :collection_code, :recordset_id, :address, :city, :state_province, :country, :contact_person, :team_id, :member_ids, to: :solr_document
+    delegate :organization_type, :institution_name, :institution_code, :collection_code, :recordset_id, :related_url, :address, :city, :state_province, :country, :contact_person, :team_id, :member_ids, to: :solr_document
 
 
 	  def browse_service

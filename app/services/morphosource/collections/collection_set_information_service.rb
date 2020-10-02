@@ -262,12 +262,19 @@ module Morphosource
             )
           end
 
-          combined_query = "#{solrize('member_of_collection_ids', :symbol)}:(#{collection_ids.join(' OR ')})"
-          combined_query += " OR " + org_team_query if org_team_query.present? 
-          combined_query += " OR " + nestable_query if nestable_query.present?
-          combined_query += " OR " + assemble_user_media_query
-          params[:fq] << combined_query
+          main_query = assemble_or_query(
+            solrize('member_of_collection_ids', :symbol),
+            collection_ids
+          )
 
+          query_clauses = [
+            main_query,
+            org_team_query,
+            nestable_query,
+            assemble_user_media_query
+          ] - ["", nil]
+          combined_query = "(#{query_clauses.join(' OR ')})"
+          params[:fq] << combined_query
           solr.get_facet_fields(nil, facet_fields, params)
 
           return solr.facet_fields(facet_fields), solr.count, 

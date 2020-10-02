@@ -1,7 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work Media`
 require 'rails_helper'
-require 'iiif_manifest'
 include ActionDispatch::TestProcess
 include Warden::Test::Helpers
 
@@ -33,14 +32,6 @@ RSpec.describe Hyrax::MediaController, type: :controller do
   let(:private)     { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
   let(:embargo)     { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO }
   let(:lease)       { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE }
-
-
-  describe "manifest builder " do
-    it "is a IIIFManifest::ManifestBuilder object" do
-      allow(subject).to receive(:presenter).and_return(test_presenter)
-      expect(subject.send(:manifest_builder)).to be_a IIIFManifest::ManifestBuilder
-    end
-  end
 
   describe "search_builder_class" do
     it "is Morphosource::WorkSearchBuilder" do

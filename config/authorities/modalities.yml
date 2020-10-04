@@ -10,6 +10,12 @@ terms:
   - id: PositronEmissionTomography
     term: Positron Emission Tomography (PET)
     active: true
+  - id: SinglePhotonEmissionComputedTomography
+    term: Single Photon Emission Computed Tomography (SPECT)
+    active: true
+  - id: NeutronComputedTomography
+    term: Neutron Computed Tomography (NCT)
+    active: true
   - id: SynchrotronImaging
     term: Synchrotron Imaging
     active: true

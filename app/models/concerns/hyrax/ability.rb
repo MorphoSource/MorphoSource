@@ -74,13 +74,13 @@ module Hyrax
       # @return [Boolean] true if the user has at least one admin set they can deposit into.
       def admin_set_with_deposit?
         ids = PermissionTemplateAccess.for_user(ability: self,
-                                                access: ['deposit', 'manage'])
-                                      .joins(:permission_template)
-                                      .select(:source_id)
-                                      .distinct
-                                      .pluck(:source_id)
+                                                  access: ['deposit', 'manage'])
+                                        .joins(:permission_template)
+                                        .select(:source_id)
+                                        .distinct
+                                        .pluck(:source_id)
         query = "_query_:\"{!raw f=has_model_ssim}AdminSet\" AND {!terms f=id}#{ids.join(',')}"
-        Hyrax::SolrService.count(query).positive?
+        ActiveFedora::SolrService.count(query).positive?
       end
 
       # This overrides hydra-head, (and restores the method from blacklight-access-controls)
@@ -118,7 +118,7 @@ module Hyrax
           end
         end
 
-        can :create, ProxyDepositRequest if (Flipflop.proxy_deposit? || Flipflop.transfer_works?) && registered_user?
+        can :create, ProxyDepositRequest if Flipflop.proxy_deposit? && registered_user?
 
         can :accept, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
         can :reject, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
@@ -166,7 +166,7 @@ module Hyrax
       # removes edit access for the depositor.
       def trophy_abilities
         can [:create, :destroy], Trophy do |t|
-          doc = Hyrax::SolrService.search_by_id(t.work_id, fl: 'depositor_ssim')
+          doc = ActiveFedora::Base.search_by_id(t.work_id, fl: 'depositor_ssim')
           current_user.user_key == doc.fetch('depositor_ssim').first
         end
       end

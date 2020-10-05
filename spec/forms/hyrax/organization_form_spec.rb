@@ -12,6 +12,7 @@ RSpec.describe Hyrax::OrganizationForm do
                                       :institution_code,
                                       :collection_code,
                                       :recordset_id,
+                                      :related_url,
                                       :address,
                                       :city,
                                       :state_province,
@@ -37,7 +38,7 @@ RSpec.describe Hyrax::OrganizationForm do
 
   let(:media_permissions_fields)  { [:download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as] }
 
-  let(:secondary_terms)           { [:description, :address, :city, :state_province, :country, :contact_person, :collection_code, :recordset_id] }
+  let(:secondary_terms)           { [:description, :related_url, :address, :city, :state_province, :country, :contact_person, :collection_code, :recordset_id] }
 
   it "has expected metadata terms" do
     expect(subject.terms).to match_array(terms)

@@ -220,6 +220,7 @@ class SubmissionsController < ApplicationController
         :institution_name => new_organization.institution_name.first,
         :collection_code => new_organization.collection_code.first,
         :description => new_organization.description.first,
+        :related_url => new_organization.related_url.first,
         :address => new_organization.address.first,
         :city => new_organization.city.first,
         :state_province => new_organization.state_province.first,

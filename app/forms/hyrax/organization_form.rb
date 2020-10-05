@@ -19,6 +19,7 @@ module Hyrax
       :institution_code,
       :collection_code,
       :recordset_id,
+      :related_url,
       :address,
       :city,
       :state_province,

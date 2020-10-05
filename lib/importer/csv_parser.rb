@@ -47,7 +47,7 @@ module Importer
     end
 
     def as_csv_table
-      @csv_table ||= CSV.read(file_name, headers: true)
+      @csv_table ||= CSV.read(file_name, headers: true, :encoding => 'UTF-8')
     end
 
   end

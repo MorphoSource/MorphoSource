@@ -74,9 +74,11 @@ module Hyrax
       # @return [Boolean] true if the user has at least one admin set they can deposit into.
       def admin_set_with_deposit?
         ids = PermissionTemplateAccess.for_user(ability: self,
-                                                access: ['deposit', 'manage'])
-                                      .joins(:permission_template)
-                                      .pluck('DISTINCT source_id')
+                                                  access: ['deposit', 'manage'])
+                                        .joins(:permission_template)
+                                        .select(:source_id)
+                                        .distinct
+                                        .pluck(:source_id)
         query = "_query_:\"{!raw f=has_model_ssim}AdminSet\" AND {!terms f=id}#{ids.join(',')}"
         ActiveFedora::SolrService.count(query).positive?
       end

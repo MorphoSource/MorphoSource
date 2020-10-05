@@ -223,6 +223,10 @@ module Hyrax
                                       type: type)
       end
 
+      def image_format(channels)
+        channels&.find { |c| c.include?('rgba') }.nil? ? 'image/jpeg' : 'image/png'
+      end
+
       def hostname
         @hostname || 'localhost'
       end

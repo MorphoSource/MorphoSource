@@ -15,6 +15,8 @@ module Ms1to2
             'MicroNanoXRayComputedTomography' => 'MicroNanoXRayComputedTomography',
             'MagneticResonanceImaging' => 'MagneticResonanceImaging',
             'PositronEmissionTomography' => 'PositronEmissionTomography',
+            'SinglePhotonEmissionComputedTomography' => 'SinglePhotonEmissionComputedTomography',
+            'NeutronComputedTomography' => 'NeutronComputedTomography',
             'SynchrotronImaging' => 'SynchrotronImaging',
             'Photogrammetry' => 'Photogrammetry',
             'StructuredLight' => 'StructuredLight',

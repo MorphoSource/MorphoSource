@@ -114,13 +114,31 @@ namespace :morphosource do
   end
 
   desc 'Mass ingest data'
-  task :mass_ingest => :environment do
-    MassIngestJob.perform_later({csv_path: File.expand_path("tmp/ingest/"), update: true, update_only_if_no_file: true})
+  task :mass_ingest, [:admin_email] => :environment do |task, args|
+    u = User.find_by(email: args[:admin_email])
+    MassIngestJob.perform_later({csv_path: File.expand_path("tmp/ingest/"), admin_email: u, update: true, update_only_if_no_file: true})
   end
 
   desc 'Mass ingest data not in a job context'
-  task :mass_ingest_no_job => :environment do
-    Ms1to2::Importer.new(File.expand_path("tmp/ingest/"), true, true).call
+  task :mass_ingest_no_job, [:admin_email]  => :environment do |task, args|
+    u = User.find_by(email: args[:admin_email])
+    Ms1to2::Importer.new(File.expand_path("tmp/ingest/"), u, true, true).call
+  end
+
+  desc 'Update blank organization institution and collection codes'
+  task :fix_organization_blanks => :environment do
+    Organization.all.each do |o|
+      changed = false
+      if o.institution_code.include?('blank')
+        o.institution_code = o.institution_code.map { |x| x == 'blank' ? '' : x }
+        changed = true
+      end
+      if o.collection_code.include?('blank')
+        o.collection_code = o.collection_code.map { |x| x == 'blank' ? '' : x }
+        changed = true
+      end
+      o.save! if changed
+    end
   end
 
   desc 'Set up MS dev team user accounts'

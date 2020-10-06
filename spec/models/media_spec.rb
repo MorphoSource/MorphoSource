@@ -122,6 +122,8 @@ RSpec.describe Media do
         "MicroNanoXRayComputedTomography": "X-Ray Computed Tomography (CT/microCT)",
         "MagneticResonanceImaging": "Magnetic Resonance Imaging (MRI)",
         "PositronEmissionTomography": "Positron Emission Tomography (PET)",
+        "SinglePhotonEmissionComputedTomography": "Single Photon Emission Computed Tomography (SPECT)",
+        "NeutronComputedTomography": "Neutron Computed Tomography (NCT)",
         "SynchrotronImaging": "Synchrotron Imaging",
         "Photogrammetry": "Photogrammetry",
         "StructuredLight": "Structured Light",

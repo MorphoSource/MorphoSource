@@ -265,6 +265,12 @@ function modalityAbbrev(m) {
     case 'PositronEmissionTomography':
       return 'PET'
       break;
+    case 'SinglePhotonEmissionComputedTomography':
+      return 'SPECT'
+      break;
+    case 'NeutronComputedTomography':
+      return 'NCT'
+      break;
     case 'SynchrotronImaging':
       return 'Synchro'
       break;

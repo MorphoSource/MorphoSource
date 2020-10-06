@@ -105,6 +105,7 @@ module Morphosource
           collection_code: parent.collection_code.first.to_s,
           recordset_id: parent.recordset_id.first.to_s,
           description: parent.description.first.to_s,
+          related_url: parent.related_url.first.to_s,
           address: parent.address.first.to_s,
           city: parent.city.first.to_s,
           state_province: parent.state_province.first.to_s,

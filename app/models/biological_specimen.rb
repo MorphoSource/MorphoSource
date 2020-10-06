@@ -34,6 +34,10 @@ class BiologicalSpecimen < Morphosource::Works::Base
     member_of.select{|work| work.class == Taxonomy}
   end
 
+  def taxonomies_titles
+    taxonomies.map{ |t| t.title.first }
+  end
+
   def canonical_taxonomy_object
     return nil unless canonical_taxonomy.present?
     Taxonomy.find(canonical_taxonomy.first)

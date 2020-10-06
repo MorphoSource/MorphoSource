@@ -5,7 +5,10 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.1.4'
+#gem 'rails', '~> 5.2'
+gem 'rails', '~> 5.2.4', '>= 5.2.4.3'
+gem 'rdf-vocab', '3.1.4'
+
 # Use postgresql for all environments, not just production
 gem 'pg'
 gem 'sass-rails', '~> 5.0'
@@ -31,7 +34,7 @@ gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git'
 # used for XML validation in Crossref DOI deposit
 gem 'nokogiri'
 
-gem 'hyrax', '2.7.0'
+gem 'hyrax', '2.9.0'
 
 gem 'om'
 
@@ -73,7 +76,7 @@ group :development, :test do
   gem 'rspec-its'
   gem 'rails-controller-testing'
   gem 'factory_bot_rails', '~> 4.8'
-  gem 'webmock'
+  gem 'webmock', '~> 3.5.0'
   gem 'geckodriver-helper'
   gem 'shoulda-callback-matchers', '~> 1.1.1'
   gem 'shoulda-matchers', '~> 3.1'

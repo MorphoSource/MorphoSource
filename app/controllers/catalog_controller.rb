@@ -143,6 +143,7 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name('is_type_specimen', :stored_searchable)
     config.add_show_field solr_name('occurrence_id', :stored_searchable)
     config.add_show_field solr_name('sex', :stored_searchable)
+    config.add_show_field solr_name('taxonomy', :stored_searchable)
 
     # CHOs
     config.add_show_field solr_name('cho_type', :stored_searchable)

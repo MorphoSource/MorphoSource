@@ -25,6 +25,13 @@ module Morphosource
           file_set.class.archive_mime_types
       end
 
+      def create_image_derivatives(filename)
+        # We're asking for layer 0, becauase otherwise pyramidal tiffs flatten all the layers together into the thumbnail
+        Morphosource::Derivatives::CroppedImageDerivatives.create(filename,
+                                                  outputs: [{ label: :thumbnail,
+                                                              url: derivative_url('thumbnail') }])
+      end
+
       def create_mesh_derivatives(filename)
         Morphosource::Derivatives::MeshDerivatives.create(filename,
                                                           outputs: [{ label: :glb,

@@ -796,6 +796,11 @@ class SolrDocument
     self[Solrizer.solr_name('gbif_key', :stored_searchable)]
   end
 
+  # Derivative download field
+  def access_control_id
+    self[Solrizer.solr_name('accessControl', :symbol)]
+  end
+
   # Download fields
   def download_groups
     self["download_access_group_ssim"]

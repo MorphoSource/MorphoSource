@@ -88,7 +88,7 @@ This repo ([MorphoSource_SF](https://github.com/morphosource/MorphoSource_SF)) i
 
     then run
 
-    `bin/rails hyrax:default_admin_set:create`
+    `rake morphosource:setup`
 
     (you can close the session when it's done)
 
@@ -119,11 +119,11 @@ This repo ([MorphoSource_SF](https://github.com/morphosource/MorphoSource_SF)) i
 ## Environment (via morphosource-vagrant)
 
 * Ubuntu 16.04 64-bit base machine
-* [Solr 6.6.0](http://lucene.apache.org/solr/): [http://localhost:8983/solr/](http://localhost:8983/solr/)
-* [Fedora 4.7.1](http://fedorarepository.org/): [http://localhost:8984/](http://localhost:8984/)
-* [Ruby 2.4.2](https://www.ruby-lang.org) (managed by RVM)
-* [Rails 5.1.4](http://rubyonrails.org/)
-* [Hyrax v2.2.0](http://hyr.ax/)
+* [Solr 7.1](http://lucene.apache.org/solr/): [http://localhost:8983/solr/](http://localhost:8983/solr/)
+* [Fedora 12.1](http://fedorarepository.org/): [http://localhost:8984/](http://localhost:8984/)
+* [Ruby 2.6](https://www.ruby-lang.org) (managed by RVM)
+* [Rails 5.2](http://rubyonrails.org/)
+* [Hyrax v2.9](http://hyr.ax/)
 
 ## Tests
 

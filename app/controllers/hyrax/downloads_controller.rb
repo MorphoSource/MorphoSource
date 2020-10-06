@@ -29,9 +29,14 @@ class Hyrax::DownloadsController
 
     def load_file
       file_reference = params[:file]
-      file_set = file_set_from_access_control_id(params[asset_param_key])
-      return default_file unless file_reference && file_set && file_set.id
-      file_path = Morphosource::DerivativePath.derivative_path_for_reference(file_set.id, file_reference)
+      return default_file unless file_reference
+      if file_reference == 'thumbnail'
+        file_path = Morphosource::DerivativePath.derivative_path_for_reference(params[asset_param_key], file_reference)
+      else
+        file_set = file_set_from_access_control_id(params[asset_param_key])
+        return default_file unless file_set && file_set.id
+        file_path = Morphosource::DerivativePath.derivative_path_for_reference(file_set.id, file_reference)
+      end
       File.exist?(file_path) ? file_path : nil
     end
 

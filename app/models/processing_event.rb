@@ -1,7 +1,7 @@
 class ProcessingEvent < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
-  after_save :add_id_to_title
+  after_save :add_id_to_title, :update_media_index, :update_object_index
 
   self.indexer = ProcessingEventIndexer
   # Change this to restrict which works can be added as a child.
@@ -17,6 +17,24 @@ class ProcessingEvent < Morphosource::Works::Base
 
   def imaging_event
     ancestors.find(&:imaging_event?)
+  end
+
+  def update_media_index
+    child_media.each(&:update_index)
+  end
+
+  def child_media
+    descendants.select{ |d| d.media? }
+  end
+
+  def update_object_index
+    return if objects.blank?
+
+    objects.each(&:update_index)
+  end
+
+  def objects
+    ancestors.select(&:physical_object?)
   end
 
   private

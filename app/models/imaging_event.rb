@@ -53,7 +53,8 @@ end
 class ImagingEvent < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator, ImagingEventParentDeviceModalityValidator
-  after_save :add_id_to_title
+
+  after_save :add_id_to_title, :update_child_media, :update_physical_object
 
   self.work_requires_files = false
   self.indexer = ImagingEventIndexer
@@ -70,6 +71,20 @@ class ImagingEvent < Morphosource::Works::Base
 
   def device
     Device.find(device_id.first)
+  end
+
+  def update_child_media
+    child_media.each(&:update_index)
+  end
+
+  def child_media
+    descendants.select{ |d| d.media? }
+  end
+
+  def update_physical_object
+    return if member_of.blank?
+
+    member_of.each(&:update_index)
   end
 
   private

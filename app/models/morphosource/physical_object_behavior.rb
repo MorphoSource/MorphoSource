@@ -75,4 +75,8 @@ module Morphosource::PhysicalObjectBehavior
       end
     end
   end
+
+  def update_child_media
+    media.each(&:update_index)
+  end
 end

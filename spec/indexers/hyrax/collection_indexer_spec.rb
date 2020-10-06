@@ -10,7 +10,7 @@ RSpec.describe Hyrax::CollectionIndexer do
 
   describe 'custom fields' do
     it 'indexes linked_organization' do
-      expect(subject['linked_organization_sim']).to eq(organization.title.first)
+      expect(subject['linked_organization_sim']).to eq(organization.title)
     end
   end
 end

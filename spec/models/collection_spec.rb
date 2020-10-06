@@ -19,8 +19,16 @@ RSpec.describe Collection, type: :model do
     let!(:org2)  { Organization.create(title: ['title'], team_id: []) }
     let!(:org3)  { Organization.create(title: ['title'], team_id: []) }
 
+    before do
+      project.member_of_collections << team
+      project.save
+    end
+
     it 'returns the organization linked to the team' do
       expect(team.organization).to eq(org1)
+    end
+    it 'returns the organization linked to a parent team' do
+      expect(project.organization).to eq(org1)
     end
   end
 
@@ -258,7 +266,7 @@ RSpec.describe Collection, type: :model do
 
     context 'there is a date uploaded' do
       let(:existing_date) { "2020-11-11 18:24:45 +0000" }
-      
+
       before do
         team.date_uploaded = existing_date
         team.save
@@ -268,5 +276,12 @@ RSpec.describe Collection, type: :model do
         expect(team.date_uploaded).to eq(existing_date)
       end
     end
+  end
+  describe '#child_projects' do
+    before do
+      project.member_of_collections << team
+      project.save
+    end
+    it { expect(team.child_projects).to match_array([project]) }
   end
 end

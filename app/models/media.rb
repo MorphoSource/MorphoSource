@@ -3,6 +3,7 @@ class Media < Morphosource::Works::Base
   validates_with Morphosource::ParentChildValidator
   after_create :mint_ark
   after_update :update_ark_status
+  after_save :update_object_index
 
   after_initialize do
     if self.new_record?

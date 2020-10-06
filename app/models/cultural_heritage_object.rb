@@ -16,4 +16,6 @@ class CulturalHeritageObject < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
+
+  after_save :update_child_media
 end

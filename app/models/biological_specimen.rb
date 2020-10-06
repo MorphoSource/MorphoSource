@@ -23,6 +23,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # Temporarily removing this because we're not sure if we want specimens to auto-update on change
   # before_update :update_metadata_from_idigbio_occurrence_id, if: :occurrence_id_changed?
 
+  after_save :update_child_media
+
   def best_taxonomy
     if canonical_taxonomy.present?
       canonical_taxonomy_object

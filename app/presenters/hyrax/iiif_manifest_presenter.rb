@@ -181,6 +181,7 @@ module Hyrax
 
       include Hyrax::DisplaysImage
       include Hyrax::DisplaysMesh
+      include Hyrax::DisplaysVolume
 
       ##
       # @!attribute [w] ability
@@ -213,13 +214,36 @@ module Hyrax
         return nil unless model.mesh?
         return nil unless latest_file_id
 
-        url = Hyrax::Engine.routes.url_helpers.download_path(model.access_control_id, file: 'glb')
+        url = URI::join(
+          hostname,
+          Hyrax::Engine.routes.url_helpers.download_path(model.access_control_id, file: 'glb')
+        )
         format = 'model/gltf+json'
-        type = 'PhysicalObject'
+        type = 'Model'
 
         # @see https://github.com/samvera-labs/iiif_manifest TODO: Change this to eventual mesh3D fork?
         IIIFManifest::DisplayMesh.new(url, 
                                       format: format, 
+                                      type: type)
+      end
+
+      ##
+      # Creates a display volume only where #model is a volume.
+      #
+      # @return [IIIFManifest::DisplayVolume] usable by the manifest builder.
+      def display_volume
+        return nil unless model.volume?
+        return nil unless latest_file_id
+
+        url = URI::join(
+          hostname,
+          Hyrax::Engine.routes.url_helpers.download_path(id, file: 'dcm')
+        )
+        format = 'application/dicom'
+        type = 'Model'
+
+        IIIFManifest::DisplayVolume.new(url,
+                                      format: format,
                                       type: type)
       end
 

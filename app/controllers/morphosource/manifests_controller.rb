@@ -35,7 +35,7 @@ module Morphosource
 
       def iiif_manifest_presenter(work)
         Hyrax::IiifManifestPresenter.new(work).tap do |p|
-          p.hostname = request.hostname
+          p.hostname = request.base_url
           p.ability = current_ability
         end
       end

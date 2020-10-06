@@ -1,5 +1,5 @@
 <% if presenter.representative_id.present? && presenter.representative_presenter.present? %>
-  <% if defined?(viewer) && viewer %>
+  <% if presenter.preview_in_3d? && defined?(viewer) && viewer %>
     <div class="viewer-wrapper">
       <div class="viewer">
   		  <iframe 
@@ -12,7 +12,9 @@
   	  </div>
   	</div>
   <% else %>
+    <div class="viewer-wrapper">
     <%= media_display presenter.representative_presenter %>
+    </div>
   <% end %>
 <% else %>
   <%= image_tag 'default.png', class: "canonical-image" %>

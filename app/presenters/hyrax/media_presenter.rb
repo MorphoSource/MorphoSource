@@ -107,6 +107,10 @@ module Hyrax
       imaging_event_editable == true
     end
 
+    def preview_in_3d?
+      preview_in_3d&.first != 'No' 
+    end
+
     def round_it(string_value)
       if is_number_with_decimal?(string_value)
         string_value.to_f.round(3).to_s

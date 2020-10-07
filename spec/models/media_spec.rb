@@ -49,6 +49,7 @@ RSpec.describe Media do
         subject.funding = ['foo']
         subject.publisher = ['foo']
         subject.cite_as = ['foo']
+        subject.preview_in_3d = ['No']
         expect(subject).to be_valid
     end
 

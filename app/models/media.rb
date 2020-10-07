@@ -6,7 +6,7 @@ class Media < Morphosource::Works::Base
 
   after_initialize do
     if self.new_record?
-      self.preview_in_3d = 'Yes'
+      self.preview_in_3d = Array.new(['Yes'])
     end
   end
 

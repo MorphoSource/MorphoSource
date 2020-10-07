@@ -6,7 +6,7 @@
       <iframe
         height="100%" 
         width="100%" 
-        src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= main_app.manifest_hyrax_media_path(Hyrax.config.front_page_media) %>&config=/universalviewer/front/uvconfig.json"
+        src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: Media.find(Hyrax.config.front_page_media).access_control_id) %>&config=/universalviewer/front/uvconfig.json"
         allowfullscreen
         frameborder="0">
       </iframe>

@@ -219,7 +219,7 @@ Hyrax.config do |config|
   config.banner_image = 'banner_image.png'
 
   # ID of a media work to be used as the front page preview
-  config.front_page_media = nil # this should not be merged into master!
+  config.front_page_media = Rails.env.production? ? '000200404' : nil
 
   # Temporary paths to hold uploads before they are ingested into FCrepo
   # These must be lambdas that return a Pathname. Can be configured separately

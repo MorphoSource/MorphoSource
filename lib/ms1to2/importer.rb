@@ -96,7 +96,7 @@ module Ms1to2
 
     def import_standard(m)
       opts = { :model => m.to_s }
-      opts[:depositor] = @admin_user.user_key if m != :BiologicalSpecimen
+      opts[:depositor] = @admin_user.user_key
       csv_importer = ::Importer::CSVImporter.new(
         File.join(input_path, csvfile(m)),
         '',

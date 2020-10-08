@@ -26,30 +26,6 @@
             <% end %>            
           <% end %>
 
-          <% if can? :deposit, @presenter.solr_document %>
-            <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
-                        Rails.application.routes.url_helpers.my_media_index_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
-                        class: 'btn btn-primary' %>
-            <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
-          <% end %>
-
-          <% if can? :edit, @presenter.solr_document %>
-            <% if @collection.team? && @presenter.collection_type_is_nestable? %>
-
-              <%= link_to t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
-                          'javascript:void(0)',
-                          class: 'btn btn-primary actions-add-subcollection' %>
-
-              <% if @presenter.user_can_create_new_nest_collection? %>
-                <%= link_to t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
-                  hyrax.dashboard_create_subcollection_under_path(parent_id: @presenter.id, target_collection_type_id: Hyrax::CollectionType.find_by(machine_id: "project").id),
-                  title: t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
-                  class: 'btn btn-primary' %>
-              <% end %>
-
-            <% end %>
-          <% end %>
-
           <% if can? :destroy, @presenter.solr_document %>
             <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
                         hyrax.dashboard_collection_path(@presenter),

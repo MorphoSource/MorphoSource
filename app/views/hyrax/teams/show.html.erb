@@ -43,34 +43,15 @@ provide :page_title, construct_page_title(@presenter.title)
       </div>
     </div>
     <div class="col-sm-9 col-md-4 flex">
-      <% if @presenter.collection_type.machine_id == 'team' %>
-        <% if @presenter.collection.organization %>
-          <% organization_presenter = Hyrax::OrganizationPresenter.new(@presenter.collection.organization, current_ability, nil) %>
-          <%= render 'counts_for_organization', presenter: organization_presenter %>
-        <% end %>
+      <% if @presenter.collection_type.machine_id == 'team' && @presenter.collection.organization %>
+        <% organization_presenter = Hyrax::OrganizationPresenter.new(@presenter.collection.organization, current_ability, nil) %>
+        <%= render 'counts_for_organization', presenter: organization_presenter %>
       <% end %>
     </div>
-
-    <div class="col-xs-12 col-sm-3 col-md-2 flex text-right">
-      <div class="show-actions col-xs-12">
-        <% if can?(:edit, @presenter.solr_document) || can?(:deposit, @presenter.solr_document) %>
-          <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Actions <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu">
-            <% if can?(:edit, @presenter.solr_document) %>
-              <li>
-                <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary' %>
-              </li>
-            <% end %>
-            <% if can?(:deposit, @presenter.solr_document) %>
-              <li>
-                <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
-              </li>
-            <% end %>
-          </ul>
+    <div class="col-xs-12 col-md-2 flex text-right">
+        <% if can?(:edit, @presenter.solr_document) %>
+          <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary' %>
         <% end %>
-      </div>
     </div>
 
   </div><!-- /row -->

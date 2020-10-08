@@ -12,12 +12,13 @@
           <% else %>
             <div class="collection-list">
               <fieldset>
-                <legend><%= t("hyrax.collection.select_form.select_heading") %></legend>
               <ul>
                 <% if @add_works_to_collection.present? %>
+                  <legend>The selected media will be added to:</legend>
                   <%= text_field_tag 'member_of_collection_label', @add_works_to_collection_label, disabled: true %>
                   <%= hidden_field_tag 'member_of_collection_ids', @add_works_to_collection %>
                 <% else %>
+                  <legend><%= t("hyrax.collection.select_form.select_heading") %></legend>
                   <%= text_field_tag 'member_of_collection_ids', nil,
                               prompt: :translate,
                               data: {

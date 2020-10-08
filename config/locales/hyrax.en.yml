@@ -230,13 +230,13 @@ en:
       collections:
         actions:
           add_media_to_Team:
-            label: 'Add media to team'
+            label: 'Select existing media to include in team'
           create_new_media_in_Team:
-            label: 'Create new media in team'
+            label: 'Upload new media to team'
           add_media_to_Project:
-            label: 'Add media to project'
+            label: 'Select existing media to include in project'
           create_new_media_in_Project:
-            label: 'Create new media in project'
+            label: 'Upload new media to project'
           add_project_to_Team:
             label: 'Add project to team'
             select_label: 'Select project'

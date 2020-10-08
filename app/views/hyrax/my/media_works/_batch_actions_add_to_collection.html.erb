@@ -1,0 +1,5 @@
+<%= render 'form_for_select_collection', user_collections: @user_collections %>
+
+<%= button_tag @add_to_collection_button_label,
+    class: 'btn btn-sm btn-default submits-batches submits-batches-add disabled', disabled: 'disabled',
+    data: { toggle: "modal", target: "#collection-list-container" } %>

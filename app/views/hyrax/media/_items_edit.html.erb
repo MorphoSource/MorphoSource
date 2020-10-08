@@ -16,7 +16,7 @@ members = presenter.member_presenters_for(@presenter.file_set_list)
     <% end %>
   </div>
 <% elsif can? :edit, presenter.id %>
-    <div class="alert alert-warning" role="alert"><%= t('.empty', type: presenter.human_readable_type) %></div>
+    <div class="alert alert-warning" role="alert">No file uploaded.</div>
 <% else %>
   <div class="alert alert-warning" role="alert"><%= t('.unauthorized', type: presenter.human_readable_type) %></div>
 <% end %>

@@ -51,6 +51,19 @@ en:
       collection:
         new: "New Collection"
   hyrax:
+    media:
+      member_edit:
+        delete: Delete
+        delete_confirm: Deleting %{file_set} from %{application_name} is permanent.  Please click OK to delete, or Cancel to return to the page.
+        delete_title: Delete %{file_set}
+        download: Download
+        download_title: Download %{file_set}
+        edit: Edit
+        edit_title: Edit %{file_set}
+        header: Select an action
+        press_to: Press to
+        versions: Versions
+        versions_title: Display previous versions
     collection:
       actions:
         edit:
@@ -148,6 +161,8 @@ en:
     product_name:           "MorphoSource"
     product_twitter_handle: "@MorphoSource"
     base:
+      form_files:
+        local_upload_html: "<p>You can add one file to associate with this media.</p>"
       parents:
         actions: Actions
         date_uploaded: Date Uploaded

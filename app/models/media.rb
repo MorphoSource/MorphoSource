@@ -4,6 +4,12 @@ class Media < Morphosource::Works::Base
   after_create :mint_ark
   after_update :update_ark_status
 
+  after_initialize do
+    if self.new_record?
+      self.preview_in_3d = Array.new(['Yes'])
+    end
+  end
+
   self.work_requires_files = true
 
   self.indexer = MediaIndexer

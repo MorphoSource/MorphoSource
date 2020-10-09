@@ -1078,10 +1078,52 @@ html {
       background-color: transparent;
       border: 1px solid transparent;
 
-      .viewer-wrapper {
+      .viewer-wrapper-2d {
         margin-top: 10px;
         background-color: transparent;
+
+        .viewer {
+          height: 100%;
+          padding: 10px;
+
+          @media (max-width: 767px) {
+            .image-wrapper {
+              width: 82vw;
+              height: 82vw;
+            }
+          }
+          @media (min-width: 768px) {
+            .image-wrapper {
+              width: 42vw;
+              height: 42vw;
+              max-width: 500px;
+              max-height: 500px;
+            }
+          }
+
+          .image-wrapper {
+            background-color: #000;
+            margin-left: auto;
+            margin-right: auto;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            img {
+              max-width: 250px;
+              margin: auto;
+            }
+            @media 
+            (-webkit-min-device-pixel-ratio: 2), 
+            (min-resolution: 192dpi) { 
+              /* Retina-specific */
+              img {
+                max-width: 500px;
+              }
+            }
+          }
+        }
       }
+
     }
 
   }

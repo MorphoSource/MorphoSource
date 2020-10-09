@@ -237,7 +237,7 @@ module Hyrax
 
         url = URI::join(
           hostname,
-          Hyrax::Engine.routes.url_helpers.download_path(id, file: 'dcm')
+          Hyrax::Engine.routes.url_helpers.download_path(model.access_control_id, file: 'dcm')
         )
         format = 'application/dicom'
         type = 'Model'

@@ -14,44 +14,50 @@ provide :page_title, construct_page_title(@presenter.title)
 
   <div class="row team-header">
 
-    <div class="col-sm-12 col-md-6 flex">
-      <div class="team-logo">
-        <% unless @presenter.logo_record.blank? %>
-          <% lr = @presenter.logo_record.first %>
-          <% if lr[:linkurl].blank? %>
-              <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
-          <% else %>
-              <a href="<%= lr[:linkurl] %>">
+    <div class="col-xs-12 col-sm-9 col-md-10">
+
+      <div class="col-sm-12 col-md-6 flex">
+        <div class="team-logo">
+          <% unless @presenter.logo_record.blank? %>
+            <% lr = @presenter.logo_record.first %>
+            <% if lr[:linkurl].blank? %>
                 <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
-              </a>
+            <% else %>
+                <a href="<%= lr[:linkurl] %>">
+                  <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+                </a>
+            <% end %>
           <% end %>
+        </div>
+        <div class="team-title">
+           <h1>
+              <div id="showcase-title">
+                <%= @presenter.title.first %>
+                <%= @presenter.collection_type_badge %>
+                <%= @presenter.permission_badge %>
+              </div>
+              <div class="text-muted">
+                <%= @media_member_count %> Media
+                <span class="bso-count"></span> 
+                 · Managed by: <%= @presenter.collection_managers %>
+              </div>
+          </h1>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 flex">
+        <% if @presenter.collection_type.machine_id == 'team' && @presenter.collection.organization %>
+          <% organization_presenter = Hyrax::OrganizationPresenter.new(@presenter.collection.organization, current_ability, nil) %>
+          <%= render 'counts_for_organization', presenter: organization_presenter %>
         <% end %>
       </div>
-      <div class="team-title">
-         <h1>
-            <div id="showcase-title">
-              <%= @presenter.title.first %>
-              <%= @presenter.collection_type_badge %>
-              <%= @presenter.permission_badge %>
-            </div>
-            <div class="text-muted">
-              <%= @media_member_count %> Media
-              <span class="bso-count"></span> 
-               · Managed by: <%= @presenter.collection_managers %>
-            </div>
-        </h1>
-      </div>
+
     </div>
-    <div class="col-sm-9 col-md-4 flex">
-      <% if @presenter.collection_type.machine_id == 'team' && @presenter.collection.organization %>
-        <% organization_presenter = Hyrax::OrganizationPresenter.new(@presenter.collection.organization, current_ability, nil) %>
-        <%= render 'counts_for_organization', presenter: organization_presenter %>
+
+    <div class="col-xs-12 col-sm-3 col-md-2 btn-wrapper">
+      <% if can?(:edit, @presenter.solr_document) %>
+        <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary col-xs-12' %>
       <% end %>
-    </div>
-    <div class="col-xs-12 col-md-2 flex text-right">
-        <% if can?(:edit, @presenter.solr_document) %>
-          <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary' %>
-        <% end %>
     </div>
 
   </div><!-- /row -->

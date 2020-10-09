@@ -229,14 +229,10 @@ en:
           collection_type: collection type
       collections:
         actions:
-          add_media_to_Team:
-            label: 'Select existing media to include in team'
-          create_new_media_in_Team:
-            label: 'Upload new media to team'
-          add_media_to_Project:
-            label: 'Select existing media to include in project'
-          create_new_media_in_Project:
-            label: 'Upload new media to project'
+          add_media_to:
+            label: 'Select existing'
+          create_new_media_in:
+            label: 'Upload new'
           add_project_to_Team:
             label: 'Add project to team'
             select_label: 'Select project'

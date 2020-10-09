@@ -558,6 +558,10 @@ input.disabled {
         margin-bottom: 8px;
       }
     }
+
+    label {
+      vertical-align: middle;
+    }
   }
 }
 /* /styles for dashboard collection edit page */

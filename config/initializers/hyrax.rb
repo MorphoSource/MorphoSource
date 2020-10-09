@@ -125,7 +125,7 @@ Hyrax.config do |config|
   config.python_path = ENV.fetch("MORPHOSOURCE_PYTHON", "python3")
 
   # Path to where derivative generation tmp files should be placed (temporary method)
-  config.derivatives_tmp_path = Rails.env.production? ? '/nas/morphosource_demo/tmp/' : ENV.fetch("DERIVATIVES_TMP_PATH", Rails.root.join("tmp"))
+  config.derivatives_tmp_path = ENV.fetch("DERIVATIVES_TMP_PATH", Rails.root.join("tmp"))
 
   # Path to the file derivatives creation tool
   # config.libreoffice_path = "soffice"

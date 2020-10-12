@@ -10,9 +10,11 @@ module Morphosource
 		def show
 			headers['Access-Control-Allow-Origin'] = '*'
 
-		 	if params.include?(:id) && media_from_access_control(params[:id])
+		 	if params.include?(:id) && (m = media_from_access_control(params[:id]))
+        authorize! :read, m.id
+
 		 		json = iiif_manifest_builder.manifest_for(
-		 			presenter: iiif_manifest_presenter(media_from_access_control(params[:id]))
+		 			presenter: iiif_manifest_presenter(m)
 		 		)
 
 	      respond_to do |wants|
@@ -22,6 +24,9 @@ module Morphosource
 		 	else
 		 		redirect_to '/'
 		 	end
+    rescue CanCan::AccessDenied
+      flash[:alert] = 'You are not authorized to access this resource.'
+      redirect_to '/'
 		end
 
 		private 

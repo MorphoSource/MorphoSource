@@ -193,6 +193,20 @@ RSpec.describe Hyrax::MediaPresenter do
       }
     end
 
+    context 'preview_in_3d default value' do
+      subject { presenter.preview_in_3d.first }
+      it { 
+        is_expected.to eq 'Yes'
+      }
+    end
+
+    context '#preview_in_3d?' do
+      subject { presenter.preview_in_3d? }
+      it { 
+        is_expected.to be true
+      }
+    end
+
   end
 
   describe '#has_child_media?' do

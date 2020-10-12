@@ -1,18 +1,24 @@
 <% if presenter.representative_id.present? && presenter.representative_presenter.present? %>
-  <% if defined?(viewer) && viewer %>
+  <% if presenter.preview_in_3d? && defined?(viewer) && viewer %>
     <div class="viewer-wrapper">
       <div class="viewer">
-  		  <iframe 
+        <iframe 
           height="100%" 
           width="100%" 
           src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: curation_concern.access_control_id) %>&config=<%= PulUvRails::UniversalViewer.config_src %>" 
           allowfullscreen 
           frameborder="0"
         ></iframe>
-  	  </div>
-  	</div>
+      </div>
+    </div>
   <% else %>
-    <%= media_display presenter.representative_presenter %>
+    <div class="viewer-wrapper-2d">
+      <div class="viewer">
+        <div class="image-wrapper">
+          <%= media_display presenter.representative_presenter %>
+        </div>
+      </div>
+    </div>
   <% end %>
 <% else %>
   <%= image_tag 'default.png', class: "canonical-image" %>

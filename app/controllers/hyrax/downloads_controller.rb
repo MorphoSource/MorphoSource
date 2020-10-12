@@ -17,7 +17,14 @@ class Hyrax::DownloadsController
   private
     # Override authorize_download! to use the :read permission instead of the :download permission
     def authorize_download!
-      authorize! :read, params[asset_param_key]
+      file_reference = params[:file]
+      if file_reference == 'thumbnail'
+        authorize! :read, params[asset_param_key]
+      else
+        file_set = file_set_from_access_control_id(params[asset_param_key])
+        file_set_id = file_set.present? ? file_set.id : nil
+        authorize! :read, file_set_id
+      end
     rescue CanCan::AccessDenied
       unauthorized_image = Rails.root.join("app", "assets", "images", "unauthorized.png")
       send_file unauthorized_image, status: :unauthorized
@@ -29,9 +36,14 @@ class Hyrax::DownloadsController
 
     def load_file
       file_reference = params[:file]
-      file_set = file_set_from_access_control_id(params[asset_param_key])
-      return default_file unless file_reference && file_set && file_set.id
-      file_path = Morphosource::DerivativePath.derivative_path_for_reference(file_set.id, file_reference)
+      return default_file unless file_reference
+      if file_reference == 'thumbnail'
+        file_path = Morphosource::DerivativePath.derivative_path_for_reference(params[asset_param_key], file_reference)
+      else
+        file_set = file_set_from_access_control_id(params[asset_param_key])
+        return default_file unless file_set && file_set.id
+        file_path = Morphosource::DerivativePath.derivative_path_for_reference(file_set.id, file_reference)
+      end
       File.exist?(file_path) ? file_path : nil
     end
 

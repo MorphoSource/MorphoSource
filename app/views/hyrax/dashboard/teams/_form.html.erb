@@ -2,9 +2,12 @@
 
 <%= simple_form_for @form, url: [hyrax, :dashboard, @form], wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
-  <div class="col-xs-9 title">
+  <div class="col-xs-9 title team-title">
     <span class="fa fa-edit" aria-hidden="true"></span>
-    <h1><%= @form.title %></h1>
+    <h1><%= @form.title %>
+      <%= @presenter.collection_type_badge %>
+      <%= @presenter.permission_badge %>
+    </h1>
     <span>
       <%= @collection_counts['media'] %> Media · <%= @collection_counts['po'] %> Objects
     </span>

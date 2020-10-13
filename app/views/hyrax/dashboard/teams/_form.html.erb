@@ -2,9 +2,12 @@
 
 <%= simple_form_for @form, url: [hyrax, :dashboard, @form], wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
-  <div class="col-xs-9 title">
+  <div class="col-xs-9 title team-title">
     <span class="fa fa-edit" aria-hidden="true"></span>
-    <h1><%= @form.title %></h1>
+    <h1><%= @form.title %>
+      <%= @presenter.collection_type_badge %>
+      <%= @presenter.permission_badge %>
+    </h1>
     <span>
       <%= @collection_counts['media'] %> Media · <%= @collection_counts['po'] %> Objects
     </span>
@@ -24,30 +27,6 @@
               <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
               <%#= link_to t(:'helpers.action.cancel'), hyrax.my_collections_path, class: 'btn btn-link' %>
             <% end %>            
-          <% end %>
-
-          <% if can? :deposit, @presenter.solr_document %>
-            <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
-                        Rails.application.routes.url_helpers.my_media_index_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
-                        class: 'btn btn-primary' %>
-            <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
-          <% end %>
-
-          <% if can? :edit, @presenter.solr_document %>
-            <% if @collection.team? && @presenter.collection_type_is_nestable? %>
-
-              <%= link_to t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
-                          'javascript:void(0)',
-                          class: 'btn btn-primary actions-add-subcollection' %>
-
-              <% if @presenter.user_can_create_new_nest_collection? %>
-                <%= link_to t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
-                  hyrax.dashboard_create_subcollection_under_path(parent_id: @presenter.id, target_collection_type_id: Hyrax::CollectionType.find_by(machine_id: "project").id),
-                  title: t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
-                  class: 'btn btn-primary' %>
-              <% end %>
-
-            <% end %>
           <% end %>
 
           <% if can? :destroy, @presenter.solr_document %>
@@ -174,9 +153,11 @@
 
           <% if can? :deposit, @presenter.solr_document %>
             <div class="row tab-action-buttons">
-              <%= link_to t('hyrax.dashboard.collections.actions.add_media_to_' + @presenter.collection_type_title + '.label'),
+
+              <label>Add media to <%= @presenter.collection_type_title.downcase %>:</label>
+              <%= link_to t('hyrax.dashboard.collections.actions.add_media_to.label'),
                           Rails.application.routes.url_helpers.my_media_index_path(add_works_to_collection: @presenter.id, add_works_to_collection_label: @presenter.title),
-                          class: 'btn btn-primary' %>
+                          class: 'btn btn-sm btn-primary' %>
 
               <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
             </div>

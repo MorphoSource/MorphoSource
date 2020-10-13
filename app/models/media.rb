@@ -6,7 +6,7 @@ class Media < Morphosource::Works::Base
 
   after_initialize do
     if self.new_record?
-      self.preview_in_3d = Array.new(['Yes'])
+      self.preview_mode = Array.new(['Interactive/Embeddable'])
     end
   end
 

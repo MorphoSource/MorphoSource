@@ -44,6 +44,9 @@
                 <%= f.input :thumbnail_id,
                             input_html: { data: { text: f.object.thumbnail_title } } %>
               <% end %>
+
+              <label class="control-label text required" for="collection_visibility">Visibility</label>
+              <%= render 'ms_form_visibility_component_public_private', f: f %>
             </div>
             <% if f.object.display_additional_fields? %>
               <%= link_to t('hyrax.collection.form.additional_fields'),

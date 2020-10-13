@@ -47,8 +47,8 @@ class SolrDocument
     self[Solrizer.solr_name('agreement_uri', :stored_searchable)]
   end
 
-  def preview_in_3d
-    self[Solrizer.solr_name('preview_in_3d', :stored_searchable)]
+  def preview_mode
+    self[Solrizer.solr_name('preview_mode', :stored_searchable)]
   end
 
   def cite_as

@@ -10,12 +10,25 @@
       <%= render_edit_field_partial('contributor', f: f) %>
       <%= render_edit_field_partial('based_near', f: f) %>
       <%= render_edit_field_partial('related_url', f: f) %>
-      <%#= f.input :title, as: :multi_value, label_wrapper_html: { class: 'required-flag' } %>
-      <%#= f.input :description, as: :multi_value, label: "Full description" %>
-      <%#= f.input :creator, as: :multi_value %>
-      <%#= f.input :contributor, as: :multi_value %>
-      <%#= f.input :based_near, as: :multi_value %>
-      <%#= f.input :related_url, as: :multi_value %>
+
+      <div class="row">
+        <div class="col-xs-6 showcase-label">
+          Visibility
+        </div>
+        <div class="col-xs-6 showcase-value">
+          
+          <div class="m-0 p-0 text-nowrap">
+          <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
+            <span class="label" id="current_visibility_value">
+              <%= @presenter.visibility %>
+            </span>
+
+            <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
+          <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
+            <%= render 'ms_form_visibility_component_public_private', f: f %>
+          </div>
+        </div>
+      </div>
 
       <h2>THUMBNAIL</h2>
       <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>

@@ -34,6 +34,22 @@ module Hyrax
         action_name == 'show' || action_name == 'specimens' || action_name == 'chos' ? @presenter : @collection
       end
 
+      def prepare_for_add_to_collection
+        if request.params["add_works_to_collection_label"]
+          @is_add_to_collection = true
+          @add_to_collection_title = request.params["add_works_to_collection_label"].first.html_safe
+          @media_works_page_title = "Select existing media to include in " + @add_to_collection_title
+          @add_to_collection_button_label = "Add media to " + @add_to_collection_title
+          @batch_actions_partial = 'batch_actions_add_to_collection'
+        else
+          @is_add_to_collection = false
+          @add_to_collection_title = ""
+          @media_works_page_title = "Media and Objects"
+          @add_to_collection_button_label = t('hyrax.dashboard.my.action.add_to_collection')
+          @batch_actions_partial = 'batch_actions'
+        end
+      end
+
       private
 
         #def presenter

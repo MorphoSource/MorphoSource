@@ -11,6 +11,19 @@ $( document ).ready(function() {
     };
     $('#fileupload').hyraxUploader(options);
     $('#fileuploadlogo').hyraxUploader({downloadTemplateId: 'logo-template-download'});
+
+    // show / hide file upload buttons
+    // currently the fileupload widget is on media edit page and submission flow
+    $('#fileupload')
+      .bind('fileuploadcompleted', function (e, data) {
+        $('.fileinput-button').hide();
+        $('.dropzone').hide();
+      })
+      .bind('fileuploaddestroyed', function (e, data) {
+        $('.fileinput-button').show();
+        $('.dropzone').show();
+     });
+
   }
 
 });

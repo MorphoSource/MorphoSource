@@ -28,8 +28,8 @@
 //= require morphosource/ms_editor
 //= require morphosource/media/upload_formats
 //= require morphosource/media/select_publication_status
-//= require morphosource/media/select_visibility_status
 //= require morphosource/media/tags
+//= require morphosource/collections/select_visibility_status
 //= require morphosource/ms_save_work_control
 //= require morphosource/ms_control
 //= require morphosource/ms_registry

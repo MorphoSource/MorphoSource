@@ -19,13 +19,13 @@
           
           <div class="m-0 p-0 text-nowrap">
           <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
-            <span class="label" id="current_visibility_value">
+            <span class="label" id="current_visibility_value_for_collection">
               <%= @presenter.visibility %>
             </span>
 
             <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
           <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
-            <%= render 'ms_form_visibility_component_public_private', f: f %>
+            <%= render 'ms_form_visibility_component_for_collection', f: f %>
           </div>
         </div>
       </div>

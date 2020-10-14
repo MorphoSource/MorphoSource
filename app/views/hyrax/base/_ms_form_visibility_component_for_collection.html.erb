@@ -1,7 +1,7 @@
 
     <fieldset>
-      <ul id="publication-options" class="visibility">
-        <span id="selected_visibility" class=<%= (@presenter&.visibility || 'new') %>></span>
+      <ul id="visibility-options" class="visibility">
+        <span id="selected_visibility_for_collection" class=<%= (@presenter&.visibility || 'new') %>></span>
         <li class="radio">
           <label>
             <%= f.radio_button :visibility, Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC, data: { 'target': '#collapsePublic', 'toggle':'collapse' } %>

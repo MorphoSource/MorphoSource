@@ -242,6 +242,10 @@ module MorphosourceHelper
       'Photo'
     when 'ScanningElectronMicroscopy'
       'SEM'
+    when 'BornDigital'
+      'BD'
+    when 'XRay'
+      'XRay'
     else
       'Etc'
     end

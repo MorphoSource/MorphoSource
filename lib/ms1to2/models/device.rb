@@ -25,7 +25,10 @@ module Ms1to2
             'Infrared' => 'Infrared',
             'ReflectanceTransformationImaging' => 'ReflectanceTransformationImaging',
             'Photography' => 'Photography',
-            'ScanningElectronMicroscopy' => 'ScanningElectronMicroscopy'
+            'ScanningElectronMicroscopy' => 'ScanningElectronMicroscopy',
+            'BornDigital' => 'BornDigital',
+            'Xray' => 'XRay',
+            'XRay' => 'XRay'
           }
         }
       end

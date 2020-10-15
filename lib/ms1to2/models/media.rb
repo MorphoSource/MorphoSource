@@ -3,8 +3,8 @@ module Ms1to2
     class Media < BaseObject
       def mappings
         {
-          :legacy_media_file_id => :media_file_id,
-          :legacy_media_group_id => :media_id,
+          :media_file_id => :legacy_media_file_id,
+          :media_id => :legacy_media_group_id,
           :ark => :ark,
           :doi => :doi,
           :media_type => :media_type,

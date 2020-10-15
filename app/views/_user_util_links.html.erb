@@ -15,6 +15,9 @@
       <li><%= link_to t("hyrax.toolbar.browse.teams"), main_app.browse_teams_path %></li>
       <li class="divider"></li>
       <li><%= link_to t("hyrax.toolbar.browse.organizations"), main_app.browse_organizations_path %></li>
+      <li class="divider"></li>
+      <li><%= link_to t("hyrax.toolbar.browse.taxonomy"), main_app.browse_taxonomies_path %></li>
+      <li class="divider"></li>
     </ul>
   </li><!-- /.btn-group -->
   <% if user_signed_in? %>

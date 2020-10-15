@@ -13,6 +13,7 @@ module Morphosource
 
     # names should be an array of hashes with name and rank information
     # e.g., [{name: 'Animalia', rank: 'kingdom'}, {name: 'Chordata', rank: 'phylum'}]
+    # If names is empty, will return kingdoms!
     def self.call(names=[], absent_ranks=[])
       new(names, absent_ranks).call
     end
@@ -29,8 +30,8 @@ module Morphosource
     end
 
     
-    def all_children(names, absent_ranks=[])
-      subrank = get_subrank(absent_ranks.present? ? absent_ranks.last : names.last[:rank])
+    def all_children(names=[], absent_ranks=[])
+      subrank = get_subrank(names, absent_ranks)
       return nil if !subrank
 
       children = {}
@@ -49,8 +50,6 @@ module Morphosource
 
     # For a set of names, returns direct children with non-"" names
     def direct_children(names=[], absent_ranks=[])
-      return nil if !names.present?
-
       solr_params = {
         fq: [
           "#{solrize('has_model', :symbol)}:Taxonomy",
@@ -68,7 +67,7 @@ module Morphosource
         solr_params[:fq] << "!#{prepare_field(r)}:*"
       end
 
-      subrank = get_subrank(absent_ranks.present? ? absent_ranks.last : names.last[:rank])
+      subrank = get_subrank(names, absent_ranks)
       return nil if !subrank
 
       solr_params[:fl] = prepare_field(subrank)
@@ -78,8 +77,6 @@ module Morphosource
 
     # For a set of names, returns count of direct children with "" names
     def count_nameless_children(names=[], absent_ranks=[])
-      return nil if !names.present?
-
       solr_params = {
         fl: 'id',
         fq: [
@@ -98,14 +95,22 @@ module Morphosource
         solr_params[:fq] << "!#{prepare_field(r)}:*"
       end
 
-      subrank = get_subrank(absent_ranks.present? ? absent_ranks.last : names.last[:rank])
+      subrank = get_subrank(names, absent_ranks)
       return nil if !subrank
       solr_params[:fq] << "!#{prepare_field(subrank)}:*"
 
       solr.get_count(nil, solr_params)
     end
 
-    def get_subrank(rank, nth=1)
+    def get_subrank(names=[], absent_ranks=[])
+      if absent_ranks.present?
+        rank = absent_ranks.last
+      elsif names.present? 
+        rank = names.last[:rank]
+      else
+        return TAXONOMY_RANKS.first
+      end
+
       idx = TAXONOMY_RANKS.index(rank)
       TAXONOMY_RANKS[idx+1] if idx
     end

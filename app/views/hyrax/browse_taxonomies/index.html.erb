@@ -1,0 +1,11 @@
+<% content_for :body_css_classes do %>showcase browse<% end %>
+<% provide :page_title, t("hyrax.browse.title.taxonomies") %>
+<div class="browse">
+  <div id="browse_taxonomy_container">
+    <%= render(
+      partial: 'hyrax/browse_taxonomies/browse',
+      locals: { taxonomy_params: @taxonomy_params, names: @names }
+      ) 
+    %>
+  </div>
+</div>

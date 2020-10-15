@@ -1,0 +1,28 @@
+<div id="taxonomy-browse">
+  <div id="path">
+    Current Path:
+    <div id="current-path">
+      <% previous_params = {} %>
+      <% taxonomy_params.each do |rank, name| %>
+        <% previous_params.merge!({ rank => name }) %>
+        <%= link_to "#{name} (#{rank})", main_app.browse_taxonomies_path(previous_params), :remote => true %>
+      <% end %>
+    </div>
+  </div>
+  <div> 
+  <div id="tree">
+    <% names.each do |rank, rank_names| %>
+      <div>
+      <h2><%= rank.titleize %></h2>
+      <% rank_names.each do |name| %>
+        <div>
+          <%= link_to name, main_app.browse_taxonomies_path(taxonomy_params.merge({ rank => name })), :remote => true %>
+        </div>
+      <% end %>
+      </div>
+    <% end %>
+  </div>
+  <div id="objects">
+    Objects
+  </div>
+</div>

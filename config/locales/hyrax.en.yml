@@ -70,6 +70,7 @@ en:
         physical_object_types: Physical Object Types
         media_types_and_modalities: Media Types and Modalities
         media_types: Media Types
+        taxonomies: Browse Taxonomy
         Mesh: Mesh or Point Cloud 
         CTImageSeries: CT Image Series 
         PhotogrammetryImageSeries: Photogrammetry Image Series

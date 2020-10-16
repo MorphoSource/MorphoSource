@@ -35,4 +35,14 @@
   <td><%= date(item,'approved') %></td>
   <td><%= date(item,'expired') %></td>
   <td><%= link_to "Download Item", main_app.download_items_path(item_id: item.id), class: "btn btn-info", method: :get %></td>
+  <td>
+
+    <div data-agreement="agreements_for_#{document.id}">
+      <div data-field="morphosource_use_agreement_type"><%= document.morphosource_use_agreement_type.first %></div>
+      <div data-field="permits_commercial_use"><%= document.permits_commercial_use.first %></div>
+      <div data-field="required_archival_of_published_derivatives"><%= document.required_archival_of_published_derivatives.first %></div>
+      <div data-field="permits_3d_use"><%= document.permits_3d_use.first %></div>
+    </div>
+
+  </td>
 </tr>

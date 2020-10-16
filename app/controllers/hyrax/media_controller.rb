@@ -77,7 +77,7 @@ module Hyrax
           added_flash << " The file might take some time to be processed."
           file_status = "added"
         elsif flash[:notice].include? 'updated'
-          added_flash << " The file might take some time to be processed."
+          added_flash << " Any updated file might take some time to be processed."
           file_status = "updated"
         elsif flash[:notice].include? 'deleted'
           file_status = "deleted"

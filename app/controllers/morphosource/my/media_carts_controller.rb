@@ -8,8 +8,24 @@ module Morphosource
       def index
         get_items('cart')
         get_restricted_items
+        get_download_agreements
         render 'morphosource/my/cart/index'
       end
+
+      def get_download_agreements
+        agreements = []
+        @items.each do |item|
+          media = Media.find(item.work_id)
+          descriptions = media.morphosource_use_agreement_type.first +
+            ' (' + media.permits_commercial_use.first +
+            ', ' + media.required_archival_of_published_derivatives.first +
+            ', ' + media.permits_3d_use.first +
+            ')'
+          agreements << descriptions
+        end
+        @agreements_group = agreements.inject(Hash.new(0)) { |h, e| h[e] += 1 ; h }
+      end
+
 
       def download
         get_downloadable_items

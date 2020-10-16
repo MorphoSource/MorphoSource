@@ -118,7 +118,8 @@ module Ms1to2
       if combined_table.length == 1
         ids = [combined_table.keys.first]
       else
-        ids = ids_in_order
+        # ids = ids_in_order
+        ids = combined_table.keys # for parent-less ingest
       end
 
       puts(ids)

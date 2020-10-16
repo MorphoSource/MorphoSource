@@ -95,6 +95,32 @@ class SolrDocument
     self[Solrizer.solr_name('rights_holder', :stored_searchable)]
   end
 
+
+  def license
+    self[Solrizer.solr_name('license', :stored_searchable)]
+  end
+
+  def rights_statement
+    self[Solrizer.solr_name('rights_statement', :stored_searchable)]
+  end
+
+  def morphosource_use_agreement_type
+    self[Solrizer.solr_name('morphosource_use_agreement_type', :stored_searchable)]
+  end
+
+  def permits_commercial_use
+    self[Solrizer.solr_name('permits_commercial_use', :stored_searchable)]
+  end
+
+  def required_archival_of_published_derivatives
+    self[Solrizer.solr_name('required_archival_of_published_derivatives', :stored_searchable)]
+  end
+
+  def permits_3d_use
+    self[Solrizer.solr_name('permits_3d_use', :stored_searchable)]
+  end
+
+
   def scale_bar
     self[Solrizer.solr_name('scale_bar', :stored_searchable)]
   end

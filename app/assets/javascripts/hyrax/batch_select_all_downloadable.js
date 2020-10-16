@@ -1,3 +1,21 @@
+$( document ).ready(function() {
+
+  //if ( $('.cart-page').length ) {
+  if ( $('form#form-download-selected').length ) {
+    var downloadSelectedForm = $('form#form-download-selected');
+    $(downloadSelectedForm).find('input[type="submit"]').bind('click', function(e) { 
+      // download selected button clicked
+      e.preventDefault();
+      $('#downloadAgreementsModal').modal('show');
+
+      //$(downloadSelectedForm).submit();
+    });
+
+  }
+
+});
+
+
 // function to hide or show the batch update buttons based on how may items are checked
 function toggleButtons(forceOn, otherPage ){
   forceOn = typeof forceOn !== 'undefined' ? forceOn : false

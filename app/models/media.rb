@@ -89,7 +89,7 @@ class Media < Morphosource::Works::Base
     when "BornDigital"
       "Born Digital"
     when "XRay"
-      "XRay"
+      "X-Ray"
     else
       imaging_event&.ie_modality&.first
     end

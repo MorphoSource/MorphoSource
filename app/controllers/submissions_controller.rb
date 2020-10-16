@@ -196,7 +196,8 @@ class SubmissionsController < ApplicationController
     end
 
     # render 'show' # re-enable for debug mode
-    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en') if @submission.media_id
+    flash_message = "New media has been added. "
+    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en'), notice: flash_message if @submission.media_id
   end
 
   # AJAX Physical object and media edit page submission methods

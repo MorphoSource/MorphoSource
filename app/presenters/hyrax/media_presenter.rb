@@ -9,7 +9,7 @@ module Hyrax
 
     delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, :preview_mode, to: :solr_document
 
-    attr_accessor :physical_object_type, :idigbio_uuid, :vouchered,
+    attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
       :device_and_facility, :device_link, :device, :device_manufacturer, :device_description,
       :device_organization_institution,
@@ -72,11 +72,28 @@ module Hyrax
       :compression
 
     def universal_viewer?
-      representative_id.present? &&
+      viewer_ready = representative_id.present? &&
         representative_presenter.present? &&
+        Hyrax.config.iiif_image_server?  &&
+        universal_viewable_ready?
+      return viewer_ready
+    end
+
+    def is_file_uploaded?
+      if !@file_set_list.present? && @file_status != "added" && @file_status != "updated"
+        is_uploaded = false
+      else
+        is_uploaded = true
+      end
+      return is_uploaded
+    end
+
+    def universal_viewable_ready?
+      return false unless representative_presenter.present?
+      viewable = 
         ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.volume? ) &&
-        Hyrax.config.iiif_image_server? &&
         ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_volume? )
+      return viewable
     end
 
     def source_of_record
@@ -152,6 +169,7 @@ module Hyrax
       @image_height = []
       @compression = []
       @color_depth = []
+      @file_status = ""
       temp = ""
       contents_mime_type = ""
       @file_set_list = media.file_set_ids

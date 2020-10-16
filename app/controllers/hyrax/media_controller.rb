@@ -41,6 +41,7 @@ module Hyrax
     def showcase
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       @presenter.get_showcase_data
+      set_flash
       render '/hyrax/media/showcase', presenter: @presenter
     end
 
@@ -64,7 +65,31 @@ module Hyrax
       @countries_service = Morphosource::CountriesService.new
       @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
       @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
+      set_flash
       render '/hyrax/media/edit', presenter: @presenter
+    end
+
+    def set_flash
+      added_flash = ""
+      file_status = ""
+      if flash[:notice].present?
+        if flash[:notice].include? 'added'
+          added_flash << " The file might take some time to be processed."
+          file_status = "added"
+        elsif flash[:notice].include? 'updated'
+          added_flash << " The file might take some time to be processed."
+          file_status = "updated"
+        elsif flash[:notice].include? 'deleted'
+          file_status = "deleted"
+        end          
+      else
+        flash[:notice] = ""
+      end
+      @presenter.file_status = file_status
+      #added_flash << " ... universal_viewer : " + @presenter.universal_viewer?.to_s 
+      #added_flash << " ... universal_viewable_ready : " + @presenter.universal_viewable_ready?.to_s 
+      #added_flash << " ... is_file_uploaded : " + @presenter.is_file_uploaded?.to_s 
+      flash[:notice] << added_flash    
     end
 
     # in case we need to reference the old edit page. remove this action later

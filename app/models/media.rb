@@ -87,7 +87,7 @@ class Media < Morphosource::Works::Base
     when "ScanningElectronMicroscopy"
       "Scanning Electron Microscopy"
     when "BornDigital"
-      "BD"
+      "Born Digital"
     when "XRay"
       "XRay"
     else

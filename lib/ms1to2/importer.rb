@@ -128,7 +128,7 @@ module Ms1to2
           # prepare
           attrs = combined_table[id]
           attrs.delete(:collection_id)
-          csv_importer = ::Importer::CSVImporter.new('', input_path, { :model => to_model(id) })
+          csv_importer = ::Importer::CSVImporter.new('', input_path, { :model => to_model(id).to_s })
 
           if !to_model(id).to_s.constantize.exists?(id)
             # create

@@ -1,9 +1,11 @@
+
 $( document ).ready(function() {
 
+  downloadForm = $('form#form-download-selected');
   //if ( $('.cart-page').length ) {
-  if ( $('form#form-download-selected').length ) {
-    var downloadSelectedForm = $('form#form-download-selected');
-    $(downloadSelectedForm).find('input[type="submit"]').bind('click', function(e) { 
+  if ( downloadForm.length ) {
+    
+    $(downloadForm).find('input[type="submit"]').bind('click', function(e) { 
       // download selected button clicked
       e.preventDefault();
       $('#downloadAgreementsModal').modal('show');
@@ -11,9 +13,80 @@ $( document ).ready(function() {
       //$(downloadSelectedForm).submit();
     });
 
+
+    $('#unrestricted_documents input[type="checkbox"]').bind('click', function(e) { 
+      do_agreements();
+    });
+
   }
 
+  $(document).on('click', '#modal-agree', function(){
+    if($(this).prop('checked')){
+      $('#modal-download').removeAttr('disabled');
+    } else {
+      $('#modal-download').attr('disabled', 'disabled');
+    }
+  });
+
+  $(document).on('click', '#modal-download', function(){
+    downloadForm.submit();
+    $('#downloadAgreementsModal').modal('hide');
+  });
+
 });
+
+function do_agreements() {
+  agreements = new Array();
+  links = new Array();
+  $("input[type='checkbox'].downloadable_items:checked").each(function() {
+    checkboxId = $(this).attr('id');
+    agreementData = '[data-checkbox-id="' + checkboxId + '"] ';
+    desc = agreementData + 'input[name="description"]';
+    link = agreementData + 'input[name="license"]';
+    agreements.push($(desc).val());
+    links.push($(link).val());
+  });
+  agreementGroup = groupCounts(agreements);
+  links = jQuery.unique(links);
+  display = displayAgreements(agreementGroup, links);
+  $('.agreement-items-wrapper').empty().append(display);
+}
+
+function displayAgreements(group, links) {
+  var html = "Agreements";
+  html += "<ul>";
+  jQuery.each(group, function(desc, count) {
+    html += "  <li>" + count + " Media: "+ desc + "</li>";
+  });
+  html += "</ul>";
+  html += "Please click on each link to read the agreement specific to the selected media:";
+  html += "<ul>";
+  jQuery.each(links, function(index, link) {
+    html += "  <li>" + link + "</li>";
+  });
+  html += "</ul>";
+
+  wrapper = [
+    "<div class='agreement-items'>",
+    html,
+    "</div>"
+  ].join("\n");
+
+  return wrapper;
+}
+
+function groupCounts(items) {
+  counts = {};
+  jQuery.each(items, function(key,value) {
+    if (!counts.hasOwnProperty(value)) {
+      counts[value] = 1;
+    } else {
+      counts[value]++;
+    }
+  });
+
+  return counts;
+}
 
 
 // function to hide or show the batch update buttons based on how may items are checked

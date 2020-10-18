@@ -100,6 +100,22 @@ html {
   padding: 5px;
 }
 
+/* modal styles */
+.modal-content {
+  h2 {
+    font-size:22px;
+  }
+  .agreement-content {
+    font-size: 11px;
+    .agreement-items-wrapper {
+      font-size: 11px;
+    }      
+    .agree-checkbox > div {
+      display: inline;
+    }
+  }
+}
+
 .showcase.teams, .showcase.media-works, .showcase.browse { /* / teams and projects show page styles */
   .title.browse {
     margin-top:30px;

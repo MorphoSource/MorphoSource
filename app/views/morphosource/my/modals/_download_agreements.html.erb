@@ -1,20 +1,28 @@
-<!--div class="modal fade" id="downloadAgreementsModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true" -->
+<div class="modal fade" id="downloadAgreementsModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span id="close-modal" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        Download Agreements
-
-        <% @agreements_group.each do |description, count| %>
-          <p><%= count %> Media: <%= description %></p>
-
-        <% end %>
-
+        <h2>Download Agreements</h2>
       </div>
+      <div class="modal-body">
+        <div class="agreement-content">
+        <%# @agreements_group.each do |description, count| %>
 
+        <%# end %>
+          <div class="agreement-items-wrapper">
+            <!-- items filled by js -->
+          </div>
 
-
-
+          <div class="agree-checkbox">
+            <div><input type="checkbox" id="modal-agree" name="modal-agree" /></div>
+            <div><b>I agree to all terms and conditions of use for this data as specified in the agreement(s) above and in any licenses associated with the data.</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+          <input type="button" name="download" value="Download" class="btn btn-info" id="modal-download" disabled="disabled" />
+      </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

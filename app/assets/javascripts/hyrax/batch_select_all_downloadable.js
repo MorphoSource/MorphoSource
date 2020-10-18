@@ -9,10 +9,7 @@ $( document ).ready(function() {
       // download selected button clicked
       e.preventDefault();
       $('#downloadAgreementsModal').modal('show');
-
-      //$(downloadSelectedForm).submit();
     });
-
 
     $('#unrestricted_documents input[type="checkbox"]').bind('click', function(e) { 
       do_agreements();
@@ -42,13 +39,17 @@ function do_agreements() {
     checkboxId = $(this).attr('id');
     agreementData = '[data-checkbox-id="' + checkboxId + '"] ';
     desc = agreementData + 'input[name="description"]';
-    link = agreementData + 'input[name="license"]';
+    license = agreementData + 'input[name="license"]';
+    rightsStatement = agreementData + 'input[name="rights_statement"]';
+    customLink = agreementData + 'input[name="custom_agreement"]';
     agreements.push($(desc).val());
-    links.push($(link).val());
+    links.push($(license).val());
+    links.push($(rightsStatement).val());
+    if ($(customLink).val() != '')
+      links.push($(customLink).val());
   });
   agreementGroup = groupCounts(agreements);
-  links = jQuery.unique(links);
-  display = displayAgreements(agreementGroup, links);
+  display = displayAgreements(agreementGroup, links.uniq());
   $('.agreement-items-wrapper').empty().append(display);
 }
 
@@ -56,13 +57,13 @@ function displayAgreements(group, links) {
   var html = "Agreements";
   html += "<ul>";
   jQuery.each(group, function(desc, count) {
-    html += "  <li>" + count + " Media: "+ desc + "</li>";
+    html += "  <li>" + count + " media:<br/>"+ splitCamelCase(desc) + "</li>";
   });
   html += "</ul>";
   html += "Please click on each link to read the agreement specific to the selected media:";
   html += "<ul>";
   jQuery.each(links, function(index, link) {
-    html += "  <li>" + link + "</li>";
+    html += "  <li>" + agreementLinkHTML(link) + "</li>";
   });
   html += "</ul>";
 

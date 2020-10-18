@@ -7,7 +7,12 @@ module Hyrax
     include MorphosourceHelper
     include MediaFinderHelper
 
-    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, :preview_mode, to: :solr_document
+    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, :preview_mode, 
+      :morphosource_use_agreement_type,
+      :permits_commercial_use,
+      :required_archival_of_published_derivatives,
+      :permits_3d_use,
+      to: :solr_document
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
@@ -136,8 +141,11 @@ module Hyrax
       end
     end
 
+    def media
+      @media ||= Media.where('id' => solr_document.id).first
+    end
+
     def get_showcase_data
-      media = Media.where('id' => solr_document.id).first
       # todo: need to get the user name (and a link to user) from the email address
       @data_managed_by = solr_document.depositor
 
@@ -489,6 +497,24 @@ module Hyrax
     def supplied_record_badge
       # override the method in presents_attributes, passing the idigbio_uuid retrieved from get_showcase_data
       supplied_record_badge_class.new(@idigbio_uuid).render
+    end
+
+    def custom_agreement
+      if solr_document.agreement_uri.present?
+        return solr_document.agreement_uri.first
+      elsif media.attachment('agreement').present? 
+        return Rails.application.routes.url_helpers.attachment_path(id: media.id, field: 'agreement')
+      else
+        return nil
+      end
+    end
+
+    def agreement_description
+      description = solr_document.morphosource_use_agreement_type.first + ": (" + 
+             solr_document.permits_commercial_use.first + ", " + 
+             solr_document.required_archival_of_published_derivatives.first + ", " + 
+             solr_document.permits_3d_use.first  + ")" 
+      return description
     end
 
     # methods for showcase partials

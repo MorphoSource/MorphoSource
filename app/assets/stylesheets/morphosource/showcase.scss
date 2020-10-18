@@ -107,12 +107,13 @@ html {
   }
   .agreement-content {
     font-size: 11px;
+    li {
+      font-size: 11px;
+      margin-left: -20px;
+    }
     .agreement-items-wrapper {
       font-size: 11px;
     }      
-    .agree-checkbox > div {
-      display: inline;
-    }
   }
 }
 

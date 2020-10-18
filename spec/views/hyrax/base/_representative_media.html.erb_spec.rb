@@ -22,8 +22,12 @@ RSpec.describe 'hyrax/base/_representative_media.html.erb', type: :view do
 
   let(:ability) { double }
 
-  let(:presenter) do
+  let(:work_show_presenter) do
     Hyrax::WorkShowPresenter.new(work_solr_document, ability, request)
+  end
+
+  let(:media_presenter) do
+    Hyrax::MediaPresenter.new(work_solr_document, ability, request)
   end
 
   let(:representative_presenter) do
@@ -40,32 +44,32 @@ RSpec.describe 'hyrax/base/_representative_media.html.erb', type: :view do
 
   describe 'UniversalViewer iframe presence/absence' do
 
-# skip the follow tests for now, since curation_concern is not available 
+  	context 'when representative presenter and id present' do
+  		before do
+	  		allow(media_presenter).to receive(:representative_presenter).and_return(representative_presenter)
+	  		allow(media_presenter).to receive(:representative_id).and_return('123')
+	  	end
 
-#  	context 'when representative presenter and id present' do
-#  		before do
-#	  		allow(presenter).to receive(:representative_presenter).and_return(representative_presenter)
-#	  		allow(presenter).to receive(:representative_id).and_return('123')
-#	  	end
-#
-#  		context 'when viewer is defined' do
-#  			it 'renders UniversalViewer iframe' do
-#  				render 'hyrax/base/representative_media', presenter: presenter, viewer: true
-#  				expect(page).to have_selector 'iframe'
-#  			end
-#  		end
-#
-#  		context 'when viewer is not defined' do
-#  			it 'omits UniversalViewer iframe' do
-#  				render 'hyrax/base/representative_media', presenter: presenter
-#  				expect(page).not_to have_selector 'iframe'
-#  			end
-#  		end
-#  	end
+      # todo: need to revise the tests after viewer logic changes
+  		#context 'when viewer is defined' do
+  		#	it 'renders UniversalViewer iframe' do
+  		#		render 'hyrax/base/representative_media', presenter: media_presenter, viewer: true
+  		#		expect(page).to have_selector 'iframe'
+  		#	end
+  		#end
+
+  		context 'when viewer is not defined' do
+  			it 'omits UniversalViewer iframe' do
+  				render 'hyrax/base/representative_media', presenter: media_presenter
+  				expect(page).not_to have_selector 'iframe'
+  			end
+  		end
+  	end
 
   	context 'when representative presenter and id not present' do
   		before do
-	  		render 'hyrax/base/representative_media', presenter: presenter
+        allow(media_presenter).to receive(:is_file_uploaded?) { true }        
+        render 'hyrax/base/representative_media', presenter: media_presenter
 	  	end
 
   		it 'omits UniversalViewer iframe' do

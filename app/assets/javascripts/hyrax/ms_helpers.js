@@ -1,5 +1,28 @@
 // shared helper functions 
 
+// dedupe and return a unique array of strings
+Array.prototype.uniq = function(){
+  return this.filter(
+    function(a){return !this[a] ? this[a] = true : false;}, {}
+  );
+}
+
+function splitCamelCase(str) {
+	return str.replace(/((?<!^)[A-Z](?![A-Z]))(?=\S)/g, ' $1').replace(/^./, s => s.toUpperCase() ); 
+}
+
+function agreementLinkHTML(link) {
+	if (link.indexOf("rightsstatements") != -1) {
+		title = "Rights statement";
+	} else if (link.indexOf("creativecommons") != -1) {
+		title = "Creative Common licenses";
+	} else {
+		title = "Custom agreement";
+	}
+  html = "<a href='" + link + "' target='_blank'>" + title + "</a>";
+  return html;
+}
+
 function disablePageAndSave(btn) {
   $(btn).prop('disabled', true).val('Saving...');
   disablePage();

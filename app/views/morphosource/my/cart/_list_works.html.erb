@@ -36,17 +36,12 @@
   <td><%= date(item,'expired') %></td>
   <td><%= link_to "Download Item", main_app.download_items_path(item_id: item.id), class: "btn btn-info", method: :get %></td>
   <td>
-
-    <% desc = document.morphosource_use_agreement_type.first + ": (" + 
-              document.permits_commercial_use.first + ", " + 
-              document.required_archival_of_published_derivatives.first + ", " + 
-              document.permits_3d_use.first  + ")" 
-    %>
     <div class="agreements" data-checkbox-id="batch_download_<%= item.id %>">
-      <%= desc %>
-      <input type="text" name="description" value="<%= desc %>" />
+      <%= presenter.agreement_description %>
+      <input type="text" name="description" value="<%= presenter.agreement_description %>" />
       <input type="text" name="license" value="<%= document.license.first %>" />
       <input type="text" name="rights_statement" value="<%= document.rights_statement.first %>" />
+      <input type="text" name="custom_agreement" value="<%= presenter.custom_agreement %>" />
     </div>
   </td>
 </tr>

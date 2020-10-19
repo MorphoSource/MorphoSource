@@ -35,13 +35,25 @@
   <td><%= date(item,'approved') %></td>
   <td><%= date(item,'expired') %></td>
   <td><%= link_to "Download Item", main_app.download_items_path(item_id: item.id), class: "btn btn-info", method: :get %></td>
-  <td>
+  <td class="hide">
     <div class="agreements" data-checkbox-id="batch_download_<%= item.id %>">
-      <%= presenter.agreement_description %>
-      <input type="text" name="description" value="<%= presenter.agreement_description %>" />
-      <input type="text" name="license" value="<%= document.license.first %>" />
-      <input type="text" name="rights_statement" value="<%= document.rights_statement.first %>" />
-      <input type="text" name="custom_agreement" value="<%= presenter.custom_agreement %>" />
+      <div data-field="media_doc_id" data-value="<%= document.id %>"></div>
+      <div data-field="agreement_description" data-value="<%= presenter.agreement_description %>"><%= presenter.agreement_description %></div>
+      <div data-field="license"><%= presenter.attribute_to_html(:license, label: 'Creative Common licenses', render_as: :showcase_license_link, include_empty: true, html_dl: false) %></div>
+      <div data-field="rights_statement"><%= presenter.attribute_to_html(:rights_statement, render_as: :showcase_external_link, include_empty: true, html_dl: false) %></div>
+      <div data-field="agreement_uri">
+      <%= presenter.attribute_to_html(
+        :agreement_uri, 
+        label: 'Additional Usage Agreement', 
+        render_as: :showcase_agreement_uri_file, 
+        include_empty: true, 
+        text_if_empty: 'None',
+        attachment_path: presenter.agreement_attachment,
+        attachment_file_url: main_app.attachment_path(id: document.id, field: 'agreement'),
+        html_dl: false) 
+      %>
+      </div>
+
     </div>
   </td>
 </tr>

@@ -509,6 +509,10 @@ module Hyrax
       end
     end
 
+    def agreement_attachment
+      return media.attachment('agreement') || ""
+    end
+
     def agreement_description
       description = solr_document.morphosource_use_agreement_type.first + ": (" + 
              solr_document.permits_commercial_use.first + ", " + 

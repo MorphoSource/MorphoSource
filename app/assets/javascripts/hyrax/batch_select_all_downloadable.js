@@ -11,6 +11,22 @@ $( document ).ready(function() {
       $('#downloadAgreementsModal').modal('show');
     });
 
+    $('#download-all').bind('click', function(e) { 
+      e.preventDefault();
+//      if ($("#check_all_unrestricted").prop('checked') == false)
+//        $("#check_all_unrestricted").trigger('click');
+      //$("#check_all_unrestricted").prop('checked', true);
+      //check_all_downloadable_page();
+
+      $("input[type='checkbox'].downloadable_items").each(function(index, value) {
+         value['checked'] = false;
+      });
+      $("#check_all_unrestricted").prop('checked', false);
+      $("#check_all_unrestricted").trigger('click');
+
+      $('#downloadAgreementsModal').modal('show');
+    });
+
     $('#unrestricted_documents input[type="checkbox"]').bind('click', function(e) { 
       do_agreements();
     });
@@ -35,35 +51,41 @@ $( document ).ready(function() {
 function do_agreements() {
   agreements = new Array();
   links = new Array();
+  customLinkGroup = {};
   $("input[type='checkbox'].downloadable_items:checked").each(function() {
     checkboxId = $(this).attr('id');
     agreementData = '[data-checkbox-id="' + checkboxId + '"] ';
-    desc = agreementData + 'input[name="description"]';
-    license = agreementData + 'input[name="license"]';
-    rightsStatement = agreementData + 'input[name="rights_statement"]';
-    customLink = agreementData + 'input[name="custom_agreement"]';
-    agreements.push($(desc).val());
-    links.push($(license).val());
-    links.push($(rightsStatement).val());
-    if ($(customLink).val() != '')
-      links.push($(customLink).val());
+    mediaId = $(agreementData + '[data-field="media_doc_id"]').attr('data-value');
+    desc = $(agreementData + '[data-field="agreement_description"]').attr('data-value');
+    license = $(agreementData + '[data-field="license"] .showcase-link').html();
+    rightsStatement = $(agreementData + '[data-field="rights_statement"] .showcase-link').html();
+    customLink = $(agreementData + '[data-field="agreement_uri"] .showcase-link').html();
+    agreements.push(desc);
+    links.push(license);
+    links.push(rightsStatement);
+    if (customLink != '') {
+      customLinkGroup['Media ' + mediaId + ': Custom usage agreement'] = customLink;
+    }
   });
   agreementGroup = groupCounts(agreements);
-  display = displayAgreements(agreementGroup, links.uniq());
+  display = buildAgreements(agreementGroup, links.sort().uniq(), customLinkGroup);
   $('.agreement-items-wrapper').empty().append(display);
 }
 
-function displayAgreements(group, links) {
-  var html = "Agreements";
+function buildAgreements(agreementGroup, links, customLinkGroup) {
+  var html = "User agreements:";
   html += "<ul>";
-  jQuery.each(group, function(desc, count) {
-    html += "  <li>" + count + " media:<br/>"+ splitCamelCase(desc) + "</li>";
+  jQuery.each(agreementGroup, function(desc, count) {
+    html += "  <li>" + count + " media: " + splitCamelCase(desc) + "</li>";
   });
   html += "</ul>";
-  html += "Please click on each link to read the agreement specific to the selected media:";
+  html += "Please click on each link to read the agreement:";
   html += "<ul>";
   jQuery.each(links, function(index, link) {
-    html += "  <li>" + agreementLinkHTML(link) + "</li>";
+    html += "  <li>" + link + "</li>";
+  });
+  jQuery.each(customLinkGroup, function(desc, link) {
+    html += "  <li>" + agreementLinkHTML(link, desc) + "</li>";
   });
   html += "</ul>";
 

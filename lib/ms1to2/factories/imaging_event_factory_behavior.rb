@@ -1,9 +1,9 @@
 module Ms1to2
   module Factories
     module ImagingEventFactoryBehavior
-      def process_ie(id, mg)
+      def process_ie(id, mf, mg)
         ms2_ie_table[id] = ms1to2_model(ms2_ie_model).
-          new(id, mg, derive_special_fields_ie(mg)).
+          new(id, mg, derive_special_fields_ie(mf, mg)).
           ms2_attributes
       end
 
@@ -11,22 +11,27 @@ module Ms1to2
         hyraxify("IE"+id.to_s)
       end
 
-      def derive_special_fields_ie(v)
+      def derive_special_fields_ie(mf, mg)
         {
-          :depositor => derive_depositor(v[:user_id]),
-          :parent_id => derive_ie_parents(v),
-          :ie_modality => derive_ie_modality(v),
-          :power => derive_ie_power(v)
+          :depositor => derive_depositor(mf[:project_user]),
+          :ie_modality => derive_ie_modality(mf),
+          :power => derive_ie_power(mg)
         }
       end
 
       def derive_ie_parents(v)
-        [hyraxify("S"+v[:specimen_id].first), hyraxify("D"+v[:scanner_id].first)]
+        parents = []
+        if v[:specimen_id].present?
+          parents << hyraxify("S"+v[:specimen_id].first)
+        end
+        if v[:scanner_id].present?
+          parents << hyraxify("D"+v[:scanner_id].first)
+        end
+        return parents
       end
 
       def derive_ie_modality(v)
-        device_id = hyraxify("D"+v[:scanner_id].first)
-        ms2_output_data.find(ms2_model_var(:Device), device_id, :modality)
+        v[:modality].first
       end
 
       def derive_ie_power(v)

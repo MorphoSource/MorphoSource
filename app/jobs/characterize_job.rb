@@ -1,7 +1,7 @@
 require 'hydra/works/services/zip_contents_characterization_service.rb'
 
 class CharacterizeJob < Hyrax::ApplicationJob
-  queue_as Hyrax.config.ingest_queue_name
+  queue_as Hyrax.config.heavy_queue_name
 
   # Characterizes the file at 'filepath' if available, otherwise, pulls a copy from the repository
   # and runs characterization on that file.

@@ -195,6 +195,13 @@ module Hyrax
       @ingest_queue_name ||= :default
     end
 
+    # @!attribute [w] heavy_queue_name
+    #   ActiveJob queue to handle performance-heavy jobs.
+    attr_writer :heavy_queue_name
+    def heavy_queue_name
+      @heavy_queue_name ||= :heavy
+    end
+
     # @!attribute [w] import_export_jar_file_path
     #   Path to the jar file for the Fedora import/export tool
     attr_writer :import_export_jar_file_path

@@ -68,7 +68,7 @@ module Morphosource
         end
 
         def get_expiration_date
-          @date = params[:expiration_date].first
+          @date = params[:expiration_date]
         end
 
     end

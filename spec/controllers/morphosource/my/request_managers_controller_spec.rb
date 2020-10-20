@@ -69,16 +69,17 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
   end
 
   describe "PUT #approve_download" do
+    let(:expiration_date) { "2020-10-20"}
     context 'the data manager approves one request' do
       before do
-        put :approve_download, params: { item_id: cartItem1.id, expiration_date: [1.month.from_now] }
+        put :approve_download, params: { item_id: cartItem1.id, expiration_date: expiration_date }
         cartItem1.reload
       end
       it "marks the item's date approved to today" do
         expect(cartItem1.date_approved.to_date).to eq(Date.today)
       end
       it "marks the item's date expired to one month from now" do
-        expect(cartItem1.date_expired.to_date).to eq(1.month.from_now.to_date)
+        expect(cartItem1.date_expired).to eq(expiration_date)
       end
       it 'records the current user in action_by' do
         expect(cartItem1.action_by).to eq(current_user.ms_id)
@@ -92,7 +93,7 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
     end
     context 'the data manager approves multiple requests' do
       before do
-        put :approve_download, params: { batch_document_ids: [cartItem1.id,cartItem5.id], expiration_date: [1.month.from_now] }
+        put :approve_download, params: { batch_document_ids: [cartItem1.id,cartItem5.id], expiration_date: expiration_date }
         [cartItem1,cartItem5].each(&:reload)
       end
       it "marks the items' date approved to today" do
@@ -104,8 +105,8 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
         expect(cartItem5.action_by).to eq(current_user.ms_id)
       end
       it "marks the items' date expired to one month from now" do
-        expect(cartItem1.date_expired.to_date).to eq(1.month.from_now.to_date)
-        expect(cartItem5.date_expired.to_date).to eq(1.month.from_now.to_date)
+        expect(cartItem1.date_expired).to eq(expiration_date)
+        expect(cartItem5.date_expired).to eq(expiration_date)
       end
       it "creates a flash message with the number of items approved" do
         expect(response.flash[:notice]).to eq("2 Items Approved for Download")
@@ -158,12 +159,13 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
   end
 
   describe 'PUT #edit_expiration' do
+    let(:expiration_date) { "2020-10-20" }
     before do
-      put :edit_expiration, params: { item_id: cartItem1.id, expiration_date: [Date.yesterday] }
+      put :edit_expiration, params: { item_id: cartItem1.id, expiration_date: expiration_date }
       cartItem1.reload
     end
     it "marks the item's expiration date as yesterday" do
-      expect(cartItem1.date_expired.to_date).to eq(Date.yesterday)
+      expect(cartItem1.date_expired).to eq(expiration_date)
     end
     it 'records action_by' do
       expect(cartItem1.action_by).to eq(current_user.ms_id)

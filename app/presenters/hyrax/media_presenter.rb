@@ -76,6 +76,53 @@ module Hyrax
       :color_depth,
       :compression
 
+    def media_permissions_string
+      permissions_string = ''
+      if media.morphosource_use_agreement_type == ['Permissive']
+        permissions_string = 'permissive'
+      else
+        permissions_string += 'std_'
+        if media.permits_commercial_use == ['CommercialUsePermitted']
+          permissions_string += 'comm_yes_'
+        else
+          permissions_string += 'comm_no_'
+        end
+        if media.required_archival_of_published_derivatives == ['OnAnyRepository']
+          permissions_string += 'rearc_any_'
+        elsif media.required_archival_of_published_derivatives == ['OnMorphoSource']
+          permissions_string += 'rearc_ms_'
+        else
+          permissions_string += 'rearc_no_'
+        end
+        if media.permits_3d_use == ['3DPrintingPermitted']
+          permissions_string += '3d_yes'
+        elsif media.permits_3d_use == ['3DPrintingLimited']
+          permissions_string += '3d_limited'
+        else
+          permissions_string += '3d_no'
+        end
+      end
+      return permissions_string
+    end
+
+    def aup_path
+      return media_permissions_string
+    end
+    
+    def aup_filenames
+      @media_ids.
+        map { |id| media_permissions_string(id) }.
+        compact.
+        uniq.
+        map { |permission| "ms_usage_#{permission}.pdf" }
+    end
+
+    def aup_paths
+      aup_filenames.map do |aup_filename|
+        File.join(Rails.root, %w{app assets documents}, aup_filename)
+      end
+    end
+
     def universal_viewer?
       viewer_ready = representative_id.present? &&
         representative_presenter.present? &&

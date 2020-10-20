@@ -82,8 +82,6 @@ function buildAgreements(agreementGroup, links, customLinkGroup) {
   jQuery.each(agreementGroup, function(desc, count) {
     html += "  <li>" + count + " media: " + desc + "</li>";
   });
-//  html += "</ul>";
-//  html += "<ul>";
   //jQuery.each(links, function(index, link) {
   //  html += "  <li>" + link + "</li>";
   //});

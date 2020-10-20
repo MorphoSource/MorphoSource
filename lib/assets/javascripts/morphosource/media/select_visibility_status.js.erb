@@ -1,0 +1,63 @@
+function set_initial_value() {
+  let selected_visibility = $('#selected_visibility').attr('class');
+
+  set_visibility(selected_visibility);
+}
+
+function set_visibility(val) {
+  let open = $('#collection_visibility_open');
+  let restricted = $('#collection_visibility_restricted');
+
+  let current_visibility_value = $('#current_visibility_value');
+
+  switch (val) {
+    case 'new':
+      select_visibility(open);
+      display_value = "Public";
+      display_class = "label-success";
+      break;
+    case 'open':
+      select_visibility(open);
+      display_value = "Public";
+      display_class = "label-success";
+      break;
+    case 'restricted':
+      select_visibility(restricted);
+      display_value = "Private";
+      display_class = "label-danger";
+      break;
+    default:
+//      display_value = "Private";
+//      display_class = "label-danger";
+  }
+
+  if (current_visibility_value.length) {
+    current_visibility_value.text(display_value);
+    current_visibility_value
+      .removeClass('label-success')
+      .removeClass('label-info')
+      .removeClass('label-danger');
+    current_visibility_value.addClass(display_class);
+  }
+}
+
+function select_visibility(visibility) {
+  visibility.prop("checked", true);
+}
+
+$( document ).ready(function() {
+  if ( $('form[id*="edit_collection"]').length ||
+       $('form[id*="new_collection"]').length ) { 
+    set_initial_value();
+
+    $('input[name="media[visibility]"]').change(function(event){
+      console.log('Radio visibility changed');
+
+      if ($(this).val()){
+        console.log('Value provided');
+        console.log($(this).val());
+        set_visibility($(this).val());
+      }
+    });
+  }
+});

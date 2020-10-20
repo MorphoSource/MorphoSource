@@ -115,7 +115,7 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
-      property :preview_in_3d, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/previewIn3D") do |index|
+      property :preview_mode, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/previewMode") do |index|
         index.as :stored_searchable
       end
 

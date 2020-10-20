@@ -3,15 +3,19 @@
   <!-- left column  -->
   <div class="col-sm-6">
     <div class="content-block">
-      <h2 class="required-flag">UPLOAD FILE(S)<span class="label label-info"></span></h2>
-      <%= render 'form_files_edit', f: f %>
+      <h2 class="required-flag">UPLOAD FILE<span class="label label-info"></span></h2>
+      <% unless @presenter.file_set_list.present? %>
+        <%= render 'form_files_edit', f: f %>
+      <% else %>
+        To replace a file, please delete the existing file first.
+      <% end %>
     </div>
   </div>
 
   <!-- right column  -->
   <div class="col-sm-6">
     <div class="content-block">
-      <h2>FILE(S) IN THIS MEDIA</h2>
+      <h2>FILE IN THIS MEDIA</h2>
       <%= render 'items_edit', presenter: @presenter %>
     </div>
   </div>

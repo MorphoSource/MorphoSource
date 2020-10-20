@@ -23,8 +23,6 @@ module Hyrax
       end
 
       def index
-        add_breadcrumb t(:'hyrax.controls.home'), root_path
-        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         @user_collections_for_view = collections_service.search_results(:view)
         # The user's collections for the "add to collection" form
         @user_collections = collections_service.search_results(:deposit)
@@ -34,8 +32,17 @@ module Hyrax
         query_collection_information
         query_collection_members
         prepare_instance_variables_for_batch_control_display
+        prepare_for_add_to_collection
         respond_to do |format|
-          format.html {}
+          format.html {
+            if @is_add_to_collection
+              render 'index_add_to_collection'
+            else
+              add_breadcrumb t(:'hyrax.controls.home'), root_path
+              add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+              render 'index'
+            end
+          }
           format.rss  { render layout: false }
           format.atom { render layout: false }
         end

@@ -7,10 +7,6 @@ Array.prototype.uniq = function(){
   );
 }
 
-function splitCamelCase(str) {
-	return str.replace(/((?<!^)[A-Z](?![A-Z]))(?=\S)/g, ' $1').replace(/^./, s => s.toUpperCase() ); 
-}
-
 function agreementLinkHTML(link, title) {
 	if (!title) {
 	  if (link.indexOf("rightsstatements") != -1) {

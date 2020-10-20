@@ -514,11 +514,11 @@ module Hyrax
     end
 
     def agreement_description
-      description = solr_document.morphosource_use_agreement_type.first + ": (" + 
+      description = solr_document.morphosource_use_agreement_type.first + " (" + 
              solr_document.permits_commercial_use.first + ", " + 
              solr_document.required_archival_of_published_derivatives.first + ", " + 
              solr_document.permits_3d_use.first  + ")" 
-      return description
+      return description.titleize.sub('3 D', '3D')
     end
 
     # methods for showcase partials

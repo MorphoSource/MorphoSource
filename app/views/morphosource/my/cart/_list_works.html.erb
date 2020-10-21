@@ -38,7 +38,7 @@
     <a class="btn-download-item btn btn-info btn-xs" data-item-id="<%= item.id %>" href="javascript:void(0)">Download Item</a>
     <%= link_to item.id, main_app.download_items_path(item_id: item.id), class: "hide", id: 'link-to-download-item-'+item.id.to_s, method: :get %>
   </td>
-  <td class="hide">
+  <td class="download-agreements hide">
     <div class="agreements" data-item-id="<%= item.id %>">
       <div data-field="media_doc_id" data-value="<%= document.id %>"></div>
       <div data-field="agreement_description" data-value="<%= presenter.agreement_description %>"><%= link_to presenter.agreement_description, asset_path(presenter.aup_path) %></div>

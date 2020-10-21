@@ -8,27 +8,30 @@ $( document ).ready(function() {
     $(downloadForm).find('input[type="submit"]').bind('click', function(e) { 
       // download selected button clicked
       e.preventDefault();
-      $('#downloadAgreementsModal').modal('show');
+      showAgreementModal();
     });
 
     $('#download-all').bind('click', function(e) { 
+      // download all clicked
       e.preventDefault();
       $("input[type='checkbox'].downloadable_items").each(function(index, value) {
          value['checked'] = false;
       });
       $("#check_all_unrestricted").prop('checked', false);
       $("#check_all_unrestricted").trigger('click');
-      $('#downloadAgreementsModal').modal('show');
+      showAgreementModal();
     });
 
     $('.btn-download-item').bind('click', function(e) { 
+      // download item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
-      $('[type="checkbox"][id="batch_download_' + itemId + '"]').trigger('click');
-      $('#downloadAgreementsModal').modal('show');
+//      $('[type="checkbox"][id="batch_download_' + itemId + '"]').trigger('click');
+      set_agreements(itemId);
+      showAgreementModal();
     });
 
-    $('#unrestricted_documents input[type="checkbox"]').bind('click', function(e) { 
+    $('#unrestricted_documents input[type="checkbox"]').bind('click', function(e) {
       set_agreements();
     });
 
@@ -43,53 +46,80 @@ $( document ).ready(function() {
   });
 
   $(document).on('click', '#modal-download', function(){
-    downloadForm.submit();
+    var itemId = $(this).attr('data-download-item-id');
+    console.log(' downloading item '+ itemId);
+    if (itemId == 'SELECTED') {
+      downloadForm.submit();
+    } else if (itemId != '') { 
+      $('#link-to-download-item-'+itemId).trigger('click');      
+    } else {
+      console.log('error: itemId missing');
+    }
     $('#downloadAgreementsModal').modal('hide');
   });
 
 });
 
-function set_agreements() {
+function showAgreementModal() {
+  $('#downloadAgreementsModal').modal('show');
+  $('#modal-agree').prop('checked', false);
+  $('#modal-download').attr('disabled', 'disabled');
+}
+
+function set_agreements(itemId) {
+  // set the agreement content in the modal  
   var agreements = new Array();
-  var links = new Array();
-  var customLinkGroup = {};
-  $("input[type='checkbox'].downloadable_items:checked").each(function() {
-    var itemId = $(this).val();
+  var customLinks = new Array();
 
-/* to do: make another function for below */
+  if (itemId) {
+      // set the item id in the button for download one item
+      $('input#modal-download').attr('data-download-item-id', itemId);
 
-    var agreementWrapper = '[data-item-id="' + itemId + '"] ';
-    var mediaId = $(agreementWrapper + '[data-field="media_doc_id"]').attr('data-value');
-    var desc = $(agreementWrapper + '[data-field="agreement_description"]').attr('data-value');
-    var license = $(agreementWrapper + '[data-field="license"] .showcase-link').html();
-    var rightsStatement = $(agreementWrapper + '[data-field="rights_statement"] .showcase-link').html();
-    var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
-    agreements.push(desc);
-    links.push(license);
-    links.push(rightsStatement);
-    if (customLink != '') {
-      customLinkGroup['Media ' + mediaId + ': Custom usage agreement'] = customLink;
-    }
+      var agreementWrapper = '[data-item-id="' + itemId + '"] ';
+      var mediaId = $(agreementWrapper + '[data-field="media_doc_id"]').attr('data-value');
+      //var agreementDesc = $(agreementWrapper + '[data-field="agreement_description"]').attr('data-value');
+      var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
+      agreements.push(agreementLink);
+      var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
+      if (customLink) {
+        customLinks.push('Media ' + mediaId + ': ' + customLink);
+      }
 
-  });
+  } else {
+
+    $('input#modal-download').attr('data-download-item-id', 'SELECTED');
+
+    $("input[type='checkbox'].downloadable_items:checked").each(function() {
+      var itemId = $(this).val();
+
+      var agreementWrapper = '[data-item-id="' + itemId + '"] ';
+      var mediaId = $(agreementWrapper + '[data-field="media_doc_id"]').attr('data-value');
+      //var agreementDesc = $(agreementWrapper + '[data-field="agreement_description"]').attr('data-value');
+      var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
+      agreements.push(agreementLink);
+      var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
+      if (customLink) {
+        customLinks.push('Media ' + mediaId + ': ' + customLink);
+      }
+
+    });
+
+  }
+
   var agreementGroup = groupCounts(agreements);
-  var display = buildAgreements(agreementGroup, links.sort().uniq(), customLinkGroup);
+  var display = buildAgreements(agreementGroup, customLinks.sort());
   $('.agreement-items-wrapper').empty().append(display);
 }
 
-function buildAgreements(agreementGroup, links, customLinkGroup) {
+function buildAgreements(agreementGroup, customLinks) {
   var html = "<ul>";
   jQuery.each(agreementGroup, function(desc, count) {
     html += "  <li>" + count + " media: " + desc + "</li>";
   });
-  //jQuery.each(links, function(index, link) {
-  //  html += "  <li>" + link + "</li>";
-  //});
-  jQuery.each(customLinkGroup, function(desc, link) {
-    html += "  <li>" + agreementLinkHTML(link, desc) + "</li>";
+  jQuery.each(customLinks, function(index, link) {
+    html += "  <li>" + link + "</li>";
   });
   html += "</ul>";
-
   wrapper = [
     "<div class='agreement-items'>",
     html,

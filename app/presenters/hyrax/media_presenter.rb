@@ -106,21 +106,7 @@ module Hyrax
     end
 
     def aup_path
-      return media_permissions_string
-    end
-    
-    def aup_filenames
-      @media_ids.
-        map { |id| media_permissions_string(id) }.
-        compact.
-        uniq.
-        map { |permission| "ms_usage_#{permission}.pdf" }
-    end
-
-    def aup_paths
-      aup_filenames.map do |aup_filename|
-        File.join(Rails.root, %w{app assets documents}, aup_filename)
-      end
+      return "ms_usage_#{media_permissions_string}.pdf"
     end
 
     def universal_viewer?

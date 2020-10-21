@@ -7,20 +7,6 @@ Array.prototype.uniq = function(){
   );
 }
 
-function agreementLinkHTML(link, title) {
-	if (!title) {
-	  if (link.indexOf("rightsstatements") != -1) {
-			title = "Rights statement";
-		} else if (link.indexOf("creativecommons") != -1) {
-			title = "Creative Common licenses";
-		} else {
-			title = "Custom usage agreement";
-		}
-	}
-  html = "<a href='" + link + "' target='_blank'>" + title + "</a>";
-  return html;
-}
-
 function disablePageAndSave(btn) {
   $(btn).prop('disabled', true).val('Saving...');
   disablePage();

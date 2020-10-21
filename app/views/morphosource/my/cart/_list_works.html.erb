@@ -34,14 +34,14 @@
   <td class="date"><%= item.created_at.strftime("%Y-%m-%d") %></td>
   <td><%= date(item,'approved') %></td>
   <td><%= date(item,'expired') %></td>
-  <td><a class="btn-download-item btn btn-info btn-xs" data-item-id="<%= item.id %>" href="javascript:void(0)">Download Item</a></td>
-  <td class="hi">
+  <td>
+    <a class="btn-download-item btn btn-info btn-xs" data-item-id="<%= item.id %>" href="javascript:void(0)">Download Item</a>
+    <%= link_to item.id, main_app.download_items_path(item_id: item.id), class: "hide", id: 'link-to-download-item-'+item.id.to_s, method: :get %>
+  </td>
+  <td class="hide">
     <div class="agreements" data-item-id="<%= item.id %>">
       <div data-field="media_doc_id" data-value="<%= document.id %>"></div>
-      <div data-field="agreement_description" data-value="<%= presenter.agreement_description %>"><%= presenter.agreement_description %></div>
-      <div data-field="aup_path" data-value="<%= presenter.aup_path %>"><%= presenter.aup_path %></div>
-<div data-field="license"><%= presenter.attribute_to_html(:license, label: 'Creative Common licenses', render_as: :showcase_license_link, include_empty: true, html_dl: false) %></div>
-<div data-field="rights_statement"><%= presenter.attribute_to_html(:rights_statement, render_as: :showcase_external_link, include_empty: true, html_dl: false) %></div>
+      <div data-field="agreement_description" data-value="<%= presenter.agreement_description %>"><%= link_to presenter.agreement_description, asset_path(presenter.aup_path) %></div>
       <div data-field="agreement_uri">
       <%= presenter.attribute_to_html(
         :agreement_uri, 
@@ -54,7 +54,6 @@
         html_dl: false) 
       %>
       </div>
-
     </div>
   </td>
 </tr>

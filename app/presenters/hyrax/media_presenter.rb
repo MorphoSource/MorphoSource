@@ -177,7 +177,7 @@ module Hyrax
     end
 
     def preview_in_3D?
-      preview_mode&.first == "Interactive/Embeddable"
+      preview_mode&.first == "Interactive/Embeddable" || ""
     end
 
     def round_it(string_value)

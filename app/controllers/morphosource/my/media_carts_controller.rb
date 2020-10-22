@@ -4,7 +4,8 @@ module Morphosource
       helper CartItemHelper
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
-
+      with_themed_layout 'morphosource_dashboard'
+      
       def index
         get_items('cart')
         get_restricted_items

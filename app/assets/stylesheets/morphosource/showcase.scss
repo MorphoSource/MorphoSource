@@ -117,6 +117,12 @@ html {
   }
 }
 
+.showcase.cart {
+  input.batch_document_selector, input.disabled {
+    margin: 4px 0 0;
+  }
+}
+
 .showcase.teams, .showcase.media-works, .showcase.browse { /* / teams and projects show page styles */
   .title.browse {
     margin-top:30px;
@@ -518,12 +524,19 @@ html {
   }
 
   .modal-content {
+    h2 { 
+      font-size: 15px; 
+    }
     .add-works {
       font-size: 14px;
       input {
         border: none;
         font-weight: bold;
       }
+    }
+    .modal-header {
+      border: none;
+      padding: 8px 15px 0;
     }
     .modal-title {
       border-bottom: none;

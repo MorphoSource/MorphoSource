@@ -1,8 +1,10 @@
 $( document ).ready(function() {
 
-  downloadForm = $('form#form-download-selected');
-  //if ( $('.cart-page').length ) {
-  if ( downloadForm.length ) {
+  var downloadForm = $('form#form-download-selected');
+  var isMediaPage = ($('#media-page-download-agreements').length);
+  var isCartPage = (downloadForm.length);
+
+  if ( isCartPage ) {
     
     $(downloadForm).find('input[type="submit"]').bind('click', function(e) { 
       // download selected button clicked
@@ -25,7 +27,6 @@ $( document ).ready(function() {
       // download item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
-//      $('[type="checkbox"][id="batch_download_' + itemId + '"]').trigger('click');
       set_agreements(itemId);
       showAgreementModal();
     });
@@ -36,27 +37,41 @@ $( document ).ready(function() {
 
   }
 
-  $(document).on('click', '#modal-agree', function(){
-    if($(this).prop('checked')){
-      $('#modal-download').removeAttr('disabled');
-    } else {
-      $('#modal-download').attr('disabled', 'disabled');
-    }
-  });
+  if ( isMediaPage || isCartPage ) {
 
-  $(document).on('click', '#modal-download', function(){
-    var itemId = $(this).attr('data-download-item-id');
-    console.log(' downloading item '+ itemId);
-    if (itemId == 'SELECTED') {
-      downloadForm.submit();
-    } else if (itemId != '') { 
-      $('#link-to-download-item-'+itemId).trigger('click');      
-    } else {
-      console.log('error: itemId missing');
+    if ( isMediaPage ) {
+      $('.btn-download-item').bind('click', function(e) { 
+        // media page download button clicked
+        e.preventDefault();
+        set_agreements('CURRENT');
+        showAgreementModal();
+      });  
     }
-    $('#downloadAgreementsModal').modal('hide');
-  });
+  
+    $(document).on('click', '#modal-agree', function(){
+      if($(this).prop('checked')){
+        $('#modal-download').removeAttr('disabled');
+      } else {
+        $('#modal-download').attr('disabled', 'disabled');
+      }
+    });
 
+    $(document).on('click', '#modal-download', function(){
+      var itemId = $(this).attr('data-download-item-id');
+      console.log(' downloading item '+ itemId);
+      $('#downloadAgreementsModal').modal('hide');
+      if (itemId == 'SELECTED') {
+        downloadForm.submit();
+      } else if (itemId == 'CURRENT') { 
+        jQuery('#hidden-file-download')[0].click();
+      } else if (itemId != '') { 
+        $('#link-to-download-item-'+itemId).trigger('click');      
+      } else {
+        console.log('error: itemId missing');
+      }
+    });
+
+  }
 });
 
 function showAgreementModal() {

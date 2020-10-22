@@ -2,7 +2,8 @@
   <div class="btn-group">
     <% if signed_in? %>
       <% if current_user.can? :download, @curation_concern %>
-        <%= download_button(presenter.id) %>
+        <a class="btn-download-item btn btn-default" data-item-id="CURRENT" href="javascript:void(0)">Download</a>
+        <%= hidden_download_link(presenter.id) %>
         <%= choose_cart_button(presenter) %>
       <% elsif @curation_concern.restricted? %>
         <%= choose_download_button(presenter.id) %>

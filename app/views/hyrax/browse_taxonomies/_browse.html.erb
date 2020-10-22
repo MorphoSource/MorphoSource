@@ -1,28 +1,103 @@
 <div id="taxonomy-browse">
-  <div id="path">
-    Current Path:
-    <div id="current-path">
-      <% previous_params = {} %>
-      <% taxonomy_params.each do |rank, name| %>
-        <% previous_params.merge!({ rank => name }) %>
-        <%= link_to "#{name} (#{rank})", main_app.browse_taxonomies_path(previous_params), :remote => true %>
-      <% end %>
-    </div>
-  </div>
-  <div> 
-  <div id="tree">
-    <% names.each do |rank, rank_names| %>
-      <div>
-      <h2><%= rank.titleize %></h2>
-      <% rank_names.each do |name| %>
-        <div>
-          <%= link_to name, main_app.browse_taxonomies_path(taxonomy_params.merge({ rank => name })), :remote => true %>
+  <% genus_term = '' %>
+  <div class="row">
+    <div id='taxonomy-select' class="col-xs-12 col-sm-6">
+      <div id="tree" class="block">
+        <div class="row list-item" style='text-align: center;'>
+          <span class="h4">Taxonomic Names</span>
         </div>
-      <% end %>
+        <div id="current-path">
+          <% previous_params = {} %>
+          <% higher_names.each do |higher_name| %>
+            <% name = higher_name[:name] %>
+            <% rank = higher_name[:rank] %>
+            <% genus_term = name if rank == 'genus' %>
+            <% previous_params.merge!({ rank => name }) %>
+              <div class="row list-item row-striped type-a">
+                <div class="col-xs-7">
+                  <% if name == higher_names.last[:name] %>
+                    <div><b>
+                      <% if rank == 'species' && !genus_term.blank? %>
+                        <span style='font-style: italic;'><%= "#{genus_term} #{name}" %></span>
+                      <% else %>
+                        <%= name %>
+                      <% end %> 
+                    </b></div>
+                  <% else %>
+                    <div><%= link_to name, main_app.browse_taxonomies_path(previous_params), :remote => true %></div>
+                  <% end %>
+                  <div class='smaller-text'>
+                    <%= rank.titleize %>
+                  </div>
+                </div>
+                <div class="col-xs-5 smaller-text">
+                  <div><%= pluralize(higher_name[:count], 'taxonomic name') %></div> 
+                  <div><%= pluralize(higher_name[:specimen_count], 'specimen') %></div>
+                </div>
+              </div>
+          <% end %>
+        </div>
+        <% if names.present? %>
+          <% if higher_names.present? %>
+            <div class='row list-item'>
+              <div class="col-xs-7">
+                <b class='smaller-text'>Immediate Children</b>
+              </div>
+              <div class="col-xs-5 smaller-text">
+                <a href='#specimen-list' id='jump-to-specimens'><b>Jump to specimens</b></a>
+              </div>
+            </div>
+          <% end %>
+          <div>
+            <% names.each do |rank, rank_names| %>
+              <% rank_names.each do |name, counts| %>
+                <% genus_term = name if rank == 'genus' %>
+                <div class="row list-item row-striped type-b">
+                  <div class="col-xs-7">
+                    <% if rank == 'species' && !genus_term.blank? %>
+                      <div style='font-style: italic;'><%= link_to "#{genus_term} #{name}", main_app.browse_taxonomies_path(previous_params.merge({ rank => name })), :remote => true %></div>
+                    <% else %>
+                      <div><%= link_to name, main_app.browse_taxonomies_path(previous_params.merge({ rank => name })), :remote => true %></div>
+                    <% end %>
+                    <div class='smaller-text'>
+                      <%= rank.titleize %>
+                    </div>
+                  </div>
+                  <div class="col-xs-5 smaller-text">
+                    <div><%= pluralize(counts[:count], 'taxonomic name') %></div> 
+                    <div><%= pluralize(counts[:specimen_count], 'specimen') %></div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
       </div>
-    <% end %>
-  </div>
-  <div id="objects">
-    Objects
+    </div>
+    <div id='specimen-list' class="col-xs-12 col-sm-6">
+      <div id="objects" class="block">
+        <% if specimens['numFound'] > 0 %>
+          <div>
+            <div class="row list-item" style="text-align: center;">
+              <span class="h4">Specimens For Selected Taxonomy (<%= specimens['numFound'] %>)</span>
+            </div>
+            <div>
+              <% specimens['docs'].each do |specimen| %>
+                <div class="row list-item row-striped type-c">
+                  <%= link_to "#{ specimen['title_tesim']&.first }", main_app.hyrax_biological_specimen_path(id: specimen['id']) %>
+                </div>
+              <% end %>
+            </div>
+            <% if specimens['numFound'] > 200 %>
+              <div style='margin-top: 20px; font-weight: bold'>
+                <%= link_to "See all #{specimens['numFound']} specimens for this taxonomy", main_app.object_search_path( { 'f[external_taxonomy_tesim][]' => specimen_taxonomy_term.present? ? specimen_taxonomy_term.downcase : '' } ) %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <span>No specimens found for this taxon.</span>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>

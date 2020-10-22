@@ -1,0 +1,45 @@
+#taxonomy-browse {
+	.block {
+    border: 1px solid #DDDDDD;
+    border-radius: 5px;
+    padding: 10px;
+    padding-bottom: 20px;
+    text-align: center;
+    margin-top: 20px;
+
+  }
+
+  .list-item {
+    border-bottom: 1px solid #D2D2D2;
+    padding: 10px;
+  }
+
+  .row.list-item {
+    text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .smaller-text {
+    font-size: smaller;
+    color: gray;
+  }
+
+  .row-striped.type-a:nth-child(even) {
+    background-color: #F2F2F2;
+  }
+
+  .row-striped.type-b:nth-child(even) {
+    background-color: #F2F2F2;
+  }
+
+  .row-striped.type-c:nth-child(even) {
+    background-color: #F2F2F2;
+  }
+
+  @media (min-width: 768px) {
+    a#jump-to-specimens {
+      display: none;
+    }
+  }
+}

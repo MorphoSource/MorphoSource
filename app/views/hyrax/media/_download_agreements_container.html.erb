@@ -1,0 +1,19 @@
+<%# hidden div for rendering download agreement data %>
+<div id="media-page-download-agreements" class="download-agreements hide">
+  <div class="agreements" data-item-id="CURRENT">
+    <div data-field="media_doc_id" data-value="<%= presenter.media.id %>"></div>
+    <div data-field="agreement_description" data-value="<%= presenter.agreement_description %>"><%= link_to presenter.agreement_description, asset_path(presenter.aup_path), target: "_blank", class: "aup-link" %></div>
+    <div data-field="agreement_uri">
+    <%= presenter.attribute_to_html(
+      :agreement_uri, 
+      label: 'Additional Usage Agreement', 
+      render_as: :showcase_agreement_uri_file, 
+      include_empty: true, 
+      text_if_empty: 'None',
+      attachment_path: presenter.agreement_attachment,
+      attachment_file_url: main_app.attachment_path(id: presenter.media.id, field: 'agreement'),
+      html_dl: false) 
+    %>
+    </div>
+  </div>
+</div>

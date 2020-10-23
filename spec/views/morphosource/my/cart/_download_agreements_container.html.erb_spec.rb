@@ -9,14 +9,7 @@ RSpec.describe 'morphosource/my/cart/_download_agreements_container.html.erb', t
 	let(:work_solr_document) do
   	SolrDocument.new(id: '999',
                      title_tesim: ['My Title'],
-                     creator_tesim: ['Doe, John', 'Doe, Jane'],
-                     date_modified_dtsi: '2011-04-01',
                      has_model_ssim: ['Media'],
-                     description_tesim: ['Lorem ipsum lorem ipsum.'],
-                     keyword_tesim: ['bacon', 'sausage', 'eggs'],
-                     rights_statement_tesim: ['http://example.org/rs/1'],
-                     date_created_tesim: ['1984-01-02'],
-
                     morphosource_use_agreement_type_tesim: ['Permissive'], 
                     permits_commercial_use_tesim: ['CommercialUsePermitted'],
                     required_archival_of_published_derivatives_tesim: ['EncouragedButNotRequired'],
@@ -26,7 +19,16 @@ RSpec.describe 'morphosource/my/cart/_download_agreements_container.html.erb', t
                      )
   end
 
-  let(:media)     { Media.new(id: '999', title: ["My Title"], visibility: 'open', fileset_visibility: [''])}
+  let(:media)     { Media.new(
+                      id: '999', 
+                      title: ["My Title"], 
+                      visibility: 'open', 
+                      morphosource_use_agreement_type: ['Permissive'], 
+                      permits_commercial_use: ['CommercialUsePermitted'],
+                      required_archival_of_published_derivatives: ['EncouragedButNotRequired'],
+                      permits_3d_use: ['3DPrintingPermitted'],
+                      agreement_uri: [agreement_uri]
+                      )}
 
   let(:ability) { double }
   let(:media_presenter) do
@@ -58,7 +60,7 @@ RSpec.describe 'morphosource/my/cart/_download_agreements_container.html.erb', t
     end
 
     it 'contains user added custom agreement link' do
-      expect(page).to have_link agreement_uri
+      expect(page).to have_link 'Depositor-Supplied Additional Usage Agreement'
     end
 
   end

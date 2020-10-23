@@ -82,47 +82,53 @@ function showAgreementModal() {
 
 function set_agreements(itemId) {
   // set the agreement content in the modal  
-  var agreements = new Array();
-  var customLinks = new Array();
 
   if (itemId) {
-      // set the item id in the button for download one item
-      $('input#modal-download').attr('data-download-item-id', itemId);
-
-      var agreementWrapper = '[data-item-id="' + itemId + '"] ';
-      var mediaId = $(agreementWrapper + '[data-field="media_doc_id"]').attr('data-value');
-      //var agreementDesc = $(agreementWrapper + '[data-field="agreement_description"]').attr('data-value');
-      var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
-      agreements.push(agreementLink);
-      var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
-      if (customLink) {
-        customLinks.push('Media ' + mediaId + ': ' + customLink);
-      }
+    // set the item id in the button for download one item
+    $('input#modal-download').attr('data-download-item-id', itemId);
+    var agreementWrapper = '[data-item-id="' + itemId + '"] ';
+    var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
+    var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
+    var display = buildSingleAgreement(agreementLink, customLink);
+    $('.agreement-items-wrapper').empty().append(display);
 
   } else {
 
+    var agreements = new Array();
+    var customLinks = new Array();
     $('input#modal-download').attr('data-download-item-id', 'SELECTED');
-
+    var selectedCount = $("input[type='checkbox'].downloadable_items:checked").length;
     $("input[type='checkbox'].downloadable_items:checked").each(function() {
       var itemId = $(this).val();
-
       var agreementWrapper = '[data-item-id="' + itemId + '"] ';
       var mediaId = $(agreementWrapper + '[data-field="media_doc_id"]').attr('data-value');
-      //var agreementDesc = $(agreementWrapper + '[data-field="agreement_description"]').attr('data-value');
       var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
       agreements.push(agreementLink);
       var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
       if (customLink) {
         customLinks.push('Media ' + mediaId + ': ' + customLink);
       }
-
     });
-
+    var agreementGroup = groupCounts(agreements);
+    var display = buildAgreements(agreementGroup, customLinks.sort());
+    $('.agreement-items-wrapper').empty().append(display);
   }
 
-  var agreementGroup = groupCounts(agreements);
-  var display = buildAgreements(agreementGroup, customLinks.sort());
-  $('.agreement-items-wrapper').empty().append(display);
+}
+
+function buildSingleAgreement(agreement, customLink) {
+  var html = "<ul>";
+  html += "  <li>" + agreement + "</li>";
+  if (customLink)
+    html += "  <li>" + customLink + "</li>";
+  html += "</ul>";
+  wrapper = [
+    "<div class='agreement-items'>",
+    html,
+    "</div>"
+  ].join("\n");
+
+  return wrapper;
 }
 
 function buildAgreements(agreementGroup, customLinks) {

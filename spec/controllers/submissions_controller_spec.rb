@@ -62,7 +62,10 @@ RSpec.describe SubmissionsController, type: :controller do
           :funding => ['Funder'],
           :publisher => ['Publisher'],
           :cite_as => ['Citation'],
-          :download_permission => ['restricted_download']
+          :download_permission => ['restricted_download'],
+          :morphosource_use_agreement_type => ['Permissive'],
+          :required_archival_of_published_derivatives => ['EncouragedButNotRequired'],
+          :preview_mode => ['Interactive/Embeddable']
         )
       }
 
@@ -85,7 +88,10 @@ RSpec.describe SubmissionsController, type: :controller do
           'rights_holder': ['Name: Fname, Type: Copyright'],
           'funding': ['Funder'],
           'publisher': ['Publisher'],
-          'cite_as': ['Citation']
+          'cite_as': ['Citation'],
+          'morphosource_use_agreement_type': ['Permissive'],
+          'required_archival_of_published_derivatives': ['EncouragedButNotRequired'],
+          'preview_mode': ['Interactive/Embeddable']
           },
           organization_alert_message: 'This value has been suggested by Test Title',
           organization_title: ['Test Title']

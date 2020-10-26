@@ -30,7 +30,7 @@ module Hyrax
       def preferred_generated_title(institution_code, collection_code, catalog_number, short_title)
         [
           [institution_code, collection_code, catalog_number].flatten.join(':').presence,
-          ( short_title.present? ? " #{short_title&.first.titleize}" : "" ).presence
+          ( short_title.present? ? short_title&.first.titleize : "" ).presence
         ].compact.join(' ')
       end
 

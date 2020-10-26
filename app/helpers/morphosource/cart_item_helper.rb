@@ -66,7 +66,7 @@ module Morphosource::CartItemHelper
   end
 
   def download_button
-    link_to t('hyrax.file_sets.actions.download'), main_app.zip_path(ids: [media.id]), class: 'btn btn-default', download: true, target: "_blank", role: 'button', id: 'file_download', data: { label: media.id }
+    link_to t('hyrax.file_sets.actions.download'), 'javascript:void(0)', class: 'btn btn-default btn-download-item', id: 'btn-download-item'
   end
 
   def download_requested_button

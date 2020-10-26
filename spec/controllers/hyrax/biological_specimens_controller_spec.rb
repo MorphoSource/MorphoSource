@@ -13,6 +13,25 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
     expect(described_class.show_presenter).to be(Hyrax::BiologicalSpecimenPresenter)
   end
 
+  describe '#showcase' do
+    context 'user is not signed in' do
+      context 'work is public' do
+        let(:public_specimen) { BiologicalSpecimen.create(title: ['public specimen'], visibility: 'open', vouchered: ['Yes']) }
+        it 'is authorized' do
+          get :showcase, params: { id: public_specimen.id }
+          expect(response.status).to eq(200)
+        end
+      end
+      context 'work is private' do
+        let(:private_specimen) { BiologicalSpecimen.create(title: ['private specimen'], visibility: 'restricted', vouchered: ['Yes']) }
+        it 'is redirects to sign in' do
+          get :showcase, params: { id: private_specimen.id }
+          expect(response.status).to eq(302)
+        end
+      end
+    end
+  end
+
   describe 'instance methods' do
     let(:actor)     { double(update: true) }
     let(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true]) }

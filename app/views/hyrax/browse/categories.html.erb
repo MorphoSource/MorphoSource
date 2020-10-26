@@ -24,6 +24,11 @@
     </h2>
     <p><%= t("hyrax.browse.page_description.categories.physical_object_types") %></p>
 
+    <h2><span class="fa fas fa-seedling" aria-hidden="true"></span> 
+      <%= link_to t("hyrax.toolbar.browse.taxonomy"), main_app.browse_taxonomies_path %>
+    </h2>
+    <p><%= t("hyrax.browse.page_description.categories.taxonomies") %></p>
+
     <h2><span class="fa fa-folder" aria-hidden="true"></span> 
       <%= link_to t("hyrax.toolbar.browse.projects"), main_app.browse_projects_path %>
     </h2>

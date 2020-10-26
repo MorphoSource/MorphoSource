@@ -156,51 +156,132 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
   end
 
   describe '#choose_download_button' do
-    let(:current_user)          { double('user') }
-    let(:downloadable_work_ids) { ['aaa','bbb','ccc'] }
-    let(:requests_work_ids)     { ['ddd','eee','fff'] }
+    let(:open_media)        { Media.create(title: ['open media'], visibility: 'open', fileset_accessibility: ['open']) }
+    let(:restricted_media)  { Media.create(title: ['restricted media'], visibility: 'open', fileset_accessibility: ['restricted_download']) }
 
     before do
-      allow(current_user).to receive(:downloadable_item_work_ids).and_return(downloadable_work_ids)
-      allow(current_user).to receive(:my_active_requests_work_ids).and_return(requests_work_ids)
+      allow(helper).to receive(:current_user).and_return(current_user)
     end
 
-    context "item is not in the user's cart OR item is in the user's cart but hasn't been requested" do
-      it 'displays the request download button' do
-        expect(choose_download_button('ggg')).to eq("<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#pageModal\" data-work-id=\"ggg\">Request Download</button>")
+    context 'user is not signed in' do
+      let(:current_user)  { nil }
+
+      context 'work is open' do
+        before do
+          assign(:curation_concern, open_media)
+        end
+        it 'displays the disabled download button' do
+          expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"\">Download</a>")
+        end
+      end
+
+      context 'work is restricted download' do
+        before do
+          before do
+            assign(:curation_concern, restricted_media)
+          end
+          it 'displays the disabled request download button' do
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"\">Download</a>")
+          end
+        end
       end
     end
-    context "item has been requested but not yet approved" do
-      it 'displays the download requested button' do
-        expect(choose_download_button('ddd')).to eq("<a class=\"btn btn-default\" role=\"button\" disabled=\"disabled\" href=\"\">Download Requested</a>")
+
+    context 'user is signed in' do
+      let(:current_user) { User.create(email: 'email@email.com', password: 'password') }
+
+      context 'work is open' do
+        before do
+          assign(:curation_concern, open_media)
+        end
+
+        it 'displays the download button' do
+          expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" download=\"true\" target=\"_blank\" role=\"button\" id=\"file_download\" data-label=\"#{open_media.id}\" href=\"/zip?ids%5B%5D=#{open_media.id}\">Download</a>")
+        end
       end
-    end
-    context "item is in the user's cart, has been requested, and has been approved" do
-      it 'displays the download button' do
-        expect(choose_download_button('aaa')).to eq("<a class=\"btn btn-default\" download=\"true\" target=\"_blank\" role=\"button\" id=\"file_download\" data-label=\"aaa\" href=\"/zip?ids%5B%5D=aaa\">Download</a>")
+
+      context 'work is restricted' do
+        before do
+          assign(:curation_concern, restricted_media)
+        end
+
+        it 'displays the request download button' do
+          expect(helper.choose_download_button).to eq("<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#pageModal\" data-work-id=\"#{restricted_media.id}\">Request Download</button>")
+        end
+
+        context 'user has an approved cart item' do
+          before do
+            allow(current_user).to receive(:downloadable_item_work_ids).and_return([restricted_media.id])
+          end
+          it 'returns the download button' do
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" download=\"true\" target=\"_blank\" role=\"button\" id=\"file_download\" data-label=\"#{restricted_media.id}\" href=\"/zip?ids%5B%5D=#{restricted_media.id}\">Download</a>")
+          end
+        end
+
+        context 'user has an unapproved cart item' do
+          before do
+            allow(current_user).to receive(:my_active_requests_work_ids).and_return([restricted_media.id])
+          end
+
+          it 'returns the download requested button' do
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" disabled=\"disabled\" href=\"\">Download Requested</a>")
+          end
+        end
+
+        context 'user has download access through a group' do
+          let(:access_group)  { Role.create(name: 'access_group') }
+          before do
+            access_group.users << current_user
+            access_group.save
+            restricted_media.download_groups += [access_group]
+            restricted_media.save
+          end
+
+          it 'returns the download button' do
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" download=\"true\" target=\"_blank\" role=\"button\" id=\"file_download\" data-label=\"#{restricted_media.id}\" href=\"/zip?ids%5B%5D=#{restricted_media.id}\">Download</a>")
+          end
+        end
       end
     end
   end
 
   describe '#choose_cart_button' do
-    let(:current_user)          { double('user') }
-    let(:cart_works)            { ['aaa','bbb','ccc'] }
-    let(:presenter1)            { double('presenter', id: 'aaa') }
-    let(:presenter2)            { double('presenter', id: 'ddd') }
+    let(:restricted_media)  { Media.create(title: ['restricted media'], visibility: 'open', fileset_accessibility: ['restricted_download']) }
 
     before do
-      allow(current_user).to receive(:work_ids_in_cart).and_return(cart_works)
-      allow(current_user).to receive_message_chain(:media_cart,:id).and_return(555)
+      allow(helper).to receive(:current_user).and_return(current_user)
+      assign(:curation_concern, restricted_media)
     end
 
-    context "the work is in the user's cart" do
-      it 'displays the item in cart button' do
-        expect(choose_cart_button(presenter1)).to eq("<a class=\"btn btn-default\" href=\"/dashboard/my/cart\">Item in Cart</a>")
+    context 'user is not signed in' do
+      let(:current_user)  { nil }
+
+      it 'returns the disabled add to cart button' do
+        expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"\">Add to Cart</a>")
       end
     end
-    context "the work is not in the user's cart" do
-      it 'displays the add to cart button' do
-        expect(choose_cart_button(presenter2)).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=ddd\">Add to Cart</a>")
+
+    context 'the user is signed in' do
+      let(:current_user)  { User.create(email: 'email@email.com', password: 'password') }
+
+      context 'media is not in the user cart' do
+        before do
+          allow(current_user).to receive(:work_ids_in_cart).and_return([])
+        end
+
+        it 'returns the add to cart button' do
+          expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{restricted_media.id}\">Add to Cart</a>")
+        end
+      end
+
+      context 'media is in the user cart' do
+        before do
+          allow(current_user).to receive(:work_ids_in_cart).and_return([restricted_media.id])
+        end
+
+        it 'returns the in cart button' do
+          expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" href=\"/dashboard/my/cart\">Item in Cart</a>")
+        end
       end
     end
   end

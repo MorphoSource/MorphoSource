@@ -15,6 +15,8 @@ module Hyrax
     # override Hydra::AccessControlsEnforcement to include 'download' access in @discovery_permissions
     self.search_builder_class = Morphosource::WorkSearchBuilder
 
+    skip_authorize_resource only: :showcase
+
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
 

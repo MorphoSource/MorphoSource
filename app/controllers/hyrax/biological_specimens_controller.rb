@@ -15,6 +15,8 @@ module Hyrax
 
     before_action :record_original_parents, only: :update
 
+    skip_authorize_resource only: :showcase
+
     # override the layout from WorksControllerBehavior
     def decide_layout
       layout = case action_name

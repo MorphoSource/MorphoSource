@@ -33,5 +33,9 @@ FactoryBot.define do
     factory :registered_user do
       groups { ['registered'] }
     end
+
+    trait :guest do
+      guest { true }
+    end
   end
 end

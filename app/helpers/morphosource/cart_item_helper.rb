@@ -1,53 +1,110 @@
 module Morphosource::CartItemHelper
 
-  def edit_work_button(presenter)
-    link_to "Edit", edit_polymorphic_path([main_app, presenter]), class: 'btn btn-default'
+  def media
+    @curation_concern
   end
 
-  def download_button(id)
-    link_to t('hyrax.file_sets.actions.download'), main_app.zip_path(ids: [id]), class: 'btn btn-default', download: true, target: "_blank", role: 'button', id: 'file_download', data: { label: id }
+  # media showcase download button options
+  def choose_download_button
+    if current_user
+      if user_can_download?
+        download_button
+      elsif media.restricted_download?
+        if requested_by_user?
+          download_requested_button
+        else
+          request_download_button
+        end
+      end
+    else
+      choose_guest_download_button
+    end
+  end
+
+  # media is open, user has been granted download access, or has an approved download request
+  def user_can_download?
+    return true if current_user.can? :download, media
+    return true if current_user.downloadable_item_work_ids.include?(media.id)
+    false
   end
 
   def hidden_download_link(id)
     link_to t('hyrax.file_sets.actions.download'), main_app.zip_path(ids: [id]), class: 'hide', download: true, target: "_blank", role: 'button', id: 'hidden-file-download', data: { label: id }
   end
 
-  def request_download_button(id)
-    button_tag("Request Download", id:'request-button', class: 'btn btn-default', data: {toggle: 'modal', target: '#pageModal', work_id: id})
+  def requested_by_user?
+    current_user.my_active_requests_work_ids.include?(media.id)
+  end
+
+  def choose_guest_download_button
+    if media.restricted_download?
+      disabled_request_download_button
+    else
+      disabled_download_button
+    end
+  end
+
+  # media showcase cart button options
+  def choose_cart_button
+    if current_user
+      if media_in_cart?
+        in_cart_button
+      else
+        add_to_cart_button
+      end
+    else
+      disabled_cart_button
+    end
+  end
+
+  def media_in_cart?
+    current_user.work_ids_in_cart.include? media.id
+  end
+
+  def edit_work_button
+    link_to "Edit", edit_polymorphic_path([main_app, media]), class: 'btn btn-default'
+  end
+
+  def download_button
+    link_to t('hyrax.file_sets.actions.download'), main_app.zip_path(ids: [media.id]), class: 'btn btn-default', download: true, target: "_blank", role: 'button', id: 'file_download', data: { label: media.id }
   end
 
   def download_requested_button
     link_to 'Download Requested','', class: 'btn btn-default', role: 'button', disabled: true
   end
 
-  def choose_download_button(id)
-    if current_user.downloadable_item_work_ids.include?(id)
-      download_button(id)
-    elsif current_user.my_active_requests_work_ids.include?(id)
-      download_requested_button
-    else
-      request_download_button(id)
-    end
+  def request_download_button
+    button_tag("Request Download", id:'request-button', class: 'btn btn-default', data: {toggle: 'modal', target: '#pageModal', work_id: media.id})
+  end
+
+  def disabled_request_download_button
+    link_to "Request Download", '', class: 'btn btn-default', role: 'button', disabled: true
+  end
+
+  def disabled_download_button
+    link_to "Download", '', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;' ,disabled: true
   end
 
   def in_cart_button
     link_to "Item in Cart", main_app.my_cart_path, class: 'btn btn-default'
   end
 
-  def add_to_cart_button(id)
-    link_to "Add to Cart", main_app.add_to_cart_path(:work_id => id), class: 'btn btn-default', :method => :post
+  def add_to_cart_button
+    link_to "Add to Cart", main_app.add_to_cart_path(work_id: media.id), class: 'btn btn-default', method: :post
   end
 
-  def choose_cart_button(presenter)
-    if current_user.work_ids_in_cart.include? presenter.id
-      in_cart_button
-    else
-      add_to_cart_button(presenter.id)
-    end
+  def disabled_cart_button
+    link_to "Add to Cart", '', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;', disabled: true
   end
 
+  # No longer used
   def unavailable_for_download_button
     link_to 'Download Unavailable','', class: 'btn btn-default', role: 'button', disabled: true
+  end
+
+  # When user is not signed in, appears below disabled download/cart buttons
+  def login_message
+    (link_to 'Login', main_app.new_user_session_path) + ' or ' + (link_to 'create an account', main_app.new_user_registration_path) + ' to download files'
   end
 
   # provide status label <span> element

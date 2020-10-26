@@ -6,13 +6,18 @@ RSpec.shared_context 'cart items', :shared_context => :metadata do
 
   let(:reviewer)      { User.create(email: 'reviewer@email.com', password: 'password') }
 
-  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'])}
-  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['open'])}
-  let(:work3)         { Media.create(id: "ccc", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'])}
-  let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['open'])}
-  let(:work5)         { Media.create(id: "eee", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download']) }
-  let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['open'], download_reviewer: ['xxx']) }
-  let(:work7)         { Media.create(id: "ggg", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download']) }
+  let(:morphosource_use_agreement_type) { ['test'] }
+  let(:required_archival_of_published_derivatives) { ['test'] }
+  let(:permits_3d_use) { ['test'] }
+  let(:permits_commercial_use) { ['test'] }
+    
+  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
+  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['open'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
+  let(:work3)         { Media.create(id: "ccc", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
+  let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['open'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
+  let(:work5)         { Media.create(id: "eee", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
+  let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['open'], download_reviewer: ['xxx'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
+  let(:work7)         { Media.create(id: "ggg", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
 
   let(:cartItem1)     { CartItem.create( user_id: current_user.ms_id, work_id: work1.id, in_cart: true, date_requested: Date.yesterday, date_downloaded: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
   let(:cartItem2)     { CartItem.create( user_id: current_user.ms_id, work_id: work2.id, in_cart: true, date_downloaded: Date.yesterday) }

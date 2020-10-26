@@ -1,25 +1,63 @@
-<% if presenter.representative_id.present? && presenter.representative_presenter.present? %>
-  <% if presenter.preview_in_3D? && defined?(viewer) && viewer %>
-    <div class="viewer-wrapper">
-      <div class="viewer">
-        <iframe 
-          height="100%" 
-          width="100%" 
-          src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: curation_concern.access_control_id) %>&config=<%= PulUvRails::UniversalViewer.config_src %>" 
-          allowfullscreen 
-          frameborder="0"
-        ></iframe>
-      </div>
-    </div>
-  <% else %>
-    <div class="viewer-wrapper-2d">
-      <div class="viewer">
-        <div class="image-wrapper">
-          <%= media_display presenter.representative_presenter %>
+<% if presenter.is_file_uploaded? %>
+<%# if presenter.representative_id.present? && presenter.representative_presenter.present? %>
+  
+  <% if presenter.preview_in_3D? %>
+
+    <%# if presenter.universal_viewable_ready? && defined?(viewer) && viewer %>
+    <% if presenter.universal_viewer? %>
+      <div class="viewer-wrapper">
+        <div class="viewer">
+          <iframe id="uv-iframe"
+            height="100%" 
+            width="100%" 
+            src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: curation_concern.access_control_id) %>&config=<%= PulUvRails::UniversalViewer.config_src %>" 
+            allowfullscreen 
+            frameborder="0"
+          ></iframe>
         </div>
       </div>
-    </div>
+    <% else %>
+      <div class="viewer-wrapper-2d">
+        <div class="viewer">
+          <div class="image-wrapper">
+            <div class="not-ready">Interactive/Embeddable Media Preview is currently unavailable. Please check back later.</div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+  <% else %>
+
+    <% if presenter.universal_viewable_ready? %>
+      <div class="viewer-wrapper-2d">
+        <div class="viewer">
+          <div class="image-wrapper">
+            <%= media_display presenter.representative_presenter %>
+          </div>
+        </div>
+        <p>Interactive/Embeddable Media Preview disabled by data contributor</p>
+      </div>
+    <% else %>
+      <div class="viewer-wrapper-2d">
+        <div class="viewer">
+          <div class="image-wrapper">
+            <div class="not-ready">Media Preview is currently unavailable. Please check back later.</div>
+            <%#= image_tag 'default.png', class: "canonical-image" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
   <% end %>
+
 <% else %>
-  <%= image_tag 'default.png', class: "canonical-image" %>
+    
+  <!--div class="viewer-wrapper-2d">
+    <div class="viewer">
+      <div class="image-wrapper">
+        <div class="not-ready">Interactive/Embeddable Media Preview is currently unavailable.  If a new media file has been uploaded, please allow some time for processing and check back later.</div>
+      </div>
+    </div>
+  </div-->
+
 <% end %>

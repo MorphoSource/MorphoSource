@@ -1,3 +1,4 @@
+
 // function to hide or show the batch update buttons based on how may items are checked
 function toggleButtons(forceOn, otherPage ){
   forceOn = typeof forceOn !== 'undefined' ? forceOn : false

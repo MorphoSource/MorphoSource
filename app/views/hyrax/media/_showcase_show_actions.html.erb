@@ -1,5 +1,6 @@
 <div class="show-actions">
   <div class="btn-group" style="display: flex; justify-content: center; flex-wrap: wrap;">
+    <%= hidden_download_link(presenter.id) %>
     <%= choose_download_button %>
     <%= choose_cart_button %>
     <% if presenter.editor? %>

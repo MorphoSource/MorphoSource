@@ -100,6 +100,29 @@ html {
   padding: 5px;
 }
 
+/* modal styles */
+.modal-content {
+  h2 {
+    font-size:22px;
+  }
+  .agreement-content {
+    font-size: 11px;
+    li {
+      font-size: 11px;
+      margin-left: -20px;
+    }
+    .agreement-items-wrapper {
+      font-size: 11px;
+    }      
+  }
+}
+
+.showcase.cart {
+  input.batch_document_selector, input.disabled {
+    margin: 4px 0 0;
+  }
+}
+
 .showcase.teams, .showcase.media-works, .showcase.browse { /* / teams and projects show page styles */
   .title.browse {
     margin-top:30px;
@@ -493,13 +516,27 @@ html {
 
 .showcase {
 
+  .flash-wrapper {
+    padding: 0;
+    .alert {
+      margin: 0 12px;
+    }
+  }
+
   .modal-content {
+    h2 { 
+      font-size: 15px; 
+    }
     .add-works {
       font-size: 14px;
       input {
         border: none;
         font-weight: bold;
       }
+    }
+    .modal-header {
+      border: none;
+      padding: 8px 15px 0;
     }
     .modal-title {
       border-bottom: none;
@@ -1100,6 +1137,11 @@ html {
         margin-top: 10px;
         background-color: transparent;
 
+        p {
+          text-align: center;
+          font-size: 10px;
+        }
+
         .viewer {
           height: 100%;
           padding: 10px;
@@ -1126,6 +1168,12 @@ html {
             display:flex;
             align-items:center;
             justify-content:center;
+              .not-ready {
+              color: #ccc;
+              font-size: 12px;
+              margin: 30px;
+              text-align: center;
+            }
             img {
               max-width: 250px;
               margin: auto;

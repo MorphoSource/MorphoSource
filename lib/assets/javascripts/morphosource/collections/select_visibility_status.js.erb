@@ -1,0 +1,58 @@
+function set_initial_value_for_collection() {
+  let selected_visibility = $('#selected_visibility_for_collection').attr('class');
+
+  set_visibility_for_collection(selected_visibility);
+}
+
+function set_visibility_for_collection(val) {
+  let open = $('#collection_visibility_open');
+  let restricted = $('#collection_visibility_restricted');
+
+  let current_visibility_value = $('#current_visibility_value_for_collection');
+
+  switch (val) {
+    case 'new':
+      select_visibility_for_collection(open);
+      display_value = "Public";
+      display_class = "label-success";
+      break;
+    case 'open':
+      select_visibility_for_collection(open);
+      display_value = "Public";
+      display_class = "label-success";
+      break;
+    case 'restricted':
+      select_visibility_for_collection(restricted);
+      display_value = "Private";
+      display_class = "label-danger";
+      break;
+    default:
+      display_value = "Public";
+      display_class = "label-success";
+  }
+
+  if (current_visibility_value.length) {
+    current_visibility_value.text(display_value);
+    current_visibility_value
+      .removeClass('label-success')
+      .removeClass('label-danger');
+    current_visibility_value.addClass(display_class);
+  }
+}
+
+function select_visibility_for_collection(visibility) {
+  visibility.prop("checked", true);
+}
+
+$( document ).ready(function() {
+  if ( $('form[id*="edit_collection"]').length ||
+       $('form[id*="new_collection"]').length ) { 
+    set_initial_value_for_collection();
+
+    $('input[name="collection[visibility]"]').change(function(event){
+      if ($(this).val()){
+        set_visibility_for_collection($(this).val());
+      }
+    });
+  }
+});

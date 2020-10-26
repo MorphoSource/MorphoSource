@@ -173,7 +173,7 @@ module Morphosource
     # Get specimens with published media for GBIF taxonomy rank
     def taxonomy_specimens(name)
       solr_params = {
-        fl: ['id', 'title_tesim'],
+        fl: ['id', 'title_tesim', 'taxonomy_tesim'],
         fq: [
           "#{solrize('has_model', :symbol)}:BiologicalSpecimen",
           "#{solrize('external_taxonomy', :stored_searchable)}:#{name.present? ? name : '*'}",

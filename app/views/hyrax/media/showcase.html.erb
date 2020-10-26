@@ -46,3 +46,7 @@
 <script>
   <%= render partial: '/morphosource/my/scripts/modal_scripts', formats: [:js] %>
 </script>
+
+<%# hidden div and modal for download agreement %>
+<%= render 'download_agreements_container', presenter: @presenter %>
+<%= render 'morphosource/my/modals/download_agreements' %>

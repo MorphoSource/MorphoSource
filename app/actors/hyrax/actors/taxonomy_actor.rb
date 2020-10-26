@@ -21,7 +21,16 @@ module Hyrax
       private
 
         def generated_title(env)
-          get_ranks(env.attributes).join(' > ')
+          ranks = rank_hash(env.attributes)
+          if ranks['taxonomy_genus'].present?
+            species_term = ranks['taxonomy_species'].present? ? " #{ranks['taxonomy_species']}" : " sp."
+            subspecies_term = ranks['taxonomy_species'].present? && ranks['taxonomy_subspecies'].present? ? " #{ranks['taxonomy_subspecies']}" : ""
+            ranks['taxonomy_genus'] + species_term + subspecies_term
+          else
+            lowest_rank_term = 'Taxonomy'
+            higher_ranks.each { |hr| ranks[hr].present? ? lowest_rank_term = ranks[hr] : nil }
+            "#{lowest_rank_term} indet."
+          end
         end
 
         def generated_source(env)
@@ -44,12 +53,23 @@ module Hyrax
           end
         end
 
-        def get_ranks(attrs)
-          all_ranks = ["taxonomy_domain","taxonomy_kingdom","taxonomy_phylum","taxonomy_superclass","taxonomy_class","taxonomy_subclass","taxonomy_superorder","taxonomy_order","taxonomy_suborder","taxonomy_superfamily","taxonomy_family","taxonomy_subfamily","taxonomy_tribe","taxonomy_genus","taxonomy_subgenus","taxonomy_species","taxonomy_subspecies"]
-          all_ranks.map!{|rank| attrs[rank].presence ? attrs[rank].first : ""}
-          all_ranks.keep_if{|rank| rank.present?}
+        def all_ranks
+          ["taxonomy_domain","taxonomy_kingdom","taxonomy_phylum","taxonomy_superclass","taxonomy_class","taxonomy_subclass","taxonomy_superorder","taxonomy_order","taxonomy_suborder","taxonomy_superfamily","taxonomy_family","taxonomy_subfamily","taxonomy_tribe","taxonomy_genus","taxonomy_subgenus","taxonomy_species","taxonomy_subspecies"]
         end
 
+        def higher_ranks
+          ["taxonomy_domain","taxonomy_kingdom","taxonomy_phylum","taxonomy_superclass","taxonomy_class","taxonomy_subclass","taxonomy_superorder","taxonomy_order","taxonomy_suborder","taxonomy_superfamily","taxonomy_family","taxonomy_subfamily","taxonomy_tribe"]
+        end
+
+        def get_ranks(attrs)
+          all_ranks.map{|rank| attrs[rank].presence ? attrs[rank].first : ""}.keep_if{|rank| rank.present?}
+        end
+
+        def rank_hash(attrs)
+          all_ranks.map do |rank|
+            [ rank, ( attrs[rank].presence ? attrs[rank].first : "" ) ]
+          end.to_h
+        end
     end
   end
 end

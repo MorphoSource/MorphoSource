@@ -36,7 +36,7 @@ RSpec.describe Hyrax::Actors::TaxonomyActor do
       let(:env) { Hyrax::Actors::Environment.new(work, ability, rank_attrs) }
 
       it 'changes the title attribute' do
-        expect { subject.create(env) }.to change{env.attributes['title']}.to([ "Domain > Kingdom > Phylum > Class > Order > Family > Genus > Subgenus > Species" ])
+        expect { subject.create(env) }.to change{env.attributes['title']}.to([ "Genus Species" ])
       end
 
       it "changes the source to 'user-provided'" do
@@ -72,7 +72,7 @@ RSpec.describe Hyrax::Actors::TaxonomyActor do
       let(:env) { Hyrax::Actors::Environment.new(work, ability, new_attrs) }
 
       it 'changes the title attribute' do
-        expect { subject.update(env) }.to change{env.attributes['title']}.to([ "Domain > Kingdom > Phylum > Class > Order > Family > Genus > Subgenus > Species" ])
+        expect { subject.update(env) }.to change{env.attributes['title']}.to([ "Genus Species" ])
       end
 
       it 'changes the source and trusted values' do

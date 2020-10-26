@@ -18,11 +18,10 @@ module Hyrax
         inst = attrs['institution_code']&.first.presence || env.curation_concern.institution_code.presence || ''
         coll = attrs['collection_code']&.first.presence || env.curation_concern.collection_code.presence || ''
         cnum = attrs['catalog_number']&.first.presence || env.curation_concern.catalog_number.presence || ''
-        taxn = taxonomy_title(env).presence || existing_work_taxonomy(env).presence || ''
 
         case
-        when inst.presence || coll.presence || cnum.presence || taxn.presence
-          collection_catalog_generated_title(inst, coll, cnum, taxn)
+        when inst.presence || coll.presence || cnum.presence
+          collection_catalog_generated_title(inst, coll, cnum)
         when attrs['identifier'].present?
           identifier_generated_title(attrs['identifier'])
         when env.curation_concern.depositor.present?
@@ -34,32 +33,8 @@ module Hyrax
 
       private
 
-      def collection_catalog_generated_title(institution_code='', collection_code='', catalog_number='', taxonomy_terms='')
-        [institution_code, collection_code, catalog_number].keep_if { |x| x.presence } .join(':') + taxonomy_terms
-      end
-
-      def taxonomy_title(env)
-        taxonomy_id = check_canonical_taxonomy(env)
-        if !taxonomy_id.presence && env.attributes['work_parents_attributes']
-          # get first taxonomy parent
-          env.attributes['work_parents_attributes'].each do |i, v|
-            taxonomy_id = v['id'] if v['id'] && v['id'].first == 'T'
-          end
-        end
-        if taxonomy_id.presence && Taxonomy.exists?(taxonomy_id)
-          generate_taxonomy_title(Taxonomy.find(taxonomy_id))
-        else
-          return ''
-        end
-      end
-
-      def existing_work_taxonomy(env)
-        id = env.curation_concern.id.presence || ''
-        if id.present? and BiologicalSpecimen.exists?(id)
-          taxonomy = BiologicalSpecimen.find(id).best_taxonomy
-          return generate_taxonomy_title(taxonomy) if taxonomy.present?
-        end
-        return ''
+      def collection_catalog_generated_title(institution_code='', collection_code='', catalog_number='')
+        [institution_code, collection_code, catalog_number].keep_if { |x| x.presence } .join(':')
       end
 
       def identifier_generated_title(identifier)
@@ -70,16 +45,6 @@ module Hyrax
         voucher_term = vouchered.first == 'Yes' ? 'Vouchered' : 'Unvouchered'
         user_term = user.display_name.present? ? user.display_name : user.email
         I18n.t('morphosource.fallback_object_title', voucher: voucher_term, user: user_term)
-      end
-
-      def generate_taxonomy_title(taxonomy)
-        genus = taxonomy.taxonomy_genus&.first
-        species = taxonomy.taxonomy_species&.first
-        subspecies = taxonomy.taxonomy_subspecies&.first
-        '' +
-          (genus ? ' ' + genus.to_s : '') +
-          (species ? ' ' + species.to_s : '') +
-          (subspecies ? ' ' + subspecies.to_s : '')
       end
 
       def check_canonical_taxonomy(env)

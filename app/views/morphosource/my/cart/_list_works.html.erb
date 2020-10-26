@@ -34,5 +34,9 @@
   <td class="date"><%= item.created_at.strftime("%Y-%m-%d") %></td>
   <td><%= date(item,'approved') %></td>
   <td><%= date(item,'expired') %></td>
-  <td><%= link_to "Download Item", main_app.download_items_path(item_id: item.id), class: "btn btn-info", method: :get %></td>
+  <td>
+    <a class="btn-download-item btn btn-info btn-xs" data-item-id="<%= item.id %>" href="javascript:void(0)">Download Item</a>
+    <%= link_to item.id, main_app.download_items_path(item_id: item.id), class: "hide", id: 'link-to-download-item-'+item.id.to_s, method: :get %>
+  </td>
+  <%= render 'morphosource/my/cart/download_agreements_container', presenter: presenter, item_id: item.id %>
 </tr>

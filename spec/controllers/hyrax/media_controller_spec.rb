@@ -44,13 +44,13 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     let(:access_group)  { Role.create(name: 'access_group') }
     let(:user)          { User.create(email: 'user@email.com', password: 'password') }
 
-    before do
-      access_group.users << user
-      access_group.save
-      sign_in user
-    end
-
     describe 'user ability to view' do
+      before do
+        access_group.users << user
+        access_group.save
+        sign_in user
+      end
+
       context 'work is private' do
         context 'user does not have access' do
           it 'is unauthorized' do
@@ -123,6 +123,22 @@ RSpec.describe Hyrax::MediaController, type: :controller do
               expect(response.status).to eq(200)
             end
           end
+        end
+      end
+    end
+
+    describe 'user is not logged in' do
+      context 'media is private' do
+        it 'redirects to sign in' do
+          get :showcase, params: { id: work.id }
+          expect(response.status).to eq(302)
+        end
+      end
+      context 'media is public' do
+        let(:public_media) { Media.create(title: ['public media'], visibility: 'open') }
+        it 'is authorized' do
+          get :showcase, params: { id: public_media.id }
+          expect(response.status).to eq(200)
         end
       end
     end

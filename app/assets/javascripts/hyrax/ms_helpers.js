@@ -1,5 +1,12 @@
 // shared helper functions 
 
+// dedupe and return a unique array of strings
+Array.prototype.uniq = function(){
+  return this.filter(
+    function(a){return !this[a] ? this[a] = true : false;}, {}
+  );
+}
+
 function disablePageAndSave(btn) {
   $(btn).prop('disabled', true).val('Saving...');
   disablePage();

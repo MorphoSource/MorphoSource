@@ -11,6 +11,8 @@ module Hyrax
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::CulturalHeritageObjectPresenter
 
+    skip_authorize_resource only: :showcase
+
     # override the layout from WorksControllerBehavior
     def decide_layout
       layout = case action_name
@@ -46,7 +48,7 @@ module Hyrax
       curation_concern.depositor = current_user.user_key
       curation_concern.admin_set_id = admin_set_id_for_new
       build_form
-      render '/hyrax/base/new' 
+      render '/hyrax/base/new'
     end
 
   end

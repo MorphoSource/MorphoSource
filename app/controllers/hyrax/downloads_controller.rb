@@ -8,6 +8,7 @@ class Hyrax::DownloadsController
       redirect_to '/'
     when String
       # For derivatives stored on the local file system
+      headers['Access-Control-Allow-Origin'] = '*'
       send_local_content
     else
       raise ActiveFedora::ObjectNotFoundError

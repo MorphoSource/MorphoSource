@@ -8,25 +8,42 @@ module Hyrax
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
 
-    include TeamsControllerBehavior
-    self.presenter_class = Hyrax::OrganizationPresenter
-    self.information_service_class = Morphosource::Organizations::OrganizationInformationService
-
+#include TeamsControllerBehavior
+#    self.presenter_class = Hyrax::OrganizationPresenter
+#    self.information_service_class = Morphosource::Organizations::OrganizationInformationService
     self.curation_concern_type = ::Organization
-
     self.show_presenter = Hyrax::OrganizationPresenter
+#    self.member_service_class = Morphosource::Organizations::OrganizationMemberService
+
     with_themed_layout 'morphosource_1_column'
 
     def show
       @curation_concern ||= ActiveFedora::Base.find(params[:id])
       if @curation_concern.team_id.present?
+        # If organization is linked to a team, this route should redirect to the org-linked team’s show page instead (MR-803)
         Rails.logger.info("MR-803: organization #{params[:id]} has team: #{@curation_concern.team_id.inspect}")
         redirect_to "/teams/#{@curation_concern.team_id.first}"
       else
         presenter
-        query_collection_information
-        query_collection_members
+#query_collection_information
+#byebug
+#        query_collection_members
+
+        member_works
       end
+    end
+
+    def member_service
+      @member_service ||= Morphosource::Organizations::OrganizationMemberService.new
+    end
+
+    def member_works 
+
+      tmp = member_service.po_ids_by_org(@curation_concern)
+byebug
+#      @response = member_service_class.media
+#      @member_docs = @response.documents
+#      @members_count = @response.total
     end
 
     def update

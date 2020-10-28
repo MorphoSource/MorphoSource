@@ -407,7 +407,7 @@ module Hyrax
 
     attr_writer :browse_page_item_rows
     def browse_page_item_rows
-      @browse_page_item_rows ||= 100 # default rows per page on browse pages
+      @browse_page_item_rows ||= 1000000 # default rows per page on browse pages
     end
 
     attr_writer :browse_page_rows_per_page_range

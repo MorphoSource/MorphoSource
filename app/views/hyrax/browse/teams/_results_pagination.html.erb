@@ -1,24 +1,23 @@
 	<div class="row record-padding paginate-wrapper">
 
-		<div class="col-md-12 col-lg-2">
-		  <%= form_tag '', method: :get, :id => 'rows_per_page' do %>
-			<%#= hidden_params_for_pagination('k_') %>
+		<%# div class="col-md-12 col-lg-2">
+		  <%= form_tag '', method: :get, :id => 'rows_per_page' do % >
 		    <div class="select-tag">
-		      Rows per page <%= select_tag :rows, options_for_select(Hyrax.config.browse_page_rows_per_page_range, selected: params[:rows] || Hyrax.config.browse_page_item_rows), onchange: "$('#rows_per_page').submit();" %> 
+		      Rows per page <%= select_tag :rows, options_for_select(Hyrax.config.browse_page_rows_per_page_range, selected: params[:rows] || Hyrax.config.browse_page_item_rows), onchange: "$('#rows_per_page').submit();" % >  
 		    </div>
-		  <% end %>
-		</div>
+		  <% end % >
+		</div> %>
 
-		<div class="col-md-12 col-lg-2">
+		<div class="col-md-12">
 			<div>Showing <%= page_entries_info @paginated_document_list %></div>
 		</div>
 
-		<div class="col-md-12 col-lg-8">
-			<% if @collection_list_type == 'project' %>
-		  	<%= paginate @paginated_document_list, outer_window: 2, theme: 'blacklight', param_name: :page, route_set: main_app, :params => { script_name: "/browse_projects_paging" } %>
-		  <% else %>
-		  	<%= paginate @paginated_document_list, outer_window: 2, theme: 'blacklight', param_name: :page, route_set: main_app, :params => { script_name: "/browse_teams_paging" } %>
-			<% end %>		  
-		</div>
+		<%# div class="col-md-12 col-lg-8">
+			<% if @collection_list_type == 'project' % >
+		  	<%= paginate @paginated_document_list, outer_window: 2, theme: 'blacklight', param_name: :page, route_set: main_app, :params => { script_name: "/browse_projects_paging" } % >
+		  <% else % >
+		  	<%= paginate @paginated_document_list, outer_window: 2, theme: 'blacklight', param_name: :page, route_set: main_app, :params => { script_name: "/browse_teams_paging" } % >
+			<% end % >		  
+		</div %>
 
 	</div><!-- /row -->

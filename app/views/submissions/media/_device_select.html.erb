@@ -1,6 +1,6 @@
 <%= simple_form_for @submission, html: { id: :submission_device_select_form } do |f| %>
   <div class="row form-group">
-    <div class="col-sm-6 col-sm-offset-3">
+    <div class="col-xs-12 col-sm-6 col-sm-offset-3">
   	
 
         <%= f.input :organization_search,
@@ -10,7 +10,17 @@
           class: 'form-control mb-1',
           id: :submission_device_select_organization_search
         } %>
-  	    
+
+        <div class='mb-1'>
+          <b><%= t('morphosource.submission.or') %></b>
+        </div>
+
+        <div class='mb-3'>
+          <a href="#" id="submission_select_device_no_organization" class="btn btn-primary btn-continue">
+            <%= t('morphosource.submission.no_organization') %>
+          </a>
+        </div>
+
   	    <%= f.input :device_id, 
           collection: [], 
           prompt: 'Select device', 
@@ -68,15 +78,6 @@ $(function(){
         complete: function (xhr, status) {
           var results = $.parseJSON(xhr.responseText);
           console.log(results);
-
-          // Knit together labels
-          for (const org of results) {
-            org.title = org.label;
-            var institutionCode = org.institution_code ? org.institution_code[0] : '';
-            var collectionCodes = org.collection_code ? org.collection_code.join('/') : '';
-            org.label = [org.title[0] + ' (' + institutionCode + ':' + collectionCodes + ')'];
-          }
-
           response(results);
         }
       });

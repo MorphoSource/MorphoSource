@@ -1,5 +1,6 @@
 module Qa::Authorities
   class FindOrganizationsWithDevices < Qa::Authorities::FindWorks
+    self.search_builder_class = Morphosource::My::FindOrganizationsSearchBuilder
 
     include MorphosourceHelper
 
@@ -12,7 +13,7 @@ module Qa::Authorities
       docs = response.documents
       docs.map do |doc|
         id = doc.id
-        title = doc.title
+        title = doc.institution_name.present? ? [ doc.institution_name&.first + ', ' + doc.title&.first ] : doc.title
         organization_type = doc.organization_type
         institution_code = doc.institution_code
         institution_name = doc.institution_name

@@ -12,8 +12,8 @@ RSpec.describe OrganizationsCatalogController, :type => :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 2 facet fields' do
-        expect(facet_fields.count).to eq(2)
+      it 'has 5 facet fields' do
+        expect(facet_fields.count).to eq(5)
       end
 
       describe 'generic type' do

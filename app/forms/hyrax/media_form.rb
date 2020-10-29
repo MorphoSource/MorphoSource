@@ -10,7 +10,7 @@ module Hyrax
 
     class_attribute :single_value_fields, :permissions_terms
 
-    delegate :tags=, :tags, to: :model
+    delegate :tags=, :tags, :publication_status, to: :model
 
     # Customizing field terms
 

@@ -78,4 +78,119 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
       end
     end
   end
+
+  describe 'form_model_name, download_permission_input' do
+    context 'media' do
+      let(:media) { Media.create(title: ['title']) }
+      let(:form)  { Hyrax::MediaForm.new(media, nil, nil) }
+      it 'has the correct values' do
+        helper.simple_form_for form, url: '' do |f|
+          expect(helper.form_model_name(f)).to eq('media')
+          expect(helper.download_permission_input(f)).to eq("<input type='hidden' id= 'media_download_permission' name='media[visibility]' class='download-permission' value= #{download_permission(f)} >".html_safe)
+        end
+      end
+    end
+    context 'organization' do
+      let(:organization)  { Organization.new() }
+      let(:form)          { Hyrax::OrganizationForm.new(organization, nil, nil) }
+      it 'has the correct values' do
+        helper.simple_form_for form, url: '' do |f|
+          expect(helper.form_model_name(f)).to eq('organization')
+          expect(helper.download_permission_input(f)).to eq("<input type='hidden' id= 'organization_download_permission' name='organization[download_permission]' class='download-permission' value= #{download_permission(f)} >".html_safe)
+        end
+      end
+    end
+  end
+
+  describe 'download_permission, badge_class, human_readable_publication_status' do
+    context 'media' do
+      let(:media) { Media.create(title: ['title']) }
+      let(:form)  { Hyrax::MediaForm.new(media, nil, nil) }
+      context 'media is open' do
+        before do
+          media.visibility = 'open'
+          media.fileset_accessibility = ['open']
+          media.save
+        end
+        it 'is open' do
+          helper.simple_form_for form, url: '' do |f|
+            expect(helper.download_permission(f)).to eq('open')
+            expect(helper.badge_class(f)).to eq('label label-success')
+            expect(helper.human_readable_publication_status(f)).to eq('Open Download')
+          end
+        end
+      end
+      context 'media is restricted download' do
+        before do
+          media.visibility = 'open'
+          media.fileset_accessibility = ['restricted_download']
+          media.save
+        end
+        it 'is restricted_download' do
+          helper.simple_form_for form, url: '' do |f|
+            expect(helper.download_permission(f)).to eq('restricted_download')
+            expect(helper.badge_class(f)).to eq('label label-info')
+            expect(helper.human_readable_publication_status(f)).to eq('Restricted Download')
+          end
+        end
+      end
+      context 'media is private' do
+        before do
+          media.visibility = 'restricted'
+          media.fileset_accessibility = ['private']
+          media.save
+        end
+        it 'is restricted' do
+          helper.simple_form_for form, url: '' do |f|
+            expect(helper.download_permission(f)).to eq('restricted')
+            expect(helper.badge_class(f)).to eq('label label-danger')
+            expect(helper.human_readable_publication_status(f)).to eq('Private')
+          end
+        end
+      end
+    end
+    context 'organization' do
+      let(:organization) { Organization.create(title: ['title']) }
+      let(:form)  { Hyrax::OrganizationForm.new(organization, nil, nil) }
+      context 'organization download permission is open' do
+        before do
+          organization.download_permission = ['open']
+          organization.save
+        end
+        it 'is open' do
+          helper.simple_form_for form, url: '' do |f|
+            expect(helper.download_permission(f)).to eq('open')
+            expect(helper.badge_class(f)).to eq('label label-success')
+            expect(helper.human_readable_publication_status(f)).to eq('Open Download')
+          end
+        end
+      end
+      context 'organization download permission is restricted download' do
+        before do
+          organization.download_permission = ['restricted_download']
+          organization.save
+        end
+        it 'is restricted_download' do
+          helper.simple_form_for form, url: '' do |f|
+            expect(helper.download_permission(f)).to eq('restricted_download')
+            expect(helper.badge_class(f)).to eq('label label-info')
+            expect(helper.human_readable_publication_status(f)).to eq('Restricted Download')
+          end
+        end
+      end
+      context 'organization download permission is private' do
+        before do
+          organization.download_permission = ['restricted']
+          organization.save
+        end
+        it 'is restricted' do
+          helper.simple_form_for form, url: '' do |f|
+            expect(helper.download_permission(f)).to eq('restricted')
+            expect(helper.badge_class(f)).to eq('label label-danger')
+            expect(helper.human_readable_publication_status(f)).to eq('Private')
+          end
+        end
+      end
+    end
+  end
 end

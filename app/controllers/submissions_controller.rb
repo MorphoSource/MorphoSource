@@ -806,7 +806,10 @@ class SubmissionsController < ApplicationController
       publisher: organization.publisher,
       cite_as: organization.cite_as,
       download_permission: organization.download_permission.first,
-      attachment_url: attachment_url(organization)
+      attachment_url: attachment_url(organization),
+      morphosource_use_agreement_type: organization.morphosource_use_agreement_type,
+      required_archival_of_published_derivatives: organization.required_archival_of_published_derivatives,
+      preview_mode: organization.preview_mode
     }
 
     fields.select {|k, v| v.present? }
@@ -826,7 +829,7 @@ class SubmissionsController < ApplicationController
   # reindex works that have catalog facets depending on metadata from associated work types after all works have been linked with each other.
   def reindex_catalog_works
     return if @submission.media_id.blank?
-    
+
     catalog_works.each do |work|
       work.update_index
     end

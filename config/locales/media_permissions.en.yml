@@ -1,0 +1,65 @@
+# labels and hints used for media showcase edit and team - linked organization edit.
+en:
+  simple_form:
+    labels:
+      organization:
+        download_permission: Download Permission
+        download_reviewer: Download Reviewer
+        rights_statement: Copyright Statement
+        license: License
+        morphosource_use_agreement_type: MorphoSource Use Agreement Type
+        permits_commercial_use: Permits Commercial Use
+        permits_3d_use: Permits 3D Use
+        required_archival_of_published_derivatives: Required Archival of Published Derivatives
+        rights_holder:
+        funding: Funding Attribution
+        publisher: Publisher
+        cite_as: Cite As
+        agreement_uri: Additional Usage Agreement
+        preview_mode: Media Preview Mode
+      media:
+        download_permission: Download Permission
+        download_reviewer: Download Reviewer
+        rights_statement: Copyright Statement
+        license: License
+        morphosource_use_agreement_type: MorphoSource Use Agreement Type
+        permits_commercial_use: Permits Commercial Use
+        permits_3d_use: Permits 3D Use
+        required_archival_of_published_derivatives: Required Archival of Published Derivatives
+        rights_holder:
+        funding: Funding Attribution
+        publisher: Publisher
+        cite_as: Cite As
+        agreement_uri: Additional Usage Agreement
+        preview_mode: Media Preview Mode
+    hints:
+      organization:
+        download_permission:
+        download_reviewer:
+        rights_statement:
+        license: Licensing and distribution information governing access to the work.
+        morphosource_use_agreement_type:
+        permits_commercial_use:
+        permits_3d_use:
+        required_archival_of_published_derivatives:
+        rights_holder:
+        funding:
+        publisher: The person or group making the work available. Generally this is the institution.
+        cite_as:
+        agreement_uri:
+        preview_mode:
+      media:
+        download_permission:
+        download_reviewer:
+        rights_statement:
+        license: Licensing and distribution information governing access to the work.
+        morphosource_use_agreement_type:
+        permits_commercial_use:
+        permits_3d_use:
+        required_archival_of_published_derivatives:
+        rights_holder:
+        funding:
+        publisher: The person or group making the work available. Generally this is the institution.
+        cite_as:
+        agreement_uri:
+        preview_mode:

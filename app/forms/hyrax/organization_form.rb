@@ -15,7 +15,7 @@ module Hyrax
     self.terms = [
       :organization_type,
       :institution_name,
-      :title, 
+      :title,
       :institution_code,
       :collection_code,
       :recordset_id,
@@ -23,7 +23,7 @@ module Hyrax
       :address,
       :city,
       :state_province,
-      :country, 
+      :country,
       :contact_person,
       :description,
       :download_permission,
@@ -36,13 +36,16 @@ module Hyrax
       :rights_holder,
       :funding,
       :publisher,
-      :cite_as]
+      :cite_as,
+      :morphosource_use_agreement_type,
+      :required_archival_of_published_derivatives,
+      :preview_mode]
 
     self.required_fields = [:organization_type, :institution_name, :title, :institution_code]
 
-    self.single_valued_fields = [:organization_type, :title, :description, :address, :city, :state_province, :country, :institution_name, :cite_as, :download_permission, :download_reviewer, :agreement_uri, :rights_statement, :permits_commercial_use, :permits_3d_use, :cite_as]
+    self.single_valued_fields = [:organization_type, :title, :description, :address, :city, :state_province, :country, :institution_name, :cite_as, :download_permission, :download_reviewer, :agreement_uri, :rights_statement, :permits_commercial_use, :permits_3d_use, :cite_as, :morphosource_use_agreement_type, :preview_mode]
 
-    self.media_permissions_fields = [:download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as]
+    self.media_permissions_fields = [:download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode]
 
     def secondary_terms
       terms - primary_terms - media_permissions_fields -

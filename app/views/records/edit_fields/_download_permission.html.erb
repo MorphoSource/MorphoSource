@@ -1,0 +1,38 @@
+<%= download_permission_input(f) %>
+<div class="row">
+  <div class="col-xs-6 showcase-label">
+    Download Permission
+  </div>
+  <div class="col-xs-6 showcase-value">
+    <div class="btn-group form-control" style="">
+      <a class="btn dropdown-toggle" data-toggle="dropdown" style="width: 100%; max-width: 100%; padding: 3px; display: flex; justify-content: space-between; align-items: center; height: 100%;" href="#">
+        <span style="height:110%;" class= "<%= badge_class(f) %>" >
+          <%= human_readable_publication_status(f) %>
+        </span>
+        <span class="glyphicon glyphicon-chevron-down" style="font-size:10px; color: black;"></span>
+      </a>
+      <ul class="dropdown-menu download-permission-dropdown">
+        <li>
+          <a href="javascript:void(0);" style="height:20px;">
+            <span title="clear selection"></span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" id='open'>
+            <span class="label label-success">Open Download</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" id='restricted_download' >
+            <span class="label label-info">Restricted Download</span>
+          </a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" id='restricted'>
+            <span class="label label-danger">Private</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

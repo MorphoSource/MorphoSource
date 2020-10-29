@@ -1,23 +1,30 @@
+<% if defined?(curation_concern) && (curation_concern!= '') %>
+  <% object = curation_concern %>
+<% elsif @collection.organization %>
+  <% object = @collection.organization %>
+<% end %>
+
 <div class="form-group row string optional media_agreement_uri attachment-container">
   <div class="col-xs-6 showcase-label">
     <label class="control-label string optional" for="media_agreement_uri">Additional usage agreement</label>
     <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
   </div>
+
   <div class="col-xs-6 showcase-value">
-    <%= f.input_field :agreement_uri, 
-      as: :string, 
+    <%= f.input_field :agreement_uri,
+      as: :string,
       placeholder: 'Enter Agreement File URL',
-      id: 'media_agreement_uri', 
-      disabled: curation_concern.present? && curation_concern.attachment('agreement') ? true : false,
-      class: 'form-control string optional' 
+      id: 'media_agreement_uri',
+      disabled: object.present? && object.attachment('agreement') ? true : false,
+      class: 'form-control string optional'
     %>
-    
+
     <div style='text-align: center;'><b>- OR -</b></div>
-    
+
     <div class='attachment'>
-      <% if curation_concern.present? && curation_concern.attachment('agreement').present? %>
+      <% if object.present? && object.attachment('agreement').present? %>
         <div class='attachment-link'>
-          <%= link_to main_app.attachment_path(id: curation_concern.id, field: 'agreement') do %>
+          <%= link_to main_app.attachment_path(id: object.id, field: 'agreement') do %>
             <span>Agreement File</span>
           <% end %>
           <span class='input-group-btn field-controls' style='display: inline;'>
@@ -27,7 +34,7 @@
           </span>
         </div>
       <% end %>
-      <div class='attachment-input <%= curation_concern.present? && curation_concern.attachment('agreement').present? ? 'hide' : '' %>'>
+      <div class='attachment-input <%= object.present? && object.attachment('agreement').present? ? 'hide' : '' %>'>
         <%= file_field_tag :agreement, accept: 'text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document', class: 'file-field-input agreement-attachment' %>
         <span style='font-size:small; color: gray;'>Accepted Formats: .txt, .pdf, .docx</span>
         <input name='media_attachment_delete' class='attachment_delete hide'></input>
@@ -35,4 +42,3 @@
     </div>
   </div>
 </div>
-

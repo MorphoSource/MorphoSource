@@ -4,8 +4,34 @@
     <% doc_presenter = index_presenter(document) %>
     <% index_fields(document).each do |field_name, field| -%>
       <% if should_render_index_field? document, field %>
-          <dt><%= render_index_field_label document, field: field_name %></dt>
+          <% if (doc_presenter.field_value('has_model_ssim') == 'Collection') %>
+            <% if field_name == "date_uploaded_dtsi" %>
+              <dt>Date Created</dt>
+            <% else %>
+              <dt><%= render_index_field_label document, field: field_name %></dt>
+            <% end %>
+          <% else %>
+            <dt><%= render_index_field_label document, field: field_name %></dt>
+          <% end %>          
           <dd><%= doc_presenter.field_value field_name %></dd>
+      <% end %>
+    <% end %>
+    <% if(doc_presenter.field_value('has_model_ssim') == 'BiologicalSpecimen') %>
+      <% object_presenter = Hyrax::BiologicalSpecimenPresenter.new(document, current_ability) %>
+    <% elsif(doc_presenter.field_value('has_model_ssim') == 'CulturalHeritageObject') %>
+      <% object_presenter = Hyrax::CulturalHeritageObjectPresenter.new(document, current_ability) %>
+    <% end %>
+    <% if object_presenter.present? %>
+      <% media_count = object_presenter.total_viewable_media %>
+      <dt>Number of Media</dt>
+      <dd><%= media_count %></dd>
+    <% end %>
+    <% if(doc_presenter.field_value('has_model_ssim') == 'Organization') %>
+      <% org_presenter = Hyrax::OrganizationPresenter.new(document, current_ability) %>
+      <% linked_team = org_presenter.linked_team %>
+      <% if linked_team.present? %>
+        <dt>Team</dt>
+        <dd><%= linked_team %></dd>
       <% end %>
     <% end %>
     </dl>
@@ -15,9 +41,11 @@
     <% collection_presenter = Hyrax::CollectionPresenter.new(document, current_ability) %>
 <div class="col-md-4">
   <div class="collection-counts-wrapper">
-    <div class="collection-counts-item">
-      <span><%= collection_presenter.total_viewable_collections %></span>Projects
-    </div>
+    <% if (doc_presenter.field_value('human_readable_type_tesim') == 'Team') %>
+      <div class="collection-counts-item">
+        <span><%= collection_presenter.total_viewable_collections %></span>Projects
+      </div>
+    <% end %>
     <div class="collection-counts-item">
       <span><%= collection_presenter.total_viewable_works %></span>Media
     </div>

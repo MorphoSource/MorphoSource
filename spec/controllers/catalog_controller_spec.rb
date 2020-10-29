@@ -14,6 +14,10 @@ RSpec.describe CatalogController, :type => :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
+      it 'has a blank thumbnail field' do
+        expect(config.index.thumbnail_field).to eq('')
+      end
+
       it 'has 1 facet field' do
         expect(facet_fields.count).to eq(1)
       end

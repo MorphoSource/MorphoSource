@@ -39,11 +39,15 @@ module Hyrax
 
     def member_works 
 
-      tmp = member_service.po_ids_by_org(@curation_concern)
-byebug
-#      @response = member_service_class.media
+#      @response = member_service.bso_docs(@curation_concern)
 #      @member_docs = @response.documents
 #      @members_count = @response.total
+
+      @bso_member_docs = member_service.bso_docs(@curation_concern)
+      @bso_member_count = @bso_member_docs.total
+
+@paged_bso_member_docs = @bso_member_docs
+byebug
     end
 
     def update

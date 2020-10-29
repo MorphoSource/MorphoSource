@@ -22,22 +22,37 @@ module Morphosource
 #        return solr.facet_fields(facet_fields)
 #      end
 
-      def po_ids
+      def bso_docs(org)
+        bso_ids = bso_ids_by_org(org)
+        return [] if !bso_ids.present?
+
+        params = { 
+#          fl: ['id', solrize('title', :stored_searchable), solrize('member_ids', :symbol)].join(','),
+          fq: [
+            assemble_or_query('id', bso_ids)
+          ]
+        }
+
+        docs = solr.get_docs(nil, params)
+        return docs
+      end
+  
+      def bso_ids
         params = {
           fl: 'id',
           fq: [
-            "(has_model_ssim:BiologicalSpecimen OR has_model_ssim:CulturalHeritageObject)"
+            "(has_model_ssim:BiologicalSpecimen)"
           ]
         }
         return solr.get_docs(nil, params).map(&:values).flatten
       end
 
-      def po_ids_by_org(org)
-        # If an org has large number of member IDs, the long fq param string can cause the Request-URI Too Long error,
-        # To avoid adding long list of IDs in the fq, intersect the PO ids and the Org member ids
+      def bso_ids_by_org(org)
         return [] unless org.member_ids.present?
-        return po_ids & org.member_ids
+        return bso_ids & org.member_ids
       end
+
+
 
       def total_media_by_po_ids(po_ids)
         media_ids = []

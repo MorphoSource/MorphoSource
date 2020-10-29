@@ -6,9 +6,14 @@ module Morphosource
     
       attr_reader :solr
 
-      def initialize
+      copy_blacklight_config_from(::CatalogController)
+
+      def initialize(scope:, params:)
         @solr = solr_service.new
+        @scope = scope
+        @params = params
       end
+
 
 #      def organization_facets
 #        facet_fields = [
@@ -22,6 +27,27 @@ module Morphosource
 #        return solr.facet_fields(facet_fields)
 #      end
 
+
+      # @api public
+      #
+      def member_bso(org, fq_params = [])
+        bso_ids = bso_ids_by_org(org)
+        return [] if !bso_ids.present?
+
+        core_fq = "(id:(#{bso_ids.join(' OR ')}))"
+#        core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
+        fq_params << core_fq 
+        available_member_works_filter_query(fq_params: fq_params)
+      end
+
+      # @api public
+      #
+      # Works which are members of the given collection
+      # @return [Blacklight::Solr::Response]
+      def available_member_works_filter_query(fq_params: [])
+        query_solr_with_fq(query_builder: works_search_builder, query_params: @params[:cq], fq_params: fq_params)
+      end
+
       def bso_docs(org)
         bso_ids = bso_ids_by_org(org)
         return [] if !bso_ids.present?
@@ -32,7 +58,7 @@ module Morphosource
             assemble_or_query('id', bso_ids)
           ]
         }
-
+byebug
         docs = solr.get_docs(nil, params)
         return docs
       end
@@ -83,8 +109,27 @@ module Morphosource
 
       private
 
-        ### Solr utility methods ###
+        def query_solr_with_fq(query_builder:, query_params:, fq_params:)
+          initial_q = query_builder[:q]
+          initial_fq = query_builder[:fq]
+          initial_rows = query_builder[:rows]
+          begin
+            query_builder.merge(q: query_params)
+            query_builder.merge(fq: fq_params)
+            query_builder.merge(rows: 99999)
+            #repository.search(query_builder.with(query_params).query)
+            repository.search(query_builder.query)
+          ensure
+            query_builder.merge(q: initial_q)
+            query_builder.merge(fq: initial_fq)
+            query_builder.merge(rows: initial_rows)
+          end
+        end
 
+        def works_search_builder
+          @works_search_builder ||= Morphosource::WorkSearchBuilder.new(scope: @scope)
+        end
+  
         def solr_service
           Morphosource::SolrService
         end

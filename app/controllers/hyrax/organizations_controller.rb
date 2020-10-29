@@ -34,17 +34,23 @@ module Hyrax
     end
 
     def member_service
-      @member_service ||= Morphosource::Organizations::OrganizationMemberService.new
+      @member_service ||= Morphosource::Organizations::OrganizationMemberService.new(scope: self, params: params_for_query)
+    end
+
+    def params_for_query
+      params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
     end
 
     def member_works 
+
+      @bso_response = member_service.member_bso(@curation_concern) # , media_filter_params)
+      @bso_member_docs = @bso_response.documents
+      @bso_members_count = @bso_response.total
 
 #      @response = member_service.bso_docs(@curation_concern)
 #      @member_docs = @response.documents
 #      @members_count = @response.total
 
-      @bso_member_docs = member_service.bso_docs(@curation_concern)
-      @bso_member_count = @bso_member_docs.total
 
 @paged_bso_member_docs = @bso_member_docs
 byebug

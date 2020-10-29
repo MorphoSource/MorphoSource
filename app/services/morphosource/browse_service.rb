@@ -1,7 +1,11 @@
 module Morphosource
   class BrowseService
+    include Blacklight::AccessControls::Catalog
+    include Blacklight::Base
   
     attr_reader :solr
+
+    #copy_blacklight_config_from(::CatalogController)
 
     def initialize
       @solr = solr_service.new
@@ -19,29 +23,41 @@ module Morphosource
       return solr.facet_fields(facet_fields)
     end
 
-    def po_ids_by_org(org)
-      return [] unless org.member_ids.present?
+    def po_ids
       params = {
         fl: 'id',
         fq: [
-          "id:(#{org.member_ids.join(' OR ')})",
           "(has_model_ssim:BiologicalSpecimen OR has_model_ssim:CulturalHeritageObject)"
         ]
       }
       return solr.get_docs(nil, params).map(&:values).flatten
     end
 
+    def po_ids_by_org(org)
+      # If an org has large number of member IDs, the long fq param string can cause the Request-URI Too Long error,
+      # To avoid adding long list of IDs in the fq, intersect the PO ids and the Org member ids
+      return [] unless org.member_ids.present?
+      return po_ids & org.member_ids
+    end
+
     def total_media_by_po_ids(po_ids)
-      return 0 unless po_ids.present?
+      media_ids = []
+      po_ids.each do |id|
+        media_ids << media_ids_by_po_id(id)
+      end    
+      return media_ids.flatten.uniq.count
+    end
+
+    def media_ids_by_po_id(po_id)
+      return 0 unless po_id.present?
       params = {
-        rows: 0,
+        fl: 'id',
         fq: [
-          "physical_object_id_tesim:(#{po_ids.join(' OR ')})", 
+          "physical_object_id_tesim:(#{po_id})", 
           "has_model_ssim:Media"
         ]
       }
-      solr.get(nil, params)
-      solr.count
+      return solr.get_docs(nil, params).map(&:values).flatten
     end
 
     def total_media_by_collection(collection_id)

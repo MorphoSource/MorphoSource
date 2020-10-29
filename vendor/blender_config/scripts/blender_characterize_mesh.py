@@ -92,6 +92,7 @@ else:
         mesh_found = True
         mesh_object = obj
         mesh = obj.data
+        break
     
     if mesh_found:
       point_count = len(mesh.vertices)
@@ -101,6 +102,7 @@ else:
       # derive edges per face
       edges_list = [len(p.vertices) for p in mesh.polygons]
       edge_num_set = set(edges_list)
+      edges_per_face = ''
       if len(edge_num_set) != 1:
         loadSuccess = False 
       else:

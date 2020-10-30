@@ -1,17 +1,10 @@
 module Hyrax
-  # This search builder requires that a accessor named "collection" exists in the scope
   class OrganizationMemberSearchBuilder < ::SearchBuilder
     include Hyrax::FilterByType
-    attr_reader :collections, :search_includes_models
+    attr_reader :search_includes_models
 
-#    class_attribute :collection_membership_field
-#    self.collection_membership_field = 'member_of_collection_ids_ssim'
-#
-#    # Defines which search_params_logic should be used when searching for Collection members
 #    self.default_processor_chain += [:member_of_collection]
 
-    # @param [scope] Typically the controller object
-    # @param [Symbol] :works, :collections, (anything else retrieves both)
     def initialize(scope:,
                    search_includes_models: :works)
       @search_includes_models = search_includes_models
@@ -31,13 +24,13 @@ module Hyrax
 
     # This overrides the models in FilterByType
     def models
-      case search_includes_models
-      when :collections
-        collection_classes
-      when :works
+#      case search_includes_models
+#      when :collections
+#        collection_classes
+#      when :works
         work_classes
-      else super # super includes both works and collections
-      end
+#      else super # super includes both works and collections
+#      end
     end
   end
 end

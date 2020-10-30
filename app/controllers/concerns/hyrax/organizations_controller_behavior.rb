@@ -21,8 +21,6 @@ module Hyrax
                       :information_service_class
 
       self.presenter_class = Hyrax::OrganizationPresenter
-
-      # The search builder to find the collection
       self.single_item_search_builder_class = Morphosource::OrganizationsSearchBuilder
       self.membership_service_class = Morphosource::Organizations::OrganizationMemberService #.new(scope: self, params: params_for_query)
       self.information_service_class = Morphosource::Organizations::OrganizationInformationService
@@ -46,15 +44,15 @@ module Hyrax
         presenter
 
 
-      query_collection_information
-#      query_collection_members
+      query_organization_information
+      query_organization_members
 
-        member_works
+#        member_works
       end
     end
 
     def member_service
-      @member_service ||= Morphosource::Organizations::OrganizationMemberService.new(scope: self, params: params_for_query)
+      @member_service ||= Morphosource::Organizations::OrganizationMemberService.new(scope: self, organization: @curation_concern, params: params_for_query)
     end
 
 
@@ -88,29 +86,27 @@ module Hyrax
         @_prefixes ||= super + ['catalog', 'hyrax/base']
       end
 
-      def query_collection_members
-        member_works # 15.7, 9.5, 53.0, 97.2 ms
-        member_subcollections if collection.respond_to?(:collection_type) && collection.collection_type.nestable? # 7 - 21 ms
-        # parent collection should not be needed.  remove below later
-        #parent_collections if collection.collection_type.nestable? && action_name == 'show' # 7 - 14 ms for project
-        prepare_docs_and_filters_for_media(collection)
+      def query_organization_members
+        member_works 
+#        prepare_docs_and_filters_for_media(collection)
       end
 
 
 
       def member_works 
-
-        @bso_response = member_service.member_bso(@curation_concern) # , media_filter_params)
+        @po_type = member_service.po_type
+byebug        
+        @bso_response = member_service.member_bso # , media_filter_params)
         @bso_member_docs = @bso_response.documents
         @bso_members_count = @bso_response.total
 
-    #      @response = member_service.bso_docs(@curation_concern)
-    #      @member_docs = @response.documents
-    #      @members_count = @response.total
+#          @response = member_service.member_media
+#        @member_docs = @response.documents
+#        @members_count = @response.total
 
 
     @paged_bso_member_docs = @bso_member_docs
-    byebug
+ #   byebug
       end
 
 

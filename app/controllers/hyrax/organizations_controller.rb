@@ -15,7 +15,7 @@ module Hyrax
 
     with_themed_layout 'morphosource_1_column'
 
-    def query_collection_information
+    def query_organization_information
       @organization_information = organization_information_service.organization_information
 #      @collection_counts = @collection_information['counts'] ||= {}
 #      @collection_groups = @collection_information['collection_groups'] ||= {}

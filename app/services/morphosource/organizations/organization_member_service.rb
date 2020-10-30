@@ -8,10 +8,17 @@ module Morphosource
 
       copy_blacklight_config_from(::CatalogController)
 
-      def initialize(scope:, params:)
+      def initialize(scope:, organization:, params:)
         @solr = solr_service.new
         @scope = scope
+        @organization = organization
         @params = params
+
+        @bso_ids = bso_ids
+
+#        if po_type == 'bso'
+#member_service.member_bso(@curation_concern)
+byebug
       end
 
 
@@ -28,42 +35,24 @@ module Morphosource
 #      end
 
 
-      # @api public
-      #
-      def member_bso(org, fq_params = [])
-        bso_ids = bso_ids_by_org(org)
+      def member_bso(fq_params = [])
+byebug
+        #bso_ids = bso_ids_by_org(org)
         return [] if !bso_ids.present?
-
         core_fq = "(id:(#{bso_ids.join(' OR ')}))"
-#        core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
         fq_params << core_fq 
         available_member_works_filter_query(fq_params: fq_params)
       end
 
-      # @api public
-      #
-      # Works which are members of the given collection
-      # @return [Blacklight::Solr::Response]
       def available_member_works_filter_query(fq_params: [])
         query_solr_with_fq(query_builder: works_search_builder, query_params: @params[:cq], fq_params: fq_params)
       end
-
-      def bso_docs(org)
-        bso_ids = bso_ids_by_org(org)
-        return [] if !bso_ids.present?
-
-        params = { 
-#          fl: ['id', solrize('title', :stored_searchable), solrize('member_ids', :symbol)].join(','),
-          fq: [
-            assemble_or_query('id', bso_ids)
-          ]
-        }
-byebug
-        docs = solr.get_docs(nil, params)
-        return docs
-      end
   
       def bso_ids
+        @bso_ids ||= bso_ids_by_org
+      end
+
+      def all_bso_ids
         params = {
           fl: 'id',
           fq: [
@@ -73,11 +62,22 @@ byebug
         return solr.get_docs(nil, params).map(&:values).flatten
       end
 
-      def bso_ids_by_org(org)
-        return [] unless org.member_ids.present?
-        return bso_ids & org.member_ids
+      def bso_ids_by_org
+        return [] unless @organization.member_ids.present?
+        return all_bso_ids & @organization.member_ids
       end
 
+      def po_type
+        @po_type ||= get_po_type
+      end
+
+      def get_po_type
+        if bso_ids.length > 0
+          'bso'
+        else
+          ''
+        end
+      end
 
 
       def total_media_by_po_ids(po_ids)
@@ -127,7 +127,6 @@ byebug
         end
 
         def works_search_builder
-byebug
           @works_search_builder ||= Hyrax::OrganizationMemberSearchBuilder.new(scope: @scope, search_includes_models: :works)
         end
   

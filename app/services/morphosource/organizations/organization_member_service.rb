@@ -127,7 +127,8 @@ byebug
         end
 
         def works_search_builder
-          @works_search_builder ||= Morphosource::WorkSearchBuilder.new(scope: @scope)
+byebug
+          @works_search_builder ||= Hyrax::OrganizationMemberSearchBuilder.new(scope: @scope, search_includes_models: :works)
         end
   
         def solr_service

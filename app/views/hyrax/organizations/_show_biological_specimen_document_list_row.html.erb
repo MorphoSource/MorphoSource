@@ -1,7 +1,8 @@
 <% 
+byebug
 id = document.id 
 bso = BiologicalSpecimen.find(id)
-bso_extra = extra(@bso_extras, id)
+#bso_extra = extra(@bso_extras, id)
 %>
 <tr id="document_<%= id %>">
   <td>
@@ -14,11 +15,11 @@ bso_extra = extra(@bso_extras, id)
   <td class="break-all"><%= bso&.title&.first %></td>
   <td><%= bso&.taxonomies&.first&.taxonomy_genus&.first %></td>
 
-  <td><%= bso_extra['media_count'] %></td>  
+  <td><%#= bso_extra['media_count'] %></td>  
   <td><%= document.date_uploaded %> </td> 
   <%# todo: might need to format the date later, e.g. using MS helper display_date 
       Make sure it can be sorted in datatables
        display_date(document.date_uploaded&.to_s) %>
-  <td><%= bso_extra["origin"] %></td>
+  <td><%#= bso_extra["origin"] %></td>
   <td><%= render_source_of_record(bso) %></td>
 </tr>

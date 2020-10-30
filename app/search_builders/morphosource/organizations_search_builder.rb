@@ -23,5 +23,14 @@ module Morphosource
       solr_parameters[:rows] = 999999
     end
 
+    def sort_field
+      Solrizer.solr_name('institution_name', :sortable)
+    end
+
+    def add_sorting_to_solr(solr_parameters)
+      return if solr_parameters[:q]
+      solr_parameters[:sort] ||= "#{sort_field} asc"
+    end
+
   end
 end

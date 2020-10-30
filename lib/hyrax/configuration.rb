@@ -402,17 +402,17 @@ module Hyrax
 
     attr_writer :teams_rows_per_page_range
     def teams_rows_per_page_range
-      [2, 5, 10, 20, 40, 60, 80, 100] # rows per page that users can choose
+      [10, 20, 40, 60, 80, 100] # rows per page that users can choose
     end
 
     attr_writer :browse_page_item_rows
     def browse_page_item_rows
-      @browse_page_item_rows ||= 1000000 # default rows per page on browse pages
+      @browse_page_item_rows ||= 10 # default rows per page on browse pages
     end
 
     attr_writer :browse_page_rows_per_page_range
     def browse_page_rows_per_page_range
-      [100, 500, 1000, 2000] # rows per page that users can choose
+      [10, 50, 100, 500, 1000, 2000] # rows per page that users can choose
     end
 
     attr_writer :batch_user_key

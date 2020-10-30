@@ -11,7 +11,7 @@
           include_blank: true,
           # item_helper: method(:include_current_value),
           input_html: { class: 'form-control' },
-          label_wrapper_html: { class: 'required-flag' } 
+          label_wrapper_html: { class: 'required-flag' }
       %>
       <%= f.input :institution_code, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :collection_code, label_wrapper_html: { class: 'recommended-flag' }  %>
@@ -25,10 +25,10 @@
 
     <div class="content-block">
       <h2>GENERAL DETAILS</h2>
-      
+
       <%= f.input :description, label: 'Description' %>
-      <%= f.input :sex %>
-      <%= f.input :is_type_specimen %>
+      <%= render_edit_field_partial('sex', f: f) %>
+      <%= render_edit_field_partial('is_type_specimen', f: f) %>
       <%= @presenter.attribute_to_html(:source_of_record, render_as: :showcase_idigbio_link, include_empty: true, html_dl: false) %>
       <%# todo: render date_field in simple_form_bootstrap %>
       <div class="row">

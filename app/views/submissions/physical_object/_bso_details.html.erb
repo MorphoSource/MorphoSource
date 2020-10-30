@@ -15,7 +15,7 @@
                 include_blank: true,
                 # item_helper: method(:include_current_value),
                 input_html: { class: 'form-control' },
-                label_wrapper_html: { class: 'required-flag' } 
+                label_wrapper_html: { class: 'required-flag' }
             %>
             <%= f.input :institution_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :collection_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
@@ -59,11 +59,11 @@
           <div class="row showcase-section-header">
             <span class="h2">GENERAL DETAILS</span>
           </div>
-          
+
           <div class="content-block">
             <%= f.input :description %>
-            <%= f.input :sex %>
-            <%= f.input :is_type_specimen %>
+            <%= render_edit_field_partial('sex', f: f) %>
+            <%= render_edit_field_partial('is_type_specimen', f: f) %>
             <%# todo: render date_field in simple_form_bootstrap %>
             <div class="row">
               <div class="col-xs-6 showcase-label">Date created</div>
@@ -82,9 +82,9 @@
     </div>
 
     <div class="row">
-      <%= f.submit t('morphosource.submission.continue'), 
-        class: "btn btn-primary btn-continue", 
-        id: 'submission_create_bso_continue' 
+      <%= f.submit t('morphosource.submission.continue'),
+        class: "btn btn-primary btn-continue",
+        id: 'submission_create_bso_continue'
       %>
     </div>
   <% end %>

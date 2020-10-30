@@ -95,17 +95,20 @@ module Hyrax
 
       def member_works 
         @po_type = member_service.po_type
-byebug        
+
         @bso_response = member_service.member_bso # , media_filter_params)
         @bso_member_docs = @bso_response.documents
-        @bso_members_count = @bso_response.total
-
-#          @response = member_service.member_media
-#        @member_docs = @response.documents
-#        @members_count = @response.total
-
-
+        @bso_member_count = @bso_response.total
     @paged_bso_member_docs = @bso_member_docs
+
+        @media_response = member_service.member_media
+        @media_member_docs = @media_response.documents
+        @media_member_count = @media_response.total
+
+    @paged_media_member_docs = @media_member_docs
+byebug        
+
+
  #   byebug
       end
 

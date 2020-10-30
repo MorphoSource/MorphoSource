@@ -18,7 +18,7 @@ module Morphosource
 
 #        if po_type == 'bso'
 #member_service.member_bso(@curation_concern)
-byebug
+#byebug
       end
 
 
@@ -35,9 +35,15 @@ byebug
 #      end
 
 
+      def member_media(fq_params = [])
+        return [] unless po_ids.present?
+        core_fq = "(physical_object_id_tesim:(#{po_ids.join(' OR ')}))"
+        core_fq += "has_model_ssim:Media"
+        fq_params << core_fq 
+        available_member_works_filter_query(fq_params: fq_params)
+      end
+
       def member_bso(fq_params = [])
-byebug
-        #bso_ids = bso_ids_by_org(org)
         return [] if !bso_ids.present?
         core_fq = "(id:(#{bso_ids.join(' OR ')}))"
         fq_params << core_fq 
@@ -48,6 +54,10 @@ byebug
         query_solr_with_fq(query_builder: works_search_builder, query_params: @params[:cq], fq_params: fq_params)
       end
   
+      def po_ids
+        return bso_ids
+      end
+
       def bso_ids
         @bso_ids ||= bso_ids_by_org
       end

@@ -29,12 +29,12 @@ provide :page_title, construct_page_title(@presenter.title)
   <div class="panel panel-default tabs" role="main">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation">
+      <li role="presentation" class="active">
         <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
         <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
         </a>
       </li>
-      <li role="presentation" class="active">
+      <li role="presentation">
         <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
           <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
         </a>
@@ -57,11 +57,11 @@ provide :page_title, construct_page_title(@presenter.title)
       <div role="tabpanel" class="tab-pane active" id="media">
         <div class="form-tab-content">
           <%#= render 'hyrax/organizations/media_filters' %>
-          <%#= render 'hyrax/organizations/tab_media' %>
+          <%= render 'hyrax/organizations/tab_media' %>
         </div>
       </div>
 
-      <div role="tabpanel" class="tab-pane active" id="biological_specimens">
+      <div role="tabpanel" class="tab-pane" id="biological_specimens">
         <div class="form-tab-content">
           <%#= render 'hyrax/teams/bso_filters' %>
           <div class="row">

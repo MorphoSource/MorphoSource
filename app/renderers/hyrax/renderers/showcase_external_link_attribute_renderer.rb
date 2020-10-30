@@ -4,9 +4,11 @@ module Hyrax
       private
 
         def attribute_value_to_html(value)
-          auto_link(value) do |link|
-            "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link}</span>"
-          end
+          markup = ''
+          return markup if value.blank? 
+          link = link_to(value, value, target: :blank)
+          markup = "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link}</span>"
+          markup.html_safe
         end
     end
   end

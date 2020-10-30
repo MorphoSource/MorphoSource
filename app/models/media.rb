@@ -125,6 +125,8 @@ class Media < Morphosource::Works::Base
     publication_status == "restricted"
   end
 
+  alias restricted_download? restricted?
+
   def open?
     publication_status == "open"
   end

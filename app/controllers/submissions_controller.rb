@@ -9,9 +9,9 @@ class SubmissionsController < ApplicationController
   include Morphosource::PermissionsHelper
   include Morphosource::LinkedTeams::LinkedTeamsManagement
 
-  load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, 
-    :save_data, :organization_for_recordset, :organization_default_media_fields, 
-    :new_organization_submit, :new_taxonomy_submit, :new_device_submit, 
+  load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax,
+    :save_data, :organization_for_recordset, :organization_default_media_fields,
+    :new_organization_submit, :new_taxonomy_submit, :new_device_submit,
     :new_processing_event_submit]
 
   before_action :instantiate_work_forms
@@ -72,7 +72,7 @@ class SubmissionsController < ApplicationController
   def organization_for_recordset
     recordset_id = params[:recordset_id]
     organization = Organization.where(recordset_id: recordset_id)&.first
-    
+
     if organization.present?
       status = 'OK'
       organization_found = true
@@ -144,7 +144,7 @@ class SubmissionsController < ApplicationController
           # Exists, link as canonical
           @submission.canonical_taxonomy_id = prov.first.id
           @submission.taxonomy_id_array << prov.first.id unless @submission.taxonomy_id_array.include?(prov.first.id)
-        else 
+        else
           # Is new, must create
           provider_params[:canonical] = true # to be hooked in later to set canonical taxonomy ID
           @submission.taxonomy_params_array << ActionController::Parameters.new(provider_params)
@@ -194,9 +194,10 @@ class SubmissionsController < ApplicationController
         create_work_if_needed(work, params)
       end
     end
-
+    reindex_catalog_works
     # render 'show' # re-enable for debug mode
-    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en') if @submission.media_id
+    flash_message = "New media has been added. "
+    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en'), notice: flash_message if @submission.media_id
   end
 
   # AJAX Physical object and media edit page submission methods
@@ -371,7 +372,7 @@ class SubmissionsController < ApplicationController
   private
 
   def works
-    ['organization', 'device_organization', 'taxonomy', 'biological_specimen', 
+    ['organization', 'device_organization', 'taxonomy', 'biological_specimen',
       'cultural_heritage_object', 'device', 'imaging_event', 'processing_event', 'media']
   end
 
@@ -406,7 +407,7 @@ class SubmissionsController < ApplicationController
   def finalize_model_params(work, model_params, addl_params={})
     case work
     when 'biological_specimen'
-      if @submission.organization_id.present? && !@submission.no_organization 
+      if @submission.organization_id.present? && !@submission.no_organization
         parents = Array(@submission.organization_id)
       else
         parents = []
@@ -420,13 +421,13 @@ class SubmissionsController < ApplicationController
       @biospec_create_params = model_params
 
     when 'cultural_heritage_object'
-      if @submission.organization_id.present? && !@submission.no_organization 
+      if @submission.organization_id.present? && !@submission.no_organization
         model_params = assign_model_params_parents(
-          model_params, 
+          model_params,
           [@submission.organization_id]
         )
       end
-      
+
       @cho_create_params = model_params
 
     when 'device'
@@ -435,7 +436,7 @@ class SubmissionsController < ApplicationController
       end
       if @submission.device_organization_id.present?
         model_params = assign_model_params_parents(
-          model_params, 
+          model_params,
           [@submission.device_organization_id]
         )
       end
@@ -473,7 +474,7 @@ class SubmissionsController < ApplicationController
       @processing_event_create_params = model_params
 
     when 'media'
-      if @submission.raw_or_derived_media == 'raw' 
+      if @submission.raw_or_derived_media == 'raw'
         parent = @submission.imaging_event_id
       elsif @submission.raw_or_derived_media == 'derived'
         parent = @submission.processing_event_id
@@ -488,7 +489,7 @@ class SubmissionsController < ApplicationController
       @media_create_params = model_params
 
     # the below cases are only required for temp show page instance object creation
-    when 'organization' 
+    when 'organization'
       @organization_create_params = model_params
     when 'taxonomy'
       @taxonomy_create_params = model_params
@@ -529,7 +530,7 @@ class SubmissionsController < ApplicationController
       coll_attrs.merge!( { i.to_s => { "id" => collection_id, "_destroy" => "false" } } )
 
       new_params["member_of_collections_attributes"] = coll_attrs
-    else 
+    else
       new_params["member_of_collections_attributes"] = { "0" => { "id" => collection_id, "_destroy" => "false" } }
     end
 
@@ -548,10 +549,10 @@ class SubmissionsController < ApplicationController
   end
 
   def attachment_fields
-    { 
-      'imaging_event' => 'ie_description', 
+    {
+      'imaging_event' => 'ie_description',
       'processing_event' => 'pe_description',
-      'media' => 'agreement' 
+      'media' => 'agreement'
     }
   end
 
@@ -561,7 +562,7 @@ class SubmissionsController < ApplicationController
     work + '_id'
   end
 
-  def to_form(work)  
+  def to_form(work)
     work = ( work == 'device_organization' ? 'organization' : work )
     ('Hyrax::' + work.camelize + 'Form').constantize
   end
@@ -628,7 +629,7 @@ class SubmissionsController < ApplicationController
   end
 
   def create_work(model, attributes_for_actor)
-    # TODO: Refactor this to rely on appropriate model methods and not submissions controller    
+    # TODO: Refactor this to rely on appropriate model methods and not submissions controller
     curation_concern = model.new
     env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
     Hyrax::CurationConcern.actor.create(env)
@@ -703,14 +704,14 @@ class SubmissionsController < ApplicationController
   end
 
   def coerce_strings_to_booleans(params)
-    params.transform_values {|p| (p == 'true' || p == 'false') ? ActiveModel::Type::Boolean.new.cast(p) : p  } 
+    params.transform_values {|p| (p == 'true' || p == 'false') ? ActiveModel::Type::Boolean.new.cast(p) : p  }
   end
 
   def submission_params
     coerce_strings_to_booleans(
       params
         .fetch(:submission, {})
-        .permit( 
+        .permit(
                 { :form_data => {} },
                 { :work_data => {} },
                 :saved_step,
@@ -805,7 +806,10 @@ class SubmissionsController < ApplicationController
       publisher: organization.publisher,
       cite_as: organization.cite_as,
       download_permission: organization.download_permission.first,
-      attachment_url: attachment_url(organization)
+      attachment_url: attachment_url(organization),
+      morphosource_use_agreement_type: organization.morphosource_use_agreement_type,
+      required_archival_of_published_derivatives: organization.required_archival_of_published_derivatives,
+      preview_mode: organization.preview_mode
     }
 
     fields.select {|k, v| v.present? }
@@ -820,5 +824,22 @@ class SubmissionsController < ApplicationController
     else
       nil
     end
+  end
+
+  # reindex works that have catalog facets depending on metadata from associated work types after all works have been linked with each other.
+  def reindex_catalog_works
+    return if @submission.media_id.blank?
+
+    catalog_works.each do |work|
+      work.update_index
+    end
+  end
+
+  # works that have their own catalog controller
+  def catalog_works
+    media = [Media.find(@submission.media_id)]
+    organizations = media.first.organizations
+    objects = media.first.physical_objects
+    media + organizations + objects
   end
 end

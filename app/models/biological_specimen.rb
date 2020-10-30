@@ -63,6 +63,12 @@ class BiologicalSpecimen < Morphosource::Works::Base
     other_taxonomies.select{|taxonomy| taxonomy.gbif_key.present? }
   end
 
+  # returns an array of present gbif taxonomy terms [kingdom, phylum, class, etc.]
+  # returns all terms for all gbif taxonomies with no specific ordering (for solr indexing)
+  def gbif_taxonomy_terms
+    gbif_taxonomies.map { |t| t.gbif_taxonomy_array }.flatten
+  end
+
   # does not include the canonical taxonomy
   # any taxonomy that is not trusted or gbif
   def user_taxonomies

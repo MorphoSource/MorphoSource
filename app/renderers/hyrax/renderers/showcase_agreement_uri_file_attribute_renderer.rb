@@ -13,7 +13,12 @@ module Hyrax
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
         markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)
         if options[:attachment_path].present? && options[:attachment_file_url].present?
-          markup << %(<span class='showcase-link'>#{link_to('Agreement File', options[:attachment_file_url])}</span>)
+          if options[:link_label].present?
+            link_label = options[:link_label]
+          else
+            link_label = 'Agreement File'
+          end
+          markup << %(<span class='showcase-link'>#{link_to(link_label, options[:attachment_file_url], target: :_blank)}</span>)
         elsif values.blank?
           if options[:text_if_empty].present?
             markup << options[:text_if_empty]
@@ -21,12 +26,13 @@ module Hyrax
             markup << %(--)
           end
         else
+          link_label = options[:link_label] || ''
           Array(values).each_with_index do |value, index|
             if is_number_with_decimal?(value)
               value = value.to_f.round(3)
             end
             markup << '; ' unless index == 0
-            markup << attribute_value_to_html(value.to_s)
+            markup << attribute_value_to_html(value.to_s, link_label)
           end
         end
         markup << %(</div>)
@@ -36,9 +42,10 @@ module Hyrax
 
       private
 
-        def attribute_value_to_html(value)
+        def attribute_value_to_html(value, link_label)
           return '' if value.blank?
-          markup = "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link_to(value, value, target: :_blank)}</span>"
+          link_label = value unless link_label.present?
+          markup = "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link_to(link_label, value, target: :_blank)}</span>"
           markup.html_safe
         end
     end

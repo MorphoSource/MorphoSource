@@ -153,6 +153,9 @@ class CatalogController < ApplicationController
     # Processing Events
     config.add_show_field solr_name('processing_activity', :stored_searchable)
 
+    # Organizations (PO institution and collection code fields above also used for organizations)
+    config.add_show_field solr_name('institution_name', :stored_searchable)
+
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
     #

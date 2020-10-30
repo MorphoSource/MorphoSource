@@ -76,6 +76,11 @@ module Morphosource
       property :cite_as, predicate: ::RDF::URI.new("http://ns.adobe.com/photoshop/1.0/Credit") do |index|
         index.as :stored_searchable
       end
+
+      # Preview Mode
+      property :preview_mode, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/previewMode") do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

@@ -680,42 +680,43 @@ $( document ).ready(function() {
           console.log(data);
         });
 
+        // Commenting out create organization events for now
         // Create Organization Events
 
-        $('#submission_show_create_organization').click(function(event){
-          event.preventDefault();
-          self.toggleCreateOrganizationVisibility();
-        });
+        // $('#submission_show_create_organization').click(function(event){
+        //   event.preventDefault();
+        //   self.toggleCreateOrganizationVisibility();
+        // });
 
-        $('#organization-create-close').click(function(event){
-          event.preventDefault();
-          $('#submission_select_organization_section').addClass('show').removeClass('hide');
-          $('#submission_create_organization_button_section').addClass('show').removeClass('hide');
-          $('#submission_no_organization_section').addClass('show').removeClass('hide');
-          $('#submission_create_organization_form_section').addClass('hide').removeClass('show');
-        });
+        // $('#organization-create-close').click(function(event){
+        //   event.preventDefault();
+        //   $('#submission_select_organization_section').addClass('show').removeClass('hide');
+        //   $('#submission_create_organization_button_section').addClass('show').removeClass('hide');
+        //   $('#submission_no_organization_section').addClass('show').removeClass('hide');
+        //   $('#submission_create_organization_form_section').addClass('hide').removeClass('show');
+        // });
 
-        $('form#new_organization').submit(function(event){
-          event.preventDefault();
-          console.log('View 4 create organization and continue button');
+        // $('form#new_organization').submit(function(event){
+        //   event.preventDefault();
+        //   console.log('View 4 create organization and continue button');
 
-          data.setOrganizationDefaults();
-          data.noOrganization = false;
-          data.willCreateOrganization = true;
-          data.organizationCreateParams = $('#new_organization').serializeArray();
-          data.organizationInstitutionCode = $('#organization_institution_code').val();
-          data.organizationCollectionCode = [];
-          $("[name='organization[collection_code][]']").map((index, collection_code) => {
-            if ($(collection_code).val()) {
-              data.organizationCollectionCode.push($(collection_code).val());
-            }
-          });
-          data.savedStep = 4;
-          self.populatePhysicalObjectInstitutionCollectionCodes();
-          self.next();
+        //   data.setOrganizationDefaults();
+        //   data.noOrganization = false;
+        //   data.willCreateOrganization = true;
+        //   data.organizationCreateParams = $('#new_organization').serializeArray();
+        //   data.organizationInstitutionCode = $('#organization_institution_code').val();
+        //   data.organizationCollectionCode = [];
+        //   $("[name='organization[collection_code][]']").map((index, collection_code) => {
+        //     if ($(collection_code).val()) {
+        //       data.organizationCollectionCode.push($(collection_code).val());
+        //     }
+        //   });
+        //   data.savedStep = 4;
+        //   self.populatePhysicalObjectInstitutionCollectionCodes();
+        //   self.next();
 
-          console.log(data);
-        });
+        //   console.log(data);
+        // });
       }
 
       populatePhysicalObjectInstitutionCollectionCodes() {
@@ -997,6 +998,40 @@ $( document ).ready(function() {
             $('#submission_select_device_continue').attr('disabled', 'disabled');
         });
 
+        $('#submission_select_device_no_organization').click(function(event) {
+          event.preventDefault();
+
+          $.ajax({
+            url: "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization",
+            type: 'GET',
+            dataType: 'json',
+            complete: function (xhr, status) {
+              var results = $.parseJSON(xhr.responseText);
+              console.log(results); 
+              $("#submission_device_select_organization_search").val(results[0]['label']);
+
+              $('form#submission_device_select_form select#submission_device_id option').each(function () {
+                if ($(this).attr('value')) {
+                  $(this).remove();
+                }
+              });
+
+              console.log(results[0]['devices']);
+              for (const device of results[0]['devices']) {
+                console.log(device);
+                $('form#submission_device_select_form select#submission_device_id')
+                  .append($('<option></option>')
+                    .attr('value', device['id'])
+                    .attr('data-modality', device['modality'])
+                    .attr('data-creator', device['creator'])
+                    .attr('data-description', device['description'])
+                    .text(device['title'])
+                  );
+              }    
+            }
+          });
+        });
+
         $('#submission_select_device_continue').click(function(event) {
           event.preventDefault();
           console.log('View 10 select device button');
@@ -1013,146 +1048,148 @@ $( document ).ready(function() {
           console.log(data);
         });
 
+        // Commenting out all events related to creating devices for now! 
 
-        // Create device events
-        $('#submission_show_create_device').click(function(event){
-          event.preventDefault();
-          self.toggleCreateDeviceVisibility();
-        });
+      //   // Create device events
+      //   $('#submission_show_create_device').click(function(event){
+      //     event.preventDefault();
+      //     self.toggleCreateDeviceVisibility();
+      //   });
 
-        $('#submission_create_device_continue').click(function(event){
-          event.preventDefault();
-          console.log('View 10 create device and continue button');
+      //   $('#submission_create_device_continue').click(function(event){
+      //     event.preventDefault();
+      //     console.log('View 10 create device and continue button');
 
-          // Check device organization...
-          if ($("#device_organization_search_form input.device_organization_id").val()) {
-            data.setDeviceOrganizationDefaults();
-            data.deviceOrganizationId =
-              $("#device_organization_search_form input.device_organization_id").val();
-            data.noDeviceOrganization = false;
-            data.willCreateDeviceOrganization = false;
-          } else if (data.willCreateDeviceOrganization) {
-            if ($('form#new_device_organization')[0].checkValidity()) {
-              data.setDeviceOrganizationDefaults();
-              data.deviceOrganizationCreateParams = $('#new_device_organization').serializeArray();
-              data.willCreateDeviceOrganization = true;
-              data.noDeviceOrganization = false;
-            } else {
-              $('form#new_device_organization').find(':submit').click();
-              return false;
-            }
-          } else if (data.noDeviceOrganization === true) {
-            data.setDeviceOrganizationDefaults();
-            data.noDeviceOrganization = true;
-            data.willCreateDeviceOrganization = false;
-          } else {
-            $('div#device_create_organization_section').addClass('div-invalid');
-            return false;
-          }
+      //     // Check device organization...
+      //     if ($("#device_organization_search_form input.device_organization_id").val()) {
+      //       data.setDeviceOrganizationDefaults();
+      //       data.deviceOrganizationId =
+      //         $("#device_organization_search_form input.device_organization_id").val();
+      //       data.noDeviceOrganization = false;
+      //       data.willCreateDeviceOrganization = false;
+      //     } else if (data.willCreateDeviceOrganization) {
+      //       if ($('form#new_device_organization')[0].checkValidity()) {
+      //         data.setDeviceOrganizationDefaults();
+      //         data.deviceOrganizationCreateParams = $('#new_device_organization').serializeArray();
+      //         data.willCreateDeviceOrganization = true;
+      //         data.noDeviceOrganization = false;
+      //       } else {
+      //         $('form#new_device_organization').find(':submit').click();
+      //         return false;
+      //       }
+      //     } else if (data.noDeviceOrganization === true) {
+      //       data.setDeviceOrganizationDefaults();
+      //       data.noDeviceOrganization = true;
+      //       data.willCreateDeviceOrganization = false;
+      //     } else {
+      //       $('div#device_create_organization_section').addClass('div-invalid');
+      //       return false;
+      //     }
 
-          if ($('form#new_device')[0].checkValidity()) {
-            // Does modality match previously selected?
-            var modalityMatch = false;
-            $('select[name="device[modality][]"]').each(function() {
-              if ($(this).val() == data.submissionModality) { modalityMatch = true; }
-            });
+      //     if ($('form#new_device')[0].checkValidity()) {
+      //       // Does modality match previously selected?
+      //       var modalityMatch = false;
+      //       $('select[name="device[modality][]"]').each(function() {
+      //         if ($(this).val() == data.submissionModality) { modalityMatch = true; }
+      //       });
 
-            if (modalityMatch) {
-              data.setDeviceDefaults();
-              data.willCreateDevice = true;
-              data.deviceCreateParams = $('#new_device').serializeArray();
-              data.savedStep = 7;
+      //       if (modalityMatch) {
+      //         data.setDeviceDefaults();
+      //         data.willCreateDevice = true;
+      //         data.deviceCreateParams = $('#new_device').serializeArray();
+      //         data.savedStep = 7;
 
-              self.next();
-              console.log(data);
-            } else {
-              alert('At least one device modality selection must match modality entered in Initial Information step.');
-            }
-          } else {
-            $('form#new_device').find(':submit').click(); // Submit to show errors
-            return false;
-          }
+      //         self.next();
+      //         console.log(data);
+      //       } else {
+      //         alert('At least one device modality selection must match modality entered in Initial Information step.');
+      //       }
+      //     } else {
+      //       $('form#new_device').find(':submit').click(); // Submit to show errors
+      //       return false;
+      //     }
 
-          return false;
-        });
+      //     return false;
+      //   });
 
-        $('#submission_create_device_close').click(function(event){
-          event.preventDefault();
-          $('#submission_create_device_form_section').addClass('hide').removeClass('show');
-          $('#submission_select_device_section').addClass('show').removeClass('hide');
-          $('#submission_create_device_button_section').addClass('show').removeClass('hide');
-        });
+      //   $('#submission_create_device_close').click(function(event){
+      //     event.preventDefault();
+      //     $('#submission_create_device_form_section').addClass('hide').removeClass('show');
+      //     $('#submission_select_device_section').addClass('show').removeClass('hide');
+      //     $('#submission_create_device_button_section').addClass('show').removeClass('hide');
+      //   });
 
-        // Device organization events
+      //   // Device organization events
 
-        // Device organization select events
-        $('#device_organization_select_display_container').on(
-          'click', '#device-organization-select-close', function(event){
-            // Remove data values
-            $("#submission_device_organization_search").val('');
-            $("#device_organization_search_form input.device_organization_id").val('');
-            $("#device_organization_search_form input.device_organization_title").val('');
-            $("#device_organization_search_form input.device_organization_label").val('');
-            data.setDeviceOrganizationDefaults();
+      //   // Device organization select events
+      //   $('#device_organization_select_display_container').on(
+      //     'click', '#device-organization-select-close', function(event){
+      //       // Remove data values
+      //       $("#submission_device_organization_search").val('');
+      //       $("#device_organization_search_form input.device_organization_id").val('');
+      //       $("#device_organization_search_form input.device_organization_title").val('');
+      //       $("#device_organization_search_form input.device_organization_label").val('');
+      //       data.setDeviceOrganizationDefaults();
 
-            // UI visibility
-            $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
-            $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
-            $('#device_organization_select_display_container').addClass('hide').removeClass('show');
-        });
-
-
-        // Device organization create events
-        $('form#new_device_organization').submit(function(event){
-          event.preventDefault();
-        });
-
-        $('#submission_show_create_device_organization').click(function(event){
-          event.preventDefault();
-          console.log('View 10 create device organization button');
-
-          data.setDeviceOrganizationDefaults();
-          data.willCreateDeviceOrganization = true;
-          $('select[name="submission[device_organization_id]"]').val('');
-          self.toggleCreateDeviceOrganizationVisibility();
-        });
-
-        $('#device-organization-create-close').click(function(event){
-          event.preventDefault();
-
-          data.setDeviceOrganizationDefaults();
-          $('#submission_select_device_organization_section').addClass('show').removeClass('hide');
-          $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
-          $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
-          $('#submission_create_device_organization_form_section').addClass('hide').removeClass('show');
-        });
+      //       // UI visibility
+      //       $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
+      //       $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
+      //       $('#device_organization_select_display_container').addClass('hide').removeClass('show');
+      //   });
 
 
-        // Device organization no organization events
-        $('#submission_no_device_organization').click(function(event){
-          event.preventDefault();
-          console.log('View 10 no device organization button');
+      //   // Device organization create events
+      //   $('form#new_device_organization').submit(function(event){
+      //     event.preventDefault();
+      //   });
 
-          data.setDeviceOrganizationDefaults();
-          data.noDeviceOrganization = true;
-          data.willCreateDeviceOrganization = false;
-          $('select[name="submission[device_organization_id]"]').val('');
-          self.toggleNoDeviceOrganizationVisibility();
+      //   $('#submission_show_create_device_organization').click(function(event){
+      //     event.preventDefault();
+      //     console.log('View 10 create device organization button');
 
-          console.log(data);
-        });
+      //     data.setDeviceOrganizationDefaults();
+      //     data.willCreateDeviceOrganization = true;
+      //     $('select[name="submission[device_organization_id]"]').val('');
+      //     self.toggleCreateDeviceOrganizationVisibility();
+      //   });
 
-        $('#no-device-organization-close').click(function(event){
-          event.preventDefault();
-          console.log('closing no device organization pane');
+      //   $('#device-organization-create-close').click(function(event){
+      //     event.preventDefault();
 
-          data.setDeviceOrganizationDefaults();
-          $('#submission_select_device_organization_section').addClass('show').removeClass('hide');
-          $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
-          $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
-          $('#submission_no_device_organization_display_section').addClass('hide').removeClass('show');
-          console.log(data);
-        });
+      //     data.setDeviceOrganizationDefaults();
+      //     $('#submission_select_device_organization_section').addClass('show').removeClass('hide');
+      //     $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
+      //     $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
+      //     $('#submission_create_device_organization_form_section').addClass('hide').removeClass('show');
+      //   });
+
+
+      //   // Device organization no organization events
+      //   $('#submission_no_device_organization').click(function(event){
+      //     event.preventDefault();
+      //     console.log('View 10 no device organization button');
+
+      //     data.setDeviceOrganizationDefaults();
+      //     data.noDeviceOrganization = true;
+      //     data.willCreateDeviceOrganization = false;
+      //     $('select[name="submission[device_organization_id]"]').val('');
+      //     self.toggleNoDeviceOrganizationVisibility();
+
+      //     console.log(data);
+      //   });
+
+      //   $('#no-device-organization-close').click(function(event){
+      //     event.preventDefault();
+      //     console.log('closing no device organization pane');
+
+      //     data.setDeviceOrganizationDefaults();
+      //     $('#submission_select_device_organization_section').addClass('show').removeClass('hide');
+      //     $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
+      //     $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
+      //     $('#submission_no_device_organization_display_section').addClass('hide').removeClass('show');
+      //     console.log(data);
+      //   });
+
       }
 
       showDeviceSelectDisplay(selectedOpt) {
@@ -1407,7 +1444,7 @@ $( document ).ready(function() {
         this.setMediaPermissionFieldEvent();
 
         // Comment out for debug ability to access any step any time
-        this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        // this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
       }
 
       setMediaPermissionFieldEvent() {

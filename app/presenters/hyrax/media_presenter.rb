@@ -7,9 +7,14 @@ module Hyrax
     include MorphosourceHelper
     include MediaFinderHelper
 
-    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, :preview_mode, to: :solr_document
+    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, :preview_mode, 
+      :morphosource_use_agreement_type,
+      :permits_commercial_use,
+      :required_archival_of_published_derivatives,
+      :permits_3d_use,
+      to: :solr_document
 
-    attr_accessor :physical_object_type, :idigbio_uuid, :vouchered,
+    attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
       :device_and_facility, :device_link, :device, :device_manufacturer, :device_description,
       :device_organization_institution,
@@ -71,12 +76,62 @@ module Hyrax
       :color_depth,
       :compression
 
+    def media_permissions_string
+      permissions_string = ''
+      if media.morphosource_use_agreement_type == ['Permissive']
+        permissions_string = 'permissive'
+      else
+        permissions_string += 'std_'
+        if media.permits_commercial_use == ['CommercialUsePermitted']
+          permissions_string += 'comm_yes_'
+        else
+          permissions_string += 'comm_no_'
+        end
+        if media.required_archival_of_published_derivatives == ['OnAnyRepository']
+          permissions_string += 'rearc_any_'
+        elsif media.required_archival_of_published_derivatives == ['OnMorphoSource']
+          permissions_string += 'rearc_ms_'
+        else
+          permissions_string += 'rearc_no_'
+        end
+        if media.permits_3d_use == ['3DPrintingPermitted']
+          permissions_string += '3d_yes'
+        elsif media.permits_3d_use == ['3DPrintingLimited']
+          permissions_string += '3d_limited'
+        else
+          permissions_string += '3d_no'
+        end
+      end
+      return permissions_string
+    end
+
+    def aup_path
+      return "ms_usage_#{media_permissions_string}.pdf"
+    end
+
     def universal_viewer?
-      representative_id.present? &&
+      viewer_ready = representative_id.present? &&
         representative_presenter.present? &&
+        Hyrax.config.iiif_image_server?  &&
+        universal_viewable_ready?
+      return viewer_ready
+    end
+
+    def is_file_uploaded?
+      if !@file_set_list.present? && @file_status != "added" && @file_status != "updated"
+        is_uploaded = false
+      else
+        is_uploaded = true
+      end
+      return is_uploaded
+    end
+
+    def universal_viewable_ready?
+      return false unless representative_presenter.present?
+      viewable = 
         ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.volume? ) &&
-        Hyrax.config.iiif_image_server? &&
         ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_volume? )
+      return viewable
     end
 
     def source_of_record
@@ -119,8 +174,11 @@ module Hyrax
       end
     end
 
+    def media
+      @media ||= Media.where('id' => solr_document.id).first
+    end
+
     def get_showcase_data
-      media = Media.where('id' => solr_document.id).first
       # todo: need to get the user name (and a link to user) from the email address
       @data_managed_by = solr_document.depositor
 
@@ -152,6 +210,7 @@ module Hyrax
       @image_height = []
       @compression = []
       @color_depth = []
+      @file_status = ""
       temp = ""
       contents_mime_type = ""
       @file_set_list = media.file_set_ids
@@ -471,6 +530,28 @@ module Hyrax
     def supplied_record_badge
       # override the method in presents_attributes, passing the idigbio_uuid retrieved from get_showcase_data
       supplied_record_badge_class.new(@idigbio_uuid).render
+    end
+
+    def custom_agreement
+      if solr_document.agreement_uri.present?
+        return solr_document.agreement_uri.first
+      elsif media.attachment('agreement').present? 
+        return Rails.application.routes.url_helpers.attachment_path(id: media.id, field: 'agreement')
+      else
+        return nil
+      end
+    end
+
+    def agreement_attachment
+      return media.attachment('agreement') || ""
+    end
+
+    def agreement_description
+      description = solr_document.morphosource_use_agreement_type.first + " (" + 
+             solr_document.permits_commercial_use.first + ", " + 
+             solr_document.required_archival_of_published_derivatives.first + ", " + 
+             solr_document.permits_3d_use.first  + ")" 
+      return description.titleize.sub('3 D', '3D')
     end
 
     # methods for showcase partials

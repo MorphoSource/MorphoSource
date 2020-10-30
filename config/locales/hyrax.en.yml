@@ -76,6 +76,7 @@ en:
         organizations: Organizations
         physical_object_types: Physical Object Types
         media_types_and_modalities: Media Types and Modalities
+        taxonomy: Biological Taxonomy
     browse:
       title:
         categories: Browse Categories
@@ -83,6 +84,7 @@ en:
         physical_object_types: Physical Object Types
         media_types_and_modalities: Media Types and Modalities
         media_types: Media Types
+        taxonomies: Browse Taxonomy
         Mesh: Mesh or Point Cloud 
         CTImageSeries: CT Image Series 
         PhotogrammetryImageSeries: Photogrammetry Image Series
@@ -98,6 +100,8 @@ en:
             "Media types include 3D meshes, 3D volumes, 2D images, and videos. Media modalities include CT/MRI, photogrammetry, laser scans, and others."
           physical_object_types:
             "Physical objects associated with media are separated into two categories: biological specimen objects and cultural heritage objects."
+          taxonomies:
+            "Biological specimens can be associated with taxonomic names, which include both binomial species names and higher-order classifications like family or phylum."
           projects:
             "Media are grouped by projects created by users. Projects tend to contain media tied together by a theme. A project might represent the dataset for a single peer-reviewed paper or data for a digital lesson plan."
           teams:

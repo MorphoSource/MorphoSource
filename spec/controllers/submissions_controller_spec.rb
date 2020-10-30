@@ -48,7 +48,7 @@ RSpec.describe SubmissionsController, type: :controller do
         organization_id: '012345678'
       }}
 
-      let(:organization_double) { 
+      let(:organization_double) {
         double("Organization",
           :id => '123456789',
           :title => ['Test Title'],
@@ -62,7 +62,10 @@ RSpec.describe SubmissionsController, type: :controller do
           :funding => ['Funder'],
           :publisher => ['Publisher'],
           :cite_as => ['Citation'],
-          :download_permission => ['restricted_download']
+          :download_permission => ['restricted_download'],
+          :morphosource_use_agreement_type => ['Permissive'],
+          :required_archival_of_published_derivatives => ['EncouragedButNotRequired'],
+          :preview_mode => ['Interactive/Embeddable']
         )
       }
 
@@ -85,7 +88,10 @@ RSpec.describe SubmissionsController, type: :controller do
           'rights_holder': ['Name: Fname, Type: Copyright'],
           'funding': ['Funder'],
           'publisher': ['Publisher'],
-          'cite_as': ['Citation']
+          'cite_as': ['Citation'],
+          'morphosource_use_agreement_type': ['Permissive'],
+          'required_archival_of_published_derivatives': ['EncouragedButNotRequired'],
+          'preview_mode': ['Interactive/Embeddable']
           },
           organization_alert_message: 'This value has been suggested by Test Title',
           organization_title: ['Test Title']
@@ -172,6 +178,46 @@ RSpec.describe SubmissionsController, type: :controller do
         expect(subject).not_to receive(:create_work)
         post :create, params: form_params
       end
+    end
+
+    it 'calls reindex_catalog_works' do
+      expect(subject).to receive(:reindex_catalog_works)
+      post :create, params: {}
+    end
+  end
+
+  describe '#reindex_catalog_works' do
+    let(:submission)    { double('Submission', media_id: media.id) }
+
+    let(:media)         { Media.create(title: ['New Media']) }
+    let(:old_m_solr)    { SolrDocument.find(media.id) }
+    let(:new_m_solr)    { SolrDocument.find(media.id) }
+
+    let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
+    let(:old_s_solr)    { SolrDocument.find(specimen.id) }
+    let(:new_s_solr)    { SolrDocument.find(specimen.id) }
+
+    let(:organization)  { Organization.create(title: ['Organization'] ) }
+    let(:old_o_solr)    { SolrDocument.find(organization.id) }
+    let(:new_o_solr)    { SolrDocument.find(organization.id) }
+
+    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event']) }
+    let(:old_solr_docs) { [old_m_solr, old_s_solr, old_o_solr] }
+
+    before do
+      organization.members << specimen
+      specimen.members << imaging_event
+      imaging_event.members << media
+      [organization, specimen, imaging_event].each(&:save)
+      subject.instance_variable_set(:@submission, submission)
+    end
+
+    it 'reindexes each catalog work' do
+      old_solr_docs
+      subject.send(:reindex_catalog_works)
+      expect(old_m_solr['_version_']).not_to eq(new_m_solr['_version'])
+      expect(old_s_solr['_version_']).not_to eq(new_s_solr['_version'])
+      expect(old_o_solr['_version_']).not_to eq(new_o_solr['_version'])
     end
   end
 end

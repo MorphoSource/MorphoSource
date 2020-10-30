@@ -9,7 +9,7 @@
       <div class="row">
         <div class="col-xs-10 col-sm-5 col-sm-offset-3 no-padding">
           <%= f.input :parent_media_search,
-            placeholder: "Enter parent media title here",
+            placeholder: "Enter parent media ID here",
             input_html: {
               class: 'form-control'
             } 
@@ -64,18 +64,25 @@ $(function(){
         $("input.parent_title").val(ui.item.label);
     },
     focus: function(event, ui) {
-      console.log('hey');
       event.preventDefault();
       $("#submission_parent_media_search").val(ui.item.label);
     },
     source: function (request, response) {
-      console.log('hi');
       $.ajax({
         url: "<%= find_media_autocomplete_url %>" + request.term,
         type: 'GET',
         dataType: 'json',
         complete: function (xhr, status) {
           var results = $.parseJSON(xhr.responseText);
+
+          for (const media of results) {
+            media.title = media.label;
+            media.label = ['Media ' + media.id + ': ' + media.title];
+            if (media.object_title) {
+              media.label[0] = media.label[0] + ' [Object: ' + media.object_title + ']'
+            }
+          }
+
           response(results);
         }
       });

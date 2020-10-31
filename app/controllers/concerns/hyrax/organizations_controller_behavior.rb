@@ -90,26 +90,19 @@ module Hyrax
         member_works 
 #        prepare_docs_and_filters_for_media(collection)
       end
-
-
-
+      
       def member_works 
-        @po_type = member_service.po_type
+        @bso_member_docs = member_service.member_bso # , media_filter_params)
+        @bso_member_count = @bso_member_docs.count
+        @paged_bso_member_docs = paginated_bso_item_list
 
-        @bso_response = member_service.member_bso # , media_filter_params)
-        @bso_member_docs = @bso_response.documents
-        @bso_member_count = @bso_response.total
-    @paged_bso_member_docs = @bso_member_docs
+        @cho_member_docs = member_service.member_cho # , media_filter_params)
+        @cho_member_count = @cho_member_docs.count
+        @paged_cho_member_docs = paginated_cho_item_list
 
-        @media_response = member_service.member_media
-        @media_member_docs = @media_response.documents
-        @media_member_count = @media_response.total
-
-    @paged_media_member_docs = @media_member_docs
-byebug        
-
-
- #   byebug
+        @media_member_docs = member_service.member_media
+        @media_member_count = @media_member_docs.count
+        @paged_media_member_docs = paginated_media_item_list
       end
 
 

@@ -1,8 +1,14 @@
-<div class="hyc-blacklight hyc-bl-results">
-  <%= render_document_index @paged_cho_member_docs, work_type: 'cultural_heritage_object' %> 
-</div>
-<div class="hyc-blacklight hyc-bl-pager">
-  <%= render 'hyrax/teams/paginate_cho' %>
-</div>
-
-<input type="hidden" name="cho-count" value="<%= @cho_member_count %>" />
+<% if @cho_member_count > 0 %>
+	<div class="hyc-blacklight hyc-bl-results">
+	  <%= render_document_index @paged_cho_member_docs, work_type: 'cultural_heritage_object' %> 
+	</div>
+	<div class="hyc-blacklight hyc-bl-pager">
+	  <%= render 'hyrax/teams/paginate_cho' %>
+	</div>
+<% else %>
+  <div class="row">
+    <div class="no-result">
+      No object found.
+    </div>
+  </div>
+<% end %>

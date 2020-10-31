@@ -40,22 +40,37 @@ module Morphosource
         core_fq = "(physical_object_id_tesim:(#{po_ids.join(' OR ')}))"
         core_fq += "has_model_ssim:Media"
         fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params)
+        available_member_works_filter_query(fq_params: fq_params).documents
       end
 
       def member_bso(fq_params = [])
         return [] if !bso_ids.present?
         core_fq = "(id:(#{bso_ids.join(' OR ')}))"
         fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params)
+        available_member_works_filter_query(fq_params: fq_params).documents
       end
 
-      def available_member_works_filter_query(fq_params: [])
-        query_solr_with_fq(query_builder: works_search_builder, query_params: @params[:cq], fq_params: fq_params)
+      def member_cho(fq_params = [])
+        return [] if !cho_ids.present?
+        core_fq = "(id:(#{cho_ids.join(' OR ')}))"
+        fq_params << core_fq 
+        available_member_works_filter_query(fq_params: fq_params).documents
       end
   
       def po_ids
         return bso_ids
+      end
+
+      def po_type
+        @po_type ||= get_po_type
+      end
+
+      def get_po_type
+        if bso_ids.length > 0
+          'bso'
+        else
+          ''
+        end
       end
 
       def bso_ids
@@ -77,16 +92,23 @@ module Morphosource
         return all_bso_ids & @organization.member_ids
       end
 
-      def po_type
-        @po_type ||= get_po_type
+      def cho_ids
+        @cho_ids ||= cho_ids_by_org
       end
 
-      def get_po_type
-        if bso_ids.length > 0
-          'bso'
-        else
-          ''
-        end
+      def all_cho_ids
+        params = {
+          fl: 'id',
+          fq: [
+            "(has_model_ssim:CulturalHeritageObject)"
+          ]
+        }
+        return solr.get_docs(nil, params).map(&:values).flatten
+      end
+
+      def cho_ids_by_org
+        return [] unless @organization.member_ids.present?
+        return all_cho_ids & @organization.member_ids
       end
 
 
@@ -118,6 +140,10 @@ module Morphosource
 
 
       private
+
+        def available_member_works_filter_query(fq_params: [])
+          query_solr_with_fq(query_builder: works_search_builder, query_params: @params[:cq], fq_params: fq_params)
+        end
 
         def query_solr_with_fq(query_builder:, query_params:, fq_params:)
           initial_q = query_builder[:q]

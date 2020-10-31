@@ -1,8 +1,8 @@
 <% 
 id = document.id 
-media_extra = extra(@media_extras, id)
-po_title = media_extra['po_title']
-po_taxonomy = media_extra['po_taxonomy']
+#media_extra = extra(@media_extras, id)
+#po_title = media_extra['po_title']
+#po_taxonomy = media_extra['po_taxonomy']
 %>
 <tr id="document_<%= id %>">
   <td class="checkbox">
@@ -23,16 +23,16 @@ po_taxonomy = media_extra['po_taxonomy']
   </td>
   <td><%= document.id %></td>  
   <td><%= document.part&.first %></td>  
-  <td class="break-all"><%= po_title %></td>
+  <td class="break-all"><%#= po_title %></td>
   <% if @po_type == 'bso' %>
-    <td><%= po_taxonomy %></td>
+    <td><%#= po_taxonomy %></td>
   <% else %>
     <td></td>
   <% end %>
   <td><%= document.media_type&.first.underscore.humanize %></td> 
   <% if @is_team %>
-    <td><%= media_extra["team_project_title"] %></td>
-    <td><%= media_extra["origin"] %></td>
+    <td><%#= media_extra["team_project_title"] %></td>
+    <td><%#= media_extra["origin"] %></td>
   <% end %>
   <td><%= document.date_uploaded %></td>
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>

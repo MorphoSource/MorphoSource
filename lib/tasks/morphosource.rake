@@ -114,15 +114,40 @@ namespace :morphosource do
   end
 
   desc 'Mass ingest data'
-  task :mass_ingest, [:admin_email] => :environment do |task, args|
+  task :mass_ingest, [:admin_email, :update, :update_only_if_no_file] => :environment do |task, args|
     u = User.find_by(email: args[:admin_email])
-    MassIngestJob.perform_later({csv_path: File.expand_path("tmp/ingest/"), admin_email: u, update: true, update_only_if_no_file: true})
+    if args[:update].present? && args[:update].to_i == true
+      update = true
+    else
+      update = false
+    end
+    if args[:update_only_if_no_file].present? && args[:update_only_if_no_file].to_i == true
+      update_only_if_no_file = true
+    else
+      update_only_if_no_file = false
+    end
+    MassIngestJob.perform_later({
+      csv_path: File.expand_path("tmp/ingest/"), 
+      admin_email: u, 
+      update: update, 
+      update_only_if_no_file: update_only_if_no_file
+    })
   end
 
   desc 'Mass ingest data not in a job context'
-  task :mass_ingest_no_job, [:admin_email]  => :environment do |task, args|
+  task :mass_ingest_no_job, [:admin_email, :update, :update_only_if_no_file]  => :environment do |task, args|
     u = User.find_by(email: args[:admin_email])
-    Ms1to2::Importer.new(File.expand_path("tmp/ingest/"), u, true, true).call
+    if args[:update].present? && args[:update].to_i == true
+      update = true
+    else
+      update = false
+    end
+    if args[:update_only_if_no_file].present? && args[:update_only_if_no_file].to_i == true
+      update_only_if_no_file = true
+    else
+      update_only_if_no_file = false
+    end
+    Ms1to2::Importer.new(File.expand_path("tmp/ingest/"), u, update, update_only_if_no_file).call
   end
 
   desc 'Update blank organization institution and collection codes'

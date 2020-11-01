@@ -305,6 +305,12 @@ function modalityAbbrev(m) {
     case 'ScanningElectronMicroscopy':
       return 'SEM'
       break;
+    case 'BornDigital':
+      return 'BD'
+      break;
+    case 'XRay':
+      return 'XRay'
+      break;
     default:
       return 'Etc'; 
  	}

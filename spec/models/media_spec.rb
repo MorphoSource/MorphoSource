@@ -133,7 +133,9 @@ RSpec.describe Media do
         "Infrared": "Infrared",
         "ReflectanceTransformationImaging": "Reflectance Transformation Imaging",
         "Photography": "Photography",
-        "ScanningElectronMicroscopy": "Scanning Electron Microscopy"
+        "ScanningElectronMicroscopy": "Scanning Electron Microscopy",
+        "BornDigital": "Born Digital",
+        "XRay": "X-Ray"
         }
       }
       before do

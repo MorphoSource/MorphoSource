@@ -86,6 +86,10 @@ class Media < Morphosource::Works::Base
       "Photography"
     when "ScanningElectronMicroscopy"
       "Scanning Electron Microscopy"
+    when "BornDigital"
+      "Born Digital"
+    when "XRay"
+      "X-Ray"
     else
       imaging_event&.ie_modality&.first
     end

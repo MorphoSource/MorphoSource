@@ -92,7 +92,7 @@ module Hyrax
       end
 
       def add_team_access(env)
-        return unless env.attributes[:work_parents_attributes]
+        return unless env.attributes[:work_parents_attributes] && env.attributes[:work_parents_attributes].present?
 
         find_parent(env)
         return if new_orgs.empty?

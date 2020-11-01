@@ -7,13 +7,17 @@ status:
     Photogrammetry: derived
     StructuredLight: derived
     LaserScan: derived
+    BornDigital: derived
     Photography: any
+    XRay: any
   Video:
     MicroNanoXRayComputedTomography: derived
     MagneticResonanceImaging: derived
     Photogrammetry: derived
     StructuredLight: derived
     LaserScan: derived
+    BornDigital: derived
+    XRay: derived
     Photography: any
   CTImageSeries:
     MicroNanoXRayComputedTomography: any
@@ -35,6 +39,7 @@ status:
     Photogrammetry: derived
     StructuredLight: any
     LaserScan: any
+    BornDigital: any
     Photography: none
 examples:
   Image:

@@ -614,6 +614,7 @@ $( document ).ready(function() {
             $("#organization_search_form input.organization_id").val('');
             $("#organization_search_form input.organization_title").val('');
             $("#organization_search_form input.organization_label").val('');
+            $("#submission_organization_select_display .showcase-value").text('');
 
             // UI controls
             $('#submission_select_organization_section').addClass('show').removeClass('hide');
@@ -1001,6 +1002,10 @@ $( document ).ready(function() {
         $('#submission_select_device_no_organization').click(function(event) {
           event.preventDefault();
 
+          $('select[name="submission[device_id]"]').val('');
+          $('#submission_device_select_display').addClass('hide').removeClass('show');
+          $('#submission_select_device_continue').attr('disabled', 'disabled');
+
           $.ajax({
             url: "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization",
             type: 'GET',
@@ -1035,6 +1040,10 @@ $( document ).ready(function() {
         $('#submission_select_device_continue').click(function(event) {
           event.preventDefault();
           console.log('View 10 select device button');
+
+          if ($(this).attr('disabled')) {
+            return;
+          }
 
           data.setDeviceDefaults();
           data.setDeviceOrganizationDefaults();
@@ -1444,7 +1453,7 @@ $( document ).ready(function() {
         this.setMediaPermissionFieldEvent();
 
         // Comment out for debug ability to access any step any time
-        // this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
       }
 
       setMediaPermissionFieldEvent() {

@@ -7,8 +7,8 @@
     multipart: true
   } do |f|
 %>
+  <div id="organization-permissions">
     <%= render 'hyrax/media/edit_media_permissions', f: f %>
-
     <%= f.submit 'Save Default Permissions' %>
   </div>
 <% end %>

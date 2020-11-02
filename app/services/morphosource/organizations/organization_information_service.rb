@@ -18,8 +18,7 @@ module Morphosource
       def initialize(org_id)
         @solr = solr_service.new
         @organization = Organization.find(org_id)
-
-        #query_solr_collection_info
+        query_solr_org_info
 
       end
 
@@ -28,12 +27,7 @@ module Morphosource
 #        organization_information
 #      end
 
-      def query_solr_collection_info
-        if is_org_team && Collection.find(collection_id).organization.present?
-          @collection_organization_id = Collection.find(collection_id).organization.id
-          @team_org_po_ids = organization_po_ids
-          @n_media_team_organization = team_org_origin_count if is_org_team
-        end
+      def query_solr_org_info
 
         @facet_results, @media_count = media_facet_query
 
@@ -41,18 +35,54 @@ module Morphosource
         @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
         @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
         @n_idigbio = bso_idigbio_count
-
-        @collection_project_map = collection_id_to_project_title_map
-        @organizations = organization_docs
+#
+#        @collection_project_map = collection_id_to_project_title_map
+#        @organizations = organization_docs
       end
 
       def organization_information
         @info = { 
           'counts' => {
-            'media' => media_count
-          }
+            'media' => media_count,
+            'po' => physical_object_ids.length,
+            'bso' => bso_ids.length,
+            'cho' => cho_ids.length
+          },
+          'collection_object_ids' => physical_object_ids
         }
 
+        info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
+        info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
+        info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
+
+#        organization_groups
+#
+#        if is_org_team && collection_organization_id.present?
+#          info['media_groups']['origin'] = {
+#            'team_organization' => n_media_team_organization,
+#            'team_collection' => media_count - n_media_team_organization
+#          }
+#
+#          if bso_ids.present? && team_org_po_ids.present?
+#            team_bso_ids = team_org_po_ids.select { |x| bso_ids.include? x }
+#            info['bso_groups']['origin'] = {
+#              'team_organization' => team_bso_ids.length,
+#              'team_collection' => bso_ids.length - team_bso_ids.length
+#            }
+#          end
+#
+#          if cho_ids.present? && team_org_po_ids.present?
+#            team_cho_ids = team_org_po_ids.select { |x| cho_ids.include? x }
+#            info['cho_groups']['origin'] = {
+#              'team_organization' => team_cho_ids.length,
+#              'team_collection' => cho_ids.length - team_cho_ids.length
+#            }
+#          end
+#
+#          if team_org_po_ids.present?
+#            info['organization_object_ids'] = team_org_po_ids
+#          end
+#        end
 
         info     
       end
@@ -116,20 +146,20 @@ module Morphosource
             ]
           }
 
-          # Core query
-          if is_org_team && collection_organization_id
-            params[:fq] << assemble_po_id_or_collection_query(
-              team_org_po_ids, 
-              Array(collection_id) + Array(subcollection_ids)
-            )
-          elsif collection.collection_type.nestable?
-            params[:fq] << assemble_or_query(
-              solrize('member_of_collection_ids', :symbol),
-              Array(collection_id) + Array(subcollection_ids)
-            )
-          else
-            params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
-          end
+#          # Core query
+#          if is_org_team && collection_organization_id
+#            params[:fq] << assemble_po_id_or_collection_query(
+#              team_org_po_ids, 
+#              Array(collection_id) + Array(subcollection_ids)
+#            )
+#          elsif collection.collection_type.nestable?
+#            params[:fq] << assemble_or_query(
+#              solrize('member_of_collection_ids', :symbol),
+#              Array(collection_id) + Array(subcollection_ids)
+#            )
+#          else
+#            params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+#          end
           
           solr.get_facet_fields(nil, facet_fields, params)
 

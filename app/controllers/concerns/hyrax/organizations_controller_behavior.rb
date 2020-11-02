@@ -5,7 +5,7 @@ module Hyrax
     include Blacklight::AccessControls::Catalog
     include Blacklight::Base
     include MorphosourceHelper
-    include Morphosource::CollectionHelper
+    include Morphosource::OrganizationHelper
 
     included do
       # include the display_trophy_link view helper method
@@ -26,14 +26,6 @@ module Hyrax
       self.information_service_class = Morphosource::Organizations::OrganizationInformationService
     end
 
-
-#    def show
-#      @curation_concern ||= ActiveFedora::Base.find(params[:id])
-#      presenter
-#      query_collection_information
-#      query_collection_members
-#    end
-
     def show
       @curation_concern ||= ActiveFedora::Base.find(params[:id])
       if @curation_concern.team_id.present?
@@ -42,7 +34,6 @@ module Hyrax
         redirect_to "/teams/#{@curation_concern.team_id.first}"
       else
         presenter
-
 
       query_organization_information
       query_organization_members
@@ -54,7 +45,6 @@ module Hyrax
     def member_service
       @member_service ||= Morphosource::Organizations::OrganizationMemberService.new(scope: self, organization: @curation_concern, params: params_for_query)
     end
-
 
 
     private
@@ -88,7 +78,9 @@ module Hyrax
 
       def query_organization_members
         member_works 
-#        prepare_docs_and_filters_for_media(collection)
+        prepare_docs_and_filters_for_media
+        prepare_docs_and_filters_for_po('bso')
+        prepare_docs_and_filters_for_po('cho')
       end
       
       def member_works 
@@ -100,9 +92,12 @@ module Hyrax
         @cho_member_count = @cho_member_docs.count
         @paged_cho_member_docs = paginated_cho_item_list
 
-        @media_member_docs = member_service.member_media
+        @media_member_docs = member_service.member_media(media_filter_params)
         @media_member_count = @media_member_docs.count
         @paged_media_member_docs = paginated_media_item_list
+
+#        @member_docs = @media_member_docs
+
       end
 
 

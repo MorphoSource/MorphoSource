@@ -15,6 +15,7 @@ module Morphosource
         @params = params
 
         @bso_ids = bso_ids
+        @cho_ids = cho_ids
 
 #        if po_type == 'bso'
 #member_service.member_bso(@curation_concern)
@@ -38,8 +39,9 @@ module Morphosource
       def member_media(fq_params = [])
         return [] unless po_ids.present?
         core_fq = "(physical_object_id_tesim:(#{po_ids.join(' OR ')}))"
-        core_fq += "has_model_ssim:Media"
+        core_fq += " AND (has_model_ssim:Media)"
         fq_params << core_fq 
+byebug
         available_member_works_filter_query(fq_params: fq_params).documents
       end
 
@@ -58,7 +60,7 @@ module Morphosource
       end
   
       def po_ids
-        return bso_ids
+        return bso_ids + cho_ids
       end
 
       def po_type

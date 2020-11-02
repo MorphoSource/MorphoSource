@@ -15,16 +15,6 @@ module Hyrax
 
     with_themed_layout 'morphosource_1_column'
 
-    def query_organization_information
-      @organization_information = organization_information_service.organization_information
-#      @collection_counts = @collection_information['counts'] ||= {}
-#      @collection_groups = @collection_information['collection_groups'] ||= {}
-    end
-
-    def organization_information_service
-      @organization_information_service ||= information_service_class.new(curation_concern.id) 
-    end
-
     def update
       if update_work
         after_update_response

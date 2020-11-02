@@ -10,9 +10,7 @@ module Hyrax
     include Hyrax::ChildWorkRedirect
     include OrganizationsControllerBehavior
 
-#    self.curation_concern_type = ::Organization
-
-
+    # self.curation_concern_type = ::Organization
     with_themed_layout 'morphosource_1_column'
 
     def update

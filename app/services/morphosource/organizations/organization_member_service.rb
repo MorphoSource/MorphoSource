@@ -41,7 +41,6 @@ module Morphosource
         core_fq = "(physical_object_id_tesim:(#{po_ids.join(' OR ')}))"
         core_fq += " AND (has_model_ssim:Media)"
         fq_params << core_fq 
-byebug
         available_member_works_filter_query(fq_params: fq_params).documents
       end
 

@@ -34,11 +34,8 @@ module Hyrax
         redirect_to "/teams/#{@curation_concern.team_id.first}"
       else
         presenter
-
-      query_organization_information
-      query_organization_members
-
-#        member_works
+        query_organization_information
+        query_organization_members
       end
     end
 
@@ -46,28 +43,28 @@ module Hyrax
       @member_service ||= Morphosource::Organizations::OrganizationMemberService.new(scope: self, organization: @curation_concern, params: params_for_query)
     end
 
+    def presenter
+      @presenter ||= self.presenter_class.new(@curation_concern, current_ability, nil)
+    end
 
     private
 
-      def presenter
-        @presenter ||= begin
-          # Query Solr for the collection.
-          # run the solr query to find the collection members
-          response = repository.search(single_item_search_builder.query)
-          curation_concern = response.documents.first
-          raise CanCan::AccessDenied unless curation_concern
-          presenter_class.new(curation_concern, current_ability)
-        end
-      end
+#      def presenter
+#        @presenter ||= self.presenter
+#        @presenter ||= begin
+#          # Query Solr for the collection.
+#          # run the solr query to find the collection members
+#          response = repository.search(single_item_search_builder.query)
+#          curation_concern = response.documents.first
+#          raise CanCan::AccessDenied unless curation_concern
+#          presenter_class.new(curation_concern, current_ability)
+#        end
+#      end
 
       # Instantiates the search builder that builds a query for a single item
       # this is useful in the show view.
       def single_item_search_builder
         single_item_search_builder_class.new(self).with(params.except(:q, :page))
-      end
-
-      def collection_params
-        form_class.model_attributes(params[:collection])
       end
 
       # Include 'catalog' and 'hyrax/base' in the search path for views, while prefering
@@ -167,35 +164,6 @@ module Hyrax
 
       def cho_rows_from_params
         request.params[:crows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:crows].to_i
-      end
-
-      def dedup(docs) 
-        unique_docs = [] 
-        unique_ids = []
-        docs.each do |doc|
-          unless unique_ids.include? doc.id
-            unique_ids << doc.id
-            unique_docs << doc
-          end
-        end
-        return unique_docs
-      end
-
-      def parent_collections
-        page = params[:parent_collection_page].to_i
-        query = Hyrax::Collections::NestedCollectionQueryService
-        collection.parent_collections = query.parent_collections(child: collection_object, scope: self, page: page)
-      end
-
-      def collection_object
-        action_name == 'show' ? Collection.find(collection.id) : collection
-      end
-
-      def member_subcollections
-        results = collection_member_service.available_member_subcollections
-        @subcollection_solr_response = results
-        @subcollection_docs = results.documents
-        @subcollection_count = @presenter.subcollection_count = results.total
       end
 
       # You can override this method if you need to provide additional inputs to the search

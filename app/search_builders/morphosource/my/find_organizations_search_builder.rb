@@ -1,5 +1,5 @@
 class Morphosource::My::FindOrganizationsSearchBuilder < Hyrax::My::FindWorksSearchBuilder
-  self.default_processor_chain -= [:filter_on_title]
+  self.default_processor_chain -= [:show_only_resources_deposited_by_current_user, :filter_on_title]
 	self.default_processor_chain += [:filter_on_org_fields]
 
   def filter_on_org_fields(solr_parameters)

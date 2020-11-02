@@ -11,6 +11,7 @@ module Hyrax
     self.curation_concern_type = ::Organization
     with_themed_layout 'morphosource_1_column'
 
+    skip_load_and_authorize_resource only: :unlinked_organizations
 
     def url_for(child)
       # this method is a temp fix for the error when loading edit org page:
@@ -20,12 +21,19 @@ module Hyrax
 
     def after_update_response
       respond_to do |wants|
-        wants.html { 
+        wants.html {
           redirect_to Rails.application.routes.url_helpers.show_organization_path(curation_concern.id)
         }
         #wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
       end
     end
 
+    # search for organizations without team ids by title.
+    # returns json: unlinked_organizations.json.jbuilder
+    def unlinked_organizations
+      return unless current_user.admin?
+
+      @orgs = Morphosource::UnlinkedOrganizationsSearchService.call(params)
+    end
   end
 end

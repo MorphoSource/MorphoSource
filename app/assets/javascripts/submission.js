@@ -363,7 +363,7 @@ $( document ).ready(function() {
           if (currentParentList.indexOf(selectedId) != -1) {
             // parent has already been added
             // todo: see if it is possible to exclude the already-added parents from the autocomplete dropdown
-            alert('already added');
+            alert('Add new distinct parent media or select parent not available.');
           } else {
             if (currentParentList != '')
               currentParentList += ',';

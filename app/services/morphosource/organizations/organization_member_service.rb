@@ -41,21 +41,21 @@ module Morphosource
         core_fq = "(physical_object_id_tesim:(#{po_ids.join(' OR ')}))"
         core_fq += " AND (has_model_ssim:Media)"
         fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params).documents
+        available_member_works_filter_query(fq_params: fq_params)
       end
 
       def member_bso(fq_params = [])
         return [] if !bso_ids.present?
         core_fq = "(id:(#{bso_ids.join(' OR ')}))"
         fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params).documents
+        available_member_works_filter_query(fq_params: fq_params)
       end
 
       def member_cho(fq_params = [])
         return [] if !cho_ids.present?
         core_fq = "(id:(#{cho_ids.join(' OR ')}))"
         fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params).documents
+        available_member_works_filter_query(fq_params: fq_params)
       end
   
       def po_ids

@@ -7,6 +7,38 @@ module Morphosource
       Rails.application.routes.url_helpers.my_media_index_path + "#" + tab
     end
 
+    def ms_organization_view_link(id, view)
+#      current_uri = path_info
+#      if current_uri.include?("dashboard/collections")
+#        if action_name == 'edit'
+#          link = edit_dashboard_collection_path(id, view)
+#        else
+#          link = dashboard_collection_path(id, view)
+#        end
+#      else
+#        link = collection_path(id, view)
+#        if current_uri.include?("teams")
+#          # todo: fix team_path route
+#          # link = team_path(id)
+#          link["collections"] = "teams" # replace "collection' with "teams"
+#        elsif current_uri.include?("projects")
+#          link["collections"] = "projects"
+#        end
+#      end
+      link = Rails.application.routes.url_helpers.show_organization_path(id, view)
+      link.html_safe
+    end
+
+    def ms_organization_view_link_qs(tab, filter_prefix)
+      link = ""
+      parsed_params = filter_params(filter_prefix, request_params)
+      parsed_params.map do |k,v|
+        link = link + '&' + k + '=' + v 
+      end       
+      link = link + "#" + tab if tab.present?
+      link.html_safe
+    end
+
     def query_organization_information
       @organization_information = organization_information_service.organization_information
 #      @collection_counts = @collection_information['counts'] ||= {}
@@ -21,15 +53,15 @@ module Morphosource
       @organization_information_service ||= information_service_class.new(curation_concern.id) 
     end
 
-def query_collection_information
-  @collection_information = organization_information_service.collection_information
-  @collection_counts = @collection_information['counts'] ||= {}
-  @collection_media_groups = @collection_information['media_groups'] ||= {}
-  @collection_bso_groups = @collection_information['bso_groups'] ||= {}
-  @collection_cho_groups = @collection_information['cho_groups'] ||= {}
-  @collection_object_ids = @collection_information['collection_object_ids'] ||= []
-  @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
-end
+#def query_collection_information
+#  @collection_information = organization_information_service.collection_information
+#  @collection_counts = @collection_information['counts'] ||= {}
+#  @collection_media_groups = @collection_information['media_groups'] ||= {}
+#  @collection_bso_groups = @collection_information['bso_groups'] ||= {}
+#  @collection_cho_groups = @collection_information['cho_groups'] ||= {}
+#  @collection_object_ids = @collection_information['collection_object_ids'] ||= []
+#  @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
+#end
 
     def media_filter_params
       organization_information_service.solrize_filter_params(filter_params('m_', params))

@@ -3,8 +3,8 @@ module Morphosource
   module OrganizationHelper
     include MediaFinderHelper
 
-    def media_works_url(tab)
-      Rails.application.routes.url_helpers.my_media_index_path + "#" + tab
+    def show_org_url(id, tab)
+      Rails.application.routes.url_helpers.show_organization_path(id) + "#" + tab
     end
 
     def ms_organization_view_link(id, view)

@@ -1,4 +1,4 @@
-<% content_for :body_css_classes do %>showcase teams<% end %>
+<% content_for :body_css_classes do %>showcase organizations<% end %>
 <% provide :page_title, construct_page_title(@presenter.title.first) %>
 <div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
   <div class="hyc-header">
@@ -54,27 +54,64 @@
 
       <div role="tabpanel" class="tab-pane active" id="media">
         <div class="form-tab-content">
-          <%= render 'hyrax/organizations/media_filters' %>
-          <%= render 'hyrax/organizations/tab_media' %>
+          <% if @media_member_count > 0 %>
+            <%= render 'hyrax/organizations/media_filters' %>
+            <%= render 'hyrax/organizations/tab_media' %>
+          <% else %>
+            <div class="row">
+              <div class="no-result">
+                No media found.
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
 
       <div role="tabpanel" class="tab-pane" id="biological_specimens">
         <div class="form-tab-content">
-          <%= render 'hyrax/organizations/bso_filters' %>
-          <div class="row">
-            <!-- Search bar -->
-            <div class="col-xs-6">
-              <%#= render 'hyrax/organizations/search_form', presenter: @presenter, url: @presenter.search_form_url %>
+          <% if @bso_member_count > 0 %>
+            <%= render 'hyrax/organizations/bso_filters' %>
+            <div class="row">
+              <!-- Search bar -->
+              <div class="col-xs-6">
+                <%= render 'hyrax/organizations/search_form', tab: "biological_specimens" %>
+              </div>
+              <div class="col-xs-6">
+                <%= render 'hyrax/organizations/sort_and_per_page_bso' %>
+              </div>
             </div>
-          </div>
-          <%= render 'hyrax/organizations/tab_bso' %>
+            <%= render 'hyrax/organizations/tab_bso' %>
+          <% else %>
+            <div class="row">
+              <div class="no-result">
+                No specimens found.
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
 
       <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
         <div class="form-tab-content">
-          <%= render 'hyrax/organizations/tab_cho' %>
+          <% if @cho_member_count > 0 %>
+            <%= render 'hyrax/organizations/cho_filters' %>
+            <div class="row">
+              <!-- Search bar -->
+              <div class="col-xs-6">
+                <%= render 'hyrax/organizations/search_form', tab: "cultural_heritage_objects" %>
+              </div>
+              <div class="col-xs-6">
+                <%= render 'hyrax/organizations/sort_and_per_page_cho' %>
+              </div>
+            </div>
+            <%= render 'hyrax/organizations/tab_cho' %>
+          <% else %>
+            <div class="row">
+              <div class="no-result">
+                No objects found.
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
 

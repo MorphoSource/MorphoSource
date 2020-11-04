@@ -15,11 +15,11 @@ module Morphosource
 #        new(org_id).call
 #      end
 
-      def initialize(org_id)
+      def initialize(org_id, po_ids)
         @solr = solr_service.new
         @organization = Organization.find(org_id)
+        @po_ids = po_ids
         query_solr_org_info
-
       end
 
 #      def call
@@ -160,7 +160,8 @@ module Morphosource
 #          else
 #            params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
 #          end
-          
+
+          params[:fq] << assemble_or_query(solrize('physical_object_id', :stored_searchable), @po_ids)
           solr.get_facet_fields(nil, facet_fields, params)
 
           return solr.facet_fields(facet_fields), solr.count

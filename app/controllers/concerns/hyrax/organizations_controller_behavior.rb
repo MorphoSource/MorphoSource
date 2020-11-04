@@ -73,6 +73,20 @@ module Hyrax
         @_prefixes ||= super + ['catalog', 'hyrax/base']
       end
 
+      def query_organization_information
+        @organization_information = organization_information_service.organization_information
+  #      @collection_counts = @collection_information['counts'] ||= {}
+  #      @collection_groups = @collection_information['collection_groups'] ||= {}
+
+        @organization_media_groups = @organization_information['media_groups'] ||= {}
+        @organization_bso_groups = @organization_information['bso_groups'] ||= {}
+        @organization_cho_groups = @organization_information['cho_groups'] ||= {}
+      end
+
+      def organization_information_service
+        @organization_information_service ||= information_service_class.new(curation_concern.id, member_service.po_ids) 
+      end
+
       def query_organization_members
         member_works 
         prepare_docs_and_filters_for_media

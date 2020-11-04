@@ -14,12 +14,9 @@ module Morphosource
         @organization = organization
         @params = params
 
-        @bso_ids = bso_ids
-        @cho_ids = cho_ids
-
-#        if po_type == 'bso'
-#member_service.member_bso(@curation_concern)
-#byebug
+#        @bso_ids = bso_ids
+#        @cho_ids = cho_ids
+        @po_ids = po_ids
       end
 
 

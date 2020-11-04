@@ -21,6 +21,7 @@ module Hyrax
                       :information_service_class
 
       self.presenter_class = Hyrax::OrganizationPresenter
+      #self.search_builder_class = Morphosource::WorkSearchBuilder
       self.single_item_search_builder_class = Morphosource::OrganizationsSearchBuilder
       self.membership_service_class = Morphosource::Organizations::OrganizationMemberService #.new(scope: self, params: params_for_query)
       self.information_service_class = Morphosource::Organizations::OrganizationInformationService
@@ -43,22 +44,22 @@ module Hyrax
       @member_service ||= Morphosource::Organizations::OrganizationMemberService.new(scope: self, organization: @curation_concern, params: params_for_query)
     end
 
-#    def presenter
-#      @presenter ||= self.presenter_class.new(@curation_concern, current_ability, nil)
-#    end
+    def presenter
+      @presenter ||= self.presenter_class.new(curation_concern_from_search_results, current_ability, request)
+    end
 
     private
 
-      def presenter
-        @presenter ||= begin
-          # Query Solr for the collection.
-          # run the solr query to find the collection members
-          response = repository.search(single_item_search_builder.query)
-          curation_concern = response.documents.first
-          raise CanCan::AccessDenied unless curation_concern
-          presenter_class.new(curation_concern, current_ability)
-        end
-      end
+#      def presenter
+#        @presenter ||= begin
+#          # Query Solr for the collection.
+#          # run the solr query to find the collection members
+#          response = repository.search(single_item_search_builder.query)
+#          curation_concern = response.documents.first
+#          raise CanCan::AccessDenied unless curation_concern
+#          presenter_class.new(curation_concern, current_ability)
+#        end
+#      end
 
       # Instantiates the search builder that builds a query for a single item
       # this is useful in the show view.

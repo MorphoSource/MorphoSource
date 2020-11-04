@@ -7,7 +7,7 @@ RSpec.describe Hyrax::OrganizationsController do
     expect(Hyrax::OrganizationsController.curation_concern_type).to be(::Organization)
   end
 
-  it "should have show_presenter Hyrax::OrganizationPresenter" do
-  	expect(Hyrax::OrganizationsController.show_presenter).to be(Hyrax::OrganizationPresenter)
+  it "should have show_presenter Hyrax::WorkShowPresenter" do
+  	expect(Hyrax::OrganizationsController.show_presenter).to be(Hyrax::WorkShowPresenter)
   end
 end

@@ -43,8 +43,8 @@
     <div class="content-block">
       <h2>TIME AND PLACE DETAILS</h2>
       <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
-      <%= f.input :based_near, label: 'Current Location', as: :controlled_vocabulary %>
-      <%= f.input :original_location %>
+      <%= f.input :numeric_time, label: 'Absolute Age' %>
+      <%= f.input :original_location, label: 'Locality' %>
       <!--  todo: the html below can be removed if simpleform config wrapper can be used.  In that case, we need to figure out pass the content for the tooltip
       <div class="form-group row">
           <div class="col-xs-12 showcase-label">
@@ -52,10 +52,9 @@
           </div>
       </div>
       -->
-      <%= f.input 'Geographical coordinates', value_wrapper: false %>
+      <%= f.input 'Locality Geographical Coordinates', value_wrapper: false %>
       <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
       <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
-      <%= f.input :numeric_time, label: 'Absolute Age' %>
     </div>  
   
   </div>

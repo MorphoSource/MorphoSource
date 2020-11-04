@@ -13,25 +13,8 @@ module Morphosource
         @scope = scope
         @organization = organization
         @params = params
-
-#        @bso_ids = bso_ids
-#        @cho_ids = cho_ids
         @po_ids = po_ids
       end
-
-
-#      def organization_facets
-#        facet_fields = [
-#          Solrizer.solr_name('organization_type', :facetable)
-#        ]
-#        params = {
-#          fl: 'id',
-#          fq: ["has_model_ssim:Organization"]
-#        }
-#        solr.get_facet_fields(nil, facet_fields, params)
-#        return solr.facet_fields(facet_fields)
-#      end
-
 
       def member_media(fq_params = [])
         return [] unless po_ids.present?

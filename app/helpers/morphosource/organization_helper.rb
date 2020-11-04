@@ -8,23 +8,6 @@ module Morphosource
     end
 
     def ms_organization_view_link(id, view)
-#      current_uri = path_info
-#      if current_uri.include?("dashboard/collections")
-#        if action_name == 'edit'
-#          link = edit_dashboard_collection_path(id, view)
-#        else
-#          link = dashboard_collection_path(id, view)
-#        end
-#      else
-#        link = collection_path(id, view)
-#        if current_uri.include?("teams")
-#          # todo: fix team_path route
-#          # link = team_path(id)
-#          link["collections"] = "teams" # replace "collection' with "teams"
-#        elsif current_uri.include?("projects")
-#          link["collections"] = "projects"
-#        end
-#      end
       link = Rails.application.routes.url_helpers.show_organization_path(id, view)
       link.html_safe
     end
@@ -38,17 +21,6 @@ module Morphosource
       link = link + "#" + tab if tab.present?
       link.html_safe
     end
-
-
-#def query_collection_information
-#  @collection_information = organization_information_service.collection_information
-#  @collection_counts = @collection_information['counts'] ||= {}
-#  @collection_media_groups = @collection_information['media_groups'] ||= {}
-#  @collection_bso_groups = @collection_information['bso_groups'] ||= {}
-#  @collection_cho_groups = @collection_information['cho_groups'] ||= {}
-#  @collection_object_ids = @collection_information['collection_object_ids'] ||= []
-#  @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
-#end
 
     def media_filter_params
       organization_information_service.solrize_filter_params(filter_params('m_', params))
@@ -107,38 +79,11 @@ module Morphosource
       request.env['PATH_INFO']
     end
 
-    def bso_tab_url
-      url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
-        compact.
-        join('&')
-      "/dashboard/my/media/specimens?#{url_params}"
-    end
-
-    def cho_tab_url
-      url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
-        compact.
-        join('&')
-      "/dashboard/my/media/chos?#{url_params}"
-    end
-
     def prepare_docs_and_filters_for_media
-#      @po_type = "bso" # bso / cho
-#      @is_team = collection.team?
       @visibility_options = []
-
-#      @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
       @bso_visibility_options = []
       @bso_source_options = []
       @cho_visibility_options = []
-
-#      @members_count = @media_member_docs.length
-#      @media_member_docs = @member_docs      
-#      @media_member_count = @media_member_docs.length
-#      
-#      @paged_media_member_docs = paginated_media_item_list
-#      @document_list = @paged_media_member_docs
       @media_extras = get_media_extras(@paged_media_member_docs)
     end
 

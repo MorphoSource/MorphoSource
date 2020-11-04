@@ -50,17 +50,6 @@ module Hyrax
 
     private
 
-#      def presenter
-#        @presenter ||= begin
-#          # Query Solr for the collection.
-#          # run the solr query to find the collection members
-#          response = repository.search(single_item_search_builder.query)
-#          curation_concern = response.documents.first
-#          raise CanCan::AccessDenied unless curation_concern
-#          presenter_class.new(curation_concern, current_ability)
-#        end
-#      end
-
       # Instantiates the search builder that builds a query for a single item
       # this is useful in the show view.
       def single_item_search_builder
@@ -75,9 +64,6 @@ module Hyrax
 
       def query_organization_information
         @organization_information = organization_information_service.organization_information
-  #      @collection_counts = @collection_information['counts'] ||= {}
-  #      @collection_groups = @collection_information['collection_groups'] ||= {}
-
         @organization_media_groups = @organization_information['media_groups'] ||= {}
         @organization_bso_groups = @organization_information['bso_groups'] ||= {}
         @organization_cho_groups = @organization_information['cho_groups'] ||= {}
@@ -109,9 +95,6 @@ module Hyrax
         @media_member_docs = @response.present? ? @response.documents : []
         @media_member_count = @media_member_docs.count
         @paged_media_member_docs = paginated_media_item_list
-
-#        @member_docs = @media_member_docs
-
       end
 
 

@@ -21,10 +21,7 @@ module Hyrax
     def after_update_response
       respond_to do |wants|
         wants.html { 
-          #build_form
-          #render 'edit', status: :unprocessable_entity
           redirect_to Rails.application.routes.url_helpers.show_organization_path(curation_concern.id)
-          #, notice: "Work \"#{curation_concern}\" successfully updated." 
         }
         #wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
       end

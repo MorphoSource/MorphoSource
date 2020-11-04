@@ -7,7 +7,7 @@
 
   <div class="row team-header">
 
-    <div class="col-sm-12 col-md-6 flex">
+    <div class="col-xs-9 flex">
       <div class="team-title">
          <h1>
             <div id="showcase-title">
@@ -20,6 +20,11 @@
             </div>
         </h1>
       </div>
+    </div>
+    <div class="col-xs-3 show-actions text-right">
+      <% if current_user.admin? %>
+        <%= link_to 'Edit', main_app.edit_hyrax_organization_path(@presenter.id), class: 'btn w-50 btn-primary' %>
+      <% end %>
     </div>
 
   </div><!-- /row -->

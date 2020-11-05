@@ -17,6 +17,10 @@
     </div>
 
     <div class="content-block">
+      <%= render 'edit_file_object_details', f: f %>
+    </div>
+
+    <div class="content-block">
       <h2>OWNERSHIP AND PERMISSIONS</h2>
 
       <%= @presenter.attribute_to_html(:data_managed_by, render_as: :showcase_user_link, include_empty: true, html_dl: false) %>
@@ -31,10 +35,6 @@
       <%= @presenter.attribute_to_html(:doi, label: 'MorphoSource DOI', render_as: :showcase_doi_link, include_empty: true, text_if_empty: 'Not assigned', html_dl: false) %>
       <%= f.input :identifier, label: 'External identifier' %>
       <%= f.input :related_url, label: 'External media URL' %>
-    </div>
-
-    <div class="content-block">
-      <%= render 'edit_file_object_details', f: f %>
     </div>
 
   </div>

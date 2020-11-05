@@ -56,23 +56,24 @@
 
             <div class="col-sm-6">
               <% if @presenter.is_absentee_parent == false %>
-                <div class="content-block-intro media">
-                  Media produced by this event on MorphoSource
-                </div>
                 <div class="content-block">
+                  <h2>Media produced by this event on MorphoSource</h2>
                   <% 
                   members = presenter.direct_parent_members
                   parent_member =  members.first
                   %>
                   <% if parent_member.present? %>
                     <div class="row media-block">
-
-                        <div class="thumbnail col-xs-4">
+                      <div class="thumbnail col-xs-4">
+                        <% if parent_member.id == @presenter.id %>
+                          <%= render_thumbnail_tag parent_member, {}, { suppress_link: true } %><br>
+                          <%= parent_member.link_name_long %> (this media)<br>
+                        <% else %>
                           <%= render_thumbnail_tag parent_member %><br>
-                          <%= link_to(parent_member.link_name, contextual_path(parent_member, @presenter)) %><br>
-                          <%= parent_member.file_format %><br>
-                        </div>
-
+                          <%= link_to(parent_member.link_name_long, contextual_path(parent_member, @presenter)) %><br>
+                        <% end %>
+                        <%= parent_member.file_format %><br>
+                      </div>
                     </div>              
                   <% end %>
                 </div>

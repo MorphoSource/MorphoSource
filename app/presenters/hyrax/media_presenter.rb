@@ -306,8 +306,6 @@ module Hyrax
         direct_parent_id_list << direct_parent_id
       end
 
-      @is_absentee_parent = false
-
       this_media_list = [] << solr_document.id
       @this_media_member = member_presenters_for(this_media_list).first
 
@@ -361,6 +359,9 @@ module Hyrax
       @this_media_processing_event = processing_events
         .find { |pe| pe.member_ids.include? solr_document.id }
 
+      # If processing events exist and the topmost PE has no parent members, this hierarchy is absentee parent
+      @is_absentee_parent = @processing_events_data&.first&.[](:parent_members) == []
+
       if direct_parent_id_list.length > 0
         # If a media has a parent work and is derived, then that media’s raw ancestor media work
         # (whether parent, grandparent, etc) should be connected to an IE from which metadata should be derived.
@@ -374,7 +375,6 @@ module Hyrax
         @imaging_event_editable = true
         # check if this is a Derived media with "absentee parent" by checking if PE exists
         if @processing_event_count > 0
-          @is_absentee_parent = true
           @direct_parent_members = member_presenters_for(this_media_list)
           target_media = media
           @raw_or_derived = "Derived"
@@ -452,7 +452,7 @@ module Hyrax
         end
 
         # get imaging event details
-        @imaging_event_modality = @imaging_event.ie_modality.first
+        @imaging_event_modality = Morphosource::ModalitiesService.new.label(@imaging_event.ie_modality.first)
         if @imaging_event_modality == "Photogrammetry" or
             @imaging_event_modality == "Photography"
           @lens = ""

@@ -18,7 +18,7 @@ module Hyrax
         #return super if action_name == 'show'
         # These breadcrumbs are for the edit/create actions
         add_breadcrumb t(:'hyrax.controls.home'), root_path
-        #add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         #add_breadcrumb_for_controller
         add_breadcrumb_for_action
       end

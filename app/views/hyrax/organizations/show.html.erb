@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="col-xs-3 show-actions text-right">
-      <% if current_user.admin? %>
+      <% if current_user&.admin? %>
         <%= link_to 'Edit', main_app.edit_hyrax_organization_path(@presenter.id), class: 'btn w-50 btn-primary' %>
       <% end %>
     </div>

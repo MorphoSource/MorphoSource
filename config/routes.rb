@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'dashboard', to: redirect('/dashboard/my/media', status: 301)
+  
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id', controller: :collection_members, action: :update_members, as: 'update_members'

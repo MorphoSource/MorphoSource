@@ -50,6 +50,10 @@
     .fileupload-buttonbar {
       padding: 0;
       box-sizing: content-box !important;      
+      .fileinput-button {
+        margin-left: auto;
+        margin-right: auto;
+      }
       .fileupload-progress {
         margin-top: 0;
         div {
@@ -64,6 +68,9 @@
 
       .row {
         text-align: center !important;
+        [class*='col-'] {
+          margin-left: -10px;
+        }
       }
     }
   }

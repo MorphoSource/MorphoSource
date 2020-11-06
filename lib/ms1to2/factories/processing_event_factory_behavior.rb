@@ -13,7 +13,8 @@ module Ms1to2
 
       def derive_special_fields_pe(v, parent_id)
         {
-          :depositor => derive_depositor(v[:project_user])
+          :depositor => derive_depositor(v[:project_user]),
+          :parent_id => parent_id
         }
       end
     end

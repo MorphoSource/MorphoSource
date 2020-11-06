@@ -14,6 +14,7 @@ module Ms1to2
       def derive_special_fields_ie(mf, mg)
         {
           :depositor => derive_depositor(mf[:project_user]),
+          :parent_id => derive_ie_parents(mg),
           :ie_modality => derive_ie_modality(mf),
           :power => derive_ie_power(mg)
         }

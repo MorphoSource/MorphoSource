@@ -37,7 +37,7 @@ module Ms1to2
       end
 
       def expected_special_fields
-        [:depositor, :part, :side, :description, :cite_as, 
+        [:depositor, :parent_id, :part, :side, :description, :cite_as, 
          :available, :unit, :funding_attribution,
          :license, :rights_holder, :x_spacing, 
          :y_spacing, :z_spacing, :download_reviewer, :visibility, :fileset_visibility, :fileset_accessibility]

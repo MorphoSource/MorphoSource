@@ -14,6 +14,7 @@ module Ms1to2
       def derive_special_fields_mf(mf, mg, parent_id)
         {
           :depositor => derive_depositor(mf[:project_user]),
+          :parent_id => parent_id,
           :part => derive_part(mf, mg),
           :side => derive_side(mf, mg),
           :description => derive_description(mf, mg),

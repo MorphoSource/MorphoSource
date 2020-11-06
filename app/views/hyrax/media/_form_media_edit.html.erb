@@ -1,3 +1,4 @@
+<div class='edit_media'>
 <%= simple_form_for [main_app, @form],
                     #builder: Hyrax::ShowcaseFormBuilder,
                     wrapper: :showcase_default,
@@ -154,6 +155,7 @@
 <%= render 'modal_new_physical_object' %>
 <%= render 'modal_select_parent_media' %>
 <%= render 'modal_select_parent_media_new_processing_event' %>
+</div>
 
 <%# TODO: Commented out when turbolinks removed. Delete if nothing breaks. %>
 <!-- <script type="text/javascript">

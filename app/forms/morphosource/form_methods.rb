@@ -30,6 +30,9 @@ module Morphosource
     def find_parent_work; end
 
     # @return [NilClass]
+    def select_device_id; end
+
+    # @return [NilClass]
     def taxonomy_search; end
 
     def member_of_works_json(work_type=nil)

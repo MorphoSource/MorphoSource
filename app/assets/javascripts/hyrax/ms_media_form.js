@@ -1,5 +1,11 @@
 $( document ).ready(function() {
 
+  // Functionality for selecting devices from autocomplete organization
+  $('form#related_form_imaging_event').on('change', '#s2id_imaging_event_find_parent_work', function (e) {
+    console.log('hi');
+    console.log(e.params.data);
+  });
+
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) { // if media form page (add/edit)
 
@@ -333,7 +339,7 @@ $( document ).ready(function() {
       // replace with ajax form post to trigger other actions
       var postData = new FormData($(this)[0]);
       //postdata.push({name: "NonFormValue", value: 'foo'});
-      //console.log("postdata: " + postdata );
+      console.log("postdata: " + postdata );
 
       $.ajax({
         type: "POST",

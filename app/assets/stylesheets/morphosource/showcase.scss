@@ -637,6 +637,10 @@ html {
     }
   }
 
+  .content-wrapper {
+    padding-bottom: 30px;
+  }
+
   .content-wrapper.fixed-width {
     max-width: 1200px;
     border: 2px solid #efefef;
@@ -670,7 +674,18 @@ html {
     }
   }
 
+
   .panel-default {border: none;}
+
+  .edit_media .panel {
+    margin-bottom: 0 !important;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+  }
+
+  .edit_media h2 {
+    margin-top: 10px;
+  }
 
   /* ************************** */
 

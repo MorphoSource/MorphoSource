@@ -7,8 +7,13 @@
                       autocomplete: 'off',
                       data: {
                         autocomplete: 'work',
-                        'autocomplete-url' => find_device_autocomplete_url()
+                        'autocomplete-url' => find_organization_with_devices_autocomplete_url()
                       } %>
+    <%= i.input :select_device_id, 
+      collection: [], 
+      prompt: 'Select device', 
+      label: 'Then select from devices associated with the organization.'
+    %>
   </div>
 
   <div class="text-center button-wrapper">

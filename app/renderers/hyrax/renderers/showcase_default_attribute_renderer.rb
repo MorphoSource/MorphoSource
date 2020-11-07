@@ -12,7 +12,11 @@ module Hyrax
           css_classes << options[:css_classes]
         end
         markup << %(<div class='row'>)
-        markup << %(<div class='col-xs-6 showcase-label'>#{label}</div>)
+        if options[:label].present?
+          markup << %(<div class='col-xs-6 showcase-label'>#{options[:label]}</div>)
+        else
+          markup << %(<div class='col-xs-6 showcase-label'>#{label}</div>)
+        end          
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
         markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)
         if values.blank?

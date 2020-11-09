@@ -200,6 +200,10 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def organization_id
+    organizations.map{ |o| o.id }
+  end
+  
   def organization_titles
     organizations.map{ |o| o.title.first }
   end

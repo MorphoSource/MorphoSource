@@ -1,8 +1,5 @@
-<% content_for :body_css_classes do %>showcase teams<% end %>
-
-<%
-provide :page_title, construct_page_title(@presenter.title)
-%>
+<% content_for :body_css_classes do %>showcase organizations<% end %>
+<% provide :page_title, construct_page_title(@presenter.title.first) %>
 <div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
   <div class="hyc-header">
     <header class="hyc-generic"></header>
@@ -10,18 +7,24 @@ provide :page_title, construct_page_title(@presenter.title)
 
   <div class="row team-header">
 
-    <div class="col-sm-12 col-md-6 flex">
+    <div class="col-xs-9 flex">
       <div class="team-title">
          <h1>
             <div id="showcase-title">
               <%= @presenter.title.first %>
             </div>
             <div class="text-muted">
-              <%= @media_member_count %> Media
-              <span class="bso-count"></span>
+              <%= pluralize(@media_member_count, ' Media') %> · 
+              <%= pluralize(@bso_member_count, ' Specimen') %> · 
+              <%= pluralize(@cho_member_count, ' Object') %>
             </div>
         </h1>
       </div>
+    </div>
+    <div class="col-xs-3 show-actions text-right">
+      <% if current_user&.admin? %>
+        <%= link_to 'Edit', main_app.edit_hyrax_organization_path(@presenter.id), class: 'btn w-50 btn-primary' %>
+      <% end %>
     </div>
 
   </div><!-- /row -->
@@ -34,19 +37,16 @@ provide :page_title, construct_page_title(@presenter.title)
         <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
         </a>
       </li>
-      <% if @po_type == 'bso' %>
-        <li role="presentation">
-          <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
-            <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
-          </a>
-        </li>
-      <% elsif @po_type == 'cho' %>
-        <li role="presentation">
-          <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
-            <i class="fas fa-frog" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
-          </a>
-        </li>
-      <% end %>
+      <li role="presentation">
+        <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
+          <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+        </a>
+      </li>
+      <li role="presentation">
+        <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
+          <i class="fas fa-frog" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
+        </a>
+      </li>
       <li role="presentation">
         <a href="#about" aria-controls="about" role="tab" data-toggle="tab" aria-expanded="true">
           <i class="fa fa-newspaper" aria-hidden="true"></i> ABOUT
@@ -57,39 +57,68 @@ provide :page_title, construct_page_title(@presenter.title)
     <!-- Tab panes -->
     <div class="tab-content">
 
-        <div role="tabpanel" class="tab-pane active" id="media">
-          <div class="form-tab-content">
+      <div role="tabpanel" class="tab-pane active" id="media">
+        <div class="form-tab-content">
+          <% if @media_member_count > 0 %>
             <%= render 'hyrax/organizations/media_filters' %>
             <%= render 'hyrax/organizations/tab_media' %>
-          </div>
+          <% else %>
+            <div class="row">
+              <div class="no-result">
+                No media found.
+              </div>
+            </div>
+          <% end %>
         </div>
+      </div>
 
-      <% if @po_type == 'bso' %>
-        <div role="tabpanel" class="tab-pane" id="biological_specimens">
-          <div class="form-tab-content">
-            <%#= render 'hyrax/teams/bso_filters' %>
+      <div role="tabpanel" class="tab-pane" id="biological_specimens">
+        <div class="form-tab-content">
+          <% if @bso_member_count > 0 %>
+            <%= render 'hyrax/organizations/bso_filters' %>
             <div class="row">
               <!-- Search bar -->
               <div class="col-xs-6">
-                <%#= render 'hyrax/teams/search_form', presenter: @presenter, url: @presenter.search_form_url %>
+                <%= render 'hyrax/organizations/search_form', tab: "biological_specimens" %>
+              </div>
+              <div class="col-xs-6">
+                <%= render 'hyrax/organizations/sort_and_per_page_bso' %>
               </div>
             </div>
-            <%#= render 'hyrax/organizations/tab_bso' %>
-            <%= render_async bso_tab_url_for_organizations(@presenter.id), event_name: "bso-loaded" do %>
-              <div class="ui-loading-whole-page" style="height:200px"></div>
-            <% end %>
-          </div>
+            <%= render 'hyrax/organizations/tab_bso' %>
+          <% else %>
+            <div class="row">
+              <div class="no-result">
+                No specimens found.
+              </div>
+            </div>
+          <% end %>
         </div>
-      <% elsif @po_type == 'cho' %>
-        <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
-          <div class="form-tab-content">
-            <%#= render 'hyrax/organizations/tab_cho' %>
-            <%= render_async cho_tab_url_for_organizations(@presenter.id), event_name: "cho-loaded" do %>
-              <div class="ui-loading-whole-page" style="height:200px"></div>
-            <% end %>
-          </div>
+      </div>
+
+      <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
+        <div class="form-tab-content">
+          <% if @cho_member_count > 0 %>
+            <%= render 'hyrax/organizations/cho_filters' %>
+            <div class="row">
+              <!-- Search bar -->
+              <div class="col-xs-6">
+                <%= render 'hyrax/organizations/search_form', tab: "cultural_heritage_objects" %>
+              </div>
+              <div class="col-xs-6">
+                <%= render 'hyrax/organizations/sort_and_per_page_cho' %>
+              </div>
+            </div>
+            <%= render 'hyrax/organizations/tab_cho' %>
+          <% else %>
+            <div class="row">
+              <div class="no-result">
+                No objects found.
+              </div>
+            </div>
+          <% end %>
         </div>
-      <% end %>
+      </div>
 
       <div role="tabpanel" class="tab-pane" id="about">
         <div class="form-tab-content">

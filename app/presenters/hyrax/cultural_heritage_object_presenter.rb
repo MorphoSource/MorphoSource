@@ -8,6 +8,15 @@ module Hyrax
     delegate :bibliographic_citation, :catalog_number, :collection_code, :numeric_time, :original_location,
              :periodic_time, :vouchered, :cho_type, :material, :short_title, :geographic_coordinates, to: :solr_document
 
+
+    def date_created_label
+      'Object collection/creation date'
+    end
+
+    def creator_label
+      'Object collector/creator'
+    end
+
     # methods for showcase partials
     def showcase_work_title_partial
       'showcase_work_title'

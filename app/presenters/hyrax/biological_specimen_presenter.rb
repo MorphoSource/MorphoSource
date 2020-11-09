@@ -9,6 +9,15 @@ module Hyrax
 
     delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :gbif_taxonomies, :user_taxonomies, to: :work
 
+
+    def date_created_label
+      'Object collection date'
+    end
+
+    def creator_label
+      'Object collector'
+    end
+
     def canonical_taxonomy_label
       if canonical_taxonomy_object.present?
         if canonical_taxonomy_object.trusted == ["Yes"]

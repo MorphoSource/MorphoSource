@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'dashboard', to: redirect('/dashboard/my/media', status: 301)
+  
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id', controller: :collection_members, action: :update_members, as: 'update_members'
@@ -38,15 +40,15 @@ Rails.application.routes.draw do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]
     
-    get 'organizations/:id', to: 'organizations#show', as: :show_organization
-    get 'organizations/specimens/:id', to: 'organizations#specimens'
-    get 'organizations/chos/:id', to: 'organizations#chos'
+    get 'concern/organizations/:id', to: 'organizations#show', as: :show_organization
+    get 'concern/organizations/specimens/:id', to: 'organizations#specimens'
+    get 'concern/organizations/chos/:id', to: 'organizations#chos'
     # media pagination
-    get 'organization_paging/organizations/:id', to: redirect { |params, request| "/organizations/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'organization_paging/concern/organizations/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
     # bso pagination
-    get 'organization_paging/organizations/specimens/:id', to: redirect { |params, request| "/organizations/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'organization_paging/concern/organizations/specimens/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
     # cho pagination
-    get 'organization_paging/organizations/chos/:id', to: redirect { |params, request| "/organizations/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'organization_paging/concern/organizations/chos/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
 
     #get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'

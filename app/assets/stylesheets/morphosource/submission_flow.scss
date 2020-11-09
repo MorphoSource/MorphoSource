@@ -36,10 +36,43 @@
   div.fileinput-button {
     display: inline-block;
     float: none;
+    margin-right: 0;
   }
 
-  .fileupload-buttonbar .row {
-    text-align: center !important;
+  #fileupload {
+    p {
+      padding: 0 10px;
+      box-sizing: content-box !important;      
+    }
+    .table {
+      margin-bottom: 0;
+    }
+    .fileupload-buttonbar {
+      padding: 0;
+      box-sizing: content-box !important;      
+      .fileinput-button {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .fileupload-progress {
+        margin-top: 0;
+        div {
+          box-sizing: content-box !important;      
+        }
+      }
+      .progress {
+        box-sizing: content-box !important;      
+        height: auto;
+        margin-bottom: 0;
+      }
+
+      .row {
+        text-align: center !important;
+        [class*='col-'] {
+          margin-left: -10px;
+        }
+      }
+    }
   }
 
   .fileupload {

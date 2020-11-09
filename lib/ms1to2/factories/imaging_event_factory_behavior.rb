@@ -14,7 +14,7 @@ module Ms1to2
       def derive_special_fields_ie(mf, mg)
         {
           :depositor => derive_depositor(mf[:project_user]),
-          :parent_id => derive_ie_parents(mg),
+          :parent_id => derive_ie_parents(mf),
           :ie_modality => derive_ie_modality(mf),
           :power => derive_ie_power(mg)
         }
@@ -23,10 +23,10 @@ module Ms1to2
       def derive_ie_parents(v)
         parents = []
         if v[:specimen_id].present?
-          parents << hyraxify("S"+v[:specimen_id].first)
+          parents << hyraxify("S"+v[:specimen_id].first.to_i.to_s)
         end
         if v[:scanner_id].present?
-          parents << hyraxify("D"+v[:scanner_id].first)
+          parents << hyraxify("D"+v[:scanner_id].first.to_i.to_s)
         end
         return parents
       end

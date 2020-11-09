@@ -135,21 +135,22 @@ module Morphosource
       request.env['PATH_INFO']
     end
 
-    def bso_tab_url_for_organizations(id)
-      url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
-        compact.
-        join('&')
-      "/organizations/specimens/#{id}?#{url_params}"
-    end
-
-    def cho_tab_url_for_organizations(id)
-      url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
-        compact.
-        join('&')
-      "/organizations/chos/#{id}?#{url_params}"
-    end
+# todo: remove these 2 methods later
+#    def bso_tab_url_for_organizations(id)
+#      url_params = request_params.
+#        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+#        compact.
+#        join('&')
+#      "/organizations/specimens/#{id}?#{url_params}"
+#    end
+#
+#    def cho_tab_url_for_organizations(id)
+#      url_params = request_params.
+#        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+#        compact.
+#        join('&')
+#      "/organizations/chos/#{id}?#{url_params}"
+#    end
 
     def bso_tab_url_for_collections(id)
       url_params = request_params.

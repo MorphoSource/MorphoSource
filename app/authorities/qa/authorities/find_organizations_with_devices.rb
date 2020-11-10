@@ -1,6 +1,6 @@
 module Qa::Authorities
   class FindOrganizationsWithDevices < Qa::Authorities::FindWorks
-    self.search_builder_class = Morphosource::My::FindOrganizationsSearchBuilder
+    self.search_builder_class = Morphosource::FindOrganizationsSearchBuilder
 
     include MorphosourceHelper
 

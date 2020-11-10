@@ -4,15 +4,15 @@
 <form></form>
 
 <% if @current_user.admin? %>
-  <div class="form-add-organization-wrapper">
-    <div class="form-inline add-sharing-form sharing-row-form">
-
+  <div class="form-add-organization-wrapper col-sm-6" style="margin-left: 20px;">
+    <p><em>Linking or unlinking an organization may take a long time as it updates permissions for all associated media before reloading the page.</em></p>
+    <div class="form-inline add-sharing-form sharing-row-form" style="display:flex; justify-content: space-evenly;">
       <%= simple_form_for @collection,
           url: main_app.dashboard_collection_link_organization_path,
           method: 'post',
           html: { id: 'add-organization-form' } do |f| %>
-        <%= f.select(:organization_id, unlinked_organizations, { prompt: "Select organization", class: 'form-control'})  %> 
-        <%= submit_tag 'Link to organization', class: 'btn btn-sm btn-default' %> 
+          <%= render_edit_field_partial('organization', f: f) %>
+          <%= submit_tag 'Link to organization', class: 'btn btn-sm btn-default' %>
       <% end %>
 
       <% if @collection.organization %>
@@ -20,16 +20,15 @@
             url: main_app.dashboard_collection_unlink_organization_path,
             method: 'post',
             html: { id: 'remove-organization-form' } do |f| %>
-          <%= submit_tag 'Remove organization', class: 'btn btn-sm btn-default' %> 
+          <%= submit_tag 'Remove organization', class: 'btn btn-sm btn-default' %>
         <% end %>
       <% end %>
-
     </div>
   </div>
 <% end %>
 
 <div class="col-sm-6">
-<% if @presenter.collection_type.machine_id == 'team' %>  
+<% if @presenter.collection_type.machine_id == 'team' %>
   <h2>ORGANIZATION</h2>
   <% if @collection.organization %>
     <%= @presenter.attribute_to_html(:organization_title, label: 'Name', render_as: :showcase_default, include_empty: true, html_dl: false) %>

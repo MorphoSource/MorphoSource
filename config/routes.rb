@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   get 'dashboard', to: redirect('/dashboard/my/media', status: 301)
-  
+
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id', controller: :collection_members, action: :update_members, as: 'update_members'
@@ -39,11 +39,12 @@ Rails.application.routes.draw do
   scope module: :hyrax do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]
-    
+  
     get 'concern/organizations/specimens/:id', to: 'organizations#specimens'
     get 'concern/organizations/chos/:id', to: 'organizations#chos'
     get 'concern/organizations/new', to: 'organizations#new'
     get 'concern/organizations/:id', to: 'organizations#show', as: :show_organization
+
     # media pagination
     get 'organization_paging/concern/organizations/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
     # bso pagination
@@ -334,7 +335,7 @@ Rails.application.routes.draw do
   get '/About/termsAndConditions', to: redirect('/terms', status: 301)
 
   # MS1 Core Redirects
-  get '/Stats/dashboard', to: redirect('/', status: 301) 
+  get '/Stats/dashboard', to: redirect('/', status: 301)
   get '/LoginReg/form', to: redirect('/users/sign_in', status: 301)
   get '/LoginReg/logout', to: redirect('/users/sign_out', status: 301)
   get '/MyProjects/Dashboard/projectList', to: redirect('/dashboard', status: 301)

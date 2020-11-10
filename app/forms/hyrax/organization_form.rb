@@ -11,8 +11,14 @@ module Hyrax
     class_attribute :single_valued_fields
     class_attribute :media_permissions_fields
 
+    # Remove all default Hyrax metadata
+    self.terms -= [:title, :creator, :contributor, :description, :keyword, 
+      :license, :rights_statement, :publisher, :date_created, :subject, 
+      :language, :identifier, :based_near, :related_url, :source, 
+    ]
+
     # Customizing field terms
-    self.terms = [
+    self.terms += [
       :organization_type,
       :institution_name,
       :title,

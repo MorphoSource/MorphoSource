@@ -39,12 +39,12 @@ Rails.application.routes.draw do
   scope module: :hyrax do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]
-
-    get 'concern/organizations/:id', to: 'organizations#show', as: :show_organization
+  
     get 'concern/organizations/specimens/:id', to: 'organizations#specimens'
     get 'concern/organizations/chos/:id', to: 'organizations#chos'
-    # search for organizations without team id
-    get 'unlinked_organizations', to: 'organizations#unlinked_organizations'
+    get 'concern/organizations/new', to: 'organizations#new'
+    get 'concern/organizations/:id', to: 'organizations#show', as: :show_organization
+
     # media pagination
     get 'organization_paging/concern/organizations/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
     # bso pagination

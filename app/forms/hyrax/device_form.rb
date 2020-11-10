@@ -10,7 +10,12 @@ module Hyrax
 
     # Customizing field terms
 
-    self.terms = [:title, :creator, :modality, :description]
+    # Remove all default Hyrax metadata
+    self.terms -= [:title, :creator, :contributor, :description, :keyword, 
+      :license, :rights_statement, :publisher, :date_created, :subject, 
+      :language, :identifier, :based_near, :related_url, :source, 
+    ]
+    self.terms += [:title, :creator, :modality, :description]
 
     self.required_fields = [:title, :creator, :modality]
 

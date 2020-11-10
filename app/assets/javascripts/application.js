@@ -37,6 +37,7 @@
 //= require morphosource/ms_controlled_vocabulary
 //= require morphosource/ms_organization_resource
 //= require morphosource/ms_taxonomy_resource
+//= require morphosource/ms_unlinked_organizations
 //= require morphosource/ms_device_resource
 //= require morphosource/ms_biological_specimen_resource
 //= require morphosource/ms_cultural_heritage_object_resource

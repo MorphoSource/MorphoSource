@@ -256,9 +256,12 @@ input.disabled {
     background-color: #efefef;
     padding-top: 20px;
     .active {
-      .fa {
+      .fa, .fas, [class^="ms2-icon-"] {
         color: $font-color;
       }
+    }
+    [class^="ms2-icon-"] {
+      font-size: 15px;
     }
   }
 

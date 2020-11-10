@@ -5,7 +5,11 @@
       <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" id="tab-physical-object-details" class="">
           <a href="#physical-object-details" aria-controls="physical-object-details" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fas fa-frog"></i> Physical Object
+            <% if @presenter.physical_object_type == "Biological Specimen" %>
+              <i class="fas fa-frog"></i> Physical Object
+            <% elsif @presenter.physical_object_type == "Cultural Heritage Object" %>
+              <i class="ms2-icon-bowl icon-bowl"></i> Physical Object
+            <% end %>
           </a>
         </li>
         <li role="presentation" id="tab-parent-media" class="">

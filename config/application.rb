@@ -24,5 +24,6 @@ module MorphoSourceSf
 
     middleware.use ::ActionDispatch::Static, File.join(Hyrax.config.derivatives_path, '..'), index: 'index', headers: config.public_file_server.headers
 
+    config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
   end
 end

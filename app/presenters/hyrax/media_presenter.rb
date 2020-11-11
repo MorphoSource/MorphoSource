@@ -28,7 +28,7 @@ module Hyrax
       :raw_or_derived, :is_absentee_parent,
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
-      :file_size, :mime_type, :this_media_type, :file_set_list,
+      :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list,
       # Permissions
       :permits_commercial_use, :permits_3d_use, :required_archival_of_published_derivatives,
       :morphosource_use_agreement_type, :download_reviewer,
@@ -197,6 +197,7 @@ module Hyrax
       @this_media_type = media.media_type.first
       @mime_type = []
       @file_size = 0
+      @accepted_file_count = 0
       @point_count = 0
       @face_count = 0
       @color_format = []
@@ -238,6 +239,7 @@ module Hyrax
         end
         @mime_type << contents_mime_type
         @file_size += file_set.file_size.first.to_i if file_set.file_size.present?
+        @accepted_file_count += file_set.contents_accepted_file_count.first.to_i if file_set.contents_accepted_file_count.present?
         if @this_media_type == "Mesh"
           @point_count += file_set.point_count.first.to_i if file_set.point_count.present?
           @face_count += file_set.face_count.first.to_i  if file_set.face_count.present?
@@ -272,6 +274,11 @@ module Hyrax
       end # file_set_list loop
 
       @mime_type = @mime_type.uniq.join(", ")
+      if @accepted_file_count == 0
+        @accepted_file_count = ""
+      else
+        @accepted_file_count = @accepted_file_count.to_s(:delimited)
+      end
       if @file_size == 0
         @file_size = ""
       else

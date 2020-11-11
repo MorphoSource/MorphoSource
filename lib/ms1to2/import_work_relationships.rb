@@ -9,7 +9,7 @@ module Ms1to2
     def call
       CSVParser.new(input_csv).each do |attrs|
         if attrs[:parent_id]&.first.present? && attrs[:child_ids].present?
-          AddWorkChildrenJob.perform_now(
+          AddWorkChildrenJob.perform_later(
             attrs[:parent_id].first, 
             attrs[:child_ids]
           )

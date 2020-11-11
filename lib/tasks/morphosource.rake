@@ -153,7 +153,7 @@ namespace :morphosource do
   desc 'Mass ingest work relationships'
   task :mass_ingest_relationships, [:input_csv] => :environment do |task, args|
     input_csv = args[:input_csv]
-    Ms1to2::ImportWorkRelationships.new(input_csv)
+    Ms1to2::ImportWorkRelationships.new(input_csv).call
   end
 
   desc 'Update blank organization institution and collection codes'

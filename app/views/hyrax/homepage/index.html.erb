@@ -4,8 +4,8 @@
   <div class="col-xs-12 col-sm-6 col-sm-push-6">
     <% if Hyrax.config.front_page_media.present? && Media.exists?(Hyrax.config.front_page_media) %>
       <iframe
-        height="100%" 
-        width="100%" 
+        height="100%"
+        width="100%"
         src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: Media.find(Hyrax.config.front_page_media).access_control_id) %>&config=/universalviewer/front/uvconfig.json"
         allowfullscreen
         frameborder="0">
@@ -31,7 +31,7 @@
         <% end %>
       </div>
       <div class="col-xs-12 col-md-6 no-padding">
-        <%= link_to Rails.application.routes.url_helpers.guide_docs_path, class: 'btn' do %>
+        <%= link_to Rails.application.routes.url_helpers.contributors_docs_path, class: 'btn' do %>
           <div class="row" style='text-align: left;'>
             <div class="col-xs-3 col-align col-align--center">
               <div class="row"><i class="fas fa-feather-alt fa-2x"></i></div>
@@ -54,7 +54,7 @@
     <div class="row">
       <div class="col-xs-6 showcase-label">Media Files</div>
       <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(Media.count, :delimiter => ',') %>    
+        <%= number_with_delimiter(Media.count, :delimiter => ',') %>
       </div>
     </div>
     <div class="row">
@@ -69,7 +69,7 @@
         <%= number_with_delimiter(
           Morphosource::SolrService.new.get_count(
             'has_model_ssim:Collection AND collection_type_gid_ssim:gid://morpho-source-sf/hyrax-collectiontype/2'
-          ), 
+          ),
           :delimiter => ','
         ) %>
       </div>
@@ -96,7 +96,7 @@
       <div class="col-xs-6 showcase-label">Contributors</div>
       <div class="col-xs-6 showcase-value">
         <%= number_with_delimiter(
-          Role.find_by(name: 'contributor').users.count, 
+          Role.find_by(name: 'contributor').users.count,
           :delimiter => ','
         ) %>
       </div>
@@ -142,6 +142,6 @@
       <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('morphosource.homepage.share_button') %>
     <% end %>
     <p class="terms-of-use"><%= link_to t(:'hyrax.pages.tabs.terms_page'), hyrax.terms_path %></p>
-  <% end %>  
+  <% end %>
 </div>
 <% end %>

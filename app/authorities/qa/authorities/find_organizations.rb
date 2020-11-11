@@ -1,6 +1,6 @@
 module Qa::Authorities
   class FindOrganizations < Qa::Authorities::FindWorks
-    self.search_builder_class = Morphosource::My::FindOrganizationsSearchBuilder
+    self.search_builder_class = Morphosource::FindOrganizationsSearchBuilder
 
     def search(_q, controller)
       # The My::FindWorksSearchBuilder expects a current_user

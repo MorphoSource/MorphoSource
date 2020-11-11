@@ -527,6 +527,10 @@ class SolrDocument
     self[Solrizer.solr_name('contact_person', :stored_searchable)]
   end
 
+  def team_id
+    self[Solrizer.solr_name('team_id', :stored_searchable)]
+  end
+
   # Processing Event & Image Capture Event
   def software
     self[Solrizer.solr_name('software', :stored_searchable)]

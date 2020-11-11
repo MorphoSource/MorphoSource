@@ -180,6 +180,10 @@ class Media < Morphosource::Works::Base
     ancestors.select(&:specimen?)
   end
 
+  def object_titles
+    physical_objects.map(&:title)
+  end
+
   def physical_objects
     ancestors.select(&:physical_object?)
   end
@@ -212,6 +216,14 @@ class Media < Morphosource::Works::Base
     organizations.each_with_object([]) do |org, teams|
       teams += Collection.find(org.team_id.first)
     end
+  end
+
+  def taxonomies
+    ancestors.select{|work| work.class == Taxonomy}
+  end
+
+  def taxonomies_titles
+    taxonomies.map{ |t| t.title.first }
   end
 
   def ark_resource_type

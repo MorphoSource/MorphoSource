@@ -1,6 +1,7 @@
 module Hyrax
   class OrganizationPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
+    include ActionView::Helpers::UrlHelper
 
     attr_reader :total_po, :po_ids_by_org
 
@@ -28,6 +29,13 @@ module Hyrax
       else
       	return 0
       end
+    end
+
+    # displays on catalog index
+    def linked_team
+      return if team_id.blank?
+      team = ::SolrDocument.find(team_id.first)
+      link_to team.title.first, Rails.application.routes.url_helpers.team_path(team.id)
     end
 
   end

@@ -15,7 +15,8 @@ RSpec.describe MediaIndexer do
       physical_object_type: "Cultural Heritage Object",
       organization_titles: ["Organization 1", "Organization 2"],
       organization_id: ["org123"],
-      member_of_public_collection_ids: ['id1','id2','id3']
+      member_of_public_collection_ids: ['id1','id2','id3'],
+      taxonomies_titles: ['taxonomy1', 'taxonomy2']
     } }
 
     before do
@@ -55,6 +56,10 @@ RSpec.describe MediaIndexer do
     end
     it 'indexes public collection membership' do
       expect(subject['member_of_public_collection_ids_ssim']).to eq field_values[:member_of_public_collection_ids]
+    end
+    it 'indexes taxonomies' do
+      expect(subject['taxonomy_tesim']).to eq field_values[:taxonomies_titles]
+      expect(subject['taxonomy_ssim']).to eq field_values[:taxonomies_titles]
     end
   end
 end

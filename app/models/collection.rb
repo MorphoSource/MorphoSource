@@ -70,6 +70,10 @@ class Collection < ActiveFedora::Base
     managers + editors + depositors + downloaders + viewers
   end
 
+  def group_member_count
+    group_members.count
+  end
+
   def add_users_to_group(group, user_ids)
     user_ids.each do |u_id|
       u = User.find_by_user_key(u_id)

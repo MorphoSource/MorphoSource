@@ -151,14 +151,9 @@ namespace :morphosource do
   end
 
   desc 'Mass ingest work relationships'
-  task :mass_ingest_relationships, [:input_csv, :delete_previous_children] => :environment do |task, args|
+  task :mass_ingest_relationships, [:input_csv] => :environment do |task, args|
     input_csv = args[:input_csv]
-    if args[:delete_previous_children].present? && args[:delete_previous_children].to_i == 1
-      delete_previous_children = true
-    else
-      delete_previous_children = false
-    end
-    Ms1to2::ImportWorkRelationships.new(input_csv, delete_previous_children)
+    Ms1to2::ImportWorkRelationships.new(input_csv).call
   end
 
   desc 'Update blank organization institution and collection codes'

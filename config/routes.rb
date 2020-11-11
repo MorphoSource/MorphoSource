@@ -44,6 +44,8 @@ Rails.application.routes.draw do
     get 'concern/organizations/chos/:id', to: 'organizations#chos'
     get 'concern/organizations/new', to: 'organizations#new'
     get 'concern/organizations/:id', to: 'organizations#show', as: :show_organization
+    # search for organizations without team id
+    get 'unlinked_organizations', to: 'organizations#unlinked_organizations'
 
     # media pagination
     get 'organization_paging/concern/organizations/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }

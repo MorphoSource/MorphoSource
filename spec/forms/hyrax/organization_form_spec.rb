@@ -43,7 +43,9 @@ RSpec.describe Hyrax::OrganizationForm do
   let(:secondary_terms)           { [:description, :related_url, :address, :city, :state_province, :country, :contact_person, :collection_code, :recordset_id] }
 
   it "has expected metadata terms" do
-    expect(subject.terms).to match_array(terms)
+    terms.each do |term|
+      expect(subject.terms).to include(term)
+    end
   end
 
   it "has expected required metadata terms" do

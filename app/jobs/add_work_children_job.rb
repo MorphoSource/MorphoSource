@@ -3,23 +3,25 @@ class AddWorkChildrenJob < ApplicationJob
 
   # @param [String] parent_id ID string of parent work
   # @param [Array/String] child_ids Array of child work IDs or string of single child ID
-  # @param [Boolean] delete_previous_children Whether already existing children should be deleted
-  def perform(parent_id, child_ids, delete_previous_children=false)
-    child_ids = Array(child_ids)
-    parent = ::ActiveFedora::Base.find(parent_id)
-
-    if delete_previous_children
-      parent.members.each do |child|
-        parent.ordered_members.delete(child)
-        parent.members.delete(child)
-      end
+  def perform(parent_id, child_ids)
+    if ::ActiveFedora::Base.exists?(parent_id)
+      parent = ::ActiveFedora::Base.find(parent_id)
+    else
+      return false
     end
 
-    child_ids.each do |child_id|
-      child = ::ActiveFedora::Base.find(child_id)
-      parent.ordered_members << child unless parent.members.include?(child)
+    children = Array(child_ids)
+      .map { |c| ::ActiveFedora::Base.exists?(c) ? ::ActiveFedora::Base.find(c) : nil }
+      .compact
+    return false if !children.present?
+    
+    parent.members.each do |child|
+      parent.ordered_members.delete(child)
+      parent.members.delete(child)
+      parent.save!
     end
 
+    parent.ordered_members = children
     parent.save!
   end
 end

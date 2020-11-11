@@ -24,14 +24,18 @@ module Hyrax
 
     self.required_fields = []
 
-    self.single_valued_fields = self.terms
+    self.single_valued_fields = self.terms - [:files, :visibility_during_embargo, :embargo_release_date,
+      :visibility_after_embargo, :visibility_during_lease,
+      :lease_expiration_date, :visibility_after_lease, :visibility,
+      :thumbnail_id, :representative_id, :rendering_ids, :ordered_member_ids,
+      :member_of_collection_ids, :in_works_ids, :admin_set_id]
 
     def primary_terms
       self.terms - [:gbif_key] - [:files, :visibility_during_embargo, :embargo_release_date,
-         :visibility_after_embargo, :visibility_during_lease,
-         :lease_expiration_date, :visibility_after_lease, :visibility,
-         :thumbnail_id, :representative_id, :rendering_ids, :ordered_member_ids,
-         :member_of_collection_ids, :in_works_ids, :admin_set_id]
+        :visibility_after_embargo, :visibility_during_lease,
+        :lease_expiration_date, :visibility_after_lease, :visibility,
+        :thumbnail_id, :representative_id, :rendering_ids, :ordered_member_ids,
+        :member_of_collection_ids, :in_works_ids, :admin_set_id]
     end
 
     def secondary_terms

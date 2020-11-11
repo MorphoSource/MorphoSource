@@ -21,6 +21,7 @@ class AddWorkChildrenJob < ApplicationJob
       parent.save!
     end
 
+    parent.reload
     parent.ordered_members = children
     parent.save!
   end

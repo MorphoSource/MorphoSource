@@ -57,16 +57,16 @@ RSpec.describe Morphosource::BrowseService do
     project1.save
   end
 
-  describe 'po_ids_by_org(org)' do
-    it 'returns po ids by org' do
-      results = subject.po_ids_by_org(org1)
-      expect(results).to include(biospecs.first.id)
+  describe 'total_po_by_org(org_id)' do
+    it 'returns total_po_by_org' do
+      results = subject.total_po_by_org(org1.id)
+      expect(results).to eq(1)
     end
   end
 
-  describe 'total_media_by_po_ids(po_ids)' do
-    it 'returns media count with po ids' do
-      results = subject.total_media_by_po_ids([biospecs.first.id])
+  describe 'total_media_by_org(org_id)' do
+    it 'returns total_media_by_org' do
+      results = subject.total_media_by_org(org1.id)
       expect(results).to eq(1)
     end
   end

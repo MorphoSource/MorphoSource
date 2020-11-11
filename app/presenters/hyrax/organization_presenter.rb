@@ -14,20 +14,20 @@ module Hyrax
     def browse_service
       @browse_service ||= Morphosource::BrowseService.new
     end
-
-    def po_ids_by_org
-      @po_ids_by_org ||= browse_service.po_ids_by_org(solr_document)
-    end
-
+    
     def total_po
-      po_ids_by_org.length
+      if member_ids.present?
+        return browse_service.total_po_by_org(solr_document.id)
+      else
+        return 0
+      end
     end
 
     def total_media
       if member_ids.present?
-        return browse_service.total_media_by_po_ids(po_ids_by_org)
+      	return browse_service.total_media_by_org(solr_document.id)
       else
-        return 0
+      	return 0
       end
     end
 

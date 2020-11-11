@@ -3,26 +3,20 @@ module Morphosource
     class OrganizationInformationService
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
-      attr_reader :solr, :collection_id, :collection, :is_org_team, 
-        :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
-        :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
-        :n_idigbio, :collection_project_map, :organizations, :info, :subcollection_ids
+      attr_reader :solr, :facet_results, :media_count, :bso_ids, :cho_ids, :n_idigbio, :info
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
-      def initialize(org_id, po_ids)
+      def initialize(org)
         @solr = solr_service.new
-        @organization = Organization.find(org_id)
-        @physical_object_ids = po_ids
+        @organization = org
+        @bso_ids = bso_ids
+        @cho_ids = cho_ids
         query_solr_org_info
       end
 
       def query_solr_org_info
-
         @facet_results, @media_count = media_facet_query
-
-        @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
-        @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
         @n_idigbio = bso_idigbio_count
       end
 
@@ -30,14 +24,12 @@ module Morphosource
         @info = { 
           'counts' => {
             'media' => media_count,
-            'po' => physical_object_ids.length
+            'po' => bso_ids.length + cho_ids.length
           }
         }
-
         info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
-        info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
-        info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
-
+        info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if @bso_ids.present?
+        info['cho_groups'] = { 'organization' => {} } if @cho_ids.present?
         info     
       end
 
@@ -47,6 +39,29 @@ module Morphosource
 
 
       private
+
+        def bso_ids
+          params = {
+            fl: 'id',
+            fq: [
+              "(organization_id_ssim:#{@organization.id})",
+              "(has_model_ssim:BiologicalSpecimen)"
+            ]
+          }
+          solr.get_docs(nil, params).map(&:values).flatten
+        end
+
+        def cho_ids
+          params = {
+            fl: 'id',
+            fq: [
+              "(organization_id_ssim:#{@organization.id})",
+              "(has_model_ssim:CulturalHeritageObject)"
+            ]
+          }
+          solr.get_docs(nil, params).map(&:values).flatten
+        end
+
 
         ### Solr collection queries ###
 
@@ -58,49 +73,30 @@ module Morphosource
             solrize('media_type', :stored_searchable),
             solrize('fileset_accessibility', :stored_searchable)
           ]
-
           params = { 
             rows: 0,
             fq: [
+              "(media_organization_id_ssim:#{@organization.id})",
               "#{solrize('has_model', :symbol)}:Media",
             ]
           }
-
-          # Core query
-          params[:fq] << assemble_or_query(solrize('physical_object_id', :stored_searchable), @physical_object_ids)
           solr.get_facet_fields(nil, facet_fields, params)
-
           return solr.facet_fields(facet_fields), solr.count
         end
 
         def bso_idigbio_count
-          return 0 if !bso_ids.present?
-
+          return 0 if !@bso_ids.present?
           params = {
             rows: 0,
             fq: [
-              assemble_or_query('id', bso_ids.map { |id| prepare_value(id) } ),
+              assemble_or_query('id', @bso_ids.map { |id| prepare_value(id) } ),
               "#{solrize('idigbio_uuid', :stored_searchable)}:*"
             ] 
           }
-
           solr.get(nil, params)
           solr.count
         end
 
-        def po_ids_by_model(po_ids, model)
-          return [] if !po_ids.present?
-
-          params = {
-            fl: 'id',
-            fq: [
-              assemble_or_query('id', po_ids),
-              "#{solrize('has_model', :symbol)}:#{model}"
-            ]
-          }
-
-          solr.get_docs(nil, params).map(&:values).flatten
-        end
 
         ### Collection information parsing ###
 

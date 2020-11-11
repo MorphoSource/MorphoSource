@@ -13,106 +13,46 @@ module Morphosource
         @scope = scope
         @organization = organization
         @params = params
-        @po_ids = po_ids
       end
 
       def member_media(fq_params = [])
-        return [] unless po_ids.present?
-        core_fq = "(physical_object_id_tesim:(#{po_ids.join(' OR ')}))"
+        core_fq = "(media_organization_id_ssim:#{@organization.id})"
         core_fq += " AND (has_model_ssim:Media)"
         fq_params << core_fq 
         available_member_works_filter_query(fq_params: fq_params)
       end
 
       def member_bso(fq_params = [])
-        return [] if !bso_ids.present?
-        core_fq = "(id:(#{bso_ids.join(' OR ')}))"
-        fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params)
+        @member_bso ||= (
+          core_fq = "(organization_id_ssim:#{@organization.id})"
+          core_fq += " AND (has_model_ssim:BiologicalSpecimen)"
+          fq_params << core_fq 
+          available_member_works_filter_query(fq_params: fq_params)
+        )
       end
 
       def member_cho(fq_params = [])
-        return [] if !cho_ids.present?
-        core_fq = "(id:(#{cho_ids.join(' OR ')}))"
-        fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params)
+        @member_cho ||= (
+          core_fq = "(organization_id_ssim:#{@organization.id})"
+          core_fq += " AND (has_model_ssim:CulturalHeritageObject)"
+          fq_params << core_fq 
+          available_member_works_filter_query(fq_params: fq_params)
+        )
       end
   
-      def po_ids
-        return bso_ids + cho_ids
-      end
-
-      def po_type
-        @po_type ||= get_po_type
-      end
-
-      def get_po_type
-        if bso_ids.length > 0
-          'bso'
-        else
-          ''
-        end
-      end
-
-      def bso_ids
-        @bso_ids ||= bso_ids_by_org
-      end
-
-      def all_bso_ids
-        params = {
-          fl: 'id',
-          fq: [
-            "(has_model_ssim:BiologicalSpecimen)"
-          ]
-        }
-        return solr.get_docs(nil, params).map(&:values).flatten
-      end
-
-      def bso_ids_by_org
-        return [] unless @organization.member_ids.present?
-        return all_bso_ids & @organization.member_ids
-      end
-
-      def cho_ids
-        @cho_ids ||= cho_ids_by_org
-      end
-
-      def all_cho_ids
-        params = {
-          fl: 'id',
-          fq: [
-            "(has_model_ssim:CulturalHeritageObject)"
-          ]
-        }
-        return solr.get_docs(nil, params).map(&:values).flatten
-      end
-
-      def cho_ids_by_org
-        return [] unless @organization.member_ids.present?
-        return all_cho_ids & @organization.member_ids
-      end
-
-
-      def total_media_by_po_ids(po_ids)
-        media_ids = []
-        po_ids.each do |id|
-          media_ids << media_ids_by_po_id(id)
-        end    
-        return media_ids.flatten.uniq.count
-      end
-
-      def media_ids_by_po_id(po_id)
-        return 0 unless po_id.present?
-        params = {
-          fl: 'id',
-          fq: [
-            "physical_object_id_tesim:(#{po_id})", 
-            "has_model_ssim:Media"
-          ]
-        }
-        return solr.get_docs(nil, params).map(&:values).flatten
-      end
-
+#      def bso_ids
+#        return [] unless @member_bso.present?
+#        @bso_ids ||= (
+#          @member_bso.documents.map { |o| o.id }
+#        )
+#      end
+#
+#      def cho_ids
+#        return [] unless @cho_ids.present?
+#        @cho_ids ||= (
+#          @member_cho.documents.map { |o| o.id }
+#        )
+#      end
 
       def assemble_or_query(field, values)
         return "" if !field.present? || !values.present?

@@ -8,6 +8,10 @@ module Morphosource::PhysicalObjectBehavior
     organizations.map{ |o| o.title.first }
   end
 
+  def organization_id
+    organizations.map{ |o| o.id }
+  end
+
   def media
     descendants.select{ |d| d.class == Media }
   end

@@ -5,8 +5,6 @@ class MediaCatalogController < CatalogController
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder
-    # display thumbnails in search results
-    config.index.thumbnail_field = 'thumbnail_path_ss'
 
     # facet fields
     # type

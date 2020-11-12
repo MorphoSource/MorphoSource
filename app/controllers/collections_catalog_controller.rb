@@ -3,8 +3,6 @@ class CollectionsCatalogController < CatalogController
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::CollectionsCatalogSearchBuilder
-    # display thumbnails in search results
-    config.index.thumbnail_field = 'thumbnail_path_ss'
 
     # facets
     # type facet (team or project)

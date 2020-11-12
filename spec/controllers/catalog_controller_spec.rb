@@ -15,7 +15,7 @@ RSpec.describe CatalogController, :type => :controller do
       let(:facet_fields) { config.facet_fields }
 
       it 'has a blank thumbnail field' do
-        expect(config.index.thumbnail_field).to eq('')
+        expect(config.index.thumbnail_field).to eq('thumbnail_path_ss')
       end
 
       it 'has 1 facet field' do

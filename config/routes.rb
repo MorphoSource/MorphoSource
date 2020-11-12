@@ -39,7 +39,7 @@ Rails.application.routes.draw do
   scope module: :hyrax do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]
-  
+
     get 'concern/organizations/specimens/:id', to: 'organizations#specimens'
     get 'concern/organizations/chos/:id', to: 'organizations#chos'
     get 'concern/organizations/new', to: 'organizations#new'
@@ -196,14 +196,6 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     get :zip, action: :zip, controller: :zip_media
-  end
-
-  namespace :hyrax do
-    resources :works, only: [] do
-      member do
-        resource :custom_thumbnail, only: [:create, :destroy]
-      end
-    end
   end
 
   # Permissions routes

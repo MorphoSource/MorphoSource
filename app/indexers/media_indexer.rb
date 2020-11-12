@@ -9,6 +9,8 @@ class MediaIndexer < Morphosource::WorkIndexer
   # this behavior
   include Hyrax::IndexesLinkedMetadata
 
+  self.thumbnail_path_service = Morphosource::MediaThumbnailPathService
+
   def generate_solr_document
    super.tap do |solr_doc|
      solr_doc['file_set_visibilities_ssim'] = object.file_set_visibilities

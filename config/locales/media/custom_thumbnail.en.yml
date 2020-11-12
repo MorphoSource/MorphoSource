@@ -1,0 +1,6 @@
+# custom thumbnail fields in submission and media edit - upload file tab
+en:
+  morphosource:
+    media:
+      custom_thumbnail:
+        hint: Custom 2D thumbnail image that will be displayed in media lists, projects, teams, and search results. This will replace the automated thumbnail created from 2D/3D uploaded media. Your custom thumbnail image should be at least 300 by 300 pixels. Square images are preferred, non-square images will be cropped.

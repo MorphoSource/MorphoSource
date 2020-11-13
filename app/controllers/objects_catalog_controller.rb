@@ -3,6 +3,8 @@ class ObjectsCatalogController < CatalogController
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::ObjectsCatalogSearchBuilder
+    # disable thumbnails
+    config.index.thumbnail_field = ''
 
     # facets
     # type facet (specimen or cho)

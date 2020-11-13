@@ -50,9 +50,14 @@ module Morphosource
         [".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".jp2", ".jpeg", ".jpg", ".mtl", ".obj", ".obj", ".ply", ".png", ".stl", ".svg", ".tif", ".tiff", ".wrl", ".x3d", ".zip"]
       end
 
-      # Allowed formats for attachments
+      # Allowed formats for attachments (default for documents)
       mattr_accessor :attachment_formats do
         [".txt", ".pdf", ".docx"]
+      end
+
+      # Allowed formats for Photographic reference attachments 
+      mattr_accessor :reference_attachment_formats do
+        [".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".pdf"]
       end
 
       # right now same as all formats

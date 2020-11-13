@@ -19,7 +19,8 @@ module Hyrax
       :device_and_facility, :device_link, :device, :device_manufacturer, :device_description,
       :device_organization_institution,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software,
-      :imaging_event_description, :imaging_event_description_attachment, :imaging_event_modality,
+      :imaging_event_description, :imaging_event_description_attachment, :imaging_event_reference_attachment, 
+      :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list, :parent_media_members,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
       :this_media_and_parents_id_list, :this_media_and_parents_members,
@@ -505,6 +506,13 @@ module Hyrax
         else
           @imaging_event_description_attachment = []
         end
+        if Morphosource::AttachmentService.get(@imaging_event.id, 'ie_reference').present?
+          @imaging_event_reference_attachment = 
+            [Rails.application.routes.url_helpers.attachment_path(id: @imaging_event.id, field: 'ie_reference')]
+        else
+          @imaging_event_reference_attachment = []
+        end
+
       else
         imaging_event_exist = false
       end # end if imaging_event present?

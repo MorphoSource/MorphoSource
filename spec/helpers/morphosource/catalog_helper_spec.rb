@@ -7,6 +7,7 @@ RSpec.describe Morphosource::CatalogHelper, type: :helper do
     before do
       allow(helper).to receive(:controller_name).and_return(cat_controller.controller_name)
     end
+
     context 'media catalog controller' do
       let(:cat_controller) { MediaCatalogController.new() }
 
@@ -44,6 +45,26 @@ RSpec.describe Morphosource::CatalogHelper, type: :helper do
 
       it 'returns the all search path' do
         expect(helper.catalog_search_path).to eq( main_app.all_search_path)
+      end
+    end
+  end
+
+  describe 'link_to_object' do
+    let(:args)  { { document: { "physical_object_id_tesim" => [object.id] } } }
+
+    context 'object is a bso' do
+      let!(:object)  { BiologicalSpecimen.create(title: ['title'], vouchered: ['Yes']) }
+
+      it 'returns a link to the bso' do
+        expect(helper.link_to_object(args)).to eq("<a href=\"/concern/biological_specimens/000200000\">title</a>")
+      end
+    end
+
+    context 'object is a cho' do
+      let!(:object)  { CulturalHeritageObject.create(title: ['title'], vouchered: ['Yes']) }
+
+      it 'returns a link to the cho' do
+        expect(helper.link_to_object(args)).to eq("<a href=\"/concern/cultural_heritage_objects/000200000\">title</a>")
       end
     end
   end

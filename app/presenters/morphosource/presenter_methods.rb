@@ -1,5 +1,6 @@
 module Morphosource
   module PresenterMethods
+    include ActionView::Helpers::UrlHelper
 
     # Methods below used to parent works on a work's show page.
 
@@ -10,7 +11,7 @@ module Morphosource
     def work_id
       solr_document.id
     end
-    
+
     # Methods below copied from rdr/dataset_presenter.rb
     # Adds "In Media, In Physical object," etc. to Relationships section of a work's show page.
 
@@ -42,7 +43,7 @@ module Morphosource
     end
 
     def downloaded_works
-      current_ability.current_user.downloaded_work_ids 
+      current_ability.current_user.downloaded_work_ids
     end
 
     # physical objects showcase page methods
@@ -69,15 +70,15 @@ module Morphosource
         ''
       end
     end
-    
-    # this method is cloned from list_of_item_ids_to_display (for defaut view), 
+
+    # this method is cloned from list_of_item_ids_to_display (for defaut view),
     # to get a list of media images for PO showpage
     def list_of_item_ids_to_display_for_showpage
       # get the media from
-      # PO > IE > media 
+      # PO > IE > media
       # or
-      # PO > IE > PE > media (media with absentee parent) 
-      child_ids = solr_document.member_ids  
+      # PO > IE > PE > media (media with absentee parent)
+      child_ids = solr_document.member_ids
       imaging_events = ImagingEvent.where('id' => child_ids)
       media_ids = []
       if imaging_events.present?
@@ -85,7 +86,7 @@ module Morphosource
           child_ids = imaging_event.member_ids  # todo: do we need to handle more than one media work per imaging event?
 
           # check for absentee parent
-          # PO > IE > PE > media (media with absentee parent) 
+          # PO > IE > PE > media (media with absentee parent)
           processing_events = ProcessingEvent.where('id' => child_ids)
           if processing_events.present?
             # todo: do we need to handle more than one PE here?
@@ -94,11 +95,11 @@ module Morphosource
           else
             medias = Media.where('id' => child_ids)
           end
-          
+
           # todo: do we need to handle more than one media here?
           media = medias.first
           if media.present?
-            # add current media id, then add child media ids.  
+            # add current media id, then add child media ids.
             # currently add up to 5 levels in the tree.  Later we should store the child medias in the work
             # so there is no need to traverse the tree
             media_ids << media.id
@@ -106,7 +107,12 @@ module Morphosource
           end
         end # looping IE
       end
-      media_ids.flatten.uniq 
+      media_ids.flatten.uniq
+    end
+
+    # displays number of media for physical objects in catalog search results
+    def total_viewable_media
+      ActiveFedora::Base.where("physical_object_id_tesim:#{id}").accessible_by(current_ability).count
     end
 
   end

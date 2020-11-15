@@ -18,4 +18,16 @@ module Morphosource::CatalogHelper
       search_form_action
     end
   end
+
+  # media index metadata displays title linked to physical object
+  def link_to_object(args)
+    id = args[:document]["physical_object_id_tesim"].first
+    object = SolrDocument.find(id)
+    title = object.title.first
+    if object.specimen?
+      link_to title, specimen_showcase_path(object)
+    else
+      link_to title, cho_showcase_path(object)
+    end
+  end
 end

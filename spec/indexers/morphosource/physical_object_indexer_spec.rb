@@ -26,6 +26,7 @@ RSpec.describe Morphosource::PhysicalObjectIndexer do
       # organization
       expect(subject['organization_sim']).to eq(organization.title.to_a)
       expect(subject['organization_tesim']).to eq(organization.title.to_a)
+      expect(subject['organization_id_ssim']).to eq([organization.id])
       # media_type
       expect(subject['public_media_type_tesim']).to eq(media.human_readable_media_type.to_a)
       expect(subject['public_media_type_ssim']).to eq(media.human_readable_media_type.to_a)

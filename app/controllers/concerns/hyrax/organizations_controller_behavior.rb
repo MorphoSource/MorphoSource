@@ -70,7 +70,7 @@ module Hyrax
       end
 
       def organization_information_service
-        @organization_information_service ||= information_service_class.new(curation_concern.id, member_service.po_ids) 
+        @organization_information_service ||= information_service_class.new(@curation_concern) 
       end
 
       def query_organization_members
@@ -81,20 +81,20 @@ module Hyrax
       end
       
       def member_works 
-        @bso_response = member_service.member_bso # , media_filter_params)
-        @bso_member_docs = @bso_response.present? ? @bso_response.documents : []
-        @bso_member_count = @bso_member_docs.count
-        @paged_bso_member_docs = paginated_bso_item_list
-
-        @cho_response = member_service.member_cho # , media_filter_params)
-        @cho_member_docs = @cho_response.present? ? @cho_response.documents : []
-        @cho_member_count = @cho_member_docs.count
-        @paged_cho_member_docs = paginated_cho_item_list
-
         @response = member_service.member_media(media_filter_params)
         @media_member_docs = @response.present? ? @response.documents : []
         @media_member_count = @media_member_docs.count
         @paged_media_member_docs = paginated_media_item_list
+
+        @bso_response = member_service.member_bso(bso_filter_params)
+        @bso_member_docs = @bso_response.present? ? @bso_response.documents : []
+        @bso_member_count = @bso_member_docs.count
+        @paged_bso_member_docs = paginated_bso_item_list
+
+        @cho_response = member_service.member_cho
+        @cho_member_docs = @cho_response.present? ? @cho_response.documents : []
+        @cho_member_count = @cho_member_docs.count
+        @paged_cho_member_docs = paginated_cho_item_list
       end
 
 

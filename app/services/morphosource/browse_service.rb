@@ -23,41 +23,28 @@ module Morphosource
       return solr.facet_fields(facet_fields)
     end
 
-    def po_ids
+    def total_media_by_org(org_id)
       params = {
-        fl: 'id',
+        rows: 0,
         fq: [
+          "media_organization_id_ssim:#{org_id}",
+          "(has_model_ssim:Media)"
+        ]
+      }
+      solr.get(nil, params)
+      solr.count
+    end
+
+    def total_po_by_org(org_id)
+      params = {
+        rows: 0,
+        fq: [
+          "organization_id_ssim:#{org_id}",
           "(has_model_ssim:BiologicalSpecimen OR has_model_ssim:CulturalHeritageObject)"
         ]
       }
-      return solr.get_docs(nil, params).map(&:values).flatten
-    end
-
-    def po_ids_by_org(org)
-      # If an org has large number of member IDs, the long fq param string can cause the Request-URI Too Long error,
-      # To avoid adding long list of IDs in the fq, intersect the PO ids and the Org member ids
-      return [] unless org.member_ids.present?
-      return po_ids & org.member_ids
-    end
-
-    def total_media_by_po_ids(po_ids)
-      media_ids = []
-      po_ids.each do |id|
-        media_ids << media_ids_by_po_id(id)
-      end    
-      return media_ids.flatten.uniq.count
-    end
-
-    def media_ids_by_po_id(po_id)
-      return 0 unless po_id.present?
-      params = {
-        fl: 'id',
-        fq: [
-          "physical_object_id_tesim:(#{po_id})", 
-          "has_model_ssim:Media"
-        ]
-      }
-      return solr.get_docs(nil, params).map(&:values).flatten
+      solr.get(nil, params)
+      solr.count
     end
 
     def total_media_by_collection(collection_id)

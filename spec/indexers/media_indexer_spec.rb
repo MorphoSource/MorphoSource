@@ -14,7 +14,9 @@ RSpec.describe MediaIndexer do
       modality: "Scanning Electron Microscopy",
       physical_object_type: "Cultural Heritage Object",
       organization_titles: ["Organization 1", "Organization 2"],
-      member_of_public_collection_ids: ['id1','id2','id3']
+      organization_id: ["org123"],
+      member_of_public_collection_ids: ['id1','id2','id3'],
+      taxonomies_titles: ['taxonomy1', 'taxonomy2']
     } }
 
     before do
@@ -50,9 +52,14 @@ RSpec.describe MediaIndexer do
     it 'indexes media_organization' do
       expect(subject['media_organization_tesim']).to eq field_values[:organization_titles]
       expect(subject['media_organization_sim']).to eq field_values[:organization_titles]
+      expect(subject['media_organization_id_ssim']).to eq field_values[:organization_id]
     end
     it 'indexes public collection membership' do
       expect(subject['member_of_public_collection_ids_ssim']).to eq field_values[:member_of_public_collection_ids]
+    end
+    it 'indexes taxonomies' do
+      expect(subject['taxonomy_tesim']).to eq field_values[:taxonomies_titles]
+      expect(subject['taxonomy_ssim']).to eq field_values[:taxonomies_titles]
     end
   end
 end

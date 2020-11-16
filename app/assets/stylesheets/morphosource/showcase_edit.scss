@@ -31,6 +31,12 @@ input.disabled {
 
 .showcase-edit {
 
+  .attachment-input .hint {
+    font-size: 10px;
+    color: #666;
+    margin: 0 4px;
+  }
+
   /* temporarily use fix font size */
   .showcase-label,
   .showcase-value,

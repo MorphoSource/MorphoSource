@@ -9,7 +9,7 @@
     <div class='attachment'>
       <% if curation_concern.present? && curation_concern.attachment(field).present? %>
         <div class='attachment-link'>
-          <%= link_to main_app.attachment_path(id: curation_concern.id, field: field) do %>
+          <%= link_to main_app.attachment_path(id: curation_concern.id, field: field), target: :blank do %>
             <span>Attachment File</span>
           <% end %>
           <span class='input-group-btn field-controls' style='display: inline;'>
@@ -21,7 +21,7 @@
       <% end %>
       <div class='attachment-input <%= curation_concern.present? && curation_concern.attachment(field).present? ? 'hide' : '' %>'>
         <%= file_field_tag field.to_sym, accept: 'text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document', class: 'file-field-input' %>
-        <span style='font-size:small; color: gray;'>Accepted Formats: <%= "#{Morphosource.attachment_formats.join(', ')}" %></span>
+        <span class='hint'>Accepted Formats: <%= "#{Morphosource.attachment_formats.join(', ')}" %></span>
         <input name='<%= "#{field.downcase}_attachment_delete" %>' class='attachment_delete hide'></input>
       </div>
     </div>

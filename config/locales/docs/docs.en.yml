@@ -1,0 +1,15 @@
+en:
+  morphosource:
+    docs:
+      about:
+        title: "About MorphoSource"
+      api:
+        title: "MorphoSource API"
+      citation:
+        title: "Citing MorphoSource"
+      glossary:
+        title: "Glossary of Terms"
+      rss:
+        title: "RSS Data Reporting"
+      user_guide:
+        title: "User Guide"

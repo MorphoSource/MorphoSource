@@ -12,7 +12,7 @@ class DocsController < ApplicationController
   end
 
   def contributors
-    outdated_flash
+    # outdated_flash
   end
 
   def glossary

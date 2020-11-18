@@ -156,6 +156,13 @@ namespace :morphosource do
     Ms1to2::ImportWorkRelationships.new(input_csv).call
   end
 
+  desc 'Mass ingest collection membership'
+  task :mass_ingest_collection_membership, [:input_csv] => :environment do |task, args|
+    input_csv = args[:input_csv]
+    Ms1to2::ImportCollectionMembers.new(input_csv).call
+  end
+
+
   desc 'Update blank organization institution and collection codes'
   task :fix_organization_blanks => :environment do
     Organization.all.each do |o|

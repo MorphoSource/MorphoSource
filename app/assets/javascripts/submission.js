@@ -1385,6 +1385,12 @@ $( document ).ready(function() {
             var clone = fileField.clone();
             fileField.after(clone).appendTo('#new_media');
           }
+          if ($('input#ie_reference').val()) {
+            var fileField = $('input#ie_reference');
+            fileField.addClass('hide');
+            var clone = fileField.clone();
+            fileField.after(clone).appendTo('#new_media');
+          }
 
           console.log($('#new_media').serializeArray());
           return true;

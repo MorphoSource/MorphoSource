@@ -108,11 +108,11 @@ module Hyrax
     end
 
     def date_modified
-      solr_document.date_modified.try(:to_formatted_s, :standard)
+      solr_document.date_modified.try(:to_formatted_s, :db)
     end
 
     def date_uploaded
-      solr_document.date_uploaded.try(:to_formatted_s, :standard)
+      solr_document.date_uploaded.try(:to_formatted_s, :db)
     end
 
     def link_name

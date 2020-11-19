@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'dashboard', to: redirect('/dashboard/my/media', status: 301)
+
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id', controller: :collection_members, action: :update_members, as: 'update_members'
@@ -15,8 +17,8 @@ Rails.application.routes.draw do
     # redirect the default BSO/CHO view to showcase view, except for certain action (e.g. new)
     get 'concern/biological_specimens/new', to: 'biological_specimens#new'
     get 'concern/cultural_heritage_objects/new', to: 'cultural_heritage_objects#new'
-    get 'concern/biological_specimens/:id', to: 'biological_specimens#showcase'
-    get 'concern/cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
+    get 'concern/biological_specimens/:id', to: 'biological_specimens#showcase', as: 'specimen_showcase'
+    get 'concern/cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase', as: 'cho_showcase'
     get 'concern/parent/:parent_id/biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'concern/parent/:parent_id/cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
     # redirect the default media view to showcase view, except for certain action (e.g. new)
@@ -37,16 +39,20 @@ Rails.application.routes.draw do
   scope module: :hyrax do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]
-    
-    get 'organizations/:id', to: 'organizations#show', as: :show_organization
-    get 'organizations/specimens/:id', to: 'organizations#specimens'
-    get 'organizations/chos/:id', to: 'organizations#chos'
+  
+    get 'concern/organizations/specimens/:id', to: 'organizations#specimens'
+    get 'concern/organizations/chos/:id', to: 'organizations#chos'
+    get 'concern/organizations/new', to: 'organizations#new'
+    get 'concern/organizations/:id', to: 'organizations#show', as: :show_organization
+    # search for organizations without team id
+    get 'unlinked_organizations', to: 'organizations#unlinked_organizations'
+
     # media pagination
-    get 'organization_paging/organizations/:id', to: redirect { |params, request| "/organizations/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'organization_paging/concern/organizations/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
     # bso pagination
-    get 'organization_paging/organizations/specimens/:id', to: redirect { |params, request| "/organizations/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'organization_paging/concern/organizations/specimens/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
     # cho pagination
-    get 'organization_paging/organizations/chos/:id', to: redirect { |params, request| "/organizations/#{request.params[:id]}?#{request.params.to_query}" }
+    get 'organization_paging/concern/organizations/chos/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
 
     #get 'teams/:id', to: 'teams#show'
     get 'teams/specimens/:id', to: 'teams#specimens'
@@ -331,7 +337,7 @@ Rails.application.routes.draw do
   get '/About/termsAndConditions', to: redirect('/terms', status: 301)
 
   # MS1 Core Redirects
-  get '/Stats/dashboard', to: redirect('/', status: 301) 
+  get '/Stats/dashboard', to: redirect('/', status: 301)
   get '/LoginReg/form', to: redirect('/users/sign_in', status: 301)
   get '/LoginReg/logout', to: redirect('/users/sign_out', status: 301)
   get '/MyProjects/Dashboard/projectList', to: redirect('/dashboard', status: 301)

@@ -242,4 +242,31 @@ RSpec.describe Collection, type: :model do
       end
     end
   end
+
+  describe '#add_date_uploaded' do
+    let(:team) { Collection.new(title: ['Test Team'], collection_type_gid: team_collection_type.gid) }
+
+    context 'there is no date uploaded' do
+      before do
+        team.save
+      end
+
+      it 'adds a date uploaded' do
+        expect(team.date_uploaded.to_date).to eq(Time.now.to_date)
+      end
+    end
+
+    context 'there is a date uploaded' do
+      let(:existing_date) { "2020-11-11 18:24:45 +0000" }
+      
+      before do
+        team.date_uploaded = existing_date
+        team.save
+      end
+
+      it 'keeps the original date uploaded' do
+        expect(team.date_uploaded).to eq(existing_date)
+      end
+    end
+  end
 end

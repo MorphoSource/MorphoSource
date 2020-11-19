@@ -77,7 +77,7 @@ module Ms1to2
             :id => collection_id,
             :title => v[:title],
             :depositor => v[:depositor].first,
-            :visibility => 'open',
+            :visibility => v[:visibility].first,
             :collection_type => coll_type
           }
           coll = Collection.new(attributes=coll_attrs)

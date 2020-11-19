@@ -6,10 +6,12 @@ RSpec.describe ObjectsCatalogController, type: :controller do
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
 
-     describe 'search_builder_class' do
-      it 'is the hyrax catalog search builder' do
-        expect(config.search_builder_class).to eq(Morphosource::Catalog::ObjectsCatalogSearchBuilder)
-      end
+    it 'is the hyrax catalog search builder' do
+      expect(config.search_builder_class).to eq(Morphosource::Catalog::ObjectsCatalogSearchBuilder)
+    end
+
+    it 'does not have a thumbnail path' do
+      expect(config.index.thumbnail_field).to eq('')
     end
 
     describe 'facet fields' do
@@ -71,6 +73,56 @@ RSpec.describe ObjectsCatalogController, type: :controller do
         it 'has the correct attributes' do
           expect(subject.label).to eq('Media Tag')
           expect(subject.limit).to eq(5)
+        end
+      end
+    end
+
+    describe 'index fields' do
+      let(:index_fields)  { config.index_fields }
+
+      describe 'title' do
+        subject { index_fields['title_tesim'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Title')
+          expect(subject.field).to eq('title_tesim')
+        end
+      end
+
+      describe 'taxonomy' do
+        subject { index_fields['taxonomy_tesim'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Taxonomy')
+          expect(subject.field).to eq('taxonomy_tesim')
+        end
+      end
+
+      describe 'organization' do
+        subject { index_fields['organization_tesim'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Organization')
+          expect(subject.field).to eq('organization_tesim')
+        end
+      end
+
+      describe 'type' do
+        subject { index_fields['human_readable_type_tesim'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Type')
+          expect(subject.field).to eq('human_readable_type_tesim')
+        end
+      end
+
+      describe 'source' do
+        subject { index_fields['source'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Source')
+          expect(subject.field).to eq('source')
+          expect(subject.accessor).to eq('object_record_source')
         end
       end
     end

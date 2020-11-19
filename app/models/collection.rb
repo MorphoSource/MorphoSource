@@ -9,6 +9,8 @@ class Collection < ActiveFedora::Base
 
   attr_accessor :organization_id
 
+  before_create :add_date_uploaded
+
   after_destroy :destroy_default_groups, if: :type_assigns_groups?
 
   # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
@@ -68,6 +70,10 @@ class Collection < ActiveFedora::Base
 
   def group_members
     managers + editors + depositors + downloaders + viewers
+  end
+
+  def group_member_count
+    group_members.count
   end
 
   def add_users_to_group(group, user_ids)
@@ -172,5 +178,9 @@ class Collection < ActiveFedora::Base
 
     def destroy_default_groups
       user_groups.compact.each(&:destroy)
+    end
+
+    def add_date_uploaded
+      self.date_uploaded = date_uploaded.nil? ? Time.now : date_uploaded
     end
 end

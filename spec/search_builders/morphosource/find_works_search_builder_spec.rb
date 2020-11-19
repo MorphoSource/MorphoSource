@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe FindWorksSearchBuilder do
+RSpec.describe Morphosource::FindWorksSearchBuilder do
 
   subject { described_class.new(context) }
 

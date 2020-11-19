@@ -6,6 +6,7 @@ module Morphosource
         # organization facet
         solr_doc['organization_tesim'] = object.organization_titles
         solr_doc['organization_sim'] = object.organization_titles
+        solr_doc['organization_id_ssim'] = object.organization_id
         # media types facet
         solr_doc['public_media_type_tesim'] = object.public_human_readable_media_types
         solr_doc['public_media_type_ssim'] = object.public_human_readable_media_types

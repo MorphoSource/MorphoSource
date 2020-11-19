@@ -18,11 +18,12 @@ module MorphoSourceSf
 
     config.to_prepare do
       Qa::Authorities::FindWorks.class_eval do
-        self.search_builder_class = ::FindWorksSearchBuilder
+        self.search_builder_class = Morphosource::FindWorksSearchBuilder
       end
     end
 
     middleware.use ::ActionDispatch::Static, File.join(Hyrax.config.derivatives_path, '..'), index: 'index', headers: config.public_file_server.headers
 
+    config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
   end
 end

@@ -137,18 +137,31 @@ namespace :morphosource do
   desc 'Mass ingest data not in a job context'
   task :mass_ingest_no_job, [:admin_email, :update, :update_only_if_no_file]  => :environment do |task, args|
     u = User.find_by(email: args[:admin_email])
-    if args[:update].present? && args[:update].to_i == true
+    if args[:update].present? && args[:update].to_i == 1
       update = true
     else
       update = false
     end
-    if args[:update_only_if_no_file].present? && args[:update_only_if_no_file].to_i == true
+    if args[:update_only_if_no_file].present? && args[:update_only_if_no_file].to_i == 1
       update_only_if_no_file = true
     else
       update_only_if_no_file = false
     end
     Ms1to2::Importer.new(File.expand_path("tmp/ingest/"), u, update, update_only_if_no_file).call
   end
+
+  desc 'Mass ingest work relationships'
+  task :mass_ingest_relationships, [:input_csv] => :environment do |task, args|
+    input_csv = args[:input_csv]
+    Ms1to2::ImportWorkRelationships.new(input_csv).call
+  end
+
+  desc 'Mass ingest collection membership'
+  task :mass_ingest_collection_membership, [:input_csv] => :environment do |task, args|
+    input_csv = args[:input_csv]
+    Ms1to2::ImportCollectionMembers.new(input_csv).call
+  end
+
 
   desc 'Update blank organization institution and collection codes'
   task :fix_organization_blanks => :environment do

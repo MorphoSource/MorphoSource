@@ -549,7 +549,6 @@ class SubmissionsController < ApplicationController
           formats = Morphosource.attachment_formats
         end
         if params[field].present? && formats.include?(File.extname(params[field].original_filename))
-byebug      
           Morphosource::AttachmentService.create(id, field, params[field], formats)
           params.delete(field)
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?

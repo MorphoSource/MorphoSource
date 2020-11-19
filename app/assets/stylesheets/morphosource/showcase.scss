@@ -538,6 +538,11 @@ html {
 
 .showcase {
 
+  table.dataTable thead > tr > th {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
   .flash-wrapper {
     padding: 0;
     .alert {

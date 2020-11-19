@@ -88,8 +88,20 @@ module Ms1to2
             creating_user: User.find_by_user_key(v[:depositor].first)
           )
           coll.create_collection_groups
-          coll.add_users_to_group(coll.editors_group, v[:editors]) if v[:editors]
-          coll.add_users_to_group(coll.downloaders_group, v[:downloaders]) if v[:downloaders]
+
+          if v[:editors].present?
+            puts('editors')
+            puts(v[:editors])
+            editors = v[:editors].select { |u| User.exists?(u) }
+            coll.add_users_to_group(coll.editors_group, editors) if editors.present?
+          end
+
+          if v[:downloaders].present?
+            puts('downloaders')
+            puts(v[:downloaders])
+            downloaders = v[:downloaders].select { |u| User.exists?(u) }
+            coll.add_users_to_group(coll.downloaders_group, downloaders) if downloaders.present?
+          end
         end
       end
     end

@@ -135,6 +135,11 @@ html {
 }
 
 .showcase.teams, .showcase.media-works, .showcase.browse, .showcase.organizations { 
+  .super-title {
+    font-size: 18px;
+    color: #888;
+    font-style: italic;
+  }
   .title.browse {
     margin-top:30px;
   }

@@ -14,7 +14,32 @@ module Hyrax
 
       def generated_title(env)
         attrs = env.attributes
-        title = preferred_generated_title(attrs['institution_code'], attrs['collection_code'], attrs['catalog_number'], attrs['short_title'])
+
+        if attrs.key?('institution_code')
+          inst = attrs['institution_code']&.first.presence || ''
+        else
+          inst = env.curation_concern.institution_code&.first.presence || ''
+        end
+
+        if attrs.key?('collection_code')
+          coll = attrs['collection_code']&.first.presence || ''
+        else
+          coll = env.curation_concern.collection_code&.first.presence || ''
+        end
+
+        if attrs.key?('catalog_number')
+          cnum = attrs['catalog_number']&.first.presence || ''
+        else
+          cnum = env.curation_concern.catalog_number&.first.presence || ''
+        end
+
+        if attrs.key?('short_title')
+          titl = attrs['short_title']&.first.presence || ''
+        else
+          titl = env.curation_concern.short_title&.first.presence || ''
+        end
+
+        title = preferred_generated_title(inst, coll, cnum, titl)
         return title unless title.empty?
         title = identifier_generated_title(attrs['identifier'])
         return title unless title.empty?
@@ -29,8 +54,8 @@ module Hyrax
 
       def preferred_generated_title(institution_code, collection_code, catalog_number, short_title)
         [
-          [institution_code, collection_code, catalog_number].flatten.join(':').presence,
-          ( short_title.present? ? short_title&.first.titleize : "" ).presence
+          [institution_code, collection_code, catalog_number].join(':').presence,
+          ( short_title.present? ? short_title.titleize : "" ).presence
         ].compact.join(' ')
       end
 

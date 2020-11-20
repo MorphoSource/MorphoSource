@@ -15,12 +15,27 @@ module Hyrax
 
       def generated_title(env)
         attrs = env.attributes
-        inst = attrs['institution_code']&.first.presence || env.curation_concern.institution_code.presence || ''
-        coll = attrs['collection_code']&.first.presence || env.curation_concern.collection_code.presence || ''
-        cnum = attrs['catalog_number']&.first.presence || env.curation_concern.catalog_number.presence || ''
 
+        if attrs.key?('institution_code')
+          inst = attrs['institution_code']&.first.presence || ''
+        else
+          inst = env.curation_concern.institution_code&.first.presence || ''
+        end
+
+        if attrs.key?('collection_code')
+          coll = attrs['collection_code']&.first.presence || ''
+        else
+          coll = env.curation_concern.collection_code&.first.presence || ''
+        end
+
+        if attrs.key?('catalog_number')
+          cnum = attrs['catalog_number']&.first.presence || ''
+        else
+          cnum = env.curation_concern.catalog_number&.first.presence || ''
+        end
+        
         case
-        when inst.presence || coll.presence || cnum.presence
+        when inst.present? || coll.present? || cnum.present?
           collection_catalog_generated_title(inst, coll, cnum)
         when attrs['identifier'].present?
           identifier_generated_title(attrs['identifier'])

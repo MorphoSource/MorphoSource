@@ -54,7 +54,7 @@ module Morphosource
       def solr_docs(page)
         work_ids = self.send(options(page)[:work_ids]).uniq
 
-        ActiveFedora::SolrService.query(ActiveFedora::SolrQueryBuilder.construct_query_for_ids([work_ids]), rows: 999999).map{ |doc| SolrDocument.new(doc) }
+        ActiveFedora::SolrService.query(ActiveFedora::SolrQueryBuilder.construct_query_for_ids([work_ids]), rows: 999999, method: :post).map{ |doc| SolrDocument.new(doc) }
       end
 
       # downloads page

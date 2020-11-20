@@ -13,7 +13,7 @@ module Morphosource
       args = args.merge(q: query) unless args.key?(:q)
       args = args.merge(rows: 999999) unless args.key?(:rows)
       puts(args)
-      @result = connection.get('select', params: args)
+      @result = connection.post('select', params: args) # Switching to post due to URI too long errors
     end
 
     def get_count(query = nil, args = {})
@@ -37,7 +37,7 @@ module Morphosource
 
     # autocomplete for tags
     def search_terms(field, query)
-      connection.get("terms", params: { "terms.fl" => field, "terms.prefix" => query, "omitHeader" => true } )
+      connection.post("terms", params: { "terms.fl" => field, "terms.prefix" => query, "omitHeader" => true } )
     end
 
     def facet_fields(field_names)

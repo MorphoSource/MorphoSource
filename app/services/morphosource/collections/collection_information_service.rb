@@ -1,6 +1,7 @@
 module Morphosource
   module Collections
     class CollectionInformationService
+      include SolrHelper
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
       attr_reader :solr, :collection_id, :collection, :is_org_team, 
@@ -360,65 +361,6 @@ module Morphosource
             flatten.uniq.map(&:upcase)
 
           physical_object_ids.select { |po_id| filtered_org_po_ids.include? po_id }
-        end
-
-        ### Solr utility methods ###
-
-        def solr_service
-          Morphosource::SolrService
-        end
-
-        def solrize(name, type)
-          Solrizer.solr_name(name, type)
-        end
-
-        def desolrize(name)
-          name[0...name.rindex('_')]
-        end
-
-        def assemble_po_id_or_collection_query(ids, collection_ids)
-          return "" if !ids.present? || !collection_ids.present? 
-          "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) OR (#{assemble_or_query(solrize('member_of_collection_ids', :symbol), Array(collection_ids))})"
-        end
-
-        def assemble_po_id_and_not_collection_query(ids, collection_id)
-          return "" if !ids.present? || !collection_id.present? 
-          "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) AND NOT (#{solrize('member_of_collection_ids', :symbol)}:#{collection_id})"
-        end
-
-        def assemble_or_query(field, values)
-          return "" if !field.present? || !values.present?
-          field + ':(' + values.join(' OR ').upcase + ')'
-        end
-
-        def assemble_query
-          query_clauses = [ model_clause ] + param_clauses
-          query_clauses.join(' AND ')
-        end
-
-        def model_clause
-          "#{Solrizer.solr_name('has_model', :symbol)}:Taxonomy"
-        end
-
-        def param_clauses
-          clauses = []
-          params.each do |k,v|
-            term_type = ( k == 'member_ids' ? :symbol : :stored_searchable )
-            clauses << "#{Solrizer.solr_name(k, term_type)}:#{prepare_value(v)}"
-          end
-          clauses
-        end
-
-        def prepare_value(v)
-          if v.to_s.include? " "
-            "\"#{v}\""
-          else
-            v
-          end
-        end
-
-        def search_solr(qry)
-          ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC")
         end
     end
   end

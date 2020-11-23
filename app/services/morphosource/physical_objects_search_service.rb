@@ -1,5 +1,6 @@
 module Morphosource
   class PhysicalObjectsSearchService
+    include SolrHelper
 
     attr_reader :taxonomy_genus, :taxonomy_species, :model, :params
 
@@ -33,47 +34,26 @@ module Morphosource
 
     private
 
-    def assemble_query
-      query_clauses = [ model_clause ] + param_clauses
-      query_clauses.join(' AND ')
-    end
-
-    def filter_on_taxonomy(hits)
-      tax_doc = taxonomy_doc
-      taxonomy_member_ids = tax_doc[Solrizer.solr_name('member_ids', :symbol)]
-      if taxonomy_member_ids.present?
-        hits.select { |hit| taxonomy_member_ids.include?(hit.id) }
-      else
-        []
+      def filter_on_taxonomy(hits)
+        tax_doc = taxonomy_doc
+        taxonomy_member_ids = tax_doc[Solrizer.solr_name('member_ids', :symbol)]
+        if taxonomy_member_ids.present?
+          hits.select { |hit| taxonomy_member_ids.include?(hit.id) }
+        else
+          []
+        end
       end
-    end
 
-    def model_name
-      model.is_a?(Class) ? model.name : model
-    end
-
-    def model_clause
-      "#{Solrizer.solr_name('has_model', :symbol)}:#{model_name}"
-    end
-
-    def param_clauses
-      clauses = []
-      params.each do |k,v|
-        clauses << "#{Solrizer.solr_name(k, :stored_searchable)}:#{prepare_value(v)}"
+      def model_name
+        model.is_a?(Class) ? model.name : model
       end
-      clauses
-    end
 
-    def prepare_value(v)
-      if v.include? " "
-        "\"#{v}\"" 
-      else
-        v
+      def model_clause
+        "#{Solrizer.solr_name('has_model', :symbol)}:#{model_name}"
       end
-    end
 
-    def search_solr(qry)
-      ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC", method: :post)
-    end
+      def search_solr(qry)
+        ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC", method: :post)
+      end
   end
 end

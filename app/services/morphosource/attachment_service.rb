@@ -3,8 +3,8 @@ module Morphosource
     attr_reader :id, :field_name
 
     class << self
-      def create(object, field_name, file)
-        new(object, field_name).create_attachment(file)
+      def create(object, field_name, file, accepted_formats = Morphosource.attachment_formats)
+        new(object, field_name).create_attachment(file, accepted_formats)
       end
 
       def create_copy(object, field_name, source_object)
@@ -25,12 +25,12 @@ module Morphosource
       @field_name = field_name
     end
 
-    def create_attachment(file)
+    def create_attachment(file, accepted_formats = Morphosource.attachment_formats)
       if file.is_a? String # string path case
         file_name = File.basename(file)
         file_path = file
         tempfile = false
-      elsif Morphosource.attachment_formats.include?(File.extname(file.original_filename)) # tempfile case
+      elsif accepted_formats.include?(File.extname(file.original_filename)) # tempfile case
         file_name = file.original_filename
         file_path = file.tempfile.path
         tempfile = true

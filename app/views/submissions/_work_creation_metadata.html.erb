@@ -16,6 +16,13 @@
         label: 'Description attachment file',
         curation_concern: nil
       ) %>
+      <%= render_edit_field_partial(
+        'attachment_for_reference', 
+        f: f, 
+        field: 'ie_reference', 
+        label: 'Photographic reference file',
+        curation_concern: nil
+      ) %>
     <% else %>
       <%= render_edit_field_partial(term, f: f) %>
     <% end %>

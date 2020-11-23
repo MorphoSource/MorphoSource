@@ -31,6 +31,12 @@ input.disabled {
 
 .showcase-edit {
 
+  .attachment-input .hint {
+    font-size: 10px;
+    color: #666;
+    margin: 0 4px;
+  }
+
   /* temporarily use fix font size */
   .showcase-label,
   .showcase-value,
@@ -256,9 +262,12 @@ input.disabled {
     background-color: #efefef;
     padding-top: 20px;
     .active {
-      .fa {
+      .fa, .fas, [class^="ms2-icon-"] {
         color: $font-color;
       }
+    }
+    [class^="ms2-icon-"] {
+      font-size: 15px;
     }
   }
 
@@ -402,6 +411,9 @@ input.disabled {
     p {
       padding: 0 10px;
       box-sizing: content-box !important;      
+    }
+    #files-message {
+      color: red;
     }
     .table {
       margin-bottom: 0;

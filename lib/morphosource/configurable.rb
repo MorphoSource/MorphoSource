@@ -27,11 +27,11 @@ module Morphosource
 
       # Allowed formats for uploads based on selected Media type
       mattr_accessor :all_formats do
-        [".avi", ".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".bin", ".jp2", ".jpeg", ".jpg", ".m4v", ".mov", ".mp4", ".mpg", ".mpeg", ".mtl", ".obj", ".pdf", ".ply", ".png", ".stl", ".tif", ".tiff", ".wmv", ".wrl", ".x3d", ".zip"]
+        [".avi", ".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".bin", ".jp2", ".jpeg", ".jpg", ".m4v", ".mov", ".mp4", ".mpg", ".mpeg", ".mtl", ".obj", ".pdf", ".ply", ".png", ".stl", ".svg", ".tif", ".tiff", ".wmv", ".wrl", ".x3d", ".zip"]
       end
 
       mattr_accessor :image_formats do
-        [".bmp", ".dcm", ".dicom", ".gif", ".jp2", ".jpeg", ".jpg", ".png", ".tif", ".tiff"]
+        [".bmp", ".dcm", ".dicom", ".gif", ".jp2", ".jpeg", ".jpg", ".png", ".svg", ".tif", ".tiff"]
       end
 
       mattr_accessor :video_formats do
@@ -47,12 +47,17 @@ module Morphosource
       end
 
       mattr_accessor :mesh_formats do
-        [".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".jp2", ".jpeg", ".jpg", ".mtl", ".obj", ".obj", ".ply", ".png", ".stl", ".tif", ".tiff", ".wrl", ".x3d", ".zip"]
+        [".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".jp2", ".jpeg", ".jpg", ".mtl", ".obj", ".obj", ".ply", ".png", ".stl", ".svg", ".tif", ".tiff", ".wrl", ".x3d", ".zip"]
       end
 
-      # Allowed formats for attachments
+      # Allowed formats for attachments (default for documents)
       mattr_accessor :attachment_formats do
         [".txt", ".pdf", ".docx"]
+      end
+
+      # Allowed formats for Photographic reference attachments 
+      mattr_accessor :reference_attachment_formats do
+        [".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".pdf"]
       end
 
       # right now same as all formats

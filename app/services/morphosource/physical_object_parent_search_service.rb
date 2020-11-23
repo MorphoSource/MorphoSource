@@ -57,8 +57,17 @@ module Morphosource
         end
       end
 
-      def model_clause
-        "#{Solrizer.solr_name('has_model', :symbol)}:ProcessingEvent"
+      def assemble_query(specific_params)
+        query_clauses = param_clauses(specific_params)
+        query_clauses.join(' AND ')
+      end
+
+      def param_clauses(specific_params)
+        clauses = []
+        specific_params.each do |k,v|
+          clauses << "#{Solrizer.solr_name(k, :symbol)}:#{prepare_value(v)}"
+        end
+        clauses
       end
 
       def search_solr(qry)

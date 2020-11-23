@@ -23,8 +23,21 @@ module Morphosource
         media.select{ |m| m.reviewer == ms_id }
       end
 
+      def assemble_query(specific_params)
+        query_clauses = param_clauses(specific_params)
+        query_clauses.join(' OR ')
+      end
+
       def model_clause
         "#{Solrizer.solr_name('has_model', :symbol)}:Media"
+      end
+
+      def param_clauses(specific_params)
+        clauses = []
+        specific_params.each do |k,v|
+          clauses << "#{Solrizer.solr_name(k, :symbol)}:#{prepare_value(v)}"
+        end
+        clauses
       end
 
       def search_solr(qry)

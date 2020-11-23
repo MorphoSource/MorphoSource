@@ -98,6 +98,8 @@ module Morphosource
         end
 
         def facet_query_for_collections
+          return {} unless collection_ids.present?
+
           facet_fields = [
             solrize('visibility', :stored_sortable)
           ]
@@ -159,6 +161,8 @@ module Morphosource
         end
 
         def organization_docs(organization_title = '')
+          return [] unless collection_ids.present?
+
           params = { 
             fl: ['id', solrize('title', :stored_searchable), solrize('team_id', :stored_searchable)].join(','),
             fq: [
@@ -172,6 +176,8 @@ module Morphosource
         end
 
         def organization_title_count(organization_title)
+          return 0 unless collection_ids.present?
+
           params = { 
             rows: 0,
             fq: [

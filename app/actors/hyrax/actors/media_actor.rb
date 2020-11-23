@@ -23,9 +23,24 @@ module Hyrax
 
       def generated_title(env)
         attrs = env.attributes
-        id = attrs['id'].presence || env.curation_concern.id.presence || ''
-        part = attrs['part'].presence || env.curation_concern.part.presence || ''
-        media_type = attrs['media_type'].presence || env.curation_concern.media_type.presence || ''
+
+        if attrs.key?('id')
+          id = attrs['id'].presence || ''
+        else
+          id = env.curation_concern.id.presence || ''
+        end
+
+        if attrs.key?('part')
+          part = attrs['part'].presence || ''
+        else
+          part = env.curation_concern.part.presence || ''
+        end
+
+        if attrs.key?('media_type')
+          media_type = attrs['media_type'].presence || ''
+        else
+          media_type = env.curation_concern.media_type.presence || ''
+        end
 
         # get the modality from the parent imaging event
         ie_modality = []

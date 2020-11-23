@@ -21,7 +21,7 @@ module Morphosource
       end
 
       def search_solr(qry)
-        ActiveFedora::SolrService.query(qry, omitHeader: true, rows: 999999)
+        ActiveFedora::SolrService.query(qry, omitHeader: true, rows: 999999, method: :post)
       end
   end
 end

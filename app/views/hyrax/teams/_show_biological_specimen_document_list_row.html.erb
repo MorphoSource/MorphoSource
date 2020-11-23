@@ -4,13 +4,6 @@ bso = BiologicalSpecimen.find(id)
 bso_extra = extra(@bso_extras, id)
 %>
 <tr id="document_<%= id %>">
-  <td>
-    <div class="media">
-      <%= link_to [main_app, document], target: :_blank, class: "media-left" do %>
-        <%= render_thumbnail_tag document, { class: "hidden-xs file_listing_thumbnail" }, { suppress_link: true } %>
-      <% end %>
-    </div>
-  </td>
   <td class="break-all"><%= bso&.title&.first %></td>
   <td><%= bso&.taxonomies&.first&.taxonomy_genus&.first %></td>
 

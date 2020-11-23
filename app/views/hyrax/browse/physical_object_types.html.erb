@@ -4,7 +4,7 @@
 
   <% provide :page_header do %>
     <div class="col-xs-12 title browse">
-      <h1><span class="fa fa-frog" aria-hidden="true"></span> 
+      <h1><span class="fa fa-shapes" aria-hidden="true"></span> 
         <%= t("hyrax.browse.title.physical_object_types") %><br/>
         <span class="counts">
         	<%= "#{total_po} Physical Object".pluralize(total_po) %> · 
@@ -17,8 +17,8 @@
     <p><%= t("hyrax.browse.page_description.physical_object_types") %></p>
   </div>
   <div class="col-xs-12 body-wrapper">
-    <h2>
-    	<%= image_tag("bso_preview_small.png", alt: "Biological specimen", class: "po-image") %>
+    <h2><span class="fa fa-frog" aria-hidden="true"></span> 
+    	<%#= image_tag("bso_preview_small.png", alt: "Biological specimen", class: "po-image") %>
 			<%= link_to t("hyrax.browse.title.biological_specimen_objects"), main_app.object_search_path("f[human_readable_type_sim][]" => "Biological Specimen") %><br/>
       <span class="counts">
       	<%= "#{total_bso} Physical Object".pluralize(total_bso) %> · 
@@ -27,8 +27,8 @@
     </h2>
     <p><%= t("hyrax.browse.page_description.biological_specimen_objects") %></p>
 
-    <h2>
-    	<%= image_tag("cho_preview_small.png", alt: "Cultural heritage object", class: "po-image") %>
+    <h2><span class="ms2-icon-bowl icon-bowl" aria-hidden="true"></span>
+    	<%#= image_tag("cho_preview_small.png", alt: "Cultural heritage object", class: "po-image") %>
 			<%= link_to t("hyrax.browse.title.cultural_heritage_objects"), main_app.object_search_path("f[human_readable_type_sim][]" => "Cultural Heritage Object") %><br/>
       <span class="counts">
       	<%= "#{total_cho} Physical Object".pluralize(total_cho) %> · 

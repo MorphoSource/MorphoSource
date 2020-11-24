@@ -3,12 +3,14 @@
 module Hyrax
   class BiologicalSpecimenPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
-    include MediaFinderHelper
 
-    delegate :bibliographic_citation, :catalog_number,  :collection_code, :institution_code, :numeric_time, :original_location, :periodic_time, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, :member_ids, to: :solr_document
+    delegate :bibliographic_citation, :catalog_number,  :collection_code, :institution_code, :numeric_time, :original_location, :periodic_time, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, :member_ids, :public_media_ids, to: :solr_document
 
     delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :gbif_taxonomies, :user_taxonomies, to: :work
 
+    def media_ids 
+      solr_document.public_media_ids.present? ? solr_document.public_media_ids : []
+    end
 
     def date_created_label
       'Object collection date'

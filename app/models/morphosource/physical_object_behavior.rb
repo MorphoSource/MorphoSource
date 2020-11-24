@@ -1,7 +1,7 @@
 module Morphosource::PhysicalObjectBehavior
 
   def organizations
-    member_of.select{ |work| work.class == Organization }
+    @organizations ||= member_of.select{ |work| work.class == Organization }
   end
 
   def organization_titles
@@ -13,11 +13,15 @@ module Morphosource::PhysicalObjectBehavior
   end
 
   def media
-    descendants.select{ |d| d.class == Media }
+    @media ||= descendants.select{ |d| d.class == Media }
   end
 
   def public_media
-    media.select { |m| m.visibility == 'open' }
+    @public_media ||= media.select { |m| m.visibility == 'open' }
+  end
+
+  def public_media_ids
+    public_media.map{ |o| o.id }
   end
 
   def media_types

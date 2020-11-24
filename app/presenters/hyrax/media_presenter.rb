@@ -12,6 +12,7 @@ module Hyrax
       :permits_commercial_use,
       :required_archival_of_published_derivatives,
       :permits_3d_use,
+      :public_media_ids,
       to: :solr_document
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
@@ -517,6 +518,10 @@ module Hyrax
         imaging_event_exist = false
       end # end if imaging_event present?
 
+    end
+
+    def public_related_media_ids
+      solr_document.public_media_ids.present? ? [media.id] + solr_document.public_media_ids : [media.id]
     end
 
     # this method is cloned from list_of_item_ids_to_display (for defaut view),

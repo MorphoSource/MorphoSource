@@ -269,6 +269,10 @@ class SolrDocument
     self[Solrizer.solr_name('canonical_taxonomy', :stored_searchable)]
   end
 
+  def public_media_ids
+    self[Solrizer.solr_name('public_media_ids', :symbol)]
+  end
+
   # CHOs only
   def cho_type
     self[Solrizer.solr_name('cho_type', :stored_searchable)]

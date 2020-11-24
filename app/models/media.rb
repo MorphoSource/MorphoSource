@@ -198,6 +198,12 @@ class Media < Morphosource::Works::Base
     ancestors.find(&:imaging_event?)
   end
 
+  def public_related_media_ids
+    parents = ancestors.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id } 
+    children = descendants.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
+    parents + children
+  end
+
   def organizations
     physical_objects.each_with_object([]) do |obj, orgs|
       obj.organizations.each { |org| orgs << org }

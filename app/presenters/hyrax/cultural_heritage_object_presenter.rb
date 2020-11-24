@@ -3,11 +3,15 @@
 module Hyrax
   class CulturalHeritageObjectPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
-    include MediaFinderHelper
 
     delegate :bibliographic_citation, :catalog_number, :collection_code, :numeric_time, :original_location,
-             :periodic_time, :vouchered, :cho_type, :material, :short_title, :geographic_coordinates, to: :solr_document
+             :periodic_time, :vouchered, :cho_type, :material, :short_title, :geographic_coordinates, 
+             :public_media_ids, to: :solr_document
 
+
+    def media_ids 
+      solr_document.public_media_ids.present? ? solr_document.public_media_ids : []
+    end
 
     def date_created_label
       'Object collection/creation date'

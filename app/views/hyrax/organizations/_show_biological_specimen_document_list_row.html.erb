@@ -4,9 +4,12 @@ bso = BiologicalSpecimen.find(id)
 bso_extra = extra(@bso_extras, id)
 %>
 <tr id="document_<%= id %>">
-  <td class="break-all"><%= bso&.title&.first %></td>
+  <td class="break-all">
+    <%= link_to [main_app, document], target: :_blank do %>
+	  	<%= bso&.title&.first %>
+	  <% end %>
+  </td>
   <td><%= bso&.taxonomies&.first&.taxonomy_genus&.first %></td>
-
   <td><%= bso_extra['media_count'] %></td>  
   <td><%= document.date_uploaded %> </td> 
   <%# todo: might need to format the date later, e.g. using MS helper display_date 

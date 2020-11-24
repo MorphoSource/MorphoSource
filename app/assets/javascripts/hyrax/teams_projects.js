@@ -79,7 +79,6 @@ $(document).ready(function() {
           },
           //order: [[ 1, "asc" ]],
           columnDefs: [
-            { orderable: false, targets: 0 }, // disable sorting
             { responsivePriority: 1, targets: 0 },
             { responsivePriority: 3, targets: 1 },
             { responsivePriority: 4, targets: 2 }
@@ -111,7 +110,6 @@ $(document).ready(function() {
           },
           //order: [[ 1, "asc" ]],
           columnDefs: [
-            { orderable: false, targets: 0 }, // disable sorting
             { responsivePriority: 1, targets: 0 },
             { responsivePriority: 3, targets: 1 },
             { responsivePriority: 4, targets: 2 }

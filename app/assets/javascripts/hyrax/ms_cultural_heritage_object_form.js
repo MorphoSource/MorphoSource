@@ -3,14 +3,16 @@ $( document ).ready(function() {
   if ($('form[id*="edit_cultural_heritage_object"]').length) { // if CHO form page
 
     function updateObjectTitle() {
-      var title = [ $('#cultural_heritage_object_institution_code').val(),
-                          $('#cultural_heritage_object_collection_code').val(),
-                          $('#cultural_heritage_object_catalog_number').val(),
-                          $('#cultural_heritage_object_short_title').val() ]
+      var title = [ 
+        $('#cultural_heritage_object_institution_code').val(),
+        $('#cultural_heritage_object_collection_code').val(),
+        $('#cultural_heritage_object_catalog_number').val(),
+      ];
       title = $.map( title, function(v){ return v === "" ? null : v; }).join(':');
-      if (title == '')
+      title = title + ' ' + $('#cultural_heritage_object_short_title').val();
+      if (title == '' || title == ' ')
         title = $('#cultural_heritage_object_identifier').val();
-      if (title == '')
+      if (title == '' || title == ' ')
         title = "Vouchered object contributed by " + $('[name="current-user"]').data('userKey');
       $('#showcase-title').text(title);
     }
@@ -27,12 +29,6 @@ $( document ).ready(function() {
       }
       $('#embedded_div_new_organization').hide();
       $('#cultural_heritage_object_institution_code').val('');
-      updateObjectTitle();
-    })
-
-    // An organization has been selected.  set the institution code field on the object detail tab, then update title
-    $('#btn-add-organization').click(function() {
-      $('#cultural_heritage_object_institution_code').val( $('#organization-code').text() );
       updateObjectTitle();
     })
 

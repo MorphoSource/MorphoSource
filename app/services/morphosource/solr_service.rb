@@ -9,6 +9,14 @@ module Morphosource
 
     attr_accessor :query, :args, :result
 
+    def self.prepare_value(v)
+      if v.to_s.include? " "
+        "\"#{RSolr.solr_escape(v)}\""
+      else
+        RSolr.solr_escape(v)
+      end
+    end
+
     def get(query = nil, args = {})
       args = args.merge(q: query) unless args.key?(:q)
       args = args.merge(rows: 999999) unless args.key?(:rows)

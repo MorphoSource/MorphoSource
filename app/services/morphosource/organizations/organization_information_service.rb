@@ -1,6 +1,8 @@
 module Morphosource
   module Organizations
     class OrganizationInformationService
+      include SolrHelper
+      
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
       attr_reader :solr, :facet_results, :media_count, :bso_ids, :cho_ids, :n_idigbio, :info
@@ -162,56 +164,6 @@ module Morphosource
           else
             "#{solrize(name.split('_', 2).last, :stored_searchable)}:#{value}"
           end
-        end
-
-
-        ### Solr utility methods ###
-
-        def solr_service
-          Morphosource::SolrService
-        end
-
-        def solrize(name, type)
-          Solrizer.solr_name(name, type)
-        end
-
-        def desolrize(name)
-          name[0...name.rindex('_')]
-        end
-
-        def assemble_or_query(field, values)
-          return "" if !field.present? || !values.present?
-          field + ':(' + values.join(' OR ').upcase + ')'
-        end
-
-        def assemble_query
-          query_clauses = [ model_clause ] + param_clauses
-          query_clauses.join(' AND ')
-        end
-
-        def model_clause
-          "#{Solrizer.solr_name('has_model', :symbol)}:Taxonomy"
-        end
-
-        def param_clauses
-          clauses = []
-          params.each do |k,v|
-            term_type = ( k == 'member_ids' ? :symbol : :stored_searchable )
-            clauses << "#{Solrizer.solr_name(k, term_type)}:#{prepare_value(v)}"
-          end
-          clauses
-        end
-
-        def prepare_value(v)
-          if v.to_s.include? " "
-            "\"#{v}\""
-          else
-            v
-          end
-        end
-
-        def search_solr(qry)
-          ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC")
         end
     end
   end

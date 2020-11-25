@@ -7,7 +7,7 @@ en:
         description:        "Organization works"
         name:               "Organization"
   simple_form:
-    labels:    
+    labels:
       organization:
         institution_name: Parent Institution Name
         title: Organization Name/Title
@@ -15,6 +15,7 @@ en:
         collection_code: Collection Code(s)
         related_url: Related URL
         state_province: State/Province
+        postal_code: Postal Code
         address: Street Address
         description: Description/Notes
     hints:
@@ -24,4 +25,3 @@ en:
         institution_code: The code used in the first part of the organization's Darwin Core triplet for specimens. Probably used by multiple organizations in an institution.
         collection_code: The code used in the second part of the organization's Darwin Core triplet for specimens. Used to differentiate specimens in one collection from specimens in other collections.
         related_url: The website(s) associated with the organization.
-

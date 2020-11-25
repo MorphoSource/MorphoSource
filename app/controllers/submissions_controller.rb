@@ -225,6 +225,7 @@ class SubmissionsController < ApplicationController
         :address => new_organization.address.first,
         :city => new_organization.city.first,
         :state_province => new_organization.state_province.first,
+        :postal_code => new_organization.postal_code.first,
         :country => new_organization.country.first
       }
     else

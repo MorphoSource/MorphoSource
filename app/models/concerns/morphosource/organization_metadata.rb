@@ -25,6 +25,10 @@ module Morphosource
         index.as :stored_searchable
       end
 
+      property :postal_code, predicate: ::RDF::Vocab::DWC.higherGeographyID do |index|
+        index.as :stored_searchable
+      end 
+
       property :country, predicate: ::RDF::Vocab::DWC.country do |index|
         index.as :stored_searchable, :facetable
       end

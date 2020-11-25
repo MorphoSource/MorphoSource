@@ -29,6 +29,7 @@ RSpec.feature 'Test redirects for teams and projects', js: true do
       address: ["address"],
       city: ["city"],
       state_province: ["state_province"],
+      postal_code: ["postal_code"],
       country: ["country"],
       team_id: [team.id]
     )

@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe MediaIndexer do
+
+  it 'uses MediaThumbnailPathService' do
+    expect(described_class.thumbnail_path_service).to be(Morphosource::MediaThumbnailPathService)
+  end
+
   subject(:solr_document) { MediaIndexer.new(media).generate_solr_document }
   let(:media)             { Media.create(title: ['New Media'], fileset_accessibility: ['restricted_download']) }
 

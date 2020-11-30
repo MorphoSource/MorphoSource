@@ -7,6 +7,7 @@ module Hyrax
     include Hyrax::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
+    include Morphosource::CustomThumbnails
     self.curation_concern_type = ::Media
 
     # Use this line if you want to use a custom presenter
@@ -83,15 +84,15 @@ module Hyrax
           file_status = "updated"
         elsif flash[:notice].include? 'deleted'
           file_status = "deleted"
-        end          
+        end
       else
         flash[:notice] = ""
       end
       @presenter.file_status = file_status
-      #added_flash << " ... universal_viewer : " + @presenter.universal_viewer?.to_s 
-      #added_flash << " ... universal_viewable_ready : " + @presenter.universal_viewable_ready?.to_s 
-      #added_flash << " ... is_file_uploaded : " + @presenter.is_file_uploaded?.to_s 
-      flash[:notice] << added_flash    
+      #added_flash << " ... universal_viewer : " + @presenter.universal_viewer?.to_s
+      #added_flash << " ... universal_viewable_ready : " + @presenter.universal_viewable_ready?.to_s
+      #added_flash << " ... is_file_uploaded : " + @presenter.is_file_uploaded?.to_s
+      flash[:notice] << added_flash
     end
 
     # in case we need to reference the old edit page. remove this action later
@@ -129,6 +130,8 @@ module Hyrax
         Morphosource::AttachmentService.delete(curation_concern.id, 'agreement')
         params.delete(:media_attachment_delete)
       end
+
+      update_thumbnail
 
       if file_formats_valid? && actor.update(actor_environment)
         after_update_response
@@ -319,6 +322,17 @@ module Hyrax
           file.save!
         end
         curation_concern.update_index
+      end
+
+      def update_thumbnail
+        # delete custom thumbnail
+        if params[:media][:delete_thumbnail] == "1"
+          delete_thumbnail
+        end
+        # add custom thumbnail
+        if params[:custom_thumbnail].present?
+          create_thumbnail
+        end
       end
   end
 end

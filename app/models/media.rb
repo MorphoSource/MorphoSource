@@ -18,7 +18,7 @@ class Media < Morphosource::Works::Base
 
   validates :title, presence: { message: 'Your work must have a title.' }
 
-  attr_accessor :download_permission, :tags
+  attr_accessor :download_permission, :tags, :delete_thumbnail, :generated_thumbnail
   before_destroy :prevent_doi_deletion
   after_destroy :delete_ark_if_reserved
 
@@ -207,7 +207,7 @@ class Media < Morphosource::Works::Base
   def organization_id
     organizations.map{ |o| o.id }
   end
-  
+
   def organization_titles
     organizations.map{ |o| o.title.first }
   end

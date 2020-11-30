@@ -530,7 +530,7 @@ $( document ).ready(function() {
                   data.organizationId = getData.organization_id;
                   data.noOrganization = false;
                   data.willCreateOrganization = false;
-                  
+
                   // Set organization-related default media permission fields
                   self.form.setDefaultMediaPermissionFields();
 
@@ -546,7 +546,7 @@ $( document ).ready(function() {
                   self.form.setVisibleView(4); // view 4 select organization
                 }
               }
-            );  
+            );
           }
 
           console.log(data);
@@ -999,44 +999,6 @@ $( document ).ready(function() {
             $('#submission_select_device_continue').attr('disabled', 'disabled');
         });
 
-        $('#submission_select_device_no_organization').click(function(event) {
-          event.preventDefault();
-
-          $('select[name="submission[device_id]"]').val('');
-          $('#submission_device_select_display').addClass('hide').removeClass('show');
-          $('#submission_select_device_continue').attr('disabled', 'disabled');
-
-          $.ajax({
-            url: "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization",
-            type: 'GET',
-            dataType: 'json',
-            complete: function (xhr, status) {
-              var results = $.parseJSON(xhr.responseText);
-              console.log(results); 
-              $("#submission_device_select_organization_search").val(results[0]['label']);
-
-              $('form#submission_device_select_form select#submission_device_id option').each(function () {
-                if ($(this).attr('value')) {
-                  $(this).remove();
-                }
-              });
-
-              console.log(results[0]['devices']);
-              for (const device of results[0]['devices']) {
-                console.log(device);
-                $('form#submission_device_select_form select#submission_device_id')
-                  .append($('<option></option>')
-                    .attr('value', device['id'])
-                    .attr('data-modality', device['modality'])
-                    .attr('data-creator', device['creator'])
-                    .attr('data-description', device['description'])
-                    .text(device['title'])
-                  );
-              }    
-            }
-          });
-        });
-
         $('#submission_select_device_continue').click(function(event) {
           event.preventDefault();
           console.log('View 10 select device button');
@@ -1057,7 +1019,7 @@ $( document ).ready(function() {
           console.log(data);
         });
 
-        // Commenting out all events related to creating devices for now! 
+        // Commenting out all events related to creating devices for now!
 
       //   // Create device events
       //   $('#submission_show_create_device').click(function(event){

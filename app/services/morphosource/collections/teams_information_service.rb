@@ -1,6 +1,8 @@
 module Morphosource
   module Collections
-    class TeamsInformationService    
+    class TeamsInformationService  
+      include SolrHelper
+
       attr_reader :solr, :collection_list_type_id, :collection_ids, :info, :facet_results, :organizations, 
         :collection_count_for_manager, :collection_count_for_editor, :collection_count_for_depositor,
         :collection_count_for_viewer, :collection_count_for_downloader, :ids_by_membership
@@ -96,6 +98,8 @@ module Morphosource
         end
 
         def facet_query_for_collections
+          return {} unless collection_ids.present?
+
           facet_fields = [
             solrize('visibility', :stored_sortable)
           ]
@@ -157,6 +161,8 @@ module Morphosource
         end
 
         def organization_docs(organization_title = '')
+          return [] unless collection_ids.present?
+
           params = { 
             fl: ['id', solrize('title', :stored_searchable), solrize('team_id', :stored_searchable)].join(','),
             fq: [
@@ -170,6 +176,8 @@ module Morphosource
         end
 
         def organization_title_count(organization_title)
+          return 0 unless collection_ids.present?
+
           params = { 
             rows: 0,
             fq: [
@@ -234,51 +242,6 @@ module Morphosource
             flatten.uniq.map(&:upcase)
 
           filtered_org_team_ids
-        end
-
-        ### Solr utility methods ###
-
-        def solr_service
-          Morphosource::SolrService
-        end
-
-        def solrize(name, type)
-          Solrizer.solr_name(name, type)
-        end
-
-        def desolrize(name)
-          name[0...name.rindex('_')]
-        end
-
-        def assemble_or_query(field, values)
-          return "" if !field.present? || !values.present?
-          field + ':(' + values.join(' OR ').upcase + ')'
-        end
-
-        def assemble_query
-          query_clauses = [ model_clause ] + param_clauses
-          query_clauses.join(' AND ')
-        end
-
-        def param_clauses
-          clauses = []
-          params.each do |k,v|
-            term_type = ( k == 'member_ids' ? :symbol : :stored_searchable )
-            clauses << "#{Solrizer.solr_name(k, term_type)}:#{prepare_value(v)}"
-          end
-          clauses
-        end
-
-        def prepare_value(v)
-          if v.to_s.include? " "
-            "\"#{v}\""
-          else
-            v
-          end
-        end
-
-        def search_solr(qry)
-          ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC")
         end
     end
   end

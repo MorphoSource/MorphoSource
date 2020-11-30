@@ -21,6 +21,13 @@
       label: 'Description attachment file',
       curation_concern: @imaging_event_form.model
     ) %>
+    <%= render_edit_field_partial(
+      'attachment_for_reference', 
+      f: i, 
+      field: 'ie_reference', 
+      label: 'Photographic reference file',
+      curation_concern: @imaging_event_form.model
+    ) %>
 
     <div class="ie_xray_ct">
     <%= render_edit_field_partial('exposure_time', f: i) %>

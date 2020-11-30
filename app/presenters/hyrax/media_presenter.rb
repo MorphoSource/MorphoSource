@@ -19,7 +19,8 @@ module Hyrax
       :device_and_facility, :device_link, :device, :device_manufacturer, :device_description,
       :device_organization_institution,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software,
-      :imaging_event_description, :imaging_event_description_attachment, :imaging_event_modality,
+      :imaging_event_description, :imaging_event_description_attachment, :imaging_event_reference_attachment, 
+      :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list, :parent_media_members,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
       :this_media_and_parents_id_list, :this_media_and_parents_members,
@@ -28,7 +29,7 @@ module Hyrax
       :raw_or_derived, :is_absentee_parent,
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
-      :file_size, :mime_type, :this_media_type, :file_set_list,
+      :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list,
       # Permissions
       :permits_commercial_use, :permits_3d_use, :required_archival_of_published_derivatives,
       :morphosource_use_agreement_type, :download_reviewer,
@@ -197,6 +198,7 @@ module Hyrax
       @this_media_type = media.media_type.first
       @mime_type = []
       @file_size = 0
+      @accepted_file_count = 0
       @point_count = 0
       @face_count = 0
       @color_format = []
@@ -238,6 +240,7 @@ module Hyrax
         end
         @mime_type << contents_mime_type
         @file_size += file_set.file_size.first.to_i if file_set.file_size.present?
+        @accepted_file_count += file_set.contents_accepted_file_count.first.to_i if file_set.contents_accepted_file_count.present?
         if @this_media_type == "Mesh"
           @point_count += file_set.point_count.first.to_i if file_set.point_count.present?
           @face_count += file_set.face_count.first.to_i  if file_set.face_count.present?
@@ -272,6 +275,11 @@ module Hyrax
       end # file_set_list loop
 
       @mime_type = @mime_type.uniq.join(", ")
+      if @accepted_file_count == 0
+        @accepted_file_count = ""
+      else
+        @accepted_file_count = @accepted_file_count.to_s(:delimited)
+      end
       if @file_size == 0
         @file_size = ""
       else
@@ -498,6 +506,13 @@ module Hyrax
         else
           @imaging_event_description_attachment = []
         end
+        if Morphosource::AttachmentService.get(@imaging_event.id, 'ie_reference').present?
+          @imaging_event_reference_attachment = 
+            [Rails.application.routes.url_helpers.attachment_path(id: @imaging_event.id, field: 'ie_reference')]
+        else
+          @imaging_event_reference_attachment = []
+        end
+
       else
         imaging_event_exist = false
       end # end if imaging_event present?

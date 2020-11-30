@@ -44,7 +44,7 @@ const mediaFormatLabels = {
 function mediaTypeFormats() {
   let mediaType = $('#media_media_type').val();
   let mediaTitle = mediaFormatLabels[mediaType];
-  let acceptedFormatsMessage = "Accepted formats for " + mediaTitle + " files are: ";
+  let acceptedFormatsMessage = "Accepted formats for " + mediaTitle + " file are: ";
   let allFormats = (<%= Morphosource.all_formats %>).join(', ');
   let formats = {};
 

@@ -40,6 +40,14 @@
                   text_if_empty: 'None',
                   html_dl: false) 
                 %>
+                <%= presenter.attribute_to_html(
+                  :imaging_event_reference_attachment, 
+                  label: 'Photographic reference', 
+                  render_as: :showcase_attachment, 
+                  include_empty: true, 
+                  text_if_empty: 'None',
+                  html_dl: false) 
+                %>
 
                 <% if presenter.imaging_event_modality.presence %>
                   <% if presenter.imaging_event_modality == "Photogrammetry" || 

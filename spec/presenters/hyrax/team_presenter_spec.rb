@@ -14,10 +14,10 @@ RSpec.describe Hyrax::TeamPresenter do
   let(:project) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
 
   let(:role) { Role.new(name: 'role') }
-  
-  let!(:org1)  { 
-  	Organization.create(
-  		title: ['title'], 
+
+  let!(:org1)  {
+    Organization.create(
+      title: ['title'],
       institution_name: ["institution_name"],
       institution_code: ["institution_code"],
       collection_code: ["collection_code"],
@@ -25,9 +25,10 @@ RSpec.describe Hyrax::TeamPresenter do
       address: ["address"],
       city: ["city"],
       state_province: ["state_province"],
+      postal_code: ["postal_code"],
       country: ["country"],
-  		team_id: [team.id]
-  	) 
+      team_id: [team.id]
+    )
   }
 
 
@@ -36,13 +37,13 @@ RSpec.describe Hyrax::TeamPresenter do
     team.create_collection_groups
   end
 
-	let(:presenter) { described_class.new(SolrDocument.new(team.to_solr), ability, nil) }
+  let(:presenter) { described_class.new(SolrDocument.new(team.to_solr), ability, nil) }
 
 
-  describe "presenter methods" do 
+  describe "presenter methods" do
     subject { presenter }
     it '#set_organization_data' do
-    	expect(presenter.organization_title.first).to eq('title')
+      expect(presenter.organization_title.first).to eq('title')
       expect(presenter.organization_institution_name.first).to eq("institution_name")
       expect(presenter.organization_institution_code.first).to eq("institution_code")
       expect(presenter.organization_collection_code.first).to eq("collection_code")
@@ -50,29 +51,27 @@ RSpec.describe Hyrax::TeamPresenter do
       expect(presenter.organization_address.first).to eq("address")
       expect(presenter.organization_city.first).to eq("city")
       expect(presenter.organization_state_province.first).to eq("state_province")
+      expect(presenter.organization_postal_code.first).to eq("postal_code")
       expect(presenter.organization_country.first).to eq("country")
-  	end
+    end
 
-  	it '#collection_type' do
-			expect(presenter.collection_type.title).to eq("Team")
-  	end
+    it '#collection_type' do
+      expect(presenter.collection_type.title).to eq("Team")
+    end
 
-  	it '#manager_list' do
-  		expect(presenter.manager_list(presenter.collection.managers)).to eq("<a href=\"/users/abc123\">John Doe</a>")
-  	end
-	
+    it '#manager_list' do
+      expect(presenter.manager_list(presenter.collection.managers)).to eq("<a href=\"/users/abc123\">John Doe</a>")
+    end
+
   end
 
 
 
-  describe "metadata methods" do 
+  describe "metadata methods" do
     subject { presenter }
-	  it { is_expected.to delegate_method(:part).to(:solr_document) }
-	  it { is_expected.to delegate_method(:media_type).to(:solr_document) }
+    it { is_expected.to delegate_method(:part).to(:solr_document) }
+    it { is_expected.to delegate_method(:media_type).to(:solr_document) }
   end
 
 
 end
-
-
-

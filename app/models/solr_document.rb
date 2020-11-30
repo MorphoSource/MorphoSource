@@ -511,6 +511,10 @@ class SolrDocument
     self[Solrizer.solr_name('state_province', :stored_searchable)]
   end
 
+  def postal_code
+    self[Solrizer.solr_name('postal_code', :stored_searchable)]
+  end
+
   def country
     self[Solrizer.solr_name('country', :stored_searchable)]
   end

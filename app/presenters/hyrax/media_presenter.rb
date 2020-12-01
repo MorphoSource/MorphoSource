@@ -12,7 +12,6 @@ module Hyrax
       :permits_commercial_use,
       :required_archival_of_published_derivatives,
       :permits_3d_use,
-      :public_media_ids,
       to: :solr_document
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
@@ -520,8 +519,20 @@ module Hyrax
 
     end
 
-    def public_related_media_ids
-      solr_document.public_media_ids.present? ? [media.id] + solr_document.public_media_ids : [media.id]
+    def related_media_ids 
+      ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
+      return ids
+    end
+
+    def viewable_related_media_ids 
+      return related_media_ids + [media.id] if current_ability.current_user.admin?
+      filtered_ids = []
+      related_media_ids.each do |id|
+        if current_ability.can?(:read, id) 
+          filtered_ids << id
+        end
+      end
+      return filtered_ids + [media.id]
     end
 
     # this method is cloned from list_of_item_ids_to_display (for defaut view),

@@ -9,8 +9,20 @@ module Hyrax
              :public_media_ids, to: :solr_document
 
 
-    def media_ids 
-      solr_document.public_media_ids.present? ? solr_document.public_media_ids : []
+    def related_media_ids 
+      ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
+      return ids
+    end
+
+    def viewable_related_media_ids 
+      return related_media_ids if current_ability.current_user.admin?
+      filtered_ids = []
+      related_media_ids.each do |id|
+        if current_ability.can?(:read, id) 
+          filtered_ids << id
+        end
+      end
+      return filtered_ids
     end
 
     def date_created_label

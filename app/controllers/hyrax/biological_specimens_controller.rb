@@ -17,55 +17,6 @@ module Hyrax
 
     skip_authorize_resource only: :showcase
 
-
-
-#    class_attribute :media_search_builder_class
-#    self.media_search_builder_class = Morphosource::My::RelatedMediaSearchBuilder
-#
-#    def get_response
-#byebug
-#      #response = repository.media_search_builder(media_search_builder.query, self)
-#      response = search_media(self)
-#      
-#      return response
-#    end
-#
-#    def search_media(controller)
-#      # expects a current_user
-##byebug
-#      return [] unless controller.current_user
-##byebug
-#      repo = CatalogController.new.repository
-#      builder = media_search_builder(controller)
-#      response = repo.search(builder)
-#      return response
-# #     docs = response.documents
-#    end
-#
-#    def media_search_builder(controller)
-#
-#      params[:q] = "#{Solrizer.solr_name('has_model', :symbol)}:Media"
-##byebug
-#
-#      media_search_builder_class.new(self).with(params.except(:q, :page))
-#    end
-
-
-
-    def showcase
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-#byebug
-
-#      solr_doc = curation_concern_from_search_results
-#      ids = solr_doc.related_media_ids.present? ? solr_doc.related_media_ids : []
-#      media_response = get_response
-#byebug
-
-
-
-      render 'showcase', presenter: @presenter
-    end
-
     # override the layout from WorksControllerBehavior
     def decide_layout
       layout = case action_name
@@ -83,6 +34,10 @@ module Hyrax
       File.join(theme, layout)
     end
 
+    def showcase
+      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      render 'showcase', presenter: @presenter
+    end
 
     # overriding action methods from works_controller_behavior.rb
     def edit

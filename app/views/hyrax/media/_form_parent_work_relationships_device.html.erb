@@ -5,13 +5,17 @@
 
     <div class="mb-2" style="padding-top: 2px;">
       <div class="mb-1">
-        First, search for and select the organization that manages this device, or select no organization if the device is personally managed.
+        <div class="mb-1"><span class="label label-danger" style="">Step 1 of 2</span></div>
+        <div>
+          Search for and select the organization that manages this device, or select no organization if the device is personally managed.
+        </div>
       </div>
 
       <%= i.input_field :find_parent_work,
                         prompt: :translate,
                         autocomplete: 'off',
                         id: 'find_device_organization',
+                        placeholder: 'Search complete words in organization name',
                         data: {
                           autocomplete: 'work',
                           'autocomplete-url' => find_organization_with_devices_autocomplete_url()
@@ -24,9 +28,12 @@
       </div>
     </div>
 
-    <div>
+    <div id="device-select-section" class="hide">
       <div class="mb-1">
-        Second, select from devices associated with the organization.
+        <div class="mb-1"><span class="label label-danger" style="">Step 2 of 2</span></div>
+        <div>
+          Select from devices associated with the organization.
+        </div>
       </div>
 
       <select class="form-control select" name="select-device" id="imaging_event_select_device_id" style="width: 100%;">

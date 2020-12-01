@@ -5,13 +5,14 @@
     <%= i.input_field :find_parent_work,
                       prompt: :translate,
                       autocomplete: 'off',
+                      placeholder: 'Search complete terms in object code(s) or title',
                       data: {
                         autocomplete: 'work',
                         'autocomplete-url' => find_biological_specimen_autocomplete_url()
                       } %>
   </div>
 
-  <div class="text-center button-wrapper">
+  <div class="text-center button-wrapper mt-1">
     <a class="btn btn-md btn-primary" id="btn-add-biological-specimen" data-behavior="add-relationship">Select physical object</a>
   </div>
 </div>

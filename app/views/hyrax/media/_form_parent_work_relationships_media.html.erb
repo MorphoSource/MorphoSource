@@ -5,6 +5,7 @@
     <%= p.input_field :find_parent_work,
                       prompt: :translate,
                       autocomplete: 'off',
+                      placeholder: 'Search media ID or complete words in title',
                       data: {
                         autocomplete: 'work',
                           'autocomplete-url' => find_parent_media_to_add_autocomplete_url(@curation_concern.id),
@@ -12,7 +13,7 @@
                       } %>
   </div>
 
-  <div class="text-center button-wrapper">
+  <div class="text-center button-wrapper mt-1">
     <!-- this button will bring up the modal to prompt the user before adding -->
     <a class="btn btn-md btn-primary has-processing-event-<%= has_processing_event %>" id="btn-select-media">Select media</a>
     <!-- a hidden button to actually add the media -->

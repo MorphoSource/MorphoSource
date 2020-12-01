@@ -450,6 +450,8 @@ $( document ).ready(function() {
             );
         }
       }
+
+      $('#device-select-section').removeClass('hide').addClass('show');
     });
 
     // select2-associated no organization button
@@ -473,6 +475,11 @@ $( document ).ready(function() {
           console.log(results[0]['devices']);
           for (const device of results[0]['devices']) {
             console.log(device);
+
+            if (device['title'] && device['title'][0].toLowerCase() == 'unknown ct scanner') {
+              continue;
+            }
+
             $('#imaging_event_select_device_id')
               .append($('<option></option>')
                 .attr('value', device['id'])
@@ -481,7 +488,9 @@ $( document ).ready(function() {
                 .attr('data-description', device['description'])
                 .text(device['title'])
               );
-          }    
+          }
+
+          $('#device-select-section').removeClass('hide').addClass('show');   
         }
       });
     });

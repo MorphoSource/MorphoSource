@@ -471,7 +471,7 @@ module Hyrax
           @other_details << @imaging_event.light_source.first + " light" if @imaging_event.light_source.present?
           @other_details << @imaging_event.background_removal.first if @imaging_event.background_removal.present?
           @other_details = @other_details.join(' / ')
-        elsif @imaging_event_modality.upcase.include? "XRAY"
+        elsif @imaging_event_modality.upcase.include? "X-RAY COMPUTED TOMOGRAPHY"
           @exposure_time = @imaging_event.exposure_time.first
           @flux_normalization = @imaging_event.flux_normalization.first
           @pixel_spacing_calibration = @imaging_event.pixel_spacing_calibration.first

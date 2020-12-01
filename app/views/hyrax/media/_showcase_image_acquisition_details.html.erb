@@ -53,7 +53,7 @@
                   <% if presenter.imaging_event_modality == "Photogrammetry" || 
                        presenter.imaging_event_modality == "Photography" %>
                     <%= render "showcase_modality_photogrammetry_attributes", presenter: @presenter %>
-                  <% elsif presenter.imaging_event_modality.upcase.include? "XRAY" %>
+                  <% elsif presenter.imaging_event_modality.upcase.include? "X-RAY COMPUTED TOMOGRAPHY" %>
                     <%= render "showcase_modality_xray_attributes", presenter: @presenter %>
                   <% end %>
                 <% end %>

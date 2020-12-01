@@ -2,23 +2,45 @@
   <h2>SELECT DEVICE</h2>
 
   <div class="form-inline">
-    <%= i.input_field :find_parent_work,
-                      prompt: :translate,
-                      autocomplete: 'off',
-                      data: {
-                        autocomplete: 'work',
-                        'autocomplete-url' => find_organization_with_devices_autocomplete_url()
-                      } %>
-    <%= i.input :select_device_id, 
-      collection: [], 
-      prompt: 'Select device', 
-      label: 'Then select from devices associated with the organization.'
-    %>
-  </div>
 
-  <div class="text-center button-wrapper">
-    <a class="btn btn-md btn-primary" id="btn-add-device" data-behavior="add-relationship">Select device</a>
-    <a class="btn btn-md btn-primary" id="btn_new_device">Create new device</a>
+    <div class="mb-2" style="padding-top: 2px;">
+      <div class="mb-1">
+        First, search for and select the organization that manages this device, or select no organization if the device is personally managed.
+      </div>
+
+      <%= i.input_field :find_parent_work,
+                        prompt: :translate,
+                        autocomplete: 'off',
+                        id: 'find_device_organization',
+                        data: {
+                          autocomplete: 'work',
+                          'autocomplete-url' => find_organization_with_devices_autocomplete_url()
+                        }
+      %>
+
+      <div class="text-center button-wrapper mt-1">
+        <a class="btn btn-md btn-primary" id="btn-select-device-organization">Select organization</a>
+        <a class="btn btn-md btn-primary" id="btn-no-device-organization">No organization</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="mb-1">
+        Second, select from devices associated with the organization.
+      </div>
+
+      <select class="form-control select" name="select-device" id="imaging_event_select_device_id" style="width: 100%;">
+        <option value>Select device</option>
+      </select>
+
+      <div class="text-center button-wrapper mt-1">
+        <a class="btn btn-md btn-primary" id="btn-select-device">Select device</a>
+      </div>
+    </div>
   </div>
+</div>
+
+<div class="block mt-2">
+  If you can't find the correct device record using the search tools above, contact the <a href="mailto:morphosource@duke.org">MorphoSource administrators</a> to have a new device record created.
 </div>
 

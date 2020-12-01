@@ -15,8 +15,8 @@ module Morphosource
         # media tags
         solr_doc['public_media_keyword_tesim'] = object.public_media_keyword
         solr_doc['public_media_keyword_ssim'] = object.public_media_keyword
-        # public media ids
-        solr_doc['public_media_ids_ssim'] = object.public_media_ids
+        # related media ids
+        solr_doc['related_media_ids_ssim'] = object.related_media_ids
       end
     end
   end

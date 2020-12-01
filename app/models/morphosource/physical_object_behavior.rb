@@ -20,6 +20,10 @@ module Morphosource::PhysicalObjectBehavior
     @public_media ||= media.select { |m| m.visibility == 'open' }
   end
 
+  def related_media_ids
+    media.map{ |o| o.id }
+  end
+
   def public_media_ids
     public_media.map{ |o| o.id }
   end

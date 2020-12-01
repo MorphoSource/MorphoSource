@@ -4,12 +4,24 @@ module Hyrax
   class BiologicalSpecimenPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :bibliographic_citation, :catalog_number,  :collection_code, :institution_code, :numeric_time, :original_location, :periodic_time, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, :member_ids, :public_media_ids, to: :solr_document
+    delegate :bibliographic_citation, :catalog_number,  :collection_code, :institution_code, :numeric_time, :original_location, :periodic_time, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, :member_ids, to: :solr_document
 
     delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :gbif_taxonomies, :user_taxonomies, to: :work
 
-    def media_ids 
-      solr_document.public_media_ids.present? ? solr_document.public_media_ids : []
+    def related_media_ids 
+      ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
+      return ids
+    end
+
+    def viewable_related_media_ids 
+      return related_media_ids if current_ability.current_user.admin?
+      filtered_ids = []
+      related_media_ids.each do |id|
+        if current_ability.can?(:read, id) 
+          filtered_ids << id
+        end
+      end
+      return filtered_ids
     end
 
     def date_created_label

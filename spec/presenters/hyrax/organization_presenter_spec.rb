@@ -9,6 +9,7 @@ RSpec.describe Hyrax::OrganizationPresenter do
   it { is_expected.to delegate_method(:address).to(:solr_document) }
   it { is_expected.to delegate_method(:city).to(:solr_document) }
   it { is_expected.to delegate_method(:state_province).to(:solr_document) }
+  it { is_expected.to delegate_method(:postal_code).to(:solr_document) }
   it { is_expected.to delegate_method(:country).to(:solr_document) }
 
   describe 'linked_team' do

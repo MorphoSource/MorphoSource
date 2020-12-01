@@ -12,9 +12,9 @@ module Hyrax
     class_attribute :media_permissions_fields
 
     # Remove all default Hyrax metadata
-    self.terms -= [:title, :creator, :contributor, :description, :keyword, 
-      :license, :rights_statement, :publisher, :date_created, :subject, 
-      :language, :identifier, :based_near, :related_url, :source, 
+    self.terms -= [:title, :creator, :contributor, :description, :keyword,
+      :license, :rights_statement, :publisher, :date_created, :subject,
+      :language, :identifier, :based_near, :related_url, :source,
     ]
 
     # Customizing field terms
@@ -29,6 +29,7 @@ module Hyrax
       :address,
       :city,
       :state_province,
+      :postal_code,
       :country,
       :contact_person,
       :description,
@@ -49,7 +50,7 @@ module Hyrax
 
     self.required_fields = [:organization_type, :institution_name, :title, :institution_code]
 
-    self.single_valued_fields = [:organization_type, :title, :description, :address, :city, :state_province, :country, :institution_name, :cite_as, :download_permission, :download_reviewer, :agreement_uri, :rights_statement, :permits_commercial_use, :permits_3d_use, :cite_as, :morphosource_use_agreement_type, :preview_mode]
+    self.single_valued_fields = [:organization_type, :title, :description, :address, :city, :state_province, :country, :institution_name, :cite_as, :download_permission, :download_reviewer, :agreement_uri, :rights_statement, :permits_commercial_use, :permits_3d_use, :postal_code, :cite_as, :morphosource_use_agreement_type, :preview_mode]
 
     self.media_permissions_fields = [:download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode]
 

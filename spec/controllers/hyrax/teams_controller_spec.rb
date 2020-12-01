@@ -16,10 +16,10 @@ RSpec.describe Hyrax::TeamsController do
   let(:project) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id, visibility: public) }
 
   let(:role) { Role.new(name: 'role') }
-  
-  let!(:org1)  { 
+
+  let!(:org1)  {
     Organization.create(
-      title: ['title'], 
+      title: ['title'],
       institution_name: ["institution_name"],
       institution_code: ["institution_code"],
       collection_code: ["collection_code"],
@@ -27,9 +27,10 @@ RSpec.describe Hyrax::TeamsController do
       address: ["address"],
       city: ["city"],
       state_province: ["state_province"],
+      postal_code: ["postal_code"],
       country: ["country"],
       team_id: [team.id]
-    ) 
+    )
   }
 
 

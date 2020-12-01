@@ -8,6 +8,7 @@ class SubmissionsController < ApplicationController
   include MorphosourceHelper
   include Morphosource::PermissionsHelper
   include Morphosource::LinkedTeams::LinkedTeamsManagement
+  include Morphosource::CustomThumbnails
 
   load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax,
     :save_data, :organization_for_recordset, :organization_default_media_fields,
@@ -225,6 +226,7 @@ class SubmissionsController < ApplicationController
         :address => new_organization.address.first,
         :city => new_organization.city.first,
         :state_province => new_organization.state_province.first,
+        :postal_code => new_organization.postal_code.first,
         :country => new_organization.country.first
       }
     else
@@ -382,6 +384,8 @@ class SubmissionsController < ApplicationController
       new_work_id = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
       create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
+      # Morphosource::CustomThumbnails
+      create_thumbnail if work == 'media'
     end
   end
 
@@ -396,7 +400,6 @@ class SubmissionsController < ApplicationController
     if work == 'media'
       addl_params = { uploaded_files: params[:uploaded_files] }
       addl_params[:collection_id] = params[:collection_id] if params[:collection_id]
-
       finalize_model_params(work, model_params, addl_params)
     else
       finalize_model_params(work, model_params)

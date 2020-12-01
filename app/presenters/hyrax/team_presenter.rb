@@ -3,7 +3,7 @@ module Hyrax
     #include MorphosourceHelper
     include Morphosource::CollectionHelper
 
-    attr_reader :filter_projects, :subcollection_count, :search_form_url, :collection, :collection_managers, :collection_type_title, :specimens, 
+    attr_reader :filter_projects, :subcollection_count, :search_form_url, :collection, :collection_managers, :collection_type_title, :specimens,
       :organization,
       :organization_organization_type,
       :organization_title,
@@ -16,6 +16,7 @@ module Hyrax
       :organization_address,
       :organization_city,
       :organization_state_province,
+      :organization_postal_code,
       :organization_country,
       :organization_media_count,
       :organization_bso_count,
@@ -25,10 +26,10 @@ module Hyrax
 
     def initialize(solr_document, current_ability, request = nil)
       super
-      @search_form_url = '' 
+      @search_form_url = ''
       @collection = Collection.find(id)
       @collection_managers = manager_list(@collection.managers)
-      set_organization_data 
+      set_organization_data
     end
 
     def membership(current_user)
@@ -99,6 +100,7 @@ module Hyrax
         @organization_address = organization.address
         @organization_city = organization.city
         @organization_state_province = organization.state_province
+        @organization_postal_code = organization.postal_code
         @organization_country = organization.country
       end
     end
@@ -132,10 +134,10 @@ module Hyrax
     delegate :title, :description, :creator, :contributor, :subject, :publisher, :keyword, :language, :embargo_release_date,
              :lease_expiration_date, :license, :date_created, :resource_type, :based_near, :related_url, :identifier, :thumbnail_path,
              :title_or_label, :collection_type_gid, :create_date, :modified_date, :visibility, :edit_groups, :edit_people,
-             :part, :media_type, 
+             :part, :media_type,
              to: :solr_document
 
 
-  
+
   end
 end

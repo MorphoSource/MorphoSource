@@ -9,7 +9,7 @@
               <%= @presenter.attribute_to_html(:creator, render_as: :showcase_default, include_empty: false, html_dl: false) %>
               <%= @presenter.attribute_to_html(:contributor, render_as: :showcase_default, include_empty: false, html_dl: false) %>
               <%= @presenter.attribute_to_html(:based_near, label: 'Location', render_as: :showcase_default, include_empty: false, html_dl: false) %>
-            
+
               <h2>RELATED LINKS</h2>
               <%= @presenter.attribute_to_html(:related_url, label: 'Related links', render_as: :showcase_external_link, include_empty: false, html_dl: false) %>
 
@@ -38,18 +38,19 @@
                 <div class="col-xs-6 showcase-value ">(Not yet implemented)</div>
               </div>
 
-              <% if @presenter.collection_type.machine_id == 'team' %>  
+              <% if @presenter.collection_type.machine_id == 'team' %>
                 <h2>ORGANIZATION</h2>
                 <%= @presenter.attribute_to_html(:organization_organization_type, label: 'Organization Type', render_as: :showcase_default, include_empty: false, html_dl: false) %>
                 <%= @presenter.attribute_to_html(:organization_institution_name, label: 'Institution', render_as: :showcase_default, include_empty: false, html_dl: false) %>
                 <%= @presenter.attribute_to_html(:organization_title, label: 'Organization Name', render_as: :showcase_default, include_empty: true, html_dl: false) %>
-                <%= @presenter.attribute_to_html(:organization_institution_code, label: 'Institution code', render_as: :showcase_default, include_empty: false, html_dl: false) %>
-                <%= @presenter.attribute_to_html(:organization_collection_code, label: 'Collection code', render_as: :showcase_default, include_empty: false, html_dl: false) %>
+                <%= @presenter.attribute_to_html(:organization_institution_code, label: 'Institution Code', render_as: :showcase_default, include_empty: false, html_dl: false) %>
+                <%= @presenter.attribute_to_html(:organization_collection_code, label: 'Collection Code', render_as: :showcase_default, include_empty: false, html_dl: false) %>
                 <%= @presenter.attribute_to_html(:organization_description, label: 'Description', render_as: :showcase_default, include_empty: false, html_dl: false) %>
                 <%= @presenter.attribute_to_html(:organization_related_url, label: 'Related URL', render_as: :showcase_default, include_empty: false, html_dl: false) %>
                 <%= @presenter.attribute_to_html(:organization_address, label: 'Address', render_as: :showcase_default, include_empty: false, html_dl: false) %>
                 <%= @presenter.attribute_to_html(:organization_city, label: 'City', render_as: :showcase_default, include_empty: false, html_dl: false) %>
                 <%= @presenter.attribute_to_html(:organization_state_province, label: 'State/Province', render_as: :showcase_default, include_empty: false, html_dl: false) %>
+                <%= @presenter.attribute_to_html(:organization_postal_code, label: 'Postal Code', render_as: :showcase_default, include_empty: false, html_dl: false) %>
                 <%= @presenter.attribute_to_html(:organization_country, label: 'Country', render_as: :showcase_default, include_empty: false, html_dl: false) %>
                 <%= @presenter.attribute_to_html(:organization_contact_person, label: 'Contact Person', render_as: :showcase_default, include_empty: false, html_dl: false) %>
               <% elsif @presenter.collection_type.machine_id == 'project' %>
@@ -58,6 +59,6 @@
                   <div class="col-xs-6 showcase-label">(Not yet implemented)</div>
                   <div class="col-xs-6 showcase-value "></div>
                 </div>
-              <% end %>  
+              <% end %>
             </div>
           </div>

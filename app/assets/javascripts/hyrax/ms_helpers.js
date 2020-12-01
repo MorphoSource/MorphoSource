@@ -1,4 +1,4 @@
-// shared helper functions 
+// shared helper functions
 
 // dedupe and return a unique array of strings
 Array.prototype.uniq = function(){
@@ -28,7 +28,8 @@ function disablePage() {
         left: 0,
         width: '100%',
         height: $(window).height() + 'px'
-    }).hide().appendTo('body'); 
+    }).hide().appendTo('body');
+
   }
   $('#overlay-whole-page').show();
 }
@@ -73,8 +74,9 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
   //var this_path = "/submissions/" + action + '_' + work_name;
   var detail_div = '#' + work_name + '_details';
 
-  $(document).on("click", this_btn, function() {    
-    // the new work form button has been clicked  
+
+  $(document).on("click", this_btn, function() {
+    // the new work form button has been clicked
     $(this_div).show();
   });
 
@@ -94,7 +96,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
       $(relationship_input).val(data.work.id);
       if (work_name == 'organization') {
         var new_data = {
-          id: data.work.id, 
+          id: data.work.id,
           text: data.work.title,
           organization_type: data.work.organization_type,
           institution_name: data.work.institution_name,
@@ -103,15 +105,16 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
           recordset_id: data.work.recordset_id,
               description: data.work.description,
               related_url: data.work.related_url,
-              address: data.work.address, 
-              city: data.work.city, 
+              address: data.work.address,
+              city: data.work.city,
               state_province: data.work.state_province,
+              postal_code: data.work.postal_code,
               country: data.work.country,
               contact_person: data.work.contact_person
         };
       } else if (work_name == 'device') {
         var new_data = {
-          id: data.work.id, 
+          id: data.work.id,
           text: data.work.title,
           creator: data.work.creator,
           modality: data.work.modality,
@@ -120,7 +123,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
         };
       } else if (work_name == 'taxonomy') {
         var new_data = {
-          id: data.work.id, 
+          id: data.work.id,
           text: data.work.title,
           taxonomy_domain: data.work.taxonomy_domain,
           taxonomy_kingdom: data.work.taxonomy_kingdom,
@@ -144,7 +147,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
         }
       } else if (work_name == 'biological_specimen') {
         var new_data = {
-          id: data.work.id, 
+          id: data.work.id,
           text: data.work.title,
           bibliographic_citation: data.bibliographic_citation,
           catalog_number: data.catalog_number,
@@ -165,7 +168,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
         }
       } else if (work_name == 'cultural_heritage_object') {
         var new_data = {
-          id: data.work.id, 
+          id: data.work.id,
           text: data.work.title,
           bibliographic_citation: data.bibliographic_citation,
           catalog_number: data.catalog_number,
@@ -183,7 +186,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
         }
       } else {
         var new_data = {
-          id: data.work.id, 
+          id: data.work.id,
           text: data.work.title
         };
       }
@@ -192,7 +195,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
         console.log('populating new_data into new-work-created ', new_data)
         $(relationship_element).data('new-work-created', new_data);
         var relationship_add_btn = $(this_div).data("add-button");
-        $(relationship_add_btn).trigger("click");       
+        $(relationship_add_btn).trigger("click");
       }
 
       // perform any on-the-fly form update after new work has been created
@@ -202,7 +205,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
       $('.btn').removeClass('disabled');
       $(this_div).find('form')[0].reset();
     });
-    
+
     return false;
   }); // end submit
 
@@ -225,10 +228,10 @@ function closeLinkedContent(thisDiv) {
 }
 
 function setupTooltip() {
-  $('.tooltip-icon').tooltip({ 
+  $('.tooltip-icon').tooltip({
     title: function(){
-      return $(this).find('.hint').text() 
-    } 
+      return $(this).find('.hint').text()
+    }
   })
 }
 
@@ -238,7 +241,7 @@ function removeLastRepeatable() {
     // do not remove if there is only one field
     if ($(this).find('.listing .input-group').length > 1) {
       var lastli = $(this).find('.listing .input-group:last-child');
-      /* remove only:  
+      /* remove only:
         either input or select field exists
         if input field exists, input must be empty
         if select field exists, nothing is selected
@@ -253,12 +256,12 @@ function removeLastRepeatable() {
         isRemovable = false;
       }
       if ( (lastInput.length || lastSelect.length) && (isRemovable) ) {
-        lastli.find('.remove').trigger('click');        
+        lastli.find('.remove').trigger('click');
       }
 
     }
   })
-  window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle  
+  window.scrollTo(0, 0); // scroll back to top of the page since the trigger clicks cause the page to scroll to the middle
 }
 
 function modalityAbbrev(m) {
@@ -333,5 +336,4 @@ function modalityTerm(m) {
     default:
       return m.replace(/([A-Z])/g, ' $1').trim();
   }
-}  
-  
+}

@@ -1,0 +1,20 @@
+<!-- Media edit file upload tab -->
+<!-- hyrax/media/custom_thumbnail -->
+<div style="margin-bottom: 20px; display:flex;">
+  <label class="control-label" for="custom_thumbnail" style="margin-right: 20px;">Upload New:
+    <i class="material-icons tooltip-icon" data-original-title="" title="">
+    <p class="hint hide"><%= t('morphosource.media.custom_thumbnail.hint') %></p>
+    </i>
+    <span class="label label-info"></span>
+  </label>
+
+  <%= f.file_field_tag :custom_thumbnail %>
+</div>
+<% if has_custom_thumbnail?(@presenter) %>
+  <div>
+    <%= f.input :delete_thumbnail, as: :boolean, label_html: { style: 'font-weight:bold;' }, label: 'Use System-Generated Thumbnail' %>
+    <div class="thumbnail" style="width:150px;">
+      <%= generated_thumbnail(@presenter) %>
+    </div>
+  </div>
+<% end %>

@@ -22,8 +22,9 @@ module Qa::Authorities
         address = doc.address
         city = doc.city
         state_province = doc.state_province
+        postal_code = doc.postal_code
         country = doc.country
-        { id: id, label: title, value: id, organization_type: organization_type, institution_code: institution_code, institution_name: institution_name, collection_code: collection_code, recordset_id: recordset_id, description: description, related_url: related_url, address: address, city: city, state_province: state_province, country: country }
+        { id: id, label: title, value: id, organization_type: organization_type, institution_code: institution_code, institution_name: institution_name, collection_code: collection_code, recordset_id: recordset_id, description: description, related_url: related_url, address: address, city: city, state_province: state_province, postal_code: postal_code, country: country }
       end
     end
 

@@ -13,6 +13,7 @@ RSpec.describe ::SolrDocument, type: :model do
         address: ['Central Park West'],
         city: ['New York City'],
         state_province: ['New York'],
+        postal_code: ["12345"],
         country: ['United States']
       })
     end
@@ -33,6 +34,10 @@ RSpec.describe ::SolrDocument, type: :model do
 
     it "return state/province" do
       expect(subject.state_province.first).to eq('New York')
+    end
+
+    it "returns postal_code" do
+      expect(subject.postal_code.first).to eq('12345')
     end
 
     it "return country" do

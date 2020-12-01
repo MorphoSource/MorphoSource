@@ -2,7 +2,7 @@ module Morphosource
   # Adds methods to add work to parent work
   module FormMethods
     include MorphosourceHelper
-    
+
     delegate :work_parents_attributes=, :fileset_visibility, to: :model
 
     def self.included(base)
@@ -41,9 +41,9 @@ module Morphosource
       if @controller.params[:parent_id]
         parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
       end
-      # filter by work type      
+      # filter by work type
       if work_type.present?
-        parent_works = parent_works.select{ |item| item.class.to_s == work_type } 
+        parent_works = parent_works.select{ |item| item.class.to_s == work_type }
       end
       parent_works.map do |parent|
         {
@@ -60,9 +60,9 @@ module Morphosource
       if @controller.params[:parent_id]
         parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
       end
-      # filter by work type      
+      # filter by work type
       if work_type.present?
-        parent_works = parent_works.select{ |item| item.class.to_s == work_type } 
+        parent_works = parent_works.select{ |item| item.class.to_s == work_type }
       end
       parent_works.map do |parent|
         {
@@ -94,9 +94,9 @@ module Morphosource
       if @controller.params[:parent_id]
         parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
       end
-      # filter by work type      
+      # filter by work type
       if work_type.present?
-        parent_works = parent_works.select{ |item| item.class.to_s == work_type } 
+        parent_works = parent_works.select{ |item| item.class.to_s == work_type }
       end
       parent_works.map do |parent|
         {
@@ -112,6 +112,7 @@ module Morphosource
           address: parent.address.first.to_s,
           city: parent.city.first.to_s,
           state_province: parent.state_province.first.to_s,
+          postal_code: parent.postal_code.first.to_s,
           country: parent.country.first.to_s,
           contact_person: parent.contact_person.first.to_s,
           path: @controller.url_for(parent)
@@ -125,9 +126,9 @@ module Morphosource
       if @controller.params[:parent_id]
         parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
       end
-      # filter by work type      
+      # filter by work type
       if work_type.present?
-        parent_works = parent_works.select{ |item| item.class.to_s == work_type } 
+        parent_works = parent_works.select{ |item| item.class.to_s == work_type }
       end
       parent_works.map do |parent|
         {
@@ -160,9 +161,9 @@ module Morphosource
       if @controller.params[:parent_id]
         parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
       end
-      # filter by work type      
+      # filter by work type
       if work_type.present?
-        parent_works = parent_works.select{ |item| item.class.to_s == work_type } 
+        parent_works = parent_works.select{ |item| item.class.to_s == work_type }
       end
       parent_works.map do |parent|
         {
@@ -191,9 +192,9 @@ module Morphosource
       if @controller.params[:parent_id]
         parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
       end
-      # filter by work type      
+      # filter by work type
       if work_type.present?
-        parent_works = parent_works.select{ |item| item.class.to_s == work_type } 
+        parent_works = parent_works.select{ |item| item.class.to_s == work_type }
       end
       parent_works.map do |parent|
         {

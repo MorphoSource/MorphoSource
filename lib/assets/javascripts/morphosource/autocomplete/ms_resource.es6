@@ -18,7 +18,7 @@ export default class MorphosourceResource extends Resource {
     // TODO: need a better way to pass the work type or attribute list to here
     if (this.url.indexOf('organizations') != -1) {
       results = data.map((obj) => {
-                               return { id: obj.id, text: obj.label[0], organization_type: obj.organization_type, institution_code: obj.institution_code, institution_name: obj.institution_name, collection_code: obj.collection_code, recordset_id: obj.recordset_id, description: obj.description, related_url: obj.related_url, address: obj.address, city: obj.city, state_province: obj.state_province, country: obj.country, contact_person: obj.contact_person, devices: obj.devices };
+                               return { id: obj.id, text: obj.label[0], organization_type: obj.organization_type, institution_code: obj.institution_code, institution_name: obj.institution_name, collection_code: obj.collection_code, recordset_id: obj.recordset_id, description: obj.description, related_url: obj.related_url, address: obj.address, city: obj.city, state_province: obj.state_province, postal_code: obj.postal_code, country: obj.country, contact_person: obj.contact_person, devices: obj.devices };
                             })
     } else if (this.url.indexOf('devices') != -1) {
       results = data.map((obj) => {
@@ -26,9 +26,9 @@ export default class MorphosourceResource extends Resource {
                             })
     } else if (this.url.indexOf('taxonom') != -1) {
       results = data.map((obj) => {
-                              return { 
-                                id: obj.id, 
-                                text: obj.label[0], 
+                              return {
+                                id: obj.id,
+                                text: obj.label[0],
                                 taxonomy_domain: obj.taxonomy_domain,
                                 taxonomy_kingdom: obj.taxonomy_kingdom,
                                 taxonomy_phylum: obj.taxonomy_phylum,
@@ -54,9 +54,9 @@ export default class MorphosourceResource extends Resource {
                             })
     } else if (this.url.indexOf('biological_specimens') != -1) {
       results = data.map((obj) => {
-                              return { 
-                                id: obj.id, 
-                                text: obj.label[0], 
+                              return {
+                                id: obj.id,
+                                text: obj.label[0],
                                 bibliographic_citation: obj.bibliographic_citation,
                                 catalog_number: obj.catalog_number,
                                 collection_code: obj.collection_code,
@@ -78,9 +78,9 @@ export default class MorphosourceResource extends Resource {
                             })
     } else if (this.url.indexOf('cultural_heritage_objects') != -1) {
       results = data.map((obj) => {
-                              return { 
-                                id: obj.id, 
-                                text: obj.label[0], 
+                              return {
+                                id: obj.id,
+                                text: obj.label[0],
                                 bibliographic_citation: obj.bibliographic_citation,
                                 catalog_number: obj.catalog_number,
                                 collection_code: obj.collection_code,
@@ -99,7 +99,7 @@ export default class MorphosourceResource extends Resource {
     } else {
       results = data.map((obj) => {
                                return { id: obj.id, text: obj.label[0] };
-                            })      
+                            })
     }
     return { results: results };
   }

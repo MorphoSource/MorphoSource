@@ -1,5 +1,4 @@
 $( document ).ready(function() {
-
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) { // if media form page (add/edit)
 
@@ -16,8 +15,8 @@ $( document ).ready(function() {
     else
       HasEditProcessingEventForm = false;
 
-    setupEmbeddedWorkForm('device', 'new', false, updateMediaTitle);
-    setupEmbeddedWorkForm('organization', 'new', false, updateDevice);
+    // setupEmbeddedWorkForm('device', 'new', false, updateMediaTitle);
+    // setupEmbeddedWorkForm('organization', 'new', false, updateDevice);
     setupEmbeddedWorkForm('biological_specimen', false, 'new');
     setupEmbeddedWorkForm('processing_event', 'new', true, reloadPage);
     setupTooltip();
@@ -333,7 +332,6 @@ $( document ).ready(function() {
       // replace with ajax form post to trigger other actions
       var postData = new FormData($(this)[0]);
       //postdata.push({name: "NonFormValue", value: 'foo'});
-      //console.log("postdata: " + postdata );
 
       $.ajax({
         type: "POST",
@@ -376,6 +374,9 @@ $( document ).ready(function() {
         if ($(this).val() != '')
           return $(this).val();
       }).get().join(', ');
+      if (parts == '') {
+        parts = 'Element Unspecified';
+      }
       parts = toTitleCase(parts);
       var mediaType = $('[name="media[media_type]"]').val();
       mediaType = '[' + mediaType + ']';
@@ -422,6 +423,112 @@ $( document ).ready(function() {
       }
       $(".related_form." + clickedTab).show();
     })
+
+    // Select Device Functions 
+
+    // select2-associated select organization button
+    $('#btn-select-device-organization').click(function() {
+      var selectData = $('#s2id_find_device_organization').select2('data');
+      console.log($('#s2id_find_device_organization').select2('data'));
+
+      $('#imaging_event_select_device_id option').each(function() {
+        if ($(this).attr('value')) {
+          $(this).remove();
+        }
+      });
+
+      if (selectData) {
+        for (const device of selectData.devices) {
+          console.log(device);
+          $('#imaging_event_select_device_id').
+            append($('<option></option>')
+              .attr('value', device.id)
+              .attr('data-modality', device.modality)
+              .attr('data-creator', device.creator)
+              .attr('data-description', device.description)
+              .text(device.title)
+            );
+        }
+      }
+
+      $('#device-select-section').removeClass('hide').addClass('show');
+    });
+
+    // select2-associated no organization button
+    $('#btn-no-device-organization').click(function() {
+      $.ajax({
+        url: "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization",
+        type: 'GET',
+        dataType: 'json',
+        complete: function (xhr, status) {
+          var results = $.parseJSON(xhr.responseText);
+          console.log(results); 
+          $('#s2id_find_device_organization').val(null).trigger('change');
+          $('#select_device .select2-chosen').text('');
+
+          $('#imaging_event_select_device_id option').each(function () {
+            if ($(this).attr('value')) {
+              $(this).remove();
+            }
+          });
+
+          console.log(results[0]['devices']);
+          for (const device of results[0]['devices']) {
+            console.log(device);
+
+            if (device['title'] && device['title'][0].toLowerCase() == 'unknown ct scanner') {
+              continue;
+            }
+
+            $('#imaging_event_select_device_id')
+              .append($('<option></option>')
+                .attr('value', device['id'])
+                .attr('data-modality', device['modality'])
+                .attr('data-creator', device['creator'])
+                .attr('data-description', device['description'])
+                .text(device['title'])
+              );
+          }
+
+          $('#device-select-section').removeClass('hide').addClass('show');   
+        }
+      });
+    });
+
+    // select device button
+    $('#btn-select-device').click(function() {
+      var oldDeviceID = $('#parent-relationships-devices').data('members')[0].id;
+      var newDeviceID = $('#imaging_event_select_device_id').val();
+      var orgData = $('#s2id_find_device_organization').select2('data');
+
+      // modify current device properties
+      $('#device-organization-title-value').text(orgData.text);
+      $('#device-title-value').text($('#imaging_event_select_device_id').find(':selected').text());
+      $('#device-creator-value').text($('#imaging_event_select_device_id').find(':selected').data('creator'));
+      $('#device-modality-value').attr('data-modality-id', $('#imaging_event_select_device_id').find(':selected').data('modality'));
+      $('#device-modality-value').text(modalityTerm($('#imaging_event_select_device_id').find(':selected').data('modality')));
+      $('#device-description-value').text($('#imaging_event_select_device_id').find(':selected').data('description'));
+
+      // modify the form
+      $('form#related_form_imaging_event input[name^="imaging_event[work_parents_attributes]"]').remove();
+      $('<input />').attr('type', 'hidden')
+        .attr('name', 'imaging_event[work_parents_attributes][0][id]')
+        .attr('value', oldDeviceID)
+        .appendTo($('form#related_form_imaging_event'));
+      $('<input />').attr('type', 'hidden')
+        .attr('name', 'imaging_event[work_parents_attributes][0][_destroy]')
+        .attr('value', 'true')
+        .appendTo($('form#related_form_imaging_event'));
+      $('<input />').attr('type', 'hidden')
+        .attr('name', 'imaging_event[work_parents_attributes][1][id]')
+        .attr('value', newDeviceID)
+        .appendTo($('form#related_form_imaging_event'));
+      $('<input />').attr('type', 'hidden')
+        .attr('name', 'imaging_event[work_parents_attributes][1][_destroy]')
+        .attr('value', 'false')
+        .appendTo($('form#related_form_imaging_event'));
+    });
+
 
     // remove organization when clicking no organization button
     $('#btn_no_organization').click(function() {
@@ -495,7 +602,7 @@ $( document ).ready(function() {
       function isFormValid() {
         // check modality consistency
         if ($('#device-modality-value').length)
-          var deviceModality = $('#device-modality-value').text();
+          var deviceModality = $('#device-modality-value').data('modality-id');
         if ($('#imaging_event_ie_modality').length)
           var imagingEventModality = $('#imaging_event_ie_modality').val();
         if (deviceModality && imagingEventModality) {

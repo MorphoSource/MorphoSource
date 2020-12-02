@@ -3,35 +3,35 @@ en:
   simple_form:
     labels:
       organization:
-        download_permission: Download Permission
-        download_reviewer: Download Reviewer
-        rights_statement: Copyright Statement
+        download_permission: Download permission
+        download_reviewer: Download reviewer
+        rights_statement: Copyright statement
         license: License
-        morphosource_use_agreement_type: MorphoSource Use Agreement Type
-        permits_commercial_use: Permits Commercial Use
-        permits_3d_use: Permits 3D Use
-        required_archival_of_published_derivatives: Required Archival of Published Derivatives
+        morphosource_use_agreement_type: MorphoSource use agreement type
+        permits_commercial_use: Permits commercial use
+        permits_3d_use: Permits 3D use
+        required_archival_of_published_derivatives: Required archival of published derivatives
         rights_holder:
-        funding: Funding Attribution
+        funding: Funding attribution
         publisher: Publisher
-        cite_as: Cite As
-        agreement_uri: Additional Usage Agreement
-        preview_mode: Media Preview Mode
+        cite_as: Cite as
+        agreement_uri: Additional usage agreement
+        preview_mode: Media preview mode
       media:
-        download_permission: Download Permission
-        download_reviewer: Download Reviewer
-        rights_statement: Copyright Statement
+        download_permission: Download permission
+        download_reviewer: Download reviewer
+        rights_statement: Copyright statement
         license: License
-        morphosource_use_agreement_type: MorphoSource Use Agreement Type
-        permits_commercial_use: Permits Commercial Use
-        permits_3d_use: Permits 3D Use
-        required_archival_of_published_derivatives: Required Archival of Published Derivatives
+        morphosource_use_agreement_type: MorphoSource use agreement type
+        permits_commercial_use: Permits commercial use
+        permits_3d_use: Permits 3D use
+        required_archival_of_published_derivatives: Required archival of published derivatives
         rights_holder:
-        funding: Funding Attribution
+        funding: Funding attribution
         publisher: Publisher
-        cite_as: Cite As
-        agreement_uri: Additional Usage Agreement
-        preview_mode: Media Preview Mode
+        cite_as: Cite as
+        agreement_uri: Additional usage agreement
+        preview_mode: Media preview mode
     hints:
       organization:
         download_permission:

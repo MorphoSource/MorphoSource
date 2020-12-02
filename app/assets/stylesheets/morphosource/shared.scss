@@ -34,5 +34,31 @@ $ms-dark-blue: #002c64;
 }
 
 div.wrapper_for_2 span.input-group-btn.field-controls {
-	width: auto;
+  width: auto;
+}
+
+.mb-1 {
+  margin-bottom: 1em;
+}
+
+.mb-2 {
+  margin-bottom: 2em;
+}
+
+.mb-3 {
+  margin-bottom: 3em;
+}
+
+.mt-1 {
+  margin-top: 1em;
+}
+
+.mt-2 {
+  margin-top: 2em;
+}
+
+.block {
+  border: 1px solid #DDDDDD;
+  border-radius: 5px;
+  padding: 10px;
 }

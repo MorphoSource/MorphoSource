@@ -5,13 +5,14 @@
     <%= i.input_field :find_parent_work,
                       prompt: :translate,
                       autocomplete: 'off',
+                      placeholder: 'Search complete terms in object code(s) or title',
                       data: {
                         autocomplete: 'work',
                         'autocomplete-url' => find_cultural_heritage_object_autocomplete_url()
                       } %>
   </div>
 
-  <div class="text-center button-wrapper">
+  <div class="text-center button-wrapper mt-1">
     <a class="btn btn-md btn-primary" id="btn-add-cultural-heritage-object" data-behavior="add-relationship">Select physical object</a>
     <a class="btn btn-md btn-primary" id="btn_new_cultural_heritage_object" data-toggle="modal" data-target="#modal-new-physical-object">Create new physical object</a>
   </div>

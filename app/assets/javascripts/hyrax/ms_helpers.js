@@ -29,6 +29,7 @@ function disablePage() {
         width: '100%',
         height: $(window).height() + 'px'
     }).hide().appendTo('body');
+
   }
   $('#overlay-whole-page').show();
 }
@@ -73,6 +74,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
   //var this_path = "/submissions/" + action + '_' + work_name;
   var detail_div = '#' + work_name + '_details';
 
+
   $(document).on("click", this_btn, function() {
     // the new work form button has been clicked
     $(this_div).show();
@@ -80,7 +82,7 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
 
   $(this_div).on("submit", this_form, function() {
     // the new work form's save button has been clicked
-     console.log(this_div + ' submitting new work form : ' + $(this_form).attr('action') );
+    console.log(this_div + ' submitting new work form : ' + $(this_form).attr('action') );
     $(this_div).addClass('ui-loading');
     $('.btn').addClass('disabled');
 
@@ -313,6 +315,25 @@ function modalityAbbrev(m) {
       return 'XRay'
       break;
     default:
-      return 'Etc';
-   }
- }
+      return 'Etc'; 
+  }
+}
+
+function modalityTerm(m) {
+  switch (m) {
+    case 'MicroNanoXRayComputedTomography':
+      return 'X-Ray Computed Tomography (CT/microCT)';
+    case 'MagneticResonanceImaging':
+      return 'Magnetic Resonance Imaging (MRI)';
+    case 'PositronEmissionTomography':
+      return 'Positron Emission Tomography (PET)';
+    case 'SinglePhotonEmissionComputedTomography':
+      return 'Single Photon Emission Computed Tomography (SPECT)';
+    case 'NeutronComputedTomography':
+      return 'Neutron Computed Tomography (NCT)';
+    case 'XRay':
+      return 'X-Ray';
+    default:
+      return m.replace(/([A-Z])/g, ' $1').trim();
+  }
+}

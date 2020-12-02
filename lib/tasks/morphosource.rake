@@ -20,6 +20,22 @@ namespace :morphosource do
     end
   end
 
+  desc 'Re-characterize and generate derivatives for all FileSets without derivatives'
+  task :characterize_and_generate_derivatives_if_missing => :environment do
+    FileSet.find_each do |fs|
+      next if !fs.original_file.presence
+      m = fs.parents&.first
+      media_type = m&.media_type&.first
+      derivatives = Morphosource::DerivativePath.derivatives_for_reference(fs)
+      if derivatives.length == 0
+        Rails.logger.warn("FileSet ID #{fs.id} (Media work ID #{m&.id.to_s}, media type #{media_type.to_s}) with mime type #{fs.mime_type} has no derivatives, re-characterizing and generating derivatives")
+        wrapper = JobIoWrapper.find_by(file_set_id: fs.id)
+        path_hint = wrapper.uploaded_file ? wrapper.uploaded_file.uploader.path : wrapper.path
+        CharacterizeJob.perform_later(fs, fs.original_file.id, path_hint)
+      end
+    end
+  end
+
   # Loosely adapted from https://github.com/curationexperts/nurax/blob/master/lib/tasks/nurax.rake
   # Performs CreateDerivativesJob independently of CharacterizeJob.
   desc 'Loop over all FileSets and (re-)generate derivatives'
@@ -54,28 +70,9 @@ namespace :morphosource do
       if derivatives.length == 0
         Rails.logger.warn("FileSet ID #{fs.id} (Media work ID #{m&.id.to_s}, media type #{media_type.to_s}) with mime type #{fs.mime_type} has no derivatives")
         n += 1
-      elsif media_type == "CTImageSeries"
-        derivatives.each do |d|
-          if File.exists?(d)
-            if File.extname(d).downcase == '.dcm'
-              missing = []
-              dcm_path = File.join(File.dirname(d), File.basename(d)[0])
-              JSON.parse(File.read(d))["series"].each do |dcm|
-                missing << File.basename(dcm) if !File.file?(File.join(dcm_path, File.basename(dcm)))
-              end
-              if missing.presence
-                Rails.logger.warn("FileSet ID #{fs.id} (Media work ID #{m&.id.to_s}, media type #{media_type.to_s}) with mime type #{fs.mime_type} has manifest derivative, but #{missing.length} sub-derivative .dcm files are absent: #{missing.join(', ')}")
-                n += 1
-              end
-            end
-          else
-            Rails.logger.warn("FileSet ID #{fs.id} (Media work ID #{m&.id.to_s}, media type #{media_type.to_s}) with mime type #{fs.mime_type} should have derivative, but derivative file does not exist")
-            n += 1
-          end
-        end
       end
     end
-    Rails.logger.warn("#{n} FileSets lack derivatives or have derivative issues")
+    Rails.logger.warn("#{n} FileSets lack derivatives")
   end
 
   desc 'Loop over media and check how many lack FileSets or have FileSets without original_file'

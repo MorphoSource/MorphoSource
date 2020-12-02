@@ -35,6 +35,8 @@ RSpec.describe Morphosource::PhysicalObjectIndexer do
       # media_keyword
       expect(subject['public_media_keyword_tesim']).to match_array(media.keyword)
       expect(subject['public_media_keyword_ssim']).to match_array(media.keyword)
+
+      expect(subject['related_media_ids_ssim']).to eq([media.id])
     end
   end
 end

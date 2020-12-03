@@ -653,6 +653,10 @@ html {
     }
   }
 
+  .content-wrapper {
+    padding-bottom: 30px;
+  }
+
   .content-wrapper.fixed-width {
     max-width: 1200px;
     border: 2px solid #efefef;
@@ -686,7 +690,18 @@ html {
     }
   }
 
+
   .panel-default {border: none;}
+
+  .edit_media .panel {
+    margin-bottom: 0 !important;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+  }
+
+  .edit_media h2 {
+    margin-top: 10px;
+  }
 
   /* ************************** */
 
@@ -717,7 +732,7 @@ html {
   .input-group-btn.field-controls .btn {
     /* mainly applies to button wrapper around add and remove glyphicons */
     background-color: transparent;
-    color: $font-color;
+    color: #286090;
     border-color: transparent;
   }
 

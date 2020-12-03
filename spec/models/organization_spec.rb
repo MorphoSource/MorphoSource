@@ -14,6 +14,7 @@ RSpec.describe Organization do
       subject.address = ['foo']
       subject.city = ['foo']
       subject.state_province = ['foo']
+      subject.postal_code = ['foo']
       subject.country = ['foo']
       subject.institution_name = ['foo']
       subject.collection_code = ['foo']
@@ -39,6 +40,7 @@ RSpec.describe Organization do
     subject.address = ['foo']
     subject.city = ['foo']
     subject.state_province = ['foo']
+    subject.postal_code = ['foo']
     subject.country = ['foo']
     subject.download_permission = ['foo']
     # permissions defaults metadata
@@ -72,6 +74,7 @@ RSpec.describe Organization do
         address: ['Central Park West'],
         city: ['New York City'],
         state_province: ['New York'],
+        postal_code: ['12345'],
         country: ['United States'],
         team_id: ['123']
       })
@@ -99,6 +102,10 @@ RSpec.describe Organization do
 
     it "creates with correct state_province" do
       expect(subject.state_province.first).to eq('New York')
+    end
+
+    it "creates with correct postal_code" do
+      expect(subject.postal_code.first).to eq('12345')
     end
 
     it "creates with correct country" do

@@ -119,6 +119,10 @@ module Hyrax
       current_ability.can?(:read, id) ? to_s : 'File'
     end
 
+    def link_name_long
+      "#{model.model_name.to_s} #{solr_document.id}: #{to_s}"
+    end
+
     def export_as_nt
       graph.dump(:ntriples)
     end

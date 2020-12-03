@@ -1,20 +1,21 @@
 require 'rails_helper'
 
 RSpec.describe 'hyrax/organizations/_attribute_rows.html.erb', type: :view do
-	let(:url) { "http://example.com" }
-	let(:ability) { double }
-	let(:work) do
-		Organization.new({
-			title: ['American Museum of Natural History'],
-			institution_code: ['AMNH'],
-			description: ['A sample description'],
-			address: ['Central Park West'],
-			city: ['New York City'],
-			state_province: ['New York'],
-			country: ['United States']
-		})
-	end
-	let(:solr_document) { SolrDocument.new(work.to_solr) }
+  let(:url) { "http://example.com" }
+  let(:ability) { double }
+  let(:work) do
+    Organization.new({
+      title: ['American Museum of Natural History'],
+      institution_code: ['AMNH'],
+      description: ['A sample description'],
+      address: ['Central Park West'],
+      city: ['New York City'],
+      state_province: ['New York'],
+      postal_code: ['12345'],
+      country: ['United States']
+    })
+  end
+  let(:solr_document) { SolrDocument.new(work.to_solr) }
   let(:presenter) { Hyrax::OrganizationPresenter.new(solr_document, ability) }
 
   let(:page) do
@@ -23,27 +24,32 @@ RSpec.describe 'hyrax/organizations/_attribute_rows.html.erb', type: :view do
   end
 
   it "shows institution_code info" do
-  	expect(page).to have_content("Institution code")
-  	expect(page).to have_content("AMNH")
+    expect(page).to have_content("Institution code")
+    expect(page).to have_content("AMNH")
   end
 
   it "shows address info" do
-  	expect(page).to have_content("Address")
-  	expect(page).to have_content("Central Park West")
+    expect(page).to have_content("Address")
+    expect(page).to have_content("Central Park West")
   end
 
   it "shows city info" do
-  	expect(page).to have_content("City")
-  	expect(page).to have_content("New York City")
+    expect(page).to have_content("City")
+    expect(page).to have_content("New York City")
   end
 
   it "shows state/province info" do
-  	expect(page).to have_content("State province")
-  	expect(page).to have_content("New York")
+    expect(page).to have_content("State province")
+    expect(page).to have_content("New York")
+  end
+
+  it 'shows postal code inifo' do
+    expect(page).to have_content("Postal code")
+    expect(page).to have_content("12345")
   end
 
   it "shows country info" do
-  	expect(page).to have_content("Country")
-  	expect(page).to have_content("United States")
+    expect(page).to have_content("Country")
+    expect(page).to have_content("United States")
   end
 end

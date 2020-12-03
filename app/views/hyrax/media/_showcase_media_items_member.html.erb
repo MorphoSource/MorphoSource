@@ -10,8 +10,13 @@
 
 	 	<div class="thumbnail col-xs-4">
 			<%  # todo: need to display "Parent / Child / Sibling Media" %>
-	    <%= render_thumbnail_tag member %><br>
-	    <%= link_to(member.link_name, contextual_path(member, @presenter)) %><br>
+      <% if member.id == @presenter.id %>
+        <%= render_thumbnail_tag member, {}, { suppress_link: true } %><br>
+        <%= member.link_name_long %> (this media)<br>
+      <% else %>
+  	    <%= render_thumbnail_tag member %><br>
+  	    <%= link_to(member.link_name_long, contextual_path(member, @presenter)) %><br>
+      <% end %>
 	    <%= member.file_format %><br>
 	  </div>
 

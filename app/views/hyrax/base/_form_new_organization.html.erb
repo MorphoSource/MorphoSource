@@ -11,6 +11,7 @@
 <%= i.input :address %>
 <%= i.input :city %>
 <%= i.input :state_province %>
+<%= i.input :postal_code %>
 <%= i.input :country, as: :select,
     collection: @countries_service.select_all_options,
     include_blank: true,

@@ -148,11 +148,5 @@ module Morphosource
       def solr_service
         Morphosource::SolrService
       end
-
-
-      #def search_solr(qry)
-      #  ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC")
-      #end
   end
-
 end

@@ -5,15 +5,19 @@
     <%= i.input_field :find_parent_work,
                       prompt: :translate,
                       autocomplete: 'off',
+                      placeholder: 'Search complete terms in object code(s) or title',
                       data: {
                         autocomplete: 'work',
                         'autocomplete-url' => find_biological_specimen_autocomplete_url()
                       } %>
   </div>
 
-  <div class="text-center button-wrapper">
+  <div class="text-center button-wrapper mt-1">
     <a class="btn btn-md btn-primary" id="btn-add-biological-specimen" data-behavior="add-relationship">Select physical object</a>
-    <a class="btn btn-md btn-primary" id="btn_new_biological_specimen" data-toggle="modal" data-target="#modal-new-physical-object">Create new physical object</a>
   </div>
+</div>
+
+<div class="block mt-2">
+  Currently, physical objects can only be created during media submission. In the future, you will be able to create a new physical object without submitting media. In the meantime, if you can't find the correct physical object record using the search tools above, contact the <a href="mailto:morphosource@duke.org">MorphoSource administrators</a> to have a new physical object record created.
 </div>
 

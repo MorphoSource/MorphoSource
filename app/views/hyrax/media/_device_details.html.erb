@@ -11,23 +11,23 @@
     <td>
         <div class="row">
             <div class="col-xs-6 showcase-label">Organization</div>
-            <div class="col-xs-6 showcase-value" id="device-organization-institution-value">{%= o.organization_institution %}</div>
+            <div class="col-xs-6 showcase-value" id="device-organization-title-value">{%= o.organization_institution %}</div>
         </div>
         <div class="row">
             <div class="col-xs-6 showcase-label">Model</div>
-            <div class="col-xs-6 showcase-value">{%= o.title %}</div>
+            <div class="col-xs-6 showcase-value" id="device-title-value">{%= o.title %}</div>
         </div>
         <div class="row">
             <div class="col-xs-6 showcase-label">Manufacturer</div>
-            <div class="col-xs-6 showcase-value">{%= o.creator %}</div>
+            <div class="col-xs-6 showcase-value" id="device-creator-value">{%= o.creator %}</div>
         </div>
         <div class="row">
             <div class="col-xs-6 showcase-label">Modality</div>
-            <div class="col-xs-6 showcase-value break-all" id="device-modality-value">{%= o.modality %}</div>
+            <div class="col-xs-6 showcase-value break-all" id="device-modality-value" data-modality-id="{%= o.modality %}">{%= modalityTerm(o.modality) %}</div>
         </div>
         <div class="row">
             <div class="col-xs-6 showcase-label">Description</div>
-            <div class="col-xs-6 showcase-value">{%= o.description %}</div>
+            <div class="col-xs-6 showcase-value" id="device-description-value">{%= o.description %}</div>
         </div>
 
     </td>

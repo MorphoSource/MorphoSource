@@ -23,8 +23,8 @@ module MorphosourceHelper
     link = ""
     parsed_params = filter_params(filter_prefix, request_params)
     parsed_params.map do |k,v|
-      link = link + '&' + k + '=' + v 
-    end       
+      link = link + '&' + k + '=' + v
+    end
     link = link + "#" + tab if tab.present?
     link.html_safe
   end
@@ -54,14 +54,20 @@ module MorphosourceHelper
     end
   end
 
-  def has_custom_thumbnail?(work)
-    if work.nil? || work.thumbnail_id.nil?
+  def has_custom_thumbnail?(presenter)
+    if presenter.nil? || presenter.thumbnail_id.nil?
       return false
     else
-      original_thumbnail_path = Hyrax::DerivativePath.derivative_path_for_reference(work.thumbnail_id,'original_thumbnail')
-      has_custom_thumbnail = File.exist?(original_thumbnail_path)
+      custom_thumbnail_path = Hyrax::DerivativePath.derivative_path_for_reference(presenter.id,'thumbnail')
+      has_custom_thumbnail = File.exist?(custom_thumbnail_path)
       return has_custom_thumbnail
     end
+  end
+
+  def generated_thumbnail(presenter)
+    file_set = presenter.member_presenters_for(presenter.file_set_list).first
+    return '' unless file_set
+    render_thumbnail_tag(file_set, {}, {suppress_link:true})
   end
 
   def find_works_autocomplete_url(curation_concern, relation)
@@ -264,9 +270,9 @@ module MorphosourceHelper
   end
 
   def extra(extras, id)
-    item = {} 
+    item = {}
     extras.each do |h|
-      if h['id'] == id 
+      if h['id'] == id
         item.merge!(h)
       end
     end
@@ -280,7 +286,7 @@ module MorphosourceHelper
       extras.find { |h| h['id'] == id }[variable]
     rescue Exception => e
       return 'unknown'
-    end    
+    end
   end
 
   def organization_devices(id)

@@ -1,4 +1,32 @@
 en:
+  blacklight:
+    search:
+      fields:
+        show:
+          agreement_uri: Additial usage agreement
+          ark: MorphoSource ARK
+          centroid_location: Centroid coordinates
+          cite_as: Cite as
+          color_format: Color information format
+          description: Full description
+          doi: MorphoSource DOI
+          face_count: Polygons
+          funding: Funding attribution
+          has_uv_space: UV coordinates
+          identifier: External identifier
+          license: Creative Commons license
+          media_type: Media type
+          normals_format: Normal information format
+          part: Object element or part
+          permits_3d_use: Permits 3D use
+          point_count: Points
+          preview_mode: Media preview mode
+          related_url: External media URL
+          rights_holder: IP holder(s) (Name, Type)
+          rights_statement: Copyright statement
+          x_spacing: X pixel spacing
+          y_spacing: Y pixel spacing
+          z_spacing: Z pixel spacing
   hyrax:
     icons:
       media:     'fa fa-file-text-o'
@@ -9,12 +37,28 @@ en:
   simple_form:
     labels:    
       media:
-        media_type: Media Type
-        part: Element or Part
-        funding: Funding Attribution
-        description: Full Description
-        rights_statement: Copyright Statement
-        agreement_uri: Additial Usage Agreement URL
-        rights_holder: Rights Holder
-        cite_as: Cite As
+        agreement_uri: Additial usage agreement
+        ark: MorphoSource ARK
+        centroid_location: Centroid coordinates
+        cite_as: Cite as
+        color_format: Color information format
+        description: Full description
+        doi: MorphoSource DOI
+        face_count: Polygons
+        funding: Funding attribution
+        has_uv_space: UV coordinates
+        identifier: External identifier
+        license: Creative Commons license
+        media_type: Media type
+        normals_format: Normal information format
+        part: Object element or part
+        permits_3d_use: Permits 3D use
+        point_count: Points
+        preview_mode: Media preview mode
+        related_url: External media URL
+        rights_holder: IP holder(s) (Name, Type)
+        rights_statement: Copyright statement
+        x_spacing: X pixel spacing
+        y_spacing: Y pixel spacing
+        z_spacing: Z pixel spacing
 

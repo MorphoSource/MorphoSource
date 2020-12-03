@@ -8,14 +8,25 @@ end
 <div class="col-sm-6 indicators-wrapper">
   <h2>PARENT MEDIA HIERARCHY</h2>
 
-  <%= render partial: 'edit_parent_media_list', collection: @presenter.parent_media_members, as: :member %>
-  
+  <% if @presenter.parent_media_members[0...-1].present? %>
+    <%= render partial: 'edit_parent_media_list', collection: @presenter.parent_media_members[0...-1], as: :member %>
+  <% else %>
+    <div class="row p-0">
+      <div class="indicators line solid table-cell">
+        <p><span class="circle first"></span></p>
+      </div>
+      <div class="table-cell">
+        <p>Raw undeposited parent media</p>
+      </div>
+    </div>
+  <% end %>
+
   <div class="row p-0">
     <div class="indicators line solid <%= added_class %> table-cell">
       <p><span class="circle last"></span></p>
     </div>
     <div class="table-cell">
-      <p>This media</p>
+      <p><%= @presenter.link_name_long %> (this media)</p>
     </div>
   </div>
 

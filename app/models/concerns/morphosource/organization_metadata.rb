@@ -25,6 +25,10 @@ module Morphosource
         index.as :stored_searchable
       end
 
+      property :postal_code, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/postalCode") do |index|
+        index.as :stored_searchable
+      end
+
       property :country, predicate: ::RDF::Vocab::DWC.country do |index|
         index.as :stored_searchable, :facetable
       end

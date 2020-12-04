@@ -201,17 +201,17 @@ class Media < Morphosource::Works::Base
   # this method get siblings IDs from parents 1 level above
   def sibling_media_ids
     # Find parent media: Media < ProcessingEvent < Media    
-    processing_events = parent_works { |w| w.class == ProcessingEvent }
+    processing_events = parent_works.select { |w| w.class == ProcessingEvent }
     parent_media = []
     processing_events.each do |p|
-      parent_media += p.parent_works { |w| w.class == Media }
+      parent_media += p.parent_works.select { |w| w.class == Media }
     end
     # Find child media of each parent: Media > ProcessingEvent > Media
     child_media = []
     parent_media.each do |m|
-      processing_events = m.child_works { |w| w.class == ProcessingEvent } 
+      processing_events = m.child_works.select { |w| w.class == ProcessingEvent } 
       processing_events.each do |p|
-        child_media += p.child_works { |w| w.class == Media }
+        child_media += p.child_works.select { |w| w.class == Media }
       end
     end
     # remove any duplicate IDs, and remove the current media id

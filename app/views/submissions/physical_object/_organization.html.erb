@@ -37,18 +37,21 @@
     <!-- <div id="submission_create_organization_form_section" class="hide">   -->
       <%# render(partial: 'submissions/physical_object/organization_create') %>
     <!-- </div> -->
-    
-    <div id="submission_no_organization_section">
-      <div class="row">
-        <b><%= t('morphosource.submission.or') %></b>
-      </div>
 
-      <div class="row">
-        <a href="#" id="submission_no_organization" class="btn btn-primary btn-continue">
-          <%= t('morphosource.submission.no_organization') %>  
-        </a>
+    <!-- only admins can select 'no organization' -->
+    <% if current_user.admin? %>
+      <div id="submission_no_organization_section">
+        <div class="row">
+          <b><%= t('morphosource.submission.or') %></b>
+        </div>
+
+        <div class="row">
+          <a href="#" id="submission_no_organization" class="btn btn-primary btn-continue">
+            <%= t('morphosource.submission.no_organization') %>
+          </a>
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <div id="submission_no_organization_display_section" class="hide">
       <div class="row">
@@ -61,10 +64,8 @@
 
     <div class="row mt-2">
       <div class="col-xs-12 col-sm-6 col-sm-offset-3 block">
-         If you can't find the correct organization record using the search tools above, contact the <a href="mailto:morphosource@duke.org">MorphoSource administrators</a> to have a new organization record created.
+        <%= t('morphosource.submission.cant_find_organization').html_safe %>
       </div>
     </div>
   </div>
 </div>
-
-

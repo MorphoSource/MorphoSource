@@ -426,7 +426,7 @@ module Morphosource
               solrize('physical_object_id', :stored_searchable), 
               po_ids_by_collection_organization(value)
             )
-          when 'm_team_project'
+          when 'm_project'
             project_id = Collection.where(title: value)&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
           when 'm_origin'

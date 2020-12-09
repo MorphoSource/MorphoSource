@@ -198,6 +198,40 @@ class Media < Morphosource::Works::Base
     ancestors.find(&:imaging_event?)
   end
 
+  # this method get siblings IDs from parents 1 level above
+  def sibling_media_ids
+    # Find parent media: Media < ProcessingEvent < Media    
+    processing_events = parent_works.select { |w| w.class == ProcessingEvent }
+    parent_media = []
+    processing_events.each do |p|
+      parent_media += p.parent_works.select { |w| w.class == Media }
+    end
+    # Find child media of each parent: Media > ProcessingEvent > Media
+    child_media = []
+    parent_media.each do |m|
+      processing_events = m.child_works.select { |w| w.class == ProcessingEvent } 
+      processing_events.each do |p|
+        child_media += p.child_works.select { |w| w.class == Media }
+      end
+    end
+    # remove any duplicate IDs, and remove the current media id
+    sibling_ids = child_media.map{ |o| o.id }.flatten.uniq - [self.id] 
+    return sibling_ids
+  end
+
+  def related_media_ids
+    parents = ancestors.select { |d| d.class == Media }.map{ |o| o.id } 
+    children = descendants.select { |d| d.class == Media }.map{ |o| o.id }
+    return (parents + children + sibling_media_ids).uniq
+  end
+
+  def public_related_media_ids
+    parents = ancestors.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id } 
+    children = descendants.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
+    siblings = sibling_media_ids.select { |d| d.visibility == 'open' }.map{ |o| o.id }
+    return (parents + children + sibling_media_ids).uniq
+  end
+
   def organizations
     physical_objects.each_with_object([]) do |obj, orgs|
       obj.organizations.each { |org| orgs << org }

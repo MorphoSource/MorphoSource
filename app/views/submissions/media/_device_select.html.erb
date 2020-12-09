@@ -1,7 +1,7 @@
 <%= simple_form_for @submission, html: { id: :submission_device_select_form } do |f| %>
   <div class="row form-group">
     <div class="col-xs-12 col-sm-6 col-sm-offset-3">
-  	
+
 
         <%= f.input :organization_search,
         placeholder: 'Enter organization keywords here',
@@ -21,13 +21,13 @@
           </a>
         </div>
 
-  	    <%= f.input :device_id, 
-          collection: [], 
-          prompt: 'Select device', 
-          label: 'Then select from devices associated with the organization.', 
+        <%= f.input :device_id,
+          collection: [],
+          prompt: 'Select device',
+          label: 'Then select from devices associated with the organization.',
           required: true,
           wrapper_html: { class: 'required-flag-hidden' }
-        %>    
+        %>
     </div>
   </div>
 <% end %>
@@ -39,50 +39,125 @@
 </div>
 
 <script>
-$(function(){
-  $('#submission_device_select_organization_search').autocomplete({
-    select: function(event, ui) {
-      event.preventDefault();
+  var admin = <%= current_user.admin? %>;
+  // device names (in lowercase) belonging to 'No Organization' that should be filtered out of device list if user is not an admin
+  var filteredDevices = ['unknown ct scanner'];
+  // label of 'No Organization' organization
+  var unknownLabel = 'No Institution, No Organization';
 
-      // Add data to form fields
-      $("#submission_device_select_organization_search").val(ui.item.label);
+  // Search Organizations
+  $(function() {
+    var search_url = "<%= find_organization_with_devices_autocomplete_url %>";
 
-      $('form#submission_device_select_form select#submission_device_id option').each(function () {
-        if ($(this).attr('value')) {
-          $(this).remove();
-        }
-      });
+    $('#submission_device_select_organization_search').autocomplete({
 
-      // Enable device field and modify select results based on organization
-      if (ui.item.devices) {
-        $('form#submission_device_select_form select#submission_device_id').removeAttr('disabled');
-        console.log(ui.item.devices);
-        for (const device of ui.item.devices) {
-          console.log(device);
-          $('form#submission_device_select_form select#submission_device_id')
-            .append($('<option></option>')
-              .attr('value', device.id)
-              .attr('data-modality', device.modality)
-              .attr('data-creator', device.creator)
-              .attr('data-description', device.description)
-              .text(device.title)
-            );
+      select: function(event, ui) {
+        event.preventDefault();
+
+        organization = ui.item;
+
+        populateOrganizationName(organization.label);
+        clearList();
+
+        if (organization.devices) {
+          devices = organizationDevices(organization)
+          enableDeviceList();
+          listDevices(devices);
         }
-      }
-    },
-    source: function (request, response) {
-      $.ajax({
-        url: "<%= find_organization_with_devices_autocomplete_url %>" + request.term,
-        type: 'GET',
-        dataType: 'json',
-        complete: function (xhr, status) {
-          var results = $.parseJSON(xhr.responseText);
-          console.log(results);
-          response(results);
-        }
-      });
-    },
-    autoFocus: true
+      },
+      source: function (request, response) {
+        $.ajax({
+          url: search_url + request.term,
+          type: 'GET',
+          dataType: 'json',
+          complete: function (xhr, status) {
+            var results = $.parseJSON(xhr.responseText);
+            response(results);
+          }
+        });
+      },
+      autoFocus: true
+    });
   });
-});
+
+  // Click 'No Organization Button'
+  $('#submission_select_device_no_organization').click(function(event) {
+    event.preventDefault();
+
+    search_url = "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization";
+
+    removePreviousSelection();
+
+    $.ajax({
+      url: search_url,
+      type: 'GET',
+      dataType: 'json',
+      complete: function (xhr, status) {
+        results = $.parseJSON(xhr.responseText);
+        organization = results[0]
+        devices = organization['devices']
+
+        if (!admin) {
+          devices = removeUnknownDevices(devices);
+        }
+
+        populateOrganizationName(organization['label']);
+        clearList();
+        listDevices(devices);
+      }
+    });
+  });
+
+  function populateOrganizationName(name) {
+    $("#submission_device_select_organization_search").val(name);
+  }
+
+  function clearList() {
+    $('form#submission_device_select_form select#submission_device_id option').each(function () {
+      if ($(this).attr('value')) {
+        $(this).remove();
+      }
+    });
+  }
+
+  function organizationDevices(organization) {
+    if (unknownOrganization(organization) && !admin) {
+      devices = removeUnknownDevices(organization.devices);
+    } else {
+      devices = organization.devices;
+    }
+    return devices
+  }
+
+  // filter out any devices with title included in filteredDevices
+  function removeUnknownDevices(devices) {
+    return $.grep(devices, function(e) { return !(new RegExp(filteredDevices.join("|")).test(e.title[0].toLowerCase())) });
+  }
+
+  function unknownOrganization(organization) {
+    return organization.label == unknownLabel
+  }
+
+  function enableDeviceList() {
+    $('form#submission_device_select_form select#submission_device_id').removeAttr('disabled');
+  }
+
+  function listDevices(devices) {
+    for (const device of devices) {
+      $('form#submission_device_select_form select#submission_device_id')
+        .append($('<option></option>')
+          .attr('value', device.id)
+          .attr('data-modality', device.modality)
+          .attr('data-creator', device.creator)
+          .attr('data-description', device.description)
+          .text(device.title)
+        );
+    }
+  }
+
+  function removePreviousSelection() {
+    $('select[name="submission[device_id]"]').val('');
+    $('#submission_device_select_display').addClass('hide').removeClass('show');
+    $('#submission_select_device_continue').attr('disabled', 'disabled');
+  }
 </script>

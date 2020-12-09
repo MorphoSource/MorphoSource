@@ -153,7 +153,8 @@ module Morphosource
             rows: 0,
             fq: [
               "#{solrize('has_model', :symbol)}:Media",
-            ]
+            ],
+            "facet.limit": -1
           }
 
           # Core query
@@ -170,9 +171,8 @@ module Morphosource
           else
             params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
           end
-          
-          solr.get_facet_fields(nil, facet_fields, params)
 
+          solr.get_facet_fields(nil, facet_fields, params)
           return solr.facet_fields(facet_fields), solr.count
         end
 

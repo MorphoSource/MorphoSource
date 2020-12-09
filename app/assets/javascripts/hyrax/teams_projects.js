@@ -18,7 +18,8 @@ $(document).ready(function() {
           { responsivePriority: 1, targets: 0 },
           { responsivePriority: 2, targets: 1 },
           { responsivePriority: 3, targets: 2 },
-          { responsivePriority: 4, targets: -1 } // rightmost column
+          { responsivePriority: 4, targets: -1 }, // rightmost column
+          { responsivePriority: 5, targets: -2 }
         ],
         pageLength: 10,
         bPaginate: false,

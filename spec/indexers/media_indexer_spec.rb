@@ -21,7 +21,8 @@ RSpec.describe MediaIndexer do
       organization_titles: ["Organization 1", "Organization 2"],
       organization_id: ["org123"],
       member_of_public_collection_ids: ['id1','id2','id3'],
-      taxonomies_titles: ['taxonomy1', 'taxonomy2']
+      taxonomies_titles: ['taxonomy1', 'taxonomy2'],
+      related_media_ids: ['mid1','mid2','mid3']
     } }
 
     before do
@@ -65,6 +66,9 @@ RSpec.describe MediaIndexer do
     it 'indexes taxonomies' do
       expect(subject['taxonomy_tesim']).to eq field_values[:taxonomies_titles]
       expect(subject['taxonomy_ssim']).to eq field_values[:taxonomies_titles]
+    end
+    it 'indexes related media ids' do
+      expect(subject['related_media_ids_ssim']).to eq field_values[:related_media_ids]
     end
   end
 end

@@ -7,7 +7,7 @@ module Morphosource
       attr_reader :solr, :collection_id, :collection_ids, :collection, :is_org_team, 
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
-        :n_idigbio, :collection_project_map, :organizations, :info, :subcollection_ids,
+        :n_idigbio, :collection_project_map, :collection_team_map, :organizations, :info, :subcollection_ids,
         :manager_media_count, :editor_media_count, :depositor_media_count, :downloader_media_count, :viewer_media_count,
         :manager_po_count, :editor_po_count, :depositor_po_count, :downloader_po_count, :viewer_po_count
 
@@ -44,9 +44,8 @@ module Morphosource
         @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
         @n_idigbio = bso_idigbio_count
 
-        @collection_project_map = collection_id_to_project_title_map
+        @collection_project_map, @collection_team_map = collection_id_to_collection_title_map
         @organizations = organization_docs
-
       end
 
       def collection_information
@@ -66,7 +65,7 @@ module Morphosource
         info['membership_counts']["Depositor"] = { "media_count" => depositor_media_count, "po_count" => depositor_po_count } if depositor_media_count > 0
         info['membership_counts']["Downloader"] = { "media_count" => downloader_media_count, "po_count" => downloader_po_count } if downloader_media_count > 0
         info['membership_counts']["Viewer"] = { "media_count" => viewer_media_count, "po_count" => viewer_po_count } if viewer_media_count > 0
-      
+
         info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
         info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
         info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
@@ -294,14 +293,20 @@ module Morphosource
           return joined_clauses
         end
 
-        def collection_id_to_project_title_map
+        def collection_id_to_collection_title_map
           return {} if !facet_results[solrize('member_of_collection_ids', :symbol)].present?
-
+          projects = {}
+          teams = {}
           collection_ids = facet_results[solrize('member_of_collection_ids', :symbol)].keys
-          solr.get_docs(query = nil, params = { fq: assemble_or_query('id', collection_ids)} ).
-            select { |d| is_project? d['collection_type_gid_ssim']&.first }.
-            map { |d| [ d['id'], d[ solrize('title', :stored_searchable) ]&.first ] }.
-            to_h
+          docs = solr.get_docs(query = nil, params = { fq: assemble_or_query('id', collection_ids)} )
+          docs.each do |d|
+            if is_project? d['collection_type_gid_ssim']&.first 
+              projects = projects.merge( { d['id'] => d[ solrize('title', :stored_searchable) ]&.first } )
+            else
+              teams = teams.merge( { d['id'] => d[ solrize('title', :stored_searchable) ]&.first } )
+            end
+          end
+          return projects, teams
         end
 
         def is_project?(collection_type)
@@ -356,25 +361,34 @@ module Morphosource
 
         # Convert solr facet results to media groups
         def facet_media_groups
+          fields = []
           facet_results.map do |key, value|
             clean_key = desolrize(key)
             case clean_key
             when 'media_type'
-              [ clean_key, value.transform_keys { |k| map_media_type(k) } ]
+              fields << [ clean_key, value.transform_keys { |k| map_media_type(k) } ]
             when 'member_of_collection_ids'
-              [
+              fields << [
                 'project',
                 value.
                   map { |sub_k, sub_v| [collection_project_map[sub_k], sub_v] if collection_project_map.include? sub_k }.
                   compact.
                   to_h
               ]
+              fields << [
+                'team',
+                value.
+                  map { |sub_k, sub_v| [collection_team_map[sub_k], sub_v] if collection_team_map.include? sub_k }.
+                  compact.
+                  to_h                  
+              ]
             when 'physical_object_id'
-              nil
+              # nil
             else
-              [ clean_key, value ]
+              fields << [ clean_key, value ]
             end
-          end.compact.to_h
+          end
+          return fields.compact.to_h
         end
 
         def map_media_type(t)
@@ -429,6 +443,9 @@ module Morphosource
           when 'm_project'
             project_id = Collection.where(title: value)&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
+          when 'm_team'
+            team_id = Collection.where(title: value)&.first&.id
+            "#{solrize('member_of_collection_ids', :symbol)}:#{team_id}" if team_id.present?
           when 'm_origin'
             if value == 'team_collection'
               "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"

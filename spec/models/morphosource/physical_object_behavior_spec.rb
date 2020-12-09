@@ -45,6 +45,12 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
       works.each(&:reload)
     end
 
+    describe '#related_media_ids' do
+      it 'returns related_media_ids' do
+        expect(specimen.related_media_ids).to match_array([public_media.id] + [private_media.id])
+      end
+    end
+
     describe '#media' do
       it 'returns all child media' do
         expect(specimen.media).to match_array([public_media, private_media])
@@ -134,5 +140,6 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
         end
       end
     end
+
   end
 end

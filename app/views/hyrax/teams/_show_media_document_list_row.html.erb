@@ -27,7 +27,7 @@ po_taxonomy = media_extra['po_taxonomy']
   <% if @po_type == 'bso' %>
     <td><%= po_taxonomy %></td>
   <% else %>
-    <td></td>
+    <td><%= document.description.first %></td>
   <% end %>
   <td><%= document.media_type&.first.underscore.humanize %></td> 
   <% if @is_team %>

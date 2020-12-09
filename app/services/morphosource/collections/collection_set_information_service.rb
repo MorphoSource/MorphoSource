@@ -191,7 +191,8 @@ module Morphosource
             rows: 0,
             fq: [
               "#{solrize('has_model', :symbol)}:Media",
-            ]
+            ],
+            "facet.limit": -1
           }
 
           collection_ids = []

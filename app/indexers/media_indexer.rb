@@ -39,6 +39,9 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['taxonomy_ssim'] = object.taxonomies_titles
       # related media ids
       solr_doc['related_media_ids_ssim'] = object.related_media_ids
+      # physical_object_ids
+      solr_doc['physical_object_id_ssim'] = object.physical_object_id
+      solr_doc['physical_object_id_tesim'] = object.physical_object_id
    end
   end
 end

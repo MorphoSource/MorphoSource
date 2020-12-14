@@ -6,6 +6,10 @@ module Morphosource
 
     included do
 
+      property :device_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/deviceID") do |index|
+        index.as :stored_searchable
+      end
+
       property :ie_modality, predicate: ::RDF::URI.new("http://rs.tdwg.org/ac/terms/captureDevice") do |index|
           index.as :stored_searchable, :facetable
       end

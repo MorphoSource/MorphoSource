@@ -18,7 +18,7 @@ module Hyrax
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
       :device_and_facility, :device_link, :device, :device_manufacturer, :device_description,
-      :device_organization_institution,
+      :device_organization_institution, :device_modality,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software,
       :imaging_event_description, :imaging_event_description_attachment, :imaging_event_reference_attachment,
       :imaging_event_modality,
@@ -449,7 +449,7 @@ module Hyrax
         end
 
         # get device from imaging event
-        device = Device.where('member_ids_ssim' => @imaging_event.id).first
+        device = @imaging_event.device
         if device.present?
           @device = device.title.first
           @device_organization_institution = organization_institution(device.id)
@@ -458,6 +458,7 @@ module Hyrax
           @device_link = "/concern/devices/" + device.id
           @device_manufacturer = device.creator
           @device_description = device.description
+          @device_modality = device.modality
         end
 
         # get imaging event details

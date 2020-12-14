@@ -7,12 +7,13 @@ class AddCollectionMembersJob < ApplicationJob
     if Collection.exists?(collection_id)
       c = Collection.find(collection_id)
       c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+      collection_member_work_ids = c.member_work_ids
     else
       return false
     end
 
     member_ids = member_ids.
-      select { |m_id| Media.exists?(m_id) && !c.member_work_ids.include?(m_id) }
+      select { |m_id| Media.exists?(m_id) && !collection_member_work_ids.include?(m_id) }
     return false if !member_ids.present?
 
     c.add_member_objects member_ids

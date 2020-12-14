@@ -28,7 +28,9 @@ module Ms1to2
             'ScanningElectronMicroscopy' => 'ScanningElectronMicroscopy',
             'BornDigital' => 'BornDigital',
             'Xray' => 'XRay',
-            'XRay' => 'XRay'
+            'XRay' => 'XRay',
+            'LaserAidedProfiling' => 'LaserAidedProfiling',
+            'Video' => 'Video'
           }
         }
       end

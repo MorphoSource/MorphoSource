@@ -314,6 +314,12 @@ function modalityAbbrev(m) {
     case 'XRay':
       return 'XRay'
       break;
+    case 'LaserAidedProfiling':
+      return 'LAP'
+      break;
+    case 'Video':
+      return 'Video'
+      break;
     default:
       return 'Etc'; 
   }

@@ -90,6 +90,10 @@ class Media < Morphosource::Works::Base
       "Born Digital"
     when "XRay"
       "X-Ray"
+    when "LaserAidedProfiling"
+      "Laser Aided Profiling"
+    when "Video"
+      "Video"
     else
       imaging_event&.ie_modality&.first
     end

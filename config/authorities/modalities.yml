@@ -49,3 +49,9 @@ terms:
   - id: XRay
     term: X-Ray
     active: true
+  - id: LaserAidedProfiling
+    term: Laser Aided Profiling
+    active: true
+  - id: Video
+    term: Video
+    active: true

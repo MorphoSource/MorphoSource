@@ -115,24 +115,22 @@ module Morphosource
         ### Solr collection queries ###
 
         def media_and_po_count(collection_id)
-          query = nil
-          params = {
-            fl: [solrize('physical_object_id', :stored_searchable)],
+          facet_fields = [
+            solrize('physical_object_id', :stored_searchable)
+          ]
+          params = { 
+            rows: 0,
             fq: [
-              "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}",
-              "#{solrize('has_model', :symbol)}:Media"
-            ]
+              "#{solrize('has_model', :symbol)}:Media",
+            ],
+            "facet.limit": -1
           }
-          solr.get(query, params)
-          # also get the PO counts 
-          po_count = 0
-          if solr.docs.present?
-            solr.docs.each do |doc|
-              po_list = doc[solrize('physical_object_id', :stored_searchable)]
-              po_count += po_list.length if po_list.present?
-            end
-          end
-          return solr.count, po_count
+          params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+          solr.get_facet_fields(nil, facet_fields, params)
+          facet_results = solr.facet_fields(facet_fields)
+          physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
+byebug
+          return solr.count, physical_object_ids.length
         end
 
         def user_managed_media_count
@@ -234,6 +232,7 @@ module Morphosource
 
             this_media_count, this_po_count = media_and_po_count(collection_id)
             if collection.membership_of(@user).include?('Manager')
+byebug
               manager_media_count += this_media_count
               manager_po_count += this_po_count
             elsif collection.membership_of(@user).include?('Editor')

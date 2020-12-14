@@ -252,6 +252,10 @@ module MorphosourceHelper
       'BD'
     when 'XRay'
       'XRay'
+    when 'LaserAidedProfiling'
+      'LAP'
+    when 'Video'
+      'Video'
     else
       'Etc'
     end

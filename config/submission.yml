@@ -9,6 +9,7 @@ status:
     StructuredLight: derived
     LaserScan: derived
     BornDigital: derived
+    Video: derived
     Photography: any
     XRay: any
   Video:
@@ -20,7 +21,8 @@ status:
     LaserScan: derived
     BornDigital: derived
     XRay: derived
-    Photography: any
+    Photography: derived
+    Video: any
   CTImageSeries:
     MicroNanoXRayComputedTomography: any
     MagneticResonanceImaging: any
@@ -29,6 +31,7 @@ status:
     StructuredLight: none
     LaserScan: none
     Photography: none
+    Video: none
   PhotogrammetryImageSeries:
     MicroNanoXRayComputedTomography: none
     MagneticResonanceImaging: none
@@ -37,11 +40,13 @@ status:
     StructuredLight: none
     LaserScan: none
     Photography: none
+    Video: none
   Mesh:
     MicroNanoXRayComputedTomography: derived
     MagneticResonanceImaging: derived
     SynchrotronImaging: derived
     Photogrammetry: derived
+    Video: derived
     StructuredLight: any
     LaserScan: any
     BornDigital: any
@@ -54,7 +59,7 @@ examples:
       derived:
         - Image with filter or processing applied (dimension reduction, contrast enhancement, etc.)
   Video:
-    Photography:
+    Video:
       raw:
         - Initial video with no filters or processing applied
       derived:

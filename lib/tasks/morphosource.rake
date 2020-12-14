@@ -214,6 +214,24 @@ namespace :morphosource do
     contributors.save
   end
 
+  desc 'Re-index specified model'
+  task :update_index_by_model, [:model] => :environment do |task, args|
+    class_eval <<-RUBY
+    def model 
+      #{args[:model]}
+    end
+    RUBY
+    if model.present?
+      model.find_each do |o|
+        Rails.logger.warn("Re-indexing begin: #{model} #{o.id}")      
+        o.update_index 
+        Rails.logger.warn("Re-indexing done: #{model} #{o.id}")      
+      end
+    else
+      Rails.logger.warn("No valid model specified.")      
+    end
+  end
+
   desc 'Set up Admin Role'
   task :create_admin_role => :environment do
     Role.find_or_create_by(name: 'admin')
@@ -243,4 +261,5 @@ namespace :morphosource do
     # contributor role
     Rake::Task['morphosource:create_contributor_role'].invoke
   end
+
 end

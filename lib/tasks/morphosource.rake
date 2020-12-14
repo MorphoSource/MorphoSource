@@ -217,16 +217,14 @@ namespace :morphosource do
   desc 'Re-index specified model'
   task :update_index_by_model, [:model] => :environment do |task, args|
     class_eval <<-RUBY
-    def model 
+    def modelClass
       #{args[:model]}
     end
     RUBY
-    if model.present?
-      model.find_each do |o|
-        Rails.logger.warn("Re-indexing begin: #{model} #{o.id}")      
-        o.update_index 
-        Rails.logger.warn("Re-indexing done: #{model} #{o.id}")      
-      end
+    if modelClass.present?
+      Rails.logger.info "Re-indexing all #{args[:model]}... "
+      UpdateWorkIndexJob.perform_later(args[:model])
+      Rails.logger.info "Re-indexing #{args[:model]} completed "
     else
       Rails.logger.warn("No valid model specified.")      
     end

@@ -195,6 +195,13 @@ module Hyrax
       @ingest_queue_name ||= :default
     end
 
+    # @!attribute [w] reindex_queue_name
+    #   ActiveJob queue to handle reindex-like jobs.
+    attr_writer :reindex_queue_name
+    def reindex_queue_name
+      @reindex_queue_name ||= :default
+    end
+
     # @!attribute [w] heavy_queue_name
     #   ActiveJob queue to handle performance-heavy jobs.
     attr_writer :heavy_queue_name

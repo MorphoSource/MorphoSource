@@ -102,14 +102,6 @@ namespace :morphosource do
     Rails.logger.warn("#{n} Media works lack FileSets or have FileSets missing original_file")
   end
 
-  desc 'Loop over media and update all media-work physical object ID references'
-  task :update_media_physical_object_ids => :environment do
-    Media.all.each do |m| 
-      Rails.logger.warn("Updating physical object ID for media #{m.id}") 
-      m.update_physical_object_id
-    end
-  end
-
   desc 'Mass ingest data'
   task :mass_ingest, [:admin_email, :update, :update_only_if_no_file] => :environment do |task, args|
     u = User.find_by(email: args[:admin_email])
@@ -124,9 +116,9 @@ namespace :morphosource do
       update_only_if_no_file = false
     end
     MassIngestJob.perform_later({
-      csv_path: File.expand_path("tmp/ingest/"), 
-      admin_email: u, 
-      update: update, 
+      csv_path: File.expand_path("tmp/ingest/"),
+      admin_email: u,
+      update: update,
       update_only_if_no_file: update_only_if_no_file
     })
   end

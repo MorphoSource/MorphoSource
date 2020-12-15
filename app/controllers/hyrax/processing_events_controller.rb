@@ -31,7 +31,6 @@ module Hyrax
       emancipate_if_necessary(env)
       if actor.update(env)
         update_media_team_access
-        update_media_physical_object_ids
         after_update_response
       else
         respond_to do |wants|
@@ -69,10 +68,6 @@ module Hyrax
 
       attrs
       end
-    end
-
-    def update_media_physical_object_ids
-      @curation_concern.descendants.select { |d| d.class == Media }.each { |m| m.update_physical_object_id }
     end
 
     # old_specimens, new_specimens, old_parent_ancestors, new_parent_ancestors methods used by update_media_team_access

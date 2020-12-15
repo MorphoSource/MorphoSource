@@ -8,7 +8,6 @@ module Hyrax
 
       def create(env)
         env.attributes['title'] = [ generated_title(env) ]
-        env.attributes['physical_object_id'] = find_physical_object_parents(env)
         env.attributes['keyword'] = split_keywords(env)
         add_team_access(env)
         super
@@ -16,7 +15,6 @@ module Hyrax
 
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
-        env.attributes['physical_object_id'] = find_physical_object_parents(env)
         env.attributes['keyword'] = split_keywords(env)
         super
       end
@@ -78,32 +76,6 @@ module Hyrax
 
       def modalities_service
         @modalities_service ||= Morphosource::ModalitiesService.new
-      end
-
-      def find_physical_object_parents(env)
-        attrs = env.attributes
-        id = attrs['id'].presence || env.curation_concern.id.presence || ''
-
-        physical_object_parents = []
-
-        if attrs['work_parents_attributes'].present?
-          parents = attrs['work_parents_attributes'].map do |key, wp|
-            wp['id'] if [ImagingEvent, ProcessingEvent].include?(
-              Morphosource::Works::Base.find(wp['id']).class
-            )
-          end
-
-          physical_object_parents += parents.
-            map { |p_id| Morphosource::PhysicalObjectParentSearchService.call({ id: p_id }) }.
-            flatten.
-            map { |po| po.id }
-        end
-
-        if id.present? && Media.exists?(id)
-          physical_object_parents += Media.find(id).physical_objects.map { |po| po.id }
-        end
-
-        physical_object_parents.uniq
       end
 
       def add_team_access(env)

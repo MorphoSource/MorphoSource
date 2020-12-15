@@ -26,20 +26,19 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
   let!(:team1) { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id, visibility: public) }
 
   let(:project1) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id, visibility: public) }
-  let!(:media1) { 
+  let!(:media1) {
     Media.create( title: ["Test Media Work"],
-                  physical_object_id: [biospecs.first.id],
                   media_type: ["xyz"]
-                  ) 
+                  )
   }
   let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: ['modality abc']) }
 
 
-  let!(:org1)  { 
+  let!(:org1)  {
     Organization.create(
-      title: ['title'], 
+      title: ['title'],
       organization_type: ["foobar"]
-    ) 
+    )
   }
 
   before do
@@ -58,7 +57,7 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
   describe 'get_media_po_type_info' do
     before do
       get_media_po_type_info
-    end      
+    end
     it 'returns media po type info' do
       expect(@total_bso_media).to eq(1)
       expect(@total_cho_media).to eq(0)
@@ -69,7 +68,7 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
   describe 'get_media_type_and_modality_info' do
     before do
       get_media_type_and_modality_info
-    end      
+    end
     it 'returns media type and modality info' do
       expect(@media_type_facets["xyz"]).to eq(1)
       expect(@modality_facets["modality abc"]).to eq(1)
@@ -78,4 +77,3 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
   end
 
 end
-

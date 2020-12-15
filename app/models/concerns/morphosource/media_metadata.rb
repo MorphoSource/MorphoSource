@@ -59,10 +59,6 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      property :physical_object_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/physicalObjectID") do |index|
-        index.as :stored_searchable
-      end
-
       # -- Management of File Visibility/Download/View --
       # -- Default settings can be set by organization linked team --
 

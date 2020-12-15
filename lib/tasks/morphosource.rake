@@ -214,17 +214,30 @@ namespace :morphosource do
     contributors.save
   end
 
-  desc 'Re-index specified model'
-  task :update_index_by_model, [:model] => :environment do |task, args|
+  desc 'Re-index specified model, one job per doc'
+  task :update_index_by_model, [:model, :perdoc] => :environment do |task, args|
     class_eval <<-RUBY
-    def modelClass
+    def model
       #{args[:model]}
     end
     RUBY
-    if modelClass.present?
-      Rails.logger.info "Re-indexing all #{args[:model]}... "
-      UpdateWorkIndexJob.perform_later(args[:model])
-      Rails.logger.info "Re-indexing #{args[:model]} completed "
+    if args[:perdoc].present? && args[:perdoc] == 'true'
+      per_doc = true
+    else
+      per_doc = false
+    end
+    if model.present?
+      if per_doc == false
+        Rails.logger.warn ("Re-indexing all #{args[:model]}... ")
+        UpdateWorkIndexJob.perform_later(args[:model])
+        Rails.logger.warn ("Re-indexing #{args[:model]} completed ")
+      else
+        model.find_each do |o|
+          Rails.logger.warn ("Re-indexing begin: #{args[:model]} id:#{o.id}")
+          UpdateWorkIndexJob.perform_later(args[:model], object = o)
+          Rails.logger.warn ("Re-indexing done: #{args[:model]} id:#{o.id}")
+        end
+      end
     else
       Rails.logger.warn("No valid model specified.")      
     end

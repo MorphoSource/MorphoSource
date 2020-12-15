@@ -37,7 +37,8 @@ module Morphosource
         @facet_results, @media_count, 
         @manager_media_count, @editor_media_count, @depositor_media_count, @downloader_media_count, @viewer_media_count, 
           @manager_po_count, @editor_po_count, @depositor_po_count, @downloader_po_count, @viewer_po_count = media_facet_query_for_collections
-        @manager_media_count += user_managed_media_count
+        # todo: might need to either add user managed media to "manager" count (dedupe needed), or have a separate count for user contributed media
+        # @manager_media_count += user_managed_media_count
 
         @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
         @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
@@ -129,7 +130,6 @@ module Morphosource
           solr.get_facet_fields(nil, facet_fields, params)
           facet_results = solr.facet_fields(facet_fields)
           physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
-byebug
           return solr.count, physical_object_ids.length
         end
 
@@ -232,7 +232,6 @@ byebug
 
             this_media_count, this_po_count = media_and_po_count(collection_id)
             if collection.membership_of(@user).include?('Manager')
-byebug
               manager_media_count += this_media_count
               manager_po_count += this_po_count
             elsif collection.membership_of(@user).include?('Editor')

@@ -90,6 +90,10 @@ class Media < Morphosource::Works::Base
       "Born Digital"
     when "XRay"
       "X-Ray"
+    when "LaserAidedProfiling"
+      "Laser Aided Profiling"
+    when "Video"
+      "Video"
     else
       imaging_event&.ie_modality&.first
     end
@@ -188,6 +192,10 @@ class Media < Morphosource::Works::Base
     ancestors.select(&:physical_object?)
   end
 
+  def physical_object_id
+    physical_objects.map(&:id)
+  end
+
   def physical_object_type
     return if physical_objects.empty?
     object = physical_objects.first
@@ -200,7 +208,7 @@ class Media < Morphosource::Works::Base
 
   # this method get siblings IDs from parents 1 level above
   def sibling_media_ids
-    # Find parent media: Media < ProcessingEvent < Media    
+    # Find parent media: Media < ProcessingEvent < Media
     processing_events = parent_works.select { |w| w.class == ProcessingEvent }
     parent_media = []
     processing_events.each do |p|
@@ -209,24 +217,24 @@ class Media < Morphosource::Works::Base
     # Find child media of each parent: Media > ProcessingEvent > Media
     child_media = []
     parent_media.each do |m|
-      processing_events = m.child_works.select { |w| w.class == ProcessingEvent } 
+      processing_events = m.child_works.select { |w| w.class == ProcessingEvent }
       processing_events.each do |p|
         child_media += p.child_works.select { |w| w.class == Media }
       end
     end
     # remove any duplicate IDs, and remove the current media id
-    sibling_ids = child_media.map{ |o| o.id }.flatten.uniq - [self.id] 
+    sibling_ids = child_media.map{ |o| o.id }.flatten.uniq - [self.id]
     return sibling_ids
   end
 
   def related_media_ids
-    parents = ancestors.select { |d| d.class == Media }.map{ |o| o.id } 
+    parents = ancestors.select { |d| d.class == Media }.map{ |o| o.id }
     children = descendants.select { |d| d.class == Media }.map{ |o| o.id }
     return (parents + children + sibling_media_ids).uniq
   end
 
   def public_related_media_ids
-    parents = ancestors.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id } 
+    parents = ancestors.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
     children = descendants.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
     siblings = sibling_media_ids.select { |d| d.visibility == 'open' }.map{ |o| o.id }
     return (parents + children + sibling_media_ids).uniq
@@ -352,11 +360,6 @@ class Media < Morphosource::Works::Base
       end
       return minted_doi
     end
-  end
-
-  def update_physical_object_id
-    self.physical_object_id = physical_objects.map { |po| po.id }
-    save!
   end
 
   private

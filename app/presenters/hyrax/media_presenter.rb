@@ -7,11 +7,12 @@ module Hyrax
     include MorphosourceHelper
     include MediaFinderHelper
 
-    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, :preview_mode, 
+    delegate :agreement_uri, :cite_as, :funding, :map_type, :media_type, :orientation, :part, :rights_holder, :scale_bar, :series_type, :short_description, :description, :side, :unit, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :number_of_images_in_set, :identifier, :related_url, :point_count, :fileset_visibility, :fileset_accessibility, :preview_mode,
       :morphosource_use_agreement_type,
       :permits_commercial_use,
       :required_archival_of_published_derivatives,
       :permits_3d_use,
+      :physical_object_id,
       to: :solr_document
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
@@ -19,7 +20,7 @@ module Hyrax
       :device_and_facility, :device_link, :device, :device_manufacturer, :device_description,
       :device_organization_institution,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software,
-      :imaging_event_description, :imaging_event_description_attachment, :imaging_event_reference_attachment, 
+      :imaging_event_description, :imaging_event_description_attachment, :imaging_event_reference_attachment,
       :imaging_event_modality,
       :parent_media_id_list, :child_media_id_list, :parent_media_members,
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
@@ -129,7 +130,7 @@ module Hyrax
 
     def universal_viewable_ready?
       return false unless representative_presenter.present?
-      viewable = 
+      viewable =
         ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.volume? ) &&
         ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_volume? )
       return viewable
@@ -339,7 +340,7 @@ module Hyrax
         parent_ids = pe.in_work_ids.select { |m_id| parent_media_id_list.include? m_id }
 
         if Morphosource::AttachmentService.get(pe.id, 'pe_description').present?
-          pe_description_attachment = 
+          pe_description_attachment =
             [Rails.application.routes.url_helpers.attachment_path(id: pe.id, field: 'pe_description')]
         else
           pe_description_attachment = []
@@ -501,13 +502,13 @@ module Hyrax
         @imaging_event_software = @imaging_event.software
         @imaging_event_description = @imaging_event.description
         if Morphosource::AttachmentService.get(@imaging_event.id, 'ie_description').present?
-          @imaging_event_description_attachment = 
+          @imaging_event_description_attachment =
             [Rails.application.routes.url_helpers.attachment_path(id: @imaging_event.id, field: 'ie_description')]
         else
           @imaging_event_description_attachment = []
         end
         if Morphosource::AttachmentService.get(@imaging_event.id, 'ie_reference').present?
-          @imaging_event_reference_attachment = 
+          @imaging_event_reference_attachment =
             [Rails.application.routes.url_helpers.attachment_path(id: @imaging_event.id, field: 'ie_reference')]
         else
           @imaging_event_reference_attachment = []
@@ -519,16 +520,16 @@ module Hyrax
 
     end
 
-    def related_media_ids 
+    def related_media_ids
       ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
       return ids
     end
 
-    def viewable_related_media_ids 
+    def viewable_related_media_ids
       return related_media_ids + [media.id] if current_ability.current_user.admin?
       filtered_ids = []
       related_media_ids.each do |id|
-        if current_ability.can?(:read, id) 
+        if current_ability.can?(:read, id)
           filtered_ids << id
         end
       end
@@ -566,7 +567,7 @@ module Hyrax
     def custom_agreement
       if solr_document.agreement_uri.present?
         return solr_document.agreement_uri.first
-      elsif media.attachment('agreement').present? 
+      elsif media.attachment('agreement').present?
         return Rails.application.routes.url_helpers.attachment_path(id: media.id, field: 'agreement')
       else
         return nil
@@ -578,10 +579,10 @@ module Hyrax
     end
 
     def agreement_description
-      description = solr_document.morphosource_use_agreement_type&.first.to_s + " (" + 
-             solr_document.permits_commercial_use&.first.to_s + ", " + 
-             solr_document.required_archival_of_published_derivatives&.first.to_s + ", " + 
-             solr_document.permits_3d_use&.first.to_s  + ")" 
+      description = solr_document.morphosource_use_agreement_type&.first.to_s + " (" +
+             solr_document.permits_commercial_use&.first.to_s + ", " +
+             solr_document.required_archival_of_published_derivatives&.first.to_s + ", " +
+             solr_document.permits_3d_use&.first.to_s  + ")"
       return description.titleize.sub('3 D', '3D')
     end
 

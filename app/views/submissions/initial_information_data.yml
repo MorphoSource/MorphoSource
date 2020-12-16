@@ -4,39 +4,49 @@ status:
   Image:
     MicroNanoXRayComputedTomography: derived
     MagneticResonanceImaging: derived
+    SynchrotronImaging: derived
     Photogrammetry: derived
     StructuredLight: derived
     LaserScan: derived
     BornDigital: derived
+    Video: derived
     Photography: any
     XRay: any
   Video:
     MicroNanoXRayComputedTomography: derived
     MagneticResonanceImaging: derived
+    SynchrotronImaging: derived
     Photogrammetry: derived
     StructuredLight: derived
     LaserScan: derived
     BornDigital: derived
     XRay: derived
-    Photography: any
+    Photography: derived
+    Video: any
   CTImageSeries:
     MicroNanoXRayComputedTomography: any
     MagneticResonanceImaging: any
+    SynchrotronImaging: any
     Photogrammetry: none
     StructuredLight: none
     LaserScan: none
     Photography: none
+    Video: none
   PhotogrammetryImageSeries:
     MicroNanoXRayComputedTomography: none
     MagneticResonanceImaging: none
+    SynchrotronImaging: none
     Photogrammetry: any
     StructuredLight: none
     LaserScan: none
     Photography: none
+    Video: none
   Mesh:
     MicroNanoXRayComputedTomography: derived
     MagneticResonanceImaging: derived
+    SynchrotronImaging: derived
     Photogrammetry: derived
+    Video: derived
     StructuredLight: any
     LaserScan: any
     BornDigital: any
@@ -49,7 +59,7 @@ examples:
       derived:
         - Image with filter or processing applied (dimension reduction, contrast enhancement, etc.)
   Video:
-    Photography:
+    Video:
       raw:
         - Initial video with no filters or processing applied
       derived:
@@ -67,6 +77,12 @@ examples:
       derived:
         - Reconstruction data
         - Projection data with subsequent processing
+    SynchrotronImaging:
+      raw:
+        - X-ray projection images produced by scanner software
+      derived:
+        - Reconstructed image slices
+        - X-ray projection images with subsequent processing
   PhotogrammetryImageSeries:
     Photogrammetry:
       raw:

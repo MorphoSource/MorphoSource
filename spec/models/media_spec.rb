@@ -135,7 +135,9 @@ RSpec.describe Media do
         "Photography": "Photography",
         "ScanningElectronMicroscopy": "Scanning Electron Microscopy",
         "BornDigital": "Born Digital",
-        "XRay": "X-Ray"
+        "XRay": "X-Ray",
+        "LaserAidedProfiling": "Laser Aided Profiling",
+        "Video": "Video"
         }
       }
       before do

@@ -324,7 +324,9 @@ module Hyrax
 
       # get processing event:  media < processing_event
       # then get processing event data: activity items, child/parent IDs and member presenters
-      @processing_events = ProcessingEvent.where('member_ids_ssim' => this_media_and_parents_id_list)
+      @processing_events = ProcessingEvent
+        .where('member_ids_ssim' => this_media_and_parents_id_list)
+        .sort_by { |x| this_media_and_parents_id_list.index(x.member_ids&.first) || -1 }
       processing_event_ids = []
       @processing_events_data = []
       processing_events.each do |pe|

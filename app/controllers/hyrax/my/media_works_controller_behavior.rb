@@ -115,9 +115,6 @@ module Hyrax
         def member_works
           @response = collection_member_service.all_member_media(
             @collection_organization_object_ids, media_filter_params)
-          @member_docs = @response.documents
-          @members_count = @response.total
-          @media_member_count = @members_count
         end
 
         def member_works_objects(obj_type)
@@ -139,7 +136,7 @@ module Hyrax
         # media pagination methods
         def paginated_media_item_list
           # Uses kaminari to paginate an array to avoid need for solr documents for items here
-          Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
+          Kaminari.paginate_array(@media_member_docs, total_count: media_total_items).page(media_current_page).per(rows_from_params)
         end
 
         def media_total_items
@@ -163,7 +160,7 @@ module Hyrax
         # bso pagination methods
         def paginated_bso_item_list
           # for some reason a variable assignment is needed.  Otherwise the method returns nil
-          temp = Kaminari.paginate_array(@bso_member_docs, total_count: @bso_member_docs.size).page(bso_current_page).per(bso_rows_from_params)
+          temp = Kaminari.paginate_array(@bso_member_docs, total_count: bso_total_items).page(bso_current_page).per(bso_rows_from_params)
           return temp 
         end
 
@@ -186,7 +183,7 @@ module Hyrax
 
         # cho pagination methods
         def paginated_cho_item_list
-          temp = Kaminari.paginate_array(@cho_member_docs, total_count: @cho_member_docs.size).page(cho_current_page).per(cho_rows_from_params)
+          temp = Kaminari.paginate_array(@cho_member_docs, total_count: cho_total_items).page(cho_current_page).per(cho_rows_from_params)
           return temp 
         end
 

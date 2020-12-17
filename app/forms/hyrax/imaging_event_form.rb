@@ -20,6 +20,7 @@ module Hyrax
         :device_id,
         :ie_modality,
         :date_created,
+        :device_id,
         # X-ray CT metadata
         :exposure_time,
         :flux_normalization,
@@ -151,6 +152,14 @@ module Hyrax
             :lens_model,
             :light_source
         ]
+    end
+
+    def secondary_terms
+      []
+    end
+
+    def self.build_permitted_params
+      super + [:device_id]
     end
 
   end

@@ -33,12 +33,12 @@ RSpec.describe Morphosource::Works::Base do
     let(:new_specimen2_doc) { SolrDocument.find(specimen2.id) }
 
     before do
-      taxonomy2.members << specimen2
+      taxonomy2.ordered_members << specimen2
       taxonomy2.save
     end
 
     it 'updates the organization and added specimen objects' do
-      expect { organization.members << specimen2
+      expect { organization.ordered_members << specimen2
                organization.save
       }.to change      { organization.modified_date }
        .and change     { specimen2.modified_date }
@@ -56,7 +56,7 @@ RSpec.describe Morphosource::Works::Base do
       old_specimen2_doc
       old_docs
 
-      organization.members << specimen2
+      organization.ordered_members << specimen2
       organization.save
 
       # organization and added specimen are reindexed
@@ -107,12 +107,13 @@ RSpec.describe Morphosource::Works::Base do
   end
 
   describe 'adding a new imaging event' do
-    let!(:imaging_event2)         { ImagingEvent.create(title: ['imaging event 2']) }
+    let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry'])}
+    let!(:imaging_event2)         { ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id], ie_modality: device.modality) }
     let(:old_imaging_event2_doc)  { SolrDocument.find(imaging_event2.id) }
     let(:new_imaging_event2_doc)  { SolrDocument.find(imaging_event2.id) }
 
     it 'updates only the specimen object and added imaging event' do
-      expect { specimen.members << imaging_event2
+      expect { specimen.ordered_members << imaging_event2
                specimen.save
       }.to change      { specimen.modified_date }
        .and change     { imaging_event2.modified_date }
@@ -128,7 +129,7 @@ RSpec.describe Morphosource::Works::Base do
       old_imaging_event2_doc
       old_docs
 
-      specimen.members << imaging_event2
+      specimen.ordered_members << imaging_event2
       specimen.save
 
       # specimen and added imaging event are reindexed

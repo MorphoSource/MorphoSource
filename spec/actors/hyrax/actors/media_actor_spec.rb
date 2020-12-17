@@ -39,8 +39,8 @@ RSpec.describe Hyrax::Actors::MediaActor do
       end
       context 'media is created through the submission process' do
         let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }
-        let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event']) }
-        let(:device)              { Device.create(title: ['device']) }
+        let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id]) }
+        let(:device)              { Device.create(title: ['device'], modality: ['Photogrammetry']) }
         let(:biological_specimen) { BiologicalSpecimen.create(title: ['title'], vouchered: [true]) }
         let(:taxonomy)            { Taxonomy.create(title: ['taxonomy']) }
 
@@ -148,16 +148,18 @@ RSpec.describe Hyrax::Actors::MediaActor do
     let(:user) { FactoryBot.build(:user) }
     let(:ability) { Ability.new(user) }
     let(:work) { Media.new }
-    let(:modality_attr) { [ 'MagneticResonanceImaging', 'NeutrinoImaging' ] }
+    let(:device1) { Device.create(title: ['device1'], modality: ['MagneticResonanceImaging']) }
+    let(:device2) { Device.create(title: ['device2'], modality: ['NeutrinoImaging']) }
+    # let(:modality_attr) { [ device1.modality.first, device2.modality.first ] }
     let(:modality_labels) { [ 'MRI', 'Neutrino' ] }
     let(:part_attr) { [ 'leg', 'arm' ] }
-    let(:work_parents_attributes) { { "0"=>{"id"=>"parentIE", "_destroy"=>"false"} } }
-    let(:work_parents_attributes_multiple) { { "0"=>{"id"=>"parentIE", "_destroy"=>"false"}, "1"=>{"id"=>"parentIEmultiple", "_destroy"=>"false"} } }
+    let(:work_parents_attributes) { { "0"=>{"id"=>"parentIE1", "_destroy"=>"false"} } }
+    let(:work_parents_attributes_multiple) { { "0"=>{"id"=>"parentIE1", "_destroy"=>"false"}, "1"=>{"id"=>"parentIE2", "_destroy"=>"false"} } }
     let(:env) { Hyrax::Actors::Environment.new(work, ability, attrs) }
 
     before do
-      ImagingEvent.create(title: ["Test ImagingEvent"], id: "parentIE", ie_modality: [modality_attr.first])
-      ImagingEvent.create(title: ["Test ImagingEvent multiple modality"], id: "parentIEmultiple", ie_modality: [modality_attr[1]])
+      ImagingEvent.create(title: ["Test ImagingEvent 1"], id: "parentIE1", ie_modality: device1.modality, device_id: [device1.id])
+      ImagingEvent.create(title: ["Test ImagingEvent 2"], id: "parentIE2", ie_modality: device2.modality, device_id: [device2.id])
     end
 
     describe 'one modality' do

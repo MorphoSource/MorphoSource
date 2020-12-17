@@ -43,7 +43,8 @@ RSpec.describe Hyrax::ProcessingEventsController do
 
       context "when the processing event's params include parents" do
         let(:media)                 { Media.create(title: ['media']) }
-        let(:imaging_event)         { ImagingEvent.create(title: ['imaging event']) }
+        let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+        let(:imaging_event)         { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality) }
         let(:old_specimen)          { BiologicalSpecimen.create(title: ['old specimen'], vouchered: [true]) }
         let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
         let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
@@ -126,7 +127,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
         end
 
         context 'and the parents are changed' do
-          let(:new_imaging_event) { ImagingEvent.create(title: ['new imaging event']) }
+          let(:new_imaging_event) { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], ie_modality: device.modality) }
           let(:new_specimen)     { BiologicalSpecimen.new(title: ['new specimen'], vouchered: [true]) }
           let(:new_organization) { Organization.new(title: ['new org'], team_id: []) }
           let(:new_team)         { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
@@ -206,7 +207,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
         end
         context 'and the media is updated' do
           let(:new_media)         { Media.create(title: ['new media']) }
-          let(:new_imaging_event) { ImagingEvent.create(title: ['new imaging event']) }
+          let(:new_imaging_event) { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], ie_modality: device.modality) }
           let(:new_organization)  { Organization.create(title: ['new organization']) }
           let(:new_specimen)      { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ['false']) }
           let(:child_media)       { Media.create(title: ['child media']) }

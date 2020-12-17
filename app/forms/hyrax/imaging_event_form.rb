@@ -17,7 +17,6 @@ module Hyrax
         :description,
         :creator,
         :software,
-        :device_id,
         :ie_modality,
         :date_created,
         :device_id,

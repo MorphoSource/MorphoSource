@@ -118,13 +118,22 @@ module Hyrax
         end
 
         def member_works_objects(obj_type)
-          all_object_ids = @collection_object_ids + @collection_organization_object_ids          
+          all_object_ids = @collection_object_ids + @collection_organization_object_ids
           case obj_type
           when 'bso'
             @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
             @bso_member_docs = @bso_response.documents
             @bso_member_count = @bso_response.total
             @response = @bso_response
+            @media_count_for_edit, @po_count_for_edit = collection_information_service.media_and_po_count_by_collections(@user_collections_for_edit)
+byebug
+
+
+            @media_count_for_view = 7777 # @media_member_count - @media_count_for_edit
+            @po_count_for_view = @bso_member_count = @po_count_for_edit
+
+
+byebug
           when 'cho'
             @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
             @cho_member_docs = @cho_response.documents

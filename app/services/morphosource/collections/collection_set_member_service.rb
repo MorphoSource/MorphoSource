@@ -13,6 +13,11 @@ module Morphosource
         @params = params
       end
 
+      def media_count_for_edit(collections)
+        return 99
+      end
+
+
       # @api public
       #
       # Collections which are members of the given collection

@@ -32,6 +32,10 @@ module Morphosource
         collection_information
       end
 
+      def media_count_for_edit(collections)
+        return 999
+      end
+
       def query_solr_collection_info
 
         @facet_results, @media_count, 
@@ -39,7 +43,6 @@ module Morphosource
           @manager_po_count, @editor_po_count, @depositor_po_count, @downloader_po_count, @viewer_po_count = media_facet_query_for_collections
         # todo: might need to either add user managed media to "manager" count (dedupe needed), or have a separate count for user contributed media
         # @manager_media_count += user_managed_media_count
-
         @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
         @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
         @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
@@ -66,6 +69,8 @@ module Morphosource
         info['membership_counts']["Depositor"] = { "media_count" => depositor_media_count, "po_count" => depositor_po_count } if depositor_media_count > 0
         info['membership_counts']["Downloader"] = { "media_count" => downloader_media_count, "po_count" => downloader_po_count } if downloader_media_count > 0
         info['membership_counts']["Viewer"] = { "media_count" => viewer_media_count, "po_count" => viewer_po_count } if viewer_media_count > 0
+
+#        info['membership_counts']["Edit"] = { "media_count" => edit_media_count, "po_count" => editor_po_count } 
 
         info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
         info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
@@ -109,6 +114,29 @@ module Morphosource
 
       def subcollection_ids(collection_ids)
         @subcollection_ids ||= get_subcollection_ids(collection_ids)
+      end
+
+      def media_and_po_count_by_collections(t_collections)
+        return 0, 0 unless t_collections.present? 
+        t_collection_ids = t_collections.map { |d| d['id'] }
+        t_facet_fields = [
+          solrize('physical_object_id', :stored_searchable)
+        ]
+        t_params = { 
+          rows: 0,
+          fq: [
+            "#{solrize('has_model', :symbol)}:Media",
+          ],
+          "facet.limit": -1
+        }
+        t_params[:fq] << "#{assemble_or_query(
+            solrize('member_of_collection_ids', :symbol), t_collection_ids)}"
+        solr.get_facet_fields(nil, t_facet_fields, t_params)
+        t_facet_results = solr.facet_fields(t_facet_fields)
+        t_physical_object_ids = t_facet_results['physical_object_id_tesim'].keys.map(&:upcase)
+        media_count = solr.count ||= 0
+        po_count = t_physical_object_ids.length ||= 0
+        return media_count, po_count
       end
 
       private
@@ -230,23 +258,23 @@ module Morphosource
               is_nestable = true
             end
 
-            this_media_count, this_po_count = media_and_po_count(collection_id)
-            if collection.membership_of(@user).include?('Manager')
-              manager_media_count += this_media_count
-              manager_po_count += this_po_count
-            elsif collection.membership_of(@user).include?('Editor')
-              editor_media_count += this_media_count
-              editor_po_count += this_po_count
-            elsif collection.membership_of(@user).include?('Depositor')
-              depositor_media_count += this_media_count
-              depositor_po_count += this_po_count
-            elsif collection.membership_of(@user).include?('Downloader')
-              downloader_media_count += this_media_count
-              downloader_po_count += this_po_count
-            elsif collection.membership_of(@user).include?('Viewer')
-              viewer_media_count += this_media_count
-              viewer_po_count += this_po_count
-            end
+#            this_media_count, this_po_count = media_and_po_count(collection_id)
+#            if collection.membership_of(@user).include?('Manager')
+#              manager_media_count += this_media_count
+#              manager_po_count += this_po_count
+#            elsif collection.membership_of(@user).include?('Editor')
+#              editor_media_count += this_media_count
+#              editor_po_count += this_po_count
+#            elsif collection.membership_of(@user).include?('Depositor')
+#              depositor_media_count += this_media_count
+#              depositor_po_count += this_po_count
+#            elsif collection.membership_of(@user).include?('Downloader')
+#              downloader_media_count += this_media_count
+#              downloader_po_count += this_po_count
+#            elsif collection.membership_of(@user).include?('Viewer')
+#              viewer_media_count += this_media_count
+#              viewer_po_count += this_po_count
+#            end
 
           end
 

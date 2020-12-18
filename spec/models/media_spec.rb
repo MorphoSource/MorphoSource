@@ -118,7 +118,8 @@ RSpec.describe Media do
     end
 
     describe '#modality' do
-      let!(:imaging_event) { ImagingEvent.new(ie_modality: ['modality']) }
+      let(:device)         { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+      let!(:imaging_event) { ImagingEvent.new(ie_modality: device.modality, device_id: [device.id]) }
       let(:modality_values) { {
         "MicroNanoXRayComputedTomography": "X-Ray Computed Tomography (CT/microCT)",
         "MagneticResonanceImaging": "Magnetic Resonance Imaging (MRI)",
@@ -381,7 +382,8 @@ RSpec.describe Media do
       let(:organization)  { Organization.create(title: ['organization'])}
       let(:specimen)      { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'])}
       let(:cho)           { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes'])}
-      let(:imaging_event) { ImagingEvent.create(title: ['imaging event'])}
+      let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry'])}
+      let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality)}
 
       context 'object is a specimen' do
         let(:works) {[organization, specimen, imaging_event, media]}

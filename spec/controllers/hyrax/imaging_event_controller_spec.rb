@@ -4,11 +4,11 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::ImagingEventsController do
   let(:actor)           { double(update: true) }
-  let!(:imaging_event)  { ImagingEvent.create(title: ['imaging event']) }
+  let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry'])}
+  let!(:imaging_event)  { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality) }
   let(:user)            { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
   before do
-    expect(subject).to receive(:imaging_event_modality_valid?).and_return(true)
     allow(subject).to receive(:actor).and_return(actor)
     allow(subject).to receive(:authorize!).with(:update, imaging_event).and_return(true)
 

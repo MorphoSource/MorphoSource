@@ -19,6 +19,7 @@ module Hyrax
         :software,
         :ie_modality,
         :date_created,
+        :device_id,
         # X-ray CT metadata
         :exposure_time,
         :flux_normalization,
@@ -63,13 +64,15 @@ module Hyrax
     #self.terms -= [:keyword, :license, :rights_statement, :subject, :language, :source, :resource_type]
 
     self.required_fields = [
-        :ie_modality
+        :ie_modality,
+        :device_id
     ]
 
     self.single_valued_fields = [
         :description,
         :creator,
         :ie_modality,
+        :device_id,
         :date_created,
         # X-ray CT metadata
         :exposure_time,
@@ -148,6 +151,14 @@ module Hyrax
             :lens_model,
             :light_source
         ]
+    end
+
+    def secondary_terms
+      []
+    end
+
+    def self.build_permitted_params
+      super + [:device_id]
     end
 
   end

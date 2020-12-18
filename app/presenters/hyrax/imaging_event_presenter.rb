@@ -8,6 +8,7 @@ module Hyrax
             :creator,
             :title,
             :software,
+            :device_id,
             :ie_modality,
             # X-ray CT metadata
             :exposure_time,

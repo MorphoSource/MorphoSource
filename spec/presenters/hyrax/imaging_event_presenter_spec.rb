@@ -6,11 +6,14 @@ RSpec.describe Hyrax::ImagingEventPresenter do
 
     subject(:presenter) { described_class.new(SolrDocument.new(work.to_solr), nil) }
 
+    let(:device)  { Device.create(title:['device'], modality: ['Photogrammetry']) }
+
     let(:description)  {['test']}
     let(:creator)  {['test']}
     let(:title)  {['test']}
     let(:software)  {['test']}
-    let(:ie_modality)  {['test']}
+    let(:device_id) { [device.id] }
+    let(:ie_modality)  { device.modality }
     # X-ray CT metadata
     let(:exposure_time)  {['test']}
     let(:flux_normalization)  {['test']}
@@ -56,6 +59,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
             creator: creator,
             title: title,
             software: software,
+            device_id: device_id,
             ie_modality: ie_modality,
 
             exposure_time: exposure_time,
@@ -99,6 +103,7 @@ RSpec.describe Hyrax::ImagingEventPresenter do
             creator: creator,
             title: ["IE#{id}: #{title.first}"],
             software: software,
+            device_id: device_id,
             ie_modality: ie_modality,
 
             exposure_time: exposure_time,

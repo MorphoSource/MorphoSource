@@ -7,7 +7,8 @@ RSpec.shared_context 'update works', :shared_context => :metadata do
   let(:organization)              { Organization.create(title: ['old title']) }
   let(:taxonomy)                  { Taxonomy.create(title: ['old title']) }
   let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes']) }
-  let(:imaging_event)             { ImagingEvent.create(title: ['old title'], ie_modality: ["MagneticResonanceImaging"]) }
+  let(:device)                    { Device.create(title: ['device'], modality: ["MagneticResonanceImaging"])}
+  let(:imaging_event)             { ImagingEvent.create(title: ['old title'], ie_modality: device.modality, device_id: [device.id]) }
   let(:media1)                    { Media.create(title: ['old title']) }
   let(:processing_event)          { ProcessingEvent.create(title: ['old title']) }
   let(:media2)                    { Media.create(title: ['old title']) }

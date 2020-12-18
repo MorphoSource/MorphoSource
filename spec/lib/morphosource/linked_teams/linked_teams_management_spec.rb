@@ -11,8 +11,9 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
     let(:old_organization)      { Organization.create(title: ['old organization'], team_id: [old_team.id]) }
     let(:specimen)              { BiologicalSpecimen.create(title: ['new specimen'], vouchered: [true]) }
     let(:old_specimen)          { BiologicalSpecimen.create(title: ['old_specimen'], vouchered: [true]) }
-    let(:imaging_event)         { ImagingEvent.create(title: ['new imaging event']) }
-    let(:old_imaging_event)     { ImagingEvent.create(title: ['old imaging event']) }
+    let(:device)                { Device.create(title: ['title'], modality: ['Photogrammetry'])}
+    let(:imaging_event)         { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], ie_modality: device.modality) }
+    let(:old_imaging_event)     { ImagingEvent.create(title: ['old imaging event'], device_id: [device.id], ie_modality: device.modality) }
     let(:processing_event)      { ProcessingEvent.create(title: ['new processing event']) }
     let(:child_processing_event){ ProcessingEvent.create(title: ['child processing event']) }
     let(:media)                 { Media.create(title: ['media'], media_type: ['Image']) }

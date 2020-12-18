@@ -497,11 +497,12 @@ $( document ).ready(function() {
 
     // select device button
     $('#btn-select-device').click(function() {
-      var oldDeviceID = $('#parent-relationships-devices').data('members')[0].id;
+      var oldDeviceID = $('#device-id-value').val();
       var newDeviceID = $('#imaging_event_select_device_id').val();
       var orgData = $('#s2id_find_device_organization').select2('data');
 
       // modify current device properties
+      $('#device-id-value').val(newDeviceID);
       $('#device-organization-title-value').text(orgData.text);
       $('#device-title-value').text($('#imaging_event_select_device_id').find(':selected').text());
       $('#device-creator-value').text($('#imaging_event_select_device_id').find(':selected').data('creator'));
@@ -510,23 +511,11 @@ $( document ).ready(function() {
       $('#device-description-value').text($('#imaging_event_select_device_id').find(':selected').data('description'));
 
       // modify the form
-      $('form#related_form_imaging_event input[name^="imaging_event[work_parents_attributes]"]').remove();
+      $('form#related_form_imaging_event input[name^="imaging_event[device_id]"]').remove();
       $('<input />').attr('type', 'hidden')
-        .attr('name', 'imaging_event[work_parents_attributes][0][id]')
-        .attr('value', oldDeviceID)
-        .appendTo($('form#related_form_imaging_event'));
-      $('<input />').attr('type', 'hidden')
-        .attr('name', 'imaging_event[work_parents_attributes][0][_destroy]')
-        .attr('value', 'true')
-        .appendTo($('form#related_form_imaging_event'));
-      $('<input />').attr('type', 'hidden')
-        .attr('name', 'imaging_event[work_parents_attributes][1][id]')
-        .attr('value', newDeviceID)
-        .appendTo($('form#related_form_imaging_event'));
-      $('<input />').attr('type', 'hidden')
-        .attr('name', 'imaging_event[work_parents_attributes][1][_destroy]')
-        .attr('value', 'false')
-        .appendTo($('form#related_form_imaging_event'));
+        .attr('name', 'imaging_event[device_id][]')
+        .attr('value', newDeviceID )
+        .appendTo($('form#related_form_imaging_event'));   
     });
 
 

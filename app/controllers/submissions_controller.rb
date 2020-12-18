@@ -401,6 +401,9 @@ class SubmissionsController < ApplicationController
       addl_params = { uploaded_files: params[:uploaded_files] }
       addl_params[:collection_id] = params[:collection_id] if params[:collection_id]
       finalize_model_params(work, model_params, addl_params)
+    elsif work == 'imaging_event'
+      addl_params = { device_id: [@submission.device_id] }
+      finalize_model_params(work, model_params, addl_params)
     else
       finalize_model_params(work, model_params)
     end
@@ -461,7 +464,8 @@ class SubmissionsController < ApplicationController
       if !@submission.device_id.present?
           raise StandardError.new "Debug no device id #{@submission.device_id}"
       end
-      parents << @submission.device_id
+      # addl_params = device_id
+      model_params.merge!(addl_params)
       model_params = assign_model_params_parents(model_params, parents)
       @imaging_event_create_params = model_params
 

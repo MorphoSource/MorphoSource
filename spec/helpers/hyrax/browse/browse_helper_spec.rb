@@ -31,7 +31,8 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
                   media_type: ["xyz"]
                   )
   }
-  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: ['modality abc']) }
+  let(:device)  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id]) }
 
 
   let!(:org1)  {
@@ -71,7 +72,7 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
     end
     it 'returns media type and modality info' do
       expect(@media_type_facets["xyz"]).to eq(1)
-      expect(@modality_facets["modality abc"]).to eq(1)
+      expect(@modality_facets[device.modality.first]).to eq(1)
       expect(@total_media).to eq(1)
     end
   end

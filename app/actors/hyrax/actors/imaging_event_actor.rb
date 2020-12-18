@@ -10,7 +10,7 @@ module Hyrax
 
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
-        
+
         # skipping media update.  This should not be needed unless an IE is updated
         # by itself.  Updating title will be handled in Media actor when media is saved.
 
@@ -23,7 +23,7 @@ module Hyrax
         #    case work_child.class.to_s
         #    when 'Media'
         #      media_ids << work_child.id
-        #    end              
+        #    end
         #  end
         #  media_ids.each do |media_id|
         #    media = ::ActiveFedora::Base.find(media_id)
@@ -41,24 +41,19 @@ module Hyrax
         # For device parent fields and modality field, blank if no value
         # For date created, if no value should be “(No Event Date)”
         attrs = env.attributes
-        work_parents = ''
-        if attrs['work_parents_attributes'].present?
-          attrs['work_parents_attributes'].each do |key, wp|
-            work_parent = Morphosource::Works::Base.find(wp['id'])
-            work_parent_string = case work_parent.class.to_s
-              when 'Device'
-                "#{work_parent.creator.first} #{work_parent.title.first}"
-              # when 'BiologicalSpecimen'
-              #   "S#{wp['id']} "
-              # when 'CulturalHeritageObject'
-              #   "C#{wp['id']} "
-            end
-            work_parents += "#{work_parent_string} "
+        device_info = ''
+        if attrs['device_id'].present?
+          device = Device.find(attrs['device_id'].first)
+          if device.creator.present?
+            device_info += "#{device.creator.first} "
+          end
+          if device.title.present?
+            device_info += "#{device.title.first} "
           end
         end
         date_created = attrs['date_created'].present? ? attrs['date_created'].first : 'No Event Date'
-        modality = attrs['modality'].present? ? "#{attrs['modality'].first} " : ''
-        "#{work_parents}#{modality}Imaging Event (#{date_created})"
+        modality = attrs['ie_modality'].present? ? "#{attrs['ie_modality'].first} " : ''
+        "#{device_info}#{modality}Imaging Event (#{date_created})"
       end
     end
   end

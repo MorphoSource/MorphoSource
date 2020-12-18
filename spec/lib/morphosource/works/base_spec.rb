@@ -12,8 +12,9 @@ RSpec.describe Morphosource::Works::Base do
   let(:file_set1)       { FileSet.create }
   let(:file_set2)       { FileSet.create }
   let(:file_set3)       { FileSet.create }
-  let(:imagingEvent)    { ImagingEvent.create(title: ['title']) }
-  let(:imagingEvent2)   { ImagingEvent.create(title: ['title']) }
+  let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+  let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
+  let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
   let(:processingEvent) { ProcessingEvent.create(title: ['title']) }
   let(:works)           { [organization, specimen1, specimen2, media1, media2, media3, imagingEvent, imagingEvent2, processingEvent, file_set1, file_set2, file_set3] }
 

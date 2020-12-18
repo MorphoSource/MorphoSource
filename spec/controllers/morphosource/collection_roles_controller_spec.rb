@@ -40,6 +40,22 @@ RSpec.describe CollectionRolesController, type: :controller do
         allow(subject).to receive(:update_subcollections).and_return(true)
       end
 
+      context 'user already has a role in the collection' do
+        before do
+          set_access_params('managers')
+          is_contributor(another_user)
+          team.editors << another_user
+          team.editors_group.save
+          post :update_collection_groups, params: params
+        end
+        it "does not add the user to the collection's manager role" do
+          expect(team.managers).not_to include(another_user)
+        end
+        it 'creates a flash message with the user name' do
+          expect(flash[:error]).to match("#{another_user.name} is already a member of #{team.title.first}")
+        end
+      end
+
       context 'manager adds another user as a manager' do
         before do
           set_access_params('managers')

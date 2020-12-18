@@ -5,18 +5,13 @@ module Morphosource
     class CollectionSetMemberService 
       attr_reader :scope, :params, :collections, :collection
       delegate :repository, to: :scope
-      
+
       def initialize(scope:, user:, collections:, params:)
         @scope = scope
         @user = user
         @collections = collections
         @params = params
       end
-
-      def media_count_for_edit(collections)
-        return 99
-      end
-
 
       # @api public
       #
@@ -75,8 +70,10 @@ module Morphosource
       # Works which are members of the given collection
       # @return [Blacklight::Solr::Response]
       def available_member_works_filter_query(fq_params: [])
-        query_solr_with_fq(query_builder: works_search_builder, query_params: params[:q], fq_params: fq_params)
+        query_solr_with_fq(query_builder: media_search_builder, query_params: params[:q], fq_params: fq_params)
       end
+
+
 
       private
 
@@ -125,8 +122,6 @@ module Morphosource
         end
       end
 
-
-
       # from app/services/hyrax/collections/collection_member_service.rb
 
         # @api private
@@ -135,6 +130,10 @@ module Morphosource
         # @return [CollectionMemberSearchBuilder] new or existing
         def works_search_builder
           @works_search_builder ||= Hyrax::CollectionSetMemberSearchBuilder.new(scope: scope, collections: collections, search_includes_models: :works)
+        end
+
+        def media_search_builder
+          @works_search_builder ||= Hyrax::CollectionSetMemberSearchBuilder.new(scope: scope, collections: collections, search_includes_models: :media)
         end
 
         # @api private

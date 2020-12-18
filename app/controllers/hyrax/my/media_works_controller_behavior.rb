@@ -19,7 +19,8 @@ module Hyrax
                         :form_class,
                         :single_item_search_builder_class,
                         :membership_service_class,
-                        :information_service_class
+                        :information_service_class,
+                        :collection_set_member_search_builder_class
 
         #self.presenter_class = Hyrax::MediaWorksPresenter
 
@@ -28,6 +29,7 @@ module Hyrax
         # The search builder to find the collections' members
         self.membership_service_class = Morphosource::Collections::CollectionSetMemberService
         self.information_service_class = Morphosource::Collections::CollectionSetInformationService
+        self.collection_set_member_search_builder_class = Hyrax::CollectionSetMemberSearchBuilder      
       end
 
       def collection
@@ -49,9 +51,8 @@ module Hyrax
           @batch_actions_partial = 'batch_actions'
         end
       end
-
+      
       private
-
         #def presenter
         #  @presenter ||= begin
         #    presenter_class.new(current_user, current_ability)
@@ -88,9 +89,28 @@ module Hyrax
         end
 
 
+        def work_count(model, access)
+          # todo: modify this to get count instead of result docs. create and call another method?
+          builder = collection_set_member_search_builder(model, access)
+          builder.merge(rows: 99999)
+          response = repository.search(builder)
+          count = response.documents&.count || 0
+          return count
+        end
+
+        def collection_set_member_search_builder(model, access)
+          collection_set_member_search_builder_class.new(scope: self, 
+            collections: @user_collections_for_view, search_includes_models: model)
+                                   .with_access(access)
+        end
+
         def query_collection_members
           member_works
           prepare_docs_and_filters_for_media
+
+          @media_count_for_edit = work_count(:media, :edit)
+          @media_count_for_view = @media_member_count - @media_count_for_edit
+          # todo: get po counts
         end
 
         def query_collection_members_for_po(obj_type)
@@ -125,15 +145,6 @@ module Hyrax
             @bso_member_docs = @bso_response.documents
             @bso_member_count = @bso_response.total
             @response = @bso_response
-            @media_count_for_edit, @po_count_for_edit = collection_information_service.media_and_po_count_by_collections(@user_collections_for_edit)
-byebug
-
-
-            @media_count_for_view = 7777 # @media_member_count - @media_count_for_edit
-            @po_count_for_view = @bso_member_count = @po_count_for_edit
-
-
-byebug
           when 'cho'
             @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
             @cho_member_docs = @cho_response.documents

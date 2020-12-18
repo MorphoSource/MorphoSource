@@ -50,8 +50,6 @@ module Hyrax
 
       def specimens
         @user_collections_for_view = collections_service.search_results(:view)
-        @user_collections_for_edit = collections_service.search_results(:edit)
-byebug
         #presenter
         query_collection_information
         query_collection_members_for_po('bso')

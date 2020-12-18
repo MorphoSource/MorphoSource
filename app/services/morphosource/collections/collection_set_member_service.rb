@@ -62,31 +62,26 @@ module Morphosource
         core_fq = "(id:(#{object_ids.join(' OR ')}))"
         core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
         fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params)
+        available_member_works_filter_query(fq_params: fq_params, object_model: object_model)
       end
 
       # @api public
       #
       # Works which are members of the given collection
       # @return [Blacklight::Solr::Response]
-      def available_member_works_filter_query(fq_params: [])
-        query_solr_with_fq(query_builder: media_search_builder, query_params: params[:q], fq_params: fq_params)
+      def available_member_works_filter_query(fq_params: [], object_model: nil)
+        case object_model.to_s
+          when "BiologicalSpecimen"
+            rows = @params[:brows]
+          when "CulturalHeritageObject"
+            rows = @params[:crows]
+          else
+            rows = @params[:rows]
+          end
+        query_solr_with_fq(query_builder: media_search_builder, query_params: params[:q], fq_params: fq_params, initial_rows: rows)
       end
 
-
-
       private
-
-      # @api private
-      #
-#      def assemble_multiple_collection_query
-#        subcollection_ids = available_member_subcollections.documents.map { |s| s['id'] }
-#        if subcollection_ids.present?
-#          " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
-#        else
-#          ""
-#        end
-#      end
 
       def assemble_multiple_collection_query_for(coll)
         subcollection_ids = available_member_subcollections(coll).documents.map { |s| s['id'] }
@@ -105,14 +100,14 @@ module Morphosource
 
       # @api private
       #
-      def query_solr_with_fq(query_builder:, query_params:, fq_params:)
+      def query_solr_with_fq(query_builder:, query_params:, fq_params:, initial_rows:)
         initial_q = query_builder[:q]
         initial_fq = query_builder[:fq]
-        initial_rows = query_builder[:rows]
+        initial_rows = query_builder[:rows] unless initial_rows.present?
         begin
           query_builder.merge(q: query_params)
           query_builder.merge(fq: fq_params)
-          query_builder.merge(rows: initial_rows) # was 99999
+          query_builder.merge(rows: initial_rows)
           #repository.search(query_builder.with(query_params).query)
           repository.search(query_builder.query)
         ensure

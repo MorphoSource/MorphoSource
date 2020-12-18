@@ -100,8 +100,6 @@ module Morphosource
       @bso_source_options = []
       @cho_visibility_options = []
 
-#      @member_docs = @response.documents
-#      @members_count = @member_docs.length
       @media_member_docs = @response.documents
       @media_member_count = @response.total
       @paged_media_member_docs = paginated_media_item_list

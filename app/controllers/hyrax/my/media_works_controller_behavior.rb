@@ -92,24 +92,31 @@ module Hyrax
         def work_count(model, access)
           # todo: modify this to get count instead of result docs. create and call another method?
           builder = collection_set_member_search_builder(model, access)
-          builder.merge(rows: 99999)
+          builder.merge(rows: 999999)
           response = repository.search(builder)
           count = response.documents&.count || 0
           return count
         end
 
         def collection_set_member_search_builder(model, access)
-          collection_set_member_search_builder_class.new(scope: self, 
+          builder = collection_set_member_search_builder_class.new(scope: self, 
             collections: @user_collections_for_view, search_includes_models: model)
                                    .with_access(access)
+          rows = request.params[:rows]
+          builder.merge(rows: rows.to_i) if rows.present?                                           
+          return builder
         end
 
         def query_collection_members
           member_works
           prepare_docs_and_filters_for_media
-
           @media_count_for_edit = work_count(:media, :edit)
-          @media_count_for_view = @media_member_count - @media_count_for_edit
+          if filter_params('m_', params).present? or params[:q].present?
+            # if there is any filtering or searching, the return view count will not be the total. Get the actual count
+            @media_count_for_view = work_count(:media, :read) - @media_count_for_edit
+          else
+            @media_count_for_view = @media_member_count - @media_count_for_edit
+          end
           # todo: get po counts
         end
 
@@ -258,10 +265,9 @@ module Hyrax
         #   search_field: 'all_fields'
         # @return <Hash> the inputs required for the collection member query service
         def params_for_query
-          #params.merge(q: params[:cq])
-
           # setting higher collection limit for paginating the array       
-          params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
+          #params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
+          params.merge(q: params[:q]).merge({ 'page' => '1' })
         end
     end
   end

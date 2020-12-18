@@ -186,7 +186,7 @@
             <div class="row">
               <!-- Search bar -->
               <div class="col-xs-6">
-                <%= render 'hyrax/teams/search_form', presenter: @presenter, url: @presenter.search_form_url %>
+                <%= render 'hyrax/teams/search_form', presenter: @presenter, url: @presenter.search_form_url, tab: 'biological_specimens' %>
               </div>
               <div class="col-xs-6">
                 <%= render 'hyrax/teams/sort_and_per_page_bso', collection: @presenter %>
@@ -217,7 +217,7 @@
             <div class="row">
               <!-- Search bar -->
               <div class="col-xs-6">
-                <%= render 'hyrax/teams/search_form', presenter: @presenter, url: @presenter.search_form_url %>
+                <%= render 'hyrax/teams/search_form', presenter: @presenter, url: @presenter.search_form_url, tab: 'cultural_heritage_objects' %>
               </div>
               <div class="col-xs-6">
                 <%= render 'hyrax/teams/sort_and_per_page_cho', collection: @presenter %>

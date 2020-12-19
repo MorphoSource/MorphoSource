@@ -719,6 +719,10 @@ html {
     border-color: $button-border-color;
   }
 
+  .btn-wide {
+    min-width: 100px;
+  }
+
   .btn-disabled {
     background-color: $button-disabled-color;
     color: $button-disabled-font-color;

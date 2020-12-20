@@ -37,8 +37,17 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
       works.each(&:reload)
     end
 
+    describe 'media_solr' do
+      let(:public_media_solr)   { SolrDocument.find(public_media.id) }
+      let(:private_media_solr)  { SolrDocument.find(private_media.id) }
+
+      it 'returns descendant media solr records' do
+        expect(specimen.media_solr.map(&:id)).to match_array([public_media.id, private_media.id])
+      end
+    end
+
     describe '#related_media_ids' do
-      it 'returns related_media_ids' do
+      it 'returns related media ids' do
         expect(specimen.related_media_ids).to match_array([public_media.id] + [private_media.id])
       end
     end

@@ -4,10 +4,13 @@ module Morphosource
   module Works
     class Base < ActiveFedora::Base
       include Morphosource::AccessControls::Permissions
+      include Morphosource::Works::IndexRelatedWorks
 
       class_attribute :work_parents_attributes
       class_attribute :work_requires_files
       class_attribute :valid_parent_concerns
+
+      after_update :index_related_works
 
       self.work_requires_files = false
 

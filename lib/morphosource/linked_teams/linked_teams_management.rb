@@ -36,6 +36,10 @@ module Morphosource
         find_all_media
       end
 
+      def record_original_organizations
+        @original_organizations = Organization.find(@curation_concern.org_id)
+      end
+
       def record_original_parents
         @original_parents = @curation_concern.member_of
       end

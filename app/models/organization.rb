@@ -6,7 +6,7 @@ class Organization < Morphosource::Works::Base
 
   self.indexer = OrganizationIndexer
   # Change this to restrict which works can be added as a child.
-  self.valid_child_concerns = [Device, BiologicalSpecimen, CulturalHeritageObject]
+  self.valid_child_concerns = [Device]
 
   validates :title, presence: { message: 'Your work must have a title.' }
 
@@ -18,7 +18,15 @@ class Organization < Morphosource::Works::Base
   include ::Hyrax::BasicMetadata
 
   def specimens
-    ActiveFedora::Base.find(member_ids).select { |m| m.class == BiologicalSpecimen }
+    BiologicalSpecimen.where(org_id_tesim: id)
+  end
+
+  def cultural_heritage_objects
+    CulturalHeritageObject.where(org_id_tesim: id)
+  end
+
+  def physical_objects
+    specimens + cultural_heritage_objects
   end
 
   # Specimens that belong to the organization, but are not part of the liked team's items.
@@ -27,7 +35,7 @@ class Organization < Morphosource::Works::Base
   end
 
   def media
-    descendants.select { |d| d.class == Media }
+    physical_objects.map { |obj| obj.descendants.select { |d| d.class == Media } }.flatten
   end
 
   # Media that belong to specimens owned by the organization, but are not part of the liked team's items.

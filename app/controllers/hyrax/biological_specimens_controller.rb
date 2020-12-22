@@ -13,7 +13,7 @@ module Hyrax
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::BiologicalSpecimenPresenter
 
-    before_action :record_original_parents, only: :update
+    before_action :record_original_organizations, only: :update
 
     skip_authorize_resource only: :showcase
 
@@ -103,11 +103,11 @@ module Hyrax
     end
 
     def old_orgs
-      select_organizations(@original_parents)
+      @original_organizations
     end
 
     def new_orgs
-      select_organizations(@curation_concern.member_of)
+      Organization.find(@curation_concern.org_id)
     end
   end
 end

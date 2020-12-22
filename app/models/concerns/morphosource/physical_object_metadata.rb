@@ -6,7 +6,11 @@ module Morphosource
 
     included do
 
-  # 	  -- custom fields only --
+      # -- custom fields only --
+
+      property :org_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/orgID") do |index|
+        index.as :stored_searchable
+      end
 
       property :catalog_number, predicate: ::RDF::Vocab::DWC.catalogNumber do |index|
         index.as :stored_searchable

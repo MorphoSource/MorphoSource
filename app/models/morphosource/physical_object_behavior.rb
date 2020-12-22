@@ -1,7 +1,7 @@
 module Morphosource::PhysicalObjectBehavior
 
   def organizations
-    member_of.select{ |work| work.class == Organization }
+    Organization.find(org_id)
   end
 
   def organization_titles

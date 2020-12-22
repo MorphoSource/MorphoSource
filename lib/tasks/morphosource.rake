@@ -181,6 +181,28 @@ namespace :morphosource do
     end
   end
 
+  desc 'Transfer Physical Object Organization parent IDs to PO org_id metadata property'
+  task :transfer_po_parent_to_metadata => :environment do
+    BiologicalSpecimen.find_each do |b|
+      b.member_of.each do |parent|
+        if parent.class == Organization
+          puts("Adding organization parent #{parent.id} to BSO #{b.id}")
+          b.org_id << parent.id if !b.org_id.include?(parent.id)
+          b.save!
+        end
+      end
+    end
+    CulturalHeritageObject.find_each do |c|
+      c.member_of.each do |parent|
+        if parent.class == Organization
+          puts("Adding organization parent #{parent.id} to CHO #{c.id}")
+          c.org_id << parent.id if !c.org_id.include?(parent.id)
+          c.save!
+        end
+      end
+    end
+  end
+
   desc 'Dissolve parent/child relationships between devices and imaging events'
   task :remove_device_ie_relationships => :environment do
     Device.find_each do |d|

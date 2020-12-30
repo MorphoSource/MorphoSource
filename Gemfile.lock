@@ -959,7 +959,6 @@ GEM
 
 PLATFORMS
   ruby
-  x86_64-linux
 
 DEPENDENCIES
   activerecord-session_store!
@@ -1020,4 +1019,4 @@ DEPENDENCIES
   zipline (~> 1.0)
 
 BUNDLED WITH
-   2.2.0
+   2.0.2

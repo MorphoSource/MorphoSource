@@ -7,7 +7,7 @@ module Hyrax
 
 	  def initialize(scope:,
                    search_includes_models: :works,
-                   ids: ids)
+                   ids:)
 	    @ids = ids
       @search_includes_models = search_includes_models
 	    super(scope)

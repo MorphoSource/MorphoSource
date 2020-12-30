@@ -32,8 +32,10 @@ module Morphosource
         subcoll_fq = ""
         collections.each do |collection_doc|
           collection_ids << collection_doc.id
-          collection = Collection.find(collection_doc.id)
-          subcoll_fq += assemble_multiple_collection_query_for(collection) if collection.collection_type.nestable?
+          if is_team? collection_doc['collection_type_gid_ssim']&.first
+            collection = Collection.find(collection_doc.id)
+            subcoll_fq += assemble_multiple_collection_query_for(collection) if collection.collection_type.nestable?
+          end
         end
         core_fq = assemble_user_media_query
         core_fq += " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{collection_ids.join(' OR ')}))" if collection_ids.length > 0
@@ -79,6 +81,14 @@ module Morphosource
             rows = @params[:rows]
           end
         query_solr_with_fq(query_builder: media_search_builder, query_params: params[:q], fq_params: fq_params, initial_rows: rows)
+      end
+
+      def is_project?(collection_type)
+        collection_type.split('/').last == '2'
+      end
+
+      def is_team?(collection_type)
+        collection_type.split('/').last == '1'
       end
 
       private

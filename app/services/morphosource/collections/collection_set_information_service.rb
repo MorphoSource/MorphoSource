@@ -183,38 +183,41 @@ module Morphosource
           @n_media_team_organization = 0
           is_org_team_included = false
           is_nestable = false
+          org_team_query = ""
+          nestable_query = ""
 
-          @collections.each do |collection_doc|
+          @collections.each do |doc|
 
-            @collection_id = collection_doc.id
-            @collection = Collection.find(@collection_id)
+            @collection_id = doc.id
             collection_ids << @collection_id
-            @is_org_team = collection.team?
+            @is_org_team = is_team? doc['collection_type_gid_ssim']&.first 
 
-            if is_org_team && collection.organization.present?
-              @collection_organization_id = collection.organization.id
-              @collection_organization_ids << collection.organization.id
-              @team_org_po_ids << organization_po_ids if organization_po_ids.present?
-              @n_media_team_organization += team_org_origin_count if is_org_team
+            if is_org_team 
+              collection = Collection.find(@collection_id)
+              if collection.organization.present?
+                @collection_organization_id = collection.organization.id
+                @collection_organization_ids << collection.organization.id
+                @team_org_po_ids << organization_po_ids if organization_po_ids.present?
+                @n_media_team_organization += team_org_origin_count
+              end
+
+              if collection_organization_id
+                is_org_team_included = true
+              elsif collection.collection_type.nestable?
+                is_nestable = true
+              end
             end
 
-            if is_org_team && collection_organization_id
-              is_org_team_included = true
-            elsif collection.collection_type.nestable?
-              is_nestable = true
+            if is_org_team_included
+              org_team_query = assemble_po_id_or_collection_query(team_org_po_ids.flatten, subcollection_ids(collection_ids))
             end
 
-          end
-
-          if is_org_team_included
-            org_team_query = assemble_po_id_or_collection_query(team_org_po_ids.flatten, subcollection_ids(collection_ids))
-          end
-
-          if is_nestable
-            nestable_query = assemble_or_query(
-              solrize('member_of_collection_ids', :symbol),
-              subcollection_ids(collection_ids)
-            )
+            if is_nestable
+              nestable_query = assemble_or_query(
+                solrize('member_of_collection_ids', :symbol),
+                subcollection_ids(collection_ids)
+              )
+            end
           end
 
           main_query = assemble_or_query(
@@ -263,6 +266,10 @@ module Morphosource
 
         def is_project?(collection_type)
           collection_type.split('/').last == '2'
+        end
+
+        def is_team?(collection_type)
+          collection_type.split('/').last == '1'
         end
 
         def bso_idigbio_count

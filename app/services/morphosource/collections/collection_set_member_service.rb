@@ -17,8 +17,8 @@ module Morphosource
       #
       # Collections which are members of the given collection
       # @return [Blacklight::Solr::Response] {up to 50 solr documents}
-      def available_member_subcollections(coll)
-        query_solr(query_builder: subcollections_search_builder(coll), query_params: params_for_subcollections)
+      def available_member_subcollections(coll_id)
+        query_solr(query_builder: subcollections_search_builder(coll_id), query_params: params_for_subcollections)
       end
 
       # @api public
@@ -33,8 +33,9 @@ module Morphosource
         collections.each do |collection_doc|
           collection_ids << collection_doc.id
           if is_team? collection_doc['collection_type_gid_ssim']&.first
-            collection = Collection.find(collection_doc.id)
-            subcoll_fq += assemble_multiple_collection_query_for(collection) if collection.collection_type.nestable?
+            #collection = Collection.find(collection_doc.id)
+            #subcoll_fq += assemble_multiple_collection_query_for(collection_doc.id) if collection.collection_type.nestable?
+            subcoll_fq += assemble_multiple_collection_query_for(collection_doc.id)
           end
         end
         core_fq = assemble_user_media_query
@@ -93,8 +94,8 @@ module Morphosource
 
       private
 
-      def assemble_multiple_collection_query_for(coll)
-        subcollection_ids = available_member_subcollections(coll).documents.map { |s| s['id'] }
+      def assemble_multiple_collection_query_for(coll_id)
+        subcollection_ids = available_member_subcollections(coll_id).documents.map { |s| s['id'] }
         if subcollection_ids.present?
           " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
         else
@@ -145,8 +146,8 @@ module Morphosource
         #
         # set up a member search builder for collections only
         # @return [CollectionMemberSearchBuilder] new or existing
-        def subcollections_search_builder(collection)
-          @subcollections_search_builder ||= Hyrax::CollectionMemberSearchBuilder.new(scope: scope, collection: collection, search_includes_models: :collections)
+        def subcollections_search_builder(collection_id)
+          @subcollections_search_builder ||= Morphosource::CollectionMemberSearchBuilder.new(scope: scope, collection_id: collection_id, search_includes_models: :collections)
         end
 
         # @api private

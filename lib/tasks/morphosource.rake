@@ -217,6 +217,19 @@ namespace :morphosource do
     end
   end
 
+  desc 'Dissolve parent/child relationships between organizations and objects'
+  task :remove_organization_object_relationships => :environment do
+    Organization.find_each do |o|
+      puts("Removing BSO and CHO children from organizaiton #{o.id}")
+      new_members = Array(o.ordered_members)
+        .select { |m| m.class != BiologicalSpecimen && m.class != CulturalHeritageObject }
+        .compact
+      o.ordered_members = new_members
+      o.members = new_members
+      o.save!
+    end
+  end
+
   desc 'Set up MS dev team user accounts'
   task :create_production_users => :environment do
     emails = Morphosource.ms_init_usr.split(',')

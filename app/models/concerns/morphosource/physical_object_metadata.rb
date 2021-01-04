@@ -8,7 +8,7 @@ module Morphosource
 
       # -- custom fields only --
 
-      property :org_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/orgID") do |index|
+      property :organization_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationID") do |index|
         index.as :stored_searchable
       end
 

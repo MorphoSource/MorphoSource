@@ -37,7 +37,7 @@ module Morphosource
       end
 
       def record_original_organizations
-        @original_organizations = Organization.find(@curation_concern.org_id)
+        @original_organizations = Organization.find(Array(@curation_concern.organization_id))
       end
 
       def record_original_parents

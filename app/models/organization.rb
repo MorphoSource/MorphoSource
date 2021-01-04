@@ -18,11 +18,11 @@ class Organization < Morphosource::Works::Base
   include ::Hyrax::BasicMetadata
 
   def specimens
-    BiologicalSpecimen.where(org_id_tesim: id)
+    BiologicalSpecimen.where(organization_id_tesim: id)
   end
 
   def cultural_heritage_objects
-    CulturalHeritageObject.where(org_id_tesim: id)
+    CulturalHeritageObject.where(organization_id_tesim: id)
   end
 
   def physical_objects

@@ -240,6 +240,13 @@ html {
       li {
         display: inline-block;
       }
+
+      /* show only the Prev and Next buttons for mobile */
+      @media (max-width: 767px) {
+        li:nth-child(n+3) {
+          display: none;
+        }
+      }
     }
   }
 

@@ -181,24 +181,28 @@ namespace :morphosource do
     end
   end
 
-  desc 'Transfer Physical Object Organization parent IDs to PO org_id metadata property'
+  desc 'Transfer Physical Object Organization parent IDs to PO organization_id metadata property'
   task :transfer_po_parent_to_metadata => :environment do
     BiologicalSpecimen.find_each do |b|
-      b.member_of.each do |parent|
-        if parent.class == Organization
-          puts("Adding organization parent #{parent.id} to BSO #{b.id}")
-          b.org_id << parent.id if !b.org_id.include?(parent.id)
-          b.save!
-        end
+      org_ids = b.organization_id + b.
+        member_of.
+        map { |p| p.id if ( p.class == Organization && !b.organization_id.include?(p.id) ) }.
+        compact
+      if org_ids.present?
+        puts("Adding organizations #{org_ids.join(', ')} to BSO #{b.id}")
+        b.organization_id = org_ids
+        b.save!
       end
     end
     CulturalHeritageObject.find_each do |c|
-      c.member_of.each do |parent|
-        if parent.class == Organization
-          puts("Adding organization parent #{parent.id} to CHO #{c.id}")
-          c.org_id << parent.id if !c.org_id.include?(parent.id)
-          c.save!
-        end
+      org_ids = c.organization_id + c.
+        member_of.
+        map { |p| p.id if ( p.class == Organization && !c.organization_id.include?(p.id) ) }.
+        compact
+      if org_ids.present?
+        puts("Adding organizations #{org_ids.join(', ')} to CHO #{c.id}")
+        c.organization_id = org_ids
+        c.save!
       end
     end
   end

@@ -646,6 +646,11 @@ html {
       display: inline-block;
       vertical-align: top;
     }
+    .sidebar {      
+      .nav > li {
+        display: block;
+      }
+    }
     .dropdown-menu li {
       margin-left: -12px;      
     }

@@ -22,7 +22,8 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
 
   let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id) }
   let(:cho)              { CulturalHeritageObject.create(title: ['cho'], vouchered: [true], depositor: user.ms_id) }
-  let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id) }
+  let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+  let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, device_id: [device.id], ie_modality: device.modality) }
   let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }
   let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
   let(:team_depositor)   { User.create(email: 'depositor@test.com', password: 'password') }
@@ -98,9 +99,9 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
       allow(controller).to receive(:authorize!).with(:edit, team).and_return(true)
       allow(controller).to receive(:collection).and_return(team)
       allow(controller).to receive(:presenter).and_return(nil)
-      allow(controller).to receive(:query_collection_members).and_return(nil)      
+      allow(controller).to receive(:query_collection_members).and_return(nil)
       allow(controller).to receive(:form).and_return(nil)
-    end 
+    end
     it 'should have TeamPresenter' do
       controller.edit
       expect(controller.presenter_class).to be(Hyrax::TeamPresenter)
@@ -108,4 +109,3 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
   end
 
 end
-

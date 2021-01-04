@@ -545,6 +545,10 @@ class SolrDocument
   end
 
   # Image Capture Event
+  def device_id
+    self[Solrizer.solr_name('device_id', :stored_searchable)]
+  end
+  
   def ie_modality
       self[Solrizer.solr_name('ie_modality', :stored_searchable)]
   end

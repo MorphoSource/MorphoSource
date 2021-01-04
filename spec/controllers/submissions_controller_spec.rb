@@ -201,7 +201,10 @@ RSpec.describe SubmissionsController, type: :controller do
     let(:old_o_solr)    { SolrDocument.find(organization.id) }
     let(:new_o_solr)    { SolrDocument.find(organization.id) }
 
-    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event']) }
+    let(:device)        { Device.create(title: ['test device'], modality: ['Photogrammetry']) }
+
+    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
+
     let(:old_solr_docs) { [old_m_solr, old_s_solr, old_o_solr] }
 
     before do

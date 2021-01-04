@@ -9,6 +9,7 @@ class CollectionRolesController < ApplicationController
 
   def update_collection_groups
     return unless can? :edit, collection
+
     if users_are_eligible?
       update_subcollections
       update_agent_access
@@ -100,15 +101,22 @@ class CollectionRolesController < ApplicationController
   end
 
   def update_user_access
-    if @new_group
-      change_groups(user)
-    elsif @remove
-      @group.users.delete(user)
+    if @new_group || @remove
+      if @new_group
+        change_groups(user)
+      elsif @remove
+        @group.users.delete(user)
+      end
+      update_notice('success') if @group.save
     else
       check_subcollection_for_user(user) if @parent
-      add_user_to_group(user, @group)
+      if collection.group_members.include? user
+        update_notice('duplicate')
+      else
+        add_user_to_group(user, @group)
+        update_notice('success') if @group.save
+      end
     end
-    update_notice('success') if @group.save
   end
 
   def change_groups(user)
@@ -203,6 +211,8 @@ class CollectionRolesController < ApplicationController
     when 'user_status'
       emails = @non_contributors.join(', ')
       flash[:error] = "Error - users with email: #{ emails } do not have contributor status. Please contact an administrator."
+    when 'duplicate'
+      flash[:error] = "#{@user.name} is already a member of #{@collection.title.first}"
     end
   end
 

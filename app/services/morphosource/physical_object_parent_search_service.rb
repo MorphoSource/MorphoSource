@@ -28,7 +28,7 @@ module Morphosource
     end
 
     def total_media_count_for_po
-      query = "#{Solrizer.solr_name('physical_object_id', :stored_searchable)}:#{id}"
+      query = "#{Solrizer.solr_name('physical_object_id', :stored_searchable)}:#{id} AND has_model_ssim:Media"
       search_solr(query).length
     end
 

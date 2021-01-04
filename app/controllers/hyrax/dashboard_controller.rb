@@ -3,7 +3,7 @@ module Hyrax
     before_action :authenticate_user!
 
     def show
-      if can? :read, :admin_dashboard
+      if current_user.contributor? or current_user.admin?
         redirect_to main_app.my_media_index_path
       else
         redirect_to main_app.my_cart_path 

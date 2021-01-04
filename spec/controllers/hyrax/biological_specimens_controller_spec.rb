@@ -63,7 +63,8 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
       context "when the specimen's params include parents" do
         let(:media)                 { Media.create(title: ['media']) }
         let(:media2)                { Media.create(title: ['media2']) }
-        let(:imaging_event)         { ImagingEvent.create(title: ['imaging event']) }
+        let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+        let(:imaging_event)         { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality) }
         let(:processing_event)      { ProcessingEvent.create(title: ['processing event']) }
         let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
         let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }

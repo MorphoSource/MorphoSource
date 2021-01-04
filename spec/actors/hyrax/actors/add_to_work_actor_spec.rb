@@ -3,18 +3,15 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::Actors::AddToWorkActor do
 
-  let(:next_actor) { double(create: true, update: true) }
   subject { described_class.new(next_actor) }
 
-  let(:work) { Media.new(title: ["Work Being Updated"], id: "OriginalWork") }
-  let(:ability) { Ability.new(User.new) }
-
-  let(:parent_work) { ImagingEvent.new(title: ["Example Parent Work"], id: "ParentWork") }
-  let(:parent_id) { parent_work.id }
-
-  let(:attributes) { { work_parents_attributes: { '0' => { id: parent_id, _destroy: 'false' } } } }
-
-  let(:env) { Hyrax::Actors::Environment.new(work, ability, attributes) }
+  let(:next_actor)  { double(create: true, update: true) }
+  let(:work)        { Media.new(id: "OriginalWork", title: ["Work Being Updated"] ) }
+  let(:ability)     { Ability.new(User.new) }
+  let(:parent_work) { ProcessingEvent.new(id: "ParentWork", title: ["Example Parent Work"] ) }
+  let(:parent_id)   { parent_work.id }
+  let(:attributes)  { { work_parents_attributes: { '0' => { id: parent_id, _destroy: 'false' } } } }
+  let(:env)         { Hyrax::Actors::Environment.new(work, ability, attributes) }
 
   describe '#update' do
     before do

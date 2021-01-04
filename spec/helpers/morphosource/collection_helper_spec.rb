@@ -14,9 +14,10 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
   let!(:org1)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
 
   let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id) }
-  let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id) }
+  let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+  let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, device_id: [device.id], ie_modality: device.modality) }
   let(:cho)         { CulturalHeritageObject.create(title: ['cho title'], vouchered: [true], depositor: user.ms_id) }
-  let(:imagingEvent2)     { ImagingEvent.create(title: ['imagingEvent2'], depositor: user.ms_id) }
+  let(:imagingEvent2)     { ImagingEvent.create(title: ['imagingEvent2'], depositor: user.ms_id, device_id: [device.id], ie_modality: device.modality) }
   let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }
   let(:media2)            { Media.create(title: ['new media 2'], depositor: user.ms_id) }
   let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
@@ -65,12 +66,11 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
     let(:uri) {'dashboard/collections'}
     let(:view) {{:view=>:list}}
     before do
-      allow(helper).to receive(:path_info) { uri }   
+      allow(helper).to receive(:path_info) { uri }
     end
     it 'returns correct link' do
-      expect(helper.ms_collection_view_link(team.id, view)).to eq ("/dashboard/collections/"+team.id+"?view=list") 
+      expect(helper.ms_collection_view_link(team.id, view)).to eq ("/dashboard/collections/"+team.id+"?view=list")
     end
   end
 
 end
-

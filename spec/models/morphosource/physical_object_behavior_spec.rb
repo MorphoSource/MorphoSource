@@ -33,7 +33,8 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
   describe 'child media' do
     let(:public_media)    { Media.create(title: ['Public Media'], media_type: ['CTImageSeries'], keyword: ['red', 'yellow', 'blue'], visibility: 'open') }
     let(:private_media)   { Media.create(title: ['Private Media'], media_type: ['PhotogrammetryImageSeries'], keyword: ['green', 'orange', 'purple'], visibility: 'restricted') }
-    let(:imaging_event)   { ImagingEvent.create(title: ['Imaging Event']) }
+    let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let(:imaging_event)   { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
     let(:media)           { [public_media, private_media] }
     let(:works)           { [specimen, cho, imaging_event, public_media, private_media] }
 

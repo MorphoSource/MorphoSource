@@ -26,7 +26,8 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
 
     context 'the current user is an admin' do
       let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: admin.ms_id) }
-      let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: admin.ms_id) }
+      let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+      let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: admin.ms_id, device_id: [device.id], ie_modality: device.modality) }
       let(:media)            { Media.create(title: ['new media'], depositor: admin.ms_id) }
       let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
       let(:team_depositor)   { User.create(email: 'depositor@test.com', password: 'password') }
@@ -52,7 +53,7 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
 
       context 'the team already has a linked organization' do
         let(:specimen2)        { BiologicalSpecimen.create(title: ['specimen2'], vouchered: [true], depositor: admin.ms_id) }
-        let(:imagingEvent2)    { ImagingEvent.create(title: ['imagingEvent2'], depositor: admin.ms_id) }
+        let(:imagingEvent2)    { ImagingEvent.create(title: ['imagingEvent2'], depositor: admin.ms_id, device_id: [device.id], ie_modality: device.modality) }
         let(:media2)           { Media.create(title: ['old media'], depositor: admin.ms_id) }
         let(:works)             { [org1, org2, specimen, specimen2, imagingEvent, imagingEvent2, media, media2] }
 

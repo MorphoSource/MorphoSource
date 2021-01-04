@@ -3,7 +3,7 @@
 
     <div class="btn-group">
       <%= f.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if f.object.persisted? %>
-      <%= f.submit class: 'btn btn-primary btn-wide btn-save', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_with_files", value: "Save", data: { :disable_with => 'Saving...' } %>
+      <%= f.submit class: 'btn btn-primary btn-wide btn-save btn-save-bso', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_with_files", value: "Save", data: { :disable_with => 'Saving...' } %>
     </div>
 
   <% end %>

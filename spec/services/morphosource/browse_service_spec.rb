@@ -33,7 +33,8 @@ RSpec.describe Morphosource::BrowseService do
                   media_type: ["xyz"]
                   )
   }
-  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: ['modality abc']) }
+  let!(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id]) }
 
 
   let!(:org1)  {
@@ -103,7 +104,7 @@ RSpec.describe Morphosource::BrowseService do
     it 'returns media_type_and_modality_facets, media count' do
       facets, total_media = subject.media_type_and_modality_facets
       expect(facets["media_type_sim"]["xyz"]).to eq(1)
-      expect(facets["media_modality_sim"]["modality abc"]).to eq(1)
+      expect(facets["media_modality_sim"][device.modality.first]).to eq(1)
       expect(total_media).to eq(1)
     end
   end

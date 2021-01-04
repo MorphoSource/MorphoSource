@@ -5,7 +5,7 @@
     <%= p.input_field :find_parent_work,
                       prompt: :translate,
                       autocomplete: 'off',
-                      placeholder: 'Search media ID or complete words in title',
+                      placeholder: 'Enter complete terms in title (part, media type, modality)',
                       data: {
                         autocomplete: 'work',
                           'autocomplete-url' => find_parent_media_to_add_autocomplete_url(@curation_concern.id),

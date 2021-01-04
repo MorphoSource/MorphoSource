@@ -168,6 +168,29 @@ namespace :morphosource do
     end
   end
 
+  desc 'Transfer Imaging Event Device parent IDs to IE device_id metadata property'
+  task :transfer_ie_parent_to_metadata => :environment do
+    ImagingEvent.find_each do |ie|
+      ie.member_of.each do |parent|
+        if parent.class == Device
+          puts("Adding device parent #{parent.id} to imaging event #{ie.id}")
+          ie.device_id = [parent.id]
+          ie.save!
+        end
+      end
+    end
+  end
+
+  desc 'Dissolve parent/child relationships between devices and imaging events'
+  task :remove_device_ie_relationships => :environment do
+    Device.find_each do |d|
+      puts("Removing children from device #{d.id}")
+      d.ordered_members = []
+      d.members = []
+      d.save!
+    end
+  end
+
   desc 'Set up MS dev team user accounts'
   task :create_production_users => :environment do
     emails = Morphosource.ms_init_usr.split(',')

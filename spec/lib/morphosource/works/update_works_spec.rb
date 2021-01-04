@@ -54,8 +54,8 @@ RSpec.describe Hyrax::ImagingEventsController, :type => :controller do
   end
 
   describe 'creating an imaging event as a child of a specimen' do
-
-    let(:params) { { "imaging_event"=> { "work_parents_attributes"=> { '0' => { 'id' => specimen.id, '_destroy' => 'false' } } } } }
+    let!(:device)  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let(:params)  { { "imaging_event"=> { "device_id" => device.id, "ie_modality" => device.modality.first, "work_parents_attributes"=> { '0' => { 'id' => specimen.id, '_destroy' => 'false' } } } } }
 
     it 'updates only the specimen object' do
       expect { post :create, params: params

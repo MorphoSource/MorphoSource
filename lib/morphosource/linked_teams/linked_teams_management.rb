@@ -68,8 +68,8 @@ module Morphosource
 
       def specimen_organizations(specimens)
         specimens.each_with_object([]) do |s, orgs|
-          s.member_of.each do |parent|
-            orgs << parent if parent.organization?
+          s.organization_id.each do |organization_id|
+            orgs << Organization.find(organization_id) if Organization.exists?(organization_id)
           end
         end
       end

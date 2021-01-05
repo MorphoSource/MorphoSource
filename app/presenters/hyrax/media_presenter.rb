@@ -451,7 +451,7 @@ module Hyrax
         end
 
         # get device from imaging event
-        device = @imaging_event.device
+        device = Device.find(@imaging_event.device_id.first) if @imaging_event.device_id.present?
         if device.present?
           @device = device.title.first
           @device_id = device.id

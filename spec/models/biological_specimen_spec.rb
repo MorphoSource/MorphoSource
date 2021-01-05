@@ -18,8 +18,8 @@ RSpec.describe BiologicalSpecimen do
 
   describe "valid work relationships" do
 
-    it "has only Organization as a valid parent" do
-      expect(subject.valid_parent_concerns).to match_array([Organization, Taxonomy])
+    it "has only Taxonomy as a valid parent" do
+      expect(subject.valid_parent_concerns).to match_array([Taxonomy])
     end
 
     it "has ImagingEvent as valid child concern" do
@@ -33,8 +33,8 @@ RSpec.describe BiologicalSpecimen do
 
     describe "valid work relationships" do
 
-      it "has Organization and Taxonomy as valid parents" do
-        expect(subject.valid_parent_concerns).to match_array([Organization, Taxonomy])
+      it "has only Taxonomy as a valid parent" do
+        expect(subject.valid_parent_concerns).to match_array([Taxonomy])
       end
 
       it "has ImagingEvent as valid child concern" do

@@ -7,7 +7,11 @@ module Morphosource
 
       # called from imaging event and processing event controllers
       def update_media_team_access
-        return if parents_attributes.nil?
+        if @curation_concern.physical_object?        
+          return if organization_id_param.nil?
+        else
+          return if parents_attributes.nil?
+        end
 
         return if organizations_unchanged?
 
@@ -52,6 +56,10 @@ module Morphosource
 
       def work_type
         @curation_concern.model_name.param_key
+      end
+
+      def organization_id_param
+        params[work_type].present? ? params[work_type][:organization_id] : nil
       end
 
       def organizations_unchanged?

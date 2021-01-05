@@ -38,10 +38,11 @@ RSpec.describe Morphosource::Works::Base do
     end
 
     it 'updates the organization and added specimen objects' do
-      expect { organization.ordered_members << specimen2
-               organization.save
-      }.to change      { organization.modified_date }
-       .and change     { specimen2.modified_date }
+      expect { 
+        specimen2.organization_id = [organization.id]
+        specimen2.save
+      }.to change      { specimen2.modified_date }
+       .and not_change { organization.modified_date }
        .and not_change { taxonomy.modified_date }
        .and not_change { taxonomy2.modified_date }
        .and not_change { specimen.modified_date }
@@ -56,14 +57,14 @@ RSpec.describe Morphosource::Works::Base do
       old_specimen2_doc
       old_docs
 
-      organization.ordered_members << specimen2
-      organization.save
+      specimen2.organization_id = [organization.id]
+      specimen2.save
 
-      # organization and added specimen are reindexed
-      expect(old_organization_doc['_version_']).not_to eq(new_organization_doc['_version_'])
+      # only specimen is reindexed
       expect(old_specimen2_doc['_version_']).not_to eq(new_specimen2_doc['_version_'])
 
       # associated works are not reindexed
+      expect(old_organization_doc['_version_']).to eq(new_organization_doc['_version_'])
       expect(old_taxonomy_doc['_version_']).to eq(new_taxonomy_doc['_version_'])
       expect(old_specimen_doc['_version_']).to eq(new_specimen_doc['_version_'])
       expect(old_imaging_event_doc['_version_']).to eq(new_imaging_event_doc['_version_'])

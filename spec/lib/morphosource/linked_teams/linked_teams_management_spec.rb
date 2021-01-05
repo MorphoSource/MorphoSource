@@ -2,15 +2,15 @@ require 'rails_helper'
 RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
 
   describe '#new_processing_event_media_updates' do
-    let(:subject)   { SubmissionsController.new() }
+    let(:subject)               { SubmissionsController.new() }
     let(:user)                  { User.create(email: 'email@email.com', password: 'password') }
     let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
     let(:team)                  { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
     let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
     let(:organization)          { Organization.create(title: ['new organization']) }
     let(:old_organization)      { Organization.create(title: ['old organization'], team_id: [old_team.id]) }
-    let(:specimen)              { BiologicalSpecimen.create(title: ['new specimen'], vouchered: [true]) }
-    let(:old_specimen)          { BiologicalSpecimen.create(title: ['old_specimen'], vouchered: [true]) }
+    let(:specimen)              { BiologicalSpecimen.create(title: ['new specimen'], vouchered: [true], organization_id: [organization.id]) }
+    let(:old_specimen)          { BiologicalSpecimen.create(title: ['old_specimen'], vouchered: [true], organization_id: [old_organization.id]) }
     let(:device)                { Device.create(title: ['title'], modality: ['Photogrammetry'])}
     let(:imaging_event)         { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], ie_modality: device.modality) }
     let(:old_imaging_event)     { ImagingEvent.create(title: ['old imaging event'], device_id: [device.id], ie_modality: device.modality) }
@@ -21,14 +21,13 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
 
     before do
       # set up work relationships
-      organization.ordered_members << specimen
       specimen.ordered_members << imaging_event
       imaging_event.ordered_members << processing_event
       processing_event.ordered_members << media
       media.ordered_members << child_processing_event
       child_processing_event.ordered_members << child_media
       # save all works
-      works = [organization, specimen, imaging_event, processing_event, media, child_processing_event, child_media]
+      works = [specimen, imaging_event, processing_event, media, child_processing_event, child_media]
       works.each(&:save)
       works.each(&:reload)
     end
@@ -49,11 +48,10 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
           media.read_groups += old_team.user_groups_names
           child_media.read_groups += old_team.user_groups_names
 
-          old_organization.ordered_members << old_specimen
           old_specimen.ordered_members << old_imaging_event
           old_imaging_event.ordered_members << media
 
-          works = [old_organization, old_specimen, old_imaging_event, media, child_media]
+          works = [old_specimen, old_imaging_event, media, child_media]
           works.each(&:save)
           works.each(&:reload)
 
@@ -86,11 +84,10 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
           media.read_groups += old_team.user_groups_names
           child_media.read_groups += old_team.user_groups_names
 
-          old_organization.ordered_members << old_specimen
           old_specimen.ordered_members << old_imaging_event
           old_imaging_event.ordered_members << media
 
-          works = [old_organization, old_specimen, old_imaging_event, media, child_media]
+          works = [old_specimen, old_imaging_event, media, child_media]
           works.each(&:save)
           works.each(&:reload)
 

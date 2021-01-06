@@ -400,19 +400,25 @@ module Morphosource
               po_ids_by_collection_organization(value)
             )
           when 'm_project'
-
-            #todo: search for title instead
+            #todo: search for title instead? (will need to reindex when title is updated)
             project_id = Collection.where(title: value)&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
-
-          when 'b_project'
-            assemble_or_query(
-              'id', 
-              po_ids_by_project(value)
-            )
           when 'm_team'
             team_id = Collection.where(title: value)&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{team_id}" if team_id.present?
+          when 'b_project', 'b_team', 'c_project', 'c_team'
+            po_ids = po_ids_by_collection_title(value)
+            if po_ids.present?
+              assemble_or_query(
+                'id', 
+                po_ids
+              ) 
+            else
+              assemble_or_query(
+                'id', 
+                ['none']
+              ) 
+            end
           when 'm_origin'
             if value == 'team_collection'
               "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
@@ -453,18 +459,19 @@ module Morphosource
           end
         end
 
-        def po_ids_by_project(project_title)
-          return [] if !project_title.present?
+        def po_ids_by_collection_title(collection_title)
+          return [] if !collection_title.present?
           params = { 
             fl: ['physical_object_id_tesim'],
             fq: [
               solrize('has_model', :symbol) + ':Media',
-              "#{solrize('member_of_collections', :symbol)}:\"#{project_title}\""
+              "#{solrize('member_of_collections', :symbol)}:\"#{collection_title}\""
             ]
           }
           media = solr.get_docs(nil, params)
-          po_ids =  media.map { |o| o['physical_object_id_tesim'] }.flatten.compact.uniq
-          return po_ids
+          filtered_title_po_ids =  media.map { |o| o['physical_object_id_tesim'] }.flatten.compact.uniq
+          #ids = physical_object_ids.select { |po_id| filtered_title_po_ids.include? po_id }
+          return filtered_title_po_ids
         end
 
         def po_ids_by_collection_organization(title)

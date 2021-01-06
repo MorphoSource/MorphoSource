@@ -34,6 +34,7 @@
         show_filter_by = true %>
         <input type="hidden" name="b_project" value="<%= params['b_project'] %>" class="filter-param" />
         <input type="hidden" name="m_project" data-sync="b_project" value="<%= params['b_project'] %>" class="filter-param" />
+        <input type="hidden" name="c_project" data-sync="b_project" value="<%= params['b_project'] %>" class="filter-param" />
       <% else %>
         <select name="b_project" data-form="bso-filters" style='width: 150px;'>
           <option value="">Project</option>
@@ -42,6 +43,23 @@
           <% end %>
         </select>
         <input type="hidden" name="m_project" data-sync="b_project" value="" class="filter-param" />
+        <input type="hidden" name="c_project" data-sync="b_project" value="" class="filter-param" />
+      <% end %>
+
+      <% if params['b_team'].present? 
+        show_filter_by = true %>
+        <input type="hidden" name="b_team" value="<%= params['b_team'] %>" class="filter-param" />
+        <input type="hidden" name="m_team" data-sync="b_team" value="<%= params['b_team'] %>" class="filter-param" />
+        <input type="hidden" name="c_team" data-sync="b_team" value="<%= params['b_team'] %>" class="filter-param" />
+      <% else %>
+        <select name="b_team" data-form="bso-filters" style='width: 150px;'>
+          <option value="">Team</option>
+          <% Array(@collection_media_groups['team']).each do |v, n| %>
+            <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
+          <% end %>
+        </select>
+        <input type="hidden" name="m_team" data-sync="b_team" value="" class="filter-param" />
+        <input type="hidden" name="c_team" data-sync="b_team" value="" class="filter-param" />
       <% end %>
 
       <% if params['q'].present? 
@@ -66,6 +84,9 @@
         <% end %>
         <% if params['b_project'].present? %>
           <p id="b_project" class="filter-param">Project > <%= params['b_project'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_project"></i></p>
+        <% end %>
+        <% if params['b_team'].present? %>
+          <p id="b_team" class="filter-param">Team > <%= params['b_team'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_team"></i></p>
         <% end %>
 
         <% if params['q'].present? %>

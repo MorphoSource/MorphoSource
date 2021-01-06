@@ -65,7 +65,7 @@ module CollectionInformationHelper
 
   def physical_object_counts_by_organization
     # hash of physical object counts by organization IDs
-    return [] if !@physical_object_ids.present?
+    return {} if !@physical_object_ids.present?
 
     facet_fields = [solrize('organization_id', :stored_searchable)]
 

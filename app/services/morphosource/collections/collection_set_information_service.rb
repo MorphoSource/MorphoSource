@@ -400,8 +400,16 @@ module Morphosource
               po_ids_by_collection_organization(value)
             )
           when 'm_project'
+
+            #todo: search for title instead
             project_id = Collection.where(title: value)&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
+
+          when 'b_project'
+            assemble_or_query(
+              'id', 
+              po_ids_by_project(value)
+            )
           when 'm_team'
             team_id = Collection.where(title: value)&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{team_id}" if team_id.present?
@@ -443,6 +451,20 @@ module Morphosource
           else
             "#{solrize(name.split('_', 2).last, :stored_searchable)}:#{value}"
           end
+        end
+
+        def po_ids_by_project(project_title)
+          return [] if !project_title.present?
+          params = { 
+            fl: ['physical_object_id_tesim'],
+            fq: [
+              solrize('has_model', :symbol) + ':Media',
+              "#{solrize('member_of_collections', :symbol)}:\"#{project_title}\""
+            ]
+          }
+          media = solr.get_docs(nil, params)
+          po_ids =  media.map { |o| o['physical_object_id_tesim'] }.flatten.compact.uniq
+          return po_ids
         end
 
         def po_ids_by_collection_organization(title)

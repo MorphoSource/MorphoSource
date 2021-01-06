@@ -46,6 +46,7 @@
       <% if params['m_project'].present? 
         show_filter_by = true %>
         <input type="hidden" name="m_project" value="<%= params['m_project'] %>" class="filter-param" />
+        <input type="hidden" name="b_project" data-sync="m_project" value="<%= params['m_project'] %>" class="filter-param" />
       <% else %>
         <select name="m_project" data-form="media-filters" style='width: 150px;'>
           <option value="">Project</option>
@@ -53,6 +54,7 @@
             <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
           <% end %>
         </select>
+        <input type="hidden" name="b_project" data-sync="m_project" value="" class="filter-param" />
       <% end %>
 
       <% if params['m_team'].present? 

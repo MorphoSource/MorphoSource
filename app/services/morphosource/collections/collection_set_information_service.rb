@@ -9,11 +9,7 @@ module Morphosource
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
         :n_idigbio, :collection_project_map, :collection_team_map, :po_counts_by_org, 
-        :organizations, :info, :subcollection_ids,
-        :manager_media_count, :editor_media_count, :depositor_media_count, 
-        :downloader_media_count, :viewer_media_count,
-        :manager_po_count, :editor_po_count, :depositor_po_count, 
-        :downloader_po_count, :viewer_po_count
+        :organizations, :info, :subcollection_ids
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
@@ -38,11 +34,9 @@ module Morphosource
 
       def query_solr_collection_info
 
-        @facet_results, @media_count, 
-        @manager_media_count, @editor_media_count, @depositor_media_count, @downloader_media_count, @viewer_media_count, 
-          @manager_po_count, @editor_po_count, @depositor_po_count, @downloader_po_count, @viewer_po_count = media_facet_query_for_collections
-        @manager_media_count += user_managed_media_count
-
+        @facet_results, @media_count = media_facet_query_for_collections
+        # todo: might need to either add user managed media to "manager" count (dedupe needed), or have a separate count for user contributed media
+        # @manager_media_count += user_managed_media_count
         @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
         @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
         @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
@@ -62,16 +56,8 @@ module Morphosource
             'bso' => bso_ids.length,
             'cho' => cho_ids.length
           },
-          'membership_counts' => {},
           'collection_object_ids' => physical_object_ids
         }
-        
-        info['membership_counts']["Manager"] = { "media_count" => manager_media_count, "po_count" => manager_po_count } if manager_media_count > 0
-        info['membership_counts']["Editor"] = { "media_count" => editor_media_count, "po_count" => editor_po_count } if editor_media_count > 0
-        info['membership_counts']["Depositor"] = { "media_count" => depositor_media_count, "po_count" => depositor_po_count } if depositor_media_count > 0
-        info['membership_counts']["Downloader"] = { "media_count" => downloader_media_count, "po_count" => downloader_po_count } if downloader_media_count > 0
-        info['membership_counts']["Viewer"] = { "media_count" => viewer_media_count, "po_count" => viewer_po_count } if viewer_media_count > 0
-
         info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
         info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
         info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
@@ -118,27 +104,22 @@ module Morphosource
 
       private
 
-        ### Solr collection queries ###
-
         def media_and_po_count(collection_id)
-          query = nil
-          params = {
-            fl: [solrize('physical_object_id', :stored_searchable)],
+          facet_fields = [
+            solrize('physical_object_id', :stored_searchable)
+          ]
+          params = { 
+            rows: 0,
             fq: [
-              "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}",
-              "#{solrize('has_model', :symbol)}:Media"
-            ]
+              "#{solrize('has_model', :symbol)}:Media",
+            ],
+            "facet.limit": -1
           }
-          solr.get(query, params)
-          # also get the PO counts 
-          po_count = 0
-          if solr.docs.present?
-            solr.docs.each do |doc|
-              po_list = doc[solrize('physical_object_id', :stored_searchable)]
-              po_count += po_list.length if po_list.present?
-            end
-          end
-          return solr.count, po_count
+          params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+          solr.get_facet_fields(nil, facet_fields, params)
+          facet_results = solr.facet_fields(facet_fields)
+          physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
+          return solr.count, physical_object_ids.length
         end
 
         def user_managed_media_count
@@ -178,67 +159,41 @@ module Morphosource
           @n_media_team_organization = 0
           is_org_team_included = false
           is_nestable = false
+          org_team_query = ""
+          nestable_query = ""
 
-          manager_media_count = 0
-          editor_media_count = 0
-          depositor_media_count = 0
-          viewer_media_count = 0
-          downloader_media_count = 0
-          manager_po_count = 0
-          editor_po_count = 0
-          depositor_po_count = 0
-          viewer_po_count = 0
-          downloader_po_count = 0
+          @collections.each do |doc|
 
-          @collections.each do |collection_doc|
-
-            @collection_id = collection_doc.id
-            @collection = Collection.find(@collection_id)
+            @collection_id = doc.id
             collection_ids << @collection_id
-            @is_org_team = collection.team?
+            @is_org_team = is_team? doc['collection_type_gid_ssim']&.first 
 
-            if is_org_team && collection.organization.present?
-              @collection_organization_id = collection.organization.id
-              @collection_organization_ids << collection.organization.id
-              @team_org_po_ids << organization_po_ids if organization_po_ids.present?
-              @n_media_team_organization += team_org_origin_count if is_org_team
+            if is_org_team 
+              collection = Collection.find(@collection_id)
+              if collection.organization.present?
+                @collection_organization_id = collection.organization.id
+                @collection_organization_ids << collection.organization.id
+                @team_org_po_ids << organization_po_ids if organization_po_ids.present?
+                @n_media_team_organization += team_org_origin_count
+              end
+
+              if collection_organization_id
+                is_org_team_included = true
+              elsif collection.collection_type.nestable?
+                is_nestable = true
+              end
             end
 
-            if is_org_team && collection_organization_id
-              is_org_team_included = true
-            elsif collection.collection_type.nestable?
-              is_nestable = true
+            if is_org_team_included
+              org_team_query = assemble_po_id_or_collection_query(team_org_po_ids.flatten, subcollection_ids(collection_ids))
             end
 
-            this_media_count, this_po_count = media_and_po_count(collection_id)
-            if collection.membership_of(@user).include?('Manager')
-              manager_media_count += this_media_count
-              manager_po_count += this_po_count
-            elsif collection.membership_of(@user).include?('Editor')
-              editor_media_count += this_media_count
-              editor_po_count += this_po_count
-            elsif collection.membership_of(@user).include?('Depositor')
-              depositor_media_count += this_media_count
-              depositor_po_count += this_po_count
-            elsif collection.membership_of(@user).include?('Downloader')
-              downloader_media_count += this_media_count
-              downloader_po_count += this_po_count
-            elsif collection.membership_of(@user).include?('Viewer')
-              viewer_media_count += this_media_count
-              viewer_po_count += this_po_count
+            if is_nestable
+              nestable_query = assemble_or_query(
+                solrize('member_of_collection_ids', :symbol),
+                subcollection_ids(collection_ids)
+              )
             end
-
-          end
-
-          if is_org_team_included
-            org_team_query = assemble_po_id_or_collection_query(team_org_po_ids.flatten, subcollection_ids(collection_ids))
-          end
-
-          if is_nestable
-            nestable_query = assemble_or_query(
-              solrize('member_of_collection_ids', :symbol),
-              subcollection_ids(collection_ids)
-            )
           end
 
           main_query = assemble_or_query(
@@ -256,9 +211,7 @@ module Morphosource
           params[:fq] << combined_query
           solr.get_facet_fields(nil, facet_fields, params)
 
-          return solr.facet_fields(facet_fields), solr.count, 
-            manager_media_count, editor_media_count, depositor_media_count, downloader_media_count, viewer_media_count, 
-            manager_po_count, editor_po_count, depositor_po_count, downloader_po_count, viewer_po_count
+          return solr.facet_fields(facet_fields), solr.count
         end
 
         def assemble_user_media_query
@@ -333,11 +286,25 @@ module Morphosource
               po_ids_by_collection_organization(value)
             )
           when 'm_project'
+            #todo: search for title instead? (will need to reindex when title is updated)
             project_id = Collection.where(title: value)&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
           when 'm_team'
             team_id = Collection.where(title: value)&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{team_id}" if team_id.present?
+          when 'b_project', 'b_team', 'c_project', 'c_team'
+            po_ids = po_ids_by_collection_title(value)
+            if po_ids.present?
+              assemble_or_query(
+                'id', 
+                po_ids
+              ) 
+            else
+              assemble_or_query(
+                'id', 
+                ['none']
+              ) 
+            end
           when 'm_origin'
             if value == 'team_collection'
               "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"

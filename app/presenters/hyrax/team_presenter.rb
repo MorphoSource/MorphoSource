@@ -105,16 +105,20 @@ module Hyrax
       end
     end
 
+    def get_media_po_counts_by_collection(collection_id)
+      @total_media, @total_po = browse_service.total_media_and_po_by_collection(collection_id)
+    end
+
     def browse_service
       @browse_service ||= Morphosource::BrowseService.new
     end
 
     def total_media
-      browse_service.total_media_by_collection(id)
+      @total_media
     end
 
     def total_po
-      browse_service.total_po_by_collection(id)
+      @total_po
     end
 
     def total_team_projects

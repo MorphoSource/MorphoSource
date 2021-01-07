@@ -48,6 +48,10 @@ module CollectionInformationHelper
     collection_type.split('/').last == '2'
   end
 
+  def is_team?(collection_type)
+    collection_type.split('/').last == '1'
+  end
+
   def bso_idigbio_count
     return 0 if !@bso_ids.present?
 
@@ -100,6 +104,8 @@ module CollectionInformationHelper
   end
 
   def organization_docs(organization_title = '')
+    return [] if !@po_counts_by_org.present?
+
     # solr docs of organizations corresponding to physical object IDs
     params = {
       fl: ['id', solrize('title', :stored_searchable)].join(','),
@@ -169,6 +175,20 @@ module CollectionInformationHelper
   end
 
   ### Collection solrize filter params ###
+
+  def po_ids_by_collection_title(collection_title)
+    return [] if !collection_title.present?
+    params = { 
+      fl: ['physical_object_id_tesim'],
+      fq: [
+        solrize('has_model', :symbol) + ':Media',
+        "#{solrize('member_of_collections', :symbol)}:#{prepare_value(collection_title)}"
+      ]
+    }
+    media = solr.get_docs(nil, params)
+    filtered_title_po_ids =  media.map { |o| o['physical_object_id_tesim'] }.flatten.compact.uniq
+    return filtered_title_po_ids
+  end
 
   def po_ids_by_collection_organization(title)
     return [] if !title.present?

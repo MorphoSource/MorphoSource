@@ -66,17 +66,11 @@ RSpec.describe Morphosource::BrowseService do
     end
   end
 
-  describe 'total_media_by_collection(collection_id)' do
-    it 'returns media count by collection_id' do
-      results = subject.total_media_by_collection(team1.id)
-      expect(results).to eq(1)
-    end
-  end
-
-  describe 'total_po_by_collection(collection_id)' do
-    it 'returns po count by collection_id' do
-      results = subject.total_po_by_collection(team1.id)
-      expect(results).to eq(1)
+  describe 'total_media_and_po_by_collection(collection_id)' do
+    it 'returns media and po count by collection_id' do
+      media_count, po_count = subject.total_media_and_po_by_collection(team1.id)
+      expect(media_count).to eq(1)
+      expect(po_count).to eq(1)
     end
   end
 

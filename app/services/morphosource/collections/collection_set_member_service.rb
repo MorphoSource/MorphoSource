@@ -5,7 +5,7 @@ module Morphosource
     class CollectionSetMemberService 
       attr_reader :scope, :params, :collections, :collection
       delegate :repository, to: :scope
-      
+
       def initialize(scope:, user:, collections:, params:)
         @scope = scope
         @user = user
@@ -17,8 +17,8 @@ module Morphosource
       #
       # Collections which are members of the given collection
       # @return [Blacklight::Solr::Response] {up to 50 solr documents}
-      def available_member_subcollections(coll)
-        query_solr(query_builder: subcollections_search_builder(coll), query_params: params_for_subcollections)
+      def available_member_subcollections(coll_id)
+        query_solr(query_builder: subcollections_search_builder(coll_id), query_params: params_for_subcollections)
       end
 
       # @api public
@@ -32,8 +32,11 @@ module Morphosource
         subcoll_fq = ""
         collections.each do |collection_doc|
           collection_ids << collection_doc.id
-          collection = Collection.find(collection_doc.id)
-          subcoll_fq += assemble_multiple_collection_query_for(collection) if collection.collection_type.nestable?
+          if is_team? collection_doc['collection_type_gid_ssim']&.first
+            #collection = Collection.find(collection_doc.id)
+            #subcoll_fq += assemble_multiple_collection_query_for(collection_doc.id) if collection.collection_type.nestable?
+            subcoll_fq += assemble_multiple_collection_query_for(collection_doc.id)
+          end
         end
         core_fq = assemble_user_media_query
         core_fq += " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{collection_ids.join(' OR ')}))" if collection_ids.length > 0
@@ -62,32 +65,37 @@ module Morphosource
         core_fq = "(id:(#{object_ids.join(' OR ')}))"
         core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
         fq_params << core_fq 
-        available_member_works_filter_query(fq_params: fq_params)
+        available_member_works_filter_query(fq_params: fq_params, object_model: object_model)
       end
 
       # @api public
       #
       # Works which are members of the given collection
       # @return [Blacklight::Solr::Response]
-      def available_member_works_filter_query(fq_params: [])
-        query_solr_with_fq(query_builder: works_search_builder, query_params: params[:q], fq_params: fq_params)
+      def available_member_works_filter_query(fq_params: [], object_model: nil)
+        case object_model.to_s
+          when "BiologicalSpecimen"
+            rows = @params[:brows]
+          when "CulturalHeritageObject"
+            rows = @params[:crows]
+          else
+            rows = @params[:rows]
+          end
+        query_solr_with_fq(query_builder: media_search_builder, query_params: params[:q], fq_params: fq_params, initial_rows: rows)
+      end
+
+      def is_project?(collection_type)
+        collection_type.split('/').last == '2'
+      end
+
+      def is_team?(collection_type)
+        collection_type.split('/').last == '1'
       end
 
       private
 
-      # @api private
-      #
-#      def assemble_multiple_collection_query
-#        subcollection_ids = available_member_subcollections.documents.map { |s| s['id'] }
-#        if subcollection_ids.present?
-#          " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
-#        else
-#          ""
-#        end
-#      end
-
-      def assemble_multiple_collection_query_for(coll)
-        subcollection_ids = available_member_subcollections(coll).documents.map { |s| s['id'] }
+      def assemble_multiple_collection_query_for(coll_id)
+        subcollection_ids = available_member_subcollections(coll_id).documents.map { |s| s['id'] }
         if subcollection_ids.present?
           " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
         else
@@ -103,14 +111,14 @@ module Morphosource
 
       # @api private
       #
-      def query_solr_with_fq(query_builder:, query_params:, fq_params:)
+      def query_solr_with_fq(query_builder:, query_params:, fq_params:, initial_rows:)
         initial_q = query_builder[:q]
         initial_fq = query_builder[:fq]
-        initial_rows = query_builder[:rows]
+        initial_rows = query_builder[:rows] unless initial_rows.present?
         begin
           query_builder.merge(q: query_params)
           query_builder.merge(fq: fq_params)
-          query_builder.merge(rows: 99999)
+          query_builder.merge(rows: initial_rows)
           #repository.search(query_builder.with(query_params).query)
           repository.search(query_builder.query)
         ensure
@@ -119,8 +127,6 @@ module Morphosource
           query_builder.merge(rows: initial_rows)
         end
       end
-
-
 
       # from app/services/hyrax/collections/collection_member_service.rb
 
@@ -132,12 +138,16 @@ module Morphosource
           @works_search_builder ||= Hyrax::CollectionSetMemberSearchBuilder.new(scope: scope, collections: collections, search_includes_models: :works)
         end
 
+        def media_search_builder
+          @works_search_builder ||= Hyrax::CollectionSetMemberSearchBuilder.new(scope: scope, collections: collections, search_includes_models: :media)
+        end
+
         # @api private
         #
         # set up a member search builder for collections only
         # @return [CollectionMemberSearchBuilder] new or existing
-        def subcollections_search_builder(collection)
-          @subcollections_search_builder ||= Hyrax::CollectionMemberSearchBuilder.new(scope: scope, collection: collection, search_includes_models: :collections)
+        def subcollections_search_builder(collection_id)
+          @subcollections_search_builder ||= Morphosource::CollectionMemberSearchBuilder.new(scope: scope, collection_id: collection_id, search_includes_models: :collections)
         end
 
         # @api private

@@ -46,6 +46,8 @@
       <% if params['m_project'].present? 
         show_filter_by = true %>
         <input type="hidden" name="m_project" value="<%= params['m_project'] %>" class="filter-param" />
+        <input type="hidden" name="b_project" data-sync="m_project" value="<%= params['m_project'] %>" class="filter-param" />
+        <input type="hidden" name="c_project" data-sync="m_project" value="<%= params['m_project'] %>" class="filter-param" />
       <% else %>
         <select name="m_project" data-form="media-filters" style='width: 150px;'>
           <option value="">Project</option>
@@ -53,11 +55,15 @@
             <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
           <% end %>
         </select>
+        <input type="hidden" name="b_project" data-sync="m_project" value="" class="filter-param" />
+        <input type="hidden" name="c_project" data-sync="m_project" value="" class="filter-param" />
       <% end %>
 
       <% if params['m_team'].present? 
         show_filter_by = true %>
         <input type="hidden" name="m_team" value="<%= params['m_team'] %>" class="filter-param" />
+        <input type="hidden" name="b_team" data-sync="m_team" value="<%= params['m_team'] %>" class="filter-param" />
+        <input type="hidden" name="c_team" data-sync="m_team" value="<%= params['m_team'] %>" class="filter-param" />
       <% else %>
         <select name="m_team" data-form="media-filters" style='width: 150px;'>
           <option value="">Team</option>
@@ -65,6 +71,8 @@
             <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
           <% end %>
         </select>
+        <input type="hidden" name="b_team" data-sync="m_team" value="" class="filter-param" />
+        <input type="hidden" name="c_team" data-sync="m_team" value="" class="filter-param" />
       <% end %>
 
       <% if params['q'].present? 

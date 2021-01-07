@@ -174,3 +174,10 @@ div#front-banner iframe {
 	padding: 20px 40px 20px 40px;
 	text-align: center;
 }
+
+.secondary-nav {
+  min-height: 50px !important;
+  .container {
+    min-height: 50px !important;
+  }
+}

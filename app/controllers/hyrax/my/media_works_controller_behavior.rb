@@ -19,7 +19,9 @@ module Hyrax
                         :form_class,
                         :single_item_search_builder_class,
                         :membership_service_class,
-                        :information_service_class
+                        :information_service_class,
+                        :collection_set_member_search_builder_class,
+                        :collection_set_member_count_search_builder_class
 
         #self.presenter_class = Hyrax::MediaWorksPresenter
 
@@ -28,6 +30,8 @@ module Hyrax
         # The search builder to find the collections' members
         self.membership_service_class = Morphosource::Collections::CollectionSetMemberService
         self.information_service_class = Morphosource::Collections::CollectionSetInformationService
+        self.collection_set_member_search_builder_class = Hyrax::CollectionSetMemberSearchBuilder      
+        self.collection_set_member_count_search_builder_class = Hyrax::CollectionSetMemberCountSearchBuilder      
       end
 
       def collection
@@ -49,9 +53,8 @@ module Hyrax
           @batch_actions_partial = 'batch_actions'
         end
       end
-
+      
       private
-
         #def presenter
         #  @presenter ||= begin
         #    presenter_class.new(current_user, current_ability)
@@ -87,10 +90,53 @@ module Hyrax
           @_prefixes ||= super + ['catalog', 'hyrax/base']
         end
 
+        def po_count_for_edit(ids)
+          builder = po_count_search_builder(:edit, ids)
+          builder.merge(rows: 999999)
+          response = repository.search(builder)
+          po_count = response.documents&.count || 0
+          return po_count
+        end
+
+        def work_by_access(model, access)
+          # todo: modify this to get count instead of result docs. create and call another method?
+          builder = collection_set_member_search_builder(model, access)
+          builder.merge(rows: 999999)
+          response = repository.search(builder)
+          return response.documents
+        end
+
+        def collection_set_member_search_builder(model, access)
+          builder = collection_set_member_search_builder_class.new(scope: self, 
+            collections: @user_collections_for_view, search_includes_models: model)
+                                   .with_access(access)
+          rows = request.params[:rows]
+          builder.merge(rows: rows.to_i) if rows.present?                                           
+          return builder
+        end
+
+        def po_count_search_builder(access, ids)
+          builder = collection_set_member_count_search_builder_class.new(scope: self, search_includes_models: :physical_objects, ids: ids).with_access(access)
+          #rows = request.params[:rows]
+          #builder.merge(rows: rows.to_i) if rows.present?                                           
+          return builder
+        end
 
         def query_collection_members
           member_works
           prepare_docs_and_filters_for_media
+          media_for_view = work_by_access(:media, :read)
+          @media_count_for_view = media_for_view&.count || 0
+          @media_count_for_edit = work_by_access(:media, :edit)&.count || 0
+          if filter_params('m_', params).present? or params[:q].present?
+            # if there is any filtering or searching, the return view count will not be the total. Get the actual count
+            @media_count_for_view = @media_count_for_view - @media_count_for_edit
+          else
+            @media_count_for_view = @media_member_count - @media_count_for_edit
+          end
+          # todo: get po counts
+          po_ids = media_for_view.map { |m| m.physical_object_id }.flatten.uniq.compact
+          @po_count_for_edit = po_count_for_edit(po_ids)
         end
 
         def query_collection_members_for_po(obj_type)
@@ -115,13 +161,10 @@ module Hyrax
         def member_works
           @response = collection_member_service.all_member_media(
             @collection_organization_object_ids, media_filter_params)
-          @member_docs = @response.documents
-          @members_count = @response.total
-          @media_member_count = @members_count
         end
 
         def member_works_objects(obj_type)
-          all_object_ids = @collection_object_ids + @collection_organization_object_ids          
+          all_object_ids = @collection_object_ids + @collection_organization_object_ids
           case obj_type
           when 'bso'
             @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
@@ -139,7 +182,7 @@ module Hyrax
         # media pagination methods
         def paginated_media_item_list
           # Uses kaminari to paginate an array to avoid need for solr documents for items here
-          Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
+          Kaminari.paginate_array(@media_member_docs, total_count: media_total_items).page(media_current_page).per(rows_from_params)
         end
 
         def media_total_items
@@ -163,7 +206,7 @@ module Hyrax
         # bso pagination methods
         def paginated_bso_item_list
           # for some reason a variable assignment is needed.  Otherwise the method returns nil
-          temp = Kaminari.paginate_array(@bso_member_docs, total_count: @bso_member_docs.size).page(bso_current_page).per(bso_rows_from_params)
+          temp = Kaminari.paginate_array(@bso_member_docs, total_count: bso_total_items).page(bso_current_page).per(bso_rows_from_params)
           return temp 
         end
 
@@ -186,7 +229,7 @@ module Hyrax
 
         # cho pagination methods
         def paginated_cho_item_list
-          temp = Kaminari.paginate_array(@cho_member_docs, total_count: @cho_member_docs.size).page(cho_current_page).per(cho_rows_from_params)
+          temp = Kaminari.paginate_array(@cho_member_docs, total_count: cho_total_items).page(cho_current_page).per(cho_rows_from_params)
           return temp 
         end
 
@@ -241,10 +284,9 @@ module Hyrax
         #   search_field: 'all_fields'
         # @return <Hash> the inputs required for the collection member query service
         def params_for_query
-          #params.merge(q: params[:cq])
-
           # setting higher collection limit for paginating the array       
-          params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
+          #params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
+          params.merge(q: params[:q]).merge({ 'page' => '1' })
         end
     end
   end

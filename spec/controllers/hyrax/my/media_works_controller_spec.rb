@@ -2,9 +2,16 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::My::MediaWorksController, type: :controller do
   let(:user) { User.create(email: 'email@email.com', password: 'password') }
+  let(:admin_role)  { Role.create(name: 'admin') }
 
   before do
+    admin_role.users << user
+    admin_role.save
     sign_in user
+    # skip all methods, just need to test which partial to be rendered
+    allow(controller).to receive(:query_collection_information) { }
+    allow(controller).to receive(:query_collection_members) { }
+    allow(controller).to receive(:prepare_instance_variables_for_batch_control_display) { }
   end
 
   describe 'GET #index' do

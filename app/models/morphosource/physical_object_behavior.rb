@@ -1,15 +1,11 @@
 module Morphosource::PhysicalObjectBehavior
 
   def organizations
-    member_of.select{ |work| work.class == Organization }
+    Organization.find(Array(organization_id))
   end
 
   def organization_titles
     organizations.map{ |o| o.title.first }
-  end
-
-  def organization_id
-    organizations.map{ |o| o.id }
   end
 
   def media

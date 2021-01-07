@@ -380,16 +380,15 @@ RSpec.describe Media do
     describe 'ancestor physical objects' do
       let(:media)         { Media.create(title: ['title'], media_type: ['Image'])}
       let(:organization)  { Organization.create(title: ['organization'])}
-      let(:specimen)      { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'])}
-      let(:cho)           { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes'])}
+      let(:specimen)      { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], organization_id: [organization.id])}
+      let(:cho)           { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes'], organization_id: [organization.id])}
       let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry'])}
       let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality)}
 
       context 'object is a specimen' do
-        let(:works) {[organization, specimen, imaging_event, media]}
+        let(:works) {[specimen, imaging_event, media]}
 
         before do
-          organization.ordered_members << specimen
           specimen.ordered_members << imaging_event
           imaging_event.ordered_members << media
           works.each(&:save)
@@ -405,10 +404,9 @@ RSpec.describe Media do
       end
 
       context 'object is a cultural heritage object' do
-        let(:works) {[organization, cho, imaging_event, media]}
+        let(:works) {[cho, imaging_event, media]}
 
         before do
-          organization.ordered_members << cho
           cho.ordered_members << imaging_event
           imaging_event.ordered_members << media
           works.each(&:save)

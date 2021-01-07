@@ -16,19 +16,11 @@ module Hyrax
     end
 
     def total_po
-      if member_ids.present?
-        return browse_service.total_po_by_org(solr_document.id)
-      else
-        return 0
-      end
+      browse_service.total_po_by_org(solr_document.id)
     end
 
     def total_media
-      if member_ids.present?
-        return browse_service.total_media_by_org(solr_document.id)
-      else
-        return 0
-      end
+      browse_service.total_media_by_org(solr_document.id)
     end
 
     # displays on catalog index

@@ -19,6 +19,7 @@ module Hyrax
         :latitude,
         :longitude,
         :numeric_time,
+        :organization_id,
         :original_location,
         :periodic_time,
         :vouchered,
@@ -57,6 +58,14 @@ module Hyrax
           :identifier,
           :related_url
       ]
+    end
+
+    def secondary_terms
+      []
+    end
+
+    def self.build_permitted_params
+      super + [:organization_id]
     end
 
   end

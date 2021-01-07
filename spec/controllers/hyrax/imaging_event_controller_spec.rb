@@ -34,8 +34,8 @@ RSpec.describe Hyrax::ImagingEventsController do
 
     context "when the imaging event's params include parents" do
       let(:media)                 { Media.create(title: ['media']) }
-      let(:old_specimen)          { BiologicalSpecimen.create(title: ['old specimen'], vouchered: [true]) }
       let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
+      let(:old_specimen)          { BiologicalSpecimen.create(title: ['old specimen'], vouchered: [true], organization_id: [old_organization.id]) }
       let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
       let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
       let(:old_team_manager)      { User.create(email: 'oldmanager@test.com', password: 'password') }
@@ -44,7 +44,6 @@ RSpec.describe Hyrax::ImagingEventsController do
       let(:params)                { { id: imaging_event.id, 'imaging_event' => { 'work_parents_attributes' => parent_attributes } } }
 
       before do
-        old_organization.ordered_members << old_specimen
         old_specimen.ordered_members << imaging_event
         imaging_event.ordered_members << media
 
@@ -56,7 +55,7 @@ RSpec.describe Hyrax::ImagingEventsController do
 
         media.read_groups += old_team.user_groups.map(&:name)
 
-        works = [old_organization, old_specimen, imaging_event, media]
+        works = [old_specimen, imaging_event, media]
         works.each(&:save)
         works.each(&:reload)
       end
@@ -80,17 +79,13 @@ RSpec.describe Hyrax::ImagingEventsController do
       end
 
       context 'and the parents are changed' do
-        let(:new_specimen)     { BiologicalSpecimen.new(title: ['new specimen'], vouchered: [true]) }
-        let(:new_organization) { Organization.new(title: ['new org'], team_id: []) }
+        let(:new_organization) { Organization.create(title: ['new org'], team_id: []) }
+        let(:new_specimen)     { BiologicalSpecimen.create(title: ['new specimen'], vouchered: [true], organization_id: [new_organization.id]) }
         let(:new_team)         { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
 
         let(:parent_attributes) { { '0' => { 'id' => old_specimen.id, '_destroy' => 'true' }, '1' => { 'id' => new_specimen.id, '_destroy' => 'false' } } }
 
         before do
-          new_organization.ordered_members << new_specimen
-          works = [new_organization, new_specimen]
-          works.each(&:save)
-          works.each(&:reload)
           # this will be updated by the actor
           allow(subject).to receive(:new_specimens).and_return([new_specimen])
         end

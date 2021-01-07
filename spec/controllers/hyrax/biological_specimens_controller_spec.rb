@@ -53,9 +53,9 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
     end
 
     describe '#update_media_team_access' do
-      context "when the specimen's params don't include parents" do
-        it 'returns nil for parents_attributes' do
-          expect(subject).to receive(:parents_attributes).and_return(nil)
+      context "when the specimen's params don't include parent organization_id" do
+        it 'returns nil for organization_id_param' do
+          expect(subject).to receive(:organization_id_param).and_return(nil)
           patch :update, params: { id: specimen.id }
         end
       end
@@ -72,14 +72,15 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
         let(:old_team_manager)      { User.create(email: 'oldmanager@test.com', password: 'password') }
         let(:old_team_depositor)    { User.create(email: 'olddepositor@test.com', password: 'password') }
         let(:old_team_viewer)       { User.create(email: 'oldviewer@test.com', password: 'password') }
-        let(:params)                { { id: specimen.id, 'biological_specimen' => { 'work_parents_attributes' => parent_attributes } } }
+        let(:params)                { { id: specimen.id, 'biological_specimen' => { 'organization_id' => parent_organization_id } } }
 
         before do
-          old_organization.ordered_members << specimen
           specimen.ordered_members << imaging_event
           imaging_event.ordered_members << media
           media.ordered_members << processing_event
           processing_event.ordered_members << media2
+
+          specimen.organization_id = [old_organization.id]
 
           old_team.create_collection_groups
           old_team.managers << old_team_manager
@@ -96,7 +97,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
         end
 
         context 'and the parent organization is not changed' do
-          let(:parent_attributes) { { '1' => { 'id' => old_organization.id, '_destroy' => 'false' } } }
+          let(:parent_organization_id) { old_organization.id }
 
           before do
             # this will get updated by the actor
@@ -121,7 +122,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
 
         context 'and the parents are changed' do
           let(:new_organization) { Organization.new(title: ['new org'], team_id: []) }
-          let(:parent_attributes) { { '0' => { 'id' => old_organization.id, '_destroy' => 'true' }, '1' => { 'id' => new_organization.id, '_destroy' => 'false' } } }
+          let(:parent_organization_id) { new_organization.id }
 
           before do
             # this will be updated by the actor

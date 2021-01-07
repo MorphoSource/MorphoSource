@@ -47,8 +47,8 @@ RSpec.describe Hyrax::Actors::MediaActor do
         before do
           taxonomy.ordered_members << biological_specimen
           biological_specimen.ordered_members << imaging_event
-          device.ordered_members << imaging_event
           imaging_event.ordered_members << processing_event
+          imaging_event.device_id = [device.id]
 
           [processing_event, imaging_event, device, biological_specimen, taxonomy].each(&:save)
 
@@ -68,7 +68,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
           let(:organization) { Organization.create(title: ['organization'], team_id: []) }
 
           before do
-            organization.ordered_members << biological_specimen
+            biological_specimen.organization_id = [organization.id]
             [organization, biological_specimen].each(&:save)
           end
 

@@ -23,11 +23,11 @@ module Morphosource
       return solr.facet_fields(facet_fields)
     end
 
-    def total_media_by_org(org_id)
+    def total_media_by_org(organization_id)
       params = {
         rows: 0,
         fq: [
-          "media_organization_id_ssim:#{org_id}",
+          "media_organization_id_ssim:#{organization_id}",
           "(has_model_ssim:Media)"
         ]
       }
@@ -35,11 +35,11 @@ module Morphosource
       solr.count
     end
 
-    def total_po_by_org(org_id)
+    def total_po_by_org(organization_id)
       params = {
         rows: 0,
         fq: [
-          "organization_id_ssim:#{org_id}",
+          "organization_id_ssim:#{organization_id}",
           "(has_model_ssim:BiologicalSpecimen OR has_model_ssim:CulturalHeritageObject)"
         ]
       }

@@ -228,9 +228,13 @@ class Media < Morphosource::Works::Base
   end
 
   def related_media_ids
+    po_media = []
+    physical_objects.each do |po|
+      po_media += po.related_media_ids
+    end
     parents = ancestors.select { |d| d.class == Media }.map{ |o| o.id }
     children = descendants.select { |d| d.class == Media }.map{ |o| o.id }
-    return (parents + children + sibling_media_ids).uniq
+    return (po_media + parents + children + sibling_media_ids).uniq
   end
 
   def public_related_media_ids

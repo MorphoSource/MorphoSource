@@ -531,14 +531,14 @@ module Hyrax
     end
 
     def viewable_related_media_ids
-      return related_media_ids + [media.id] if current_ability.current_user.admin?
+      return related_media_ids if current_ability.current_user.admin?
       filtered_ids = []
       related_media_ids.each do |id|
         if current_ability.can?(:read, id)
           filtered_ids << id
         end
       end
-      return filtered_ids + [media.id]
+      return filtered_ids
     end
 
     # this method is cloned from list_of_item_ids_to_display (for defaut view),

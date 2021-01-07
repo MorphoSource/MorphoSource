@@ -26,7 +26,7 @@
             <% else %>
               <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
               <%#= link_to t(:'helpers.action.cancel'), hyrax.my_collections_path, class: 'btn btn-link' %>
-            <% end %>            
+            <% end %>
           <% end %>
 
           <% if can? :destroy, @presenter.solr_document %>
@@ -229,7 +229,7 @@
             <% end %>
           </div>
         </div>
-      
+
       <% end %>
 
       <% if @collection.team? && @presenter.collection_type_is_nestable? %>
@@ -241,8 +241,9 @@
                     <!-- The user should have deposit access to the parent (the collection we are showing) and read access to the child -->
                     <% if @presenter.user_can_nest_collection? %>
 
-                      <%= button_tag t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
-                            type: 'button',
+                      <!-- temporarily disabling - see MR-963 -->
+                      <%# <%= button_tag t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'), %>
+                            <%# type: 'button',
                             class: 'btn btn-primary add-subcollection',
                             title: t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
                             data: { nestable: true,

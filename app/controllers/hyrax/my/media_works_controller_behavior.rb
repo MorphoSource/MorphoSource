@@ -165,17 +165,27 @@ module Hyrax
 
         def member_works_objects(obj_type)
           all_object_ids = @collection_object_ids + @collection_organization_object_ids
-          case obj_type
-          when 'bso'
-            @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
-            @bso_member_docs = @bso_response.documents
-            @bso_member_count = @bso_response.total
-            @response = @bso_response
-          when 'cho'
-            @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
-            @cho_member_docs = @cho_response.documents
-            @cho_member_count = @cho_response.total
-            @response = @cho_response
+          if all_object_ids.present?     
+            case obj_type
+            when 'bso'
+              @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
+              @bso_member_docs = @bso_response.documents
+              @bso_member_count = @bso_response.total
+              @response = @bso_response
+            when 'cho'
+              @cho_response = collection_member_service.all_member_media_objects(all_object_ids, CulturalHeritageObject, cho_filter_params)
+              @cho_member_docs = @cho_response.documents
+              @cho_member_count = @cho_response.total
+              @response = @cho_response
+            end
+          else
+            @bso_response = nil
+            @bso_member_docs = []
+            @bso_member_count = 0
+            @cho_response = nil
+            @cho_member_docs = []
+            @cho_member_count = 0
+            @response = nil
           end
         end
 

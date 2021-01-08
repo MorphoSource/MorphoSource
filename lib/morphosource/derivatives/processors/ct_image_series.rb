@@ -205,7 +205,7 @@ module Morphosource::Derivatives::Processors
       new_y = ( y.to_f * y_spacing.to_f ) / new_dim(y)
 
       # depth 
-      z_total = ( z_spacing.to_f * (z.to_f - 1.0) ) + slice_thickness
+      z_total = ( z_spacing.to_f * (z.to_f - 1.0) ) + slice_thickness.to_f
       new_slice_thickness = ( slice_thickness.to_f * z.to_f) / new_dim(z)
       new_z = ( z_total  - new_slice_thickness ) / ( new_dim(z) - 1 ) 
 

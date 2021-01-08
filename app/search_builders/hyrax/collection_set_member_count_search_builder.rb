@@ -1,34 +1,29 @@
 module Hyrax
-  # This search builder requires that a accessor named "collection" exists in the scope
-  class CollectionSetMemberSearchBuilder < ::SearchBuilder
+  class CollectionSetMemberCountSearchBuilder < ::SearchBuilder
     include Hyrax::FilterByType
-    attr_reader :collections, :search_includes_models, :access
+    attr_reader :access, :search_includes_models, :ids
 
-    class_attribute :collection_membership_field
-    self.collection_membership_field = 'member_of_collection_ids_ssim'
+    self.default_processor_chain += [:filter_on_ids]
 
-    # Defines which search_params_logic should be used when searching for Collection members
-    self.default_processor_chain += [:member_of_collection]
-
-    # @param [scope] Typically the controller object
-    # @param [Symbol] :works, :collections, (anything else retrieves both)
-    def initialize(scope:,
-                   collections:,
-                   search_includes_models: :works)
-      @collections = collections
+	  def initialize(scope:,
+                   search_includes_models: :works,
+                   ids:)
+	    @ids = ids
       @search_includes_models = search_includes_models
-      super(scope)
-    end
+	    super(scope)
+	  end
 
-    # include filters into the query to only include the collection memebers
-    def member_of_collection(solr_parameters)
-      solr_parameters[:fq] ||= []
-      collection_ids = []
-      collections.each do |collection_doc|
-        collection_ids << collection_doc.id
-      end
-      solr_parameters[:fq] << "#{collection_membership_field}:(#{collection_ids.join(' OR ')})"
-    end
+	  def filter_on_ids(solr_parameters)
+	    solr_parameters[:fq] ||= []
+	    solr_parameters[:fq] += [
+	      ::ActiveFedora::SolrQueryBuilder.construct_query(
+	        {
+	          id: @ids
+	        },
+	        join_with = ' OR '
+	      )
+	    ]
+	  end
 
     # This overrides the models in FilterByType
     def models

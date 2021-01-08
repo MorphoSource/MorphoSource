@@ -25,7 +25,7 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
     end
 
     context 'the current user is an admin' do
-      let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: admin.ms_id) }
+      let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: admin.ms_id, organization_id: [org1.id]) }
       let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
       let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: admin.ms_id, device_id: [device.id], ie_modality: device.modality) }
       let(:media)            { Media.create(title: ['new media'], depositor: admin.ms_id) }
@@ -38,7 +38,6 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
         allow(subject.current_user).to receive(:admin?).and_return(true)
         request.env['HTTP_REFERER'] = 'original_page'
 
-        org1.ordered_members << specimen
         specimen.ordered_members << imagingEvent
         imagingEvent.ordered_members << media
 
@@ -52,13 +51,12 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
       end
 
       context 'the team already has a linked organization' do
-        let(:specimen2)        { BiologicalSpecimen.create(title: ['specimen2'], vouchered: [true], depositor: admin.ms_id) }
+        let(:specimen2)        { BiologicalSpecimen.create(title: ['specimen2'], vouchered: [true], depositor: admin.ms_id, organization_id: [org2.id]) }
         let(:imagingEvent2)    { ImagingEvent.create(title: ['imagingEvent2'], depositor: admin.ms_id, device_id: [device.id], ie_modality: device.modality) }
         let(:media2)           { Media.create(title: ['old media'], depositor: admin.ms_id) }
         let(:works)             { [org1, org2, specimen, specimen2, imagingEvent, imagingEvent2, media, media2] }
 
         before do
-          org2.ordered_members << specimen2
           specimen2.ordered_members << imagingEvent2
           imagingEvent2.ordered_members << media2
 

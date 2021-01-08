@@ -100,10 +100,8 @@ module Morphosource
       @bso_source_options = []
       @cho_visibility_options = []
 
-      @members_count = @member_docs.length
-      @media_member_docs = @member_docs      
-      @media_member_count = @member_docs.length
-      
+      @media_member_docs = @response.documents
+      @media_member_count = @response.total
       @paged_media_member_docs = paginated_media_item_list
       @document_list = @paged_media_member_docs
       @media_extras = get_media_extras(@paged_media_member_docs)
@@ -235,8 +233,7 @@ module Morphosource
     end
 
     def organization_from_bso(bso)
-      organization = Organization.where('member_ids_ssim' => bso.id).first
-      organization
+      Organization.find(bso.organization_id&.first) if bso.organization_id.present?
     end
 
   end

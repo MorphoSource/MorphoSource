@@ -7,20 +7,22 @@ RSpec.describe Morphosource::BrowseService do
   let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
   let(:ability) { double Ability }
 
-  let!(:biospecs) do
-    [
-        BiologicalSpecimen.create(title: [ 'abc:123' ],
-                                  catalog_number: [ '123' ],
-                                  institution_code: [ 'INST1' ],
-                                  collection_code: [ 'abc' ],
-                                  vouchered: [ true ]),
-        BiologicalSpecimen.create(title: [ 'abc:456' ],
-                                  catalog_number: [ '456' ],
-                                  institution_code: [ 'INST2' ],
-                                  collection_code: [ 'abc' ],
-                                  vouchered: [ true ]),
-    ]
-  end
+  let!(:org1)  {
+    Organization.create(
+      title: ['title'],
+      organization_type: ["foobar"]
+    )
+  }
+  let!(:specimen) {
+    BiologicalSpecimen.create(
+      title: [ 'abc:123' ],
+      catalog_number: [ '123' ],
+      institution_code: [ 'INST1' ],
+      collection_code: [ 'abc' ],
+      vouchered: [ true ],
+      organization_id: [org1.id]
+    )
+  }
 
   let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let!(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
@@ -37,19 +39,12 @@ RSpec.describe Morphosource::BrowseService do
   let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id]) }
 
 
-  let!(:org1)  {
-    Organization.create(
-      title: ['title'],
-      organization_type: ["foobar"]
-    )
-  }
+  
 
   before do
-    org1.ordered_members << biospecs.first
-    org1.save
-    biospecs.first.ordered_members << imagingEvent
+    specimen.ordered_members << imagingEvent
     imagingEvent.ordered_members << media1
-    biospecs.first.save
+    specimen.save
     imagingEvent.save
     media1.member_of_collections << team1
     media1.save
@@ -71,17 +66,11 @@ RSpec.describe Morphosource::BrowseService do
     end
   end
 
-  describe 'total_media_by_collection(collection_id)' do
-    it 'returns media count by collection_id' do
-      results = subject.total_media_by_collection(team1.id)
-      expect(results).to eq(1)
-    end
-  end
-
-  describe 'total_po_by_collection(collection_id)' do
-    it 'returns po count by collection_id' do
-      results = subject.total_po_by_collection(team1.id)
-      expect(results).to eq(1)
+  describe 'total_media_and_po_by_collection(collection_id)' do
+    it 'returns media and po count by collection_id' do
+      media_count, po_count = subject.total_media_and_po_by_collection(team1.id)
+      expect(media_count).to eq(1)
+      expect(po_count).to eq(1)
     end
   end
 

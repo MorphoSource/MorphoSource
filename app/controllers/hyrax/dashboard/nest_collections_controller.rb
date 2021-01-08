@@ -29,6 +29,9 @@ module Hyrax
 
       # link this collection as parent by adding existing collection as subcollection under this one
       def create_relationship_under
+        # temporarily disabling - see MR-963
+        return
+
         @form = build_under_form
         if @form.save
           notice = I18n.t('create_under', scope: 'hyrax.dashboard.nest_collections_form', child_title: @form.child.title.first, parent_title: @form.parent.title.first)

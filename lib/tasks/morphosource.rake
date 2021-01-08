@@ -181,6 +181,32 @@ namespace :morphosource do
     end
   end
 
+  desc 'Transfer Physical Object Organization parent IDs to PO organization_id metadata property'
+  task :transfer_po_parent_to_metadata => :environment do
+    BiologicalSpecimen.find_each do |b|
+      org_ids = b.organization_id + b.
+        member_of.
+        map { |p| p.id if ( p.class == Organization && !b.organization_id.include?(p.id) ) }.
+        compact
+      if org_ids.present?
+        puts("Adding organizations #{org_ids.join(', ')} to BSO #{b.id}")
+        b.organization_id = org_ids
+        b.save!
+      end
+    end
+    CulturalHeritageObject.find_each do |c|
+      org_ids = c.organization_id + c.
+        member_of.
+        map { |p| p.id if ( p.class == Organization && !c.organization_id.include?(p.id) ) }.
+        compact
+      if org_ids.present?
+        puts("Adding organizations #{org_ids.join(', ')} to CHO #{c.id}")
+        c.organization_id = org_ids
+        c.save!
+      end
+    end
+  end
+
   desc 'Dissolve parent/child relationships between devices and imaging events'
   task :remove_device_ie_relationships => :environment do
     Device.find_each do |d|
@@ -188,6 +214,19 @@ namespace :morphosource do
       d.ordered_members = []
       d.members = []
       d.save!
+    end
+  end
+
+  desc 'Dissolve parent/child relationships between organizations and objects'
+  task :remove_organization_object_relationships => :environment do
+    Organization.find_each do |o|
+      puts("Removing BSO and CHO children from organizaiton #{o.id}")
+      new_members = Array(o.ordered_members)
+        .select { |m| m.class != BiologicalSpecimen && m.class != CulturalHeritageObject }
+        .compact
+      o.ordered_members = new_members
+      o.members = new_members
+      o.save!
     end
   end
 

@@ -48,9 +48,9 @@ module Morphosource
 
     # physical objects showcase page methods
     def parent_organization
-      organization = Organization.where('member_ids_ssim' => solr_document.id).first
-      return nil unless organization.present?
-      organization
+      organization_id = solr_document.organization_id&.first
+      return nil unless organization_id.present? && Organization.exists?(organization_id)
+      Organization.find(organization_id)
     end
 
     def parent_organization_title

@@ -2,20 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::PhysicalObjectBehavior do
 
-  let(:specimen)  { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
-  let(:cho)       { CulturalHeritageObject.create(title: ['CHO'], vouchered: ['Yes']) }
+  let(:organization)  { Organization.create(title: ['Organization']) }
+  let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id]) }
+  let(:cho)           { CulturalHeritageObject.create(title: ['CHO'], vouchered: ['Yes'], organization_id: [organization.id]) }
 
   describe 'parent organizations' do
-    let(:organization)  { Organization.create(title: ['Organization'])}
-    let(:works)         { [organization, specimen, cho] }
-
-    before do
-      organization.ordered_members << specimen
-      organization.ordered_members << cho
-      works.each(&:save)
-      works.each(&:reload)
-    end
-
     describe '#organizations' do
       it 'returns the parent organizations' do
         expect(specimen.organizations).to eq([organization])

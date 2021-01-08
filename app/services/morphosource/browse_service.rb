@@ -23,11 +23,11 @@ module Morphosource
       return solr.facet_fields(facet_fields)
     end
 
-    def total_media_by_org(org_id)
+    def total_media_by_org(organization_id)
       params = {
         rows: 0,
         fq: [
-          "media_organization_id_ssim:#{org_id}",
+          "media_organization_id_ssim:#{organization_id}",
           "(has_model_ssim:Media)"
         ]
       }
@@ -35,11 +35,11 @@ module Morphosource
       solr.count
     end
 
-    def total_po_by_org(org_id)
+    def total_po_by_org(organization_id)
       params = {
         rows: 0,
         fq: [
-          "organization_id_ssim:#{org_id}",
+          "organization_id_ssim:#{organization_id}",
           "(has_model_ssim:BiologicalSpecimen OR has_model_ssim:CulturalHeritageObject)"
         ]
       }
@@ -47,29 +47,21 @@ module Morphosource
       solr.count
     end
 
-    def total_media_by_collection(collection_id)
+    def total_media_and_po_by_collection(collection_id)
+      facet_fields = [
+        "physical_object_id_tesim"
+      ]
       params = {
-        rows: 0,
+        fl: 'id',
         fq: [
           "member_of_collection_ids_ssim:#{collection_id}",
           "has_model_ssim:Media"
-        ]
+        ],
+        "facet.limit": -1
       }
-      solr.get(nil, params)
-      solr.count
-    end
-
-    def total_po_by_collection(collection_id)
-      params = {
-        rows: 0,
-        fq: [
-          "member_of_collection_ids_ssim:#{collection_id}",
-          "has_model_ssim:Media",
-          "-physical_object_id_tesim:nil"
-        ]
-      }
-      solr.get(nil, params)
-      solr.count
+      solr.get_facet_fields(nil, facet_fields, params)
+      facet_results = solr.facet_fields(facet_fields)
+      return solr.count, facet_results["physical_object_id_tesim"].size
     end
 
     def total_team_projects_by_collection(collection_id)

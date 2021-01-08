@@ -166,6 +166,10 @@ class SolrDocument
   end
 
   # Physical Object Fields
+  def organization_id
+    self[Solrizer.solr_name('organization_id', :stored_searchable)]
+  end
+
   def bibliographic_citation
     self[Solrizer.solr_name('bibliographic_citation', :stored_searchable)]
   end

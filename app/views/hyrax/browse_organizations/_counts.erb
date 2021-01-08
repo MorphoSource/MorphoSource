@@ -1,5 +1,5 @@
-
-<%= "#{total_collections} Collections".pluralize(total_collections) %>
+<div class="dot-delimited">
 <% org_type_and_count.each do |key, val| %>
 	<%= render partial: 'counts_for_organization_types', :locals => { :type => key, :count => val } %>
 <% end %>
+</div>

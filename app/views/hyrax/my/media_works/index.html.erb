@@ -12,9 +12,7 @@
   </div>
 
   <div class="row collection-count">
-    <% @collection_information['membership_counts'].each do |membership, counts| %>
-      <%= render 'membership_count', membership: membership, counts: counts %>
-    <% end %>
+      <%= render 'membership_count' %>
   </div>
 <% end %>
 

@@ -18,8 +18,8 @@ RSpec.describe CulturalHeritageObject do
 
   describe "valid work relationships" do
 
-    it "has only Organization as a valid parent" do
-      expect(subject.valid_parent_concerns).to match_array([Organization])
+    it "has no valid parents" do
+      expect(subject.valid_parent_concerns).to match_array([])
     end
 
     it "has ImagingEvent as valid child concern" do
@@ -36,8 +36,8 @@ RSpec.describe CulturalHeritageObject do
 
     describe "valid work relationships" do
 
-      it "has only Organization as a valid parent" do
-        expect(subject.valid_parent_concerns).to match_array([Organization])
+      it "has no valid parents" do
+        expect(subject.valid_parent_concerns).to match_array([])
       end
 
       it "has ImagingEvent as valid child concern" do

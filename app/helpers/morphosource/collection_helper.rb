@@ -328,8 +328,7 @@ module Morphosource
     end
 
     def organization_from_bso(bso)
-      organization = Organization.where('member_ids_ssim' => bso.id).first
-      organization
+      Organization.find(bso.organization_id&.first) if bso.organization_id.present?
     end
 
   end

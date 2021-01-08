@@ -62,12 +62,12 @@ RSpec.describe Organization do
     end
 
     it "has Device, BiologicalSpecimen, and CulturalHeritageObject as valid children" do
-      expect(subject.valid_child_concerns).to match_array([Device, BiologicalSpecimen, CulturalHeritageObject])
+      expect(subject.valid_child_concerns).to match_array([Device])
     end
   end
 
   describe "instance" do
-    subject { Organization.new({
+    subject { Organization.create({
         title: ['American Museum of Natural History'],
         institution_code: ['AMNH'],
         description: ['A sample description'],
@@ -123,20 +123,21 @@ RSpec.describe Organization do
       end
 
       it "has Device, BiologicalSpecimen, and CulturalHeritageObject as valid children" do
-        expect(subject.valid_child_concerns).to match_array([Device, BiologicalSpecimen, CulturalHeritageObject])
+        expect(subject.valid_child_concerns).to match_array([Device])
       end
     end
 
     describe 'team-related instance methods' do
       let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
       let(:team)                  { Collection.create(id: 'teamid', title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: 'abcdef') }
-
-      let(:specimen1)             { BiologicalSpecimen.create(title: ['title'], vouchered: [true]) }
-      let(:specimen2)             { BiologicalSpecimen.create(title: ['title'], vouchered: [false]) }
+      let(:specimen1)             { BiologicalSpecimen.create(title: ['title'], vouchered: [true], organization_id: [subject.id]) }
+      let(:specimen2)             { BiologicalSpecimen.create(title: ['title'], vouchered: [false], organization_id: [subject.id]) }
 
       before do
         subject.team_id = [team.id]
         subject.save
+        specimen1.save
+        specimen2.save
         allow(Collection).to receive(:find).with(team.id).and_return(team)
       end
 
@@ -148,10 +149,7 @@ RSpec.describe Organization do
 
       describe '#specimens, #outside_specimens' do
         before do
-          subject.ordered_members << specimen1 << specimen2
-          subject.save
           specimen1.member_of_collections << team
-          team.save
         end
 
         it '#specimens returns child specimens' do
@@ -173,8 +171,6 @@ RSpec.describe Organization do
         let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
 
         before do
-          subject.ordered_members << specimen1 << specimen2
-          subject.save
           specimen1.ordered_members << imagingEvent
           specimen1.save
           imagingEvent.ordered_members << media1

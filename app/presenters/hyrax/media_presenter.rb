@@ -265,6 +265,8 @@ module Hyrax
           # color_depth value comes from different attributes, depending on the file type
           # for multiple values e.g. '8 8 8' , concat them with '/'
           if contents_mime_type.match(/(dcm|dicom)/i)
+            @image_width << file_set.columns.first.to_s if file_set.columns.present?
+            @image_height << file_set.rows.first.to_s if file_set.rows.present?
             @color_depth << file_set.bits_allocated.first.to_s if file_set.bits_allocated.present?
           else #if contents_mime_type.match(/(jp?eg|ti?ff)/)
             temp = file_set.bits_per_sample.first.to_s if file_set.bits_per_sample.present?

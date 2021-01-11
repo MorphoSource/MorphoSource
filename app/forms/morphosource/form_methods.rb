@@ -30,6 +30,9 @@ module Morphosource
     def find_parent_work; end
 
     # @return [NilClass]
+    def find_organization; end
+
+    # @return [NilClass]
     def select_device_id; end
 
     # @return [NilClass]

@@ -8,7 +8,7 @@ class SessionsController < Devise::SessionsController
     if sign_in_params[:email] and sign_in_params[:password]
       u = User.find_by email: sign_in_params[:email]
       if u.present? and u.ms1_user and Digest::MD5.hexdigest(sign_in_params[:password]) == u.ms1_password_hash
-        flash[:alert] = 'Welcome to MorphoSource 2! Please reset your password before proceeding.'
+        flash[:alert] = t("devise.passwords.edit.ms1_user_flash")
         raw, hashed = Devise.token_generator.generate(User, :reset_password_token)
         u.reset_password_token = hashed
         u.reset_password_sent_at = Time.now.utc

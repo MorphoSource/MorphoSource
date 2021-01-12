@@ -38,17 +38,7 @@
           </div>
       </div>
       <%= @presenter.attribute_to_html(:date_uploaded, render_as: :showcase_date, include_empty: true, html_dl: false) %>
-      <% if @presenter.parent_organization.present? %>
-        <%= @presenter.attribute_to_html(
-          :parent_organization_title, 
-          label: 'Organization', 
-          link: Rails.application.routes.url_helpers.hyrax_organization_path(@presenter.parent_organization.id), 
-          render_as: :showcase_organization_title, 
-          html_dl: false) 
-        %>
-      <% else %>
-        <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
-      <% end %>
+      <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_default, html_dl: false) %>
       <%= f.input :creator, label: @presenter.creator_label, as: :multi_value %>
       <%= f.input :contributor, label: 'Object contributor', as: :multi_value %>
       <%= f.input :publisher %>

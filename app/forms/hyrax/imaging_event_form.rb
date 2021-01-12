@@ -111,7 +111,7 @@ module Hyrax
 
     # These show above the fold
     def primary_terms
-        required_fields - [:device_id] + [
+        required_fields + [
             :description,
             :creator,
             :software,

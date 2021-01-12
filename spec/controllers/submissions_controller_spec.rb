@@ -115,6 +115,12 @@ RSpec.describe SubmissionsController, type: :controller do
   describe '#create' do
     describe 'when provided with correct params' do
       form_params = [
+        { work: 'organization', params:
+          { organization: { title: ['Test Title'] } }
+        },
+        { work: 'device_organization', params:
+          { device_organization: { title: ['Test Title'] } }
+        },
         { work: 'taxonomy', params:
           { taxonomy: { title: ['Test Title'] } }
         },
@@ -123,6 +129,9 @@ RSpec.describe SubmissionsController, type: :controller do
         },
         { work: 'cultural_heritage_object', params:
           { cultural_heritage_object: { title: ['Test Title'] } }
+        },
+        { work: 'device', params:
+          { device: { title: ['Test Title'] } }
         },
         { work: 'imaging_event', params:
           { imaging_event: { title: ['Test Title'] },
@@ -184,22 +193,25 @@ RSpec.describe SubmissionsController, type: :controller do
     let(:old_m_solr)    { SolrDocument.find(media.id) }
     let(:new_m_solr)    { SolrDocument.find(media.id) }
 
-    let(:organization)  { Organization.create(title: ['Organization'] ) }
-
-    let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id]) }
+    let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
     let(:old_s_solr)    { SolrDocument.find(specimen.id) }
     let(:new_s_solr)    { SolrDocument.find(specimen.id) }
+
+    let(:organization)  { Organization.create(title: ['Organization'] ) }
+    let(:old_o_solr)    { SolrDocument.find(organization.id) }
+    let(:new_o_solr)    { SolrDocument.find(organization.id) }
 
     let(:device)        { Device.create(title: ['test device'], modality: ['Photogrammetry']) }
 
     let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
 
-    let(:old_solr_docs) { [old_m_solr, old_s_solr] }
+    let(:old_solr_docs) { [old_m_solr, old_s_solr, old_o_solr] }
 
     before do
+      organization.members << specimen
       specimen.members << imaging_event
       imaging_event.members << media
-      [specimen, imaging_event].each(&:save)
+      [organization, specimen, imaging_event].each(&:save)
       subject.instance_variable_set(:@submission, submission)
     end
 
@@ -208,6 +220,7 @@ RSpec.describe SubmissionsController, type: :controller do
       subject.send(:reindex_catalog_works)
       expect(old_m_solr['_version_']).not_to eq(new_m_solr['_version'])
       expect(old_s_solr['_version_']).not_to eq(new_s_solr['_version'])
+      expect(old_o_solr['_version_']).not_to eq(new_o_solr['_version'])
     end
   end
 end

@@ -497,6 +497,7 @@ $( document ).ready(function() {
 
     // select device button
     $('#btn-select-device').click(function() {
+      var oldDeviceID = $('#device-id-value').val();
       var newDeviceID = $('#imaging_event_select_device_id').val();
       var orgData = $('#s2id_find_device_organization').select2('data');
 

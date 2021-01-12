@@ -228,6 +228,12 @@ class Media < Morphosource::Works::Base
   end
 
   def related_media_ids
+    # Get related media from same IE, e.g.
+    # - IE1     
+    #   - PE1 
+    #     - Media1 
+    #   - PE2 
+    #     - Media2 
     if imaging_event.present?
       ie_media = imaging_event.descendants.select { |d| d.class == Media }.map{ |o| o.id }
     else
@@ -239,11 +245,15 @@ class Media < Morphosource::Works::Base
   end
 
   def public_related_media_ids
-    ie_media = imaging_event&.descendants&.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
+    if imaging_event.present?
+      ie_media = imaging_event&.descendants&.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
+    else
+      ie_media = []
+    end
     parents = ancestors.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
     children = descendants.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
     siblings = sibling_media_ids.select { |d| d.visibility == 'open' }.map{ |o| o.id }
-    return (parents + children + sibling_media_ids).uniq
+    return (ie_media + parents + children + sibling_media_ids).uniq
   end
 
   def organizations

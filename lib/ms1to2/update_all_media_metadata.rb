@@ -8,7 +8,7 @@ module Ms1to2
 
     def call
       CSVParser.new(input_csv).each do |attrs|
-        UpdateMediaMetadataJob.perform_now(attrs)
+        UpdateMediaMetadataJob.perform_later(attrs)
       end
     end
   end

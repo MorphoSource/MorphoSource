@@ -51,21 +51,8 @@ RSpec.describe MediaIndexer do
       expect(subject['media_modality_tesim']).to eq field_values[:modality]
       expect(subject['media_modality_sim']).to eq field_values[:modality]
     end
-    it 'indexes media_physical_object_type' do
-      expect(subject['media_physical_object_type_tesim']).to eq field_values[:physical_object_type]
-      expect(subject['media_physical_object_type_sim']).to eq field_values[:physical_object_type]
-    end
-    it 'indexes media_organization' do
-      expect(subject['media_organization_tesim']).to eq field_values[:organization_titles]
-      expect(subject['media_organization_sim']).to eq field_values[:organization_titles]
-      expect(subject['media_organization_id_ssim']).to eq field_values[:organization_id]
-    end
     it 'indexes public collection membership' do
       expect(subject['member_of_public_collection_ids_ssim']).to eq field_values[:member_of_public_collection_ids]
-    end
-    it 'indexes taxonomies' do
-      expect(subject['taxonomy_tesim']).to eq field_values[:taxonomies_titles]
-      expect(subject['taxonomy_ssim']).to eq field_values[:taxonomies_titles]
     end
     it 'indexes related media ids' do
       expect(subject['related_media_ids_ssim']).to eq field_values[:related_media_ids]

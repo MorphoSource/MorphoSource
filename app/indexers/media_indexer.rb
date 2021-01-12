@@ -20,29 +20,68 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['owner_ssim'] = object.owner
       solr_doc['download_reviewer_ssim'] = object.download_reviewer
       # add media type facet
-      solr_doc['human_readable_media_type_tesim'] = object.human_readable_media_type
-      solr_doc['human_readable_media_type_sim'] = object.human_readable_media_type
+      mt = object.human_readable_media_type
+      solr_doc['human_readable_media_type_tesim'] = mt
+      solr_doc['human_readable_media_type_sim'] = mt
       # add modality facet
-      solr_doc['media_modality_tesim'] = object.modality
-      solr_doc['media_modality_sim'] = object.modality
+      modality = object.modality
+      solr_doc['media_modality_tesim'] = modality
+      solr_doc['media_modality_sim'] = modality
+      
+      # data processing for subsequent fields
+      physical_objects = object.physical_objects
+      if physical_objects.present?
+        physical_object_type = physical_objects.first.specimen? ? "Biological Specimen" : "Cultural Heritage Object"
+        physical_object_id = physical_objects.map(&:id)
+        if physical_object_type == "Biological Specimen"
+          taxonomy_titles = physical_objects.map(&:taxonomies_titles).flatten
+        else
+          taxonomy_titles = nil
+        end
+
+        organizations = []
+        physical_objects.each_with_object(organizations) do |obj, orgs|
+          obj.organizations.each { |org| orgs << org }
+        end
+        organizations = organizations.uniq
+
+        if organizations.present?
+          organization_titles = organizations.map{ |o| o.title.first }
+          organization_id = organizations.map{ |o| o.id }
+        else
+          organization_titles = nil
+          organization_id = nil
+        end
+      else
+        physical_object_type = nil
+        physical_object_id = nil
+        taxonomy_titles = nil
+        organization_titles = nil
+        organization_id = nil
+      end
+
       # add physical object facet
-      solr_doc['media_physical_object_type_tesim'] = object.physical_object_type
-      solr_doc['media_physical_object_type_sim'] = object.physical_object_type
+      solr_doc['media_physical_object_type_tesim'] = physical_object_type
+      solr_doc['media_physical_object_type_sim'] = physical_object_type
+      # physical_object_ids
+      solr_doc['physical_object_id_ssim'] = physical_object_id
+      solr_doc['physical_object_id_tesim'] = physical_object_id
+      
+      # add taxonomies
+      solr_doc['taxonomy_tesim'] = taxonomy_titles
+      solr_doc['taxonomy_ssim'] = taxonomy_titles
+      
       # add organization facet
-      solr_doc['media_organization_tesim'] = object.organization_titles
-      solr_doc['media_organization_sim'] = object.organization_titles
-      solr_doc['media_organization_id_ssim'] = object.organization_id
-      solr_doc['media_organization_id_tesim'] = object.organization_id
+      solr_doc['media_organization_tesim'] = organization_titles
+      solr_doc['media_organization_sim'] = organization_titles
+      solr_doc['media_organization_id_ssim'] = organization_id
+      solr_doc['media_organization_id_tesim'] = organization_id
+      
       # add public collection membership facet
       solr_doc['member_of_public_collection_ids_ssim'] = object.member_of_public_collection_ids
-      # add taxonomies
-      solr_doc['taxonomy_tesim'] = object.taxonomies_titles
-      solr_doc['taxonomy_ssim'] = object.taxonomies_titles
+      
       # related media ids
       solr_doc['related_media_ids_ssim'] = object.related_media_ids
-      # physical_object_ids
-      solr_doc['physical_object_id_ssim'] = object.physical_object_id
-      solr_doc['physical_object_id_tesim'] = object.physical_object_id
    end
   end
 end

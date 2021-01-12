@@ -22,18 +22,22 @@ module Ms1to2
           :cite_as => derive_cite_as(mg),
           :available => derive_available(mf, mg),
           :unit => derive_unit(mg),
-          :funding_attribution => derive_funding_attribution(mg),
+          :funding => derive_funding(mg),
           :license => derive_license(mg),
+          :rights_statement => derive_rights_statement(mg),
           :rights_holder => derive_rights_holder(mg),
           :x_spacing => derive_x_spacing(mg),
           :y_spacing => derive_y_spacing(mg),
           :z_spacing => derive_z_spacing(mg),
           :modality => derive_modality(mg),
-          :download_reviewer => derive_download_reviewer(mf[:reviewer_id]),
+          :download_reviewer => derive_download_reviewer(mg),
           :visibility => derive_visibility(mf, mg),
           :fileset_visibility => derive_fileset_visibility(mf, mg),
           :fileset_accessibility => derive_fileset_accessibility(mf, mg),
-
+          :morphosource_use_agreement_type => ['Standard'], 
+          :required_archival_of_published_derivatives => ['OnAnyRepository'],
+          :permits_commercial_use => ['CommercialUseNotPermitted'], 
+          :permits_3d_use => ['3DPrintingLimited']
         }
       end
 
@@ -72,13 +76,28 @@ module Ms1to2
         (derive_x_spacing(mg) || derive_y_spacing(mg) || derive_z_spacing(mg)) ? ["Mm"] : []
       end
 
-      def derive_funding_attribution(mg)
+      def derive_funding(mg)
         mg[:grant_support]
       end
 
       def derive_license(mg)
         val = mg[:copyright_license]
         [mf_control_vocab_mappings[:copyright_license][val.first]] if val.presence
+      end
+
+      def derive_rights_statement(mg)
+        if mg[:is_copyrighted]&.first.to_i == 1
+          ['http://rightsstatements.org/vocab/InC/1.0/']
+        else
+          case mg[:copyright_permission]&.first
+          when '4'
+            ['http://rightsstatements.org/vocab/NKC/1.0/']
+          when '5'
+            ['http://rightsstatements.org/vocab/CNE/1.0/']
+          else
+            []
+          end
+        end
       end
 
       def derive_rights_holder(mg)
@@ -107,13 +126,13 @@ module Ms1to2
             'UNKNOWN' => 'Unknown'
           },
           :copyright_license => {
-            1 => 'http://creativecommons.org/publicdomain/zero/1.0/',
-            2 => 'https://creativecommons.org/licenses/by/4.0/',
-            3 => 'https://creativecommons.org/licenses/by-nc/4.0/',
-            4 => 'https://creativecommons.org/licenses/by-sa/4.0/',
-            5 => 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
-            6 => 'https://creativecommons.org/licenses/by-nd/4.0/',
-            7 => 'https://creativecommons.org/licenses/by-nc-nd/4.0/'
+            '1' => 'http://creativecommons.org/publicdomain/zero/1.0/',
+            '2' => 'https://creativecommons.org/licenses/by/4.0/',
+            '3' => 'https://creativecommons.org/licenses/by-nc/4.0/',
+            '4' => 'https://creativecommons.org/licenses/by-sa/4.0/',
+            '5' => 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+            '6' => 'https://creativecommons.org/licenses/by-nd/4.0/',
+            '7' => 'https://creativecommons.org/licenses/by-nc-nd/4.0/'
           }
         }
       end
@@ -174,8 +193,8 @@ module Ms1to2
         end
       end
 
-      def derive_download_reviewer(reviewer_id)
-        Array(reviewer_id).first
+      def derive_download_reviewer(mg)
+        mg[:reviewer_id]
       end
     end
   end

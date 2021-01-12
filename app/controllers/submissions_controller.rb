@@ -374,8 +374,7 @@ class SubmissionsController < ApplicationController
   private
 
   def works
-    ['organization', 'device_organization', 'taxonomy', 'biological_specimen',
-      'cultural_heritage_object', 'device', 'imaging_event', 'processing_event', 'media']
+    ['taxonomy', 'biological_specimen', 'cultural_heritage_object', 'imaging_event', 'processing_event', 'media']
   end
 
   def create_work_if_needed(work, params)
@@ -404,6 +403,9 @@ class SubmissionsController < ApplicationController
     elsif work == 'imaging_event'
       addl_params = { device_id: [@submission.device_id] }
       finalize_model_params(work, model_params, addl_params)
+    elsif work == 'biological_specimen' || work == 'cultural_heritage_object'
+      addl_params = { organization_id: [@submission.organization_id] }
+      finalize_model_params(work, model_params, addl_params)
     else
       finalize_model_params(work, model_params)
     end
@@ -413,27 +415,20 @@ class SubmissionsController < ApplicationController
   def finalize_model_params(work, model_params, addl_params={})
     case work
     when 'biological_specimen'
-      if @submission.organization_id.present? && !@submission.no_organization
-        parents = Array(@submission.organization_id)
-      else
-        parents = []
+      model_params.merge!(addl_params)
+      if @submission.taxonomy_id_array.present?
+        model_params = assign_model_params_parents(
+          model_params, 
+          @submission.taxonomy_id_array
+        ) 
       end
-
-      parents = parents + @submission.taxonomy_id_array if @submission.taxonomy_id_array.present?
-      model_params = assign_model_params_parents(model_params, parents) if parents.present?
       if @submission.canonical_taxonomy_id.present?
         model_params.merge!('canonical_taxonomy' => [@submission.canonical_taxonomy_id])
       end
       @biospec_create_params = model_params
 
     when 'cultural_heritage_object'
-      if @submission.organization_id.present? && !@submission.no_organization
-        model_params = assign_model_params_parents(
-          model_params,
-          [@submission.organization_id]
-        )
-      end
-
+      model_params.merge!(addl_params)
       @cho_create_params = model_params
 
     when 'device'
@@ -464,7 +459,6 @@ class SubmissionsController < ApplicationController
       if !@submission.device_id.present?
           raise StandardError.new "Debug no device id #{@submission.device_id}"
       end
-      # addl_params = device_id
       model_params.merge!(addl_params)
       model_params = assign_model_params_parents(model_params, parents)
       @imaging_event_create_params = model_params

@@ -53,14 +53,74 @@ module Morphosource
       Organization.find(organization_id)
     end
 
-    def parent_organization_title
-      return '' unless parent_organization.present?
-      parent_organization.title.first
+    def parent_organization_id
+       return '' unless parent_organization.present?
+       parent_organization.id
     end
 
-    def parent_institution_code
+    def parent_organization_organization_type
+       return '' unless parent_organization.present?
+       parent_organization.organization_type&.first
+    end
+
+    def parent_organization_institution_name
+       return '' unless parent_organization.present?
+       parent_organization.institution_name&.first
+    end
+
+    def parent_organization_title
       return '' unless parent_organization.present?
-      parent_organization.institution_code.first
+      parent_organization.title&.first
+    end
+
+    def parent_organization_institution_code
+      return [] unless parent_organization.present?
+      parent_organization.institution_code
+    end
+
+    def parent_organization_collection_code
+       return [] unless parent_organization.present?
+       parent_organization.collection_code
+    end
+
+    def parent_organization_related_url
+       return [] unless parent_organization.present?
+       parent_organization.related_url
+    end
+
+    def parent_organization_address
+       return '' unless parent_organization.present?
+       parent_organization.address&.first
+    end
+
+    def parent_organization_city
+       return '' unless parent_organization.present?
+       parent_organization.city&.first
+    end
+
+    def parent_organization_state_province
+       return '' unless parent_organization.present?
+       parent_organization.state_province&.first
+    end
+
+    def parent_organization_postal_code
+       return '' unless parent_organization.present?
+       parent_organization.postal_code&.first
+    end
+
+    def parent_organization_country
+       return '' unless parent_organization.present?
+       parent_organization.country&.first
+    end
+
+    def parent_organization_contact_person
+       return [] unless parent_organization.present?
+       parent_organization.contact_person
+    end
+
+    def parent_organization_description
+       return '' unless parent_organization.present?
+       parent_organization.description&.first
     end
 
     def source_of_record

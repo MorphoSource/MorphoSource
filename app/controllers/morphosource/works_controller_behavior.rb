@@ -20,7 +20,7 @@ module Morphosource
     end
 
     def select_media(works)
-      works.select(&:media?)
+      works.select { |w| w.class == Media }
     end
   end
 end

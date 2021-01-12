@@ -1,26 +1,35 @@
 <div id="organization_details">
   <h2>ORGANIZATION</h2>
 
-  <p><%= t('morphosource.physical_object.edit.select_organization').html_safe %></p>
-
   <div class="form-inline">
-    <%= f.input_field :find_parent_work,
+    <div class="mb-1">
+      <div>
+        Search for and select the organization that manages this physical object.
+      </div>
+    </div>
+
+    <%= f.input_field :find_organization,
                       prompt: :translate,
                       autocomplete: 'off',
+                      placeholder: 'Enter complete words in organization name',
                       data: {
                         autocomplete: 'work',
                         'autocomplete-url' => find_organization_autocomplete_url()
                       } %>
   </div>
 
-  <div class="text-center button-wrapper">
-    <a class="btn btn-md btn-primary" id="btn-add-organization" data-behavior="add-relationship">Select organization</a>
+  <div class="text-center button-wrapper mt-1">
+    <a class="btn btn-md btn-primary" id="btn_select_organization">Select organization</a>
 
     <!-- only admins can create a new organization or select 'no organization' -->
     <% if current_user.admin? %>
-      <a class="btn btn-md btn-primary" id="btn_new_organization">Create new organization</a>
       <a class="btn btn-md btn-primary" id="btn_no_organization">No organization</a>
     <% end %>
 
   </div>
+
+</div>
+
+<div class="block mt-2">
+  <%= t('morphosource.physical_object.edit.select_organization').html_safe %>
 </div>

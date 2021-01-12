@@ -151,6 +151,11 @@ namespace :morphosource do
     Ms1to2::ImportCollectionMembers.new(input_csv).call
   end
 
+  desc 'Mass media metadata update'
+  task :mass_update_all_media_metadata, [:input_csv] => :environment do |task, args|
+    input_csv = args[:input_csv]
+    Ms1to2::UpdateAllMediaMetadata.new(input_csv).call
+  end
 
   desc 'Update blank organization institution and collection codes'
   task :fix_organization_blanks => :environment do

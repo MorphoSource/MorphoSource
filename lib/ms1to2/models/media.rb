@@ -3,8 +3,8 @@ module Ms1to2
     class Media < BaseObject
       def mappings
         {
-          :legacy_media_file_id => :media_file_id,
-          :legacy_media_group_id => :media_id,
+          :media_file_id => :legacy_media_file_id,
+          :media_id => :legacy_media_group_id,
           :ark => :ark,
           :doi => :doi,
           :media_type => :media_type,
@@ -37,7 +37,7 @@ module Ms1to2
       end
 
       def expected_special_fields
-        [:depositor, :parent_id, :collection_id, :part, :side, :description, 
+        [:depositor, :parent_id, :part, :side, :description, 
          :cite_as, :available, :unit, :funding, :license, :rights_statement, 
          :rights_holder, :x_spacing, :y_spacing, :z_spacing, :download_reviewer, 
          :visibility, :fileset_visibility, :fileset_accessibility,

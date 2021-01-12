@@ -125,7 +125,7 @@ module Ms1to2
       @media = get_table(m)
       @ie = get_table(:ImagingEvent)
       @pe = get_table(:ProcessingEvent)
-      combined_table = {}.merge(media).merge(ie).merge(pe)
+      combined_table = {}.merge(ie).merge(pe).merge(media)
       
       if combined_table.length == 1
         ids = [combined_table.keys.first]
@@ -169,7 +169,7 @@ module Ms1to2
     def ids_in_order
       relations = {}
       [media, ie, pe].each do |t|
-        t.each { |k, v| relations[k] = v[:parent_id].first }
+        t.each { |k, v| relations[k] = v[:parent_id]&.first }
       end
       sort_order(relations)
     end

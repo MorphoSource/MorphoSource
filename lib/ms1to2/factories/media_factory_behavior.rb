@@ -13,9 +13,8 @@ module Ms1to2
 
       def derive_special_fields_mf(mf, mg, parent_id)
         {
-          :depositor => derive_depositor(mf[:user_id]),
+          :depositor => derive_depositor(mf[:project_user]),
           :parent_id => parent_id,
-          :collection_id => derive_collection_id(mg[:project_id]),
           :part => derive_part(mf, mg),
           :side => derive_side(mf, mg),
           :description => derive_description(mf, mg),
@@ -29,8 +28,8 @@ module Ms1to2
           :x_spacing => derive_x_spacing(mg),
           :y_spacing => derive_y_spacing(mg),
           :z_spacing => derive_z_spacing(mg),
-          :modality => derive_modality(mg),
           :download_reviewer => derive_download_reviewer(mg),
+          :modality => derive_modality(mf),
           :visibility => derive_visibility(mf, mg),
           :fileset_visibility => derive_fileset_visibility(mf, mg),
           :fileset_accessibility => derive_fileset_accessibility(mf, mg),
@@ -137,13 +136,8 @@ module Ms1to2
         }
       end
 
-      def derive_modality(mg)
-        device_id = hyraxify('D' + mg[:scanner_id]&.first)
-        if 'Device'.constantize.exists?(device_id)
-          'Device'.constantize.find(device_id).modality&.first
-        else
-          ms2_output_data.public_send('device')[device_id][:modality]&.first
-        end
+      def derive_modality(mf)
+        mf[:modality]
       end
 
       def ms1_publication_code(mf, mg)

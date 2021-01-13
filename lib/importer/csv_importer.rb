@@ -45,13 +45,13 @@ module Importer
     def import_batch_object(attributes, delete_collection_ids=false)
       puts("\n\n\n\n\nIMPORTING OBJECT WITH ID " + attributes[:id]&.first.to_s + " AT TIME " + DateTime.now.strftime("%d/%m/%Y %H:%M:%S") + "\n\n\n\n\n")
       attributes.delete(:collection_id) if delete_collection_ids
-      BatchObjectImportJob.perform_now(model, attributes, files_directory)
+      BatchObjectImportJob.perform_later(model, attributes, files_directory)
     end
 
     def update_batch_object(attributes, delete_collection_ids=false)
       puts("\n\n\n\n\nUPDATING OBJECT WITH ID " + attributes[:id]&.first.to_s + " AT TIME " + DateTime.now.strftime("%d/%m/%Y %H:%M:%S") + "\n\n\n\n\n")
       attributes.delete(:collection_id) if delete_collection_ids
-      BatchObjectImportJob.perform_now(model, attributes, files_directory, true)
+      BatchObjectImportJob.perform_later(model, attributes, files_directory, true)
     end
 
     def import_all_users

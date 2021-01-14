@@ -16,7 +16,8 @@ module Ms1to2
           :depositor => derive_depositor(mf[:project_user]),
           :parent_id => derive_ie_parents(mf),
           :ie_modality => derive_ie_modality(mf),
-          :power => derive_ie_power(mg)
+          :power => derive_ie_power(mg),
+          :device_id => derive_device_id(mf)
         }
       end
 
@@ -24,9 +25,6 @@ module Ms1to2
         parents = []
         if v[:specimen_id].present?
           parents << hyraxify("S"+v[:specimen_id].first.to_i.to_s)
-        end
-        if v[:scanner_id].present?
-          parents << hyraxify("D"+v[:scanner_id].first.to_i.to_s)
         end
         return parents
       end
@@ -37,6 +35,10 @@ module Ms1to2
 
       def derive_ie_power(v)
         v[:scanner_watts].presence ? [(v[:scanner_watts].first.to_f/1000.0).to_s] : nil
+      end
+
+      def derive_device_id(v)
+        v[:scanner_id].presence ? [hyraxify("D"+v[:scanner_id].first.to_i.to_s)] : nil
       end
     end
   end

@@ -21,7 +21,8 @@ module Ms1to2
           :type => :is_type_specimen,
           :sex => :sex,
           :reference_source => :vouchered,
-          :created_on => :date_uploaded
+          :created_on => :date_uploaded,
+          :organization_id => :organization_id
         }
       end
 

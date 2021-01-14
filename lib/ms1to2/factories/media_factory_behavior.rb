@@ -108,11 +108,11 @@ module Ms1to2
       end
 
       def derive_y_spacing(mg)
-        mg[:scanner_x_resolution]
+        mg[:scanner_y_resolution]
       end
 
       def derive_z_spacing(mg)
-        mg[:scanner_x_resolution]
+        mg[:scanner_z_resolution]
       end
 
       def mf_control_vocab_mappings

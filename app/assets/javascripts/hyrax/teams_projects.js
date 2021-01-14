@@ -69,7 +69,7 @@ $(document).ready(function() {
       // populate PO BSO counts when the tab has been loaded
       document.addEventListener("bso-loaded", function(event) {
         //console.log("bso have loaded!", event.container);
-        $('span.bso-count').html(' · ' + $('input[name="bso-count"]').val() + ' Specimens');
+        $('span.bso-count').html(' · ' + pluralize('Specimen', $('input[name="bso-count"]').val()));
         $('.tab-bso-count').html($('input[name="bso-count"]').val());
 
         var bsoTable = $('#datatable-bso-list').DataTable({
@@ -99,9 +99,8 @@ $(document).ready(function() {
 
       // populate PO CHO counts when the tab has been loaded
       document.addEventListener("cho-loaded", function(event) {
-        //console.log("bso have loaded!", event.container);
-        $('span.bso-count').html($('input[name="cho-count"]').val() + ' Objects · ');
-        $('.tab-bso-count').html($('input[name="cho-count"]').val());
+        $('span.cho-count').html(' · ' + pluralize('Cultural Heritage Object', $('input[name="cho-count"]').val()));
+        $('.tab-cho-count').html($('input[name="cho-count"]').val());
   
         var choTable = $('#datatable-cho-list').DataTable({
           responsive: {

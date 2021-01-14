@@ -7,6 +7,14 @@ Array.prototype.uniq = function(){
   );
 }
 
+function pluralize(noun, count) {
+  if (count != 1) 
+    suffix = 's' 
+  else
+    suffix = ''
+  return count + ' ' + noun + suffix;
+}
+
 function disablePageAndSave(btn) {
   $(btn).prop('disabled', true).val('Saving...');
   disablePage();

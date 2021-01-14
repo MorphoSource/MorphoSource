@@ -15,7 +15,8 @@ class UpdateMediaMetadataJob < Hyrax::ApplicationJob
   end
 
   def media_properties
-    [ :media_type, :short_description, :side, :series_type, :part, :orientation, 
+    [ 
+      :media_type, :short_description, :side, :series_type, :part, :orientation, 
       :legacy_media_file_id, :legacy_media_group_id, :ark, :doi, 
       :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :download_reviewer, 
       :morphosource_use_agreement_type, :required_archival_of_published_derivatives, 

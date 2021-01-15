@@ -134,19 +134,12 @@ module Morphosource
 
           # Core query
           if is_org_team && collection_organization_id
-            params[:fq] << assemble_po_id_or_collection_query(
-              team_org_po_ids, 
-              Array(collection_id) + Array(subcollection_ids)
-            )
+            params[:fq] << assemble_po_id_or_collection_query(team_org_po_ids, Array(collection_id) + Array(subcollection_ids))
           elsif collection.collection_type.nestable?
-            params[:fq] << assemble_or_query(
-              solrize('member_of_collection_ids', :symbol),
-              Array(collection_id) + Array(subcollection_ids)
-            )
+            params[:fq] << assemble_or_query(solrize('member_of_collection_ids', :symbol), Array(collection_id) + Array(subcollection_ids))
           else
             params[:fq] << "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
           end
-
           solr.get_facet_fields(nil, facet_fields, params)
           return solr.facet_fields(facet_fields), solr.count
         end

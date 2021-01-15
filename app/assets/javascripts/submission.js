@@ -253,19 +253,28 @@ $( document ).ready(function() {
               $('#raw-or-derived-btn-group').removeAttr('disabled');
               $('#radio_raw').removeClass('active');
               $('#radio_derived').removeClass('active');
-              $('#submission-suggestions').text('Your media could be raw or derived, depending on different factors. See the examples below and select whether your media is better described as raw or derived.');
 
-              $('#submission-suggestions-examples-raw li').remove();
-              for (const raw_example of submissionYaml.examples[mediaType][modality].raw) {
-                console.log(raw_example);
-                $('#submission-suggestions-examples-raw').append('<li>' + raw_example + '</li>');
-              }
+              if (submissionYaml.examples.hasOwnProperty(mediaType) &&
+                 (submissionYaml.examples[mediaType].hasOwnProperty(modality))
+              ) {
+                $('#submission-suggestions').text('Your media could be raw or derived, depending on different factors. See the examples below and select whether your media is better described as raw or derived.');
 
-              $('#submission-suggestions-examples-derived li').remove();
-              for (const derived_example of submissionYaml.examples[mediaType][modality].derived) {
-                $('#submission-suggestions-examples-derived').append('<li>' + derived_example + '</li>');
+                $('#submission-suggestions-examples-raw li').remove();
+                for (const raw_example of submissionYaml.examples[mediaType][modality].raw) {
+                  console.log(raw_example);
+                  $('#submission-suggestions-examples-raw').append('<li>' + raw_example + '</li>');
+                }
+
+                $('#submission-suggestions-examples-derived li').remove();
+                for (const derived_example of submissionYaml.examples[mediaType][modality].derived) {
+                  $('#submission-suggestions-examples-derived').append('<li>' + derived_example + '</li>');
+                }
+                $('#submission-suggestions-examples').removeClass('hide').addClass('show');
+              } else {
+                $('#submission-suggestions').text('Your media could be raw or derived, depending on different factors. Select whether your media is better described as raw or derived.');
+                $('#submission-suggestions-examples-raw li').remove();
+                $('#submission-suggestions-examples-derived li').remove();
               }
-              $('#submission-suggestions-examples').removeClass('hide').addClass('show');
 
               $('#submission-raw-or-derived-section').removeClass('hide').addClass('show');
               $('#submission-suggestions-container').removeClass('hide').addClass('show');

@@ -45,7 +45,7 @@ module Hyrax
       self.membership_service_class = Morphosource::Collections::CollectionMemberService
       self.information_service_class = Morphosource::Collections::CollectionInformationService
 
-      load_and_authorize_resource except: [:index, :create], instance_name: :collection
+      load_and_authorize_resource except: [:index, :specimens, :chos, :create], instance_name: :collection
 
       def deny_collection_access(exception)
         if exception.action == :edit

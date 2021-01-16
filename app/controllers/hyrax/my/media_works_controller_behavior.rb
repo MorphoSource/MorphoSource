@@ -100,8 +100,10 @@ module Hyrax
 
         def work_by_access(model, access)
           # todo: modify this to get count instead of result docs. create and call another method?
+          return [] unless @user_collections_for_view.present?
           builder = collection_set_member_search_builder(model, access)
           builder.merge(rows: 999999)
+          byebug
           response = repository.search(builder)
           return response.documents
         end

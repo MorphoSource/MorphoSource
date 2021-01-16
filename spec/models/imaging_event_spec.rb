@@ -139,7 +139,7 @@ RSpec.describe ImagingEvent do
         it 'is not valid' do
           subject.ie_modality = [modality]
           expect(subject).to_not be_valid
-          expect(subject.errors[:ie_modality]).to eq(["Imaging Event modality \"#{modality}\" does not match parent device modality: #{device.modality.first}"])
+          expect(subject.errors[:ie_modality]).to eq(["Imaging Event modality \"#{modality}\" does not match parent device modality: #{device.modality.join(', ')}"])
         end
       end
     end

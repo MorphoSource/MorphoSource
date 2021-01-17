@@ -238,7 +238,7 @@ module Ms1to2
     end
 
     def update_models
-      [:BiologicalSpecimen, :Media]
+      [:Organization, :Device, :Taxonomy, :BiologicalSpecimen, :Media]
     end
   end
 end

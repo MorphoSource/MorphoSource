@@ -33,10 +33,10 @@ module Ms1to2
       end
 
       def process_row(ms1_id, mf, mg)
-        if mf[:file_type].first == '1'
+        if mf[:file_type].first.to_i == 1
           # raw files, no parent, media and imaging event
           process_media_ie(ms1_id, mf, mg)
-        elsif mf[:file_type].first == '2'
+        elsif mf[:file_type].first.to_i == 2
           if mf[:derived_from_media_file_id].presence
             # standard child media, media and processing event
             process_media_pe(ms1_id, mf, mg)
@@ -54,7 +54,7 @@ module Ms1to2
         ie_id = derive_ie_id(ms1_id)
         mf_id = derive_mf_id(ms1_id)
 
-        process_ie(ie_id, mg)
+        process_ie(ie_id, mf, mg)
         process_mf(mf_id, mf, mg, ie_id)
       end
 
@@ -63,7 +63,7 @@ module Ms1to2
         pe_parent_id = derive_mf_id(mf[:derived_from_media_file_id].first.to_i.to_s)
         mf_id        = derive_mf_id(ms1_id)
 
-        process_pe(pe_id, mg, pe_parent_id)
+        process_pe(pe_id, mf, mg, pe_parent_id)
         process_mf(mf_id, mf, mg, pe_id)
       end
 
@@ -72,13 +72,13 @@ module Ms1to2
           ie_id = derive_ie_id(([ms1_id.to_i] + sibling_ids).min)
         else 
           ie_id = derive_ie_id(ms1_id)
-          process_ie(ie_id, mg)
+          process_ie(ie_id, mf, mg)
         end
 
         pe_id = derive_pe_id(ms1_id)
         mf_id = derive_mf_id(ms1_id)
 
-        process_pe(pe_id, mg, ie_id)
+        process_pe(pe_id, mf, mg, ie_id)
         process_mf(mf_id, mf, mg, pe_id)
       end
 

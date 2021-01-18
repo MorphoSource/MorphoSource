@@ -37,7 +37,7 @@ module Ms1to2
       end
 
       def expected_special_fields
-        [:depositor, :parent_id, :ie_modality, :power]
+        [:depositor, :parent_id, :ie_modality, :power, :device_id]
       end
     end
   end

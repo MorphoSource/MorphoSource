@@ -17,7 +17,7 @@ module Hyrax
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_link, :physical_object_id,
-      :device_and_facility, :device_link, :device, :device_id, :device_manufacturer, :device_description,
+      :device_and_facility, :device_link, :device, :device_id, :device_label, :device_manufacturer, :device_description,
       :device_organization_institution, :device_modality, :device_modality_term,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software,
       :imaging_event_description, :imaging_event_description_attachment, :imaging_event_reference_attachment,
@@ -455,11 +455,13 @@ module Hyrax
         if device.present?
           @device = device.title.first
           @device_id = device.id
+          @device_manufacturer = device.creator&.first
           @device_organization_institution = organization_institution(device.id)
-          @device_and_facility = @device
+          @device_label = ( @device_manufacturer.present? ? @device_manufacturer + " " : "") + @device
+          @device_and_facility = @device_label
           @device_and_facility += ", " + @device_organization_institution if @device_organization_institution.present?
           @device_link = "/concern/devices/" + device.id
-          @device_manufacturer = device.creator&.first
+          
           @device_description = device.description&.first
           @device_modality = device.modality&.first
           @device_modality_term = Morphosource::ModalitiesService.new.label(device.modality&.first)

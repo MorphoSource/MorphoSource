@@ -64,6 +64,10 @@ module Hyrax
       :target_type,
       :detector_type,
       :detector_configuration,
+      :detector_pixels_x,
+      :detector_pixel_size_x,
+      :detector_pixels_y,
+      :detector_pixel_size_y,
       :source_object_distance,
       :source_detector_distance,
       :target_material,
@@ -134,6 +138,15 @@ module Hyrax
         ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.volume? ) &&
         ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_volume? )
       return viewable
+    end
+
+    def derivative_present?
+      return false unless representative_presenter.present?
+      d = Morphosource::DerivativePath.derivatives_for_reference(representative_presenter)
+      if representative_presenter.mesh? || representative_presenter.volume?
+        d = d.select { |x| !x.include?('thumbnail') }
+      end
+      return d.present?
     end
 
     def source_of_record
@@ -265,6 +278,8 @@ module Hyrax
           # color_depth value comes from different attributes, depending on the file type
           # for multiple values e.g. '8 8 8' , concat them with '/'
           if contents_mime_type.match(/(dcm|dicom)/i)
+            @image_width << file_set.columns.first.to_s if file_set.columns.present?
+            @image_height << file_set.rows.first.to_s if file_set.rows.present?
             @color_depth << file_set.bits_allocated.first.to_s if file_set.bits_allocated.present?
           else #if contents_mime_type.match(/(jp?eg|ti?ff)/)
             temp = file_set.bits_per_sample.first.to_s if file_set.bits_per_sample.present?
@@ -533,14 +548,14 @@ module Hyrax
     end
 
     def viewable_related_media_ids
-      return related_media_ids + [media.id] if current_ability.current_user.admin?
+      return related_media_ids if current_ability.current_user.admin?
       filtered_ids = []
       related_media_ids.each do |id|
         if current_ability.can?(:read, id)
           filtered_ids << id
         end
       end
-      return filtered_ids + [media.id]
+      return filtered_ids
     end
 
     # this method is cloned from list_of_item_ids_to_display (for defaut view),

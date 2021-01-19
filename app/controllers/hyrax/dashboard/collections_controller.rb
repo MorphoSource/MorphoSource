@@ -45,7 +45,7 @@ module Hyrax
       self.membership_service_class = Morphosource::Collections::CollectionMemberService
       self.information_service_class = Morphosource::Collections::CollectionInformationService
 
-      load_and_authorize_resource except: [:index, :create], instance_name: :collection
+      load_and_authorize_resource except: [:index, :specimens, :chos, :create], instance_name: :collection
 
       def deny_collection_access(exception)
         if exception.action == :edit
@@ -75,10 +75,19 @@ module Hyrax
       def show
         # if the current user has edit permission, redirect to edit 
         if current_user and can? :edit, @collection
-            tab = request.params[:tab]
-            edit_path = edit_dashboard_collection_url + '&' + request.params.slice!(:action, :id, :controller, :locale, :tab).to_query
-            edit_path += '#' + tab if tab.present?
-            redirect_to edit_path
+          tab = request.params[:tab]
+          edit_path = edit_dashboard_collection_url + '&' + request.params.slice!(:action, :id, :controller, :locale, :tab).to_query
+          edit_path += '#' + tab if tab.present?
+          redirect_to edit_path
+        elsif current_user and can? :read, @collection
+          # if the user only has read access, redirect to the pubiic view page
+          if collection.project?
+            redirect_to main_app.project_path
+          elsif collection.team?
+            redirect_to main_app.team_path
+          else
+            redirect_to root_url
+          end
         else          
           # run the presenter and other methods (same as the team_presenter methods) necessary for
           # displaying teams and project show page content

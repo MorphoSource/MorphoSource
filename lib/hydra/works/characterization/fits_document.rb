@@ -67,6 +67,8 @@ module Hydra::Works::Characterization
           t.photometric_interpretation(path: 'photometricInterpretation')
           t.rows(path: 'rows')
           t.columns(path: 'columns')
+          t.width(path: 'imageWidth')
+          t.height(path: 'imageHeight')
           t.pixel_spacing(path: 'pixelSpacing')
           t.slice_thickness(path: 'sliceThickness')
           t.bits_allocated(path: 'bitsAllocated')
@@ -78,7 +80,6 @@ module Hydra::Works::Characterization
           t.rescale_intercept(path: 'rescaleIntercept')
           t.rescale_slope(path: 'rescaleSlope')
           t.window_center_and_width_explanation(path: 'windowCenterAndWidthExplanation')
-
           t.exposure_time(path: 'exposureTime')
           t.pixel_spacing_calibration_description(path: 'pixelSpacingCalibrationDescription')
           t.pixel_spacing_calibration_type(path: 'pixelSpacingCalibrationType')

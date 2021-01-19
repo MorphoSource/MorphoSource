@@ -1,4 +1,3 @@
-
 module Hyrax
   module Renderers
     class ShowcaseDefaultAttributeRenderer < AttributeRenderer
@@ -28,7 +27,11 @@ module Hyrax
         else
           Array(values).each_with_index do |value, index|
             if is_number_with_decimal?(value)
-              value = value.to_f.round(3)
+              if options[:signif_digits].present?
+                value = value.to_f.signif(options[:signif_digits].to_i)
+              else
+                value = value.to_f.round(3)
+              end
             end
             markup << '; ' unless index == 0
             markup << attribute_value_to_html(value.to_s)
@@ -40,5 +43,11 @@ module Hyrax
       end
 
     end
+  end
+end
+
+class Float
+  def signif(digit_count)
+    Float("%.#{digit_count}g" % self)
   end
 end

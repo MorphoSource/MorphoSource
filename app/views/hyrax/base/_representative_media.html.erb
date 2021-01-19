@@ -4,7 +4,7 @@
   <% if presenter.preview_in_3D? %>
 
     <%# if presenter.universal_viewable_ready? && defined?(viewer) && viewer %>
-    <% if presenter.universal_viewer? %>
+    <% if presenter.universal_viewer? && presenter.derivative_present? %>
       <div class="viewer-wrapper">
         <div class="viewer">
           <iframe id="uv-iframe"

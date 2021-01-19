@@ -136,6 +136,15 @@ module Hyrax
       return viewable
     end
 
+    def derivative_present?
+      return false unless representative_presenter.present?
+      d = Morphosource::DerivativePath.derivatives_for_reference(representative_presenter)
+      if representative_presenter.mesh? || representative_presenter.volume?
+        d = d.select { |x| !x.include?('thumbnail') }
+      end
+      return d.present?
+    end
+
     def source_of_record
       if @idigbio_uuid.present?
         'iDigBio'

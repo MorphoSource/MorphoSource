@@ -1,10 +1,12 @@
 <% id = collection_presenter.id %>
-<%# Data attributes referenced by the javascript for submitting nested forms. %>
+<%# Data attributes referenced by the javascript for submitting nested forms. 
+todo: data-colls-hash takes additional time and might not be needed.  Can be removed later
+%>
 <tr id="document_<%= id %>"
   data-source="my"
   data-id="<%= id %>"
-  data-colls-hash="<%= collection_presenter.available_parent_collections(scope: controller) %>"
-  data-post-url="<%= hyrax.dashboard_create_nest_collection_within_path(id) %>"
+  data-colls-hash="<%#= collection_presenter.available_parent_collections(scope: controller) %>"
+  data-post-url="<%#= hyrax.dashboard_create_nest_collection_within_path(id) %>"
   data-post-delete-url="<%= hyrax.dashboard_collection_path(id) %>">
 
   <td>

@@ -3,7 +3,8 @@ module Hyrax
     #include MorphosourceHelper
     #include Morphosource::CollectionHelper
 
-    attr_reader :filter_projects, :subcollection_count, :search_form_url, :collection, :collection_managers, :collection_type_title, :specimens,
+    attr_reader :filter_projects, :subcollection_count, :search_form_url, :collection, :collection_managers, 
+      :collection_type_title, :specimens,
       :organization,
       :organization_organization_type,
       :organization_title,
@@ -25,12 +26,13 @@ module Hyrax
     attr_writer :collection_type
 
     #def initialize(solr_document, current_ability, request = nil)
-    def initialize(solr_document, current_ability, collection_type)
+    def initialize(solr_document, current_ability, coll_type)
       super
 #      @search_form_url = ''
-#      @collection = Collection.find(id)
 #      @collection_managers = manager_list(@collection.managers)
+      @collection_type_title = coll_type
       if team?
+        @collection = Collection.find(id)
         set_organization_data
       end
     end
@@ -63,11 +65,11 @@ module Hyrax
 #    end
 
     def team?
-      collection_type == 'Team'
+      @collection_type_title == 'Team'
     end
 
     def project?
-      collection_type == 'Project'
+      @collection_type_title == 'Project'
     end
 
     def filter_projects(docs, params)
@@ -89,7 +91,7 @@ module Hyrax
     end
 
     def set_organization_data
-byebug
+#byebug
       collection = Collection.find(id)
       organization = collection.organization
       if organization.present?
@@ -130,20 +132,21 @@ byebug
     end
 
     def project_team_title_link
-      return 'TBD'
-#      if @collection.first_parent.present?
-#        renderer = Hyrax::Renderers::ShowcaseCollectionLinkRenderer.new(nil,nil)
-#        return renderer.collection_link(@collection.first_parent)
-#      else
-#        return ""
-#      end
+      #if @collection.first_parent.present?
+      if member_of_collection_ids.present?
+        collection = Collection.find(id)        
+        renderer = Hyrax::Renderers::ShowcaseCollectionLinkRenderer.new(nil,nil)
+        return renderer.collection_link(collection.first_parent)
+      else
+        return ""
+      end
     end
 
     # Metadata Methods
     delegate :title, :description, :creator, :contributor, :subject, :publisher, :keyword, :language, :embargo_release_date,
              :lease_expiration_date, :license, :date_created, :resource_type, :based_near, :related_url, :identifier, :thumbnail_path,
              :title_or_label, :collection_type_gid, :create_date, :modified_date, :visibility, :edit_groups, :edit_people,
-             :part, :media_type,
+             :part, :media_type, :member_of_collection_ids,
              to: :solr_document
 
 

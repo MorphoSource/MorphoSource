@@ -14,20 +14,25 @@ module Morphosource
       end
 
       def initialize(user, collection_list_type_id, page = "my")
+        # the service is shared by dashboard my teams/projects page and browse teams/projects
         @solr = solr_service.new
         @user = user
         @collection_list_type_id = collection_list_type_id
-        @collection_count_for_manager = 0
-        @collection_count_for_editor = 0
-        @collection_count_for_depositor = 0
-        @collection_count_for_viewer = 0
-        @collection_count_for_downloader = 0
-        @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
-        membership_info(all_collection_ids)
         if page == "my"
+          @collection_count_for_manager = 0
+          @collection_count_for_editor = 0
+          @collection_count_for_depositor = 0
+          @collection_count_for_viewer = 0
+          @collection_count_for_downloader = 0
+          @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
+          membership_info(all_collection_ids)
           query_solr_collection_info
+        else
+          @collection_ids = all_collection_ids
         end
-        @organizations = organization_docs
+        if is_team?
+          @organizations = organization_docs
+        end
       end
 
       #def call
@@ -59,8 +64,9 @@ module Morphosource
         @info = { 
           'counts_for_team_type' => {}
         }
-        info['counts_for_team_type']['org_teams'] = total_organization_teams
-        info['counts_for_team_type']['user_teams'] = @ids_by_membership['any'].length - total_organization_teams
+        total_organizations = total_organization_teams(@collection_ids)
+        info['counts_for_team_type']['org_teams'] = total_organizations
+        info['counts_for_team_type']['user_teams'] = @collection_ids.length - total_organizations
         info     
       end
 
@@ -119,8 +125,16 @@ module Morphosource
           return solr.facet_fields(facet_fields)
         end
 
-        def is_project?(collection_type)
-          collection_type.split('/').last == '2'
+        #def is_project?(collection_type)
+        #  collection_type.split('/').last == '2'
+        #end
+
+        def is_project?
+          @collection_list_type_id == 2
+        end
+
+        def is_team?
+          @collection_list_type_id == 1
         end
 
         def membership_info(all_collection_ids)
@@ -190,13 +204,13 @@ module Morphosource
           solr.count
         end
 
-        def total_organization_teams
-          return 0 unless ids_by_membership['any'].present?
+        def total_organization_teams(ids)
+          return 0 unless ids.present?
           params = { 
             rows: 0,
             fq: [
               solrize('has_model', :symbol) + ':Organization',
-              assemble_or_query(solrize('team_id', :stored_searchable), ids_by_membership['any'])
+              assemble_or_query(solrize('team_id', :stored_searchable), ids)
             ]
           }
           solr.get(nil, params)

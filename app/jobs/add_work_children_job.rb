@@ -25,7 +25,7 @@ class AddWorkChildrenJob < ApplicationJob
     end
 
     parent.reload
-    parent.ordered_members = children
+    parent.ordered_members = (parent.ordered_members.to_a + children).uniq
     parent.save!
   end
 end

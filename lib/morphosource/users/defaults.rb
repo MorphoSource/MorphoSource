@@ -4,6 +4,7 @@ module Morphosource
 
       # Settings used by morphosource.rake when creating default development user accounts
       ADMIN = {
+        id: 1,
         email: "admin@email.com",
         password: 'password',
         guest: false,
@@ -20,10 +21,12 @@ module Morphosource
         country: 'USA',
         postal_code: '27278',
         terms_read: true,
-        ms1_user: false
+        ms1_user: false,
+        ms_id: "1"
       }
 
       CONTRIBUTOR = {
+        id: 2,
         email: "contributor@email.com",
         password: 'password',
         guest: false,
@@ -40,10 +43,12 @@ module Morphosource
         country: 'USA',
         postal_code: '27278',
         terms_read: true,
-        ms1_user: false
+        ms1_user: false,
+        ms_id: "2"
       }
 
       REGISTERED = {
+        id: 3,
         email: "registered@email.com",
         password: 'password',
         guest: false,
@@ -60,7 +65,8 @@ module Morphosource
         country: 'USA',
         postal_code: '27278',
         terms_read: true,
-        ms1_user: false
+        ms1_user: false,
+        ms_id: "3"
       }
     end
   end

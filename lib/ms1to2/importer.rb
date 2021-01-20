@@ -76,6 +76,7 @@ module Ms1to2
           coll_attrs = {
             :id => collection_id,
             :title => v[:title],
+            :description => v[:description],
             :depositor => v[:depositor].first,
             :visibility => v[:visibility].first,
             :collection_type => coll_type

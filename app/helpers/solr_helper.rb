@@ -37,11 +37,14 @@ module SolrHelper
   end
 
   def assemble_po_id_or_collection_query(ids, collection_ids)
-    return "" if !ids.present? || !collection_ids.present? 
-    "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) OR (#{assemble_or_query(solrize('member_of_collection_ids', :symbol), Array(collection_ids))})"
+    query = []
+    query << "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)})" if ids.present?
+    query << "(#{assemble_or_query(solrize('member_of_collection_ids', :symbol), Array(collection_ids))})" if collection_ids.present?
+    return query.join(' OR ')
   end
 
   def assemble_po_id_and_not_collection_query(ids, collection_id)
+    # todo: might need to check if ids should be handled separately (similar to assemble_po_id_or_collection_query) 
     return "" if !ids.present? || !collection_id.present? 
     "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) AND NOT (#{solrize('member_of_collection_ids', :symbol)}:#{collection_id})"
   end

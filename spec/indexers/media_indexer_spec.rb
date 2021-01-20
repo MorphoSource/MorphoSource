@@ -59,6 +59,42 @@ RSpec.describe MediaIndexer do
     end
   end
 
+  describe 'related_media_ids' do
+    #- Specimen1 
+    #  
+    #  - IE1 
+    #    
+    #    - PE1 
+    #      - Media1 
+    #    
+    #    - PE2 
+    #      - Media2 
+    let(:specimen)                { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
+    let(:media1)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
+    let(:media2)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
+    let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
+    let!(:processing_event1)       { ProcessingEvent.create(title: ['processing_event']) }
+    let!(:processing_event2)       { ProcessingEvent.create(title: ['processing_event']) }
+    let!(:works)                  { [ specimen, device, imaging_event, processing_event1, processing_event2 ] }
+
+    subject(:solr_document)       { described_class.new(media1).generate_solr_document }
+
+    before do
+      specimen.ordered_members << imaging_event
+      imaging_event.ordered_members << processing_event1
+      imaging_event.ordered_members << processing_event2
+      processing_event1.ordered_members << media1
+      processing_event2.ordered_members << media2
+      works.each(&:save)
+      works.each(&:reload)
+    end
+
+    it 'indexes related_media_ids' do
+      expect(subject['related_media_ids_ssim']).to include(media1.id, media2.id)
+    end
+  end
+
   describe 'physical object fields' do
     let(:organization)  { Organization.create(title: ['Organization']) }
     let(:taxonomy)      { Taxonomy.create(title: ['taxonomy title']) }
@@ -76,7 +112,7 @@ RSpec.describe MediaIndexer do
       works.each(&:save)
       works.each(&:reload)
     end
-
+      
     it 'indexes physical object type' do
       expect(subject['media_physical_object_type_tesim']).to eq('Biological Specimen')
       expect(subject['media_physical_object_type_sim']).to eq('Biological Specimen')

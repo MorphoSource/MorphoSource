@@ -6,7 +6,7 @@
       <%= collection_presenter.title_or_label %>
     <% end %>
   </td>
-  <td><%= collection_presenter.description&.first %></td>
+  <td><span class="text-truncate-lines three-lines"><%= collection_presenter.description&.first %></span></td>
   <td><%= collection_presenter.project_team_title_link %></td>
   <td><%= collection_presenter.creator&.first %></td>
   <td><%= collection_presenter.total_media %></td>

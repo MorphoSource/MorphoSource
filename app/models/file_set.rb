@@ -12,9 +12,9 @@ class FileSet < ActiveFedora::Base
 
   # for images
   delegate(
-    :bits_per_sample,
-    :color_space,
-    :compression,
+    :bits_per_sample, 
+    :color_space, 
+    :compression, 
     :focal_length,
     :aperture_value,
     :iso_speed_ratings,
@@ -70,7 +70,7 @@ class FileSet < ActiveFedora::Base
     :distance_source_to_detector,
     :anode_target_material,
     :spiral_pitch_factor,
-    :number_of_series_related_instances,
+    :number_of_series_related_instances,    
     to: :characterization_proxy
   )
 
@@ -100,8 +100,4 @@ class FileSet < ActiveFedora::Base
     :contents_accepted_file_count,
     to: :characterization_proxy
   )
-
-  def media?
-    false
-  end
 end

@@ -13,6 +13,7 @@ RSpec.describe ImagingEvent do
     it "has Media and ProcessingEvent as valid child concerns" do
       expect(subject.valid_child_concerns).to match_array([Media, ProcessingEvent])
     end
+
   end
 
   describe "instance" do
@@ -141,43 +142,6 @@ RSpec.describe ImagingEvent do
           expect(subject.errors[:ie_modality]).to eq(["Imaging Event modality \"#{modality}\" does not match parent device modality: #{device.modality.first}"])
         end
       end
-    end
-  end
-
-  describe 'media' do
-    let(:ie)      { ImagingEvent.create(title: ['ie']) }
-    let(:pe)      { ProcessingEvent.create(title: ['pe']) }
-    let(:media1)  { Media.create(title: ['media1'] ) }
-    let(:media2)  { Media.create(title: ['media2']) }
-    let(:works)   { [ie, pe, media1, media2] }
-
-    before do
-      ie.ordered_members << media1
-      media1.ordered_members << pe
-      pe.ordered_members << media2
-      works.each(&:save)
-    end
-
-    it 'returns all media descendants' do
-      expect(ie.media).to match_array([media1, media2])
-    end
-  end
-
-  describe 'objects' do
-    let(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
-    let(:cho)       { CulturalHeritageObject.create(title: ['cho'], vouchered: ['No']) }
-    let(:ie)        { ImagingEvent.create(title: ['ie'], device_id: [device.id], ie_modality: device.modality) }
-    let(:device)    { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:works)     { [specimen, cho, ie] }
-
-    before do
-      specimen.ordered_members << ie
-      cho.ordered_members << ie
-      works.each(&:save)
-    end
-
-    it 'returns all parent objects' do
-      expect(ie.objects).to match_array([specimen, cho])
     end
   end
 end

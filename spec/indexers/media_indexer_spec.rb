@@ -95,37 +95,4 @@ RSpec.describe MediaIndexer do
     end
   end
 
-  describe 'physical object fields' do
-    let(:organization)  { Organization.create(title: ['Organization']) }
-    let(:taxonomy)      { Taxonomy.create(title: ['taxonomy title']) }
-    let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id]) }
-    let(:cho)           { CulturalHeritageObject.create(title: ['CHO'], vouchered: ['Yes'], organization_id: [organization.id]) }
-    let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
-    let(:works)         { [taxonomy, organization, specimen, cho, media, device, imaging_event] }
-
-    before do
-      taxonomy.ordered_members << specimen
-      specimen.ordered_members << imaging_event
-      cho.ordered_members << imaging_event
-      imaging_event.ordered_members << media
-      works.each(&:save)
-      works.each(&:reload)
-    end
-      
-    it 'indexes physical object type' do
-      expect(subject['media_physical_object_type_tesim']).to eq('Biological Specimen')
-      expect(subject['media_physical_object_type_sim']).to eq('Biological Specimen')
-    end
-
-    it 'indexes physical object id' do
-      expect(subject['physical_object_id_ssim']).to match_array([specimen.id, cho.id])
-      expect(subject['physical_object_id_tesim']).to match_array([specimen.id, cho.id])
-    end
-
-    it 'indexes taxonomies' do
-      expect(subject['taxonomy_tesim']).to match_array(taxonomy.title)
-      expect(subject['taxonomy_ssim']).to match_array(taxonomy.title)
-    end
-  end
 end

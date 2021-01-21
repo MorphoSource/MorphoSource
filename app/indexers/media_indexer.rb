@@ -27,24 +27,16 @@ class MediaIndexer < Morphosource::WorkIndexer
       modality = object.modality
       solr_doc['media_modality_tesim'] = modality
       solr_doc['media_modality_sim'] = modality
-
+      
       # data processing for subsequent fields
       physical_objects = object.physical_objects
       if physical_objects.present?
-        physical_object_id = physical_objects.map(&:id)
         physical_object_type = physical_objects.first.specimen? ? "Biological Specimen" : "Cultural Heritage Object"
-        types = physical_objects.map(&:class).uniq
-        if types == [CulturalHeritageObject]
-          taxonomy_titles = nil
-        elsif types == [BiologicalSpecimen]
+        physical_object_id = physical_objects.map(&:id)
+        if physical_object_type == "Biological Specimen"
           taxonomy_titles = physical_objects.map(&:taxonomies_titles).flatten
         else
-          taxonomy_titles = []
-          physical_objects.each do |object|
-            if object.specimen?
-              taxonomy_titles += object.taxonomies_titles
-            end
-          end
+          taxonomy_titles = nil
         end
 
         organizations = []
@@ -74,20 +66,20 @@ class MediaIndexer < Morphosource::WorkIndexer
       # physical_object_ids
       solr_doc['physical_object_id_ssim'] = physical_object_id
       solr_doc['physical_object_id_tesim'] = physical_object_id
-
+      
       # add taxonomies
       solr_doc['taxonomy_tesim'] = taxonomy_titles
       solr_doc['taxonomy_ssim'] = taxonomy_titles
-
+      
       # add organization facet
       solr_doc['media_organization_tesim'] = organization_titles
       solr_doc['media_organization_sim'] = organization_titles
       solr_doc['media_organization_id_ssim'] = organization_id
       solr_doc['media_organization_id_tesim'] = organization_id
-
+      
       # add public collection membership facet
       solr_doc['member_of_public_collection_ids_ssim'] = object.member_of_public_collection_ids
-
+      
       # related media ids
       solr_doc['related_media_ids_ssim'] = object.related_media_ids
    end

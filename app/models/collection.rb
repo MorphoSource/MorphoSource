@@ -96,10 +96,6 @@ class Collection < ActiveFedora::Base
     !member_of_collections.empty?
   end
 
-  def child_projects
-    ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id}")
-  end
-
   def organization
     if parent_id
       Organization.where(team_id: parent_id).first
@@ -110,7 +106,7 @@ class Collection < ActiveFedora::Base
 
   def organization_name
     return nil if organization.nil?
-    organization.title
+    organization.title.first
   end
 
   # Create manager/depositor/viewer roles for each Team/Project collection
@@ -170,10 +166,6 @@ class Collection < ActiveFedora::Base
     membership_list << 'Viewer' if viewers.include?(user)
     membership_list << 'Downloader' if downloaders.include?(user)
     membership_list
-  end
-
-  def child_projects
-    ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id}").select{ |c| c.project? }
   end
 
   private

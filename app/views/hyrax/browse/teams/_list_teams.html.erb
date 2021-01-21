@@ -6,7 +6,7 @@
       <%= collection_presenter.title_or_label %>
     <% end %>
   </td>
-  <td><%= collection_presenter.organization&.title&.first %></td>
+  <td><%= collection_presenter.linked_organization&.first %></td>
   <td><%= collection_presenter.creator&.first %></td>
   <td><%= collection_presenter.total_team_projects %></td>
   <td><%= collection_presenter.total_media %></td>

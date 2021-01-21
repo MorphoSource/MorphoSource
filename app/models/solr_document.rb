@@ -240,6 +240,10 @@ class SolrDocument
     self[Solrizer.solr_name('physical_object_type', :stored_searchable)]
   end
 
+  def taxonomy_id
+    self[Solrizer.solr_name('taxonomy_id', :stored_searchable)]
+  end
+
   def vouchered
     self[Solrizer.solr_name('vouchered', :stored_searchable)]
   end

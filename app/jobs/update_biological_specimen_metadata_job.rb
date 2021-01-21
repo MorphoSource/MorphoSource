@@ -3,7 +3,7 @@ class UpdateBiologicalSpecimenMetadataJob < UpdateWorkMetadataJob
     [
       :organization_id, :catalog_number, :collection_code, :institution_code,
       :latitude, :longitude, :numeric_time, :original_location, :periodic_time, 
-      :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, 
+      :taxonomy_id, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, 
       :occurrence_id, :sex, :canonical_taxonomy, :creator, :contributor, 
       :description, :publisher, :identifier, :related_url
     ]

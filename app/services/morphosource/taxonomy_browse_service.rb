@@ -1,5 +1,7 @@
 module Morphosource
 	class TaxonomyBrowseService
+    include SolrHelper
+
     attr_reader :names, :absent_ranks, :solr
 
     TAXONOMY_RANKS = [
@@ -52,7 +54,7 @@ module Morphosource
 
       names.each do |n|
          return nil if !n[:name].present? || !n[:rank].present? || !TAXONOMY_RANKS.include?(n[:rank])
-         solr_params[:fq] << "#{prepare_field(n[:rank])}:#{n[:name]}"
+         solr_params[:fq] << "#{prepare_field(n[:rank])}:#{prepare_value(n[:name])}"
       end
 
       absent_ranks.each do |r|
@@ -93,7 +95,7 @@ module Morphosource
 
       names.each do |n|
          return nil if !n[:name].present? || !n[:rank].present? || !TAXONOMY_RANKS.include?(n[:rank])
-         solr_params[:fq] << "#{prepare_field(n[:rank])}:#{n[:name]}"
+         solr_params[:fq] << "#{prepare_field(n[:rank])}:#{prepare_value(n[:name])}"
       end
 
       absent_ranks.each do |r|
@@ -128,7 +130,7 @@ module Morphosource
 
       names.each do |n|
          return nil if !n[:name].present? || !n[:rank].present? || !TAXONOMY_RANKS.include?(n[:rank])
-         solr_params[:fq] << "#{prepare_field(n[:rank])}:#{n[:name]}"
+         solr_params[:fq] << "#{prepare_field(n[:rank])}:#{prepare_value(n[:name])}"
       end
 
       absent_ranks.each do |r|
@@ -176,7 +178,7 @@ module Morphosource
         fl: ['id', 'title_tesim', 'taxonomy_tesim'],
         fq: [
           "#{solrize('has_model', :symbol)}:BiologicalSpecimen",
-          "#{solrize('external_taxonomy', :stored_searchable)}:#{name.present? ? name : '*'}",
+          "#{solrize('external_taxonomy', :stored_searchable)}:#{name.present? ? prepare_value(name) : '*'}",
           "#{solrize('public_media_type', :stored_searchable)}:*",
         ],
         rows: 200
@@ -190,7 +192,7 @@ module Morphosource
         fl: ['id'],
         fq: [
           "#{solrize('has_model', :symbol)}:BiologicalSpecimen",
-          "#{solrize('external_taxonomy', :stored_searchable)}:#{name.present? ? name : '*'}",
+          "#{solrize('external_taxonomy', :stored_searchable)}:#{name.present? ? prepare_value(name) : '*'}",
           "#{solrize('public_media_type', :stored_searchable)}:*",
         ]
       }

@@ -26,31 +26,19 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
     let(:private_media)   { Media.create(title: ['Private Media'], media_type: ['PhotogrammetryImageSeries'], keyword: ['green', 'orange', 'purple'], visibility: 'restricted') }
     let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
     let(:imaging_event)   { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
-    let(:imaging_event2)   { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
     let(:media)           { [public_media, private_media] }
-    let(:works)           { [specimen, cho, imaging_event, imaging_event2, public_media, private_media] }
+    let(:works)           { [specimen, cho, imaging_event, public_media, private_media] }
 
     before do
       specimen.ordered_members << imaging_event
-      cho.ordered_members << imaging_event2
+      cho.ordered_members << imaging_event
       imaging_event.ordered_members << public_media << private_media
-      imaging_event2.ordered_members << public_media << private_media
       works.each(&:save)
       works.each(&:reload)
     end
 
-    describe 'media_solr' do
-      let(:public_media_solr)   { SolrDocument.find(public_media.id) }
-      let(:private_media_solr)  { SolrDocument.find(private_media.id) }
-
-      it 'returns descendant media solr records' do
-        expect(specimen.media_solr.map(&:id)).to match_array([public_media.id, private_media.id])
-        expect(cho.media_solr.map(&:id)).to match_array([public_media.id, private_media.id])
-      end
-    end
-
     describe '#related_media_ids' do
-      it 'returns related media ids' do
+      it 'returns related_media_ids' do
         expect(specimen.related_media_ids).to match_array([public_media.id] + [private_media.id])
       end
     end

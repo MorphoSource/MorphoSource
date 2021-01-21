@@ -8,18 +8,8 @@ module Morphosource::PhysicalObjectBehavior
     organizations.map{ |o| o.title.first }
   end
 
-  def media_solr
-    return [] if id.nil?
-
-    qry = "physical_object_id_ssim:#{self.id} AND has_model_ssim:Media"
-    ActiveFedora::SolrService.query(qry, rows: 999999)
-  end
-
   def media
-    return [] if media_solr.blank?
-
-    ids = media_solr.map(&:id)
-    Media.find(ids)
+    descendants.select{ |d| d.class == Media }
   end
 
   def public_media

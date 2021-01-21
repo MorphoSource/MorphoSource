@@ -191,7 +191,6 @@ class Media < Morphosource::Works::Base
   def physical_objects
     ancestors.select(&:physical_object?)
   end
-  alias objects physical_objects
 
   def physical_object_id
     physical_objects.map(&:id)

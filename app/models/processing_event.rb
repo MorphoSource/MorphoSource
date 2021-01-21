@@ -19,14 +19,6 @@ class ProcessingEvent < Morphosource::Works::Base
     ancestors.find(&:imaging_event?)
   end
 
-  def media
-    descendants.select{ |d| d.media? }
-  end
-
-  def objects
-    ancestors.select{ |a| a.physical_object? }
-  end
-
   private
     def add_id_to_title
       unless self.title && self.id && self.title.first.to_s.start_with?("PE#{self.id.to_s}: ")

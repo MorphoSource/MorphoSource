@@ -67,9 +67,6 @@ RSpec.describe Organization do
   end
 
   describe "instance" do
-    let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'team_collection_type') }
-    let(:team)                  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
-
     subject { Organization.create({
         title: ['American Museum of Natural History'],
         institution_code: ['AMNH'],
@@ -79,7 +76,7 @@ RSpec.describe Organization do
         state_province: ['New York'],
         postal_code: ['12345'],
         country: ['United States'],
-        team_id: [team.id]
+        team_id: ['123']
       })
     }
 
@@ -116,7 +113,7 @@ RSpec.describe Organization do
     end
 
     it "creates with correct team id" do
-      expect(subject.team_id.first).to eq(team.id)
+      expect(subject.team_id.first).to eq('123')
     end
 
     describe "valid work relationships" do
@@ -201,28 +198,6 @@ RSpec.describe Organization do
         it '#outside_media returns specimens not owned by team' do
           expect(subject.outside_media).to match_array([media1, media2])
         end
-      end
-    end
-  end
-
-  describe 'record_orginial_team' do
-    let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-    let(:team1)         { Collection.create(title: ['team1'], collection_type_gid: team_collection_type.gid) }
-    let(:team2)         { Collection.create(title: ['team2'], collection_type_gid: team_collection_type.gid) }
-    let(:project_collection_type)    { Hyrax::CollectionType.create(title: 'Project') }
-    let(:project)         { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
-    let(:organization) { Organization.create(title: ['org'], team_id: [team1.id]) }
-
-    before do
-      project.member_of_collections << team1
-      project.save
-    end
-
-    context 'updating a team' do
-      it 'records the original team' do
-        organization.update(team_id: [team2.id])
-        expect(organization.instance_variable_get(:@old_collections)).to match_array([team1, project])
-        expect(organization.team).to eq(team2)
       end
     end
   end

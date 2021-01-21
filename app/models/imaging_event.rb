@@ -72,14 +72,6 @@ class ImagingEvent < Morphosource::Works::Base
     Device.find(device_id.first)
   end
 
-  def media
-    descendants.select{ |d| d.media? }
-  end
-
-  def objects
-    ActiveFedora::Base.find(in_works_ids)
-  end
-
   private
 
     def add_id_to_title

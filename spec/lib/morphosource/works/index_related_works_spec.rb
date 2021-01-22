@@ -161,13 +161,14 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
             p.member_of_collections << new_team
             p.save
           end
+          # allow(organization).to receive(:index_related)
         end
         it 'updates its new team, old team, old and new child projects, but not media and objects' do
           expect(organization).not_to receive(:index_related).with(media).and_call_original
           expect(organization).not_to receive(:index_related).with(objects).and_call_original
+          expect(organization).to receive(:index_related_collections).with(a_collection_containing_exactly(team, projectA, projectB)).and_call_original
           expect(organization).to receive(:index_related_collections).with([new_team]).and_call_original
-          expect(organization).to receive(:index_related_collections).with([team, projectA, projectB]).and_call_original
-          expect(organization).to receive(:index_related_collections).with(new_team_projects).and_call_original
+          expect(organization).to receive(:index_related_collections).with(a_collection_containing_exactly(projectC, projectD))
           organization.team_id = [new_team.id]
           organization.save
         end

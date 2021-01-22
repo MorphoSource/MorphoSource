@@ -27,7 +27,7 @@ todo: data-colls-hash takes additional time and might not be needed.  Can be rem
     </div>
   </td>
   <% if page_is_team? %>
-    <td><%= collection_presenter.organization&.title&.first %></td>
+    <td><%= collection_presenter.linked_organization&.first %></td>
   <% end %>
   <td><%= collection_presenter.total_items %></td>
   <%#= collection_presenter.total_viewable_items %>

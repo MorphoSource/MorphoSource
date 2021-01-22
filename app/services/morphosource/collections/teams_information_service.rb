@@ -105,11 +105,9 @@ module Morphosource
 
         def facet_query_for_collections
           return {} unless collection_ids.present?
-
           facet_fields = [
             solrize('visibility', :stored_sortable)
           ]
-
           params = { 
             #rows: 0,
             fl: ['id'],
@@ -117,11 +115,10 @@ module Morphosource
               "#{solrize('has_model', :symbol)}:Collection",
               "(#{solrize('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{@collection_list_type_id}\")",
               assemble_or_query('id', collection_ids)
-            ]
+            ],
+            "facet.limit": -1
           }
-
           solr.get_facet_fields(nil, facet_fields, params)
-
           return solr.facet_fields(facet_fields)
         end
 
@@ -140,7 +137,8 @@ module Morphosource
         def membership_info(all_collection_ids)
           all_collection_ids.each do |id|
             begin
-              membership = Collection.find(id).membership_of(@user)
+              coll = Collection.find(id)
+              membership = coll.membership_of(@user)
             rescue Exception => e  
               # some collections end up with an exception below.
               # undefined method `users' for nil:NilClass
@@ -168,7 +166,9 @@ module Morphosource
               @collection_count_for_downloader += 1
               @ids_by_membership['Downloader'] << id
               @ids_by_membership['any'] << id
-            else
+            elsif @user.can? :read, coll         
+              # check if user at least has read access
+              @ids_by_membership['any'] << id
             end          
           end
           @collection_ids = @ids_by_membership['any']

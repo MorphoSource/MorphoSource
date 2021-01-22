@@ -1,7 +1,6 @@
 module Hyrax
   class BrowseTeamPresenter < CollectionPresenter
-
-    #def initialize(solr_document, current_ability, request = nil)
+    # this presenter is for showing team in each row on browse team listing page
     def initialize(solr_document, current_ability, coll_type)
       super
       @collection_type_title = coll_type

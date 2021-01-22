@@ -220,7 +220,7 @@ namespace :morphosource do
         map { |p| p.id if ( p.class == Taxonomy && !b.taxonomy_id.include?(p.id) ) }.
         compact
       if taxonomy_id.present?
-        UpdateBiologicalSpecimenMetadataJob.perform_now({
+        UpdateBiologicalSpecimenMetadataJob.perform_later({
           id: [b.id],
           taxonomy_id: taxonomy_id
         })

@@ -25,6 +25,7 @@ module Hyrax
         :organization_id,
         :original_location,
         :periodic_time,
+        :taxonomy_id,
         :vouchered,
         :idigbio_recordset_id,
         :idigbio_uuid,
@@ -79,7 +80,7 @@ module Hyrax
     end
 
     def self.build_permitted_params
-      super + [:organization_id]
+      super + [:organization_id, :taxonomy_id]
     end
 
   end

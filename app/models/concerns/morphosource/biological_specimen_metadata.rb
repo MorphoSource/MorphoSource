@@ -5,6 +5,10 @@ module Morphosource
     extend ActiveSupport::Concern
 
     included do
+      property :taxonomy_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/taxonomyID") do |index|
+        index.as :stored_searchable
+      end
+
       property :idigbio_recordset_id, predicate: ::RDF::Vocab::DWC.datasetID do |index|
         index.as :stored_searchable
       end

@@ -212,6 +212,22 @@ namespace :morphosource do
     end
   end
 
+  desc 'Transfer Physical Object Taxonomy parent to PO taxonomy_id metadata property'
+  task :transfer_po_parent_taxonomy_to_metadata => :environment do
+    BiologicalSpecimen.find_each do |b|
+      taxonomy_id = b.taxonomy_id + b.
+        member_of.
+        map { |p| p.id if ( p.class == Taxonomy && !b.taxonomy_id.include?(p.id) ) }.
+        compact
+      if taxonomy_id.present?
+        UpdateBiologicalSpecimenMetadataJob.perform_now({
+          id: [b.id],
+          taxonomy_id: taxonomy_id
+        })
+      end
+    end
+  end
+
   desc 'Dissolve parent/child relationships between devices and imaging events'
   task :remove_device_ie_relationships => :environment do
     Device.find_each do |d|
@@ -232,6 +248,16 @@ namespace :morphosource do
       o.ordered_members = new_members
       o.members = new_members
       o.save!
+    end
+  end
+
+  desc 'Dissolve parent/child relationships between taxonomies and objects'
+  task :remove_taxonomy_object_relationships => :environment do
+    Taxonomy.find_each do |t|
+      puts("Removing BSO children from taxonomy #{t.id}")
+      t.ordered_members = []
+      t.members = []
+      t.save!
     end
   end
 

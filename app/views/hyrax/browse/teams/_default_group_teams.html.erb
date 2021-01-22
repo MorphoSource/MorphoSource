@@ -12,7 +12,7 @@
   </thead>
   <tbody>
   <% docs.each_with_index do |document, counter| %>
-    <% collection_presenter = Hyrax::TeamPresenter.new(document, current_ability, nil) %>
+    <% collection_presenter = Hyrax::BrowseTeamPresenter.new(document, current_ability, 'Team') %>
     <% collection_presenter.get_media_po_counts_by_collection(document.id) %>
     <%= render 'hyrax/browse/teams/list_teams', collection_presenter: collection_presenter, counter: counter, document: document %>
   <% end %>

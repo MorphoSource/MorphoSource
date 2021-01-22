@@ -20,16 +20,19 @@ module Hyrax
         @collection_list_type = "collection"
       end
 
-      query_collection_information
-
+      if page_is_team?
+        query_collection_information
+      end
       #@response = teams_service.all_collections_by_type(@collection_list_type_id, collection_filter_params)
       @response = teams_service.all_collections_by_type(@collection_list_type_id, browse_collection_params)
       @document_list = @response.documents
       @document_count = @document_list.length
       @paginated_document_list = paginated_item_list
 
-      @org_teams_count = @collection_information['counts_for_team_type']['org_teams'].to_int
-      @user_teams_count = @document_count - @org_teams_count
+      if page_is_team?
+        @org_teams_count = @collection_information['counts_for_team_type']['org_teams'].to_int
+        @user_teams_count = @document_count - @org_teams_count
+      end
 
       respond_to do |format|
         format.html { render 'hyrax/browse/teams/index'}

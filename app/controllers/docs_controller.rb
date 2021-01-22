@@ -7,6 +7,9 @@ class DocsController < ApplicationController
     outdated_flash
   end
 
+  def beta_guide
+  end
+
   def citation
     outdated_flash
   end

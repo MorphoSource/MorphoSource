@@ -66,16 +66,12 @@ module Hyrax
         canonical_taxonomy = env.attributes["canonical_taxonomy"]
         return '' if !canonical_taxonomy || canonical_taxonomy.empty?
         canonical_id = canonical_taxonomy.first
-        dissociated_parents = get_dissociated_parents(env)
-        dissociated_parents.include?(canonical_id) ? '' : canonical_id
-      end
-
-      def get_dissociated_parents(env)
-        env.attributes["work_parents_attributes"].each_value.with_object([]) do |v,ids|
-          ids << v["id"] if v["_destroy"] == "true"
+        if !env.attributes["taxonomy_id"].include?(canonical_id) && env.curation_concern.taxonomy_id.include?(canonical_id)
+          return ''
+        else
+          return canonical_id
         end
       end
-
     end
   end
 end

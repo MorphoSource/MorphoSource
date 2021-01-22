@@ -39,8 +39,12 @@ class Taxonomy < Morphosource::Works::Base
     gbif_ranks.map { |rank| self.send(rank)&.first }.compact
   end
 
+  def objects
+    BiologicalSpecimen.where(taxonomy_id: id)
+  end
+
   def media
-    descendants.select{ |d| d.media? }
+    objects.map { |o| o.descendants.select { |d| d.media? } }.flatten
   end
 
 end

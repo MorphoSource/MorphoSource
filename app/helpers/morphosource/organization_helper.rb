@@ -98,7 +98,7 @@ module Morphosource
           this_media_extras['po_title'] = po_doc.title&.first
           if po_doc.hydra_model == BiologicalSpecimen
             @po_type = "bso"
-            taxonomy = Morphosource::TaxonomySearchService.call({ 'member_ids' => po_doc.id})&.first
+            taxonomy = Morphosource::TaxonomySearchService.call({ 'id' => po_doc.taxonomy_id&.first})&.first if po_doc.taxonomy_id.present?
             this_media_extras['po_taxonomy'] = taxonomy.title&.first if taxonomy.present? && taxonomy.title.present?
           elsif po_doc.hydra_model == CulturalHeritageObject
             @po_type = "cho"

@@ -7,7 +7,7 @@ module Hyrax
     delegate :taxonomy_domain, :taxonomy_kingdom, :taxonomy_phylum, :taxonomy_superclass, :taxonomy_class, :taxonomy_subclass, :taxonomy_superorder, :taxonomy_order, :taxonomy_suborder, :taxonomy_superfamily, :taxonomy_family, :taxonomy_subfamily, :taxonomy_tribe, :taxonomy_genus, :taxonomy_subgenus, :taxonomy_species, :taxonomy_subspecies, :trusted, :gbif_key, to: :solr_document
 
     def biological_specimens
-      work.members
+      BiologicalSpecimen.where(taxonomy_id: id)
     end
 
   end

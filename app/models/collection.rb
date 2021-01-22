@@ -173,7 +173,7 @@ class Collection < ActiveFedora::Base
   end
 
   def child_projects
-    ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id}").select{ |c| c.project? }
+    ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id}").select{ |c| c.class == Collection && c.project? }
   end
 
   private

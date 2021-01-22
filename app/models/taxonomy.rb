@@ -39,4 +39,8 @@ class Taxonomy < Morphosource::Works::Base
     gbif_ranks.map { |rank| self.send(rank)&.first }.compact
   end
 
+  def media
+    descendants.select{ |d| d.media? }
+  end
+
 end

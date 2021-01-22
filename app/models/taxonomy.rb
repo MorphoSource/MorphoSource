@@ -40,7 +40,7 @@ class Taxonomy < Morphosource::Works::Base
   end
 
   def objects
-    BiologicalSpecimen.where(taxonomy_id: id)
+    BiologicalSpecimen.where(taxonomy_id: id).to_a
   end
 
   def media

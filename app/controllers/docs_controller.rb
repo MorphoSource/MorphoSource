@@ -15,6 +15,9 @@ class DocsController < ApplicationController
     # outdated_flash
   end
 
+  def contributor_terms
+  end
+
   def glossary
     outdated_flash
   end

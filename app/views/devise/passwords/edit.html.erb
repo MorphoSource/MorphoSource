@@ -1,4 +1,4 @@
-<h2>Change your password</h2>
+<h2 style="margin-bottom: 30px;">Change your password</h2>
 
 <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
@@ -9,19 +9,29 @@
     <% if @minimum_password_length %>
       <em>(<%= @minimum_password_length %> characters minimum)</em><br />
     <% end %>
-    <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %><br />
+    <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
   </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation, "Confirm new password" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %><br />
+  <br/>
+  <div class="field" style="margin-top: 5px;">
+    <%= f.label :password_confirmation, "Confirm new password" %>
+    <br />
+    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
   </div>
-
+  <br/>
   <div class="field">
+    <%= f.label :terms_of_use, "Usage Agreement" %>
+    <br />
     <%= f.check_box :terms_read, {checked: false, required: true}, true %>
     <%= t("devise.passwords.edit.terms").html_safe %>
   </div><!-- .form-group -->
-  <br />
+
+  <% if User.with_reset_password_token(params[:reset_password_token])&.contributor? %>
+    <div class="field">
+      <%= f.check_box :contributor_terms_read, {checked: false, required: true}, true %>
+      <%= t("devise.passwords.edit.contributor_terms").html_safe %>
+    </div><!-- .form-group -->
+  <% end %>
+  <br/>
 
   <div class="actions">
     <%= f.submit "Change my password" %>

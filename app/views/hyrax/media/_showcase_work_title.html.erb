@@ -7,7 +7,11 @@
             <div><span class="label label-primary"><%= presenter.physical_object_type %></span></div>
             <div><%= presenter.in_collection_badge %></div>
 
-            <div><%= link_to(presenter.physical_object_title, presenter.physical_object_link) %></div>
+            <div>
+              <%= link_to presenter.physical_object_link do  %>
+                <%= presenter.physical_object_title %> <i><%= presenter.physical_object_taxonomy_title %></i>
+              <% end %>
+            </div>
           </small>
         <% end %>
       </h1>

@@ -6,7 +6,7 @@ module Hyrax
 
     delegate :bibliographic_citation, :catalog_number,  :collection_code, :institution_code, :numeric_time, :original_location, :periodic_time, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, to: :solr_document
 
-    delegate :taxonomies, :canonical_taxonomy_object, :trusted_taxonomies, :gbif_taxonomies, :user_taxonomies, to: :work
+    delegate :taxonomies, :taxonomies_titles, :canonical_taxonomy_object, :trusted_taxonomies, :gbif_taxonomies, :user_taxonomies, to: :work
 
     def related_media_ids 
       ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []

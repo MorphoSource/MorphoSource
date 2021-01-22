@@ -32,7 +32,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   end
 
   def taxonomies
-    member_of.select{|work| work.class == Taxonomy}
+    Taxonomy.find(taxonomy_id.to_a)
   end
 
   def taxonomies_titles
@@ -102,7 +102,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
           self.canonical_taxonomy = [ new_taxonomy.id ]
         end
         # set the taxonomy to the canonical taxonomy
-        self.work_parents_attributes = { '1' => { "id" => self.canonical_taxonomy.first, "_destroy" => "false" } }
+        self.taxonomy_id = [ self.canonical_taxonomy.first ] 
         biospec_model_params = Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(idigbio_occurrence['uuid'])
         biospec_model_params.each do |key, value|
           self.send("#{key}=", value.is_a?(Array) ? value : [value] )

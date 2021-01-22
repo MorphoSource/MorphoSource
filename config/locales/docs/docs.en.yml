@@ -5,6 +5,8 @@ en:
         title: "About MorphoSource"
       api:
         title: "MorphoSource API"
+      beta_guide:
+        title: "MorphoSource 2 Beta Guide"
       citation:
         title: "Citing MorphoSource"
       contributor_terms:

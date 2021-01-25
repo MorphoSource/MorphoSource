@@ -11,7 +11,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
   let(:taxonomy)                { Taxonomy.create(title: ['taxonomy']) }
 
-  let(:specimen)                { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], organization_id: [organization.id]) }
+  let(:specimen)                { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
   let(:cho)                     { CulturalHeritageObject.create(title: ['cho'], vouchered: ['No'], organization_id: [organization.id]) }
   let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
   let(:device2)                 { Device.create(title: ['device 2'], modality: ['Photography']) }
@@ -27,13 +27,12 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
   let(:processing_event2)       { ProcessingEvent.create(title: ['processing event 2']) }
   let(:media2b)                 { Media.create(title: ['media 2b']) }
 
-
   let(:media)                   { [media1a, media1b, media2a, media2b] }
 
-  let(:works)                   { [organization, taxonomy, specimen, cho, imaging_event1, media1a, processing_event1, media1b, imaging_event2, media2a, processing_event2, media2b] }
+  let(:works)                   { [specimen, cho, imaging_event1, media1a, processing_event1, media1b, imaging_event2, media2a, processing_event2, media2b] }
 
   before do
-    taxonomy.ordered_members << specimen
+
     specimen.ordered_members << imaging_event1
     imaging_event1.ordered_members << media1a
     media1a.ordered_members << processing_event1
@@ -161,8 +160,8 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
             p.member_of_collections << new_team
             p.save
           end
-          # allow(organization).to receive(:index_related)
         end
+
         it 'updates its new team, old team, old and new child projects, but not media and objects' do
           expect(organization).not_to receive(:index_related).with(media).and_call_original
           expect(organization).not_to receive(:index_related).with(objects).and_call_original

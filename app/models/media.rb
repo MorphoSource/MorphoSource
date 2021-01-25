@@ -278,7 +278,7 @@ class Media < Morphosource::Works::Base
   end
 
   def taxonomies
-    ancestors.select{|work| work.class == Taxonomy}
+    physical_objects.select {|po| po.class == BiologicalSpecimen }.map(&:taxonomies).flatten
   end
 
   def taxonomies_titles

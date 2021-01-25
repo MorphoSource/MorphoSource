@@ -9,7 +9,53 @@ $( document ).ready(function() {
 			$('#showcase-title').text(title.join(':'));			
 		}
 
-    setupEmbeddedWorkForm('taxonomy', 'new', false);
+    function addTaxonomy(taxonomy) {
+      const template = $( $('#new_taxonomy_detail_row')[0].innerHTML );
+      if (taxonomy.gbif_key) {
+        var label = 'GBIF (Unsaved)';
+      } else {
+        var label = 'User (Unsaved)';
+      }
+      template.attr('data-taxonomy-id', taxonomy.id);
+      template.attr('data-gbif-key', taxonomy.gbif_key);
+      template.find('input').val(taxonomy.id);
+      template.find('.taxonomy-label').html(label);
+      template.find('.taxonomy-title').html(build_name(taxonomy.name, taxonomy.rank));
+      $('#taxonomy_detail_rows').append(template);
+    }
+
+    function addNewTaxonomy() {
+      var newTaxonomy = $('#parent-relationships-taxonomies').data('new-work-created');
+      if (newTaxonomy) {
+        newTaxonomy.name = newTaxonomy.text;
+        addTaxonomy(newTaxonomy);
+      }
+    }
+    
+    function build_name(name, rank) {
+      var s = "";
+      if (rank) {
+        if (rank == 'GENUS' || rank == 'SPECIES' || rank == 'SUBSPECIES') {
+          s = s + "<i>" + name + "</i>";
+        } else {
+          s = s + name;
+        }
+        s = s + " (" + rank.toLowerCase() + ")";
+      } else {
+        s = s + "<i>" + name + "</i>";
+      }
+      return s;
+    }
+
+    function build_name_no_formatting(name, rank) {
+      var s = name;
+      if (rank) {
+        s = s + " (" + rank.toLowerCase() + ")";
+      }
+      return s;
+    }
+
+    setupEmbeddedWorkForm('taxonomy', 'new', false, addNewTaxonomy);
     setupEmbeddedWorkForm('organization', 'new', false, updateObjectTitle);
     setupTooltip();
 		removeLastRepeatable();
@@ -72,6 +118,62 @@ $( document ).ready(function() {
         .appendTo($('form.edit_biological_specimen')
       );  
 		})
+
+    // Taxonomy select or add functions
+
+    $('#biological_specimen_select_taxonomy_id').autocomplete({
+      select: function(event, ui) {
+          event.preventDefault();
+          console.log(ui.item);
+          addTaxonomy(ui.item);
+          $(this).val('');
+      },
+      source: function (request, response) {
+        console.log(request);
+        $.ajax({
+          url: '/submissions/search_taxonomy_ajax?type[]=Taxonomy&id=NA&q=' + request.term,
+          type: 'GET',
+          dataType: 'json',
+          complete: function (xhr, status) {
+            var results = $.parseJSON(xhr.responseText);
+            var all_t = [];
+            var all_g = [];
+            $('.taxonomy-accordion-group').each(function() {
+              all_t.push($(this).data('taxonomy-id'));
+              all_g.push($(this).data('gbif-key'));
+            });
+            console.log(results);
+            console.log(all_t);
+            console.log(all_g);
+            var new_results = $.map(results, function(r) {
+              if (all_t.includes(r.id) || all_g.includes(r.gbif_key) ) {
+                return null;
+              } else {
+                return r;
+              }
+            });
+            console.log(new_results);
+            response(new_results);
+          }
+        });
+      },
+      autoFocus: false
+    }).autocomplete('instance')._renderItem = function(ul, item) {
+      // Overwrite default autocomplete list display
+      return $(
+        "<li><div style='border-bottom: 1px solid #D2D2D2;'>" + 
+        build_name(item.name, item.rank) + 
+        "<br/><span style='font-size: small;'>" + 
+        item.higher_taxonomy + 
+        "</span><br/>" +
+        item.source_info + 
+        "</div></li>"
+      ).appendTo(ul);
+    };
+
+    $(document).on('click', '#remove-taxonomy', function() {
+      $(this).parents('.taxonomy-accordion-group').remove();
+    })
 
 		// when selecting taxonomy, hide the new work form if any
 		$('[data-behavior="add-relationship"]').click(function() {

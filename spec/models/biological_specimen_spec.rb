@@ -18,8 +18,8 @@ RSpec.describe BiologicalSpecimen do
 
   describe "valid work relationships" do
 
-    it "has only Taxonomy as a valid parent" do
-      expect(subject.valid_parent_concerns).to match_array([Taxonomy])
+    it "has no valid parents" do
+      expect(subject.valid_parent_concerns).to match_array([])
     end
 
     it "has ImagingEvent as valid child concern" do
@@ -33,8 +33,8 @@ RSpec.describe BiologicalSpecimen do
 
     describe "valid work relationships" do
 
-      it "has only Taxonomy as a valid parent" do
-        expect(subject.valid_parent_concerns).to match_array([Taxonomy])
+      it "has no valid parents" do
+        expect(subject.valid_parent_concerns).to match_array([])
       end
 
       it "has ImagingEvent as valid child concern" do
@@ -51,21 +51,19 @@ RSpec.describe BiologicalSpecimen do
       let (:parents) {[taxonomy1, taxonomy2, taxonomy3, organization]}
 
       before do
-        parents.each do |parent|
-          parent.members << subject
-          parent.save
-        end
+        subject.organization_id = [organization.id]
+        subject.taxonomy_id = [taxonomy1.id, taxonomy2.id, taxonomy3.id]
         subject.canonical_taxonomy = [taxonomy1.id]
       end
 
       describe "#taxonomies" do
-        it 'returns only its parents that are taxonomies' do
+        it 'returns correct taxonomies' do
           expect(subject.taxonomies).to match_array([taxonomy1, taxonomy2, taxonomy3])
         end
       end
 
       describe "#taxonomies_titles" do
-        it 'returns all its parent taxonomy titles' do
+        it 'returns all its taxonomy titles' do
           expect(subject.taxonomies_titles).to match_array([taxonomy1.title.first, taxonomy2.title.first, taxonomy3.title.first])
         end
       end
@@ -83,7 +81,7 @@ RSpec.describe BiologicalSpecimen do
       end
 
       describe "#other_taxonomies" do
-        it 'returns all parent taxonomies except the canonical taxonomy' do
+        it 'returns all taxonomies except the canonical taxonomy' do
           expect(subject.other_taxonomies).to match_array([taxonomy2, taxonomy3])
         end
       end

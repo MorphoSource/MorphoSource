@@ -1,7 +1,7 @@
 <% presenter.title.each_with_index do |title, index| %>
   <div class="row" id="showcase-title-wrapper">
     <div class="col-xs-9">
-        <h1><div id="showcase-title"><%= title %></div>
+        <h1><div id="showcase-title"><%= title %> <i><%= presenter.taxonomies_titles&.first %></i></div>
           <small class="text-muted badge-wrapper">
             <div><span class="label label-primary">Biological Specimen Object</span></div>
             <div><%= presenter.in_collection_badge %></div>
@@ -11,6 +11,9 @@
     </div>
     <div class="col-xs-3 text-right">
         <%= render "edit_show_actions", presenter: presenter, f: f %>
+    </div>
+    <div class="col-xs-12 flash-wrapper">
+      <%= render "flash_msg" %>
     </div>
   </div>
 <% end %>

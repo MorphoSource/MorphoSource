@@ -6,7 +6,7 @@ class Taxonomy < Morphosource::Works::Base
 
   self.indexer = TaxonomyIndexer
   # Change this to restrict which works can be added as a child.
-  self.valid_child_concerns = [BiologicalSpecimen]
+  self.valid_child_concerns = []
 
   validates :title, presence: { message: 'Your work must have a title.' }
 
@@ -39,8 +39,12 @@ class Taxonomy < Morphosource::Works::Base
     gbif_ranks.map { |rank| self.send(rank)&.first }.compact
   end
 
+  def objects
+    BiologicalSpecimen.where(taxonomy_id: id).to_a
+  end
+
   def media
-    descendants.select{ |d| d.media? }
+    objects.map { |o| o.descendants.select { |d| d.media? } }.flatten
   end
 
 end

@@ -122,19 +122,19 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
                            </div>
        <div class="row taxonomy-rank">
                              <div class="col-xs-6 showcase-label">Genus</div>
-                             <div class="col-xs-6 showcase-value">genus</div>
+                             <div class="col-xs-6 showcase-value"><i>genus</i></div>
                            </div>
        <div class="row taxonomy-rank">
                              <div class="col-xs-6 showcase-label">Subgenus</div>
-                             <div class="col-xs-6 showcase-value">subgenus</div>
+                             <div class="col-xs-6 showcase-value"><i>subgenus</i></div>
                            </div>
        <div class="row taxonomy-rank">
                              <div class="col-xs-6 showcase-label">Species</div>
-                             <div class="col-xs-6 showcase-value">species</div>
+                             <div class="col-xs-6 showcase-value"><i>species</i></div>
                            </div>
        <div class="row taxonomy-rank">
                              <div class="col-xs-6 showcase-label">Subspecies</div>
-                             <div class="col-xs-6 showcase-value">subspecies</div>
+                             <div class="col-xs-6 showcase-value"><i>subspecies</i></div>
                            </div>
        </div>
        </div> )
@@ -217,19 +217,19 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
             </div>
             <div class="row taxonomy-rank">
               <div class="col-xs-6 showcase-label">Genus</div>
-              <div class="col-xs-6 showcase-value">genus</div>
+              <div class="col-xs-6 showcase-value"><i>genus</i></div>
             </div>
             <div class="row taxonomy-rank">
               <div class="col-xs-6 showcase-label">Subgenus</div>
-              <div class="col-xs-6 showcase-value">--</div>
+              <div class="col-xs-6 showcase-value"><i>--</i></div>
             </div>
             <div class="row taxonomy-rank">
               <div class="col-xs-6 showcase-label">Species</div>
-              <div class="col-xs-6 showcase-value">species</div>
+              <div class="col-xs-6 showcase-value"><i>species</div>
             </div>
             <div class="row taxonomy-rank">
               <div class="col-xs-6 showcase-label">Subspecies</div>
-              <div class="col-xs-6 showcase-value">--</div>
+              <div class="col-xs-6 showcase-value"><i>--</i></div>
             </div>
           </div>
         </div>)

@@ -27,10 +27,17 @@ module Hyrax
         return markup if taxonomy.nil?
         RANKS.each do |attribute, label|
           value = get_rank_value(taxonomy, attribute)
-          markup << "<div class='row taxonomy-rank'>
-                      <div class='col-xs-6 showcase-label'>#{label}</div>
-                      <div class='col-xs-6 showcase-value'>#{value}</div>
-                    </div>"
+          if [:taxonomy_genus, :taxonomy_subgenus, :taxonomy_species, :taxonomy_subspecies].include?(attribute)
+            markup << "<div class='row taxonomy-rank'>
+                        <div class='col-xs-6 showcase-label'>#{label}</div>
+                        <div class='col-xs-6 showcase-value'><i>#{value}</i></div>
+                      </div>"
+          else
+            markup << "<div class='row taxonomy-rank'>
+                        <div class='col-xs-6 showcase-label'>#{label}</div>
+                        <div class='col-xs-6 showcase-value'>#{value}</div>
+                      </div>"
+          end
         end
         user = contributing_user_link(taxonomy, false)
         if user.present?

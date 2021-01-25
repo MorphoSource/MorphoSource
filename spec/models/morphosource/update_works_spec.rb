@@ -25,17 +25,13 @@ RSpec.describe Morphosource::Works::Base do
   end
 
   describe 'adding a specimen to an organization that already has a specimen' do
-    let!(:specimen2)        { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes']) }
     let!(:taxonomy2)        { Taxonomy.create(title: ['taxonomy 2']) }
+    let!(:specimen2)        { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], taxonomy_id: [taxonomy2.id]) }
+    
     let(:old_taxonomy2_doc) { SolrDocument.find(taxonomy2.id) }
     let(:old_specimen2_doc) { SolrDocument.find(specimen2.id) }
     let(:new_taxonomy2_doc) { SolrDocument.find(taxonomy2.id) }
     let(:new_specimen2_doc) { SolrDocument.find(specimen2.id) }
-
-    before do
-      taxonomy2.ordered_members << specimen2
-      taxonomy2.save
-    end
 
     it 'updates the organization and added specimen objects' do
       expect { 
@@ -70,7 +66,6 @@ RSpec.describe Morphosource::Works::Base do
       expect(old_imaging_event_doc['_version_']).to eq(new_imaging_event_doc['_version_'])
       expect(old_media1_doc['_version_']).to eq(new_media1_doc['_version_'])
       expect(old_processing_event_doc['_version_']).to eq(new_processing_event_doc['_version_'])
-      expect(old_media2_doc['_version_']).to eq(new_media2_doc['_version_'])
       expect(old_taxonomy2_doc['_version_']).to eq(new_taxonomy2_doc['_version_'])
     end
   end
@@ -103,7 +98,6 @@ RSpec.describe Morphosource::Works::Base do
       expect(old_specimen_doc['_version_']).to eq(new_specimen_doc['_version_'])
       expect(old_imaging_event_doc['_version_']).to eq(new_imaging_event_doc['_version_'])
       expect(old_processing_event_doc['_version_']).to eq(new_processing_event_doc['_version_'])
-      expect(old_media2_doc['_version_']).to eq(new_media2_doc['_version_'])
     end
   end
 
@@ -143,7 +137,6 @@ RSpec.describe Morphosource::Works::Base do
       expect(old_imaging_event_doc['_version_']).to eq(new_imaging_event_doc['_version_'])
       expect(old_media1_doc['_version_']).to eq(new_media1_doc['_version_'])
       expect(old_processing_event_doc['_version_']).to eq(new_processing_event_doc['_version_'])
-      expect(old_media2_doc['_version_']).to eq(new_media2_doc['_version_'])
     end
   end
 end

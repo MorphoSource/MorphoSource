@@ -9,7 +9,7 @@ bso_extra = extra(@bso_extras, id)
 	  	<%= bso&.title&.first %>
 	  <% end %>
   </td>
-  <td><%= bso&.taxonomies&.first&.taxonomy_genus&.first %></td>
+  <td><i><%= bso&.taxonomies_titles&.first %></i></td>
   <td><%= bso_extra['media_count'] %></td>  
   <td><%= document.date_uploaded %> </td> 
   <%# todo: might need to format the date later, e.g. using MS helper display_date 

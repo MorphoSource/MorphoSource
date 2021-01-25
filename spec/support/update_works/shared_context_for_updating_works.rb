@@ -6,13 +6,13 @@ RSpec.shared_context 'update works', :shared_context => :metadata do
 
   let(:organization)              { Organization.create(title: ['old title']) }
   let(:taxonomy)                  { Taxonomy.create(title: ['old title']) }
-  let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes']) }
+  let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
   let(:device)                    { Device.create(title: ['device'], modality: ["MagneticResonanceImaging"])}
   let(:imaging_event)             { ImagingEvent.create(title: ['old title'], ie_modality: device.modality, device_id: [device.id]) }
   let(:media1)                    { Media.create(title: ['old title']) }
   let(:processing_event)          { ProcessingEvent.create(title: ['old title']) }
   let(:media2)                    { Media.create(title: ['old title']) }
-  let(:specimen_works)            { [organization, taxonomy, specimen, imaging_event, media1, processing_event, media2] }
+  let(:specimen_works)            { [specimen, imaging_event, media1, processing_event, media2] }
 
   let(:old_organization_doc)      { SolrDocument.find(organization.id) }
   let(:old_taxonomy_doc)          { SolrDocument.find(taxonomy.id) }
@@ -33,8 +33,6 @@ RSpec.shared_context 'update works', :shared_context => :metadata do
   let(:new_media2_doc)            { SolrDocument.find(media2.id) }
 
   before do
-    taxonomy.members << specimen
-    organization.members << specimen
     specimen.members << imaging_event
     imaging_event.members << media1
     media1.members << processing_event

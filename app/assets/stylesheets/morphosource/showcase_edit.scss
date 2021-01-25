@@ -439,6 +439,20 @@ input.disabled {
     }
   }
 
+  .biological_specimen_select_taxonomy_id {
+    width: 100%;
+    label {
+      display: none;
+    }
+    input {
+      width: 100%;
+    }
+    input[type='text'].ui-autocomplete-loading {
+      background: image-url('loading.gif') right center no-repeat;
+      background-size: 20px;
+    }
+  }
+
 } /* / .showcase-edit */
 
 

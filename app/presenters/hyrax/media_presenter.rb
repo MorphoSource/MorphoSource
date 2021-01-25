@@ -16,7 +16,7 @@ module Hyrax
       to: :solr_document
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
-      :physical_object_title, :physical_object_link, :physical_object_id,
+      :physical_object_title, :physical_object_taxonomy_title, :physical_object_link, :physical_object_id,
       :device_and_facility, :device_link, :device, :device_id, :device_label, :device_manufacturer, :device_description,
       :device_organization_institution, :device_modality, :device_modality_term,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software,
@@ -438,6 +438,7 @@ module Hyrax
 
         if biological_specimen.present?
           @physical_object_title = biological_specimen.title.first
+          @physical_object_taxonomy_title = biological_specimen.taxonomies_titles&.first
           @physical_object_id = biological_specimen.id
           @physical_object_link = "/concern/biological_specimens/" + @physical_object_id
           @idigbio_uuid = biological_specimen.idigbio_uuid
@@ -453,6 +454,7 @@ module Hyrax
           @idigbio_uuid = biological_specimen.idigbio_uuid
         elsif cultural_heritage_object.present?
           @physical_object_title = cultural_heritage_object.title.first
+          @physical_object_taxonomy_title = ''
           @physical_object_id = cultural_heritage_object.id
           @physical_object_link = "/concern/cultural_heritage_objects/" + @physical_object_id
           @vouchered = cultural_heritage_object.vouchered

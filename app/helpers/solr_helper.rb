@@ -26,8 +26,12 @@ module SolrHelper
   def param_clauses
     clauses = []
     params.each do |k,v|
-      term_type = ( k == 'member_ids' ? :symbol : :stored_searchable )
-      clauses << "#{Solrizer.solr_name(k, term_type)}:#{prepare_value(v)}"
+      if k == 'id' || k == :id
+        clauses << "id:#{prepare_value(v)}"
+      else
+        term_type = ( k == 'member_ids' ? :symbol : :stored_searchable )
+        clauses << "#{Solrizer.solr_name(k, term_type)}:#{prepare_value(v)}"
+      end
     end
     clauses
   end

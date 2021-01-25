@@ -25,7 +25,7 @@ po_taxonomy = media_extra['po_taxonomy']
   <td><%= document.id %></td>  
   <td><%= document.part&.first %></td>  
   <td class="break-all"><%= po_title %></td>
-  <td><%= po_taxonomy %></td>
+  <td><i><%= po_taxonomy %></i></td>
   <td><%= document.media_type&.first.underscore.humanize %></td> 
   <td><%= document.date_uploaded %></td>
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>

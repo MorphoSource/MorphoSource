@@ -105,17 +105,6 @@ module Hyrax
 
     def new_orgs
       Organization.find(Array(@curation_concern.organization_id))
-    end
-
-    def search_taxonomy_ajax
-      search_term = params[:q]
-      gbif_taxa = Morphosource::GbifSearchService.call({ 'name' => search_term })
-      ms_taxa = Qa::Authorities::FindTaxonomies.new().search_submission(search_term, self)
-
-      gbif_ms_ids = gbif_taxa.map { |t| t[:ms] }
-      ms_taxa = ms_taxa.reject { |t| gbif_ms_ids.include? t[:id] }
-
-      render :json => gbif_taxa + ms_taxa
     end    
   end
 end

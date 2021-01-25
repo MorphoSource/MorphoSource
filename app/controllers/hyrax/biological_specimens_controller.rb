@@ -80,12 +80,9 @@ module Hyrax
     private
 
     def create_gbif_taxonomies
-      if params[:biological_specimen] && params[:biological_specimen][:work_parents_attributes]
-        params[:biological_specimen][:work_parents_attributes].each do |wpa_id, wpa_val|
-          if wpa_val[:id].include? 'gbif:'
-            taxonomy_id = new_gbif_taxonomy(wpa_val[:id])
-            wpa_val[:id] = taxonomy_id if taxonomy_id.present?
-          end
+      if params[:biological_specimen].present? && params[:biological_specimen][:taxonomy_id].present?
+        params[:biological_specimen][:taxonomy_id].map! do |t_id|
+          t_id.include?('gbif:') && (new_t_id = new_gbif_taxonomy(t_id)) ? new_t_id : t_id
         end
       end
     end
@@ -109,5 +106,16 @@ module Hyrax
     def new_orgs
       Organization.find(Array(@curation_concern.organization_id))
     end
+
+    def search_taxonomy_ajax
+      search_term = params[:q]
+      gbif_taxa = Morphosource::GbifSearchService.call({ 'name' => search_term })
+      ms_taxa = Qa::Authorities::FindTaxonomies.new().search_submission(search_term, self)
+
+      gbif_ms_ids = gbif_taxa.map { |t| t[:ms] }
+      ms_taxa = ms_taxa.reject { |t| gbif_ms_ids.include? t[:id] }
+
+      render :json => gbif_taxa + ms_taxa
+    end    
   end
 end

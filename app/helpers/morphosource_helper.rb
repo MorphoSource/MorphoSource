@@ -143,6 +143,10 @@ module MorphosourceHelper
     'search_taxonomy_ajax?type[]=Taxonomy&id=NA&q='
   end
 
+  def find_taxonomy_submission_autocomplete_url_bso_edit
+    '/submissions/search_taxonomy_ajax?type[]=Taxonomy&id=NA&q='
+  end
+
   def find_device_autocomplete_url
     Rails.application.routes.url_helpers.qa_path + '/search/find_devices?type[]=Device&id=NA&q='
   end

@@ -12,5 +12,8 @@
     <div class="col-xs-3 text-right">
         <%= render "edit_show_actions", presenter: presenter, f: f %>
     </div>
+    <div class="col-xs-12 flash-wrapper">
+      <%= render "flash_msg" %>
+    </div>
   </div>
 <% end %>

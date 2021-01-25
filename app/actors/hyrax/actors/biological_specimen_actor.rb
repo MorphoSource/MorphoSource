@@ -66,7 +66,7 @@ module Hyrax
         canonical_taxonomy = env.attributes["canonical_taxonomy"]
         return '' if !canonical_taxonomy || canonical_taxonomy.empty?
         canonical_id = canonical_taxonomy.first
-        if !env.attributes["taxonomy_id"].include?(canonical_id) && env.curation_concern.taxonomy_id.include?(canonical_id)
+        if env.attributes.key?("taxonomy_id") && !env.attributes["taxonomy_id"].include?(canonical_id)
           return ''
         else
           return canonical_id

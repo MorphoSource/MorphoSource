@@ -98,14 +98,13 @@ RSpec.describe MediaIndexer do
   describe 'physical object fields' do
     let(:organization)  { Organization.create(title: ['Organization']) }
     let(:taxonomy)      { Taxonomy.create(title: ['taxonomy title']) }
-    let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id]) }
+    let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
     let(:cho)           { CulturalHeritageObject.create(title: ['CHO'], vouchered: ['Yes'], organization_id: [organization.id]) }
     let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry']) }
     let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
-    let(:works)         { [taxonomy, organization, specimen, cho, media, device, imaging_event] }
+    let(:works)         { [specimen, cho, media, imaging_event] }
 
     before do
-      taxonomy.ordered_members << specimen
       specimen.ordered_members << imaging_event
       cho.ordered_members << imaging_event
       imaging_event.ordered_members << media

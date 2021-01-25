@@ -190,7 +190,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
     end
 
     context 'the canonical taxonomy is dissociated from the work' do
-      let(:attrs) { {"canonical_taxonomy"=> canonical_taxonomy_id, "work_parents_attributes"=>{"0"=>{"id"=>canonical_taxonomy_id.first, "_destroy"=>"true"}}} }
+      let(:attrs) { {"canonical_taxonomy"=> canonical_taxonomy_id, "taxonomy_id"=> []} }
 
       it "clears the canonical_taxonomy attribute" do
         expect(subject.send(:check_canonical_taxonomy, env)).to eq('')
@@ -198,7 +198,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
     end
 
     context 'a taxonomy other than the canonical taxonomy is dissociated' do
-      let(:attrs) { {"canonical_taxonomy"=> canonical_taxonomy_id, "work_parents_attributes"=>{"0"=>{"id"=>canonical_taxonomy_id.first, "_destroy"=>"false"}, "1"=>{"id"=>"abc123", "_destroy"=>"true"}}} }
+      let(:attrs) { {"canonical_taxonomy"=> canonical_taxonomy_id, "taxonomy_id"=>[canonical_taxonomy_id.first]} }
 
       it "keeps the canonical_taxonomy attribute value" do
         expect(subject.send(:check_canonical_taxonomy, env)).to eq(canonical_taxonomy_id.first)
@@ -206,7 +206,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
     end
 
     context 'there is no canonical taxonomy selected' do
-      let(:attrs) { {"canonical_taxonomy"=> [], "work_parents_attributes"=>{"0"=>{"id"=>"def456", "_destroy"=>"false"}, "1"=>{"id"=>"abc123", "_destroy"=>"true"}}} }
+      let(:attrs) { {"canonical_taxonomy"=> [], "taxonomy_id"=>["def456"]} }
 
       it "canonical taxonomy remains blank" do
         expect(subject.send(:check_canonical_taxonomy, env)).to eq('')

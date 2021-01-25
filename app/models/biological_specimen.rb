@@ -102,7 +102,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
           self.canonical_taxonomy = [ new_taxonomy.id ]
         end
         # set the taxonomy to the canonical taxonomy
-        self.taxonomy_id = [ self.canonical_taxonomy.first ] 
+        self.taxonomy_id = self.taxonomy_id + [ self.canonical_taxonomy.first ] unless self.taxonomy_id.include?(self.canonical_taxonomy.first)
         biospec_model_params = Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(idigbio_occurrence['uuid'])
         biospec_model_params.each do |key, value|
           self.send("#{key}=", value.is_a?(Array) ? value : [value] )

@@ -874,4 +874,9 @@ class SolrDocument
     self["has_model_ssim"] == ["BiologicalSpecimen"]
   end
 
+  # Collections
+  def linked_organization
+    self["linked_organization_tesim"]
+  end
+
 end

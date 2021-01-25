@@ -16,8 +16,8 @@ RSpec.describe OrganizationsCatalogController, :type => :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 5 facet fields' do
-        expect(facet_fields.count).to eq(5)
+      it 'has 7 facet fields' do
+        expect(facet_fields.count).to eq(7)
       end
 
       describe 'generic type' do
@@ -34,10 +34,59 @@ RSpec.describe OrganizationsCatalogController, :type => :controller do
           expect(subject.limit).to eq(5)
         end
       end
+
+      describe 'institution name' do
+        subject { facet_fields['institution_name_sim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Institution")
+          expect(subject.limit).to eq(5)
+        end
+      end
+
+      describe 'institution code' do
+        subject { facet_fields['institution_code_tesim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Institution Code")
+          expect(subject.limit).to eq(5)
+        end
+      end
+
+      describe 'country' do
+        subject { facet_fields['country_tesim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Country")
+          expect(subject.limit).to eq(5)
+        end
+      end
+
+      describe 'state/province' do
+        subject { facet_fields['state_province_tesim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("State / Province")
+          expect(subject.limit).to eq(5)
+        end
+      end
+
+      describe 'city' do
+        subject { facet_fields['city_tesim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("City")
+          expect(subject.limit).to eq(5)
+        end
+      end
     end
 
     describe 'index fields' do
       let(:index_fields)  { config.index_fields }
+
+      describe 'type' do
+        subject { index_fields['organization_type_tesim'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Type')
+          expect(subject.field).to eq('organization_type_tesim')
+        end
+      end
 
       describe 'title' do
         subject { index_fields['title_tesim'] }
@@ -57,21 +106,30 @@ RSpec.describe OrganizationsCatalogController, :type => :controller do
         end
       end
 
+      describe 'institution code' do
+        subject { index_fields['institution_code_tesim'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Institution Code')
+          expect(subject.field).to eq('institution_code_tesim')
+        end
+      end
+
+      describe 'collection code' do
+        subject { index_fields['collection_code_tesim'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Collection Code')
+          expect(subject.field).to eq('collection_code_tesim')
+        end
+      end
+
       describe 'country' do
         subject { index_fields['country_tesim'] }
 
         it 'has the correct attributes' do
           expect(subject.label).to eq('Country')
           expect(subject.field).to eq('country_tesim')
-        end
-      end
-
-      describe 'type' do
-        subject { index_fields['organization_type_tesim'] }
-
-        it 'has the correct attributes' do
-          expect(subject.label).to eq('Type')
-          expect(subject.field).to eq('organization_type_tesim')
         end
       end
     end

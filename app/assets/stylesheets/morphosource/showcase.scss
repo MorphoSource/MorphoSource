@@ -99,6 +99,24 @@ html {
   white-space: nowrap;
   overflow: hidden;
 }
+.text-truncate-lines {
+  overflow:hidden;
+  -webkit-box-orient: vertical;
+  display: block;
+  display: -webkit-box;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+.text-truncate-lines.two-lines {
+  line-height: 2rem;
+  max-height: 4rem; /* number of lines x line height */
+  -webkit-line-clamp: 2;
+}  
+.text-truncate-lines.three-lines {
+  line-height: 2rem;
+  max-height: 6rem;
+  -webkit-line-clamp: 3;
+}  
 .no-result {
   text-align: center;
   margin:50px auto;

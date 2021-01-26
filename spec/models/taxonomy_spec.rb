@@ -10,8 +10,8 @@ RSpec.describe Taxonomy do
       expect(subject.valid_parent_concerns).to match_array([])
     end
 
-    it "has Biological Specimen as its valid child concern" do
-      expect(subject.valid_child_concerns).to match_array([BiologicalSpecimen])
+    it "has no valid child concerns" do
+      expect(subject.valid_child_concerns).to match_array([])
     end
   end
 
@@ -72,10 +72,37 @@ RSpec.describe Taxonomy do
         expect(subject.valid_parent_concerns).to match_array([])
       end
 
-      it "has BiologicalSpecimen as its only valid child concern" do
-        expect(subject.valid_child_concerns).to match_array([BiologicalSpecimen])
+      it "has no valid child concerns" do
+        expect(subject.valid_child_concerns).to match_array([])
       end
 
+    end
+  end
+
+  describe 'media' do
+    let(:taxonomy)      { Taxonomy.create(title: ['title']) }
+    let(:specimen)      { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], taxonomy_id: [taxonomy.id]) }
+    let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let(:imaging_event) { ImagingEvent.create(title: ['ie'], ie_modality: device.modality, device_id: [device.id]) }
+    let(:pe1)           { ProcessingEvent.create(title: ['pe1']) }
+    let(:media1)        { Media.create(title: ['media1']) }
+    let(:pe2)           { ProcessingEvent.create(title: ['pe2']) }
+    let(:media2)        { Media.create(title: ['media2']) }
+    let(:pe3)           { ProcessingEvent.create(title: ['pe3']) }
+    let(:media3)        { Media.create(title: ['media3']) }
+
+    before do
+      specimen.ordered_members << imaging_event
+      imaging_event.ordered_members << media1
+      media1.ordered_members << pe1
+      pe1.ordered_members << media2
+      media2.ordered_members << pe3
+      pe3.ordered_members << media3
+      [specimen, imaging_event, pe1, media1, pe2, media2, pe3, media3].each(&:save)
+    end
+
+    it 'returns all descendant media' do
+      expect(taxonomy.media).to match_array([media1, media2, media3])
     end
   end
 end

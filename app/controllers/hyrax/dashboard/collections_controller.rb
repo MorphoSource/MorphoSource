@@ -109,6 +109,7 @@ module Hyrax
 
       def specimens
         presenter
+        @collection ||= presenter.collection
         query_collection_information
         query_collection_members_for_po
         render partial: "hyrax/teams/tab_bso"
@@ -116,6 +117,7 @@ module Hyrax
 
       def chos
         presenter
+        @collection ||= presenter.collection
         query_collection_information
         query_collection_members_for_po
         render partial: "hyrax/teams/tab_cho"

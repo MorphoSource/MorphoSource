@@ -191,6 +191,7 @@ class Media < Morphosource::Works::Base
   def physical_objects
     ancestors.select(&:physical_object?)
   end
+  alias objects physical_objects
 
   def physical_object_id
     physical_objects.map(&:id)
@@ -277,7 +278,7 @@ class Media < Morphosource::Works::Base
   end
 
   def taxonomies
-    ancestors.select{|work| work.class == Taxonomy}
+    physical_objects.select {|po| po.class == BiologicalSpecimen }.map(&:taxonomies).flatten
   end
 
   def taxonomies_titles

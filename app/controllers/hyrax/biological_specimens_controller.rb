@@ -80,12 +80,9 @@ module Hyrax
     private
 
     def create_gbif_taxonomies
-      if params[:biological_specimen] && params[:biological_specimen][:work_parents_attributes]
-        params[:biological_specimen][:work_parents_attributes].each do |wpa_id, wpa_val|
-          if wpa_val[:id].include? 'gbif:'
-            taxonomy_id = new_gbif_taxonomy(wpa_val[:id])
-            wpa_val[:id] = taxonomy_id if taxonomy_id.present?
-          end
+      if params[:biological_specimen].present? && params[:biological_specimen][:taxonomy_id].present?
+        params[:biological_specimen][:taxonomy_id].map! do |t_id|
+          t_id.include?('gbif:') && (new_t_id = new_gbif_taxonomy(t_id)) ? new_t_id : t_id
         end
       end
     end
@@ -108,6 +105,6 @@ module Hyrax
 
     def new_orgs
       Organization.find(Array(@curation_concern.organization_id))
-    end
+    end    
   end
 end

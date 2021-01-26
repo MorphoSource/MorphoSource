@@ -7,12 +7,18 @@ class DocsController < ApplicationController
     outdated_flash
   end
 
+  def beta_guide
+  end
+
   def citation
     outdated_flash
   end
 
   def contributors
     # outdated_flash
+  end
+
+  def contributor_terms
   end
 
   def glossary

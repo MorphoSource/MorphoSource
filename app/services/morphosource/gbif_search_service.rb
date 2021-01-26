@@ -86,11 +86,11 @@ module Morphosource
 
     def prepare_result(taxon, synonym_correction=false)
       ms_id = ms_taxonomy_id_from_gbif_key(taxon['key'])
-      name = prepare_name(taxon)
+      name, species, subspecies = prepare_name(taxon)
       source_info = build_source_info(taxon['key'], synonym_correction, ms_id)
       title = build_title(name, taxon['rank'], source_info)
       id_value = ms_id ? ms_id : 'gbif:' + taxon['key'].to_s
-      {
+      prepared_taxon = {
         id: id_value, 
         label: [title], 
         value: id_value,
@@ -104,15 +104,24 @@ module Morphosource
         ms: ms_id,
         source_info: source_info
       }
+      GBIF_HIGHER_TAXONOMY_MAPPING.each do |k, v|
+        prepared_taxon[v.to_sym] = taxon[k] unless k == 'key'
+      end
+      prepared_taxon[:taxonomy_species] = species
+      prepared_taxon[:taxonomy_subspecies] = subspecies
+      return prepared_taxon
     end
 
     def prepare_name(taxon) 
       # Has to be done due to GBIF canonicalName/genus name mismatches
       if taxon['rank'] == 'SPECIES' || taxon['rank'] == 'SUBSPECIES'
         nt = taxon[GBIF_NAME_TERM].split(' ')
-        taxon['genus'] + ( nt.length > 1 ? ' ' + nt[1] : '' ) + ( nt.length > 2 ? ' ' + nt[2] : '' )
+        genus = taxon['genus']
+        species = (nt.length > 1) ? nt[1] : nil 
+        subspecies = (nt.length > 2) ? nt[2] : nil
+        return [genus, species, subspecies].compact.join(' '), species, subspecies
       else
-        taxon[GBIF_NAME_TERM]
+        return taxon[GBIF_NAME_TERM], nil, nil
       end
     end
 

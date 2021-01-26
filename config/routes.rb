@@ -249,6 +249,7 @@ Rails.application.routes.draw do
     collection do
       get 'about'
       get 'api'
+      get 'beta_guide'
       get 'citation'
       get 'contributors'
       get 'glossary'
@@ -341,4 +342,5 @@ Rails.application.routes.draw do
     get 'Detail/ProjectDetail/Show/project_id/:id', to: 'ms1#projects'
   end
 
+  get '/contributor_terms', to: 'docs#contributor_terms', as: 'contributor_terms_docs'
 end

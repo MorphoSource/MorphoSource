@@ -45,12 +45,12 @@ RSpec.describe Hyrax::Actors::MediaActor do
         let(:taxonomy)            { Taxonomy.create(title: ['taxonomy']) }
 
         before do
-          taxonomy.ordered_members << biological_specimen
           biological_specimen.ordered_members << imaging_event
+          biological_specimen.taxonomy_id = [taxonomy.id]
           imaging_event.ordered_members << processing_event
           imaging_event.device_id = [device.id]
 
-          [processing_event, imaging_event, device, biological_specimen, taxonomy].each(&:save)
+          [processing_event, imaging_event, device, biological_specimen].each(&:save)
 
           env.attributes[:work_parents_attributes] = { '1' => { 'id' => processing_event.id, '_destroy' => 'false' } }
         end

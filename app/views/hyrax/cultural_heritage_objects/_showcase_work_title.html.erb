@@ -12,5 +12,8 @@
     <div class="col-xs-3 text-right">
         <%= render @presenter.showcase_show_actions_partial, presenter: presenter %>
     </div>
+    <div class="col-xs-12 flash-wrapper">
+      <%= render "flash_msg" %>
+    </div>
   </div>
 <% end %>

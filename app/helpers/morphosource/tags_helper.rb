@@ -4,7 +4,7 @@ module Morphosource::TagsHelper
     @object = Morphosource::PhysicalObjectParentSearchService.call({ id: document.id })&.first
     return '' if @object.nil?
     if @object.specimen?
-      @taxonomy = Morphosource::TaxonomySearchService.call({ 'member_ids' => @object.id})&.first
+      @taxonomy = Morphosource::TaxonomySearchService.call({ 'id' => @object.taxonomy_id&.first})&.first if @object.taxonomy_id.present?
       if @taxonomy
         ("<td>${link_to(@physical_object.title.first, hyrax_biological_specimen_path(@physical_object.id))}</td>\n
         <td>${link_to(taxonomy.title.first, hyrax_taxonomy_path(taxonomy.id))}</td>").html_safe
@@ -20,7 +20,7 @@ module Morphosource::TagsHelper
   def get_media_info(document)
     @object = Morphosource::PhysicalObjectParentSearchService.call({ id: document.id })&.first
     if @object
-      @taxonomy = Morphosource::TaxonomySearchService.call({ 'member_ids' => @object.id})&.first
+      @taxonomy = Morphosource::TaxonomySearchService.call({ 'id' => @object.taxonomy_id&.first})&.first if @object.taxonomy_id.present?
     else
       @taxonomy = nil
     end

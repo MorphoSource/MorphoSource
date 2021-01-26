@@ -126,9 +126,11 @@ module Hyrax
     end
 
     def project_team_title_link
-      if @collection.first_parent.present?
+      #if @collection.first_parent.present?
+      if member_of_collection_ids.present?
+        collection = Collection.find(id)        
         renderer = Hyrax::Renderers::ShowcaseCollectionLinkRenderer.new(nil,nil)
-        return renderer.collection_link(@collection.first_parent)
+        return renderer.collection_link(collection.first_parent)
       else
         return ""
       end
@@ -138,7 +140,7 @@ module Hyrax
     delegate :title, :description, :creator, :contributor, :subject, :publisher, :keyword, :language, :embargo_release_date,
              :lease_expiration_date, :license, :date_created, :resource_type, :based_near, :related_url, :identifier, :thumbnail_path,
              :title_or_label, :collection_type_gid, :create_date, :modified_date, :visibility, :edit_groups, :edit_people,
-             :part, :media_type,
+             :part, :media_type, :member_of_collection_ids,
              to: :solr_document
 
 

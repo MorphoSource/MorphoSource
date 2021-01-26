@@ -82,7 +82,8 @@ module Qa::Authorities
           taxonomy_species: doc.taxonomy_species,
           taxonomy_subspecies: doc.taxonomy_subspecies,
           gbif_key: doc.gbif_key,
-          depositor: depositor
+          depositor: depositor,
+          depositor_name: User.exists?(depositor) ? User.find(depositor).display_name : nil
         }
         
         name = build_name(taxonomy_attrs)

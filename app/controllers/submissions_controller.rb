@@ -417,13 +417,10 @@ class SubmissionsController < ApplicationController
     when 'biological_specimen'
       model_params.merge!(addl_params)
       if @submission.taxonomy_id_array.present?
-        model_params = assign_model_params_parents(
-          model_params, 
-          @submission.taxonomy_id_array
-        ) 
+        model_params.merge!(taxonomy_id: Array(@submission.taxonomy_id_array))
       end
       if @submission.canonical_taxonomy_id.present?
-        model_params.merge!('canonical_taxonomy' => [@submission.canonical_taxonomy_id])
+        model_params.merge!(canonical_taxonomy: [@submission.canonical_taxonomy_id])
       end
       @biospec_create_params = model_params
 

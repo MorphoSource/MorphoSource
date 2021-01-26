@@ -28,7 +28,11 @@
 
     <% if user.state %>
       <dt>State/Province</dt>
-      <dd><%= Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) %></dd>
+        <% if Morphosource::UserProfile::LocationHelper::STATE[user.country]&.key(user.state) %>        
+          <dd><%= Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) %></dd>
+        <% else %>
+          <dd><%= user.state %>
+        <% end %>
     <% end %>
   <% end %>
 

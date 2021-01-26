@@ -71,8 +71,8 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
       let!(:taxonomy) { Taxonomy.create(title: [ 'Tax' ], taxonomy_genus: [ 'Test Genus' ], taxonomy_species: [ 'Test Species' ]) }
       let(:params) { { 'collection_code' => 'abc', 'taxonomy_genus' => 'Test Genus', 'taxonomy_species' => 'Test Species'  } }
       before do
-        taxonomy.ordered_members << biospecs[1]
-        taxonomy.save!
+        biospecs[1].taxonomy_id = [taxonomy.id]
+        biospecs[1].save!
       end
       it 'returns SolrDocuments for specified model that match search params and belong to taxonomy' do
         results = subject.call

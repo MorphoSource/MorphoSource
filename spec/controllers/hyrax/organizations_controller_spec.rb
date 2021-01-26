@@ -12,11 +12,13 @@ RSpec.describe Hyrax::OrganizationsController, type: :controller do
   end
 
   describe '#unlinked_organizations' do
-    let(:user)  { User.create(email: 'user@email.com', password: 'password') }
-    let(:org1)  { Organization.create(title: ['green yellow']) }
-    let(:org4)  { Organization.create(title: ['red yellow'], team_id: ['456']) }
-    let(:org2)  { Organization.create(title: ['black']) }
-    let(:org3)  { Organization.create(title: ['blue'], team_id: ['123']) }
+    let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team') }
+    let(:team)                  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
+    let(:user)                  { User.create(email: 'user@email.com', password: 'password') }
+    let(:org1)                  { Organization.create(title: ['green yellow']) }
+    let(:org4)                  { Organization.create(title: ['red yellow'], team_id: ['456']) }
+    let(:org2)                  { Organization.create(title: ['black']) }
+    let(:org3)                  { Organization.create(title: ['blue'], team_id: [team.id]) }
 
     before do
       ActiveFedora::SolrService.add(org1.to_solr, commit: true)

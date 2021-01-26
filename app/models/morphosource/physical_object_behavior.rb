@@ -16,9 +16,9 @@ module Morphosource::PhysicalObjectBehavior
   end
 
   def media
-    return [] if media_solr.blank?
-
-    ids = media_solr.map(&:id)
+    ms = media_solr
+    return [] if ms.blank?
+    ids = ms.map(&:id).select { |id| Media.exists?(id) }
     Media.find(ids)
   end
 

@@ -17,16 +17,16 @@ RSpec.describe Hyrax::User do
       before do
         user.display_name = nil
       end
-      it 'returns the user email' do
-        expect(user.name).to eq(user.email)
+      it 'returns the user ms_id' do
+        expect(user.name).to eq(user.ms_id)
       end
     end
     context 'user display_name is an empty string' do
       before do
         user.display_name = ''
       end
-      it 'returns the user email' do
-        expect(user.name).to eq(user.email)
+      it 'returns the user ms_id' do
+        expect(user.name).to eq(user.ms_id)
       end
     end
   end

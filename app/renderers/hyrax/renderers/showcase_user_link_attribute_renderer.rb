@@ -5,13 +5,7 @@ module Hyrax
       def user_link(user)
         markup = ''
         ms_id = user.ms_id
-        if user.display_name.present?
-          display_text = user.display_name
-        elsif user.email.present?
-          display_text = user.email
-        else
-          display_text = ms_id
-        end            
+        display_text = user.name
         url = "/users/" + ms_id
         link = link_to(display_text, "#{url}")
         link.html_safe
@@ -21,7 +15,7 @@ module Hyrax
 
         def attribute_value_to_html(value)
           markup = ''
-          return markup if value.blank? 
+          return markup if value.blank?
 
           user = ::User.find_by_user_key(value)
           if user.present?

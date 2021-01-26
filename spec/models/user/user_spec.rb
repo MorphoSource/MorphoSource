@@ -61,8 +61,8 @@ RSpec.describe User, type: :model do
         user.display_name = nil
         user.save
       end
-      it 'returns the email address' do
-        expect(user.name).to eq(user.email)
+      it 'returns the ms_id' do
+        expect(user.name).to eq(user.ms_id)
       end
     end
 

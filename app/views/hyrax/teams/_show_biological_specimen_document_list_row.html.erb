@@ -15,6 +15,6 @@ bso_extra = extra(@bso_extras, id)
   <%# todo: might need to format the date later, e.g. using MS helper display_date 
       Make sure it can be sorted in datatables
        display_date(document.date_uploaded&.to_s) %>
-  <td><%= bso_extra["origin"] %></td>
+  <!--td><%#= bso_extra["origin"] %></td -->
   <td><%= render_source_of_record(bso) %></td>
 </tr>

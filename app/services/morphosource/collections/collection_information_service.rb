@@ -48,10 +48,11 @@ module Morphosource
         @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
         @n_idigbio = bso_idigbio_count
 
-        @collection_project_map = collection_id_to_project_title_map
-
-        @po_counts_by_org = physical_object_counts_by_organization
-        @organizations = organization_docs
+        if collection.team?
+          @collection_project_map = collection_id_to_project_title_map
+          @po_counts_by_org = physical_object_counts_by_organization
+          @organizations = organization_docs
+        end
       end
 
       def collection_information
@@ -69,8 +70,9 @@ module Morphosource
         info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
         info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
 
-        info_po_media_counts_by_organization
-
+        if collection.team?
+          info_po_media_counts_by_organization
+        end
         if is_org_team && collection_organization_id.present?
           info['media_groups']['origin'] = {
             'team_organization' => n_media_team_organization,
@@ -116,14 +118,21 @@ module Morphosource
         # Other solr queries #
 
         def media_facet_query
-          facet_fields = [
-            solrize('media_type', :stored_searchable),
-            solrize('fileset_accessibility', :stored_searchable),
-            solrize('physical_object_id', :stored_searchable),
-            solrize('media_organization_id', :symbol),
-            solrize('member_of_collection_ids', :symbol)
-          ]
-
+          if collection.team?
+            facet_fields = [
+              solrize('media_type', :stored_searchable),
+              solrize('fileset_accessibility', :stored_searchable),
+              solrize('physical_object_id', :stored_searchable),
+              solrize('media_organization_id', :symbol),
+              solrize('member_of_collection_ids', :symbol)
+            ]
+          else
+            facet_fields = [
+              solrize('media_type', :stored_searchable),
+              solrize('fileset_accessibility', :stored_searchable),
+              solrize('physical_object_id', :stored_searchable)
+            ]
+          end          
           params = { 
             rows: 0,
             fq: [
@@ -190,6 +199,7 @@ module Morphosource
             )
           when 'm_team_project'
             project_id = Collection.where(title: value)&.first&.id
+byebug
             "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
           when 'm_origin'
             if value == 'team_collection'

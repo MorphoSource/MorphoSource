@@ -188,6 +188,15 @@ module Morphosource
 
         ### Collection solrize filter params ###
 
+        def team_or_team_project_ids(coll_id)
+          # the team id + any team project id
+          ids = [coll_id]
+          if Collection.find(collection_id).child_projects
+            ids << Collection.find(collection_id).child_projects.first.id    
+          end
+          return ids
+        end
+
         def solrize_param(name, value)
           case name
           when 'm_pub_status'
@@ -197,13 +206,12 @@ module Morphosource
               solrize('physical_object_id', :stored_searchable), 
               po_ids_by_collection_organization(value)
             )
-          when 'm_team_project'
-            project_id = Collection.where(title: value)&.first&.id
-byebug
-            "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
           when 'm_origin'
             if value == 'team_collection'
-              "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+              assemble_or_query(
+                "#{solrize('member_of_collection_ids', :symbol)}",
+                team_or_team_project_ids(collection_id)
+              )
             elsif value == 'team_organization' && Collection.find(collection_id).organization.present?
               organization_title = Collection.find(collection_id).organization.title&.first
               assemble_po_id_and_not_collection_query(

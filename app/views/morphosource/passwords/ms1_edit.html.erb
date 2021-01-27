@@ -1,5 +1,4 @@
 <h2 style="margin-bottom: 30px;">Change your password</h2>
-
 <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
   <%= f.hidden_field :reset_password_token %>
@@ -39,6 +38,3 @@
 <% end %>
 
 <%#  Don't show sign up / log in links if MS1 user %>
-<% unless User.with_reset_password_token(params[:reset_password_token]) %>
-  <%= render "devise/shared/links" %>
-<% end %>

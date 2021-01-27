@@ -346,4 +346,9 @@ Rails.application.routes.draw do
   end
 
   get '/contributor_terms', to: 'docs#contributor_terms', as: 'contributor_terms'
+
+  # ms1 users changing their password must agree to terms and conditions
+  devise_scope :user do
+    get '/users/password/ms1_edit', to: 'morphosource/passwords#ms1_edit', as: 'ms1_edit_user_password'
+  end
 end

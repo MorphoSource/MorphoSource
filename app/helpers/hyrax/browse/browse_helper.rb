@@ -11,14 +11,14 @@ module Hyrax::Browse::BrowseHelper
     po_type_facets = facets["media_physical_object_type_sim"]
     @total_bso_media = po_type_facets["Biological Specimen"] || 0
     @total_cho_media = po_type_facets["Cultural Heritage Object"] || 0
-  end  
+  end
 
   def total_bso_media
-    @total_bso_media 
+    @total_bso_media
   end
 
   def total_cho_media
-    @total_cho_media 
+    @total_cho_media
   end
 
   def total_media_by_po
@@ -53,26 +53,19 @@ module Hyrax::Browse::BrowseHelper
     end
   end
 
-  def map_media_type(t)
-    case t
-      when 'CTImageSeries' then 'ctimagesery'
-      when 'PhotogrammetryImageSeries' then 'photogrammetryimagesery'
-      else t.downcase
-    end
-  end
-
   def get_media_type_and_modality_info
     facets, @total_media = browse_service.media_type_and_modality_facets
+    byebug
     @media_type_facets = facets[Solrizer.solr_name('media_type', :facetable)]
     @modality_facets = facets[Solrizer.solr_name('media_modality', :facetable)]
-  end  
+  end
 
   def total_media
     @total_media
   end
 
   def media_count_by_media_type(type)
-    count = @media_type_facets[map_media_type(type)]
+    count = @media_type_facets[type]
     if count.present?
       return count.to_int
     else

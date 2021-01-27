@@ -54,10 +54,10 @@ module Hyrax
 
       def collection_filter_params
         returned_solrize_filter_params = teams_information_service.solrize_filter_params(filter_params('k_', params))
-        unless params['k_membership'].present?
-          # if no membership criteria, get collections with any membership value
-          returned_solrize_filter_params << teams_information_service.default_membership_params          
-        end
+        #unless params['k_membership'].present?
+        #  # if no membership criteria, get collections with any membership value
+        #  returned_solrize_filter_params << teams_information_service.default_membership_params          
+        #end
         returned_solrize_filter_params
       end
 

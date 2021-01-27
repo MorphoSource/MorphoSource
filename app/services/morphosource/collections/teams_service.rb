@@ -15,12 +15,15 @@ module Morphosource
         fq_params << "(#{Solrizer.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
 
         response = available_collections_filter_query(fq_params: fq_params)
+byebug
         return response
       end
 
       # @return [Blacklight::Solr::Response]
       def available_collections_filter_query(fq_params: [])
+byebug
         query_solr_with_fq(query_builder: ms_collections_search_builder, query_params: params[:q], fq_params: fq_params)
+byebug
       end
 
       private
@@ -45,7 +48,8 @@ module Morphosource
       end
 
       def ms_collections_search_builder
-        @ms_collections_search_builder ||= Morphosource::My::MsCollectionsSearchBuilder.new(scope: scope)
+byebug
+        @ms_collections_search_builder ||= Morphosource::My::MsCollectionsSearchBuilder.new(scope: scope).with_access(:edit)
       end
 
       # @api private

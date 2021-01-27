@@ -19,13 +19,13 @@ module Morphosource
         @user = user
         @collection_list_type_id = collection_list_type_id
         if page == "my"
-          @collection_count_for_manager = 0
-          @collection_count_for_editor = 0
-          @collection_count_for_depositor = 0
-          @collection_count_for_viewer = 0
-          @collection_count_for_downloader = 0
-          @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
-          membership_info(all_collection_ids)
+          #@collection_count_for_manager = 0
+          #@collection_count_for_editor = 0
+          #@collection_count_for_depositor = 0
+          #@collection_count_for_viewer = 0
+          #@collection_count_for_downloader = 0
+          #@ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
+          #membership_info(all_collection_ids)
           query_solr_collection_info
         else
           @collection_ids = all_collection_ids
@@ -47,11 +47,11 @@ module Morphosource
         @info = { 
           'counts' => {}
         }
-        info['counts']['Manager'] = @collection_count_for_manager if @collection_count_for_manager > 0
-        info['counts']['Editor'] = @collection_count_for_editor if @collection_count_for_editor > 0
-        info['counts']['Depositor'] = @collection_count_for_depositor if @collection_count_for_depositor > 0
-        info['counts']['Downloader'] = @collection_count_for_downloader if @collection_count_for_downloader > 0
-        info['counts']['Viewer'] = @collection_count_for_viewer if @collection_count_for_viewer > 0
+        #info['counts']['Manager'] = @collection_count_for_manager if @collection_count_for_manager > 0
+        #info['counts']['Editor'] = @collection_count_for_editor if @collection_count_for_editor > 0
+        #info['counts']['Depositor'] = @collection_count_for_depositor if @collection_count_for_depositor > 0
+        #info['counts']['Downloader'] = @collection_count_for_downloader if @collection_count_for_downloader > 0
+        #info['counts']['Viewer'] = @collection_count_for_viewer if @collection_count_for_viewer > 0
 
         info['collection_groups'] = { 'organization' => {} }.merge(facet_collection_groups)
         organization_groups
@@ -134,7 +134,7 @@ module Morphosource
           @collection_list_type_id == 1
         end
 
-        def membership_info(all_collection_ids)
+        def BACKUP_membership_info(all_collection_ids)
           all_collection_ids.each do |id|
             begin
               coll = Collection.find(id)
@@ -241,8 +241,8 @@ module Morphosource
             "#{solrize('visibility', :stored_sortable)}:#{value}"
           when 'k_organization'
             assemble_or_query('id', team_ids_by_collection_organization(value))
-          when 'k_membership'
-            assemble_or_query('id', ids_by_membership[value])
+          #when 'k_membership'
+          #  assemble_or_query('id', ids_by_membership[value])
           else
             "#{solrize(name.split('_', 2).last, :stored_searchable)}:#{value}"
           end

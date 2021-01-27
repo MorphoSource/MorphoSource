@@ -30,18 +30,6 @@
 		  	</select>
 		  <% end %>
 
-		 	<% if params['k_membership'].present? 
-					 show_filter_by = true %>
-				<input type="hidden" name="k_membership" value="<%= params['k_membership'] %>" class="filter-param" />
-			<% else %>
-		  	<select name="k_membership" data-form="collection-filters">
-		  		<option value="">Membership</option>
-          <% Array(@collection_counts).each do |v, n| %>
-            <option value="<%= v %>"><%= "#{v} (#{n})" %></option>
-		  		<% end %>
-		  	</select>
-		  <% end %>
-
       <% if params['q'].present? 
         show_filter_by = true %>
         <input type="hidden" name="q" value="<%= params['q'] %>" class="filter-param" />
@@ -61,9 +49,6 @@
 				<% end %>
 				<% if params['k_organization'].present? %>
 					<p id="k_organization" class="filter-param">Organization > <%= params['k_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="k_organization"></i></p>
-				<% end %>
-				<% if params['k_membership'].present? %>
-					<p id="k_membership" class="filter-param">Membership > <%= params['k_membership'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="collection-filters" data-param="k_membership"></i></p>
 				<% end %>
 
         <% if params['q'].present? %>

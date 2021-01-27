@@ -16,6 +16,12 @@ module Hyrax
         'Editor'
       elsif collection.viewers.include?(current_user)
         'Viewer'
+      elsif collection.downloaders.include?(current_user)
+        'Downloader'
+      elsif collection.depositors.include?(current_user)
+        'Depositor'
+      else
+        ''
       end
     end
 

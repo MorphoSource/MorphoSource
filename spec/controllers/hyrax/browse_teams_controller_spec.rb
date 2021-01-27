@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Hyrax::BrowseOrganizationsController, type: :controller do
+RSpec.describe Hyrax::BrowseTeamsController, type: :controller do
 
   it 'allows non-logged in users to view' do
     get :index

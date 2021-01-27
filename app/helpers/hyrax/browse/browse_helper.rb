@@ -55,7 +55,6 @@ module Hyrax::Browse::BrowseHelper
 
   def get_media_type_and_modality_info
     facets, @total_media = browse_service.media_type_and_modality_facets
-    byebug
     @media_type_facets = facets[Solrizer.solr_name('media_type', :facetable)]
     @modality_facets = facets[Solrizer.solr_name('media_modality', :facetable)]
   end

@@ -22,7 +22,9 @@
             <div class="row footer-sublink"><%= link_to t("hyrax.controls.resources.rss"), Rails.application.routes.url_helpers.rss_docs_path %></div>
           </div>
           <div class="col-xs-3 no-horizontal-padding">
-            <%= link_to t(:'hyrax.controls.terms_of_use'), hyrax.terms_path, aria: current_page?(hyrax.terms_path) ? {current: 'page'} : nil %>
+            <div class="row" style='padding-top: 0;'><span class='footer-label'><%= t(:'hyrax.controls.terms_of_use') %></span></div>
+            <div class="row footer-sublink"><%= link_to t("morphosource.docs.terms.label"), Rails.application.routes.url_helpers.terms_path %></div>
+            <div class="row footer-sublink"><%= link_to t("morphosource.docs.contributor_terms.label"), Rails.application.routes.url_helpers.contributor_terms_path %></div>
           </div>
         </div>
       </div>
@@ -31,10 +33,10 @@
         <span id='duke-logo' style='margin-left: 10px;'><a href='https://www.duke.edu/'><%= image_tag('duke_logo.png') %></a></span>
         <span id='nsf-logo' style='margin-left: 10px;'><a href='https://www.nsf.gov/'><%= image_tag('nsf_logo.png') %></a></span>
       </div>
-      <div class="col-md-2 col-sm-6 col-xs-12 col-align col-align--center footer-section icons">   
+      <div class="col-md-2 col-sm-6 col-xs-12 col-align col-align--center footer-section icons">
         <a href="https://github.com/MorphoSource"><i class="fab fa-github fa-lg"></i></a>
         <a href="https://twitter.com/MorphoSource"><i class="fab fa-twitter fa-lg"></i></a>
-        <a href="mailto:morphosource@duke.org"><i class="fas fa-envelope fa-lg"></i></a>
+        <a href="mailto:morphosource@duke.edu"><i class="fas fa-envelope fa-lg"></i></a>
       </div>
     </div>
   </div>

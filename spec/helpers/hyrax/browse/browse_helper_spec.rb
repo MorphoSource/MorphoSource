@@ -77,4 +77,20 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
     end
   end
 
+  describe 'media_count_by_media_type' do
+    let(:media_types) { YAML.load_file('config/authorities/media_types.yml') }
+    let(:type_ids)    { media_types["terms"].map{ |term| term["id"] } }
+
+    let(:media_type_facets) { {"Image"=>3, "CTImageSeries"=>5, "Mesh"=>7, "Other"=>9, "PhotogrammetryImageSeries"=>11, "Video"=>13} }
+
+    before do
+      helper.instance_variable_set(:@media_type_facets, media_type_facets)
+    end
+
+    it 'returns correct counts' do
+      type_ids.each do |type|
+        expect(helper.media_count_by_media_type(type)).to eq(media_type_facets[type])
+      end
+    end
+  end
 end

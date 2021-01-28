@@ -18,9 +18,6 @@ module Hyrax
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         collection_type_list_presenter
         #super
-        @user = current_user 
-        manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = @user.collections_with_membership_role_ids
-
         if page_is_project?
           @collection_list_type = "project"
           @collection_list_type_id = 2
@@ -33,21 +30,8 @@ module Hyrax
           @collection_list_type = "collection"
         end
 
+        collections_by_memberships
         query_collection_information
-        manager_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, manager_collection_ids)
-        editor_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, editor_collection_ids)
-        depositor_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, depositor_collection_ids)
-        downloader_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, downloader_collection_ids)
-        viewer_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, viewer_collection_ids)
-        @document_list = manager_docs + editor_docs + depositor_docs + downloader_docs + viewer_docs
-
-        @paginated_document_list = paginated_item_list
-        @collection_counts = {}
-        @collection_counts["Manager"] = manager_docs.count if manager_docs.count > 0
-        @collection_counts["Editor"] = editor_docs.count if editor_docs.count > 0
-        @collection_counts["Depositor"] = depositor_docs.count if depositor_docs.count > 0
-        @collection_counts["Downloader"] = downloader_docs.count if downloader_docs.count > 0
-        @collection_counts["Viewer"] = viewer_docs.count if viewer_docs.count > 0
 
         respond_to do |format|
           format.html {}
@@ -55,6 +39,57 @@ module Hyrax
           format.atom { render layout: false }
         end
 
+      end
+
+      def collections_by_memberships
+        @user = current_user 
+        manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = @user.collections_with_membership_role_ids
+        # pass the target_collection_ids to information service 
+        if params['k_membership'].present?
+          case params['k_membership']
+            when 'Manager'
+              @target_collection_ids = manager_collection_ids
+            when 'Editor'
+              @target_collection_ids = editor_collection_ids
+            when 'Depositor'
+              @target_collection_ids = depositor_collection_ids
+            when 'Downloader'
+              @target_collection_ids = downloader_collection_ids
+            when 'Viewer'
+              @target_collection_ids = viewer_collection_ids
+            end
+        else
+          @target_collection_ids = manager_collection_ids + editor_collection_ids + depositor_collection_ids + downloader_collection_ids + viewer_collection_ids
+        end
+        manager_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, manager_collection_ids)
+        editor_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, editor_collection_ids)
+        depositor_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, depositor_collection_ids)
+        downloader_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, downloader_collection_ids)
+        viewer_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, viewer_collection_ids)
+        # pass the target_collection_ids to information service 
+        if params['k_membership'].present?
+          case params['k_membership']
+            when 'Manager'
+              @document_list = manager_docs
+            when 'Editor'
+              @document_list = editor_docs
+            when 'Depositor'
+              @document_list = depositor_docs
+            when 'Downloader'
+              @document_list = downloader_docs
+            when 'Viewer'
+              @document_list = viewer_docs
+            end
+        else
+          @document_list = manager_docs + editor_docs + depositor_docs + downloader_docs + viewer_docs
+        end
+        @paginated_document_list = paginated_item_list
+        @collection_counts = {}
+        @collection_counts["Manager"] = manager_docs.count if manager_docs.count > 0
+        @collection_counts["Editor"] = editor_docs.count if editor_docs.count > 0
+        @collection_counts["Depositor"] = depositor_docs.count if depositor_docs.count > 0
+        @collection_counts["Downloader"] = downloader_docs.count if downloader_docs.count > 0
+        @collection_counts["Viewer"] = viewer_docs.count if viewer_docs.count > 0
       end
 
       def query_collection_information
@@ -105,11 +140,11 @@ module Hyrax
         end
 
         def teams_information_service
-          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "my") 
+          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "my", @target_collection_ids) 
         end
 
         def browse_teams_information_service
-          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "browse") 
+          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "browse", nil) 
         end
 
         def paginated_item_list

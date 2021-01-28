@@ -18,7 +18,7 @@ module Morphosource
         return response
       end
 
-      def all_collections_by_type_and_user(collection_type_id, fq_params = [], collection_ids)
+      def collection_docs_by_type_and_ids(collection_type_id, fq_params = [], collection_ids)
         return [] unless collection_ids.present?
         fq_params << "(#{Solrizer.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
         fq_params << assemble_or_query('id', collection_ids)

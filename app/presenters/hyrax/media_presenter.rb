@@ -666,7 +666,7 @@ module Hyrax
     end
 
     def showcase_collections_partial
-      '/hyrax/physical_objects/showcase_collections'
+      '/hyrax/media/showcase_collections'
     end
 
     def showcase_tags_partial

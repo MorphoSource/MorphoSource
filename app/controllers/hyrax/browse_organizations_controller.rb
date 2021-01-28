@@ -1,24 +1,26 @@
 module Hyrax
 
-	class BrowseOrganizationsController < My::WorksController
+  class BrowseOrganizationsController < My::WorksController
     include Browse::BrowseOrganizationsHelper
 
-		with_themed_layout 'morphosource_1_column'      
+    with_themed_layout 'morphosource_1_column'
+
+    before_action :authenticate_user!, except: [:index]      
 
     def search_builder_class
       Morphosource::OrganizationsSearchBuilder
     end
 
-    def index 
-			(@response, @document_list) = query_solr
+    def index
+      (@response, @document_list) = query_solr
       @paginated_document_list = paginated_item_list
       get_organization_count_by_type
 
-			respond_to do |format|
-			format.html {}
-			format.rss  { render layout: false }
-			format.atom { render layout: false }
-			end
+      respond_to do |format|
+      format.html {}
+      format.rss  { render layout: false }
+      format.atom { render layout: false }
+      end
     end
 
 
@@ -53,5 +55,5 @@ module Hyrax
 
 
   end
-  
+
 end

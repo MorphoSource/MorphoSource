@@ -3,6 +3,7 @@ module Morphosource
     module IndexRelatedWorks
 
       def index_related_works
+        return unless Hyrax.config.index_related_works
         case self
         when BiologicalSpecimen
           if organization_id_changed?

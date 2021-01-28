@@ -326,6 +326,8 @@ Hyrax.config do |config|
   # mount point.
   #
   config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_ms1/', '/vagrant/downloads/']
+
+  config.index_related_works = false
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

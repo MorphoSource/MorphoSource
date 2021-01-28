@@ -284,6 +284,12 @@ module Hyrax
       @rights_statement_service_class ||= Hyrax::RightsStatementService
     end
 
+    attr_writer :index_related_works
+    def index_related_works
+      # This image can be used for free and without attribution. See here for source and license: https://github.com/samvera/hyrax/issues/1551#issuecomment-326624909
+      @index_related_works ||= false
+    end
+
     attr_writer :banner_image
     def banner_image
       # This image can be used for free and without attribution. See here for source and license: https://github.com/samvera/hyrax/issues/1551#issuecomment-326624909

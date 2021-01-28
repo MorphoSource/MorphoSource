@@ -143,7 +143,9 @@ module Hyrax
     def derivative_present?
       return false unless representative_presenter.present?
       d = Morphosource::DerivativePath.derivatives_for_reference(representative_presenter)
-      if representative_presenter.mesh? || representative_presenter.volume?
+      if representative_presenter.image? && !file_size.present?
+        return false
+      elsif representative_presenter.mesh? || representative_presenter.volume?
         d = d.select { |x| !x.include?('thumbnail') }
       end
       return d.present?

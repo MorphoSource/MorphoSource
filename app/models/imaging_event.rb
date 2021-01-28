@@ -35,9 +35,9 @@ class ImagingEventParentDeviceModalityValidator < ActiveModel::Validator
   end
 
   def validate_modality_matches
-    device_modality = @imaging_event.device.modality.first
+    device_modality = @imaging_event.device.modality
     unless device_modality.include?(@ie_modality)
-      @modality_errors << "Imaging Event modality \"#{@ie_modality}\" does not match parent device modality: #{device_modality}"
+      @modality_errors << "Imaging Event modality \"#{@ie_modality}\" does not match parent device modality: #{device_modality.join(', ')}"
     end
   end
 

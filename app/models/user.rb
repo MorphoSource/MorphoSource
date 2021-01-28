@@ -128,17 +128,32 @@ class User < ApplicationRecord
   end
 
   # finds collection ids for which user belongs to different role
-  def collections_with_manager_role_ids
-    roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
+  def collections_with_membership_role_ids
+    manager_collection_ids = []
+    editor_collection_ids = []
+    depositor_collection_ids = []
+    downloader_collection_ids = []
+    viewer_collection_ids = []
+    roles.each do |r|
+      if r.name.include? "managers"
+        manager_collection_ids << r.name.chomp("_managers")
+      elsif r.name.include? "editors"
+        editor_collection_ids << r.name.chomp("_editors")
+      elsif r.name.include? "downloaders"
+        downloader_collection_ids << r.name.chomp("_downloaders")
+      elsif r.name.include? "depositors"
+        depositor_collection_ids << r.name.chomp("_depositors")
+      elsif r.name.include? "viewers"
+        viewer_collection_ids << r.name.chomp("_viewers")
+      end 
+    end 
+    return manager_collection_ids.compact, 
+            editor_collection_ids.compact, 
+            depositor_collection_ids.compact,
+            downloader_collection_ids.compact,
+            viewer_collection_ids.compact
   end
 
-  def collections_with_editor_role_ids
-    roles.map{|r| r.name.chomp("_editors") if r.name.include? "editors"}.compact
-  end
-
-  def collections_with_viewer_role_ids
-    roles.map{|r| r.name.chomp("_viewers") if r.name.include? "viewers"}.compact
-  end
 
   private
 

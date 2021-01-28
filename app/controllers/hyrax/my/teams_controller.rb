@@ -19,9 +19,8 @@ module Hyrax
         collection_type_list_presenter
         #super
         @user = current_user 
-        manager_collection_ids = @user.collections_with_manager_role_ids
-        editor_collection_ids = @user.collections_with_editor_role_ids
-        viewer_collection_ids = @user.collections_with_viewer_role_ids
+        manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = @user.collections_with_membership_role_ids
+
         if page_is_project?
           @collection_list_type = "project"
           @collection_list_type_id = 2
@@ -35,15 +34,20 @@ module Hyrax
         end
 
         query_collection_information
-        manager_response = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, manager_collection_ids)
-        editor_response = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, editor_collection_ids)
-        viewer_response = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, viewer_collection_ids)
-        @document_list = manager_response.documents + editor_response.documents + viewer_response.documents
+        manager_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, manager_collection_ids)
+        editor_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, editor_collection_ids)
+        depositor_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, depositor_collection_ids)
+        downloader_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, downloader_collection_ids)
+        viewer_docs = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, viewer_collection_ids)
+        @document_list = manager_docs + editor_docs + depositor_docs + downloader_docs + viewer_docs
+
         @paginated_document_list = paginated_item_list
         @collection_counts = {}
-        @collection_counts["Manager"] = manager_response.documents.count if manager_response.documents.count > 0
-        @collection_counts["Editor"] = editor_response.documents.count if editor_response.documents.count > 0
-        @collection_counts["Viewer"] = viewer_response.documents.count if viewer_response.documents.count > 0
+        @collection_counts["Manager"] = manager_docs.count if manager_docs.count > 0
+        @collection_counts["Editor"] = editor_docs.count if editor_docs.count > 0
+        @collection_counts["Depositor"] = depositor_docs.count if depositor_docs.count > 0
+        @collection_counts["Downloader"] = downloader_docs.count if downloader_docs.count > 0
+        @collection_counts["Viewer"] = viewer_docs.count if viewer_docs.count > 0
 
         respond_to do |format|
           format.html {}
@@ -97,7 +101,7 @@ module Hyrax
         end
 
         def teams_service 
-           teams_service_class.new(scope: self, user: current_user, params: params_for_query)
+          @teams_service ||= teams_service_class.new(scope: self, user: current_user, params: params_for_query)
         end
 
         def teams_information_service

@@ -19,15 +19,11 @@ module Morphosource
       end
 
       def all_collections_by_type_and_user(collection_type_id, fq_params = [], collection_ids)
-        if collection_ids.present?
-          fq_params << "(#{Solrizer.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
-          fq_params << assemble_or_query('id', collection_ids)
-        else
-          # no collections the user has roles in
-          fq_params << "(id:none)"
-        end
+        return [] unless collection_ids.present?
+        fq_params << "(#{Solrizer.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
+        fq_params << assemble_or_query('id', collection_ids)
         response = available_collections_filter_query(fq_params: fq_params)
-        return response
+        return response.documents
       end
 
       # @return [Blacklight::Solr::Response]

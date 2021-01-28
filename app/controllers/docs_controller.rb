@@ -33,6 +33,9 @@ class DocsController < ApplicationController
     outdated_flash
   end
 
+  def terms
+  end
+
   private
 
     def outdated_flash

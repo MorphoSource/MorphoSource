@@ -3,7 +3,7 @@
   <% @dashboard = @_request.fullpath.include?("/dashboard/profiles/") %>
 
   <dt><i class="fa fa-envelope"></i> Email</dt>
-  <dd><%= mail_to user.email %></dd>
+  <dd><%= mail_to user.email, "Contact User" %></dd>
 
   <% if user.display_name %>
     <dt>Display Name</dt>
@@ -28,7 +28,7 @@
 
     <% if user.state %>
       <dt>State/Province</dt>
-        <% if Morphosource::UserProfile::LocationHelper::STATE[user.country]&.key(user.state) %>        
+        <% if Morphosource::UserProfile::LocationHelper::STATE[user.country]&.key(user.state) %>
           <dd><%= Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) %></dd>
         <% else %>
           <dd><%= user.state %>

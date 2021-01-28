@@ -5,13 +5,18 @@ module Hyrax
 
     helper Hyrax::TrophyHelper
 
+    # do not restrict json (need it for searching for users during submission/record editing)
+    # only allow admins to access the /users page
     def index
-      authenticate_user! if Flipflop.hide_users_list?
+      if request.format == :html
+        authorize! :index, ::User
+      end
       @users = search(params[:uq])
     end
 
     # Display user profile
     def show
+      authenticate_user!
       user = ::User.from_url_component(params[:id])
       return redirect_to root_path, alert: "User '#{params[:id]}' does not exist" if user.nil?
       @presenter = Hyrax::UserProfilePresenter.new(user, current_ability)

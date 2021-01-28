@@ -5,10 +5,12 @@ module Hyrax
 
     with_themed_layout 'morphosource_1_column'
 
+    before_action :authenticate_user!, except: [:index]      
+
     def index
       collection_type_list_presenter
       #super
-      @user = current_user 
+      @user = current_user
 
       if page_is_project?
         @collection_list_type = "project"

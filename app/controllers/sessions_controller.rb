@@ -13,7 +13,7 @@ class SessionsController < Devise::SessionsController
         u.reset_password_token = hashed
         u.reset_password_sent_at = Time.now.utc
         u.save
-        redirect_to Rails.application.routes.url_helpers.edit_user_password_path(reset_password_token: raw)
+        redirect_to Rails.application.routes.url_helpers.ms1_edit_user_password_path(reset_password_token: raw)
         return
       end
     end

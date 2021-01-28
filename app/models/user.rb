@@ -65,8 +65,9 @@ class User < ApplicationRecord
     ms_id
   end
 
+  # display ms_id if display name does not exist
   def name
-    display_name.blank? ? email : display_name
+    display_name.blank? ? ms_id : display_name
   end
 
   def registered?

@@ -19,7 +19,9 @@ module Hyrax
         collection_type_list_presenter
         #super
         @user = current_user 
-
+        manager_collection_ids = @user.collections_with_manager_role_ids
+        editor_collection_ids = @user.collections_with_editor_role_ids
+        viewer_collection_ids = @user.collections_with_viewer_role_ids
         if page_is_project?
           @collection_list_type = "project"
           @collection_list_type_id = 2
@@ -33,10 +35,15 @@ module Hyrax
         end
 
         query_collection_information
-
-        @response = teams_service.all_collections_by_type(@collection_list_type_id, collection_filter_params)
-        @document_list = @response.documents
+        manager_response = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, manager_collection_ids)
+        editor_response = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, editor_collection_ids)
+        viewer_response = teams_service.all_collections_by_type_and_user(@collection_list_type_id, collection_filter_params, viewer_collection_ids)
+        @document_list = manager_response.documents + editor_response.documents + viewer_response.documents
         @paginated_document_list = paginated_item_list
+        @collection_counts = {}
+        @collection_counts["Manager"] = manager_response.documents.count if manager_response.documents.count > 0
+        @collection_counts["Editor"] = editor_response.documents.count if editor_response.documents.count > 0
+        @collection_counts["Viewer"] = viewer_response.documents.count if viewer_response.documents.count > 0
 
         respond_to do |format|
           format.html {}
@@ -48,7 +55,6 @@ module Hyrax
 
       def query_collection_information
         @collection_information = teams_information_service.collection_information
-        @collection_counts = @collection_information['counts'] ||= {}
         @collection_groups = @collection_information['collection_groups'] ||= {}
       end
 

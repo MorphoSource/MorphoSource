@@ -4,7 +4,7 @@
 		  <%= form_tag '', method: :get, :id => 'rows_per_page' do %>
 			<%= hidden_params_for_pagination('k_') %>
 		    <div class="select-tag">
-		      Rows per page <%= select_tag :trows, options_for_select(Hyrax.config.teams_rows_per_page_range, selected: params[:trows] || Hyrax.config.teams_show_work_item_rows), onchange: "$('#rows_per_page').submit();" %> 
+		      Rows per page <%= select_tag :rows, options_for_select(Hyrax.config.teams_rows_per_page_range, selected: params[:rows] || Hyrax.config.teams_show_work_item_rows), onchange: "$('#rows_per_page').submit();" %> 
 		    </div>
 		  <% end %>
 		</div>

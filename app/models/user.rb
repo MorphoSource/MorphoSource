@@ -127,6 +127,19 @@ class User < ApplicationRecord
     Collection.where(id: ids)
   end
 
+  # finds collection ids for which user belongs to different role
+  def collections_with_manager_role_ids
+    roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
+  end
+
+  def collections_with_editor_role_ids
+    roles.map{|r| r.name.chomp("_editors") if r.name.include? "editors"}.compact
+  end
+
+  def collections_with_viewer_role_ids
+    roles.map{|r| r.name.chomp("_viewers") if r.name.include? "viewers"}.compact
+  end
+
   private
 
   # Assigns a random string to be used as the user_key

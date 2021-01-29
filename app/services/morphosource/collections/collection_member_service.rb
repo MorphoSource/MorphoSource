@@ -3,20 +3,20 @@ module Morphosource
   module Collections
     # Responsible for retrieving collection members
     class CollectionMemberService < Hyrax::Collections::CollectionMemberService
-      
+
       # @api public
       #
-      # Media works which are 
-      # 1) direct members of given collection, 
-      # 2) members of subcollections of given collection (if collection is nestable), and 
+      # Media works which are
+      # 1) direct members of given collection,
+      # 2) members of subcollections of given collection (if collection is nestable), and
       # 3) media representing physical objects from collection-linked media
       def all_member_media(organization_object_ids = [], fq_params = [])
         core_fq = "(#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id})"
         core_fq += assemble_multiple_collection_query if collection.respond_to?(:collection_type) && collection.collection_type.nestable?
-        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
+        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present?
         fq_params << core_fq
         fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"
-        available_member_works_filter_query(fq_params: fq_params)
+        available_media_works_filter_query(fq_params: fq_params)
       end
 
       # @api public
@@ -24,7 +24,7 @@ module Morphosource
       def all_member_media_objects(object_ids = [], object_model = nil, fq_params = [])
         core_fq = "(id:(#{object_ids.join(' OR ')}))"
         core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
-        fq_params << core_fq 
+        fq_params << core_fq
         available_member_works_filter_query(fq_params: fq_params)
       end
 
@@ -34,6 +34,10 @@ module Morphosource
       # @return [Blacklight::Solr::Response]
       def available_member_works_filter_query(fq_params: [])
         query_solr_with_fq(query_builder: works_search_builder, query_params: params[:cq], fq_params: fq_params)
+      end
+
+      def available_media_works_filter_query(fq_params: [])
+        query_solr_for_media_with_fq(query_builder: works_search_builder, query_params: params[:cq], fq_params: fq_params)
       end
 
       private
@@ -65,13 +69,17 @@ module Morphosource
           query_builder.merge(q: query_params)
           query_builder.merge(fq: fq_params)
           query_builder.merge(rows: 99999)
-          #repository.search(query_builder.with(query_params).query)
+          # repository.search(query_builder.with(query_params).query)
           repository.search(query_builder.query)
         ensure
           query_builder.merge(q: initial_q)
           query_builder.merge(fq: initial_fq)
           query_builder.merge(rows: initial_rows)
         end
+      end
+
+      def query_solr_for_media_with_fq(query_builder:, query_params:, fq_params:)
+        repository.search(query_builder.query)
       end
     end
   end

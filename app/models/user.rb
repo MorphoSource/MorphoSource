@@ -147,11 +147,20 @@ class User < ApplicationRecord
         viewer_collection_ids << r.name.chomp("_viewers")
       end 
     end 
-    return manager_collection_ids.compact, 
+    all_memberships_collection_ids = (
+            manager_collection_ids + 
+            editor_collection_ids +
+            depositor_collection_ids +
+            downloader_collection_ids +
+            viewer_collection_ids
+            ).compact
+    return all_memberships_collection_ids, 
+            manager_collection_ids.compact, 
             editor_collection_ids.compact, 
             depositor_collection_ids.compact,
             downloader_collection_ids.compact,
             viewer_collection_ids.compact
+
   end
 
 

@@ -43,8 +43,8 @@ module Hyrax
 
       def collections_by_memberships
         @user = current_user 
-        manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = @user.collections_with_membership_role_ids
-        # pass the target_collection_ids to information service 
+        all_memberships_collection_ids, manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = @user.collections_with_membership_role_ids
+        # pass the target_collection_ids to information service (mainly for facets)
         if params['k_membership'].present?
           case params['k_membership']
             when 'Manager'
@@ -59,8 +59,10 @@ module Hyrax
               @target_collection_ids = viewer_collection_ids
             end
         else
-          @target_collection_ids = manager_collection_ids + editor_collection_ids + depositor_collection_ids + downloader_collection_ids + viewer_collection_ids
+          @target_collection_ids = all_memberships_collection_ids
         end
+        # todo: see if there is a way to avoid queries to get each membership docs
+        # currently this is needed, at least for getting the counts
         manager_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, manager_collection_ids)
         editor_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, editor_collection_ids)
         depositor_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, depositor_collection_ids)
@@ -81,7 +83,8 @@ module Hyrax
               @document_list = viewer_docs
             end
         else
-          @document_list = manager_docs + editor_docs + depositor_docs + downloader_docs + viewer_docs
+          all_memberships_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, all_memberships_collection_ids)
+          @document_list = all_memberships_docs
         end
         @paginated_document_list = paginated_item_list
         @collection_counts = {}

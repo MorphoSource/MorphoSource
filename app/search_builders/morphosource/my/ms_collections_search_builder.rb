@@ -23,4 +23,13 @@ class Morphosource::My::MsCollectionsSearchBuilder < ::SearchBuilder
     [::Collection]
   end
 
+  def sort_field
+    Solrizer.solr_name('title', :sortable)
+  end
+
+  def add_sorting_to_solr(solr_parameters)
+    return if solr_parameters[:q]
+    solr_parameters[:sort] = "#{sort_field} asc"
+  end
+
 end

@@ -152,7 +152,7 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe '#collections_managed' do
+    describe '#collections_managed #collections_with_membership_role_ids' do
       let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
       let(:team_a)                { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
       let(:team_b)                { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
@@ -161,6 +161,11 @@ RSpec.describe User, type: :model do
       let(:role2)                 { team_b.managers_group }
       let(:role3)                 { team_c.managers_group }
       let(:manager_roles)         { [role1, role2, role3] }
+      let(:role4)                 { team_a.editors_group }
+      let(:role5)                 { team_b.editors_group }
+      let(:editor_roles)          { [role4, role5] }
+      let(:role6)                 { team_c.viewers_group }
+      let(:viewer_roles)          { [role6] }
 
       before do
         team_a.create_collection_groups
@@ -173,6 +178,32 @@ RSpec.describe User, type: :model do
       it 'returns all collections where user belongs to default _manager role' do
         expect(user.collections_managed).to match_array([team_a, team_b, team_c])
       end
+
+      it 'returns ids for manager_roles' do
+        all_memberships_collection_ids, manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = user.collections_with_membership_role_ids
+        expect(manager_collection_ids).to eq(["000200000", "000200001", "000200002"])      
+      end
+
+      describe 'return ids for editor roles' do
+        before do
+          allow(user).to receive(:roles).and_return(editor_roles)
+        end
+        it 'returns ids for the editor_roles' do
+          all_memberships_collection_ids, manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = user.collections_with_membership_role_ids
+          expect(editor_collection_ids).to eq(["000200000", "000200001"])      
+        end
+      end
+
+      describe 'return ids for viewer roles' do
+        before do
+          allow(user).to receive(:roles).and_return(viewer_roles)
+        end
+        it 'returns ids for the viewer_roles' do
+          all_memberships_collection_ids, manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = user.collections_with_membership_role_ids
+          expect(viewer_collection_ids).to eq(["000200002"])      
+        end
+      end
+
     end
   end
 

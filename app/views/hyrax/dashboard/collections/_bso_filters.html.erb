@@ -32,20 +32,6 @@
         </select>
       <% end %>
 
-      <% if @collection.team? %>
-        <% if params['b_origin'].present? 
-             show_filter_by = true %>
-          <input type="hidden" name="b_origin" value="<%= params['b_origin'] %>" class="filter-param" />
-        <% else %>
-          <select name="b_origin" data-form="bso-filters" style='width: 150px;'>
-            <option value="">Origin</option>
-            <% Array(@collection_bso_groups['origin']).each do |v, n| %>
-              <option value="<%= v %>"><%= "#{origin_label(v)} (#{n})" %></option>
-            <% end %>
-          </select>
-        <% end %>
-      <% end %>
-
       <% if params['cq'].present? 
         show_filter_by = true %>
         <input type="hidden" name="cq" value="<%= params['cq'] %>" class="filter-param" />
@@ -65,9 +51,6 @@
         <% end %>
         <% if params['b_organization'].present? %>
           <p id="b_organization" class="filter-param">Organization > <%= params['b_organization'] %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_organization"></i></p>
-        <% end %>
-        <% if params['b_origin'].present? %>
-          <p id="b_origin" class="filter-param">Origin > <%= origin_label(params['b_origin']) %> <i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-filter" data-form="bso-filters" data-param="b_origin"></i></p>
         <% end %>
 
         <% if params['cq'].present? %>

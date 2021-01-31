@@ -55,6 +55,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
       context 'organization id is updated' do
         it 'updates related media' do
+          skip if !Hyrax.config.index_related_works
           expect(specimen).to receive(:index_related).with(specimen_media)
           specimen.organization_id = [new_organization.id]
           specimen.save
@@ -62,6 +63,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
       context 'another attribute is updated' do
         it 'does not update related media' do
+          skip if !Hyrax.config.index_related_works
           expect(specimen).not_to receive(:index_related).with(specimen_media)
           specimen.title = ["new title"]
           specimen.save
@@ -75,6 +77,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
       context 'organization id is updated' do
         it 'updates related media' do
+          skip if !Hyrax.config.index_related_works
           expect(cho).to receive(:index_related).with(cho_media)
           cho.organization_id = [new_organization.id]
           cho.save
@@ -82,6 +85,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
       context 'another attribute is updated' do
         it 'does not update related media' do
+          skip if !Hyrax.config.index_related_works
           expect(cho).not_to receive(:index_related).with(cho_media)
           cho.title = ["new title"]
           cho.save
@@ -94,6 +98,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
         allow(imaging_event1).to receive(:index_related)
       end
       it 'updates related media and objects' do
+        skip if !Hyrax.config.index_related_works
         expect(imaging_event1).to receive(:index_related).with(ie_media).and_call_original
         expect(imaging_event1).to receive(:index_related).with([specimen])
         imaging_event1.device_id = [device2.id]
@@ -108,6 +113,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
           allow(specimen_media).to receive(:index_related)
         end
         it 'updates the related specimen' do
+          skip if !Hyrax.config.index_related_works
           expect(specimen_media).to receive(:index_related).with([specimen])
           specimen_media.title = ['new title']
           specimen_media.save
@@ -119,6 +125,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
           allow(cho_media).to receive(:index_related)
         end
         it 'updates the related cho' do
+          skip if !Hyrax.config.index_related_works
           expect(cho_media).to receive(:index_related).with([cho])
 
           cho_media.title = ['new title']
@@ -142,6 +149,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
       context 'title is updated' do
         it 'updates related media, objects, linked team, and team child projects' do
+          skip if !Hyrax.config.index_related_works
           expect(organization).to receive(:index_related).ordered.with(media).and_call_original
           expect(organization).to receive(:index_related).ordered.with(objects).and_call_original
           expect(organization).to receive(:index_related_collections).ordered.with([team]).and_call_original
@@ -163,6 +171,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
         end
 
         it 'updates its new team, old team, old and new child projects, but not media and objects' do
+          skip if !Hyrax.config.index_related_works
           expect(organization).not_to receive(:index_related).with(media).and_call_original
           expect(organization).not_to receive(:index_related).with(objects).and_call_original
           expect(organization).to receive(:index_related_collections).with(a_collection_containing_exactly(team, projectA, projectB)).and_call_original
@@ -179,6 +188,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
           allow(UpdateRelatedWorksIndexJob).to receive(:perform_later)
         end
         it 'updates related media, objects, and linked team' do
+          skip if !Hyrax.config.index_related_works
           expect(organization).not_to receive(:index_related).ordered.with(media).and_call_original
           expect(organization).not_to receive(:index_related).ordered.with(objects).and_call_original
           expect(organization).not_to receive(:index_related).ordered.with(team)
@@ -196,6 +206,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
       context 'title is updated' do
         it 'updates related media and objects' do
+          skip if !Hyrax.config.index_related_works
           expect(processing_event1).to receive(:index_related).with(pe_media).and_call_original
           expect(processing_event1).to receive(:index_related).with([specimen])
           processing_event1.title = ['New Title']
@@ -211,6 +222,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
       context 'title is updated' do
         it 'updates related media and objects' do
+          skip if !Hyrax.config.index_related_works
           expect(taxonomy).to receive(:index_related).with([specimen]).and_call_original
           expect(taxonomy).to receive(:index_related).with(taxonomy_media)
           taxonomy.title = ['New Title']

@@ -122,8 +122,7 @@ module Hyrax
       end
 
       def member_works_objects
-        # all_object_ids = @collection_object_ids + @collection_organization_object_ids
-        all_object_ids = get_object_ids_from_media
+        all_object_ids = @collection_object_ids + @collection_organization_object_ids
 
         if all_object_ids.present?
           @bso_response = collection_member_service.all_member_media_objects(all_object_ids, BiologicalSpecimen, bso_filter_params)
@@ -151,7 +150,7 @@ module Hyrax
       end
 
       def get_object_ids_from_media
-        media_response = collection_member_service.all_member_media
+        media_response = collection_member_service.all_member_media(@collection_organization_object_ids)
         media_docs = media_response.documents
         media_docs.map{|d| d["physical_object_id_ssim"].first}.uniq
       end

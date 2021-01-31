@@ -14,9 +14,8 @@ module Morphosource
         core_fq = "(#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id})"
         core_fq += assemble_multiple_collection_query if collection.respond_to?(:collection_type) && collection.collection_type.nestable?
         core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present?
-        fq_params << core_fq
         fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"
-        available_media_works_filter_query(fq_params: fq_params)
+        available_media_works_filter_query(fq_params: fq_params, core_fq: core_fq)
       end
 
       # @api public
@@ -36,8 +35,8 @@ module Morphosource
         query_solr_with_fq(query_builder: works_search_builder, query_params: params[:cq], fq_params: fq_params)
       end
 
-      def available_media_works_filter_query(fq_params: [])
-        query_solr_for_media_with_fq(query_builder: works_search_builder, query_params: params[:cq], fq_params: fq_params)
+      def available_media_works_filter_query(fq_params: [], core_fq: [])
+        query_solr_for_media_with_fq(query_builder: works_search_builder, query_params: params[:cq], fq_params: fq_params, core_fq: core_fq)
       end
 
       private
@@ -78,8 +77,29 @@ module Morphosource
         end
       end
 
-      def query_solr_for_media_with_fq(query_builder:, query_params:, fq_params:)
-        repository.search(query_builder.query)
+      def query_solr_for_media_with_fq(query_builder:, query_params:, fq_params:, core_fq:)
+        initial_q = query_builder[:q]
+        initial_fq = query_builder[:fq]
+        initial_rows = query_builder[:rows]
+        begin
+          query_builder.merge(q: query_params)
+          query_builder.merge(fq: prepare_media_query_fq_param(initial_fq, fq_params, core_fq))
+          query_builder.merge(rows: 99999)
+          # repository.search(query_builder.with(query_params).query)
+          repository.search(query_builder.query)
+        ensure
+          query_builder.merge(q: initial_q)
+          query_builder.merge(fq: initial_fq)
+          query_builder.merge(rows: initial_rows)
+        end
+      end
+
+      def prepare_media_query_fq_param(initial, new, new_core)
+        ((initial.map { |x| x == std_core_fq && new_core.present? ? new_core : x }) + new).uniq
+      end
+
+      def std_core_fq
+        "#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id}"
       end
     end
   end

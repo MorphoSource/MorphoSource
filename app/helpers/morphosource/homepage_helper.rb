@@ -12,6 +12,8 @@ module Morphosource
       end
     end
 
+    private
+
     # Return 6 collections
      def collections(rows: 6)
        builder = Hyrax::CollectionSearchBuilder.new(self).rows(rows)

@@ -13,21 +13,15 @@ module Morphosource
         new(user, collection_list_type_id, browse).call
       end
 
-      def initialize(user, collection_list_type_id, page = "my")
+      def initialize(user, collection_list_type_id, page = "my", target_collection_ids)
         # the service is shared by dashboard my teams/projects page and browse teams/projects
         @solr = solr_service.new
         @user = user
         @collection_list_type_id = collection_list_type_id
         if page == "my"
-          @collection_count_for_manager = 0
-          @collection_count_for_editor = 0
-          @collection_count_for_depositor = 0
-          @collection_count_for_viewer = 0
-          @collection_count_for_downloader = 0
-          @ids_by_membership = { 'Manager' => [], 'Editor' => [], 'Depositor' => [], 'Viewer' => [], 'Downloader' => [], 'any' => [] }
-          membership_info(all_collection_ids)
+          @collection_ids = target_collection_ids
           query_solr_collection_info
-        else
+        else # browse page
           @collection_ids = all_collection_ids
         end
         if is_team?
@@ -44,15 +38,7 @@ module Morphosource
       end
 
       def collection_information
-        @info = { 
-          'counts' => {}
-        }
-        info['counts']['Manager'] = @collection_count_for_manager if @collection_count_for_manager > 0
-        info['counts']['Editor'] = @collection_count_for_editor if @collection_count_for_editor > 0
-        info['counts']['Depositor'] = @collection_count_for_depositor if @collection_count_for_depositor > 0
-        info['counts']['Downloader'] = @collection_count_for_downloader if @collection_count_for_downloader > 0
-        info['counts']['Viewer'] = @collection_count_for_viewer if @collection_count_for_viewer > 0
-
+        @info = {}
         info['collection_groups'] = { 'organization' => {} }.merge(facet_collection_groups)
         organization_groups
 
@@ -134,46 +120,6 @@ module Morphosource
           @collection_list_type_id == 1
         end
 
-        def membership_info(all_collection_ids)
-          all_collection_ids.each do |id|
-            begin
-              coll = Collection.find(id)
-              membership = coll.membership_of(@user)
-            rescue Exception => e  
-              # some collections end up with an exception below.
-              # undefined method `users' for nil:NilClass
-              # todo: remove the exception catching later if not needed
-              membership = []
-              Rails.logger.debug("Error in membership_info, #{e}, collection id: #{id}")
-            end
-            if membership.include?('Manager')
-              @collection_count_for_manager += 1
-              @ids_by_membership['Manager'] << id
-              @ids_by_membership['any'] << id
-            elsif membership.include?('Editor')
-              @collection_count_for_editor += 1
-              @ids_by_membership['Editor'] << id
-              @ids_by_membership['any'] << id
-            elsif membership.include?('Depositor')
-              @collection_count_for_depositor += 1
-              @ids_by_membership['Depositor'] << id
-              @ids_by_membership['any'] << id
-            elsif membership.include?('Viewer')
-              @collection_count_for_viewer += 1
-              @ids_by_membership['Viewer'] << id
-              @ids_by_membership['any'] << id
-            elsif membership.include?('Downloader')
-              @collection_count_for_downloader += 1
-              @ids_by_membership['Downloader'] << id
-              @ids_by_membership['any'] << id
-            elsif @user.can? :read, coll         
-              # check if user at least has read access
-              @ids_by_membership['any'] << id
-            end          
-          end
-          @collection_ids = @ids_by_membership['any']
-        end
-
         def organization_docs(organization_title = '')
           return [] unless collection_ids.present?
 
@@ -242,7 +188,9 @@ module Morphosource
           when 'k_organization'
             assemble_or_query('id', team_ids_by_collection_organization(value))
           when 'k_membership'
-            assemble_or_query('id', ids_by_membership[value])
+            # the target_collection_ids already contain collections from the target membership
+            # therefore no need to filter here
+            #assemble_or_query('id', ids_by_membership[value])
           else
             "#{solrize(name.split('_', 2).last, :stored_searchable)}:#{value}"
           end

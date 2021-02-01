@@ -70,7 +70,7 @@ module Hyrax
       end
 
       def organization_information_service
-        @organization_information_service ||= information_service_class.new(@curation_concern) 
+        @organization_information_service ||= information_service_class.new(self, @curation_concern) 
       end
 
       def query_organization_members

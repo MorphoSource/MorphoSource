@@ -1,6 +1,7 @@
 module Morphosource
   module Collections
     class TeamsService 
+      include SolrHelper
       attr_reader :scope, :params
       delegate :repository, to: :scope
       
@@ -13,9 +14,16 @@ module Morphosource
       def all_collections_by_type(collection_type_id, fq_params = [])
         #fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Collection}"
         fq_params << "(#{Solrizer.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
-
         response = available_collections_filter_query(fq_params: fq_params)
         return response
+      end
+
+      def collection_docs_by_type_and_ids(collection_type_id, fq_params = [], collection_ids)
+        return [] unless collection_ids.present?
+        fq_params << "(#{Solrizer.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
+        fq_params << assemble_or_query('id', collection_ids)
+        response = available_collections_filter_query(fq_params: fq_params)
+        return response.documents
       end
 
       # @return [Blacklight::Solr::Response]
@@ -35,7 +43,6 @@ module Morphosource
           query_builder.merge(q: query_params)
           query_builder.merge(fq: fq_params)
           query_builder.merge(rows: 99999)
-          #repository.search(query_builder.with(query_params).query)
           repository.search(query_builder.query)
         ensure
           query_builder.merge(q: initial_q)

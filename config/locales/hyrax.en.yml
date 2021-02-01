@@ -158,7 +158,7 @@ en:
     directory:
       suffix:               "@example.org"
     footer:
-      copyright_html: "Copyright &copy; 2020 MorphoSource"
+      copyright_html: "Copyright &copy; 2021 MorphoSource"
       service_html: A <a href="https://hyrax.samvera.org/" class="navbar-link" target="_blank">Hyrax</a> Digital Repository.
     institution_name:       "Duke University"
     institution_name_full:  "Duke University"

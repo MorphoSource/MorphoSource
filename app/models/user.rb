@@ -124,8 +124,58 @@ class User < ApplicationRecord
   # finds collections for which user belongs to "_managers" role
   def collections_managed
     ids = roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
-    Collection.where(id: ids)
+    if ids.present?
+      Morphosource::SolrService.new
+        .get_docs(nil, fq: ["id:(#{ids.join(' OR ').upcase})"], fl: ["id"])
+        .map do |solr_doc|
+          begin
+            Collection.find(solr_doc["id"])
+          rescue ActiveFedora::ObjectNotFoundError
+            nil
+          end
+        end
+        .compact
+    else
+      return []
+    end
   end
+
+  # finds collection ids for which user belongs to different role
+  def collections_with_membership_role_ids
+    manager_collection_ids = []
+    editor_collection_ids = []
+    depositor_collection_ids = []
+    downloader_collection_ids = []
+    viewer_collection_ids = []
+    roles.each do |r|
+      if r.name.include? "managers"
+        manager_collection_ids << r.name.chomp("_managers")
+      elsif r.name.include? "editors"
+        editor_collection_ids << r.name.chomp("_editors")
+      elsif r.name.include? "downloaders"
+        downloader_collection_ids << r.name.chomp("_downloaders")
+      elsif r.name.include? "depositors"
+        depositor_collection_ids << r.name.chomp("_depositors")
+      elsif r.name.include? "viewers"
+        viewer_collection_ids << r.name.chomp("_viewers")
+      end 
+    end 
+    all_memberships_collection_ids = (
+            manager_collection_ids + 
+            editor_collection_ids +
+            depositor_collection_ids +
+            downloader_collection_ids +
+            viewer_collection_ids
+            ).compact
+    return all_memberships_collection_ids, 
+            manager_collection_ids.compact, 
+            editor_collection_ids.compact, 
+            depositor_collection_ids.compact,
+            downloader_collection_ids.compact,
+            viewer_collection_ids.compact
+
+  end
+
 
   private
 

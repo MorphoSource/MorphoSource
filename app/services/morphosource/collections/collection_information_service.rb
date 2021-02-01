@@ -5,24 +5,22 @@ module Morphosource
       include SolrHelper
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
-      attr_reader :solr, :collection_id, :collection, :is_org_team, 
+      attr_reader :solr, :scope, :collection_id, :collection, :is_org_team, 
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
         :n_idigbio, :collection_project_map, :po_counts_by_org, 
         :organizations, :info, :subcollection_ids
+      delegate :repository, to: :scope
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
-      def self.call(collection_id)
-        new(collection_id).call
+      def self.call(scope:, collection_id:)
+        new(scope, collection_id).call
       end
 
-      def self.collection_organization_object_ids(collection_id)
-
-      end
-
-      def initialize(collection_id)
+      def initialize(scope:, collection_id:)
         @solr = solr_service.new
+        @scope = scope
         @collection_id = collection_id
         @collection = Collection.find(collection_id)
         @is_org_team = collection.team?
@@ -41,17 +39,18 @@ module Morphosource
           @n_media_team_organization = team_org_origin_count if is_org_team
         end
 
-        @facet_results, @media_count = media_facet_query
+        @facet_results, @media_count = media_facet_query_with_builder
 
         @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
         @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
         @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
         @n_idigbio = bso_idigbio_count
 
+        @po_counts_by_org = physical_object_counts_by_organization
+        @organizations = organization_docs
+
         if collection.team?
-          @collection_project_map = collection_id_to_project_title_map
-          @po_counts_by_org = physical_object_counts_by_organization
-          @organizations = organization_docs
+          @collection_project_map = collection_id_to_project_title_map 
         end
       end
 
@@ -70,9 +69,8 @@ module Morphosource
         info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
         info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
 
-        if collection.team?
-          info_po_media_counts_by_organization
-        end
+        info_po_media_counts_by_organization
+        
         if is_org_team && collection_organization_id.present?
           info['media_groups']['origin'] = {
             'team_organization' => n_media_team_organization,
@@ -112,7 +110,6 @@ module Morphosource
       end
 
       private
-
         ### Solr collection queries ###
       
         # Other solr queries #
@@ -130,7 +127,8 @@ module Morphosource
             facet_fields = [
               solrize('media_type', :stored_searchable),
               solrize('fileset_accessibility', :stored_searchable),
-              solrize('physical_object_id', :stored_searchable)
+              solrize('physical_object_id', :stored_searchable),
+              solrize('media_organization_id', :symbol)
             ]
           end          
           params = { 
@@ -151,6 +149,84 @@ module Morphosource
           end
           solr.get_facet_fields(nil, facet_fields, params)
           return solr.facet_fields(facet_fields), solr.count
+        end
+
+        def media_facet_query_with_builder
+          if collection.team?
+            facet_fields = [
+              solrize('media_type', :stored_searchable),
+              solrize('fileset_accessibility', :stored_searchable),
+              solrize('physical_object_id', :stored_searchable),
+              solrize('media_organization_id', :symbol),
+              solrize('member_of_collection_ids', :symbol)
+            ]
+          else
+            facet_fields = [
+              solrize('media_type', :stored_searchable),
+              solrize('fileset_accessibility', :stored_searchable),
+              solrize('physical_object_id', :stored_searchable),
+              solrize('media_organization_id', :symbol)
+            ]
+          end
+
+          fq =  [ "#{solrize('has_model', :symbol)}:Media" ]         
+
+          # Core query
+          if is_org_team && collection_organization_id
+            core_fq = assemble_po_id_or_collection_query(team_org_po_ids, Array(collection_id) + Array(subcollection_ids))
+          elsif collection.collection_type.nestable?
+            core_fq = assemble_or_query(solrize('member_of_collection_ids', :symbol), Array(collection_id) + Array(subcollection_ids))
+          else
+            core_fq = "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
+          end
+
+          result = query_solr_for_media_with_fq(query_builder: works_search_builder, fq_params: fq, core_fq: core_fq, facet_fields: facet_fields)
+          return facet_field_hash(result, facet_fields), result['response']['numFound'].to_i
+        end
+
+        def query_solr_for_media_with_fq(query_builder:, fq_params:, core_fq:, facet_fields:)
+          initial_fq = query_builder[:fq]
+          initial_facet_fields = query_builder["facet.field"]
+          initial_rows = query_builder[:rows]
+          begin
+            query_builder.merge(fq: prepare_media_query_fq_param(initial_fq, fq_params, core_fq))
+            query_builder.merge('facet.field' => initial_facet_fields + facet_fields)
+            query_builder.merge(rows: 999999)
+            # repository.search(query_builder.with(query_params).query)
+            repository.search(query_builder.query)
+          ensure
+            query_builder.merge(fq: initial_fq)
+            query_builder.merge('facet.field' => initial_facet_fields)
+            query_builder.merge(rows: initial_rows)
+          end
+        end
+
+        def works_search_builder
+          @works_search_builder ||= 
+            Morphosource::CollectionMemberSearchBuilderNoFacetLimits.new(
+              scope: scope, collection: collection, search_includes_models: :works
+            )
+        end
+
+        def prepare_media_query_fq_param(initial, new, new_core)
+          ((initial.map { |x| x == std_core_fq && new_core.present? ? new_core : x }) + new).uniq
+        end
+
+        def std_core_fq
+          "#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id}"
+        end
+
+        def facet_field_hash(result, field_names)
+          if result.present? and result["facet_counts"]["facet_fields"].present?
+            facet_hash = {}
+            facet_result = result["facet_counts"]["facet_fields"]
+            field_names.each do |f|
+              facet_hash[f] = Hash[*facet_result[f].flatten(1)] if facet_result.key?(f)
+            end
+            facet_hash
+          else
+            {}
+          end
         end
 
         def collection_id_to_project_title_map

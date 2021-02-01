@@ -10,6 +10,8 @@ module Morphosource
           projects << ::SolrDocument.find(id)
         end
       end
+      rescue Blacklight::Exceptions::RecordNotFound
+      collections
     end
 
     private

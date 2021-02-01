@@ -5,12 +5,14 @@ module Morphosource
       
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
-      attr_reader :solr, :facet_results, :media_count, :bso_ids, :cho_ids, :n_idigbio, :info
+      attr_reader :scope, :solr, :facet_results, :media_count, :bso_ids, :cho_ids, :n_idigbio, :info
+      delegate :repository, to: :scope
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
-      def initialize(org)
+      def initialize(scope, org)
         @solr = solr_service.new
+        @scope = scope
         @organization = org
         @bso_ids = bso_ids
         @cho_ids = cho_ids
@@ -18,7 +20,7 @@ module Morphosource
       end
 
       def query_solr_org_info
-        @facet_results, @media_count = media_facet_query
+        @facet_results, @media_count = media_facet_query_with_builder
         @n_idigbio = bso_idigbio_count
       end
 
@@ -38,7 +40,6 @@ module Morphosource
       def solrize_filter_params(params = {})
         params.map { |k, v| solrize_param(k, v) }.compact
       end
-
 
       private
 
@@ -84,6 +85,55 @@ module Morphosource
           }
           solr.get_facet_fields(nil, facet_fields, params)
           return solr.facet_fields(facet_fields), solr.count
+        end
+
+        def media_facet_query_with_builder
+          facet_fields = [
+            solrize('media_type', :stored_searchable),
+            solrize('fileset_accessibility', :stored_searchable)
+          ]
+          
+          fq = [
+            "(media_organization_id_ssim:#{@organization.id})",
+            "#{solrize('has_model', :symbol)}:Media",
+          ]
+          
+          result = query_solr_with_fq(query_builder: works_search_builder, fq_params: fq, facet_fields: facet_fields)
+          return facet_field_hash(result, facet_fields), result['response']['numFound'].to_i
+        end
+
+        def query_solr_with_fq(query_builder:, fq_params:, facet_fields:)
+          initial_fq = query_builder[:fq]
+          initial_facet_fields = query_builder["facet.field"]
+          initial_rows = query_builder[:rows]
+          begin
+            query_builder.merge(fq: initial_fq + fq_params)
+            query_builder.merge('facet.field' => initial_facet_fields + facet_fields)
+            query_builder.merge(rows: 99999)
+            #repository.search(query_builder.with(query_params).query)
+            repository.search(query_builder.query)
+          ensure
+            query_builder.merge(fq: initial_fq)
+            query_builder.merge('facet.field' => initial_facet_fields)
+            query_builder.merge(rows: initial_rows)
+          end
+        end
+
+        def works_search_builder
+          @works_search_builder ||= Hyrax::OrganizationMemberSearchBuilder.new(scope: @scope, search_includes_models: :works)
+        end
+
+        def facet_field_hash(result, field_names)
+          if result.present? and result["facet_counts"]["facet_fields"].present?
+            facet_hash = {}
+            facet_result = result["facet_counts"]["facet_fields"]
+            field_names.each do |f|
+              facet_hash[f] = Hash[*facet_result[f].flatten(1)] if facet_result.key?(f)
+            end
+            facet_hash
+          else
+            {}
+          end
         end
 
         def bso_idigbio_count

@@ -108,7 +108,7 @@ module Hyrax
 
       # Instantiate the information query service
       def collection_information_service
-        @collection_information_service ||= information_service_class.new(collection.id)
+        @collection_information_service ||= information_service_class.new(scope: self, collection_id: collection.id)
       end
 
       def subcollection_media_service(subcollection)

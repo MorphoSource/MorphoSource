@@ -217,9 +217,8 @@ module Morphosource
               )
             elsif value == 'team_organization' && Collection.find(collection_id).organization.present?
               organization_title = Collection.find(collection_id).organization.title&.first
-              assemble_po_id_and_not_collection_query(
-                po_ids_by_collection_organization(organization_title),
-                collection_id
+              assemble_po_id_including_collection_query(
+                po_ids_by_collection_organization(organization_title)
               )
             end
           when 'b_source'

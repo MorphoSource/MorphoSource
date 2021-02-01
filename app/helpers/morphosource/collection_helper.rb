@@ -212,30 +212,34 @@ module Morphosource
           # which means handling team vs project, and duplicate media in the list
           media_collection_ids = doc.member_of_collection_ids
           if media_collection_ids.present?
-            media_collection = Collection.find(media_collection_ids.first)
-            if media_collection.project?
-              # since media is in a project, check if this project belongs to the current team
-              if media_collection.member_of_collection_ids.include? collection.id
-                this_media_extras['team_project_title'] = media_collection.title.first
-                this_media_extras['origin'] = 'Team' # or Team project, specifically
-              end
-            elsif media_collection_ids.include? collection.id
+            if media_collection_ids.include? collection.id
               this_media_extras['origin'] = 'Team'
             else
-              this_media_extras['origin'] = ''
+              # check if from team project            
+              media_collection_ids.each do |cid|
+                media_collection = Collection.find(cid)
+                if media_collection.project?
+                  # since media is in a project, check if this project belongs to the current team
+                  if media_collection.member_of_collection_ids.include? collection.id
+                    this_media_extras['team_project_title'] = media_collection.title.first
+                    this_media_extras['origin'] = 'Team' # or Team project, specifically
+                  end
+                end
+              end
             end
           end
-          unless this_media_extras['origin'].present?          
-            # check if media is from a linked organization:
-            org = collection.organization
-            if org.present?
-              org_media_ids = org.media.map(&:id)
-              if org_media_ids.include? doc.id
+          # check if media is from a linked organization:
+          org = collection.organization
+          if org.present?
+            org_media_ids = org.media.map(&:id)
+            if org_media_ids.include? doc.id
+              if this_media_extras['origin'].present?          
+                this_media_extras['origin'] += ', Organization'
+              else
                 this_media_extras['origin'] = 'Organization'
               end
             end
           end
-
         end
         # get BSO and CHO
         po_doc = Morphosource::PhysicalObjectParentSearchService.call({ id: doc.id })&.first

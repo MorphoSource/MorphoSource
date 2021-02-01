@@ -52,4 +52,9 @@ module SolrHelper
     return "" if !ids.present? || !collection_id.present? 
     "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)}) AND NOT (#{solrize('member_of_collection_ids', :symbol)}:#{collection_id})"
   end
+
+  def assemble_po_id_including_collection_query(ids)
+    return "" if !ids.present? 
+    "(#{assemble_or_query(solrize('physical_object_id', :stored_searchable), ids)})"
+  end
 end

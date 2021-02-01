@@ -19,14 +19,12 @@ module CollectionInformationHelper
     solr.get_docs(nil, params).map { |d| d['id'] }
   end
 
-
-
   def team_origin_count
-    # team or team projects
+    # counting team projects + team
     params = {
       rows: 0,
       fq: [
-        assemble_or_query(solrize('member_of_collection_ids', :symbol), get_subcollection_ids([collection_id])),
+        assemble_or_query(solrize('member_of_collection_ids', :symbol), get_subcollection_ids([collection_id]) + [collection_id]),
         "#{solrize('has_model', :symbol)}:Media"
       ]
     }
@@ -38,7 +36,7 @@ module CollectionInformationHelper
     params = {
       rows: 0,
       fq: [
-        assemble_po_id_and_not_collection_query(@team_org_po_ids, collection_id),
+        assemble_po_id_or_collection_query(@team_org_po_ids, collection_id),
         "#{solrize('has_model', :symbol)}:Media"
       ]
     }

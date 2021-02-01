@@ -219,7 +219,7 @@ Hyrax.config do |config|
   config.banner_image = 'banner_image.png'
 
   # ID of a media work to be used as the front page preview
-  config.front_page_media = Rails.env.production? ? '000200404' : nil
+  config.front_page_media = Rails.env.production? ? '000009951' : nil
 
   # Temporary paths to hold uploads before they are ingested into FCrepo
   # These must be lambdas that return a Pathname. Can be configured separately
@@ -327,7 +327,7 @@ Hyrax.config do |config|
   #
   config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_ms1/', '/vagrant/downloads/']
 
-  config.index_related_works = false
+  config.index_related_works = true
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

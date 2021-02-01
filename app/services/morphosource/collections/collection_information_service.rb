@@ -6,7 +6,7 @@ module Morphosource
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
       attr_reader :solr, :collection_id, :collection, :is_org_team, 
-        :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
+        :collection_organization_id, :team_org_po_ids, :n_media_team_organization, :n_media_team,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
         :n_idigbio, :collection_project_map, :po_counts_by_org, 
         :organizations, :info, :subcollection_ids
@@ -38,7 +38,10 @@ module Morphosource
         if is_org_team && Collection.find(collection_id).organization.present?
           @collection_organization_id = Collection.find(collection_id).organization.id
           @team_org_po_ids = organization_po_ids
-          @n_media_team_organization = team_org_origin_count if is_org_team
+          if is_org_team
+            @n_media_team = team_origin_count 
+            @n_media_team_organization = team_org_origin_count
+          end
         end
 
         @facet_results, @media_count = media_facet_query
@@ -76,7 +79,7 @@ module Morphosource
         if is_org_team && collection_organization_id.present?
           info['media_groups']['origin'] = {
             'team_organization' => n_media_team_organization,
-            'team_collection' => media_count - n_media_team_organization
+            'team_collection' => n_media_team
           }
 
           if bso_ids.present? && team_org_po_ids.present?

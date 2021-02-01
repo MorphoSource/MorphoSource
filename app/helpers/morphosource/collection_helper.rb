@@ -208,31 +208,34 @@ module Morphosource
           'id' => doc.id
         }
         if @is_team 
-          # check if media is from a linked organization:
-          org = collection.organization
-          if org.present?
-            org_media_ids = org.media.map(&:id)
-            if org_media_ids.include? doc.id
-              this_media_extras['origin'] = 'Organization linked to team'
+          # todo: might need to handle more than one collections later
+          # which means handling team vs project, and duplicate media in the list
+          media_collection_ids = doc.member_of_collection_ids
+          if media_collection_ids.present?
+            media_collection = Collection.find(media_collection_ids.first)
+            if media_collection.project?
+              # since media is in a project, check if this project belongs to the current team
+              if media_collection.member_of_collection_ids.include? collection.id
+                this_media_extras['team_project_title'] = media_collection.title.first
+                this_media_extras['origin'] = 'Team' # or Team project, specifically
+              end
+            elsif media_collection_ids.include? collection.id
+              this_media_extras['origin'] = 'Team'
+            else
+              this_media_extras['origin'] = ''
             end
           end
-          unless this_media_extras['origin'].present?
-            # todo: might need to handle more than one collections later
-            # which means handling team vs project, and duplicate media in the list
-            media_collection_ids = doc.member_of_collection_ids
-            if media_collection_ids.present?
-              media_collection = Collection.find(media_collection_ids.first)
-              if media_collection.project?
-                # if media belongs to a project in the team page, it can be assumed it is a team project
-                # in that cast, get the team project title.  todo: if the asumption is not correct, verify the team 
-                # and project relationship
-                this_media_extras['team_project_title'] = media_collection.title.first
-                this_media_extras['origin'] = 'Team'
-              elsif media_collection_ids.include? collection.id
-                this_media_extras['origin'] = 'Team'
+          unless this_media_extras['origin'].present?          
+            # check if media is from a linked organization:
+            org = collection.organization
+            if org.present?
+              org_media_ids = org.media.map(&:id)
+              if org_media_ids.include? doc.id
+                this_media_extras['origin'] = 'Organization'
               end
             end
           end
+
         end
         # get BSO and CHO
         po_doc = Morphosource::PhysicalObjectParentSearchService.call({ id: doc.id })&.first

@@ -84,11 +84,8 @@ module Ms1to2
           coll = Collection.new(attributes=coll_attrs)
           coll.save!
           puts('Establishing collection permissions')
-          ::Hyrax::Collections::PermissionsCreateService.create_default(
-            collection: coll,
-            creating_user: User.find_by_user_key(v[:depositor].first)
-          )
           coll.create_collection_groups
+          ::Morphosource::Collections::PermissionsCreateService.create_default(collection: coll)
 
           if v[:editors].present?
             puts('editors')

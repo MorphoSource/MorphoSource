@@ -205,7 +205,7 @@ RSpec.describe Organization do
     end
   end
 
-  describe 'record_orginial_team' do
+  describe 'record_original_team' do
     let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
     let(:team1)         { Collection.create(title: ['team1'], collection_type_gid: team_collection_type.gid) }
     let(:team2)         { Collection.create(title: ['team2'], collection_type_gid: team_collection_type.gid) }

@@ -72,7 +72,7 @@ module Hyrax
       # Instantiates the search builder that builds a query for a single item
       # this is useful in the show view.
       def single_item_search_builder
-        # setting higher collection limit   
+        # setting higher collection limit
         # params.merge!({ 'rows' => '999999', 'page' => '1' })
         single_item_search_builder_class.new(self).with(params.except(:q, :page))
       end
@@ -102,13 +102,13 @@ module Hyrax
       end
 
       # Instantiate the membership query service
-      def collection_member_service 
+      def collection_member_service
          membership_service_class.new(scope: self, collection: collection, params: params_for_query)
       end
 
       # Instantiate the information query service
       def collection_information_service
-        @collection_information_service ||= information_service_class.new(collection.id)
+        @collection_information_service ||= information_service_class.new(scope: self, collection_id: collection.id)
       end
 
       def subcollection_media_service(subcollection)
@@ -147,6 +147,12 @@ module Hyrax
           @cho_member_count = 0
           @response = nil
         end
+      end
+
+      def get_object_ids_from_media
+        media_response = collection_member_service.all_member_media(@collection_organization_object_ids)
+        media_docs = media_response.documents
+        media_docs.map{|d| d["physical_object_id_ssim"].first}.uniq
       end
 
       # media pagination methods
@@ -217,8 +223,8 @@ module Hyrax
         request.params[:crows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:crows].to_i
       end
 
-      def dedup(docs) 
-        unique_docs = [] 
+      def dedup(docs)
+        unique_docs = []
         unique_ids = []
         docs.each do |doc|
           unless unique_ids.include? doc.id
@@ -253,7 +259,7 @@ module Hyrax
       def params_for_query
         #params.merge(q: params[:cq])
 
-        # setting higher collection limit for paginating the array       
+        # setting higher collection limit for paginating the array
         params.merge(q: params[:cq]).merge({ 'rows' => '999999', 'page' => '1' })
       end
   end

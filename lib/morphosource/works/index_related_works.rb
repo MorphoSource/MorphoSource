@@ -5,19 +5,23 @@ module Morphosource
       def index_related_works
         case self
         when BiologicalSpecimen
+          return unless Hyrax.config.index_related_works
           if organization_id_changed?
             index_related(media)
           end
         when CulturalHeritageObject
+          return unless Hyrax.config.index_related_works
           if organization_id_changed?
             index_related(media)
           end
         when ImagingEvent
+          return unless Hyrax.config.index_related_works
           if ie_modality_changed?
             index_related(media)
             index_related(objects)
           end
         when Media
+          return unless Hyrax.config.index_related_works
           index_related(objects)
         when Organization
           if title_changed? || team_id_changed?
@@ -34,9 +38,11 @@ module Morphosource
             index_related_collections(team&.child_projects)
           end
         when ProcessingEvent
+          return unless Hyrax.config.index_related_works
           index_related(media)
           index_related(objects)
         when Taxonomy
+          return unless Hyrax.config.index_related_works
           index_related(objects)
           index_related(media)
         end

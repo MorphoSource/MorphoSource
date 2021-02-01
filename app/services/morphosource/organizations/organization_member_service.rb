@@ -72,7 +72,7 @@ module Morphosource
           initial_rows = query_builder[:rows]
           begin
             query_builder.merge(q: query_params)
-            query_builder.merge(fq: fq_params)
+            query_builder.merge(fq: initial_fq + fq_params)
             query_builder.merge(rows: 99999)
             #repository.search(query_builder.with(query_params).query)
             repository.search(query_builder.query)

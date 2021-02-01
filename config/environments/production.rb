@@ -93,7 +93,7 @@ Rails.application.configure do
   # Use a different logger for distributed setups.
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
-  
+
   config.colorize_logging = false
 
   if ENV["RAILS_LOG_TO_STDOUT"].present?
@@ -106,6 +106,9 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Resolve CookieOverflow error in Submission flow (MR-493)
-  config.session_store :active_record_store, :key => '_morpho_source_sf_session' 
+  config.session_store :active_record_store, :key => '_morpho_source_sf_session'
+
+  # these collections appear in the featured projects section on the homepage. If this is empty, the homepage shows 6 random collections that the user has access to view.
+  config.featured_project_ids = ['00000C211','0000C1055','00000C887','00000C427','00000C945','0000C1213']
 
 end

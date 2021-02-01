@@ -106,7 +106,8 @@
     <h2>Featured Projects</h2>
       <table class="table table-striped collection-highlights">
         <tbody>
-          <% @presenter.collections.each do |collection| %>
+          <%# featured project ids set in config/environments. If no ids added, returns 6 collections the user can access at random. %>
+          <% featured_projects.each do |collection| %>
             <tr>
               <td>
                 <div class="media">

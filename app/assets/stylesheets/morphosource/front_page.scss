@@ -168,6 +168,14 @@ div#front-banner iframe {
 	padding-right: 0 !important;
 }
 
+.launch-box {
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  margin-top: 30px;
+}
+
 .mesh-source-box {
 	border: 1px solid #d9d9d9;
 	border-radius: 5px;
@@ -180,4 +188,18 @@ div#front-banner iframe {
   .container {
     min-height: 50px !important;
   }
+}
+
+.inline-button {
+  padding: 3px 6px 3px 6px;
+  background-color: $ms-dark-blue;
+  border: 1px solid $ms-dark-blue;
+  border-radius: 5px;
+  color: #f3f3f3;
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+.inline-button:hover, .inline-button:focus {
+  color: #f3f3f3;
 }

@@ -188,42 +188,35 @@ module Morphosource
       @po_type = "bso" # bso / cho
       @is_team = collection.respond_to?(:team?) ? collection.team? : false
       @visibility_options = []
-
-      @team_project_options = @subcollection_docs.map(&:title).flatten unless @subcollection_docs.nil? # [] for projects
-      @bso_visibility_options = []
+      if @subcollection_docs.present?
+        team_projects = @subcollection_docs.map{|tp| [tp.id, tp.title.first]}
+      end        
+      #@team_project_options = @subcollection_docs.map(&:title).flatten unless @subcollection_docs.nil? # [] for projects
       @bso_source_options = []
       @cho_visibility_options = []
 
       @members_count = @member_docs.length
       @media_member_docs = @member_docs      
       @media_member_count = @member_docs.length
-      
       @paged_media_member_docs = paginated_media_item_list
-      @media_extras = get_media_extras(@paged_media_member_docs)
+      @media_extras = get_media_extras(@paged_media_member_docs, team_projects)
     end
 
-    def get_media_extras(docs)
+    def get_media_extras(docs, team_projects)
       docs.map do |doc|
         this_media_extras = { 
           'id' => doc.id
         }
         if @is_team 
-          # todo: might need to handle more than one collections later
-          # which means handling team vs project, and duplicate media in the list
           media_collection_ids = doc.member_of_collection_ids
           if media_collection_ids.present?
             if media_collection_ids.include? collection.id
               this_media_extras['origin'] = 'Team'
             else
-              # check if from team project            
-              media_collection_ids.each do |cid|
-                media_collection = Collection.find(cid)
-                if media_collection.project?
-                  # since media is in a project, check if this project belongs to the current team
-                  if media_collection.member_of_collection_ids.include? collection.id
-                    this_media_extras['team_project_title'] = media_collection.title.first
-                    this_media_extras['origin'] = 'Team' # or Team project, specifically
-                  end
+              team_projects.each do |id, title|
+                if media_collection_ids.include? id
+                  this_media_extras['team_project_title'] = title
+                  this_media_extras['origin'] = 'Team' # or Team project, specifically
                 end
               end
             end

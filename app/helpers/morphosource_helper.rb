@@ -207,6 +207,13 @@ module MorphosourceHelper
     )
   end
 
+  def render_view_link_publication_status_badge(document)
+    media = Media.find(document.id)
+    badge = publication_badge(media.publication_status)
+
+    link_to(badge, polymorphic_path([main_app, document]), id:"permission_#{document.id}", class: 'visibility-link')
+  end
+
   def permission_badge_by_value(value)
     Hyrax::PermissionBadge.new(value).render
   end

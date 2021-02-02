@@ -43,12 +43,6 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
 
   end
 
-  describe '#organization_from_bso(bso)' do
-    it 'returns the organization' do
-      expect(helper.organization_from_bso(specimen).id).to eq(org1.id)
-    end
-  end
-
   describe '#hidden_params_for_filters' do
     let(:params) { { 'view' => 'gallery' } }
     before do

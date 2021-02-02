@@ -135,23 +135,6 @@ module Morphosource
       request.env['PATH_INFO']
     end
 
-# todo: remove these 2 methods later
-#    def bso_tab_url_for_organizations(id)
-#      url_params = request_params.
-#        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
-#        compact.
-#        join('&')
-#      "/organizations/specimens/#{id}?#{url_params}"
-#    end
-#
-#    def cho_tab_url_for_organizations(id)
-#      url_params = request_params.
-#        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
-#        compact.
-#        join('&')
-#      "/organizations/chos/#{id}?#{url_params}"
-#    end
-
     def bso_tab_url_for_collections(id)
       url_params = request_params.
         map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
@@ -199,10 +182,10 @@ module Morphosource
       @media_member_docs = @member_docs      
       @media_member_count = @member_docs.length
       @paged_media_member_docs = paginated_media_item_list
-      @media_extras = get_media_extras(@paged_media_member_docs, team_projects)
+      @media_extras = get_media_extras(@paged_media_member_docs, team_projects, collection.organization&.id)
     end
 
-    def get_media_extras(docs, team_projects)
+    def get_media_extras(docs, team_projects, team_org_id)
       docs.map do |doc|
         this_media_extras = { 
           'id' => doc.id
@@ -222,18 +205,14 @@ module Morphosource
             end
           end
           # check if media is from a linked organization:
-          org = collection.organization
-          if org.present?
-            org_media_ids = org.media.map(&:id)
-            if org_media_ids.include? doc.id
-              if this_media_extras['origin'].present?          
-                this_media_extras['origin'] += ', Organization'
-              else
-                this_media_extras['origin'] = 'Organization'
-              end
+          if doc.media_organization_id.include? team_org_id
+            if this_media_extras['origin'].present?          
+              this_media_extras['origin'] += ', Organization'
+            else
+              this_media_extras['origin'] = 'Organization'
             end
           end
-        end
+        end # /is_team
         # get BSO and CHO
         po_doc = Morphosource::PhysicalObjectParentSearchService.call({ id: doc.id })&.first
         if po_doc.present?
@@ -349,10 +328,6 @@ module Morphosource
       else
         ''
       end
-    end
-
-    def organization_from_bso(bso)
-      Organization.find(bso.organization_id&.first) if bso.organization_id.present?
     end
 
   end

@@ -5,7 +5,7 @@ module Morphosource
       include SolrHelper
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
-      attr_reader :solr, :collection_id, :collection, :is_org_team, 
+      attr_reader :solr, :scope, :collection_id, :collection, :is_org_team, 
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization, :n_media_team,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
         :n_idigbio, :collection_project_map, :po_counts_by_org, 

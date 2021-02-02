@@ -124,7 +124,20 @@ class User < ApplicationRecord
   # finds collections for which user belongs to "_managers" role
   def collections_managed
     ids = roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
-    Collection.where(id: ids)
+    if ids.present?
+      Morphosource::SolrService.new
+        .get_docs(nil, fq: ["id:(#{ids.join(' OR ').upcase})"], fl: ["id"])
+        .map do |solr_doc|
+          begin
+            Collection.find(solr_doc["id"])
+          rescue ActiveFedora::ObjectNotFoundError
+            nil
+          end
+        end
+        .compact
+    else
+      return []
+    end
   end
 
   # finds collection ids for which user belongs to different role

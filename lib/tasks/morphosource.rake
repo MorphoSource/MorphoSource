@@ -328,6 +328,14 @@ namespace :morphosource do
     end
   end
 
+  desc 'Run InheritPermissionsJob on all media'
+  task :inherit_permissions_on_media => :environment do 
+    Media.find_each do |m|
+      Rails.logger.warn ("Running InheritPermissionsJob on id:#{m.id}")
+      InheritPermissionsJob.perform_later(m)
+    end
+  end
+
   desc 'Set up Admin Role'
   task :create_admin_role => :environment do
     Role.find_or_create_by(name: 'admin')

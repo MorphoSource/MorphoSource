@@ -1,5 +1,5 @@
-<% 
-id = document.id 
+<%
+id = document.id
 media_extra = extra(@media_extras, id)
 po_title = media_extra['po_title']
 po_taxonomy = media_extra['po_taxonomy']
@@ -21,32 +21,32 @@ po_taxonomy = media_extra['po_taxonomy']
       </div %>
     </div>
   </td>
-  <td><%= document.id %></td>  
-  <td><%= document.part&.first %></td>  
+  <td><%= document.id %></td>
+  <td><%= document.part&.first %></td>
   <td class="break-all"><%= po_title %></td>
   <% if @po_type == 'bso' %>
     <td><i><%= po_taxonomy %></i></td>
   <% else %>
     <td><%= document.description.first %></td>
   <% end %>
-  <td><%= document.media_type&.first.underscore.humanize %></td> 
+  <td><%= document.media_type&.first.underscore.humanize %></td>
   <% if @is_team %>
     <td><%= media_extra["team_project_title"] %></td>
     <td><%= media_extra["origin"] %></td>
   <% end %>
   <td><%= document.date_uploaded %></td>
-  <td class='long-badge'><%= render_publication_status_badge(document) %></td>
+  <td class='long-badge'><%= render_view_link_publication_status_badge(document) %></td>
   <td class="text-center">
-    <% 
-      # todo: below code does not work since source_of_result is no longer available 
+    <%
+      # todo: below code does not work since source_of_result is no longer available
       # need to figure out how to determine when the user can remove a media on each row.
       # for now, show remove button if user can edit collection
-      if current_user and can? :edit, @collection 
+      if current_user and can? :edit, @collection
       %>
         <form></form>
         <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
 
-      <%# if media_extra["source_of_result"] == 'team' || 
+      <%# if media_extra["source_of_result"] == 'team' ||
         media_extra["source_of_result"] == 'project' %>
         <%#form></form>
         <%#= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
@@ -54,10 +54,10 @@ po_taxonomy = media_extra['po_taxonomy']
         <%# show info instead of remove button if the media is not in the team bucket %>
         <%#i class="material-icons tooltip-icon" data-original-title="" title="">
           <p class="hint hide">
-            <%# if media_extra["source_of_result"] == 'team_project' %> 
+            <%# if media_extra["source_of_result"] == 'team_project' %>
             <%#  This media belongs to a team project.
-            <%# elsif media_extra["source_of_result"] == 'linked_org' %> 
-            <%#  This media belongs to a linked organization.  
+            <%# elsif media_extra["source_of_result"] == 'linked_org' %>
+            <%#  This media belongs to a linked organization.
             <%# else %>
             <%#  You do not have permission to remove this media
             <%# end %>
@@ -66,7 +66,7 @@ po_taxonomy = media_extra['po_taxonomy']
       <% end %>
 
     <% else %>
-      &nbsp; 
+      &nbsp;
     <% end %>
   </td>
 

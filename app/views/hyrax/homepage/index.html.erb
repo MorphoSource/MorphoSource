@@ -47,6 +47,12 @@
   </div>
 </div>
 
+<div class="row launch-box showcase">
+  <div class="col-xs-12" style="padding-left: 0; padding-right: 0;">
+    <p style="text-align: justify; font-size: 16px; line-height: 160%;"><%= t('morphosource.homepage.launch_text').html_safe %></p>
+  </div>
+</div>
+
 
 <div class="row stats-and-projects showcase">
   <div class="col-xs-12 col-sm-6 stats">
@@ -106,7 +112,8 @@
     <h2>Featured Projects</h2>
       <table class="table table-striped collection-highlights">
         <tbody>
-          <% @presenter.collections.each do |collection| %>
+          <%# featured project ids set in config/environments. If no ids added, returns 6 collections the user can access at random. %>
+          <% featured_projects.each do |collection| %>
             <tr>
               <td>
                 <div class="media">

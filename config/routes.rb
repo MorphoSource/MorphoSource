@@ -342,10 +342,12 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     # ms1 object routes
     get 'Detail/SpecimenDetail/Show/specimen_id/:id', to: 'ms1#biological_specimens'
-    get 'Detail/MediaDetail/Show/media_id/:id', to: 'ms1#media'
+    get 'Detail/MediaDetail/Show/media_id/:id', to: 'ms1#media_group'
+    get 'Detail/MediaDetail/Show/media_file_id/:id', to: 'ms1#media'
     get 'Detail/ProjectDetail/Show/project_id/:id', to: 'ms1#projects'
     get 'index.php/Detail/SpecimenDetail/Show/specimen_id/:id', to: 'ms1#biological_specimens'
-    get 'index.php/Detail/MediaDetail/Show/media_id/:id', to: 'ms1#media'
+    get 'index.php/Detail/MediaDetail/Show/media_id/:id', to: 'ms1#media_group'
+    get 'index.php/Detail/MediaDetail/Show/media_file_id/:id', to: 'ms1#media'
     get 'index.php/Detail/ProjectDetail/Show/project_id/:id', to: 'ms1#projects'
   end
 

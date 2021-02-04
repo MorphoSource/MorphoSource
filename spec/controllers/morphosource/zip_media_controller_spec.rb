@@ -103,7 +103,7 @@ RSpec.describe Morphosource::ZipMediaController, type: :controller do
             allow(subject).to receive(:current_user).and_return(user)
             allow(user).to receive(:can?).with(:download, work1.id).and_return(true)
             allow(user).to receive(:can?).with(:download, work2.id).and_return(false)
-            allow(user).to receive(:downloadable_item_work_ids).and_return([])
+            #allow(user).to receive(:downloadable_item_work_ids).and_return([])
           end
           it 'returns unauthorized' do
             get :zip, params: { ids: [work1.id, work2.id] }
@@ -114,7 +114,7 @@ RSpec.describe Morphosource::ZipMediaController, type: :controller do
           before do
             allow(user).to receive(:can?).with(:download, work1.id).and_return(false)
             allow(user).to receive(:can?).with(:download, work2.id).and_return(false)
-            allow(user).to receive(:downloadable_item_work_ids).and_return([work1.id])
+            allow(user).to receive(:my_approved_requests_work_ids).and_return([work1.id])
           end
           it 'returns unauthorized' do
             get :zip, params: { ids: [work1.id, work2.id] }

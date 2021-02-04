@@ -24,7 +24,7 @@ module Morphosource::CartItemHelper
   # media is open, user has been granted download access, or has an approved download request
   def user_can_download?
     return true if current_user.can? :download, media
-    return true if current_user.downloadable_item_work_ids.include?(media.id)
+    return true if current_user.my_approved_requests_work_ids.include?(media.id)
     false
   end
 

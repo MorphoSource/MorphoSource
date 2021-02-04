@@ -13,6 +13,19 @@ module Morphosource
           @my_active_requests ||= my_requests.select{ |item| ["Approved","Requested","Cleared"].include? item.request_status }
         end
 
+        def my_approved_requests
+          @my_approved_requests ||= cart_items.where(
+            date_canceled: nil, 
+            date_denied: nil, 
+            date_expired: DateTime.current.to_date..100.years.from_now.to_date, 
+            date_approved: 100.year.ago..DateTime.current
+          )
+        end
+
+        def my_approved_requests_work_ids
+          my_approved_requests.map(&:work_id)
+        end
+
         def my_requests_ids
           my_requests.map(&:id)
         end

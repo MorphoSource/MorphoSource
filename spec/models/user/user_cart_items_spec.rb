@@ -21,7 +21,7 @@ RSpec.describe User, type: :model do
     end
 
     context 'user has an approved request' do
-      let!(:cart_item) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday)}
+      let!(:cart_item) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: 1.year.from_now)}
 
       it { expect(subject).to be(true) }
     end
@@ -40,7 +40,7 @@ RSpec.describe User, type: :model do
     end
 
     context 'user has an approved download' do
-      let!(:cart_item) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday)}
+      let!(:cart_item) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: 1.year.from_now)}
 
       it{ expect(subject).to be(true) }
     end
@@ -233,21 +233,6 @@ RSpec.describe User, type: :model do
     before do
       restricted_work2.download_users += [user]
       restricted_work2.save
-    end
-    describe '#downloadable_items' do
-      it 'returns the items the user is allowed to download' do
-        expect(user.downloadable_items).to match_array([cart_item1, cart_item2, cart_item3])
-      end
-    end
-    describe '#downloadable_ids' do
-      it 'returns the ids for items the user is allowed to download' do
-        expect(user.downloadable_ids).to match_array([cart_item1.id, cart_item2.id, cart_item3.id])
-      end
-    end
-    describe '#downloadable_item_work_ids' do
-      it 'returns the work ids for items the user is allowed to download' do
-        expect(user.downloadable_item_work_ids).to match_array([cart_item1.work_id, cart_item2.work_id, cart_item3.work_id])
-      end
     end
     describe 'downloadable items in the cart' do
       before do

@@ -211,7 +211,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
         context 'user has an approved cart item' do
           before do
-            allow(current_user).to receive(:downloadable_item_work_ids).and_return([restricted_media.id])
+            allow(current_user).to receive(:my_approved_requests_work_ids).and_return([restricted_media.id])
           end
           it 'returns the download button' do
             expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" href=\"javascript:void(0)\">Download</a>")

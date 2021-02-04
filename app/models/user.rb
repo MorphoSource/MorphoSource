@@ -104,11 +104,11 @@ class User < ApplicationRecord
 
   # true if user has download access or an approved cart item
   def has_download_access_or_approval?(media_id)
-    (self.can? :download, media_id) || (downloadable_item_work_ids.include? media_id)
+    (self.can? :download, media_id) || (approved_to_download? media_id)
   end
 
   def approved_to_download?(media_id)
-    downloadable_item_work_ids.include? media_id
+    my_approved_requests_work_ids.include? media_id
   end
 
   # profile methods

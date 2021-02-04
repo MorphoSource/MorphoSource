@@ -24,20 +24,8 @@ module Morphosource
           restricted_items_in_cart.map(&:id)
         end
 
-        def downloadable_items
-          cart_items.select(&:downloadable?)
-        end
-
-        def downloadable_ids
-          downloadable_items.map(&:id)
-        end
-
-        def downloadable_item_work_ids
-          downloadable_items.map(&:work_id)
-        end
-
         def downloadable_items_in_cart
-          downloadable_items.select(&:in_cart?)
+          items_in_cart.select(&:downloadable?)
         end
 
         def downloadable_ids_in_cart

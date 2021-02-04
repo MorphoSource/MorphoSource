@@ -195,7 +195,7 @@ module Morphosource
           if media_collection_ids.present?
             if media_collection_ids.include? collection.id
               this_media_extras['origin'] = 'Team'
-            else
+            elsif team_projects.present?
               team_projects.each do |id, title|
                 if media_collection_ids.include? id
                   this_media_extras['team_project_title'] = title

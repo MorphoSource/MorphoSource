@@ -27,6 +27,7 @@
 <% if @presenter.has_imaging_events? %>
   <% if @presenter.imaging_event_editable? %>
       <%= simple_form_for [main_app, @imaging_event_form],
+                          url: Rails.application.routes.url_helpers.media_owner_update_imaging_event_path(id: @imaging_event_form.model.id),
                           wrapper: :showcase_default,
                           html: {
                             id: 'related_form_imaging_event',
@@ -34,6 +35,7 @@
                                     'param-key' => @imaging_event_form.model_name.param_key },
                             multipart: true
                           } do |i| %>
+        <%= hidden_field_tag :media_id, @presenter.id %> 
         <div class="row related_form imaging-event" style="display:none">
           <%= render 'form_imaging_event', i: i, presenter: @presenter %>
         </div>
@@ -67,6 +69,7 @@
 
 <% if @presenter.has_processing_events? %>
     <%= simple_form_for [main_app, @processing_event_form],
+                        url: Rails.application.routes.url_helpers.media_owner_update_processing_event_path(id: @processing_event_form.model.id),
                         wrapper: :showcase_default,
                         html: {
                           id: 'related_form_processing_event',
@@ -75,12 +78,13 @@
                           multipart: true
                         } do |p| %>
 
-        <div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
-          <%= render 'form_processing_event', p: p, presenter: @presenter %>
-        </div>
-        <div class="row related_form parent-media" style="display:none;">
-          <%= render 'tab_parent_media', p: p %>
-        </div>
+      <%= hidden_field_tag :media_id, @presenter.id %>             
+      <div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
+        <%= render 'form_processing_event', p: p, presenter: @presenter %>
+      </div>
+      <div class="row related_form parent-media" style="display:none;">
+        <%= render 'tab_parent_media', p: p %>
+      </div>
 
     <% end %>
 <% else %>

@@ -2,4 +2,4 @@ en:
   morphosource:
     physical_object:
       edit:
-        select_organization: If you can't find the correct organization record using the search tool below, or if your physical object is not managed by a collection, department, lab, or other group, please contact the <a href="mailto:morphosource@duke.org">MorphoSource administrators</a>. An administrator will create a new organization record for you or help you associate your object with no organization.
+        select_organization: If you can't find the correct organization record using the search tool below, or if your physical object is not managed by a collection, department, lab, or other group, please contact the <a href="mailto:morphosource@duke.edu">MorphoSource administrators</a>. An administrator will create a new organization record for you or help you associate your object with no organization.

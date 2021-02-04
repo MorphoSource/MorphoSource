@@ -4,6 +4,7 @@ module Morphosource
   module WorksControllerBehavior
 
     def ancestors(works)
+      return [] unless works.present?
       ancestors = []
       works.each do |work|
         work.ancestors.each { |a| ancestors << a }

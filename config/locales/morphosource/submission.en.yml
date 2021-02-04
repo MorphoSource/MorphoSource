@@ -30,7 +30,7 @@ en:
       morphosource_empty_search_results: 'No Biological Specimens found in MorphoSource that match the search criteria.'
       po_empty_search_results: 'No physical objects found in MorphoSource or any appropriate external aggregators that match the search criteria. Search again or create a new physical object.'
       morphosource_result_from_idigbio: '(imported from IDigBio)'
-      cant_find_organization: If you can't find the correct organization record using the search tools above, or if your physical object is not managed by a collection, department, lab, or other group, please contact the <a href="mailto:morphosource@duke.org">MorphoSource administrators</a>. An administrator will create a new organization record for you or help you associate your object with no organization. Thank you!
+      cant_find_organization: If you can't find the correct organization record using the search tools above, or if your physical object is not managed by a collection, department, lab, or other group, please contact the <a href="mailto:morphosource@duke.edu">MorphoSource administrators</a>. An administrator will create a new organization record for you or help you associate your object with no organization. Thank you!
       header_text:
         initial_information: 'We need to collect some initial information about your media.'
         parent_media: 'Got it. Since your media is derived, we need to ask about the parent media it derived from. If the parent is in MorphoSource, search for the parent''s media ID number. If not, indicate that. But if you have parent media available, please upload it first.'

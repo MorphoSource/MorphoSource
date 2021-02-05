@@ -96,6 +96,7 @@ html {
 }
 .title-min-width {
   min-width: 120px;
+  max-width: 250px;
 }
 .text-truncate {
   text-overflow: ellipsis;
@@ -618,9 +619,6 @@ html {
     background-color: $ms-dark-blue;
   }
 
-  .secondary-nav {
-    font-size: 14px;
-  }
   .controls {
     .navbar {
       background-color: transparent;
@@ -639,17 +637,29 @@ html {
 
   }
 
+  .secondary-nav * {
+    font-size: 14px;
+    li.dropdown  {
+      margin-left: 0 !important;
+      @media (min-width: 767px) {
+        margin-left: 7px !important;
+      }
+    }
+  }
   @media (min-width: 320px) and (max-width: 374px) {
     li.browse-links {
       width: 150px;
     }
-    .secondary-nav {
-      font-size: 11px;
+    .secondary-nav * {
+      font-size: 10px;
     }
   }
   @media (min-width: 375px) and (max-width: 767px) {
     li.browse-links {
       width: 200px;
+    }
+    .secondary-nav * {
+      font-size: 12px;
     }
   }
 

@@ -11,8 +11,12 @@ module Morphosource
       @user = user
     end
 
+    # def query_builder
+    #   Morphosource::UserMediaAccessSearchBuilder.new(@scope)
+    # end
+
     def query_builder
-      Morphosource::UserMediaAccessSearchBuilder.new(@scope)
+      Morphosource::UserWorks::UserWorksSearchBuilder.new(::Ability.new(@user))
     end
 
     # def call

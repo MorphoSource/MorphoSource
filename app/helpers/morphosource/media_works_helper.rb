@@ -45,6 +45,10 @@ module Morphosource
       hidden_params.merge!({'rows' => params['rows']}) if params['rows'].present?
       hidden_params.merge!({'brows' => params['brows']}) if params['brows'].present?
       hidden_params.merge!({'crows' => params['crows']}) if params['crows'].present?
+      if params['add_works_to_collection'].present?
+        hidden_params.merge!({'add_works_to_collection' => params['add_works_to_collection']}) 
+        hidden_params.merge!({'add_works_to_collection_label' => params['add_works_to_collection_label']}) 
+      end
       html = ''
       hidden_params.map do |k,v|
         html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
@@ -67,7 +71,7 @@ module Morphosource
     end
 
     def request_params
-      request.params
+      @request_params || request.params
     end
 
     def path_info 

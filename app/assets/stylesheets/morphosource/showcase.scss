@@ -94,10 +94,14 @@ html {
 #search-form-header {
   margin: 0.7em 0 0;
 }
+.title-min-width {
+  min-width: 120px;
+}
 .text-truncate {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  max-width: 150px;
 }
 .text-truncate-lines {
   overflow:hidden;
@@ -106,6 +110,7 @@ html {
   display: -webkit-box;
   overflow: hidden !important;
   text-overflow: ellipsis;
+  max-width: 250px;
 }
 .text-truncate-lines.two-lines {
   line-height: 2rem;

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Morphosource::PhysicalObjectsSearchService do
+RSpec.describe Morphosource::UserWorksAccessSearchService do
 
   subject { described_class.new(scope) }
 
@@ -15,7 +15,7 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
   describe '.call' do
     it 'instantiates the search service and calls it' do
       expect_any_instance_of(described_class).to receive(:call)
-      described_class.call(scope)
+      described_class.call(scope: scope)
     end
   end
 
@@ -24,7 +24,6 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
 
     describe 'no search params' do
       it 'returns SolrDocuments for all of the specified model' do
-        byebug
         results = subject.call
         expect(results).to match_array([ SolrDocument])
         expect(results.map(&:id)).to match_array([ media.id ])

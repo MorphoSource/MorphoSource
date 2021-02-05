@@ -205,7 +205,7 @@ module Morphosource
             end
           end
           # check if media is from a linked organization:
-          if doc.media_organization_id.include? team_org_id
+          if doc.media_organization_id&.include? team_org_id
             if this_media_extras['origin'].present?          
               this_media_extras['origin'] += ', Organization'
             else

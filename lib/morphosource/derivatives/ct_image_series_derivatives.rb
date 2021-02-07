@@ -10,7 +10,7 @@ module Morphosource
     	end
 
     	def self.processor_class
-      	Processors::CTImageSeries
+      	::Morphosource::Derivatives::Processors::CTImageSeries
     	end
 		end
 	end

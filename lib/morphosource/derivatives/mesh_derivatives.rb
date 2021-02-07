@@ -10,7 +10,7 @@ module Morphosource
     	end
 
     	def self.processor_class
-      	Processors::Mesh
+        ::Morphosource::Derivatives::Processors::Mesh 
     	end
 		end
 	end

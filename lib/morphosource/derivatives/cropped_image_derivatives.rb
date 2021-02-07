@@ -15,7 +15,7 @@ module Morphosource
     	end
 
     	def self.processor_class
-      	Processors::CroppedImage
+      	::Morphosource::Derivatives::Processors::CroppedImage
     	end
 		end
 	end

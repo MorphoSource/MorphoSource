@@ -25,12 +25,12 @@ module Morphosource
       new(names, absent_ranks).count
     end
 
-    def self.taxonomy_specimens(name)
-      new.taxonomy_specimens(name)
+    def self.taxonomy_specimens(taxonomies = [])
+      new.taxonomy_specimens(taxonomies)
     end
 
-    def self.taxonomy_specimens_count(name)
-      new.taxonomy_specimens_count(name)
+    def self.taxonomy_specimens_count(taxonomies = [])
+      new.taxonomy_specimens_count(taxonomies)
     end
 
     def initialize(names=[], absent_ranks=[])
@@ -114,7 +114,13 @@ module Morphosource
         .each_with_object(Hash.new(0)) { |o, h| h[o] += 1 } # count name appearances
         .sort.to_h # sort alphabetically by key
         .each_with_object({}) do |(k, v), a| 
-          a[k] = { count: v, specimen_count: taxonomy_specimens_count(k) } # count specimen numbers
+          if subrank == 'species' and (genus = names.find { |n| n[:rank] == 'genus' } ).present?
+            count_names = [ { name: k, rank: subrank }, genus ]
+          else
+            count_names = [name: k, rank: subrank]
+          end
+          a[k] = { count: v, specimen_count: taxonomy_specimens_count(count_names) } # count specimen numbers
+          
         end
     end
 
@@ -173,31 +179,50 @@ module Morphosource
     end
 
     # Get specimens with published media for GBIF taxonomy rank
-    def taxonomy_specimens(name)
+    def taxonomy_specimens(taxonomies)
+      return [] unless taxonomies.present?
+      all_valid_taxonomy_ids = all_taxonomy_ids_for_rank(taxonomies) if taxonomies.first[:name].present? && taxonomies.first[:rank].present?
+      taxonomy_specimen_query(taxonomies.first[:name], all_valid_taxonomy_ids)['response']
+    end
+
+    def taxonomy_specimens_count(taxonomies)
+      return 0 unless taxonomies.present?
+      all_valid_taxonomy_ids = all_taxonomy_ids_for_rank(taxonomies) if taxonomies.first[:name].present? && taxonomies.first[:rank].present?
+      taxonomy_specimen_query(taxonomies.first[:name], all_valid_taxonomy_ids)['response']['numFound'].to_i
+    end
+
+    def taxonomy_specimen_query(name, taxonomy_ids=[])
       solr_params = {
-        fl: ['id', 'title_tesim', 'taxonomy_tesim'],
+        fl: ['id', 'title_tesim', 'taxonomy_tesim', 'taxonomy_id_tesim'],
         fq: [
           "#{solrize('has_model', :symbol)}:BiologicalSpecimen",
           "#{solrize('external_taxonomy', :stored_searchable)}:#{name.present? ? prepare_value(name) : '*'}",
           "#{solrize('public_media_type', :stored_searchable)}:*",
         ],
-        rows: 200
+        rows: 100
       }
 
-      solr.get(nil, solr_params)['response']
+      solr_params[:fq] << assemble_or_query(solrize('taxonomy_id', :stored_searchable), taxonomy_ids) if taxonomy_ids.present?
+
+      solr.get(nil, solr_params)
     end
 
-    def taxonomy_specimens_count(name)
+    def all_taxonomy_ids_for_rank(taxonomies)
+      return [] if !taxonomies.present?
       solr_params = {
         fl: ['id'],
         fq: [
-          "#{solrize('has_model', :symbol)}:BiologicalSpecimen",
-          "#{solrize('external_taxonomy', :stored_searchable)}:#{name.present? ? prepare_value(name) : '*'}",
-          "#{solrize('public_media_type', :stored_searchable)}:*",
+          "#{solrize('has_model', :symbol)}:Taxonomy",
+          "#{solrize('gbif_key', :stored_searchable)}:*"
         ]
       }
 
-      solr.get_count(nil, solr_params)
+      taxonomies.each do |n|
+        return [] if !n[:name].present? || !n[:rank].present? || !TAXONOMY_RANKS.include?(n[:rank])
+        solr_params[:fq] << "#{prepare_field(n[:rank])}:#{prepare_value(n[:name])}"
+      end
+
+      solr.get_docs(nil, solr_params).map { |x| x['id'] }
     end
   end
 end

@@ -47,7 +47,7 @@ module Morphosource
     end
 
     def thumbnail_format_valid?
-      Morphosource::MEDIA_FORMATS['Image'][:extensions].include? File.extname(thumbnail.original_filename)
+      Morphosource::MEDIA_FORMATS['Image'][:extensions].include? File.extname(thumbnail.original_filename).downcase
     end
 
     def make_derivative_directory
@@ -56,7 +56,7 @@ module Morphosource
 
     def create_derivative
       begin
-        Morphosource::Derivatives::CroppedImageDerivatives.create(
+        ::Morphosource::Derivatives::CroppedImageDerivatives.create(
           thumbnail.path,
           outputs: [{
             label: :thumbnail,

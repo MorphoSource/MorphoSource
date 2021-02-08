@@ -34,6 +34,22 @@ Rails.application.routes.draw do
     get 'concern/cultural_heritage_objects/show/:id', to: 'cultural_heritage_objects#show'
   end
 
+  # Ajax routes for media owners submitting updates to media-associated IE and PE works
+  scope module: :hyrax do
+    resources :processing_events do
+      member do
+        post 'media_owner_update'
+        patch 'media_owner_update'
+      end
+    end
+    resources :imaging_events do
+      member do
+        post 'media_owner_update'
+        patch 'media_owner_update'
+      end
+    end
+  end
+
   scope module: :hyrax do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]

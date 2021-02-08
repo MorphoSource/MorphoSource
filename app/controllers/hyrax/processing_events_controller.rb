@@ -10,6 +10,8 @@ module Hyrax
     include Hyrax::ChildWorkRedirect
     include Morphosource::LinkedTeams::LinkedTeamsManagement
 
+    skip_authorize_resource only: :media_owner_update
+
     self.curation_concern_type = ::ProcessingEvent
 
     # Use this line if you want to use a custom presenter
@@ -39,6 +41,22 @@ module Hyrax
             render 'edit', status: :unprocessable_entity
           end
           wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
+        end
+      end
+    end
+
+    def media_owner_update
+      if (
+        params["media_id"].present? && 
+        curation_concern.media.map(&:id).include?(params["media_id"]) && 
+        current_user.can?(:edit, params["media_id"])
+      )
+        update
+      else
+        # unauthorized, return
+        respond_to do |wants|
+          wants.html { redirect_to main_app.root_url, alert: "Unauthorized." }
+          wants.json { render_json_response(response_type: :forbidden) }
         end
       end
     end

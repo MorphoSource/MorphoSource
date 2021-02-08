@@ -199,7 +199,7 @@ module Hyrax
     #   ActiveJob queue to handle reindex-like jobs.
     attr_writer :reindex_queue_name
     def reindex_queue_name
-      @reindex_queue_name ||= :default
+      @reindex_queue_name ||= :reindex
     end
 
     # @!attribute [w] heavy_queue_name

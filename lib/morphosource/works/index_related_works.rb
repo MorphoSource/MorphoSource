@@ -37,10 +37,6 @@ module Morphosource
             index_related_collections([team])
             index_related_collections(team&.child_projects)
           end
-        when ProcessingEvent
-          return unless Hyrax.config.index_related_works
-          index_related(media)
-          index_related(objects)
         when Taxonomy
           return unless Hyrax.config.index_related_works
           index_related(objects)

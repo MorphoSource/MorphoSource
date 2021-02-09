@@ -4,6 +4,8 @@
   </div>
   <!-- right col -->
   <div class="col-xs-9">
-    <%= render 'profile_tabs', presenter: @presenter %>
+    <% if current_user.admin? %>
+      <%= render 'profile_tabs', presenter: @presenter %>
+    <% end %>
   </div>
 </div>

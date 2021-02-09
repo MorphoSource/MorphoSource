@@ -1,11 +1,18 @@
-<div class="row profile">
-  <div class="col-xs-3">
-    <%= render 'left_sidebar' %>
+<% if current_user.admin? %>
+  <div class="row profile">
+    <div class="col-xs-3">
+      <%= render 'left_sidebar' %>
+    </div>
+    <!-- right col -->
+    <div class="col-xs-9">
+        <%= render 'profile_tabs', presenter: @presenter %>
+        <%= render 'contributor_buttons', presenter: @presenter %>
+    </div>
   </div>
-  <!-- right col -->
-  <div class="col-xs-9">
-    <% if current_user.admin? %>
-      <%= render 'profile_tabs', presenter: @presenter %>
-    <% end %>
+<% else %>
+  <div class="row profile">
+    <div class="col-xs-12">
+      <%= render 'left_sidebar' %>
+    </div>
   </div>
-</div>
+<% end %>

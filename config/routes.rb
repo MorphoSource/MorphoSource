@@ -373,4 +373,9 @@ Rails.application.routes.draw do
   devise_scope :user do
     get '/users/password/ms1_edit', to: 'morphosource/passwords#ms1_edit', as: 'ms1_edit_user_password'
   end
+
+  # Routes for granting/removing contributor status
+  post 'users/:id/make_contributor' => 'contributors#make_contributor', as: 'make_depositor'
+  post 'users/:id/remove_contributor' => 'contributors#remove_contributor', as: 'remove_depositor'
+
 end

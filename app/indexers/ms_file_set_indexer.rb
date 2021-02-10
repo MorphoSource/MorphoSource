@@ -2,6 +2,8 @@
 class MsFileSetIndexer < Hyrax::FileSetIndexer
   def generate_solr_document
     super.tap do |solr_doc|
+      solr_doc['download_access_group_ssim'] = object.download_groups
+      solr_doc['download_access_person_ssim'] = object.download_users
       # images
       solr_doc['bits_per_sample_tesim'] = object.bits_per_sample
       solr_doc['focal_length_tesim'] = object.focal_length
@@ -59,7 +61,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['anode_target_material_tesim'] = object.anode_target_material
       solr_doc['spiral_pitch_factor_tesim'] = object.spiral_pitch_factor
       solr_doc['number_of_series_related_instances_tesim'] = object.number_of_series_related_instances
-      
+
       # mesh
       solr_doc['point_count_tesim'] = object.point_count
       solr_doc['face_count_tesim'] = object.face_count

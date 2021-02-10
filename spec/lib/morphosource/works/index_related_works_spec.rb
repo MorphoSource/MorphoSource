@@ -199,22 +199,6 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
     end
 
-    context 'work is a Processing Event' do
-      let(:pe_media)  { [media1b]}
-      before do
-        allow(processing_event1).to receive(:index_related)
-      end
-      context 'title is updated' do
-        it 'updates related media and objects' do
-          skip if !Hyrax.config.index_related_works
-          expect(processing_event1).to receive(:index_related).with(pe_media).and_call_original
-          expect(processing_event1).to receive(:index_related).with([specimen])
-          processing_event1.title = ['New Title']
-          processing_event1.save
-        end
-      end
-    end
-
     context 'work is a Taxonomy' do
       let(:taxonomy_media)  { [media1a, media1b]}
       before do

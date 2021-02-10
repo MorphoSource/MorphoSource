@@ -7,6 +7,8 @@ module Hyrax
       include BreadcrumbsForCollections
       include MorphosourceHelper
       include Morphosource::CollectionHelper
+      helper_method :hidden_params_for_filters, :hidden_params_for_pagination, :publication_status_label,
+        :media_type_label, :filter_params, :ms_collection_view_link, :source_label, :dashboard_bso_tab_url, :dashboard_cho_tab_url, :origin_label, :filter_projects
 
       with_themed_layout 'morphosource_dashboard'
       #with_themed_layout :decide_layout

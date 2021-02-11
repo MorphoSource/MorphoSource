@@ -435,38 +435,41 @@ module Hyrax
 
       if @imaging_event.present?
         imaging_event_exist = true
-        biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
-        cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
 
-        if biological_specimen.present?
-          @physical_object_title = biological_specimen.title.first
-          @physical_object_taxonomy_title = biological_specimen.taxonomies_titles&.first
-          @physical_object_id = biological_specimen.id
-          @physical_object_link = "/concern/biological_specimens/" + @physical_object_id
-          @idigbio_uuid = biological_specimen.idigbio_uuid
-          @vouchered = biological_specimen.vouchered
-          @physical_object_type = biological_specimen.human_readable_type
-          @institution_code = biological_specimen.institution_code
-          @collection_code = biological_specimen.collection_code
-          @catalog_number = biological_specimen.catalog_number
-          @occurrence_id = biological_specimen.occurrence_id
-          @user_taxonomies = biological_specimen.user_taxonomies
-          @canonical_taxonomy_object = biological_specimen.canonical_taxonomy_object
-          @trusted_taxonomies = biological_specimen.trusted_taxonomies
-          @idigbio_uuid = biological_specimen.idigbio_uuid
-        elsif cultural_heritage_object.present?
-          @physical_object_title = cultural_heritage_object.title.first
-          @physical_object_taxonomy_title = ''
-          @physical_object_id = cultural_heritage_object.id
-          @physical_object_link = "/concern/cultural_heritage_objects/" + @physical_object_id
-          @vouchered = cultural_heritage_object.vouchered
-          @physical_object_type = cultural_heritage_object.human_readable_type
-          @institution_code = cultural_heritage_object.institution_code
-          @collection_code = cultural_heritage_object.collection_code
-          @catalog_number = cultural_heritage_object.catalog_number
-          @cho_type = cultural_heritage_object.cho_type
-          @material = cultural_heritage_object.material
-          @short_title = cultural_heritage_object.short_title
+        physical_object = ActiveFedora::Base.find(@imaging_event.physical_object_id.to_a)&.first if @imaging_event.physical_object_id.present? 
+        if physical_object.present? 
+          if physical_object.class == BiologicalSpecimen
+            biological_specimen = physical_object
+            @physical_object_title = biological_specimen.title.first
+            @physical_object_taxonomy_title = biological_specimen.taxonomies_titles&.first
+            @physical_object_id = biological_specimen.id
+            @physical_object_link = "/concern/biological_specimens/" + @physical_object_id
+            @idigbio_uuid = biological_specimen.idigbio_uuid
+            @vouchered = biological_specimen.vouchered
+            @physical_object_type = biological_specimen.human_readable_type
+            @institution_code = biological_specimen.institution_code
+            @collection_code = biological_specimen.collection_code
+            @catalog_number = biological_specimen.catalog_number
+            @occurrence_id = biological_specimen.occurrence_id
+            @user_taxonomies = biological_specimen.user_taxonomies
+            @canonical_taxonomy_object = biological_specimen.canonical_taxonomy_object
+            @trusted_taxonomies = biological_specimen.trusted_taxonomies
+            @idigbio_uuid = biological_specimen.idigbio_uuid
+          elsif physical_object.class == CulturalHeritageObject
+            cultural_heritage_object = physical_object
+            @physical_object_title = cultural_heritage_object.title.first
+            @physical_object_taxonomy_title = ''
+            @physical_object_id = cultural_heritage_object.id
+            @physical_object_link = "/concern/cultural_heritage_objects/" + @physical_object_id
+            @vouchered = cultural_heritage_object.vouchered
+            @physical_object_type = cultural_heritage_object.human_readable_type
+            @institution_code = cultural_heritage_object.institution_code
+            @collection_code = cultural_heritage_object.collection_code
+            @catalog_number = cultural_heritage_object.catalog_number
+            @cho_type = cultural_heritage_object.cho_type
+            @material = cultural_heritage_object.material
+            @short_title = cultural_heritage_object.short_title
+          end
         end
 
         # get device from imaging event

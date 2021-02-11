@@ -19,16 +19,6 @@ module MorphosourceHelper
     request.params
   end
 
-  def ms_collection_view_link_qs(tab, filter_prefix)
-    link = ""
-    parsed_params = filter_params(filter_prefix, request_params)
-    parsed_params.map do |k,v|
-      link = link + '&' + k + '=' + v
-    end
-    link = link + "#" + tab if tab.present?
-    link.html_safe
-  end
-
   def truncate_value(value, length=20)
     return "" if value.nil?
     value.truncate(length)

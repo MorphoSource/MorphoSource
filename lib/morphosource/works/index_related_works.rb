@@ -6,7 +6,7 @@ module Morphosource
         case self
         when BiologicalSpecimen
           return unless Hyrax.config.index_related_works
-          if organization_id_changed?
+          if organization_id_changed? || taxonomy_id_changed?
             index_related(media)
           end
         when CulturalHeritageObject
@@ -22,7 +22,15 @@ module Morphosource
           end
         when Media
           return unless Hyrax.config.index_related_works
-          index_related(objects)
+          if (
+            visibility_changed? || 
+            fileset_accessibility_changed? ||
+            media_type_changed? ||
+            keyword_changed? ||
+            member_of_public_collection_ids_changed?
+          ) 
+            index_related(objects)
+          end
         when Organization
           if title_changed? || team_id_changed?
             if title_changed?

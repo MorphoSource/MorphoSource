@@ -191,7 +191,7 @@ namespace :morphosource do
     ImagingEvent.find_each do |ie|
       po_id = ie.member_of.map { |p| p.id if ( p.class == BiologicalSpecimen || p.class == CulturalHeritageObject ) }.compact
       if po_id.present?
-        UpdateImagingEventMetadataJob.perform_now({
+        UpdateImagingEventMetadataJob.perform_later({
           id: [ie.id],
           physical_object_id: po_id
         })

@@ -229,7 +229,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
       end
     end
 
-    describe '#render_publication_status_badge' do
+    describe '#render_publication_status_badge, render_view_link_publication_status_badge' do
       let(:document)  { SolrDocument.new(id: 'aaa')}
       let(:media)     { Media.new(id: 'aaa', title: ["Test Media Work"], visibility: 'open', fileset_visibility: [''])}
       let(:model)     { Hyrax::SolrDocumentBehavior::ModelWrapper.new(Media,media.id) }
@@ -245,6 +245,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
 
         it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"label label-success\">Open Download</span></a>") }
+
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-success\">Open Download</span></a>") }
       end
 
       context 'media is open, files are restricted' do
@@ -253,6 +255,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
 
         it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"label label-info\">Restricted Download</span></a>") }
+
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-info\">Restricted Download</span></a>") }
       end
 
       context 'media is open, files are preview only' do
@@ -261,6 +265,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
 
         it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"label label-info\">No Download</span></a>") }
+
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-info\">No Download</span></a>") }
       end
 
       context 'media is open, files are hidden' do
@@ -270,6 +276,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
 
         it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"label label-info\">Hidden</span></a>") }
+
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-info\">Hidden</span></a>") }
       end
 
       context 'media and files are both private' do
@@ -279,6 +287,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
 
         it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"label label-danger\">Private</span></a>") }
+
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-danger\">Private</span></a>") }
       end
 
       context 'media and files are under embargo' do
@@ -292,6 +302,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
 
         it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"label label-warning\">Embargo</span></a>") }
+
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-warning\">Embargo</span></a>") }
       end
 
       context 'media and files are under a lease' do
@@ -304,6 +316,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
 
         it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"label label-warning\">Lease</span></a>") }
+
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-warning\">Lease</span></a>") }
       end
     end
   end

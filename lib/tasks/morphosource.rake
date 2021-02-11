@@ -186,6 +186,19 @@ namespace :morphosource do
     end
   end
 
+  desc 'Transfer Imaging Event Device parent physical object IDs to IE physical_object_id metadata property'
+  task :transfer_ie_parent_po_to_metadata => :environment do
+    ImagingEvent.find_each do |ie|
+      po_id = ie.member_of.map { |p| p.id if ( p.class == BiologicalSpecimen || p.class == CulturalHeritageObject ) }.compact
+      if po_id.present?
+        UpdateImagingEventMetadataJob.perform_now({
+          id: [ie.id],
+          physical_object_id: po_id
+        })
+      end
+    end
+  end
+
   desc 'Transfer Physical Object Organization parent IDs to PO organization_id metadata property'
   task :transfer_po_parent_to_metadata => :environment do
     BiologicalSpecimen.find_each do |b|
@@ -235,6 +248,22 @@ namespace :morphosource do
       d.ordered_members = []
       d.members = []
       d.save!
+    end
+  end
+
+  desc 'Dissolve parent/child relationships between POs and imaging events'
+  task :remove_po_ie_relationships => :environment do
+    BiologicalSpecimen.find_each do |b|
+      puts("Removing children from BSO #{b.id}")
+      b.ordered_members = []
+      b.members = []
+      b.save!
+    end
+    CulturalHeritageObject.find_each do |c|
+      puts("Removing children from CHO #{c.id}")
+      c.ordered_members = []
+      c.members = []
+      c.save!
     end
   end
 

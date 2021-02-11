@@ -44,6 +44,10 @@ module Morphosource
         @original_organizations = Organization.find(Array(@curation_concern.organization_id))
       end
 
+      def record_original_objects
+        @original_objects = ActiveFedora::Base.find(Array(@curation_concern.physical_object_id))
+      end
+
       def record_original_parents
         @original_parents = @curation_concern.member_of
       end

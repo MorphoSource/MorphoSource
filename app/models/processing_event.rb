@@ -24,7 +24,7 @@ class ProcessingEvent < Morphosource::Works::Base
   end
 
   def objects
-    ancestors.select{ |a| a.physical_object? }
+    ancestors.select(&:imaging_event?).map(&:objects).flatten
   end
 
   private

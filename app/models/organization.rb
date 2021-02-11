@@ -32,6 +32,7 @@ class Organization < Morphosource::Works::Base
   def physical_objects
     specimens + cultural_heritage_objects
   end
+  alias objects physical_objects
 
   # Specimens that belong to the organization, but are not part of the liked team's items.
   def outside_specimens
@@ -39,11 +40,7 @@ class Organization < Morphosource::Works::Base
   end
 
   def media
-    physical_objects.map { |obj| obj.descendants.select { |d| d.class == Media } }.flatten
-  end
-
-  def objects
-    ActiveFedora::Base.find(member_ids)
+    physical_objects.map(&:media).flatten
   end
 
   # Media that belong to specimens owned by the organization, but are not part of the liked team's items.

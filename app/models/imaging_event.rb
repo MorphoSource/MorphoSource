@@ -77,7 +77,7 @@ class ImagingEvent < Morphosource::Works::Base
   end
 
   def objects
-    ActiveFedora::Base.find(in_works_ids)
+    ActiveFedora::Base.find(Array(physical_object_id))
   end
 
   private

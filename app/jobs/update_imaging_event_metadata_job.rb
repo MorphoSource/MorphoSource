@@ -1,7 +1,7 @@
 class UpdateImagingEventMetadataJob < UpdateWorkMetadataJob
   def work_properties
     [ 
-      :device_id, :ie_modality, :software, :exposure_time, :flux_normalization, 
+      :device_id, :physical_object_id, :ie_modality, :software, :exposure_time, :flux_normalization, 
       :pixel_spacing_calibration, :shading_correction, :ie_filter, 
       :frame_averaging, :projections, :voltage, :power, :amperage, 
       :surrounding_material, :xray_tube_type, :target_type, :detector_type, 

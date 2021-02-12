@@ -1,5 +1,5 @@
 class IngestJob < Hyrax::ApplicationJob
-  queue_as Hyrax.config.heavy_queue_name
+  queue_as Hyrax.config.ingest_queue_name
 
   after_perform do |job|
     # We want the lastmost Hash, if any.

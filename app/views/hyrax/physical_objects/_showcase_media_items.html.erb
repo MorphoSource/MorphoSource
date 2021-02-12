@@ -3,6 +3,7 @@ array_of_ids = presenter.viewable_related_media_ids
 media_count = array_of_ids.count
 items_per_row = 3
 items_to_show_initially = 6
+@row_div_opened = false
 %>
 	<h2><%= media_count %> MEDIA REPRESENTING PHYSICAL OBJECT </h2>
 	<%  members = presenter.member_presenters_for(array_of_ids) %>
@@ -20,4 +21,8 @@ items_to_show_initially = 6
 			<%= collapse_expand_panel("collapse-block-media-items-member") %>
 		<% end %>
 
+	<% end %>
+
+	<% if @row_div_opened # most likely media is missing and div is never closed %>
+		</div>
 	<% end %>

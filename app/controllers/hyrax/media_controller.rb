@@ -21,6 +21,52 @@ module Hyrax
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
 
+    def after_destroy(related_media, pe, ie)
+      if related_media.present?
+        UpdateRelatedWorksIndexJob.perform_later(related_media)
+      end
+      pe.delete if pe.present?
+      ie.delete if ie.present?
+      respond_to do |format|
+        format.js {render :js => "location.reload()"}
+        format.html do
+          flash[:notice] = 'Media deleted'
+          redirect_to '/dashboard/my/media'
+        end
+        format.json { head :no_content, location: '/dashboard/my/media' }
+      end
+    end
+
+    def after_destroy_error(id)
+      respond_to do |format|
+        format.html do
+          flash[:notice] = 'Error deleting media'
+          redirect_to '/concern/media/' + id + '/edit'
+        end
+        format.json { render json: { id: id }, status: :unprocessable_entity, location: media_showcase_path(curation_concern) }
+      end
+    end
+
+    def destroy
+      # delete the PE parent of that media 
+      # If the media has a direct or indirect IE parent and that IE parent has no other children, it should also be deleted
+      processing_event = curation_concern.parent_works.select { |w| w.class == ProcessingEvent }&.first
+      if processing_event.present?
+        imaging_event = processing_event.parent_works.select { |w| w.class == ImagingEvent }&.first
+        if imaging_event.present?
+          if imaging_event.descendants.select { |d| d.class == Media && d.id != curation_concern.id}.present?
+            imaging_event = nil
+          end
+        end
+      end
+      related_media = curation_concern.related_media
+      if curation_concern.destroy
+        after_destroy(related_media, processing_event, imaging_event)
+      else
+        after_destroy_error(curation_concern.id)
+      end
+    end
+
     # override the layout from WorksControllerBehavior
     def decide_layout
       layout = case action_name
@@ -334,5 +380,16 @@ module Hyrax
           create_thumbnail
         end
       end
+
+
+
+    def index_objects
+  byebug
+      @objects_for_index&.each do |o|
+        o.update_index
+      end
+    end
+
+
   end
 end

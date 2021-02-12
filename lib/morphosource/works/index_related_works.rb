@@ -23,6 +23,7 @@ module Morphosource
         when Media
           return unless Hyrax.config.index_related_works
           index_related(objects)
+          index_related(related_media)
         when Organization
           if title_changed? || team_id_changed?
             if title_changed?

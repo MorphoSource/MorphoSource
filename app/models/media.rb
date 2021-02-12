@@ -207,54 +207,24 @@ class Media < Morphosource::Works::Base
     ancestors.find(&:imaging_event?)
   end
 
-  # this method get siblings IDs from parents 1 level above
-  def sibling_media_ids
-    # Find parent media: Media < ProcessingEvent < Media
-    processing_events = parent_works.select { |w| w.class == ProcessingEvent }
-    parent_media = []
-    processing_events.each do |p|
-      parent_media += p.parent_works.select { |w| w.class == Media }
-    end
-    # Find child media of each parent: Media > ProcessingEvent > Media
-    child_media = []
-    parent_media.each do |m|
-      processing_events = m.child_works.select { |w| w.class == ProcessingEvent }
-      processing_events.each do |p|
-        child_media += p.child_works.select { |w| w.class == Media }
-      end
-    end
-    # remove any duplicate IDs, and remove the current media id
-    sibling_ids = child_media.map{ |o| o.id }.flatten.uniq - [self.id]
-    return sibling_ids
+  def related_media
+    return [] unless imaging_event.present?
+    imaging_event.descendants.select { |d| d.class == Media && d.id != self.id}
   end
 
   def related_media_ids
-    # Get related media from same IE, e.g.
-    # - IE1     
-    #   - PE1 
-    #     - Media1 
-    #   - PE2 
-    #     - Media2 
-    if imaging_event.present?
-      ie_media = imaging_event.descendants.select { |d| d.class == Media }.map{ |o| o.id }
-    else
-      ie_media = []
-    end
-    parents = ancestors.select { |d| d.class == Media }.map{ |o| o.id }
-    children = descendants.select { |d| d.class == Media }.map{ |o| o.id }
-    return (ie_media + parents + children + sibling_media_ids).uniq
+    return [] unless related_media.present?
+    related_media.map{ |o| o.id }
+  end
+
+  def public_related_media
+    return [] unless imaging_event.present?
+    imaging_event.descendants.select { |d| d.class == Media && d.visibility == 'open' && d.id != self.id}
   end
 
   def public_related_media_ids
-    if imaging_event.present?
-      ie_media = imaging_event&.descendants&.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
-    else
-      ie_media = []
-    end
-    parents = ancestors.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
-    children = descendants.select { |d| d.class == Media and d.visibility == 'open' }.map{ |o| o.id }
-    siblings = sibling_media_ids.select { |d| d.visibility == 'open' }.map{ |o| o.id }
-    return (ie_media + parents + children + sibling_media_ids).uniq
+    return [] unless public_related_media.present?
+    public_related_media.map{ |o| o.id }
   end
 
   def organizations
@@ -380,6 +350,7 @@ class Media < Morphosource::Works::Base
   end
 
   private
+
     def add_id_to_title
       unless self.title && self.id && self.title.first.to_s.start_with?("M#{self.id.to_s}: ")
         self.title.set("M#{self.id.to_s}: #{self.title.first.to_s}")

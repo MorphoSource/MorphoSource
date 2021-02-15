@@ -452,7 +452,7 @@ RSpec.describe Media do
       end
 
       it 'returns related media ids' do
-        expect(media1.related_media_ids).to include(media1.id, media2.id)
+        expect(media1.related_media_ids).to include(media2.id)
       end
     end
 

@@ -91,7 +91,7 @@ RSpec.describe MediaIndexer do
     end
 
     it 'indexes related_media_ids' do
-      expect(subject['related_media_ids_ssim']).to include(media1.id, media2.id)
+      expect(subject['related_media_ids_ssim']).to include(media2.id)
     end
   end
 

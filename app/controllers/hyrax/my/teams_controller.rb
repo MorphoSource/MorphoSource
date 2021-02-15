@@ -1,8 +1,10 @@
 module Hyrax
   module My
     class TeamsController < MyController
-      include Morphosource::CollectionHelper
       include MyTeamsControllerBehavior
+      include Morphosource::CollectionHelper
+      helper_method :page_is_project?, :ms_dashboard_my_collection_link, :hidden_params_for_filters, :visibility_label, 
+        :page_is_team?, :collection_type, :hidden_params_for_pagination
 
       with_themed_layout 'morphosource_dashboard'
 

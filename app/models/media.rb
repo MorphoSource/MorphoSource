@@ -2,7 +2,7 @@ class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
   after_create :mint_ark
-  before_update :record_original_member_of_public_collection_ids
+  before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids
   after_update :update_ark_status
 
   after_initialize do
@@ -356,6 +356,14 @@ class Media < Morphosource::Works::Base
 
   def member_of_public_collection_ids_changed?
     @original_member_of_public_collection_ids.sort != member_of_public_collection_ids.sort
+  end
+
+  def record_original_related_media_ids
+    @original_related_media_ids = related_media_ids
+  end
+
+  def related_media_ids_changed?
+    @original_related_media_ids.sort != related_media_ids.sort
   end
 
   private

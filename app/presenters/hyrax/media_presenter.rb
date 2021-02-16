@@ -454,7 +454,6 @@ module Hyrax
             @user_taxonomies = biological_specimen.user_taxonomies
             @canonical_taxonomy_object = biological_specimen.canonical_taxonomy_object
             @trusted_taxonomies = biological_specimen.trusted_taxonomies
-            @idigbio_uuid = biological_specimen.idigbio_uuid
           elsif physical_object.class == CulturalHeritageObject
             cultural_heritage_object = physical_object
             @physical_object_title = cultural_heritage_object.title.first

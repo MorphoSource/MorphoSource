@@ -19,6 +19,8 @@ module Morphosource
           if ie_modality_changed?
             index_related(media)
             index_related(objects)
+          elsif physical_object_id_changed?
+            index_related(media)
           end
         when Media
           return unless Hyrax.config.index_related_works

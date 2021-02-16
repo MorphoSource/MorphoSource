@@ -42,11 +42,6 @@ module Morphosource
         end
       end
 
-      def find_parents(specific_id)
-        qry = assemble_query({ 'member_ids' => specific_id })
-        search_solr(qry)
-      end
-
       def find_physical_objects
         physical_object_ids.map do |po_id|
           qry = "id:#{po_id}"

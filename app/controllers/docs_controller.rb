@@ -11,7 +11,6 @@ class DocsController < ApplicationController
   end
 
   def citation
-    outdated_flash
   end
 
   def contributors

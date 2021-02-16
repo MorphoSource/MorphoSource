@@ -160,7 +160,7 @@ module Morphosource::CartItemHelper
       when 'Expired'
         make_button(item,"Request Again",:request_again_path,"btn btn-primary",:get,'')
       when 'Cleared'
-       make_button(item,"Request Download",:request_item_path,"btn btn-info",:put,'')
+       button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
       when 'Requested'
         make_button(item,"Cancel Request",:cancel_request_path,"btn btn-danger",:put,"background-color: gray;")
       else

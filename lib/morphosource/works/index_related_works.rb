@@ -30,6 +30,9 @@ module Morphosource
             member_of_public_collection_ids_changed?
           ) 
             index_related(objects)
+          end
+          if related_media_ids_changed?
+            index_related(objects)
             index_related(related_media)
           end
         when Organization

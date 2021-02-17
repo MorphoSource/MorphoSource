@@ -2,6 +2,9 @@ module Hyrax
   module My
     class MediaWorksController < MyController
       include MediaWorksControllerBehavior
+      include Morphosource::MediaWorksHelper
+      helper_method :media_works_url, :hidden_params_for_filters, :hidden_params_for_pagination, :publication_status_label,
+        :media_type_label, :source_label, :bso_tab_url, :cho_tab_url
       with_themed_layout 'morphosource_dashboard'
 
       # Define collection specific filter facets.
@@ -63,6 +66,7 @@ module Hyrax
         query_collection_members_for_po('cho')
         render :partial => "tab_cho"
       end
+
 
       private
 

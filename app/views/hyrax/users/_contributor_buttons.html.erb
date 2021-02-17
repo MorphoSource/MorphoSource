@@ -1,0 +1,10 @@
+
+<% if @current_user.admin? %>
+  <div id='contributor-buttons' style='margin-top:15px;'>
+    <% if @user.contributor? %>
+      <%= button_to 'Remove Contributor Status', main_app.remove_contributor_path(@user.ms_id), method: :post, class: "btn btn-danger" %>
+    <% else %>
+      <%= button_to 'Grant Contributor Status', main_app.make_contributor_path(@user.ms_id), method: :post, class: "btn btn-primary" %>
+    <% end %>
+  </div>
+<% end %>

@@ -839,7 +839,7 @@ class SubmissionsController < ApplicationController
     return if @submission.media_id.blank?
 
     catalog_works.each do |work|
-      work.update_index
+      work.update_index if work.present?
     end
   end
 
@@ -848,6 +848,7 @@ class SubmissionsController < ApplicationController
     media = [Media.find(@submission.media_id)]
     organizations = media.first.organizations
     objects = media.first.physical_objects
-    media + organizations + objects
+    related_media = media.first.related_media
+    media + organizations + objects + related_media
   end
 end

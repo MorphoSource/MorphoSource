@@ -21,11 +21,12 @@
       </div>
     </div>
   </td>
-  <td>
-    <%= document.id %>
-  </td>
+  <td><%= document.id %></td>
+  <td><%= object_details(document) %></td>
   <td><%= date(item,'requested') %></td>
-  <td><button class='btn btn-success' data-toggle="modal" data-target="#pageModal" data-item-id= <%= item.id %>>Approve Download</button></td>
-  <td><%= link_to "Clear Request", main_app.clear_request_path(:item_id => item.id), class: 'btn btn-info', :method => :put %></td>
-  <td><%= link_to "Deny Download", main_app.deny_download_path(:item_id => item.id), class: 'btn btn-danger', :method => :put %></td>
+  <td>
+    <button class='btn btn-success' data-toggle="modal" data-target="#pageModal" data-item-id= <%= item.id %>>Approve Download</button>
+    <%= link_to "Clear Request", main_app.clear_request_path(:item_id => item.id), class: 'btn btn-info', :method => :put %>
+    <%= link_to "Deny Download", main_app.deny_download_path(:item_id => item.id), class: 'btn btn-danger', :method => :put %>
+  </td>
 </tr>

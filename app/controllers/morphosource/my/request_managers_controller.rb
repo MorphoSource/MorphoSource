@@ -5,7 +5,7 @@ module Morphosource
       include Morphosource::CartItems::ListItems
       include Morphosource::CartItems::RequestManagerItems
       include Morphosource::CartItems::RequestItems
-
+      with_themed_layout 'morphosource_dashboard'      
 
       before_action :get_items_by_id, only: [:clear_request, :approve_download, :deny_download, :edit_expiration]
 

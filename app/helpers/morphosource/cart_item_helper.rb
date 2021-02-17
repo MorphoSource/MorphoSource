@@ -230,6 +230,22 @@ module Morphosource::CartItemHelper
     items.select(&:editable?)
   end
 
+  def object_details(media_doc)
+    details = ""
+    if media_doc.media_physical_object_type.first == "Biological Specimen"
+      if media_doc.physical_object_id.present?
+        bso = SolrDocument.find(media_doc.physical_object_id)
+        bso_title = [bso.institution_code, bso.collection_code, bso.catalog_number].compact.join(':')
+#byebug
+        o = BiologicalSpecimen.find(bso.id)
+#byebug
+        details = bso_title + ', ' + o.taxonomies_titles.to_s
+      end
+    else
+    end
+    return details
+  end
+
   def requester_title(requester)
     if requester.display_name.present?
       requester.display_name

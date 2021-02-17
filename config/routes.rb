@@ -375,7 +375,7 @@ Rails.application.routes.draw do
   end
 
   # Routes for granting/removing contributor status
-  post 'users/:id/make_contributor' => 'contributors#make_contributor', as: 'make_depositor'
-  post 'users/:id/remove_contributor' => 'contributors#remove_contributor', as: 'remove_depositor'
+  post 'users/:id/make_contributor' => 'contributors#make_contributor', as: 'make_contributor'
+  post 'users/:id/remove_contributor' => 'contributors#remove_contributor', as: 'remove_contributor'
 
 end

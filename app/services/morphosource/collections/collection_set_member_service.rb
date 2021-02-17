@@ -94,41 +94,41 @@ module Morphosource
 
       private
 
-      def assemble_multiple_collection_query_for(coll_id)
-        subcollection_ids = available_member_subcollections(coll_id).documents.map { |s| s['id'] }
-        if subcollection_ids.present?
-          " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
-        else
-          ""
+        def assemble_multiple_collection_query_for(coll_id)
+          subcollection_ids = available_member_subcollections(coll_id).documents.map { |s| s['id'] }
+          if subcollection_ids.present?
+            " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
+          else
+            ""
+          end
         end
-      end
 
-      # @api private
-      #
-      def assemble_organization_media_query(organization_object_ids)
-        " OR (#{Solrizer.solr_name('physical_object_id', :stored_searchable)}:(#{organization_object_ids.join(' OR ')}))"
-      end
-
-      # @api private
-      #
-      def query_solr_with_fq(query_builder:, query_params:, fq_params:, initial_rows:)
-        initial_q = query_builder[:q]
-        initial_fq = query_builder[:fq]
-        initial_rows = query_builder[:rows] unless initial_rows.present?
-        begin
-          query_builder.merge(q: query_params)
-          query_builder.merge(fq: fq_params)
-          query_builder.merge(rows: initial_rows)
-          #repository.search(query_builder.with(query_params).query)
-          repository.search(query_builder.query)
-        ensure
-          query_builder.merge(q: initial_q)
-          query_builder.merge(fq: initial_fq)
-          query_builder.merge(rows: initial_rows)
+        # @api private
+        #
+        def assemble_organization_media_query(organization_object_ids)
+          " OR (#{Solrizer.solr_name('physical_object_id', :stored_searchable)}:(#{organization_object_ids.join(' OR ')}))"
         end
-      end
 
-      # from app/services/hyrax/collections/collection_member_service.rb
+        # @api private
+        #
+        def query_solr_with_fq(query_builder:, query_params:, fq_params:, initial_rows:)
+          initial_q = query_builder[:q]
+          initial_fq = query_builder[:fq]
+          initial_rows = query_builder[:rows]
+          begin
+            query_builder.merge(q: query_params)
+            query_builder.merge(fq: fq_params)
+            query_builder.merge(rows: 999999)
+            # repository.search(query_builder.with(query_params).query)
+            repository.search(query_builder.query)
+          ensure
+            query_builder.merge(q: initial_q)
+            query_builder.merge(fq: initial_fq)
+            query_builder.merge(rows: initial_rows)
+          end
+        end
+
+        # from app/services/hyrax/collections/collection_member_service.rb
 
         # @api private
         #

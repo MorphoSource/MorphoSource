@@ -165,6 +165,54 @@ module Hyrax
       end
     end
 
+    def after_destroy(works_to_index, works_to_delete)
+      UpdateRelatedWorksIndexJob.perform_later(works_to_index)
+      works_to_delete&.each do |w|
+        w.delete if w.present?
+      end
+      respond_to do |format|
+        format.js {render :js => "location.reload()"}
+        format.html do
+          flash[:notice] = 'Media deleted'
+          redirect_to '/dashboard/my/media'
+        end
+        format.json { head :no_content, location: '/dashboard/my/media' }
+      end
+    end
+
+    def after_destroy_error(id)
+      respond_to do |format|
+        format.html do
+          flash[:notice] = 'Error deleting media'
+          redirect_to '/concern/media/' + id + '/edit'
+        end
+        format.json { render json: { id: id }, status: :unprocessable_entity, location: media_showcase_path(curation_concern) }
+      end
+    end
+
+    def destroy
+      # delete the PE parent of that media 
+      # If the media has a direct or indirect IE parent and that IE parent has no other children, it should also be deleted
+      processing_event = curation_concern.parent_works.select { |w| w.class == ProcessingEvent }&.first
+      if processing_event.present?
+        imaging_event = processing_event.parent_works.select { |w| w.class == ImagingEvent }&.first
+      else
+        imaging_event = curation_concern.parent_works.select { |w| w.class == ImagingEvent }&.first
+      end
+      if imaging_event.present?
+        if imaging_event.descendants.select { |d| d.class == Media && d.id != curation_concern.id}.present?
+          imaging_event = nil
+        end
+      end
+      works_to_delete = [processing_event, imaging_event].compact
+      works_to_index = (curation_concern.related_media + curation_concern.physical_objects).compact
+      if curation_concern.destroy
+        after_destroy(works_to_index, works_to_delete)
+      else
+        after_destroy_error(curation_concern.id)
+      end
+    end
+
     def mint_doi
       if current_user.admin?
         media_work = Media.find(params[:id])
@@ -334,5 +382,6 @@ module Hyrax
           create_thumbnail
         end
       end
+
   end
 end

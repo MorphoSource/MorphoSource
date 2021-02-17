@@ -7,6 +7,9 @@ module Hyrax
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
     include OrganizationsControllerBehavior
+    include Morphosource::OrganizationHelper
+    helper_method :showpage_url, :hidden_params_for_filters, :publication_status_label, :media_type_label, 
+      :ms_organization_view_link_qs, :ms_organization_view_link, :hidden_params_for_pagination, :source_label
 
     self.curation_concern_type = ::Organization
     with_themed_layout 'morphosource_1_column'

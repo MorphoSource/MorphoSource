@@ -1,7 +1,6 @@
 # helper methods for teams and project collection show and edit pages
 module Morphosource
   module CollectionHelper
-    include MediaFinderHelper
 
     def page_is_team?
       path_info.include?("teams")
@@ -68,6 +67,16 @@ module Morphosource
       link.html_safe
     end
 
+    def ms_collection_view_link_qs(tab, filter_prefix)
+      link = ""
+      parsed_params = filter_params(filter_prefix, request_params)
+      parsed_params.map do |k,v|
+        link = link + '&' + k + '=' + v
+      end
+      link = link + "#" + tab if tab.present?
+      link.html_safe
+    end
+    
     def query_collection_information
       @collection_information = collection_information_service.collection_information
       @collection_counts = @collection_information['counts'] ||= {}
@@ -97,6 +106,20 @@ module Morphosource
         return_params[k] = v
       end
       return_params
+    end
+
+    def filter_projects(docs, params)
+      project_filter_params = filter_params('p_', params)
+      return docs if project_filter_params.empty?
+      filtered_docs = []
+      docs.each do |doc|
+        collection = Collection.find(doc.id)
+        visibility_to_compare = project_filter_params['visibility'] || collection.visibility
+        if collection.visibility == visibility_to_compare
+          filtered_docs << doc
+        end
+      end
+      filtered_docs
     end
 
     def hidden_params_for_filters(prefix)
@@ -168,7 +191,6 @@ module Morphosource
     end
 
     def prepare_docs_and_filters_for_media(collection)
-      @po_type = "bso" # bso / cho
       @is_team = collection.respond_to?(:team?) ? collection.team? : false
       @visibility_options = []
       if @subcollection_docs.present?
@@ -183,6 +205,7 @@ module Morphosource
       @media_member_count = @member_docs.length
       @paged_media_member_docs = paginated_media_item_list
       @media_extras = get_media_extras(@paged_media_member_docs, team_projects, collection.organization&.id)
+      @po_type = "bso" unless @po_type.present?
     end
 
     def get_media_extras(docs, team_projects, team_org_id)
@@ -222,7 +245,7 @@ module Morphosource
             taxonomy = Morphosource::TaxonomySearchService.call({ 'id' => po_doc.taxonomy_id&.first})&.first if po_doc.taxonomy_id.present?
             this_media_extras['po_taxonomy'] = taxonomy.title&.first if taxonomy.present? && taxonomy.title.present?
           elsif po_doc.hydra_model == CulturalHeritageObject
-            @po_type = "cho"
+            @po_type ||= "cho"
           end
         end
         this_media_extras

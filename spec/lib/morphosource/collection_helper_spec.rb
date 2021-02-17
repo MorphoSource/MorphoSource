@@ -63,4 +63,16 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
     end
   end
 
+  describe '#ms_collection_view_link_qs(tab, filter_prefix)' do
+    let(:tab) { 'media' }
+    let(:filter_prefix) { 'm_'}
+    let(:params) { { 'm_visibility' => 'open' } }
+    before do
+      allow(helper).to receive(:request_params) { params }
+    end
+    it 'returns collection view link query string for media' do
+      expect(helper.ms_collection_view_link_qs(tab, filter_prefix)).to eq ("&m_visibility=open#media")
+    end
+  end
+
 end

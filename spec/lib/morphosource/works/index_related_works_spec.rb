@@ -21,7 +21,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
   let(:processing_event1)       { ProcessingEvent.create(title: ['processing event 1']) }
   let(:media1b)                 { Media.create(title: ['media 1b']) }
-  #
+  
   let(:imaging_event2)          { ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id], physical_object_id: [cho.id], ie_modality: device.modality) }
   let(:media2a)                 { Media.create(title: ['media 2a']) }
   let(:processing_event2)       { ProcessingEvent.create(title: ['processing event 2']) }
@@ -112,15 +112,15 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
         before do
           allow(specimen_media).to receive(:index_related)
         end
-        it 'updates the related specimen' do
+        it 'updates the related specimen when keyword is changed' do
           skip if !Hyrax.config.index_related_works
           expect(specimen_media).to receive(:index_related).with([specimen])
           specimen_media.title = ['new title']
-          specimen_media.keyword = ['tag']
+          specimen_media.keyword = ['new tag']
           specimen_media.save
         end
       end
-      context 'media represents a cho' do
+      context 'media represents a cho when keyword is changed' do
         let(:cho_media)   { media2a }
         before do
           allow(cho_media).to receive(:index_related)
@@ -128,9 +128,8 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
         it 'updates the related cho' do
           skip if !Hyrax.config.index_related_works
           expect(cho_media).to receive(:index_related).with([cho])
-
           cho_media.title = ['new title']
-          cho_media.keyword = ['tag']
+          cho_media.keyword = ['new tag']
           cho_media.save
         end
       end

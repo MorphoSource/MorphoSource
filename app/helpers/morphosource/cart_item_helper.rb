@@ -229,4 +229,13 @@ module Morphosource::CartItemHelper
   def editable_items(items)
     items.select(&:editable?)
   end
+
+  def requester_title(requester)
+    if requester.display_name.present?
+      requester.display_name
+    else
+      requester.email
+    end
+  end
+
 end

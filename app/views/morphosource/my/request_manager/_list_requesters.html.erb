@@ -1,7 +1,20 @@
 <div class="user-wrapper">
   <% get_requester_items(@items,requester) %>
   <div class="user-title">
-    <h3><%= requester.email %> ( <%= @requester_items.count %> items )</h3>
+
+    <h3><%= requester_title(requester) %> ( <%= @requester_items.count %> items )
+      <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block" class="btn collapse-block"><span class="glyphicon glyphicon-triangle-bottom collapse-block"></span></a>
+    </h3>
+    <div id="collapse-block" class="panel-collapse collapse-block glyphicon-only table collapse" aria-expanded="false">
+      <div class="text-left">
+        <div class="col-xs-3 showcase-label">Organization</div><div class="col-xs-9 showcase-value"><%= requester.affiliation %></div><br />
+        <div class="col-xs-3 showcase-label">Department:</div><div class="col-xs-9 showcase-value"><%= requester.department %></div><br />
+        <div class="col-xs-3 showcase-label">Profession</div>
+        <div class="col-xs-9 showcase-value">
+        <%= render partial: 'morphosource/my/request_manager/list_requester_demographics', collection: requester.demographics, as: :dem %>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="requests-wrapper">

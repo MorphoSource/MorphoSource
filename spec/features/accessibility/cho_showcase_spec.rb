@@ -9,6 +9,39 @@ RSpec.feature "Showcase pages accessibility check", :skiptravis => true, :access
     # PO > IE > media 
     # or
     # PO > IE > PE > media (media with absentee parent) 
+
+    inst = Organization.create({
+        id: 'inst123',
+        title: ['organization 1'],
+        institution_code: ['inst123'] ,
+        visibility: public
+    })
+
+    cho = CulturalHeritageObject.create(
+        id: "cho123", 
+        title: ["test Cultural Heritage Object"], 
+        vouchered: ['Yes'], 
+        institution_code: ['inst123'], 
+        collection_code: ['xyz'], 
+        catalog_number: ['xyz'],
+        visibility: public,
+        organization_id: [inst.id]
+    ) 
+
+    ie = ImagingEvent.create(
+        title: ["Test ImagingEvent"], 
+        id: "ie123", 
+        ie_modality: ['MicroNanoXRayComputedTomography'],
+        visibility: public,
+        physical_object_id: [cho.id]
+    )
+
+    pe = ProcessingEvent.create(
+        title: ["Test ProcessingEvent"], 
+        id: "pe123",
+        visibility: public
+    )
+    
     media = Media.create({
         id: 'media123',
         title: ['media 1'],
@@ -16,43 +49,10 @@ RSpec.feature "Showcase pages accessibility check", :skiptravis => true, :access
         visibility: public
     })
 
-    pe = ProcessingEvent.create(
-    	title: ["Test ProcessingEvent"], 
-    	id: "pe123",
-        visibility: public
-  	)
-    pe.members = [media]
-    pe.save!
-
-    ie = ImagingEvent.create(
-    	title: ["Test ImagingEvent"], 
-    	id: "ie123", 
-    	ie_modality: ['MicroNanoXRayComputedTomography'],
-        visibility: public
-  	)
     ie.members = [pe]
     ie.save!
-
- 	cho = CulturalHeritageObject.create(
- 		id: "cho123", 
- 		title: ["test Cultural Heritage Object"], 
- 		vouchered: ['Yes'], 
- 		institution_code: ['inst123'], 
- 		collection_code: ['xyz'], 
- 		catalog_number: ['xyz'],
- 		visibility: public
- 	) 
-    cho.members = [ie]
-    cho.save!
-
-    inst = Organization.create({
-        id: 'inst123',
-        title: ['organization 1'],
-		institution_code: ['inst123'] ,
-        visibility: public
-    })
-    inst.members = [cho]
-    inst.save!
+    pe.members = [media]
+    pe.save!
 
     # todo: create a method to login later , e.g. login_as(@test_user)
     visit "/users/sign_in"  

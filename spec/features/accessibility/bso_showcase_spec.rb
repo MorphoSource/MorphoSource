@@ -9,29 +9,13 @@ RSpec.feature "Showcase pages accessibility check", :skiptravis => true, :access
     # PO > IE > media 
     # or
     # PO > IE > PE > media (media with absentee parent) 
-    media = Media.create({
-        id: 'media123',
-        title: ['media 1'],
-        media_type: ['image'],
+    
+    inst = Organization.create({
+        id: 'inst123',
+        title: ['organization 1'],
+        institution_code: ['inst123'] ,
         visibility: public
     })
-
-    pe = ProcessingEvent.create(
-    	title: ["Test ProcessingEvent"], 
-    	id: "pe123",
-        visibility: public
-  	)
-    pe.members = [media]
-    pe.save!
-
-    ie = ImagingEvent.create(
-    	title: ["Test ImagingEvent"], 
-    	id: "ie123", 
-    	ie_modality: ['MicroNanoXRayComputedTomography'],
-        visibility: public
-  	)
-    ie.members = [pe]
-    ie.save!
 
  	bso = BiologicalSpecimen.create(
  		id: "bso123", 
@@ -40,19 +24,35 @@ RSpec.feature "Showcase pages accessibility check", :skiptravis => true, :access
  		institution_code: ['inst123'], 
  		collection_code: ['xyz'], 
  		catalog_number: ['xyz'],
- 		visibility: public
+ 		visibility: public,
+        organization: [inst.id]
  	) 
-    bso.members = [ie]
-    bso.save!
 
-    inst = Organization.create({
-        id: 'inst123',
-        title: ['organization 1'],
-		institution_code: ['inst123'] ,
+    ie = ImagingEvent.create(
+        title: ["Test ImagingEvent"], 
+        id: "ie123", 
+        ie_modality: ['MicroNanoXRayComputedTomography'],
+        visibility: public,
+        physical_object_id: [bso.id]
+    )
+
+    pe = ProcessingEvent.create(
+        title: ["Test ProcessingEvent"], 
+        id: "pe123",
+        visibility: public
+    )
+    
+    media = Media.create({
+        id: 'media123',
+        title: ['media 1'],
+        media_type: ['image'],
         visibility: public
     })
-    inst.members = [bso]
-    inst.save!
+
+    ie.members = [pe]
+    ie.save!
+    pe.members = [media]
+    pe.save!
 
     # todo: create a method to login later , e.g. login_as(@test_user)
     visit "/users/sign_in"  

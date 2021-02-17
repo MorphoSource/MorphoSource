@@ -15,23 +15,21 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
 
   let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id, organization_id: [org1.id]) }
   let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, device_id: [device.id], ie_modality: device.modality) }
+  let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
   let(:cho)         { CulturalHeritageObject.create(title: ['cho title'], vouchered: [true], depositor: user.ms_id) }
-  let(:imagingEvent2)     { ImagingEvent.create(title: ['imagingEvent2'], depositor: user.ms_id, device_id: [device.id], ie_modality: device.modality) }
+  let(:imagingEvent2)     { ImagingEvent.create(title: ['imagingEvent2'], depositor: user.ms_id, device_id: [device.id], physical_object_id: [cho.id], ie_modality: device.modality) }
   let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }
   let(:media2)            { Media.create(title: ['new media 2'], depositor: user.ms_id) }
   let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
   let(:team_depositor)   { User.create(email: 'depositor@test.com', password: 'password') }
   let(:team_viewer)      { User.create(email: 'viewer@test.com', password: 'password') }
-  let(:works)             { [specimen, imagingEvent, media, media2, cho, imagingEvent2] }
+  let(:works)             { [imagingEvent, media, media2, imagingEvent2] }
 
   let(:presenter) { described_class.new(SolrDocument.new(team.to_solr), ability, nil) }
 
   before do
-    specimen.ordered_members << imagingEvent
     imagingEvent.ordered_members << media
     media2.member_of_collections = [project]
-    cho.ordered_members << imagingEvent2
     imagingEvent2.ordered_members << media2
 
     works.each(&:save)

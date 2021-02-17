@@ -87,11 +87,6 @@ module Hyrax
         add_organization_team_access([env.curation_concern])
       end
 
-      def new_specimens
-        ancestors = @parent.ancestors
-        select_specimens(ancestors)
-      end
-
       def find_parent(env)
         parent_id = env.attributes[:work_parents_attributes].values.first['id']
         @parent = ActiveFedora::Base.find(parent_id)
@@ -101,6 +96,10 @@ module Hyrax
         return unless env.attributes[:tags]
         tags = env.attributes[:tags]
         tags.split(',')
+      end
+
+      def new_specimens
+        @parent.objects
       end
     end
   end

@@ -169,22 +169,19 @@ RSpec.describe Organization do
         let(:media2)          { Media.create(title: ['title']) }
         let(:media3)          { Media.create(title: ['title']) }
         let(:device)          { Device.create(title: ['title'], modality: ['Photogrammetry']) }
-        let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
-        let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
+        let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen1.id], ie_modality: device.modality) }
+        let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen2.id], ie_modality: device.modality) }
         let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
 
         before do
-          specimen1.ordered_members << imagingEvent
-          specimen1.save
           imagingEvent.ordered_members << media1
           imagingEvent.save
           media1.ordered_members << processingEvent
           media1.save
           processingEvent.ordered_members << media2
           processingEvent.save
+          media2.save
 
-          specimen2.ordered_members << imagingEvent2
-          specimen2.save
           imagingEvent2.ordered_members << media3
           imagingEvent2.save
 

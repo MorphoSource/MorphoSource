@@ -38,19 +38,16 @@ RSpec.describe Hyrax::Actors::MediaActor do
         end
       end
       context 'media is created through the submission process' do
-        let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }
-        let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id]) }
         let(:device)              { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-        let(:biological_specimen) { BiologicalSpecimen.create(title: ['title'], vouchered: [true]) }
         let(:taxonomy)            { Taxonomy.create(title: ['taxonomy']) }
+        let(:biological_specimen) { BiologicalSpecimen.create(title: ['title'], vouchered: [true], taxonomy_id: [taxonomy.id]) }
+        let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [biological_specimen.id]) }
+        let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }
+        
 
         before do
-          biological_specimen.ordered_members << imaging_event
-          biological_specimen.taxonomy_id = [taxonomy.id]
           imaging_event.ordered_members << processing_event
-          imaging_event.device_id = [device.id]
-
-          [processing_event, imaging_event, device, biological_specimen].each(&:save)
+          [processing_event, imaging_event].each(&:save)
 
           env.attributes[:work_parents_attributes] = { '1' => { 'id' => processing_event.id, '_destroy' => 'false' } }
         end
@@ -69,7 +66,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
 
           before do
             biological_specimen.organization_id = [organization.id]
-            [organization, biological_specimen].each(&:save)
+            [biological_specimen].each(&:save)
           end
 
           context 'the organization does not have a linked team' do

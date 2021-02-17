@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Works::Base do
   let(:organization)    { Organization.create(title: ['organization title']) }
-  let(:specimen1)       { BiologicalSpecimen.create(title: ['title'], vouchered: [true]) }
-  let(:specimen2)       { BiologicalSpecimen.create(title: ['title'], vouchered: [false]) }
+  let(:specimen1)       { BiologicalSpecimen.create(title: ['title'], vouchered: [true], organization_id: [organization.id]) }
+  let(:specimen2)       { BiologicalSpecimen.create(title: ['title'], vouchered: [false], organization_id: [organization.id]) }
   let(:media1)          { Media.create(title: ['title']) }
   let(:media2)          { Media.create(title: ['title']) }
   let(:media3)          { Media.create(title: ['title']) }
@@ -13,33 +13,28 @@ RSpec.describe Morphosource::Works::Base do
   let(:file_set2)       { FileSet.create }
   let(:file_set3)       { FileSet.create }
   let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
-  let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
+  let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen1.id], ie_modality: device.modality) }
+  let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen2.id], ie_modality: device.modality) }
   let(:processingEvent) { ProcessingEvent.create(title: ['title']) }
-  let(:works)           { [organization, specimen1, specimen2, media1, media2, media3, imagingEvent, imagingEvent2, processingEvent, file_set1, file_set2, file_set3] }
+  let(:works)           { [media1, media2, media3, imagingEvent, imagingEvent2, processingEvent, file_set1, file_set2, file_set3] }
 
   describe '#descendants' do
-    let(:org_desc)      { works - [organization] }
-    let(:spec1_desc)    { [imagingEvent, media1, file_set1, processingEvent, media2, file_set2] }
-    let(:spec2_desc)    { [imagingEvent2, media3, file_set3] }
+    let(:media1_desc)    { [file_set1, processingEvent, media2, file_set2] }
+    let(:media3_desc)    { [file_set3] }
 
     before do
-      organization.ordered_members << specimen1 << specimen2
-      specimen1.ordered_members << imagingEvent
       imagingEvent.ordered_members << media1
       media1.ordered_members << processingEvent << file_set1
       processingEvent.ordered_members << media2
       media2.ordered_members << file_set2
-      specimen2.ordered_members << imagingEvent2
       imagingEvent2.ordered_members << media3
       media3.ordered_members << file_set3
       works.each(&:save)
     end
 
     it 'finds all children (works and filesets) of a work' do
-      expect(organization.descendants).to match_array(org_desc)
-      expect(specimen1.descendants).to match_array(spec1_desc)
-      expect(specimen2.descendants).to match_array(spec2_desc)
+      expect(media1.descendants).to match_array(media1_desc)
+      expect(media3.descendants).to match_array(media3_desc)
     end
   end
 

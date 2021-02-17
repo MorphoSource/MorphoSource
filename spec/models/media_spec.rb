@@ -386,11 +386,12 @@ RSpec.describe Media do
       let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality)}
 
       context 'object is a specimen' do
-        let(:works) {[specimen, imaging_event, media]}
+        let(:works) {[imaging_event, media]}
 
         before do
-          specimen.ordered_members << imaging_event
+          imaging_event.physical_object_id = [specimen.id]
           imaging_event.ordered_members << media
+
           works.each(&:save)
           works.each(&:reload)
         end
@@ -404,10 +405,10 @@ RSpec.describe Media do
       end
 
       context 'object is a cultural heritage object' do
-        let(:works) {[cho, imaging_event, media]}
+        let(:works) {[imaging_event, media]}
 
         before do
-          cho.ordered_members << imaging_event
+          imaging_event.physical_object_id = [cho.id]
           imaging_event.ordered_members << media
           works.each(&:save)
           works.each(&:reload)
@@ -436,13 +437,12 @@ RSpec.describe Media do
       let(:media1)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
       let(:media2)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
       let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-      let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
+      let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
       let!(:processing_event1)       { ProcessingEvent.create(title: ['processing_event']) }
       let!(:processing_event2)       { ProcessingEvent.create(title: ['processing_event']) }
-      let!(:works)                  { [ specimen, device, imaging_event, processing_event1, processing_event2 ] }
+      let!(:works)                  { [ imaging_event, processing_event1, processing_event2 ] }
 
       before do
-        specimen.ordered_members << imaging_event
         imaging_event.ordered_members << processing_event1
         imaging_event.ordered_members << processing_event2
         processing_event1.ordered_members << media1

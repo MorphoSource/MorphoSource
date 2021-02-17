@@ -64,7 +64,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
         let(:media)                 { Media.create(title: ['media']) }
         let(:media2)                { Media.create(title: ['media2']) }
         let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-        let(:imaging_event)         { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality) }
+        let(:imaging_event)         { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
         let(:processing_event)      { ProcessingEvent.create(title: ['processing event']) }
         let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
         let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
@@ -75,7 +75,6 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
         let(:params)                { { id: specimen.id, 'biological_specimen' => { 'organization_id' => parent_organization_id } } }
 
         before do
-          specimen.ordered_members << imaging_event
           imaging_event.ordered_members << media
           media.ordered_members << processing_event
           processing_event.ordered_members << media2
@@ -91,7 +90,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
           media.read_groups += old_team.user_groups.map(&:name)
           media2.read_groups += old_team.user_groups.map(&:name)
 
-          works = [old_organization, specimen, imaging_event, media, media2]
+          works = [old_organization, specimen, imaging_event, processing_event, media, media2]
           works.each(&:save)
           works.each(&:reload)
         end

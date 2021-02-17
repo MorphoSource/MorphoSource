@@ -18,9 +18,13 @@ module Morphosource
           return unless Hyrax.config.index_related_works
           if ie_modality_changed?
             index_related(media)
-            index_related(objects)
-          elsif physical_object_id_changed?
-            index_related(media)
+          end
+          if physical_object_id_changed?
+            old_objects = 
+              BiologicalSpecimen.where(related_media_ids_ssim: media.map(&:id)) + 
+              CulturalHeritageObject.where(related_media_ids_ssim: media.map(&:id)) - 
+              objects
+            index_related(media + objects + old_objects) # a bit inefficient but getting old values is a nightmare and order of index updates is important
           end
         when Media
           return unless Hyrax.config.index_related_works

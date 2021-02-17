@@ -25,14 +25,12 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
     let(:public_media)    { Media.create(title: ['Public Media'], media_type: ['CTImageSeries'], keyword: ['red', 'yellow', 'blue'], visibility: 'open') }
     let(:private_media)   { Media.create(title: ['Private Media'], media_type: ['PhotogrammetryImageSeries'], keyword: ['green', 'orange', 'purple'], visibility: 'restricted') }
     let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event)   { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
-    let(:imaging_event2)   { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
+    let(:imaging_event)   { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
+    let(:imaging_event2)   { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], physical_object_id: [cho.id], ie_modality: device.modality) }
     let(:media)           { [public_media, private_media] }
-    let(:works)           { [specimen, cho, imaging_event, imaging_event2, public_media, private_media] }
+    let(:works)           { [imaging_event, imaging_event2, public_media, private_media] }
 
     before do
-      specimen.ordered_members << imaging_event
-      cho.ordered_members << imaging_event2
       imaging_event.ordered_members << public_media << private_media
       imaging_event2.ordered_members << public_media << private_media
       works.each(&:save)

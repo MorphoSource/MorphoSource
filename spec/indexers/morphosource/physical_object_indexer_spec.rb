@@ -6,15 +6,14 @@ RSpec.describe Morphosource::PhysicalObjectIndexer do
   let(:specimen)                { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id]) }
   let(:media)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
   let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
+  let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 88) }
   let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: 'msid', visibility: 'open') }
-  let!(:works)                  { [specimen, imaging_event, media] }
+  let!(:works)                  { [imaging_event, media] }
 
   subject(:solr_document)       { described_class.new(specimen).generate_solr_document }
 
   before do
-    specimen.ordered_members << imaging_event
     imaging_event.ordered_members << media
     media.member_of_collections = [project]
     works.each(&:save)

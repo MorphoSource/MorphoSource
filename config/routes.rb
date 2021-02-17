@@ -108,7 +108,7 @@ Rails.application.routes.draw do
     get 'project_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
     get 'team_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
     # dashboard media/object paging
-    get 'media_works_paging/dashboard/my/media', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=biological_specimens" }
+    get 'media_works_paging/dashboard/my/media', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=media" }
     get 'media_works_paging/dashboard/my/media/specimens', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=biological_specimens" }
     get 'media_works_paging/dashboard/my/media/chos', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=cultural_heritage_objects" }
     # my teams/projects paging
@@ -373,4 +373,9 @@ Rails.application.routes.draw do
   devise_scope :user do
     get '/users/password/ms1_edit', to: 'morphosource/passwords#ms1_edit', as: 'ms1_edit_user_password'
   end
+
+  # Routes for granting/removing contributor status
+  post 'users/:id/make_contributor' => 'contributors#make_contributor', as: 'make_contributor'
+  post 'users/:id/remove_contributor' => 'contributors#remove_contributor', as: 'remove_contributor'
+
 end

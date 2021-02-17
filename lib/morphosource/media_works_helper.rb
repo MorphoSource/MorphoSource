@@ -1,37 +1,30 @@
-# helper methods for teams and project collection show and edit pages
 module Morphosource
-  module OrganizationHelper
-    include MediaFinderHelper
+  module MediaWorksHelper
 
-    def show_org_url(id, tab)
-      Rails.application.routes.url_helpers.show_organization_path(id) + "#" + tab
+    def media_works_url(tab)
+      Rails.application.routes.url_helpers.my_media_index_path + "#" + tab
     end
 
-    def ms_organization_view_link(id, view)
-      link = Rails.application.routes.url_helpers.show_organization_path(id, view)
-      link.html_safe
-    end
-
-    def ms_organization_view_link_qs(tab, filter_prefix)
-      link = ""
-      parsed_params = filter_params(filter_prefix, request_params)
-      parsed_params.map do |k,v|
-        link = link + '&' + k + '=' + v 
-      end       
-      link = link + "#" + tab if tab.present?
-      link.html_safe
+    def query_collection_information
+      @collection_information = collection_information_service.collection_information
+      @collection_counts = @collection_information['counts'] ||= {}
+      @collection_media_groups = @collection_information['media_groups'] ||= {}
+      @collection_bso_groups = @collection_information['bso_groups'] ||= {}
+      @collection_cho_groups = @collection_information['cho_groups'] ||= {}
+      @collection_object_ids = @collection_information['collection_object_ids'] ||= []
+      @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
     end
 
     def media_filter_params
-      organization_information_service.solrize_filter_params(filter_params('m_', params))
+      collection_information_service.solrize_filter_params(filter_params('m_', params))
     end
 
     def bso_filter_params
-      organization_information_service.solrize_filter_params(filter_params('b_', params))
+      collection_information_service.solrize_filter_params(filter_params('b_', params))
     end
 
     def cho_filter_params
-      organization_information_service.solrize_filter_params(filter_params('c_', params))
+      collection_information_service.solrize_filter_params(filter_params('c_', params))
     end
 
     def filter_params(prefix, params)
@@ -45,11 +38,15 @@ module Morphosource
 
     def hidden_params_for_filters(prefix)
       hidden_params = {}
-      params = request_params
+      params = request.params
       hidden_params.merge!({'view' => params['view']}) if params['view'].present?
       hidden_params.merge!({'rows' => params['rows']}) if params['rows'].present?
       hidden_params.merge!({'brows' => params['brows']}) if params['brows'].present?
       hidden_params.merge!({'crows' => params['crows']}) if params['crows'].present?
+      if params['add_works_to_collection'].present?
+        hidden_params.merge!({'add_works_to_collection' => params['add_works_to_collection']}) 
+        hidden_params.merge!({'add_works_to_collection_label[]' => params['add_works_to_collection_label'].first}) 
+      end
       html = ''
       hidden_params.map do |k,v|
         html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
@@ -59,7 +56,7 @@ module Morphosource
 
     def hidden_params_for_pagination(prefix)
       hidden_params = {}
-      params = request_params
+      params = request.params
       hidden_params.merge!({'view' => params['view']}) if params['view'].present?
       html = ''
       hidden_params.map do |k,v|
@@ -71,19 +68,40 @@ module Morphosource
       html.html_safe
     end
 
-    def request_params
-      request.params
-    end
-
-    def path_info 
+    def path_info(request)
       request.env['PATH_INFO']
     end
 
+    def bso_tab_url
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/dashboard/my/media/specimens?#{url_params}"
+    end
+
+    def cho_tab_url
+      url_params = request_params.
+        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        compact.
+        join('&')
+      "/dashboard/my/media/chos?#{url_params}"
+    end
+
     def prepare_docs_and_filters_for_media
+      @po_type = "bso" # bso / cho
+#      @is_team = collection.team?
       @visibility_options = []
+
+#      @team_project_options = @subcollection_docs.map(&:title).flatten # [] for projects
       @bso_visibility_options = []
       @bso_source_options = []
       @cho_visibility_options = []
+
+      @media_member_docs = @response.documents
+      @media_member_count = @response.total
+      @paged_media_member_docs = paginated_media_item_list
+      @document_list = @paged_media_member_docs
       @media_extras = get_media_extras(@paged_media_member_docs)
     end
 
@@ -92,7 +110,8 @@ module Morphosource
         this_media_extras = { 
           'id' => doc.id
         }
-        # get BSO and CHO title
+
+        # get BSO and CHO
         po_doc = Morphosource::PhysicalObjectParentSearchService.call({ id: doc.id })&.first
         if po_doc.present?
           this_media_extras['po_title'] = po_doc.title&.first
@@ -104,6 +123,7 @@ module Morphosource
             @po_type = "cho"
           end
         end
+
         this_media_extras
       end
     end

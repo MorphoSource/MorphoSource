@@ -1,7 +1,7 @@
 module Hyrax
   class TeamPresenter < CollectionPresenter
     #include MorphosourceHelper
-    include Morphosource::CollectionHelper
+    #include Morphosource::CollectionHelper
 
     attr_reader :filter_projects, :subcollection_count, :search_form_url, :collection, :collection_managers, :collection_type_title, :specimens,
       :organization,
@@ -65,20 +65,6 @@ module Hyrax
 
     def project?
       collection_type_title == 'Project'
-    end
-
-    def filter_projects(docs, params)
-      project_filter_params = filter_params('p_', params)
-      return docs if project_filter_params.empty?
-      filtered_docs = []
-      docs.each do |doc|
-        collection = Collection.find(doc.id)
-        visibility_to_compare = project_filter_params['visibility'] || collection.visibility
-        if collection.visibility == visibility_to_compare
-          filtered_docs << doc
-        end
-      end
-      filtered_docs
     end
 
     def organization

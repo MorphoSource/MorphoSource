@@ -12,8 +12,8 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
     let(:specimen)              { BiologicalSpecimen.create(title: ['new specimen'], vouchered: [true], organization_id: [organization.id]) }
     let(:old_specimen)          { BiologicalSpecimen.create(title: ['old_specimen'], vouchered: [true], organization_id: [old_organization.id]) }
     let(:device)                { Device.create(title: ['title'], modality: ['Photogrammetry'])}
-    let(:imaging_event)         { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], ie_modality: device.modality) }
-    let(:old_imaging_event)     { ImagingEvent.create(title: ['old imaging event'], device_id: [device.id], ie_modality: device.modality) }
+    let(:imaging_event)         { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
+    let(:old_imaging_event)     { ImagingEvent.create(title: ['old imaging event'], device_id: [device.id], physical_object_id: [old_specimen.id], ie_modality: device.modality) }
     let(:processing_event)      { ProcessingEvent.create(title: ['new processing event']) }
     let(:child_processing_event){ ProcessingEvent.create(title: ['child processing event']) }
     let(:media)                 { Media.create(title: ['media'], media_type: ['Image']) }
@@ -21,13 +21,12 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
 
     before do
       # set up work relationships
-      specimen.ordered_members << imaging_event
       imaging_event.ordered_members << processing_event
       processing_event.ordered_members << media
       media.ordered_members << child_processing_event
       child_processing_event.ordered_members << child_media
       # save all works
-      works = [specimen, imaging_event, processing_event, media, child_processing_event, child_media]
+      works = [imaging_event, processing_event, media, child_processing_event, child_media]
       works.each(&:save)
       works.each(&:reload)
     end
@@ -38,6 +37,7 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
           subject.new_processing_event_updates(media)
         end
         it "does not change the media's permissions" do
+
           expect(media.read_groups).to match_array([])
           expect(child_media.read_groups).to match_array([])
         end
@@ -48,10 +48,9 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
           media.read_groups += old_team.user_groups_names
           child_media.read_groups += old_team.user_groups_names
 
-          old_specimen.ordered_members << old_imaging_event
           old_imaging_event.ordered_members << media
 
-          works = [old_specimen, old_imaging_event, media, child_media]
+          works = [old_imaging_event, media, child_media]
           works.each(&:save)
           works.each(&:reload)
 
@@ -84,10 +83,9 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
           media.read_groups += old_team.user_groups_names
           child_media.read_groups += old_team.user_groups_names
 
-          old_specimen.ordered_members << old_imaging_event
           old_imaging_event.ordered_members << media
 
-          works = [old_specimen, old_imaging_event, media, child_media]
+          works = [old_imaging_event, media, child_media]
           works.each(&:save)
           works.each(&:reload)
 

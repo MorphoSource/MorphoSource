@@ -43,11 +43,7 @@
           <%= render 'tab_device', i: i %>
         </div>
         <div class="row related_form physical-object-details" style="display:none;">
-        <% if @presenter.physical_object_type == "Biological Specimen" %>
-          <%= render 'tab_biological_specimen', i: i %>
-        <% elsif @presenter.physical_object_type == "Cultural Heritage Object" %>
-          <%= render 'tab_cultural_heritage_object', i: i %>
-        <% end %>
+          <%= render 'tab_physical_object', i: i %>
         </div>
       <% end %>
   <% else %>

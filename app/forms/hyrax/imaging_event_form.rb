@@ -20,6 +20,7 @@ module Hyrax
         :ie_modality,
         :date_created,
         :device_id,
+        :physical_object_id,
         # X-ray CT metadata
         :exposure_time,
         :flux_normalization,
@@ -111,7 +112,7 @@ module Hyrax
 
     # These show above the fold
     def primary_terms
-        required_fields - [:device_id] + [
+        required_fields - [:device_id, :physical_object_id] + [
             :description,
             :creator,
             :software,
@@ -158,7 +159,7 @@ module Hyrax
     end
 
     def self.build_permitted_params
-      super + [:device_id]
+      super + [:device_id, :physical_object_id]
     end
 
   end

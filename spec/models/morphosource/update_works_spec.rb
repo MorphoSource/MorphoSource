@@ -108,10 +108,11 @@ RSpec.describe Morphosource::Works::Base do
     let(:new_imaging_event2_doc)  { SolrDocument.find(imaging_event2.id) }
 
     it 'updates only the specimen object and added imaging event' do
-      expect { specimen.ordered_members << imaging_event2
-               specimen.save
-      }.to change      { specimen.modified_date }
-       .and change     { imaging_event2.modified_date }
+      expect { 
+        imaging_event2.physical_object_id = [specimen.id]
+        imaging_event2.save!
+      }.to change      { imaging_event2.modified_date }
+       .and not_change { specimen.modified_date }
        .and not_change { taxonomy.modified_date }
        .and not_change { organization.modified_date }
        .and not_change { imaging_event.modified_date }
@@ -124,14 +125,14 @@ RSpec.describe Morphosource::Works::Base do
       old_imaging_event2_doc
       old_docs
 
-      specimen.ordered_members << imaging_event2
-      specimen.save
+      imaging_event2.physical_object_id = [specimen.id]
+      imaging_event2.save!
 
-      # specimen and added imaging event are reindexed
-      expect(old_specimen_doc['_version_']).not_to eq(new_specimen_doc['_version_'])
+      # imaging event is reindexed
       expect(old_imaging_event2_doc['_version_']).not_to eq(new_imaging_event2_doc['_version_'])
 
       # associated works are not reindexed
+      expect(old_specimen_doc['_version_']).to eq(new_specimen_doc['_version_'])
       expect(old_taxonomy_doc['_version_']).to eq(new_taxonomy_doc['_version_'])
       expect(old_organization_doc['_version_']).to eq(new_organization_doc['_version_'])
       expect(old_imaging_event_doc['_version_']).to eq(new_imaging_event_doc['_version_'])

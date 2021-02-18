@@ -182,7 +182,7 @@ class Media < Morphosource::Works::Base
   end
 
   def specimens
-    ancestors.select(&:specimen?)
+    physical_objects.select(&:specimen?)
   end
 
   def object_titles
@@ -190,7 +190,7 @@ class Media < Morphosource::Works::Base
   end
 
   def physical_objects
-    ancestors.select(&:physical_object?)
+    ancestors.select(&:imaging_event?).map(&:objects).flatten
   end
   alias objects physical_objects
 

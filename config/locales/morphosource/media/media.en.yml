@@ -1,0 +1,6 @@
+en:
+  morphosource:
+    media:
+      edit:
+        select_physical_object_instructions: For success in searching physical objects, enter the object's complete catalog code, with institution, collection, and catalog terms separated by a colon (e.g., "USNM:MAMMALS:16308"), or terms from the object's short title.
+        select_physical_object: Currently, physical objects can only be created during media submission. In the future, you will be able to create a new physical object without submitting media. In the meantime, if you can't find the correct physical object record using the search tools above, contact the <a href="mailto:morphosource@duke.edu">MorphoSource administrators</a> to have a new physical object record created.

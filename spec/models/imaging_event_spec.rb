@@ -7,7 +7,7 @@ RSpec.describe ImagingEvent do
   describe "valid work relationships" do
 
     it "has BiologicalSpecimen and CulturalHeritageObject as valid parents" do
-      expect(subject.valid_parent_concerns).to match_array([BiologicalSpecimen, CulturalHeritageObject])
+      expect(subject.valid_parent_concerns).to match_array([])
     end
 
     it "has Media and ProcessingEvent as valid child concerns" do
@@ -166,15 +166,8 @@ RSpec.describe ImagingEvent do
   describe 'objects' do
     let(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
     let(:cho)       { CulturalHeritageObject.create(title: ['cho'], vouchered: ['No']) }
-    let(:ie)        { ImagingEvent.create(title: ['ie'], device_id: [device.id], ie_modality: device.modality) }
+    let(:ie)        { ImagingEvent.create(title: ['ie'], device_id: [device.id], physical_object_id: [specimen.id, cho.id], ie_modality: device.modality) }
     let(:device)    { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:works)     { [specimen, cho, ie] }
-
-    before do
-      specimen.ordered_members << ie
-      cho.ordered_members << ie
-      works.each(&:save)
-    end
 
     it 'returns all parent objects' do
       expect(ie.objects).to match_array([specimen, cho])

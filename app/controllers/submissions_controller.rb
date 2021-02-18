@@ -441,23 +441,22 @@ class SubmissionsController < ApplicationController
       @device_create_params = model_params
 
     when 'imaging_event'
-      parents = []
+
       if @submission.biological_specimen_or_cultural_heritage_object == 'bso'
         if !@submission.biological_specimen_id.present?
           raise StandardError.new "Debug no biological specimen id #{@submission.biological_specimen_id}"
         end
-        parents << @submission.biological_specimen_id
+        addl_params.merge!({ physical_object_id: [@submission.biological_specimen_id] })
       elsif @submission.biological_specimen_or_cultural_heritage_object == 'cho'
         if !@submission.cultural_heritage_object_id.present?
           raise StandardError.new "Debug no cho id #{@submission.cultural_heritage_object_id}"
         end
-        parents << @submission.cultural_heritage_object_id
+        addl_params.merge!({ physical_object_id: [@submission.cultural_heritage_object_id] })
       end
       if !@submission.device_id.present?
           raise StandardError.new "Debug no device id #{@submission.device_id}"
       end
       model_params.merge!(addl_params)
-      model_params = assign_model_params_parents(model_params, parents)
       @imaging_event_create_params = model_params
 
     when 'processing_event'

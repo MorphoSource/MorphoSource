@@ -12,7 +12,7 @@ module Morphosource
         else
           return if parents_attributes.nil?
         end
-
+        
         return if organizations_unchanged?
 
         update_linked_team_access
@@ -20,9 +20,9 @@ module Morphosource
 
       # called from media actor
       def add_organization_team_access(works)
+        works = Array(works)
         team_ids = linked_team_ids(new_orgs)
         return if team_ids.blank?
-
         get_groups(team_ids)
         works.each { |w| add_read_access(w) }
       end
@@ -35,13 +35,17 @@ module Morphosource
 
       def get_processing_event_values(media)
         @curation_concern = media
-        new_specimens = select_specimens(media.ancestors)
+        new_specimens = media.objects
         @new_orgs = specimen_organizations(new_specimens)
         find_all_media
       end
 
       def record_original_organizations
         @original_organizations = Organization.find(Array(@curation_concern.organization_id))
+      end
+
+      def record_original_objects
+        @original_objects = ActiveFedora::Base.find(Array(@curation_concern.physical_object_id))
       end
 
       def record_original_parents
@@ -89,7 +93,11 @@ module Morphosource
       end
 
       def find_all_media
-        works = @curation_concern.descendants << @curation_concern
+        if @curation_concern.class == BiologicalSpecimen || @curation_concern.class == CulturalHeritageObject
+          works = @curation_concern.media
+        else
+          works = @curation_concern.descendants << @curation_concern
+        end
         @media = select_media(works)
       end
 

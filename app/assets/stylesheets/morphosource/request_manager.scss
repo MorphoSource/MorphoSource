@@ -1,23 +1,33 @@
 body.dl-request {
 
+  h1 {
+    font-size: 28px !important;
+  }
+
   h3 * {
     font-size: 18px !important;
   }
 
   .btn {
-    font-weight: normal;
-    padding: 3px 8px;
-    font-size: 11px;
+    padding: 4px 15px;
+    font-size: 12px;
   }
 
   .works-list {
+    .btn {
+      padding: 3px 8px;
+      font-size: 11px;
+    }
+    th {
+      font-size: 12px;
+    }
     td {
       vertical-align: top !important;
       font-size: 12px;
       .btn {
         font-size: 10px;
         padding: 1px 8px !important;
-        width: 60px !important;
+        min-width: 60px !important;
         margin-bottom: 2px;
       }
       .media {

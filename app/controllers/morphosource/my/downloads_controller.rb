@@ -3,6 +3,7 @@ module Morphosource
     class DownloadsController < Hyrax::MyController
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
+      with_themed_layout 'morphosource_dashboard'      
 
       def index
         get_items('downloads')

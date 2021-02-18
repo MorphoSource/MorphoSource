@@ -7,13 +7,14 @@
         <span class="glyphicon glyphicon-triangle-bottom collapse-block"></span></a>( <%= @requester_items.count %> items )
     </h3>
     <div id="collapse-block" class="panel-collapse collapse-block glyphicon-only table collapse" aria-expanded="false">
-      <div class="text-left">
+      <div class="user-details">
+        <div class="col-xs-3 showcase-label">Email:</div><div class="col-xs-9 showcase-value"><%= requester.email %></div><br />
         <div class="col-xs-3 showcase-label">Organization:</div><div class="col-xs-9 showcase-value"><%= requester.affiliation %></div><br />
         <div class="col-xs-3 showcase-label">Department:</div><div class="col-xs-9 showcase-value"><%= requester.department %></div><br />
         <div class="col-xs-3 showcase-label">Profession:</div>
         <div class="col-xs-9 showcase-value">
         <%= render partial: 'morphosource/my/request_manager/list_requester_demographics', collection: requester.demographics, as: :profession %>
-        </div>
+        </div><br />
       </div>
     </div>
   </div>

@@ -231,19 +231,21 @@ module Morphosource::CartItemHelper
   end
 
   def object_details(media_doc)
-    details = ""
-    if media_doc.media_physical_object_type.first == "Biological Specimen"
-      if media_doc.physical_object_id.present?
-        bso = SolrDocument.find(media_doc.physical_object_id)
-        bso_title = [bso.institution_code, bso.collection_code, bso.catalog_number].compact.join(':')
-#byebug
-        o = BiologicalSpecimen.find(bso.id)
-#byebug
-        details = bso_title + ', ' + o.taxonomies_titles.to_s
+    title = ""
+    taxonomy = ""
+    if media_doc.physical_object_id.present?
+      obj = SolrDocument.find(media_doc.physical_object_id)
+      title = obj.title.first
+      if obj.specimen?
+        type = "bso"
+        if obj.taxonomy_id.present?
+          taxonomy = SolrDocument.find(obj.taxonomy_id.first)&.title&.first
+        end
+      else # CHO
+        type = "cho"
       end
-    else
     end
-    return details
+    return type, title, taxonomy
   end
 
   def requester_title(requester)

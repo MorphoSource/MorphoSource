@@ -162,7 +162,7 @@ module Morphosource::CartItemHelper
       when 'Cleared'
        button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
       when 'Requested'
-        make_button(item,"Cancel Request",:cancel_request_path,"btn btn-danger",:put,"background-color: gray;")
+        make_button(item,"Cancel",:cancel_request_path,"btn btn-danger",:put,"background-color: gray;")
       else
         button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
       end

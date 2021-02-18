@@ -1,3 +1,6 @@
+<%
+po_type, po_title, taxonomy = object_details(document)
+%>
 <tr id="document_<%= document.id %>">
 
   <td>
@@ -24,6 +27,9 @@
       </div>
     </div>
   </td>
+  <td><%= document.id %></td>
+  <td class="break-all"><%= po_title %></td>
+  <td><%= taxonomy %></td>
   <td><%= item_status_label(item) %></td>
   <td><%= item.reviewer.name %></td>
   <td><%= item.reviewer.affiliation %></td>

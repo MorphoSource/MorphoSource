@@ -109,11 +109,6 @@ RSpec.describe MediaIndexer do
       works.each(&:reload)
     end
 
-    it 'indexes physical object type' do
-      expect(subject['media_physical_object_type_tesim']).to eq('Biological Specimen')
-      expect(subject['media_physical_object_type_sim']).to eq('Biological Specimen')
-    end
-
     it 'indexes physical object id' do
       expect(subject['physical_object_id_ssim']).to match_array([specimen.id, cho.id])
       expect(subject['physical_object_id_tesim']).to match_array([specimen.id, cho.id])

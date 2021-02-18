@@ -4,10 +4,6 @@ body.dl-request {
     font-size: 28px !important;
   }
 
-  h3 * {
-    font-size: 18px !important;
-  }
-
   .btn {
     padding: 4px 15px;
     font-size: 12px;
@@ -37,6 +33,7 @@ body.dl-request {
   }
   .user-details {
     text-align: left;
+    margin: 10px 50px !important;    
     div {
       font-size: 12px !important;  
     }
@@ -50,14 +47,35 @@ body.dl-request {
     flex-direction: column;
     align-items: center;
     margin-bottom: 40px;
+    padding-top: 10px;
   }
 
-  .user-title {
-    text-align: center;
+  .user-title,
+  .intended-use-wrapper {
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    h4 {
+      font-size: 14px;
+      margin: 10px 50px;
+      * {
+        font-size: 18px !important;
+      }
+      .quote {
+        font-weight: bold;
+        font-size: 18px !important;
+        margin-right: 3px;
+      }
+    }
+  }
+  .intended-use-wrapper {
+    margin-top: 15px;
+    font-style: italic;
   }
 
   .check-all-media {
-    margin-left: 26px;
+    margin: 20px 0 8px -6px;
   }
 
   .requests-wrapper {
@@ -65,8 +83,7 @@ body.dl-request {
   }
 
   .select-all-use {
-  //  position: relative;
-  // top: 30px;
+    margin-top: 10px;
   }
 
   .check-all-div {
@@ -86,11 +103,6 @@ body.dl-request {
     border-radius: 5px;
     background-color: #fff;
     margin-bottom: 40px;
-  }
-
-  .intended-use-wrapper {
-    text-align: center;
-    margin-bottom: 20px;
   }
 
 }

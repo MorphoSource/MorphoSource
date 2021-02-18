@@ -1,23 +1,5 @@
+<% get_requester_items(@items,requester) %>
 <div class="user-wrapper">
-  <% get_requester_items(@items,requester) %>
-  <div class="user-title">
-    <h3>
-      <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block" class="btn collapse-block">
-        <%= requester_title(requester) %> 
-        <span class="glyphicon glyphicon-triangle-bottom collapse-block"></span></a>( <%= @requester_items.count %> items )
-    </h3>
-    <div id="collapse-block" class="panel-collapse collapse-block glyphicon-only table collapse" aria-expanded="false">
-      <div class="user-details">
-        <div class="col-xs-3 showcase-label">Email:</div><div class="col-xs-9 showcase-value"><%= requester.email %></div><br />
-        <div class="col-xs-3 showcase-label">Organization:</div><div class="col-xs-9 showcase-value"><%= requester.affiliation %></div><br />
-        <div class="col-xs-3 showcase-label">Department:</div><div class="col-xs-9 showcase-value"><%= requester.department %></div><br />
-        <div class="col-xs-3 showcase-label">Profession:</div>
-        <div class="col-xs-9 showcase-value">
-        <%= render partial: 'morphosource/my/request_manager/list_requester_demographics', collection: requester.demographics, as: :profession %>
-        </div><br />
-      </div>
-    </div>
-  </div>
 
   <div class="requests-wrapper">
     <% if @tab == 'new' %>
@@ -33,6 +15,27 @@
         <% end %>
       </div>
     <% end %>
+
+    <div class="user-title">
+      <h4>
+        <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block" class="btn collapse-block">
+          <%= requester_title(requester) %> 
+          <span class="glyphicon glyphicon-triangle-bottom collapse-block"></span></a>( <%= @requester_items.count %> items )
+      </h4>
+      <div id="collapse-block" class="panel-collapse collapse-block glyphicon-only table collapse" aria-expanded="false">
+        <div class="user-details">
+          <div class="col-xs-6 col-sm-3 col-md-2  col-xl-1 showcase-label">Email:</div><div class="col-xs-6 col-sm-9 col-md-10 col-xl-11 showcase-value"><%= requester.email %></div>
+          <div class="col-xs-6 col-sm-3 col-md-2  col-xl-1 showcase-label">Organization:</div><div class="col-xs-6 col-sm-9 col-md-10 col-xl-11 showcase-value"><%= requester.affiliation %></div>
+          <div class="col-xs-6 col-sm-3 col-md-2  col-xl-1 showcase-label">Department:</div><div class="col-xs-6 col-sm-9 col-md-10 col-xl-11 showcase-value"><%= requester.department %></div>
+          <div class="col-xs-6 col-sm-3 col-md-2  col-xl-1 showcase-label">Profession:</div>
+          <div class="col-xs-6 col-sm-9 col-md-10 col-xl-11 showcase-value">
+          <%= render partial: 'morphosource/my/request_manager/list_requester_demographics', collection: requester.demographics, as: :profession %>
+          </div>
+          <br clear="all" />
+        </div>
+      </div>
+    </div>
+
     <% requester_uses.each_with_index do |use, counter| %>
       <% if @tab == 'new' %>
         <%= render 'morphosource/my/request_manager/new/list_requests', requester: requester, counter: counter, use: use, items: @requester_items %>

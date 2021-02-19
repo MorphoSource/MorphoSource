@@ -549,8 +549,7 @@ module Hyrax
     end
 
     def related_media_ids
-      ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
-      return ids
+      @related_media_ids ||= media.related_media_ids_solr
     end
 
     def viewable_related_media_ids

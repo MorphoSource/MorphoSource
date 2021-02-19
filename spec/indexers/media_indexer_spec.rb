@@ -73,15 +73,14 @@ RSpec.describe MediaIndexer do
     let(:media1)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
     let(:media2)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
     let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], ie_modality: device.modality) }
+    let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
     let!(:processing_event1)       { ProcessingEvent.create(title: ['processing_event']) }
     let!(:processing_event2)       { ProcessingEvent.create(title: ['processing_event']) }
-    let!(:works)                  { [ specimen, device, imaging_event, processing_event1, processing_event2 ] }
+    let!(:works)                  { [ imaging_event, processing_event1, processing_event2 ] }
 
     subject(:solr_document)       { described_class.new(media1).generate_solr_document }
 
     before do
-      specimen.ordered_members << imaging_event
       imaging_event.ordered_members << processing_event1
       imaging_event.ordered_members << processing_event2
       processing_event1.ordered_members << media1
@@ -101,21 +100,13 @@ RSpec.describe MediaIndexer do
     let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
     let(:cho)           { CulturalHeritageObject.create(title: ['CHO'], vouchered: ['Yes'], organization_id: [organization.id]) }
     let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
+    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], physical_object_id: [cho.id, specimen.id], ie_modality: device.modality) }
     let(:works)         { [specimen, cho, media, imaging_event] }
 
     before do
-
-      specimen.ordered_members << imaging_event
-      cho.ordered_members << imaging_event
       imaging_event.ordered_members << media
       works.each(&:save)
       works.each(&:reload)
-    end
-
-    it 'indexes physical object type' do
-      expect(subject['media_physical_object_type_tesim']).to eq('Biological Specimen')
-      expect(subject['media_physical_object_type_sim']).to eq('Biological Specimen')
     end
 
     it 'indexes physical object id' do

@@ -20,15 +20,15 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
 
   let!(:org1)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
 
-  let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id) }
-  let(:cho)              { CulturalHeritageObject.create(title: ['cho'], vouchered: [true], depositor: user.ms_id) }
+  let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id, organization_id: [org1.id]) }
+  let(:cho)              { CulturalHeritageObject.create(title: ['cho'], vouchered: [true], depositor: user.ms_id, ) }
   let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, device_id: [device.id], ie_modality: device.modality) }
+  let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
   let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }
   let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
   let(:team_depositor)   { User.create(email: 'depositor@test.com', password: 'password') }
   let(:team_viewer)      { User.create(email: 'viewer@test.com', password: 'password') }
-  let(:works)             { [org1, specimen, imagingEvent, media] }
+  let(:works)             { [imagingEvent, media] }
 
   let(:presenter) { described_class.new(SolrDocument.new(team.to_solr), ability, nil) }
 
@@ -36,8 +36,6 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
     allow(subject.current_user).to receive(:user?).and_return(true)
     request.env['HTTP_REFERER'] = 'original_page'
 
-    org1.ordered_members << specimen
-    specimen.ordered_members << imagingEvent
     imagingEvent.ordered_members << media
 
     works.each(&:save)

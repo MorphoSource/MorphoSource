@@ -5,20 +5,8 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
   let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
   let(:ability) { double Ability }
 
-  let!(:biospecs) do
-    [
-        BiologicalSpecimen.create(title: [ 'abc:123' ],
-                                  catalog_number: [ '123' ],
-                                  institution_code: [ 'INST1' ],
-                                  collection_code: [ 'abc' ],
-                                  vouchered: [ true ]),
-        BiologicalSpecimen.create(title: [ 'abc:456' ],
-                                  catalog_number: [ '456' ],
-                                  institution_code: [ 'INST2' ],
-                                  collection_code: [ 'abc' ],
-                                  vouchered: [ true ]),
-    ]
-  end
+  let!(:org1)  { Organization.create(title: ['title'], organization_type: ["foobar"]) }
+  let!(:specimen) { BiologicalSpecimen.create(title: [ 'abc:123' ], catalog_number: [ '123' ], institution_code: [ 'INST1' ], collection_code: [ 'abc' ], vouchered: [ true ], organization_id: [ org1.id ] ) }
 
   let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let!(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
@@ -32,22 +20,10 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
                   )
   }
   let(:device)  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id]) }
-
-
-  let!(:org1)  {
-    Organization.create(
-      title: ['title'],
-      organization_type: ["foobar"]
-    )
-  }
+  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
 
   before do
-    org1.ordered_members << biospecs.first
-    org1.save
-    biospecs.first.ordered_members << imagingEvent
     imagingEvent.ordered_members << media1
-    biospecs.first.save
     imagingEvent.save
     media1.member_of_collections << team1
     media1.save

@@ -65,7 +65,7 @@ require 'rails_helper'
       it "raises errors" do
         expect( record.errors[:works][0] ).to include("valid children for Media do not include", "BiologicalSpecimen", "Organization" )
         expect( invalid_parent.errors[:works] ).to match_array( ["valid children for Media do not include Media. Valid child concerns are ProcessingEvent"])
-        expect( invalid_parent2.errors[:works] ).to match_array( ["valid children for CulturalHeritageObject do not include Media. Valid child concerns are ImagingEvent"])
+        expect( invalid_parent2.errors[:works] ).to match_array( ["valid children for CulturalHeritageObject do not include Media. Valid child concerns are "])
       end
     end
 

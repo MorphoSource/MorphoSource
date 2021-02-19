@@ -1,0 +1,60 @@
+<div style='word-wrap: break-word;' id='physical-object-details'>
+  <h2>CURRENT <%= presenter.physical_object_type.present? ? presenter.physical_object_type : 'PHYSICAL OBJECT' %></h2>
+
+  <div class="message has-warning hidden"></div>
+  <table>
+    <tbody></tbody>
+  </table>
+
+  <input id="physical-object-id-value" type="hidden" value="<%= presenter.physical_object_id %>" />
+
+  <tr>
+    <td>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Object type</div>
+        <div class="col-xs-6 showcase-value" id="physical-object-type"><%= presenter.physical_object_type %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Vouchered?</div>
+        <div class="col-xs-6 showcase-value" id="physical-object-vouchered"><%= presenter.vouchered&.first %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Institution code</div>
+        <div class="col-xs-6 showcase-value" id="physical-object-institution-code"><%= presenter.institution_code&.first %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Collection code</div>
+        <div class="col-xs-6 showcase-value" id="physical-object-collection-code"><%= presenter.collection_code&.first %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Catalog number</div>
+        <div class="col-xs-6 showcase-value" id="physical-object-catalog-number"><%= presenter.catalog_number&.first %></div>
+      </div>
+      <% if presenter.physical_object_type == "Biological Specimen" %>
+        <div class="row">
+          <div class="col-xs-6 showcase-label">Occurrence ID</div>
+          <div class="col-xs-6 showcase-value" id="physical-object-occurrence-id"><%= presenter.occurrence_id&.first %></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6 showcase-label">Source of record</div>
+          <div class="col-xs-6 showcase-value" id="physical-object-source"><%= presenter.idigbio_uuid.present? ? 'iDigBio' : '' %></div>
+        </div>
+      <% else %>
+        <div class="row">
+          <div class="col-xs-6 showcase-label">Short title</div>
+          <div class="col-xs-6 showcase-value" id="physical-object-short-title"><%= presenter.short_title&.first %></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6 showcase-label">Cultural heritage object type</div>
+          <div class="col-xs-6 showcase-value" id="physical-object-cho-type"><%= presenter.cho_type&.first %></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6 showcase-label">Material</div>
+          <div class="col-xs-6 showcase-value" id="physical-object-material"><%= presenter.material&.first %></div>
+        </div>
+      <% end %>
+    </td>
+  </tr>
+
+
+</div>

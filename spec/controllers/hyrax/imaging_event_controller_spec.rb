@@ -3,10 +3,14 @@
 require 'rails_helper'
 
 RSpec.describe Hyrax::ImagingEventsController do
-  let(:actor)           { double(update: true) }
-  let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry'])}
-  let!(:imaging_event)  { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality) }
-  let(:user)            { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
+  let(:actor)                 { double(update: true) }
+  let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+  let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+  let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
+  let(:old_specimen)          { BiologicalSpecimen.create(title: ['old specimen'], vouchered: [true], organization_id: [old_organization.id]) }
+  let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry'])}
+  let!(:imaging_event)        { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [old_specimen.id], ie_modality: device.modality) }
+  let(:user)                  { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
   before do
     allow(subject).to receive(:actor).and_return(actor)
@@ -34,17 +38,12 @@ RSpec.describe Hyrax::ImagingEventsController do
 
     context "when the imaging event's params include parents" do
       let(:media)                 { Media.create(title: ['media']) }
-      let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
-      let(:old_specimen)          { BiologicalSpecimen.create(title: ['old specimen'], vouchered: [true], organization_id: [old_organization.id]) }
-      let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
-      let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
       let(:old_team_manager)      { User.create(email: 'oldmanager@test.com', password: 'password') }
       let(:old_team_depositor)    { User.create(email: 'olddepositor@test.com', password: 'password') }
       let(:old_team_viewer)       { User.create(email: 'oldviewer@test.com', password: 'password') }
       let(:params)                { { id: imaging_event.id, 'imaging_event' => { 'work_parents_attributes' => parent_attributes } } }
 
       before do
-        old_specimen.ordered_members << imaging_event
         imaging_event.ordered_members << media
 
         old_team.create_collection_groups
@@ -55,7 +54,7 @@ RSpec.describe Hyrax::ImagingEventsController do
 
         media.read_groups += old_team.user_groups.map(&:name)
 
-        works = [old_specimen, imaging_event, media]
+        works = [imaging_event, media]
         works.each(&:save)
         works.each(&:reload)
       end

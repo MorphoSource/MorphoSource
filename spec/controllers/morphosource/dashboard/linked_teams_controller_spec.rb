@@ -27,18 +27,17 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
     context 'the current user is an admin' do
       let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: admin.ms_id, organization_id: [org1.id]) }
       let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-      let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: admin.ms_id, device_id: [device.id], ie_modality: device.modality) }
+      let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: admin.ms_id, device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
       let(:media)            { Media.create(title: ['new media'], depositor: admin.ms_id) }
       let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
       let(:team_depositor)   { User.create(email: 'depositor@test.com', password: 'password') }
       let(:team_viewer)      { User.create(email: 'viewer@test.com', password: 'password') }
-      let(:works)             { [org1, specimen, imagingEvent, media] }
+      let(:works)             { [imagingEvent, media] }
 
       before do
         allow(subject.current_user).to receive(:admin?).and_return(true)
         request.env['HTTP_REFERER'] = 'original_page'
 
-        specimen.ordered_members << imagingEvent
         imagingEvent.ordered_members << media
 
         team.managers << team_manager
@@ -52,12 +51,11 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
 
       context 'the team already has a linked organization' do
         let(:specimen2)        { BiologicalSpecimen.create(title: ['specimen2'], vouchered: [true], depositor: admin.ms_id, organization_id: [org2.id]) }
-        let(:imagingEvent2)    { ImagingEvent.create(title: ['imagingEvent2'], depositor: admin.ms_id, device_id: [device.id], ie_modality: device.modality) }
+        let(:imagingEvent2)    { ImagingEvent.create(title: ['imagingEvent2'], depositor: admin.ms_id, device_id: [device.id], physical_object_id: [specimen2.id], ie_modality: device.modality) }
         let(:media2)           { Media.create(title: ['old media'], depositor: admin.ms_id) }
-        let(:works)             { [org1, org2, specimen, specimen2, imagingEvent, imagingEvent2, media, media2] }
+        let(:works)             { [imagingEvent, imagingEvent2, media, media2] }
 
         before do
-          specimen2.ordered_members << imagingEvent2
           imagingEvent2.ordered_members << media2
 
           media2.read_groups += team.user_groups.map(&:name)

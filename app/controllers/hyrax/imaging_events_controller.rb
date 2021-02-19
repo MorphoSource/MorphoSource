@@ -17,7 +17,7 @@ module Hyrax
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::ImagingEventPresenter
 
-    before_action :record_original_parents, only: :update
+    before_action :record_original_objects, only: :update
 
     def update
       # Handle possible attachment upload
@@ -72,11 +72,11 @@ module Hyrax
     private
 
     def old_specimens
-      select_specimens(@original_parents)
+      select_specimens(@original_objects)
     end
 
     def new_specimens
-      select_specimens(@curation_concern.member_of)
+      ActiveFedora::Base.find(Array(@curation_concern.physical_object_id))
     end
   end
 end

@@ -36,15 +36,10 @@ RSpec.describe Morphosource::BrowseService do
                   )
   }
   let!(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id]) }
-
-
-  
+  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
 
   before do
-    specimen.ordered_members << imagingEvent
     imagingEvent.ordered_members << media1
-    specimen.save
     imagingEvent.save
     media1.member_of_collections << team1
     media1.save

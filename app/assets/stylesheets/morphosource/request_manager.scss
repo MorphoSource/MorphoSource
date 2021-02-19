@@ -57,21 +57,19 @@ body.dl-request {
       padding: 0;
     }
     h4 {
-      font-size: 14px;
+      font-size: 18px !important;
       margin: 10px 50px;
-      * {
+      a {
         font-size: 18px !important;
-      }
-      .quote {
-        font-weight: bold;
-        font-size: 18px !important;
-        margin-right: 3px;
       }
     }
   }
   .intended-use-wrapper {
     margin-top: 15px;
     font-style: italic;
+    h4 {
+      font-size: 15px !important;
+    }
   }
 
   .check-all-media {
@@ -80,6 +78,15 @@ body.dl-request {
 
   .requests-wrapper {
     width: 98%;
+  }
+
+  .requests-wrapper {
+    .user-div {
+      margin-left: 0;
+      h4 {
+        margin-left: 28px !important;
+      }
+    }
   }
 
   .select-all-use {

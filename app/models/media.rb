@@ -218,14 +218,14 @@ class Media < Morphosource::Works::Base
   end
 
   def related_media_ids_solr
-    related_media_solr.map(&:id).except { |id| id == self.id }
+    related_media_solr.map { |d| d['id'] }.reject { |id| id == self.id }
   end
 
   def related_media_solr
     return [] if !imaging_event.present? || !imaging_event&.id.present?
 
     qry = "#{Solrizer.solr_name('imaging_event_id', :stored_searchable)}:#{imaging_event.id} AND has_model_ssim:Media"
-    MorphoSource::SolrService.new().get_docs(qry, args: { fl: 'id' } )
+    ::Morphosource::SolrService.new().get_docs(qry, args: { fl: 'id' } )
   end
 
   def organizations

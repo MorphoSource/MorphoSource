@@ -1,0 +1,8 @@
+de:
+  hyrax:
+    icons:
+      engineering_object:     'fa fa-file-text-o'
+    select_type:
+      engineering_object:
+        description:        "Engineering object Werke"
+        name:               "Engineering Object"

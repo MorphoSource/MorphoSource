@@ -1,0 +1,10 @@
+zh:
+  hyrax:
+    icons:
+      engineering_object:     'fa fa-file-text-o'
+    select_type:
+      engineering_object:
+        # TODO: translate `human_name` into Chinese
+        description:        "Engineering object 作品"
+        name:               "Engineering Object"
+        # TODO: translate `human_name` into Chinese

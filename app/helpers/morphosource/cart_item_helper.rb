@@ -162,7 +162,7 @@ module Morphosource::CartItemHelper
       when 'Cleared'
        button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
       when 'Requested'
-        make_button(item,"Cancel Request",:cancel_request_path,"btn btn-danger",:put,"background-color: gray;")
+        make_button(item,"Cancel",:cancel_request_path,"btn btn-danger",:put,"background-color: gray;")
       else
         button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
       end
@@ -229,4 +229,31 @@ module Morphosource::CartItemHelper
   def editable_items(items)
     items.select(&:editable?)
   end
+
+  def object_details(media_doc)
+    title = ""
+    taxonomy = ""
+    if media_doc.physical_object_id.present?
+      obj = SolrDocument.find(media_doc.physical_object_id)
+      title = obj.title.first
+      if obj.specimen?
+        type = "bso"
+        if obj.taxonomy_id.present?
+          taxonomy = SolrDocument.find(obj.taxonomy_id.first)&.title&.first
+        end
+      else # CHO
+        type = "cho"
+      end
+    end
+    return type, title, taxonomy
+  end
+
+  def requester_title(requester)
+    if requester.display_name.present?
+      requester.display_name
+    else
+      requester.email
+    end
+  end
+
 end

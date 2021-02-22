@@ -1,14 +1,13 @@
 <div class="request-wrapper">
 
-  <div class="intended-use-wrapper">
-    <h4><%= use %></h4>
-  </div>
-
   <div class="check-all-div select-all-use">
     <% if editable_use_requests(items,use).count > 0 %>
       <%= check_box_tag 'check_all_div', 'no', false, class: 'check_all_use' %>
       <span>Select All Editable Requests for This Intended Use</span>
     <% end %>
+  </div>
+  <div class="intended-use-wrapper">
+    <h4><%= use %></h4>
   </div>
 
   <div class="requested-items-wrapper">
@@ -16,7 +15,7 @@
       <thead>
         <tr>
           <th></th>
-          <th></th>
+          <th>Media</th>
           <th>Status</th>
           <th>Approver</th>
           <th>Requested</th>

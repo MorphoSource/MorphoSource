@@ -110,7 +110,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         %(<span class=\"label label-primary\" style=\"\">Requested</span>)
       end
       let(:button_content) do
-        %(<a class=\"btn btn-danger\" style=\"background-color: gray;\" rel=\"nofollow\" data-method=\"put\" href=\"/cancel_request?item_id=#{item.id}\">Cancel Request</a>)
+        %(<a class=\"btn btn-danger\" style=\"background-color: gray;\" rel=\"nofollow\" data-method=\"put\" href=\"/cancel_request?item_id=#{item.id}\">Cancel</a>)
       end
       before do
         item.date_requested = Date.today
@@ -338,4 +338,5 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       end
     end
   end
+
 end

@@ -2,9 +2,9 @@
   <label class="centerizer check-all-media">
     <%= check_box_tag 'check_all', 'yes', @all_checked, class: 'check_all', disabled: @disable_select_all %>
     <% if @tab == 'new' %>
-      <span style="margin-left: 5px;">Select All Media This Page</span>
+      <span style="margin-left: 5px;">Select All Media In This Page</span>
     <% elsif @tab == 'previous' %>
-      <span style="margin-left: 5px;">Select All Editable Requests This Page</span>
+      <span style="margin-left: 5px;">Select All Editable Requests In This Page</span>
     <% end %>
   </label>
 </div>

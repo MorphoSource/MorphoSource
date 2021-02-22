@@ -35,19 +35,11 @@ module Morphosource
     private
 
       def find_physical_object_ids(specific_id)
-        parents = find_parents(specific_id)
-        parents.each do |p|
-          if p['has_model_ssim']&.first == 'BiologicalSpecimen' || p['has_model_ssim']&.first == 'CulturalHeritageObject'
-            physical_object_ids << p['id']
-          else
-            find_physical_object_ids(p['id'])
-          end
+        query = "id:#{prepare_value(specific_id)} AND has_model_ssim:Media"
+        result = search_solr(query)&.first
+        if result.present? && result[Solrizer.solr_name('physical_object_id', :stored_searchable)].present?
+          physical_object_ids.push(*result[Solrizer.solr_name('physical_object_id', :stored_searchable)])
         end
-      end
-
-      def find_parents(specific_id)
-        qry = assemble_query({ 'member_ids' => specific_id })
-        search_solr(qry)
       end
 
       def find_physical_objects

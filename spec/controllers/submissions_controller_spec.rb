@@ -192,12 +192,11 @@ RSpec.describe SubmissionsController, type: :controller do
 
     let(:device)        { Device.create(title: ['test device'], modality: ['Photogrammetry']) }
 
-    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], ie_modality: device.modality) }
+    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
 
     let(:old_solr_docs) { [old_m_solr, old_s_solr] }
 
     before do
-      specimen.members << imaging_event
       imaging_event.members << media
       [specimen, imaging_event].each(&:save)
       subject.instance_variable_set(:@submission, submission)

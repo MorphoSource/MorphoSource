@@ -418,55 +418,44 @@ module Hyrax
       #Rails.logger.info("(010) in MediaPresenter: #{@raw_or_derived.inspect} ")
       #Rails.logger.info("(010) in MediaPresenter: #{@direct_parent_members_raw_or_derived.inspect} ")
 
-      # Get the physical object type from:
-      # Media < IE < PO
-      # or
-      # media < PE < IE < PO (for media with absentee parent)
-      if @is_absentee_parent == true
-        @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
-      else
-        # It's still possible to have an ImagingEvent through the ProcessingEvent, but we prioritize
-        # those directly on the target media
-        @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
-        if @imaging_event.nil? && (@processing_event_count > 0)
-          @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
-        end
-      end
+      @imaging_event = media.imaging_event
 
       if @imaging_event.present?
         imaging_event_exist = true
-        biological_specimen = BiologicalSpecimen.where('member_ids_ssim' => @imaging_event.id).first
-        cultural_heritage_object = CulturalHeritageObject.where('member_ids_ssim' => @imaging_event.id).first
 
-        if biological_specimen.present?
-          @physical_object_title = biological_specimen.title.first
-          @physical_object_taxonomy_title = biological_specimen.taxonomies_titles&.first
-          @physical_object_id = biological_specimen.id
-          @physical_object_link = "/concern/biological_specimens/" + @physical_object_id
-          @idigbio_uuid = biological_specimen.idigbio_uuid
-          @vouchered = biological_specimen.vouchered
-          @physical_object_type = biological_specimen.human_readable_type
-          @institution_code = biological_specimen.institution_code
-          @collection_code = biological_specimen.collection_code
-          @catalog_number = biological_specimen.catalog_number
-          @occurrence_id = biological_specimen.occurrence_id
-          @user_taxonomies = biological_specimen.user_taxonomies
-          @canonical_taxonomy_object = biological_specimen.canonical_taxonomy_object
-          @trusted_taxonomies = biological_specimen.trusted_taxonomies
-          @idigbio_uuid = biological_specimen.idigbio_uuid
-        elsif cultural_heritage_object.present?
-          @physical_object_title = cultural_heritage_object.title.first
-          @physical_object_taxonomy_title = ''
-          @physical_object_id = cultural_heritage_object.id
-          @physical_object_link = "/concern/cultural_heritage_objects/" + @physical_object_id
-          @vouchered = cultural_heritage_object.vouchered
-          @physical_object_type = cultural_heritage_object.human_readable_type
-          @institution_code = cultural_heritage_object.institution_code
-          @collection_code = cultural_heritage_object.collection_code
-          @catalog_number = cultural_heritage_object.catalog_number
-          @cho_type = cultural_heritage_object.cho_type
-          @material = cultural_heritage_object.material
-          @short_title = cultural_heritage_object.short_title
+        physical_object = ActiveFedora::Base.find(@imaging_event.physical_object_id.to_a)&.first if @imaging_event.physical_object_id.present? 
+        if physical_object.present? 
+          if physical_object.class == BiologicalSpecimen
+            biological_specimen = physical_object
+            @physical_object_title = biological_specimen.title.first
+            @physical_object_taxonomy_title = biological_specimen.taxonomies_titles&.first
+            @physical_object_id = biological_specimen.id
+            @physical_object_link = "/concern/biological_specimens/" + @physical_object_id
+            @idigbio_uuid = biological_specimen.idigbio_uuid
+            @vouchered = biological_specimen.vouchered
+            @physical_object_type = biological_specimen.human_readable_type
+            @institution_code = biological_specimen.institution_code
+            @collection_code = biological_specimen.collection_code
+            @catalog_number = biological_specimen.catalog_number
+            @occurrence_id = biological_specimen.occurrence_id
+            @user_taxonomies = biological_specimen.user_taxonomies
+            @canonical_taxonomy_object = biological_specimen.canonical_taxonomy_object
+            @trusted_taxonomies = biological_specimen.trusted_taxonomies
+          elsif physical_object.class == CulturalHeritageObject
+            cultural_heritage_object = physical_object
+            @physical_object_title = cultural_heritage_object.title.first
+            @physical_object_taxonomy_title = ''
+            @physical_object_id = cultural_heritage_object.id
+            @physical_object_link = "/concern/cultural_heritage_objects/" + @physical_object_id
+            @vouchered = cultural_heritage_object.vouchered
+            @physical_object_type = cultural_heritage_object.human_readable_type
+            @institution_code = cultural_heritage_object.institution_code
+            @collection_code = cultural_heritage_object.collection_code
+            @catalog_number = cultural_heritage_object.catalog_number
+            @cho_type = cultural_heritage_object.cho_type
+            @material = cultural_heritage_object.material
+            @short_title = cultural_heritage_object.short_title
+          end
         end
 
         # get device from imaging event
@@ -547,8 +536,7 @@ module Hyrax
     end
 
     def related_media_ids
-      ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
-      return ids
+      @related_media_ids ||= media.related_media_ids_solr
     end
 
     def viewable_related_media_ids

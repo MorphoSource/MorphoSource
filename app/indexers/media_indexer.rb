@@ -89,7 +89,6 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['member_of_public_collection_ids_ssim'] = object.member_of_public_collection_ids
 
       # related media ids
-      solr_doc['related_media_ids_ssim'] = object.related_media_ids
       solr_doc['imaging_event_id_tesim'] = object.imaging_event&.id
    end
   end

@@ -168,7 +168,7 @@ class SolrDocument
   def media_organization_id
     self[Solrizer.solr_name('media_organization_id', :stored_searchable)]
   end
-
+  
   # Physical Object Fields
   def organization_id
     self[Solrizer.solr_name('organization_id', :stored_searchable)]

@@ -1,0 +1,32 @@
+<div id="select-physical-object">
+  <h2>SELECT <%= @presenter.physical_object_type.present? ? @presenter.physical_object_type : 'PHYSICAL OBJECT' %></h2>
+
+  <% if @presenter.physical_object_type.present? && @presenter.physical_object_type != 'Biological Specimen' %>
+    <% autocomplete_url = find_cultural_heritage_object_autocomplete_url() %>
+  <% else %>
+    <% autocomplete_url = find_biological_specimen_autocomplete_url() %>
+  <% end %>
+
+  <div style="margin-bottom: 2em;">
+    <%= t('morphosource.media.edit.select_physical_object_instructions').html_safe %>
+  </div>
+
+  <div class="form-inline">
+    <%= i.input_field :find_physical_object,
+                      prompt: :translate,
+                      autocomplete: 'off',
+                      placeholder: 'Enter complete terms in identifier codes or title',
+                      data: {
+                        autocomplete: 'work',
+                        'autocomplete-url' => autocomplete_url
+                      } %>
+  </div>
+
+  <div class="text-center button-wrapper mt-1">
+    <a class="btn btn-md btn-primary" id="btn-select-physical-object">Select physical object</a>
+  </div>
+</div>
+
+<div class="block" style="margin-top: 2em;">
+  <%= t('morphosource.media.edit.select_physical_object').html_safe %>
+</div>

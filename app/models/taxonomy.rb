@@ -44,7 +44,6 @@ class Taxonomy < Morphosource::Works::Base
   end
 
   def media
-    objects.map { |o| o.descendants.select { |d| d.media? } }.flatten
+    objects.map(&:media).flatten
   end
-
 end

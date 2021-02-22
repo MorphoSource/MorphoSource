@@ -422,7 +422,38 @@ $( document ).ready(function() {
         $('.embedded_div').hide();
       }
       $(".related_form." + clickedTab).show();
-    })
+    });
+
+    // Select Physical Object Functions
+
+    // select2-associated select physical object button
+    $('#btn-select-physical-object').click(function() {
+      var po = $('#s2id_imaging_event_find_physical_object').select2('data');
+
+      // modify current physical object properties
+      $('#physical-object-details #physical-object-id-value').val(po.id);
+      $('#physical-object-details #physical-object-institution-code').text(po.institution_code || '');
+      $('#physical-object-details #physical-object-collection-code').text(po.collection_code || '');
+      $('#physical-object-details #physical-object-catalog-number').text(po.catalog_number || '');
+      $('#physical-object-details #physical-object-occurrence-id').text(po.occurrence_id || '');
+      $('#physical-object-details #physical-object-short-title').text(po.short_title || '');
+      $('#physical-object-details #physical-object-cho-type').text(po.cho_type || '');
+      $('#physical-object-details #physical-object-material').text(po.material || '');
+
+      if (po.idigbio_uuid) {
+        $('#physical-object-details #physical-object-source').text('iDigBio');
+      } else {
+        $('#physical-object-details #physical-object-source').text('');
+      }
+
+      // modify the form
+      $('form.edit_imaging_event input[name^="imaging_event[physical_object_id]"]').remove();
+      $('<input />').attr('type', 'hidden')
+        .attr('name', 'imaging_event[physical_object_id][]')
+        .attr('value', po.id )
+        .appendTo($('form.edit_imaging_event')
+      ); 
+    });
 
     // Select Device Functions 
 

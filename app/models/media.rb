@@ -182,7 +182,7 @@ class Media < Morphosource::Works::Base
   end
 
   def specimens
-    ancestors.select(&:specimen?)
+    physical_objects.select(&:specimen?)
   end
 
   def object_titles
@@ -190,7 +190,7 @@ class Media < Morphosource::Works::Base
   end
 
   def physical_objects
-    ancestors.select(&:physical_object?)
+    ancestors.select(&:imaging_event?).map(&:objects).flatten
   end
   alias objects physical_objects
 
@@ -214,18 +214,18 @@ class Media < Morphosource::Works::Base
   end
 
   def related_media_ids
-    return [] unless related_media.present?
     related_media.map{ |o| o.id }
   end
 
-  def public_related_media
-    return [] unless imaging_event.present?
-    imaging_event.descendants.select { |d| d.class == Media && d.visibility == 'open' && d.id != self.id}
+  def related_media_ids_solr
+    related_media_solr.map { |d| d['id'] }.reject { |id| id == self.id }
   end
 
-  def public_related_media_ids
-    return [] unless public_related_media.present?
-    public_related_media.map{ |o| o.id }
+  def related_media_solr
+    return [] if !imaging_event.present? || !imaging_event&.id.present?
+
+    qry = "#{Solrizer.solr_name('imaging_event_id', :stored_searchable)}:#{imaging_event.id} AND has_model_ssim:Media"
+    ::Morphosource::SolrService.new().get_docs(qry, args: { fl: 'id' } )
   end
 
   def organizations

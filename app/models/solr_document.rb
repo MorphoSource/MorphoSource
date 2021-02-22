@@ -477,6 +477,10 @@ class SolrDocument
     self[Solrizer.solr_name('generator_id', :stored_searchable)]
   end
 
+  def description
+    self[Solrizer.solr_name('description', :stored_searchable)]
+  end
+
   def detector_description
     self[Solrizer.solr_name('detector_description', :stored_searchable)]
   end

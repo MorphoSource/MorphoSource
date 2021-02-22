@@ -1,6 +1,8 @@
 en:
   morphosource:
     submission:
+      object_types:
+        engineering_object: 'Engineering Object'
       page_title: 'Submit Media // MorphoSource'
       page_header: 'Submit Media'
       continue: 'Continue'
@@ -44,6 +46,10 @@ en:
         media_capture: 'Now we need to collect information about the initial parameters used to image these media. These fields will vary based on imaging modality.'
         media_processing: 'Since your media has been derived from some other parent media, it is possible to provide details about what processing was used to create this media. You can enter these details here.'
         media_details: 'This is the last step, you''re almost done. First, upload your media. Then provide us with some final details about the media. You can also control publication settings and access to the media here.'
+        eo_search: |
+          Thanks for that. Now we need to learn more about the physical object your media represents.
+          If the object is already on MorphoSource, this will be easy - just search for your specimen and select it.
+          Otherwise, create a new cultural heritage object record.'
       body_text:
         device_no_organization: 'If your device is a personal scanner, camera, and/or is not managed by a department, facility, collection, or other organization, enter "No Organization" and select the first result.'
       sidebar:

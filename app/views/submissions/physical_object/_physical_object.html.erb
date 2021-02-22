@@ -20,6 +20,13 @@
     <%= render(partial: 'submissions/physical_object/cho_search') %>
   </div>
 
+  <div
+    id="submission_eo_search_section"
+    class="<%= @submission.biological_specimen_or_cultural_heritage_object == 'eo' ? '' : 'hide' %>"
+  >
+    <%= render(partial: 'submissions/physical_object/eo_search') %>
+  </div>
+
   <div id="submission_po_search_results_container">
     <%= render(
       partial: 'submissions/physical_object/physical_object_search_results',

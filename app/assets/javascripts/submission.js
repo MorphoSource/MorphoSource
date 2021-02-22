@@ -73,8 +73,12 @@ $( document ).ready(function() {
         this.biologicalSpecimenId = null;
         this.idigbioId = null;
         this.willCreateBiologicalSpecimen = null;
+
         this.culturalHeritageObjectId = null;
         this.willCreateCulturalHeritageObject = null;
+
+        this.engineeringObjectId = null;
+        this.willCreateEngineeringObject = null;
       }
 
       setOrganizationDefaults() {
@@ -432,6 +436,7 @@ $( document ).ready(function() {
           data.biologicalSpecimenOrCulturalHeritageObject = 'bso';
           $('#submission_bso_search_section').addClass('show').removeClass('hide');
           $('#submission_cho_search_section').addClass('hide').removeClass('show');
+          $('#submission_eo_search_section').addClass('hide').removeClass('show');
           $('#submission_physical_object_type_section').addClass('hide').removeClass('show');
 
           console.log(data);
@@ -444,6 +449,20 @@ $( document ).ready(function() {
           data.biologicalSpecimenOrCulturalHeritageObject = 'cho';
           $('#submission_cho_search_section').addClass('show').removeClass('hide');
           $('#submission_bso_search_section').addClass('hide').removeClass('show');
+          $('#submission_eo_search_section').addClass('hide').removeClass('show');
+          $('#submission_physical_object_type_section').addClass('hide').removeClass('show');
+
+          console.log(data);
+        });
+
+        $('#btn_object_type_engineering').click(function(event){
+          event.preventDefault();
+          console.log('View 3 physical object type cultural continue button');
+
+          data.biologicalSpecimenOrCulturalHeritageObject = 'cho';
+          $('#submission_cho_search_section').addClass('hide').removeClass('show');
+          $('#submission_bso_search_section').addClass('hide').removeClass('show');
+          $('#submission_eo_search_section').addClass('show').removeClass('hide');
           $('#submission_physical_object_type_section').addClass('hide').removeClass('show');
 
           console.log(data);
@@ -557,6 +576,19 @@ $( document ).ready(function() {
               }
             );
           }
+
+          console.log(data);
+        });
+
+        $('#submission_will_create_eo').click(function(event){
+          event.preventDefault();
+          console.log('View 3 create new physical object button');
+
+          data.willCreateEngineeringObject = true;
+          data.savedStep = 3;
+          self.form.setSidebarViewCheck(3);
+          self.form.setSidebarViewFade(3);
+          self.form.setVisibleView(4); // view 4 create organization
 
           console.log(data);
         });

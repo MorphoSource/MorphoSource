@@ -211,6 +211,7 @@ Hyrax.config do |config|
 
   # The user who runs batch jobs. Update this if you aren't using emails
   # config.batch_user_key = 'batchuser@example.com'
+  config.batch_user_key = '1' # user with key '1' (admin@email.com)
 
   # The user who runs fixity check jobs. Update this if you aren't using emails
   # config.audit_user_key = 'audituser@example.com'

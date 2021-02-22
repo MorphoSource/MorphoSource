@@ -18,11 +18,11 @@
         <span class="fa fa-arrows-h" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.transfers') %></span>
       <% end %>
 
-      <%# if Flipflop.proxy_deposit? %>
-        <%#= menu.nav_link(hyrax.depositors_path) do %>
-          <%#span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.dashboard.manage_proxies') % ></span>
-        <%# end %>
-      <%# end %>
+      <% if Flipflop.proxy_deposit? %>
+        <%= menu.nav_link(hyrax.depositors_path) do %>
+          <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.dashboard.manage_proxies') %></span>
+        <% end %>
+      <% end %>
     <% end %>
   </li>
 

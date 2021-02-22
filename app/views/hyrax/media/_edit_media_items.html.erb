@@ -4,7 +4,7 @@ media_count = array_of_ids.count
 items_per_row = 3
 items_to_show_initially = 6
 %>
-	<h2><%= media_count %> MEDIA RELATED TO SAME ACQUISITION EVENT </h2>
+	<h2><%= media_count %> ADDITIONAL MEDIA RELATED TO SAME ACQUISITION EVENT </h2>
 	<%  members = presenter.member_presenters_for(array_of_ids) %>
 	<% if members.present? %>
 		<div class="media-block">

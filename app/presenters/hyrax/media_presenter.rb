@@ -418,20 +418,7 @@ module Hyrax
       #Rails.logger.info("(010) in MediaPresenter: #{@raw_or_derived.inspect} ")
       #Rails.logger.info("(010) in MediaPresenter: #{@direct_parent_members_raw_or_derived.inspect} ")
 
-      # Get the physical object type from:
-      # Media < IE < PO
-      # or
-      # media < PE < IE < PO (for media with absentee parent)
-      if @is_absentee_parent == true
-        @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
-      else
-        # It's still possible to have an ImagingEvent through the ProcessingEvent, but we prioritize
-        # those directly on the target media
-        @imaging_event = ImagingEvent.where('member_ids_ssim' => target_media.id).first
-        if @imaging_event.nil? && (@processing_event_count > 0)
-          @imaging_event = ImagingEvent.where('member_ids_ssim' => processing_event_ids.first).first
-        end
-      end
+      @imaging_event = media.imaging_event
 
       if @imaging_event.present?
         imaging_event_exist = true
@@ -549,8 +536,7 @@ module Hyrax
     end
 
     def related_media_ids
-      ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
-      return ids
+      @related_media_ids ||= media.related_media_ids_solr
     end
 
     def viewable_related_media_ids

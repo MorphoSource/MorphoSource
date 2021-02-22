@@ -34,6 +34,26 @@ module Morphosource
       @doc["fileset_accessibility_ssim"] == ['open']
     end
 
+    # override to include download users
+    # edit implies read, so read_users is the union of edit and read users
+    def read_users(id)
+      rp = super
+      rp |= edit_users(id)
+      rp |= download_users(id)
+      Rails.logger.debug("[CANCAN] read_users: #{rp.inspect}")
+      rp
+    end
+
+    # override to include download groups
+    # edit implies read, so read_groups is the union of edit and read groups
+    def read_groups(id)
+      rg = super
+      rg |= edit_groups(id)
+      rg |= download_groups(id)
+      Rails.logger.debug("[CANCAN] read_groups: #{rg.inspect}")
+      rg
+    end
+
     private
 
       def download_permissions
@@ -63,6 +83,7 @@ module Morphosource
       def get_doc(id)
        ActiveFedora::SolrService.get("id:#{id}", params: {qt: :permissions})["response"]["docs"].first
       end
+
   end
 end
 

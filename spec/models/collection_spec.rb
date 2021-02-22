@@ -193,20 +193,27 @@ RSpec.describe Collection, type: :model do
     before do
       team.create_collection_groups
       Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
-      team.add_member_objects(work_ids)
     end
 
     it 'adds works to the collection' do
+      team.add_member_objects(work_ids)
       expect(team.member_objects).to match_array(works)
     end
 
     it 'applies permissions to the works' do
+      team.add_member_objects(work_ids)
       works.each do |work|
         work.reload
         expect(work.edit_groups).to match_array([team.managers_group.name, team.editors_group.name, 'admin'])
         expect(work.download_groups).to match_array([team.downloaders_group.name])
         expect(work.read_groups).to match_array([team.viewers_group.name])
       end
+    end
+    it 'calls inherit permissions' do
+      works.each do |work|
+        expect(InheritPermissionsJob).to receive(:perform_later).with(work)
+      end
+      team.add_member_objects(work_ids)
     end
   end
   describe '#remove_member_objects' do
@@ -220,20 +227,27 @@ RSpec.describe Collection, type: :model do
         Hyrax::PermissionTemplateApplicator.apply(team.permission_template).to(model: work)
         work.save
       end
-      team.remove_member_objects(work_ids)
     end
 
     it 'removes the member objects' do
+      team.remove_member_objects(work_ids)
       expect(team.member_objects).to match_array([])
     end
 
     it 'removes the collection permissions from the works' do
+      team.remove_member_objects(work_ids)
       works.each do |work|
         work.reload
         expect(work.edit_groups).to match_array(['admin'])
         expect(work.download_groups).to match_array([])
         expect(work.read_groups).to match_array([])
       end
+    end
+    it 'calls inherit permissions' do
+      works.each do |work|
+        expect(InheritPermissionsJob).to receive(:perform_later).with(work)
+      end
+      team.add_member_objects(work_ids)
     end
   end
   describe '#remove_team_access_grants' do

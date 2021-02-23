@@ -1,3 +1,6 @@
+<%
+po_type, po_title, taxonomy = object_details(document)
+%>
 <tr id="document_<%= document.id %>">
   <td>
     <% if ( item.expired? || item.approved? ) %>
@@ -23,6 +26,9 @@
       </div>
     </div>
   </td>
+  <td><%= document.id %></td>
+  <td class="break-all"><%= po_title %></td>
+  <td><%= taxonomy %></td>
   <td><%= item_status_label(item) %></td>
   <td><%= action_by(item) %></td>
   <td><%= date(item,'requested') %></td>

@@ -252,7 +252,7 @@ module Morphosource::CartItemHelper
     if requester.display_name.present?
       requester.display_name
     else
-      requester.email
+      requester.email + " (display name not entered by user)"
     end
   end
 

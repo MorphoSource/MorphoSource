@@ -3,6 +3,11 @@
     wrapper: :showcase_default,
     html: { class: 'stop-disable' } do |f| 
   %>
+    <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
+      <%= f.input :on_behalf_of, 
+        collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
+        prompt: "Myself" %>
+    <% end %>
     <div class="container-fluid wider">
 
       <div class="row">

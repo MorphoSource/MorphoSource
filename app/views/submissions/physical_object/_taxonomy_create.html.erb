@@ -4,6 +4,11 @@
     <i id="taxonomy-create-close" class="fas fa-times clickable" style='float: right;'></i>
   </div>
   <%= simple_form_for @taxonomy_form, wrapper: :showcase_default do |f| %>
+    <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
+      <%= f.input :on_behalf_of, 
+        collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
+        prompt: "Myself" %>
+    <% end %>
     <div class="form-group content-block">
       <%= render partial: 'work_creation_metadata', locals: {f: f} %>
     </div>

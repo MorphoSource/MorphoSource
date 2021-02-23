@@ -1,5 +1,10 @@
 <div id="submission_image_capture" class="submission_flow submission_section submission-v2 hide">
   <%= simple_form_for @imaging_event_form, wrapper: :showcase_default do |f| %>
+    <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
+      <%= f.input :on_behalf_of, 
+        collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
+        prompt: "Myself" %>
+    <% end %>
   	<div class="container-fluid">
 
       <div class="row">

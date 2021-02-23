@@ -194,7 +194,7 @@ $( document ).ready(function() {
 
         // Proxy user select
         $("select[name='submission[on_behalf_of]']").change(function() {
-          console.log('proxy user changed');
+          //console.log('proxy user changed');
           self.triggerChangeVal("select[name='media[on_behalf_of]']", $(this).val());
           self.triggerChangeVal("select[name='biological_specimen[on_behalf_of]']", $(this).val());
           self.triggerChangeVal("select[name='cultural_heritage_object[on_behalf_of]']", $(this).val());

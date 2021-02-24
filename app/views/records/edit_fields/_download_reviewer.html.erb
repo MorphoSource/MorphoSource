@@ -4,7 +4,12 @@
     <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
   </div>
   <div class="col-xs-6 showcase-value">
-    <%= f.text_field :download_reviewer, id: 'media_download_reviewer', user_email: reviewer_email(f), class: 'form-control string optional' %>
+    <%= f.text_field :download_reviewer, 
+      id: 'media_download_reviewer',
+      name: "#{f.object_name}[download_reviewer][]",
+      'data-reviewers' => reviewer_data(f),
+      class: 'form-control string optional'
+    %>
   </div>
 </div>
 
@@ -13,18 +18,6 @@
     reviewerSelect = $('#media_download_reviewer');
 
     // add search to download reviewer
-    reviewerSelect.userSearch();
-
-    function createInitialOption(data) {
-      var option = new Option(data.text, data.user_key, true, true);
-      reviewerSelect.append(option)
-      reviewerSelect.val(data.user_key); // Select the newly created option
-      reviewerSelect.trigger('change'); // Notify any JS components that the value changed
-      //label = $('#select2-chosen-1');
-      label = $('.media_download_reviewer .select2-chosen')
-      label.text(data.text); // update the label on the select to be the user key
-    };
-
-    createInitialOption({ "user_key":reviewerSelect.attr('value'), "text":reviewerSelect.attr('user_email')});
+    reviewerSelect.userSearchMultiple(reviewerSelect.data('reviewers'));
   });
 </script>

@@ -52,7 +52,7 @@ module ActiveFedora
 
     # Request Management
     def reviewer
-      self["download_reviewer_ssim"].try(:first) || self["owner_ssim"].try(:first) || self["depositor_ssim"].try(:first)
+      self["download_reviewer_ssim"].presence || self["owner_ssim"].presence || self["depositor_ssim"]
     end
 
     private

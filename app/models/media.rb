@@ -3,6 +3,7 @@ class Media < Morphosource::Works::Base
   validates_with Morphosource::ParentChildValidator
   after_create :mint_ark
   before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids
+  before_validation :normalize_download_reviewer
   after_update :update_ark_status
 
   after_initialize do
@@ -43,7 +44,11 @@ class Media < Morphosource::Works::Base
   end
 
   def reviewer
-    User.find_by(ms_id: download_reviewer.first).try(:ms_id) || user_with_ownership
+    User.where(ms_id: download_reviewer.to_a).map { |u| u.ms_id.present? ? u.ms_id : nil }.compact || [user_with_ownership]
+  end
+
+  def normalize_download_reviewer
+    self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
   end
 
   def human_readable_media_type

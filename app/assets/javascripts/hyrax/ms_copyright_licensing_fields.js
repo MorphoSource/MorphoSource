@@ -52,7 +52,7 @@ $( document ).ready(function() {
       setCommercialUsePermitted(media_or_organization, false, false);
     }
     else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == '')) {
-        limitMorphoSourceUseAgreementToStandard(media_or_organization, false);
+      limitMorphoSourceUseAgreementToStandard(media_or_organization, false);
       setCommercialUsePermitted(media_or_organization, true, false);
     }
     else {
@@ -64,11 +64,15 @@ $( document ).ready(function() {
   var morphoSourceUseAgreementChange = function(media_or_organization) {
     var selected_agreement = $(`select#${media_or_organization}_morphosource_use_agreement_type`).val();
     if (selected_agreement == 'Standard') {
-      if ( /\/by-nc/.test($(`select#${media_or_organization}_license`).val()) ) {
+      var selected_license = $(`select#${media_or_organization}_license`).val();
+      if ( /\/by-nc/.test(selected_license) ) {
         setCommercialUsePermitted(media_or_organization, false, false);
       }
-      else {
+      else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == '')) {
         setCommercialUsePermitted(media_or_organization, true, false);
+      }
+      else {
+        setCommercialUsePermitted(media_or_organization, true, true);
       }
       unrestrictRequiredArchival(media_or_organization);
       unrestrict3DUse(media_or_organization);

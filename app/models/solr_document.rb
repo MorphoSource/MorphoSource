@@ -870,7 +870,7 @@ class SolrDocument
 
   # Request Management
   def reviewer
-    self["download_reviewer_ssim"].first || self["owner_ssim"] || self["depositor_ssim"]
+    self["download_reviewer_ssim"].presence || self["owner_ssim"].presence || self["depositor_ssim"]
   end
 
   # Tags

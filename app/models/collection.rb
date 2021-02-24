@@ -142,6 +142,7 @@ class Collection < ActiveFedora::Base
         member.member_of_collections << self
         Hyrax::PermissionTemplateApplicator.apply(permission_template).to(model: member)
         member.save!
+        InheritPermissionsJob.perform_later(member)
       end
       member
     end
@@ -153,6 +154,7 @@ class Collection < ActiveFedora::Base
       work.member_of_collections.delete self
       remove_team_access_grants(work)
       work.save!
+      InheritPermissionsJob.perform_later(work)
     end
   end
 

@@ -36,5 +36,10 @@ module Morphosource
       else super # super includes both works and collections
       end
     end
+
+    # override Hydra::AccessControlsEnforcement to include 'download'
+    def discovery_permissions
+      @discovery_permissions ||= ["edit","discover","download","read"]
+    end
   end
 end

@@ -3,6 +3,7 @@ module Morphosource
     class CartItemsController < Hyrax::MyController
 
       include Morphosource::CartItems
+      with_themed_layout 'morphosource_dashboard'      
 
       class_attribute :create_work_presenter_class
       self.create_work_presenter_class = Hyrax::SelectTypeListPresenter

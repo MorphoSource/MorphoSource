@@ -3,6 +3,7 @@ module Morphosource
     class RequestsController < Hyrax::MyController
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
+      with_themed_layout 'morphosource_dashboard'      
 
       before_action :get_items_by_id, except: [:index]
       before_action :get_intended_use, only: [:request_item, :request_again, :request_work]

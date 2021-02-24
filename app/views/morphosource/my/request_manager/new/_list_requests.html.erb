@@ -1,12 +1,11 @@
 <div class="request-wrapper">
 
-  <div class="intended-use-wrapper">
-    <h4><%= use %></h4>
-  </div>
-
   <div class="check-all-div select-all-use">
     <%= check_box_tag 'check_all_div', 'no', false, class: 'check_all_use' %>
     <span>Select All Media for This Intended Use</span>
+  </div>
+  <div class="intended-use-wrapper">
+    <h4><%= use %></h4>
   </div>
 
   <div class="requested-items-wrapper">
@@ -14,10 +13,11 @@
       <thead>
         <tr>
           <th></th>
-          <th></th>
+          <th>Media</th>
+          <th>ID</th>
+          <th>Object</th>
+          <th>Taxonomy</th>
           <th>Date Requested</th>
-          <th></th>
-          <th></th>
           <th></th>
         </tr>
       </thead>

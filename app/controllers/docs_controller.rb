@@ -1,4 +1,6 @@
 class DocsController < ApplicationController
+  with_themed_layout 'morphosource_1_column_docs'
+
   def about
     outdated_flash
   end
@@ -11,7 +13,6 @@ class DocsController < ApplicationController
   end
 
   def citation
-    outdated_flash
   end
 
   def contributors

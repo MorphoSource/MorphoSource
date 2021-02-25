@@ -363,7 +363,7 @@ RSpec.describe Media do
             expect(User).to receive(:where).with(ms_id: ['reviewer']).and_return([download_reviewer])
           end
           it 'returns the reviewer' do
-            expect(subject.reviewer).to eq(download_reviewer.ms_id)
+            expect(subject.reviewer).to eq([download_reviewer.ms_id])
           end
         end
         context 'the download_reviewer does not exist' do

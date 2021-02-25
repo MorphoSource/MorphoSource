@@ -303,7 +303,7 @@ RSpec.describe CartItem, type: :model do
   end
 
   describe '#reviewer' do
-    it { expect(cartItem1.reviewer).to eq(reviewer) }
-    it { expect(cartItem2.reviewer).to eq(depositor) }
+    it { expect(cartItem1.reviewer).to eq([reviewer]) }
+    it { expect(cartItem2.reviewer).to eq([depositor]) }
   end
 end

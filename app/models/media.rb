@@ -44,7 +44,7 @@ class Media < Morphosource::Works::Base
   end
 
   def reviewer
-    User.where(ms_id: download_reviewer.to_a).map { |u| u.ms_id.present? ? u.ms_id : nil }.compact || [user_with_ownership]
+    User.where(ms_id: download_reviewer.to_a).map { |u| u.ms_id.present? ? u.ms_id : nil }.compact.presence || [user_with_ownership]
   end
 
   def normalize_download_reviewer

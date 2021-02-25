@@ -6,3 +6,13 @@ en:
       engineering_object:
         description:        "Engineering object works"
         name:               "Engineering Object"
+  simple_form:
+    labels:
+      engineering_object:
+        institution_code: 'Institution Code'
+        catalog_number: 'Catalog Number'
+        is_pak: 'Is PAK'
+        is_built_in_fiducials_present: 'Built-in Fiducials Present?'
+        snl_assembler: 'SNL Assembler - creator/collector'
+        assembly_date: 'Assembly Date'
+        preparation_notes: 'Object preparation/creation description/notes'

@@ -1,0 +1,4 @@
+<div class="form-group">
+	<label class="control-label" for="assembly_date" ><%= t('simple_form.labels.engineering_object.assembly_date') %></label>
+	<%= f.date_field :assembly_date, wrapper: :inline, value: f.object.assembly_date || Date.today, class: 'datepicker form-control' %>
+</div>

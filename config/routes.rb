@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   # Physical Object show case pages
   # todo: clean up and rewrite the rules
   scope module: :hyrax do
+    get 'engineering_objects/:id', to: 'engineering_objects#showcase'
+    get 'concern/engineering_objects/:id', to: 'engineering_objects#showcase', as: 'engineering_object_showcase'
+
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
     get 'media/:id', to: 'media#showcase'

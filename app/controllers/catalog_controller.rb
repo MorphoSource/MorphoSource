@@ -147,6 +147,10 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name('sex', :stored_searchable)
     config.add_show_field solr_name('taxonomy', :stored_searchable)
 
+    # Engineering Objects
+    config.add_show_field solr_name('is_pak', :stored_searchable)
+    config.add_show_field solr_name('is_built_in_fiducials_present', :stored_searchable)
+
     # CHOs
     config.add_show_field solr_name('cho_type', :stored_searchable)
     config.add_show_field solr_name('material', :stored_searchable)

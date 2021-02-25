@@ -269,6 +269,26 @@ class SolrDocument
     self[Solrizer.solr_name('is_type_specimen', :stored_searchable)]
   end
 
+  def is_pak
+    self[Solrizer.solr_name('is_pak', :stored_searchable)]
+  end
+
+  def is_built_in_fiducials_present
+    self[Solrizer.solr_name('is_built_in_fiducials_present', :stored_searchable)]
+  end
+
+  def snl_assembler
+    self[Solrizer.solr_name('snl_assembler', :stored_searchable)]
+  end
+
+  def assembly_date
+    self[Solrizer.solr_name('assembly_date', :stored_searchable)]
+  end
+
+  def preparation_notes
+    self[Solrizer.solr_name('preparation_notes', :stored_searchable)]
+  end
+
   def occurrence_id
     self[Solrizer.solr_name('occurrence_id', :stored_searchable)]
   end

@@ -163,10 +163,15 @@ module Morphosource::Derivatives::Processors
     end
 
     def image_dims(f)
+      w = nil
+      h = nil
       img = MiniMagick::Image.open(f)
       if img.valid?
-        return img.width, img.height
+        w = img.width
+        h = img.height
       end
+      img.destroy!
+      return w, h
     end
 
     def set_series_metadata(x, y, z)

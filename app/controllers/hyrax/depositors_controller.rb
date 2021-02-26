@@ -21,8 +21,7 @@ module Hyrax
         head :ok
       else
         grantor.can_receive_deposits_from << grantee
-        # todo: uncomment below when email error is resolved
-        #send_proxy_depositor_added_messages(grantor, grantee)
+        send_proxy_depositor_added_messages(grantor, grantee)
         render json: { name: grantee.name, delete_path: hyrax.user_depositor_path(grantor.user_key, grantee.user_key) }
       end
     end
@@ -48,8 +47,9 @@ module Hyrax
       def send_proxy_depositor_added_messages(grantor, grantee)
         message_to_grantee = "#{grantor.name} has assigned you as a proxy depositor"
         message_to_grantor = "You have assigned #{grantee.name} as a proxy depositor"
-        Hyrax::MessengerService.deliver(::User.batch_user, grantor, message_to_grantor, "Proxy Depositor Added")
-        Hyrax::MessengerService.deliver(::User.batch_user, grantee, message_to_grantee, "Proxy Depositor Added")
+        # arguments passed to messenger_service: (sender, recipients, body, subject, *args)
+        Hyrax::MessengerService.deliver(::User.batch_user, grantor, message_to_grantor, "You have added a proxy depositor")
+        Hyrax::MessengerService.deliver(::User.batch_user, grantee, message_to_grantee, "You have been added as a MorphoSource proxy depositor")
       end
 
       def decide_layout

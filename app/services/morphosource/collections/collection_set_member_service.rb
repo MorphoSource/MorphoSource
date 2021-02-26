@@ -81,7 +81,10 @@ module Morphosource
           else
             rows = @params[:rows]
           end
-        query_solr_with_fq(query_builder: media_search_builder, query_params: params[:q], fq_params: fq_params, initial_rows: rows)
+        rows = rows.presence || Hyrax.config.teams_show_work_item_rows
+        page = @params[:page].presence || 1
+        start = ((page.to_i - 1) * rows.to_i).to_s
+        query_solr_with_fq(query_builder: media_search_builder, query_params: params[:q], fq_params: fq_params, rows: rows, start: start)
       end
 
       def is_project?(collection_type)
@@ -111,20 +114,22 @@ module Morphosource
 
         # @api private
         #
-        def query_solr_with_fq(query_builder:, query_params:, fq_params:, initial_rows:)
+        def query_solr_with_fq(query_builder:, query_params:, fq_params:, rows: 10, start: 0)
           initial_q = query_builder[:q]
           initial_fq = query_builder[:fq]
-          initial_rows = query_builder[:rows]
+          initial_rows = query_builder.rows
+          initial_start = query_builder.start
           begin
             query_builder.merge(q: query_params)
             query_builder.merge(fq: fq_params)
-            query_builder.merge(rows: 999999)
-            # repository.search(query_builder.with(query_params).query)
+            query_builder.rows = rows
+            query_builder.start = start
             repository.search(query_builder.query)
           ensure
             query_builder.merge(q: initial_q)
             query_builder.merge(fq: initial_fq)
-            query_builder.merge(rows: initial_rows)
+            query_builder.rows = initial_rows
+            query_builder.start = initial_start
           end
         end
 
@@ -177,8 +182,9 @@ module Morphosource
         def params_for_subcollections
           # To differentiate current page for works vs subcollections, we have to use a sub_collection_page
           # param. Map this to the page param before querying for subcollections, if it's present
-          params[:page] = params.delete(:sub_collection_page)
-          params
+          params2 = params.deep_dup
+          params2[:page] = params2.delete(:sub_collection_page)
+          params2
         end
 
     end

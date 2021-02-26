@@ -75,10 +75,10 @@ class CartItem < ApplicationRecord
   end
 
   def user_is_reviewer_or_has_ownership?
-    user_id == work.reviewer || user_id == work.user_with_ownership
+    work.reviewer.include?(user_id) || user_id == work.user_with_ownership
   end
 
   def reviewer
-    User.find_by(ms_id: work.reviewer)
+    User.where(ms_id: work.reviewer)
   end
 end

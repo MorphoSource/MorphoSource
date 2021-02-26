@@ -1498,7 +1498,9 @@ $( document ).ready(function() {
 
       emptyMediaFields(defaultFields) {
         for (const f in defaultFields) {
-          this.emptyMediaField(f);
+          if (defaultFields[f]) {
+            this.emptyMediaField(f);
+          }
         }
       }
 
@@ -1521,8 +1523,8 @@ $( document ).ready(function() {
             $("form#new_media input[name='media[rights_holder_name][]']").slice(1).parent().remove();
             break;
           case 'download_reviewer':
-            $(selector).val('');
-            $('form#new_media div.media_download_reviewer span.select2-chosen').text('');
+            $(selector).val('').trigger('change');
+            // $('form#new_media div.media_download_reviewer span.select2-chosen').text('');
             break;
           case 'license': // multi-value fields
           case 'agreement_uri':
@@ -1607,8 +1609,7 @@ $( document ).ready(function() {
             }
             break;
           case 'download_reviewer':
-            $(selector).val(val[0]);
-            $('form#new_media div.media_download_reviewer span.select2-chosen').text(val[0]);
+            $(multiSelector).select2('destroy').empty().userSearchMultiple(val);
             $('form#new_media div.media_download_reviewer').addClass('permissions-field');
             $('form#new_media div.media_download_reviewer').find('i.tooltip-icon').after(
               "<i class='fas fa-university'></i>"

@@ -71,6 +71,7 @@ RSpec.describe SubmissionsController, type: :controller do
 
       it 'returns JSON organization response' do
         allow(organization_double).to receive(:attachment) { 'test/url/path/attachment.pdf' }
+        allow(subject).to receive(:format_reviewers_select2).and_return([ { id: 012345, user_key: '012345', text: 'email@email.com' } ])
         allow(subject).to receive(:find_ancestor_organization).and_return(organization_double)
 
         post :organization_default_media_fields, params: form_params
@@ -79,7 +80,7 @@ RSpec.describe SubmissionsController, type: :controller do
           status: 'OK',
           message: 'Organization default permission settings retrieved',
           default_fields: {
-          'download_reviewer': ['012345'],
+          'download_reviewer': [ { id: 012345, user_key: '012345', text: 'email@email.com' } ],
           'agreement_uri': ['http://agreement.uri'],
           'license': ['CC0'],
           'rights_statement': ['In Copyright'],

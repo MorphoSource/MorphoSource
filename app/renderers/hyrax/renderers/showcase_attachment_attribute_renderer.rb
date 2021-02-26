@@ -13,7 +13,12 @@ module Hyrax
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
         markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)
         if values.present?
-          markup << %(<span class='showcase-link'>#{link_to('Attachment File', values.first, target: :blank)}</span>)
+          if options[:link_label].present?
+            link_label = options[:link_label]
+          else
+            link_label = 'Attachment File'
+          end
+          markup << %(<span class='showcase-link'>#{link_to(link_label, values.first, target: :blank)}</span>)
         else
           if options[:text_if_empty].present?
             markup << options[:text_if_empty]

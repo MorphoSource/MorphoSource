@@ -352,7 +352,7 @@ RSpec.describe Media do
           subject.depositor = depositor.ms_id
         end
         it 'returns the depositor' do
-          expect(subject.reviewer).to eq(depositor.ms_id)
+          expect(subject.reviewer).to eq([depositor.ms_id])
         end
       end
       context 'there is a download_reviewer' do
@@ -360,10 +360,10 @@ RSpec.describe Media do
           before do
             subject.download_reviewer = [download_reviewer.ms_id]
             subject.depositor = depositor.ms_id
-            expect(User).to receive(:find_by).with(ms_id: 'reviewer').and_return(download_reviewer)
+            expect(User).to receive(:where).with(ms_id: ['reviewer']).and_return([download_reviewer])
           end
           it 'returns the reviewer' do
-            expect(subject.reviewer).to eq(download_reviewer.ms_id)
+            expect(subject.reviewer).to eq([download_reviewer.ms_id])
           end
         end
         context 'the download_reviewer does not exist' do
@@ -371,7 +371,7 @@ RSpec.describe Media do
             subject.depositor = depositor.ms_id
           end
           it 'returns the depositor' do
-            expect(subject.reviewer).to eq(depositor.ms_id)
+            expect(subject.reviewer).to eq([depositor.ms_id])
           end
         end
       end

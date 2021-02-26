@@ -20,7 +20,7 @@ module Morphosource
       def find_media(ms_id)
         qry = assemble_query({ 'depositor' => ms_id, 'owner' => ms_id, 'download_reviewer' => ms_id })
         media = search_solr(qry)
-        media.select{ |m| m.reviewer == ms_id }
+        media.select{ |m| m.reviewer.include?(ms_id) }
       end
 
       def assemble_query(specific_params)

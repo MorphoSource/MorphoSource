@@ -144,7 +144,7 @@ module Hyrax
 
         # Instantiate the membership query service
         def collection_member_service
-           membership_service_class.new(scope: self, user: current_user, collections: @user_collections_for_view, params: params_for_query)
+          membership_service_class.new(scope: self, user: current_user, collections: @user_collections_for_view, params: params_for_query)
         end
 
         # Instantiate the information query service
@@ -294,7 +294,7 @@ module Hyrax
         def params_for_query
           # setting higher collection limit for paginating the array
           #params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
-          params.merge(q: params[:q]).merge({ 'page' => '1' })
+          params.merge(q: params[:q])
         end
     end
   end

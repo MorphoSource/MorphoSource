@@ -82,17 +82,17 @@ module Hyrax
       def member_works 
         @response = member_service.member_media(media_filter_params)
         @media_member_docs = @response.present? ? @response.documents : []
-        @media_member_count = @media_member_docs.count
+        @media_member_count = @media_member_docs.total
         @paged_media_member_docs = paginated_media_item_list
 
         @bso_response = member_service.member_bso(bso_filter_params)
         @bso_member_docs = @bso_response.present? ? @bso_response.documents : []
-        @bso_member_count = @bso_member_docs.count
+        @bso_member_count = @bso_member_docs.total
         @paged_bso_member_docs = paginated_bso_item_list
 
         @cho_response = member_service.member_cho
         @cho_member_docs = @cho_response.present? ? @cho_response.documents : []
-        @cho_member_count = @cho_member_docs.count
+        @cho_member_count = @cho_member_docs.total
         @paged_cho_member_docs = paginated_cho_item_list
       end
 
@@ -100,7 +100,7 @@ module Hyrax
       # media pagination methods
       def paginated_media_item_list
         # Uses kaminari to paginate an array to avoid need for solr documents for items here
-        Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
+        Kaminari.paginate_array(@media_member_docs, total_count: @media_member_count).page(media_current_page).per(rows_from_params)
       end
 
       def media_total_items
@@ -173,7 +173,7 @@ module Hyrax
         #params.merge(q: params[:cq])
 
         # setting higher collection limit for paginating the array       
-        params.merge(q: params[:cq]).merge({ 'rows' => '999999', 'page' => '1' })
+        params.merge(q: params[:cq])
       end
   end
 end

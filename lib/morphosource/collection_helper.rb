@@ -200,9 +200,8 @@ module Morphosource
       @bso_source_options = []
       @cho_visibility_options = []
 
-      @members_count = @member_docs.length
       @media_member_docs = @member_docs      
-      @media_member_count = @member_docs.length
+      @media_member_count = @members_count
       @paged_media_member_docs = paginated_media_item_list
       @media_extras = get_media_extras(@paged_media_member_docs, team_projects, collection.organization&.id)
       @po_type = "bso" unless @po_type.present?

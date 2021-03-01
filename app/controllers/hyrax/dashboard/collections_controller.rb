@@ -544,7 +544,7 @@ module Hyrax
         def paginated_media_item_list
           # Uses kaminari to paginate an array to avoid need for solr documents for items here
           #Kaminari.paginate_array(@media_member_docs, total_count: @media_member_docs.size).page(media_current_page).per(rows_from_params)
-          Kaminari.paginate_array(@member_docs, total_count: @member_docs.size).page(media_current_page).per(rows_from_params)
+          Kaminari.paginate_array(@member_docs, total_count: @members_count).page(media_current_page).per(rows_from_params)
         end
 
         def media_total_items
@@ -646,7 +646,7 @@ module Hyrax
           #params.merge(q: params[:cq])
 
           # setting higher collection limit for paginating the array
-          params.merge(q: params[:cq]).merge({ 'rows' => '999999', 'page' => '1' })
+          params.merge(q: params[:cq])
         end
 
         # Only accept HTTP|HTTPS urls;

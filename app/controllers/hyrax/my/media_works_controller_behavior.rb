@@ -123,18 +123,18 @@ module Hyrax
         end
 
         def media_count_for_view
-          response =  Morphosource::UserWorksSearchService.call('media','read',self)['response']
-          response['docs'].count
+          response =  Morphosource::UserWorksSearchService.call('media','read',self).response
+          response["numFound"]
         end
 
         def media_count_for_edit
-          response = Morphosource::UserWorksSearchService.call('media','edit',self)['response']
-          response['docs'].count
+          response = Morphosource::UserWorksSearchService.call('media','edit',self).response
+          response["numFound"]
         end
 
         def po_count_for_edit
-          response =  Morphosource::UserWorksSearchService.call('object', 'edit', self)['response']
-          response['docs'].count
+          response =  Morphosource::UserWorksSearchService.call('object', 'edit', self).response
+          response["numFound"]
         end
 
         def query_collection_members_for_po(obj_type)

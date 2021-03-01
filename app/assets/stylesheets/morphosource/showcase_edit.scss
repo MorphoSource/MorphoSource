@@ -453,6 +453,10 @@ input.disabled {
     }
   }
 
+  .select2-container-multi {
+    height: unset !important;
+  }
+
 } /* / .showcase-edit */
 
 

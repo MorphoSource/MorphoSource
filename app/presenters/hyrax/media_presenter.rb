@@ -205,7 +205,7 @@ module Hyrax
       @permits_3d_use = Morphosource::ThreeDUseTypesService.new.label(media.permits_3d_use.first) if media.permits_3d_use.present?
       @required_archival_of_published_derivatives = Morphosource::RequiredArchivalOfPublishedDerivativesTypesService.new.label(media.required_archival_of_published_derivatives.first) if media.required_archival_of_published_derivatives.present?
       @morphosource_use_agreement_type = Morphosource::MorphosourceUseAgreementTypesService.new.label(media.morphosource_use_agreement_type.first) if media.morphosource_use_agreement_type.present?
-      @download_reviewer = media.download_reviewer.first
+      @download_reviewer = media.download_reviewer.to_a
 
       @ark = media.ark
       @doi = media.doi

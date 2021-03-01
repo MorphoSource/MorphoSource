@@ -4,6 +4,8 @@ class Organization < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
 
+  before_validation :normalize_download_reviewer
+
   self.indexer = OrganizationIndexer
   # Change this to restrict which works can be added as a child.
   self.valid_child_concerns = [Device]
@@ -20,6 +22,10 @@ class Organization < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
+
+  def normalize_download_reviewer
+    self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
+  end
 
   def specimens
     BiologicalSpecimen.where(organization_id_tesim: id)

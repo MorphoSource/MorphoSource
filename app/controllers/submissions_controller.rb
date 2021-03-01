@@ -802,7 +802,7 @@ class SubmissionsController < ApplicationController
 
   def default_media_permissions(organization)
     fields = {
-      download_reviewer: organization.download_reviewer,
+      download_reviewer: format_reviewers_select2(organization.download_reviewer),
       agreement_uri: organization.agreement_uri,
       license: organization.license,
       rights_statement: organization.rights_statement,
@@ -820,6 +820,14 @@ class SubmissionsController < ApplicationController
     }
 
     fields.select {|k, v| v.present? }
+  end
+
+  def format_reviewers_select2(reviewers)
+    reviewers.map do |ms_id|
+      if (u = User.where(ms_id: ms_id)&.first).present?
+        { id: u.id, user_key: u.user_key, text: u.email.present? ? u.email : '' }
+      end
+    end.compact
   end
 
   def attachment_url(organization)

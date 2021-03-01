@@ -37,11 +37,13 @@ module Morphosource::Derivatives::Processors
       end
 
       def create_image
-        xfrm = selected_layers(load_image_transformer)
+        img = load_image_transformer
+        xfrm = selected_layers(img)
         yield(xfrm) if block_given?
         xfrm.format(directives.fetch(:format))
         xfrm.quality(quality.to_s) if quality
         write_image(xfrm)
+        img.destroy!
       end
 
       def write_image(xfrm)

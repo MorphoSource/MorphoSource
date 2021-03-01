@@ -3,7 +3,8 @@ module Morphosource
   module Users
     class ReadMediaSearchBuilder < Hyrax::WorksSearchBuilder
 
-      self.default_processor_chain = [:default_solr_parameters, :add_query_to_solr, :add_facet_fq_to_solr, :add_facetting_to_solr, :add_paging_to_solr, :add_solr_fields_to_query, :add_sorting_to_solr, :add_group_config_to_solr, :apply_read_grants_filters, :filter_models]
+      self.default_processor_chain -= [:add_facet_paging_to_solr, :add_access_controls_to_solr_params]
+      self.default_processor_chain += [:apply_read_grants_filters]
 
       def models
         [Media]

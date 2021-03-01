@@ -112,7 +112,7 @@ module Hyrax
 
     # These show above the fold
     def primary_terms
-        required_fields - [:device_id, :physical_object_id] + [
+        required_fields - [:device_id] + [
             :description,
             :creator,
             :software,

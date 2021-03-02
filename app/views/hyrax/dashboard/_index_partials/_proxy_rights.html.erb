@@ -9,7 +9,7 @@
       <h2><%= t("hyrax.dashboard.authorize_proxies") %></h2>
       <div class="form-group">
         <%= hidden_field_tag :user, nil, data: { grantor: current_user.to_param } %>
-        <%= hidden_field_tag :delete_button_label, nil, data: { label: I18n.t('hyrax.dashboard.proxy_delete') } %>
+        <%= hidden_field_tag :delete_button_label, nil, data: { label: I18n.t('hyrax.dashboard.proxy_delete'), class: 'btn-sm' } %>
       </div>
     </div>
 
@@ -21,7 +21,7 @@
             <tr><td class="depositor-name"><%= depositor.name %></td>
               <td><%= link_to(I18n.t('hyrax.dashboard.proxy_delete'), hyrax.user_depositor_path(user, depositor),
                               method: :delete,
-                              class: "remove-proxy-button btn-sm btn-danger") %>
+                              class: "remove-proxy-button btn btn-sm btn-danger") %>
               </td></tr>
         <% end %>
         </tbody>

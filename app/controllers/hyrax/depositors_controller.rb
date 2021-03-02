@@ -21,8 +21,13 @@ module Hyrax
         head :ok
       else
         grantor.can_receive_deposits_from << grantee
-        send_proxy_depositor_added_messages(grantor, grantee)
-        render json: { name: grantee.name, delete_path: hyrax.user_depositor_path(grantor.user_key, grantee.user_key) }
+        begin
+          send_proxy_depositor_added_messages(grantor, grantee)
+        rescue
+          # most likely a problem sending email (host_name not in environment, or email address possibly forged)
+        ensure
+          render json: { name: grantee.name, delete_path: hyrax.user_depositor_path(grantor.user_key, grantee.user_key) }
+        end
       end
     end
 

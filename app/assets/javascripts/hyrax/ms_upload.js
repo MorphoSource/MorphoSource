@@ -4,6 +4,7 @@ $( document ).ready(function() {
   // hyraxUploader with other options (like afterSubmit), then override this file.
   // Check if the file upload widget exists
   if ($('#fileupload').length) {
+    media_save_ok = true;
     var options = {
         maxNumberOfFiles:1,
         maxFileSize: 100000000000,
@@ -15,14 +16,42 @@ $( document ).ready(function() {
     // show / hide file upload buttons
     // currently the fileupload widget is on media edit page and submission flow
     $('#fileupload')
+      .bind('fileuploadstart', function (e, data) {
+        media_save_ok = false;
+        console.log('media_save_ok false');
+      })
       .bind('fileuploadcompleted', function (e, data) {
         $('.fileinput-button').hide();
         $('.dropzone').hide();
+        media_save_ok = true;
+
+//        if (isAutoSave) {
+//          console.log('auto saving ...');
+////          $('#btn-save-hidden').trigger('click');
+//
+//        }
+
+
+      })
+      .bind('fileuploadstop', function (e, data) {
+        console.log('fileuploadstop');
+        $('[id="file-upload-cancel-btn"]').hide();
+        media_save_ok = true;
+
+      })
+      .bind('fileuploadfail', function (e, data) {
+        console.log('fileuploadfail');
+        $('[id="file-upload-cancel-btn"]').hide();
+        media_save_ok = true;
+
       })
       .bind('fileuploaddestroyed', function (e, data) {
+        console.log('fileuploaddestroyed');
         $('.fileinput-button').show();
         $('.dropzone').show();
-     });
+        media_save_ok = true;
+
+      });
 
   }
 

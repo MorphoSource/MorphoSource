@@ -1,4 +1,5 @@
 $( document ).ready(function() {
+
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) { // if media form page (add/edit)
 
@@ -606,16 +607,38 @@ $( document ).ready(function() {
     form.addEventListener("submit", function(mediaSubmitEvent) {
 
       mediaSubmitEvent.preventDefault();
-      prepareFieldsBeforeSubmit();
+      console.log('media_save_ok = '+media_save_ok);
+      if (media_save_ok) {
 
-      if (isFormValid()) {
-        disablePageAndSave(".btn-save-media");
-        if (HasEditImagingEventForm) {
-          $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
-        } else {
-          IsImagingEventOK = true;
-          submitProcessingEvent();
+        prepareFieldsBeforeSubmit();
+
+        if (isFormValid()) {
+          disablePageAndSave(".btn-save-media");
+          if (HasEditImagingEventForm) {
+            $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
+          } else {
+            IsImagingEventOK = true;
+            submitProcessingEvent();
+          }
         }
+      } else {
+
+        mediaSaveBtn = $(".btn-save-media");
+
+formName = "foobar";
+
+        isAutoSave = confirm('File is currently being uploaded. If you select OK, this media will be saved when the file upload is complete.');
+        if (isAutoSave) {
+          // Check one last time if the file is already uploaded.
+          if (media_save_ok) {
+            console.log('after confirm ... try auto saving ...');
+            mediaSaveBtn.trigger('click');
+          } else {
+            // disable the form with overlay message
+            toggleForm(formName, true);
+          }
+        }
+
       }
 
       function isFormValid() {
@@ -680,3 +703,22 @@ $( document ).ready(function() {
   } // end if new media form page
 
 })
+
+var toggleForm = function(formName, disabledState) {
+  if (disabledState) {
+    var msg = 'Please wait for the file upload process to be completed.  The form will be saved automatically when done.  Please do not close the browser tab or window.  Click <a href="javascript:void(0)" onclick="toggleForm(\'' + formName + '\',false)">here</a> if you want to cancel and go back.';
+    // see loader options: https://www.jqueryscript.net/loading/Simple-jQuery-Loading-Spinner-Overlay-Plugin-Loader.html
+    $data = {
+      size: 22,
+      bgOpacity: 0.88, 
+      imgUrl: '/loading[size].gif',
+      title: msg,
+      fontColor: true
+    };
+    $.loader.open($data);
+      
+  } else {
+    $.loader.close();
+    isAutoSave = false;
+  }
+}

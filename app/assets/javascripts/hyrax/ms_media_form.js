@@ -74,66 +74,6 @@ $( document ).ready(function() {
       targetForm.submitRelatedWork();
     });
     
-    function prepareFieldsBeforeSubmit() {
-      // Before submit, name and type fields are concatenated and inserted into hidden default rights holder field.
-      $(targetGroupUl).empty(); // remove all items and re-build
-      var rightsHolderCount = $('select[name="media[rights_holder_type][]"]').length;
-      for (i = 0; i < rightsHolderCount; i++) {
-
-        var rightsHolderName = $('input[name="media[rights_holder_name][]"]')[i].value || '';
-        var rightsHolderType = $('select[name="media[rights_holder_type][]"]')[i].value || '';
-
-        // As long as at least one input is filled out, proceed with creating a rightsHolder string. Otherwise, create an empty string.
-        if ((rightsHolderType != '') || (rightsHolderName != '')) {
-          var rightsHolder = "Name: " + rightsHolderName + ", Type: " + rightsHolderType;
-        } else {
-          var rightsHolder = '';
-        }
-        //console.log('rightsHolder: '+rightsHolder);
-        buildTargetRightHolderField(rightsHolder, targetGroupUl);
-      }
-
-      // If media type = photogrammetry, submit scale bar fields. Otherwise, submit an empty scale bar.
-      if($('#media_media_type').val() == 'PhotogrammetryImageSeries') {
-
-        var scaleBarCount = document.getElementsByClassName("media_scale_bar_target_type").length;
-
-        for (i = 0; i < scaleBarCount; i++) {
-
-          var targetType = document.getElementsByClassName("media_scale_bar_target_type")[i].value || '';
-          var scaleBarDistance = document.getElementsByClassName("media_scale_bar_distance")[i].value || '';
-          var scaleBarUnits = document.getElementsByClassName("media_scale_bar_units")[i].value || '';
-
-          // As long as at least one input is filled out, proceed with creating a scale bar string. Otherwise, create an empty string, which will not result in a new scale bar triple.
-          if ((targetType != '') || (scaleBarDistance != '') || (scaleBarUnits != '')) {
-            var scaleBar = "Type: " + targetType + ", Distance: " + scaleBarDistance + ", Units: " +  scaleBarUnits;
-          }
-          else {
-            var scaleBar = ''
-          }
-          buildScaleBar(scaleBar, scaleBarGroupUl);
-        }
-      }
-      else {
-        buildScaleBar('', scaleBarGroupUl);
-      }
-
-    }
-
-    // Puts concatenated values into scale bar on submit.
-    function buildScaleBar(scaleBar, scaleBarGroupUl) {
-      var li = document.createElement('li');
-
-      var input = document.createElement('input');
-      input.className = 'string multi_value optional media_scale_bar form-control multi-text-field';
-      input.setAttribute("id", "media_scale_bar");
-      input.setAttribute("name", "media[scale_bar][]");
-      input.value = scaleBar
-
-      li.appendChild(input);
-      scaleBarGroupUl.appendChild(li);
-    }
-
     function setupScaleBar() {
 
       // When editing a record, this populates the three-part scale bar fields with previously saved metadata.
@@ -310,19 +250,6 @@ $( document ).ready(function() {
       $(targetGroup).hide(); // hide the field label and add button
 
     } // /setupRightsHolder
-
-    // Puts concatenated values into rightsHolder on submit.
-    function buildTargetRightHolderField(inputValue, targetGroupUl) {
-      var li = document.createElement('li');
-      var input = document.createElement('input');
-      input.className = 'string multi_value optional media_rights_holder form-control multi-text-field';
-      input.setAttribute("id", "media_rights_holder");
-      input.setAttribute("name", "media[rights_holder][]");
-      input.value = inputValue;
-
-      li.appendChild(input);
-      targetGroupUl.appendChild(li);
-    }
 
   } // end if media form page
 
@@ -607,11 +534,8 @@ $( document ).ready(function() {
     form.addEventListener("submit", function(mediaSubmitEvent) {
 
       mediaSubmitEvent.preventDefault();
-      console.log('media_save_ok = '+media_save_ok);
-      if (media_save_ok) {
-
+      if (uploadStatusOK) {
         prepareFieldsBeforeSubmit();
-
         if (isFormValid()) {
           disablePageAndSave(".btn-save-media");
           if (HasEditImagingEventForm) {
@@ -622,23 +546,7 @@ $( document ).ready(function() {
           }
         }
       } else {
-
-        mediaSaveBtn = $(".btn-save-media");
-
-formName = "foobar";
-
-        isAutoSave = confirm('File is currently being uploaded. If you select OK, this media will be saved when the file upload is complete.');
-        if (isAutoSave) {
-          // Check one last time if the file is already uploaded.
-          if (media_save_ok) {
-            console.log('after confirm ... try auto saving ...');
-            mediaSaveBtn.trigger('click');
-          } else {
-            // disable the form with overlay message
-            toggleForm(formName, true);
-          }
-        }
-
+        promptAutoSave(".btn-save-media");
       }
 
       function isFormValid() {
@@ -687,22 +595,97 @@ formName = "foobar";
 
   } // end if edit media form page
 
-  if ($('form[id*="new_media"]').length) { // if new media form page
-
-    form.addEventListener("submit", function(mediaSubmitEvent) {
-
-      //$(".btn-save-media").prop('disabled', true).val('Saving...');
-      disablePageAndSave(".btn-save-media");
-
-      prepareFieldsBeforeSubmit();
-
-      //console.log('about to add media work...');
-
-    }); // /on submit
-
-  } // end if new media form page
-
 })
+
+// Puts concatenated values into rightsHolder on submit.
+function buildTargetRightHolderField(inputValue, targetGroupUl) {
+  var li = document.createElement('li');
+  var input = document.createElement('input');
+  input.className = 'string multi_value optional media_rights_holder form-control multi-text-field';
+  input.setAttribute("id", "media_rights_holder");
+  input.setAttribute("name", "media[rights_holder][]");
+  input.value = inputValue;
+
+  li.appendChild(input);
+  targetGroupUl.appendChild(li);
+}
+
+// Puts concatenated values into scale bar on submit.
+function buildScaleBar(scaleBar, scaleBarGroupUl) {
+  var li = document.createElement('li');
+
+  var input = document.createElement('input');
+  input.className = 'string multi_value optional media_scale_bar form-control multi-text-field';
+  input.setAttribute("id", "media_scale_bar");
+  input.setAttribute("name", "media[scale_bar][]");
+  input.value = scaleBar
+
+  li.appendChild(input);
+  scaleBarGroupUl.appendChild(li);
+}
+
+function prepareFieldsBeforeSubmit() {
+  // Before submit, name and type fields are concatenated and inserted into hidden default rights holder field.
+  $(targetGroupUl).empty(); // remove all items and re-build
+  var rightsHolderCount = $('select[name="media[rights_holder_type][]"]').length;
+  for (i = 0; i < rightsHolderCount; i++) {
+
+    var rightsHolderName = $('input[name="media[rights_holder_name][]"]')[i].value || '';
+    var rightsHolderType = $('select[name="media[rights_holder_type][]"]')[i].value || '';
+
+    // As long as at least one input is filled out, proceed with creating a rightsHolder string. Otherwise, create an empty string.
+    if ((rightsHolderType != '') || (rightsHolderName != '')) {
+      var rightsHolder = "Name: " + rightsHolderName + ", Type: " + rightsHolderType;
+    } else {
+      var rightsHolder = '';
+    }
+    //console.log('rightsHolder: '+rightsHolder);
+    buildTargetRightHolderField(rightsHolder, targetGroupUl);
+  }
+
+  // If media type = photogrammetry, submit scale bar fields. Otherwise, submit an empty scale bar.
+  if($('#media_media_type').val() == 'PhotogrammetryImageSeries') {
+
+    var scaleBarCount = document.getElementsByClassName("media_scale_bar_target_type").length;
+
+    for (i = 0; i < scaleBarCount; i++) {
+
+      var targetType = document.getElementsByClassName("media_scale_bar_target_type")[i].value || '';
+      var scaleBarDistance = document.getElementsByClassName("media_scale_bar_distance")[i].value || '';
+      var scaleBarUnits = document.getElementsByClassName("media_scale_bar_units")[i].value || '';
+
+      // As long as at least one input is filled out, proceed with creating a scale bar string. Otherwise, create an empty string, which will not result in a new scale bar triple.
+      if ((targetType != '') || (scaleBarDistance != '') || (scaleBarUnits != '')) {
+        var scaleBar = "Type: " + targetType + ", Distance: " + scaleBarDistance + ", Units: " +  scaleBarUnits;
+      }
+      else {
+        var scaleBar = ''
+      }
+      buildScaleBar(scaleBar, scaleBarGroupUl);
+    }
+  }
+  else {
+    buildScaleBar('', scaleBarGroupUl);
+  }
+
+}
+
+var promptAutoSave = function(mediaSaveBtn) {
+
+formName = "foobar";
+
+  isAutoSave = confirm('File is currently being uploaded. If you select OK, this media will be saved when the file upload is complete.');
+  if (isAutoSave) {
+    // Check one last time if the file is already uploaded.
+    if (uploadStatusOK) {
+      console.log('after confirm ... try auto saving ...');
+      $(mediaSaveBtn).trigger('click');
+    } else {
+      // disable the form with overlay message
+      toggleForm(formName, true);
+    }
+  }
+}
 
 var toggleForm = function(formName, disabledState) {
   if (disabledState) {
@@ -710,7 +693,7 @@ var toggleForm = function(formName, disabledState) {
     // see loader options: https://www.jqueryscript.net/loading/Simple-jQuery-Loading-Spinner-Overlay-Plugin-Loader.html
     $data = {
       size: 22,
-      bgOpacity: 0.88, 
+      bgOpacity: 0.38, 
       imgUrl: '/loading[size].gif',
       title: msg,
       fontColor: true

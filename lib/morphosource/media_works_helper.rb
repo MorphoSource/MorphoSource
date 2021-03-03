@@ -74,7 +74,7 @@ module Morphosource
 
     def bso_tab_url
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/dashboard/my/media/specimens?#{url_params}"
@@ -82,7 +82,7 @@ module Morphosource
 
     def cho_tab_url
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/dashboard/my/media/chos?#{url_params}"

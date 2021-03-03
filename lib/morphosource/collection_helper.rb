@@ -160,7 +160,7 @@ module Morphosource
 
     def bso_tab_url_for_collections(id)
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/projects/specimens/#{id}?#{url_params}"
@@ -168,7 +168,7 @@ module Morphosource
 
     def cho_tab_url_for_collections(id)
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/projects/chos/#{id}?#{url_params}"
@@ -176,7 +176,7 @@ module Morphosource
 
     def dashboard_bso_tab_url(id)
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/dashboard/collections/specimens/#{id}?#{url_params}"
@@ -184,7 +184,7 @@ module Morphosource
 
     def dashboard_cho_tab_url(id)
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/dashboard/collections/chos/#{id}?#{url_params}"

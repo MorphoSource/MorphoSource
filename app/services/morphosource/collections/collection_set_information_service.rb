@@ -287,10 +287,10 @@ module Morphosource
             )
           when 'm_project'
             #todo: search for title instead? (will need to reindex when title is updated)
-            project_id = Collection.where(title: value)&.first&.id
+            project_id = Collection.where(title: value).select { |c| c.title&.first == value }&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{project_id}" if project_id.present?
           when 'm_team'
-            team_id = Collection.where(title: value)&.first&.id
+            team_id = Collection.where(title: value).select { |c| c.title&.first == value }&.first&.id
             "#{solrize('member_of_collection_ids', :symbol)}:#{team_id}" if team_id.present?
           when 'b_project', 'b_team', 'c_project', 'c_team'
             po_ids = po_ids_by_collection_title(value)

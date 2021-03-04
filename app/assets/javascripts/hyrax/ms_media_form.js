@@ -671,9 +671,6 @@ function prepareFieldsBeforeSubmit() {
 }
 
 var promptAutoSave = function(mediaSaveBtn) {
-
-formName = "foobar";
-
   isAutoSave = confirm('File is currently being uploaded. If you select OK, this media will be saved when the file upload is complete.');
   if (isAutoSave) {
     // Check one last time if the file is already uploaded.
@@ -682,18 +679,18 @@ formName = "foobar";
       $(mediaSaveBtn).trigger('click');
     } else {
       // disable the form with overlay message
-      toggleForm(formName, true);
+      toggleForm(true);
     }
   }
 }
 
-var toggleForm = function(formName, disabledState) {
+var toggleForm = function(disabledState) {
   if (disabledState) {
-    var msg = 'Please wait for the file upload process to be completed.  The form will be saved automatically when done.  Please do not close the browser tab or window.  Click <a href="javascript:void(0)" onclick="toggleForm(\'' + formName + '\',false)">here</a> if you want to cancel and go back.';
+    var msg = '<b>Please wait while the file is being uploaded.  The media will be submitted and saved automatically when the file upload is complete.  Please do not close the browser tab or window.  If you want to cancel and not to save the media automatically, <a href="javascript:void(0)" onclick="toggleForm(false)">click here</a>.</b>';
     // see loader options: https://www.jqueryscript.net/loading/Simple-jQuery-Loading-Spinner-Overlay-Plugin-Loader.html
     $data = {
       size: 22,
-      bgOpacity: 0.38, 
+      bgOpacity: 0.85, 
       imgUrl: '/loading[size].gif',
       title: msg,
       fontColor: true

@@ -1,11 +1,11 @@
 // Use this script to override jquery file upload options.  Add method can also be defined here
 $( document ).ready(function() {
+  uploadStatusOK = true;
+  isAutoSave = false;
   // This file is the default initialization of the fileupload.  If you want to call
   // hyraxUploader with other options (like afterSubmit), then override this file.
   // Check if the file upload widget exists
   if ($('#fileupload').length) {
-    uploadStatusOK = true;
-    isAutoSave = false;
     var options = {
         maxNumberOfFiles:1,
         maxFileSize: 100000000000,
@@ -26,7 +26,8 @@ $( document ).ready(function() {
         $('.dropzone').hide();
         uploadStatusOK = true;
         if (isAutoSave) {
-          console.log('auto saving ...');
+          console.log('auto saving ...');          
+          $.loader.close();
           $('.btn-save-media').trigger('click');
         }
       })

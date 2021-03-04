@@ -115,7 +115,6 @@ module Hyrax
       end
 
       def member_works # 24ms
-        byebug
         @response = collection_member_service.all_member_media(@collection_organization_object_ids, media_filter_params)
         @member_docs = @response.documents
         @members_count = @response.total
@@ -181,7 +180,7 @@ module Hyrax
 
       # bso pagination methods
       def paginated_bso_item_list
-        Kaminari.paginate_array(@bso_member_docs, total_count: @bso_member_docs.size).page(bso_current_page).per(bso_rows_from_params)
+        Kaminari.paginate_array(@bso_member_docs, total_count: @bso_member_count).page(bso_current_page).per(bso_rows_from_params)
       end
 
       def bso_total_items
@@ -203,7 +202,7 @@ module Hyrax
 
       # cho pagination methods
       def paginated_cho_item_list
-        Kaminari.paginate_array(@cho_member_docs, total_count: @cho_member_docs.size).page(cho_current_page).per(cho_rows_from_params)
+        Kaminari.paginate_array(@cho_member_docs, total_count: @cho_member_count).page(cho_current_page).per(cho_rows_from_params)
       end
 
       def cho_total_items

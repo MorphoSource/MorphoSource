@@ -82,17 +82,17 @@ module Hyrax
       def member_works 
         @response = member_service.member_media(media_filter_params)
         @media_member_docs = @response.present? ? @response.documents : []
-        @media_member_count = @media_member_docs.total
+        @media_member_count = @response.total
         @paged_media_member_docs = paginated_media_item_list
 
         @bso_response = member_service.member_bso(bso_filter_params)
         @bso_member_docs = @bso_response.present? ? @bso_response.documents : []
-        @bso_member_count = @bso_member_docs.total
+        @bso_member_count = @bso_response.total
         @paged_bso_member_docs = paginated_bso_item_list
 
         @cho_response = member_service.member_cho
         @cho_member_docs = @cho_response.present? ? @cho_response.documents : []
-        @cho_member_count = @cho_member_docs.total
+        @cho_member_count = @cho_response.total
         @paged_cho_member_docs = paginated_cho_item_list
       end
 
@@ -123,7 +123,7 @@ module Hyrax
 
       # bso pagination methods
       def paginated_bso_item_list
-        Kaminari.paginate_array(@bso_member_docs, total_count: @bso_member_docs.size).page(bso_current_page).per(bso_rows_from_params)
+        Kaminari.paginate_array(@bso_member_docs, total_count: @bso_member_count).page(bso_current_page).per(bso_rows_from_params)
       end
 
       def bso_total_items
@@ -145,7 +145,7 @@ module Hyrax
 
       # cho pagination methods
       def paginated_cho_item_list
-        Kaminari.paginate_array(@cho_member_docs, total_count: @cho_member_docs.size).page(cho_current_page).per(cho_rows_from_params)
+        Kaminari.paginate_array(@cho_member_docs, total_count: @cho_member_count).page(cho_current_page).per(cho_rows_from_params)
       end
 
       def cho_total_items
@@ -173,7 +173,7 @@ module Hyrax
         #params.merge(q: params[:cq])
 
         # setting higher collection limit for paginating the array       
-        params.merge(q: params[:cq])
+        request_params.merge(q: params[:cq])
       end
   end
 end

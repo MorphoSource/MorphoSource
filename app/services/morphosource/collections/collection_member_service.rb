@@ -56,6 +56,14 @@ module Morphosource
         @works_search_builder ||= Morphosource::CollectionMemberSearchBuilder.new(scope: scope, collection_id: collection.id, search_includes_models: :works)
       end
 
+      # @api public
+      #
+      # Collections which are members of the current collection
+      # @return [Blacklight::Solr::Response] {up to 50 solr documents}
+      def available_member_subcollections
+        query_solr(query_builder: subcollections_search_builder(collection.id), query_params: params_for_subcollections)
+      end
+
       private
 
       # @api private
@@ -88,6 +96,26 @@ module Morphosource
         else
           ""
         end
+      end
+
+      # @api private
+      #
+      # set up a member search builder for collections only
+      # @return [CollectionMemberSearchBuilder] new or existing
+      def subcollections_search_builder(collection_id)
+        @subcollections_search_builder ||= Morphosource::CollectionMemberSearchBuilder.new(scope: scope, collection_id: collection_id, search_includes_models: :collections)
+      end
+
+      # @api private
+      #
+      # Blacklight pagination still needs to be overridden and set up for the subcollections.
+      # @return <Hash> the additional inputs required for the subcollection member search builder
+      def params_for_subcollections
+        # To differentiate current page for works vs subcollections, we have to use a sub_collection_page
+        # param. Map this to the page param before querying for subcollections, if it's present
+        params2 = params.deep_dup
+        params2[:page] = params2.delete(:sub_collection_page)
+        params2
       end
 
       # @api private

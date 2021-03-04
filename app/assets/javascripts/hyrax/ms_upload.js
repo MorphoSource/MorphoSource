@@ -1,5 +1,6 @@
 // Use this script to override jquery file upload options.  Add method can also be defined here
 $( document ).ready(function() {
+  justUploaded = 0;
   uploadStatusOK = true;
   isAutoSave = false;
   // This file is the default initialization of the fileupload.  If you want to call
@@ -25,6 +26,7 @@ $( document ).ready(function() {
         $('.fileinput-button').hide();
         $('.dropzone').hide();
         uploadStatusOK = true;
+        justUploaded = 1;
         if (isAutoSave) {
           console.log('auto saving ...');          
           $.loader.close();
@@ -40,12 +42,14 @@ $( document ).ready(function() {
         console.log('fileuploadfail');
         $('[id="file-upload-cancel-btn"]').hide();
         uploadStatusOK = true;
+        justUploaded = 0;
       })
       .bind('fileuploaddestroyed', function (e, data) {
         console.log('fileuploaddestroyed');
         $('.fileinput-button').show();
         $('.dropzone').show();
         uploadStatusOK = true;
+        justUploaded = 0;
       });
 
   }

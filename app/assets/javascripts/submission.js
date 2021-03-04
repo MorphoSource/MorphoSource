@@ -1331,6 +1331,9 @@ $( document ).ready(function() {
             promptAutoSave(".btn-save-media");
             return false;
           }
+          if (!noFileCheck()) {
+            return false;
+          }
 
           prepareFieldsBeforeSubmit();
           disablePageAndSave(".btn-save-media");

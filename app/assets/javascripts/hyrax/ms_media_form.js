@@ -535,14 +535,16 @@ $( document ).ready(function() {
 
       mediaSubmitEvent.preventDefault();
       if (uploadStatusOK) {
-        prepareFieldsBeforeSubmit();
-        if (isFormValid()) {
-          disablePageAndSave(".btn-save-media");
-          if (HasEditImagingEventForm) {
-            $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
-          } else {
-            IsImagingEventOK = true;
-            submitProcessingEvent();
+        if (noFileCheck()) {
+          prepareFieldsBeforeSubmit();
+          if (isFormValid()) {
+            disablePageAndSave(".btn-save-media");
+            if (HasEditImagingEventForm) {
+              $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
+            } else {
+              IsImagingEventOK = true;
+              submitProcessingEvent();
+            }
           }
         }
       } else {
@@ -668,6 +670,18 @@ function prepareFieldsBeforeSubmit() {
     buildScaleBar('', scaleBarGroupUl);
   }
 
+}
+
+var noFileCheck = function() {
+  if ($('.attribute-filename').length > 0) {
+    // there is existing file associated with media
+    return true;
+  } else if (justUploaded > 0) {
+    // file just uploaded waiting to be save
+    return true;
+  } else {
+    return confirm('The media currently has no file associated.  Please click OK if you want to proceed.')
+  }
 }
 
 var promptAutoSave = function(mediaSaveBtn) {

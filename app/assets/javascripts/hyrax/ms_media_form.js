@@ -543,7 +543,7 @@ $( document ).ready(function() {
       // modify the form
       $('form#related_form_imaging_event input[name^="imaging_event[device_id]"]').remove();
       $('<input />').attr('type', 'hidden')
-        .attr('name', 'imaging_event[device_id][]')
+        .attr('name', 'imaging_event[device_id]')
         .attr('value', newDeviceID )
         .appendTo($('form#related_form_imaging_event'));   
     });

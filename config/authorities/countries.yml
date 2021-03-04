@@ -111,6 +111,9 @@ terms:
   - id: Chile
     term: Chile
     active: true
+  - id: China
+    term: China
+    active: true
   - id: Colombia
     term: Colombia
     active: true

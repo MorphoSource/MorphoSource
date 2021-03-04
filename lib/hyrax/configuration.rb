@@ -430,7 +430,8 @@ module Hyrax
 
     attr_writer :batch_user_key
     def batch_user_key
-      @batch_user_key ||= 'batchuser@example.com'
+      #@batch_user_key ||= 'batchuser@example.com'
+      @batch_user_key ||= '1' # user with key '1' (admin@email.com)
     end
 
     attr_writer :audit_user_key

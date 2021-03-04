@@ -192,10 +192,20 @@ $( document ).ready(function() {
       eventFuncs() {
         let self = this;
 
+        // Proxy user select
+        $("select[name='submission[on_behalf_of]']").change(function() {
+          //console.log('proxy user changed');
+          self.triggerChangeVal("select[name='media[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='biological_specimen[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='cultural_heritage_object[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='taxonomy[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='imaging_event[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='processing_event[on_behalf_of]']", $(this).val());
+        });
+
         // Media type select
         $("select[name='submission[submission_media_type]']").change(function() {
           console.log('View 1 Step 1 media type changed');
-
 
           self.triggerChangeVal("select[name='media[media_type]']", $(this).val());
           setRawDerivedStatus();

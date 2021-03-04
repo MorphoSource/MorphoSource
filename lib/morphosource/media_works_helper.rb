@@ -58,6 +58,10 @@ module Morphosource
       hidden_params = {}
       params = request.params
       hidden_params.merge!({'view' => params['view']}) if params['view'].present?
+      if params['add_works_to_collection'].present?
+        hidden_params.merge!({'add_works_to_collection' => params['add_works_to_collection']}) 
+        hidden_params.merge!({'add_works_to_collection_label[]' => params['add_works_to_collection_label'].first}) 
+      end
       html = ''
       hidden_params.map do |k,v|
         html += '<input type="hidden" name="' + k + '" value="' + v + '" />'

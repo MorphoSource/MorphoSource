@@ -14,6 +14,13 @@
       data: { behavior: 'work-form', 'param-key' => 'media' },
       multipart: true
     } do |f| %>
+      <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
+        <div class="hide">
+          <%= f.input :on_behalf_of, 
+          collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
+          prompt: "Myself" %>
+        </div>
+      <% end %>
 
       <div class="row">
 

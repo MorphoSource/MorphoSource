@@ -1,5 +1,12 @@
 <div id="submission_create_cho_details">
   <%= simple_form_for @cho_form, wrapper: :showcase_default do |f| %>
+    <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
+      <div class="hide">
+      <%= f.input :on_behalf_of, 
+        collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
+        prompt: "Myself" %>
+      </div>
+    <% end %>
     <div class="row">
       <!-- left column  -->
       <div class="col-xs-12 col-md-6">

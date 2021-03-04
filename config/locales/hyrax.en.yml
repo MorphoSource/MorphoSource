@@ -213,6 +213,11 @@ en:
           actions: Action
           title: Taxonomy
     dashboard:
+      proxy_help: Select contributor users who can deposit media on your behalf. You will be considered the depositor of these works. Both you and your proxy user will be able to make changes to these works. You can revoke a proxy by clicking the Delete Proxy button. Currently, you can not revoke the proxy user’s ability to edit works they previously submitted, although this feature will be available soon.
+      authorize_proxies: Proxy Users Who Can Add Media On My Behalf 
+      current_proxies: Current Proxy Users
+      current_proxy_for: Users On Whose Behalf I Can Add Media
+
       my:
         action:
           team:

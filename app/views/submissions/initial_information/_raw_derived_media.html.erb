@@ -4,6 +4,18 @@
       <div class="row">
         <h4><%= t('morphosource.submission.header_text.initial_information') %></h4>
       </div>
+
+        <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? 
+            my_name = current_user.display_name.present? ? "(#{current_user.display_name})" : ""
+          %>
+          <div class="row">
+            <div class="col-sm-6 col-sm-offset-3 no-padding">
+              <%= f.input :on_behalf_of, label: 'Which user are you depositing this media for?', 
+                collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, prompt: "Myself #{my_name}" %>
+            </div>
+          </div>
+        <% end %>
+
       	<div class="row">
           <div class="col-sm-6 col-sm-offset-3 no-padding">
       		  <%= render_edit_field_partial('submission_media_type', f: f) %>

@@ -18,6 +18,10 @@ module Hyrax
       grantor = authorize_and_return_grantor
       grantee = ::User.from_url_component(params[:grantee_id])
       if grantor.can_receive_deposits_from.include?(grantee)
+        # already a proxy user
+        head :ok
+      elsif !grantee.contributor?
+        # not a contributor
         head :ok
       else
         grantor.can_receive_deposits_from << grantee

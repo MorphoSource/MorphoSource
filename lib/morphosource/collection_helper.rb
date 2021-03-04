@@ -160,7 +160,7 @@ module Morphosource
 
     def bso_tab_url_for_collections(id)
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/projects/specimens/#{id}?#{url_params}"
@@ -168,7 +168,7 @@ module Morphosource
 
     def cho_tab_url_for_collections(id)
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/projects/chos/#{id}?#{url_params}"
@@ -176,7 +176,7 @@ module Morphosource
 
     def dashboard_bso_tab_url(id)
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/dashboard/collections/specimens/#{id}?#{url_params}"
@@ -184,7 +184,7 @@ module Morphosource
 
     def dashboard_cho_tab_url(id)
       url_params = request_params.
-        map { |k, v| "#{k}=#{v}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
+        map { |k, v| "#{CGI.escape(k)}=#{CGI.escape(v)}" if !['utf8', 'controller', 'action', 'id'].include?(k) }.
         compact.
         join('&')
       "/dashboard/collections/chos/#{id}?#{url_params}"
@@ -200,9 +200,8 @@ module Morphosource
       @bso_source_options = []
       @cho_visibility_options = []
 
-      @members_count = @member_docs.length
       @media_member_docs = @member_docs      
-      @media_member_count = @member_docs.length
+      @media_member_count = @members_count
       @paged_media_member_docs = paginated_media_item_list
       @media_extras = get_media_extras(@paged_media_member_docs, team_projects, collection.organization&.id)
       @po_type = "bso" unless @po_type.present?

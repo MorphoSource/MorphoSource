@@ -191,11 +191,13 @@ module CollectionInformationHelper
 
   def po_ids_by_collection_title(collection_title)
     return [] if !collection_title.present?
+    collection_id = Collection.where(title: collection_title).select { |c| c.title&.first == collection_title }&.first&.id
+    return [] if !collection_id.present?
     params = { 
       fl: ['physical_object_id_tesim'],
       fq: [
         solrize('has_model', :symbol) + ':Media',
-        "#{solrize('member_of_collections', :symbol)}:#{prepare_value(collection_title)}"
+        "#{solrize('member_of_collection_ids', :symbol)}:#{collection_id}"
       ]
     }
     media = solr.get_docs(nil, params)

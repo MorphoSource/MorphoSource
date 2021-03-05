@@ -133,7 +133,7 @@ module Morphosource
 
     # displays number of media for physical objects in catalog search results
     def total_viewable_media
-      ActiveFedora::Base.where("physical_object_id_tesim:#{id}").accessible_by(current_ability).count
+      ActiveFedora::Base.where("physical_object_id_tesim:#{id} AND has_model_ssim:Media").accessible_by(current_ability).count
     end
 
   end

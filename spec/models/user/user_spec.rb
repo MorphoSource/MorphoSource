@@ -1,9 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-
   let(:user)          { User.create(email: "example@email.com", password: "password") }
   let(:ms1_user)      { User.create(email: "test@test.com", password: "password", ms1_user: true, ms1_password_hash: 'hash') }
+
+  it { should have_many(:cart_items) }
+  it { should have_many(:owned_fund_codes) }
+  it { should have_many(:fund_code_memberships) }
+  it { should have_many(:fund_codes) }
 
   describe 'after_database_authentication' do
     before do
@@ -220,6 +224,27 @@ RSpec.describe User, type: :model do
     end
     it 'does not assign an ms_id to users who already have one' do
       expect(new_user2.ms_id).to eq(old_ms_id)
+    end
+  end
+
+  describe 'fund code methods' do
+    let(:creator) { User.create(email: 'admin@email.com', password: 'password') }
+    let(:fund_code) { FundCode.new(user: creator, title: 'Fund Code Title', description: 'Fund code description')}
+    let(:this_user) { User.create(email: 'user@email.com', password: 'password') }
+
+    before do
+      fund_code.save!
+    end
+
+    it "can return fund codes where user is manager" do
+      fund_code.add_user(this_user, true)
+      byebug
+      expect(this_user.managed_fund_codes).to match_array([fund_code])
+    end
+
+    it "can return fund codes where user is a member" do
+      fund_code.add_user(this_user, false)
+      expect(this_user.standard_member_fund_codes).to match_array([fund_code])
     end
   end
 end

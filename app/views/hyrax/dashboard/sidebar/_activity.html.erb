@@ -15,12 +15,18 @@
       <% end %>
 
       <%= menu.nav_link(hyrax.transfers_path) do %>
-        <span class="fa fa-arrows-h" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.transfers') %></span>
+        <span class="fa fas fa-arrows-alt-h" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.transfers') %></span>
       <% end %>
 
       <% if Flipflop.proxy_deposit? %>
         <%= menu.nav_link(hyrax.depositors_path) do %>
           <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.dashboard.manage_proxies') %></span>
+        <% end %>
+      <% end %>
+
+      <% if current_user.fund_codes.present? %>
+        <%= menu.nav_link(main_app.my_fund_codes_path) do %>
+          <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.dashboard.fund_codes') %></span>
         <% end %>
       <% end %>
     <% end %>

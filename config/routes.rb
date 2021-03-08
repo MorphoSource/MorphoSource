@@ -309,6 +309,17 @@ Rails.application.routes.draw do
       put 'clear_request', action: :clear_request, controller: :request_managers, as: 'clear_request'
       put 'deny_download', action: :deny_download, controller: :request_managers, as: 'deny_download'
       put 'edit_expiration', action: :edit_expiration, controller: :request_managers, as: 'edit_expiration'
+
+      # fund codes
+      get 'dashboard/my/fund_codes/(:id)', action: :index, controller: :fund_codes, as: 'my_fund_codes'
+      patch 'dashboard/my/fund_codes/:id', action: :update, controller: :fund_codes, as: 'my_fund_codes_update'
+    end
+
+    scope module: :admin do
+      get 'admin/fund_codes/(:id)', action: :index, controller: :fund_codes, as: 'admin_fund_codes'
+      post 'admin/fund_codes', action: :create, controller: :fund_codes, as: 'admin_fund_codes_create'
+      patch 'admin/fund_codes/:id', action: :update, controller: :fund_codes, as: 'admin_fund_codes_update'
+      delete 'admin/fund_codes/:id', action: :delete, controller: :fund_codes, as: 'admin_fund_codes_delete'
     end
   end
 

@@ -17,7 +17,7 @@ en:
         requests: 'Requests'
         manage_requests: 'Manage Requests'
       fund_codes:
-        header: 'Admin Fund Code Control Panel'
+        header: 'Fund Code Control Panel'
     base:
       form_progress:
         required_format: 'File formats match selected media type'

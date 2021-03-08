@@ -1,7 +1,7 @@
 <div class="row record-padding">
 	<div class="col-md-9">
 		<div class="pagination">
-			<%= paginate @paginated_unrestricted_items, outer_window: 2, theme: 'blacklight' %>
+			<%= paginate @paginated_restricted_items, outer_window: 2, theme: 'blacklight', param_name: :rpage %>
 		</div>
 	</div>
 </div>

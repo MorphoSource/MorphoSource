@@ -4,8 +4,7 @@ module Morphosource
 
       def get_items(page)
         @items = items(page)
-        @solr_docs = solr_docs(page)
-        @item_count = count_text(@items.size)
+        #@solr_docs = solr_docs(page)
       end
 
       def options(page)
@@ -65,7 +64,10 @@ module Morphosource
       # media cart
       def get_restricted_items
         @unrestricted_items = downloadable_items
+        @item_count = count_text(@unrestricted_items.size)
+        @paginated_unrestricted_items = paginated_unrestricted_items
         @restricted_items = undownloadable_items
+        @paginated_restricted_items = paginated_restricted_items
         @restricted_count = count_text(@restricted_items.count)
       end
 
@@ -75,6 +77,52 @@ module Morphosource
 
       def undownloadable_items
         items_in_cart.select(&:restricted?)
+      end
+
+      # pagination methods - unrestricted
+      def paginated_unrestricted_items
+        Kaminari.paginate_array(@unrestricted_items, total_count: total_items).page(current_page).per(rows_from_params)
+      end
+
+      def total_items
+        @unrestricted_items.count
+      end
+
+      def current_page
+        page = request.params[:page].nil? ? 1 : request.params[:page].to_i
+        page > total_pages ? total_pages : page
+      end
+
+      # @return [Integer] total number of pages of viewable items
+      def total_pages
+        (total_items.to_f / rows_from_params.to_f).ceil
+      end
+
+      def rows_from_params
+        request.params[:rows].nil? ? Hyrax.config.show_work_item_rows : request.params[:rows].to_i
+      end
+
+      # pagination methods - restricted
+      def paginated_restricted_items
+        Kaminari.paginate_array(@restricted_items, total_count: restricted_total_items).page(restricted_current_page).per(restricted_rows_from_params)
+      end
+
+      def restricted_total_items
+        @restricted_items.count
+      end
+
+      def restricted_current_page
+        rpage = request.params[:rpage].nil? ? 1 : request.params[:rpage].to_i
+        rpage > restricted_total_pages ? restricted_total_pages : rpage
+      end
+
+      # @return [Integer] total number of pages of viewable items
+      def restricted_total_pages
+        (restricted_total_items.to_f / restricted_rows_from_params.to_f).ceil
+      end
+
+      def restricted_rows_from_params
+        request.params[:rrows].nil? ? Hyrax.config.show_work_item_rows : request.params[:rrows].to_i
       end
 
       # media cart page

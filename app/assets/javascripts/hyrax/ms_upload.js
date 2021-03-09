@@ -1,5 +1,8 @@
 // Use this script to override jquery file upload options.  Add method can also be defined here
 $( document ).ready(function() {
+  justUploaded = 0;
+  uploadStatusOK = true;
+  isAutoSave = false;
   // This file is the default initialization of the fileupload.  If you want to call
   // hyraxUploader with other options (like afterSubmit), then override this file.
   // Check if the file upload widget exists
@@ -15,14 +18,39 @@ $( document ).ready(function() {
     // show / hide file upload buttons
     // currently the fileupload widget is on media edit page and submission flow
     $('#fileupload')
+      .bind('fileuploadstart', function (e, data) {
+        uploadStatusOK = false;
+      })
       .bind('fileuploadcompleted', function (e, data) {
+        console.log('fileuploadcompleted');
         $('.fileinput-button').hide();
         $('.dropzone').hide();
+        uploadStatusOK = true;
+        justUploaded = 1;
+        if (isAutoSave) {
+          console.log('auto saving ...');          
+          $.loader.close();
+          $('.btn-save-media').trigger('click');
+        }
+      })
+      /* .bind('fileuploadstop', function (e, data) {
+        console.log('fileuploadstop');
+        $('[id="file-upload-cancel-btn"]').hide();
+        uploadStatusOK = true;
+      }) */
+      .bind('fileuploadfail', function (e, data) {
+        console.log('fileuploadfail');
+        $('[id="file-upload-cancel-btn"]').hide();
+        uploadStatusOK = true;
+        justUploaded = 0;
       })
       .bind('fileuploaddestroyed', function (e, data) {
+        console.log('fileuploaddestroyed');
         $('.fileinput-button').show();
         $('.dropzone').show();
-     });
+        uploadStatusOK = true;
+        justUploaded = 0;
+      });
 
   }
 

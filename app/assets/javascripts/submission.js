@@ -1326,6 +1326,18 @@ $( document ).ready(function() {
         });
 
         $('#new_media').submit(function(){
+          if (!uploadStatusOK) {
+            // file upload is in progress. Prompt for auto save
+            promptAutoSave(".btn-save-media");
+            return false;
+          }
+          if (!noFileCheck()) {
+            return false;
+          }
+
+          prepareFieldsBeforeSubmit();
+          disablePageAndSave(".btn-save-media");
+
           var createParams = ['organizationCreateParams', 'taxonomyCreateParams',
             'biologicalSpecimenCreateParams', 'culturalHeritageObjectCreateParams', 'deviceCreateParams',
             'deviceOrganizationCreateParams', 'imagingEventCreateParams',
@@ -1445,9 +1457,9 @@ $( document ).ready(function() {
 
       setMediaPermissionFieldEvent() {
         $('form#new_media div,form#new_media a').click(function(event) {
-          console.log('hi');
+          //console.log('in setMediaPermissionFieldEvent');
           if ($(this).hasClass('permissions-field')) {
-            console.log('hi2');
+            //console.log('hi2');
             alert($('#organization-alert-message').text());
             $(this).off(event); // Only fire once
           }

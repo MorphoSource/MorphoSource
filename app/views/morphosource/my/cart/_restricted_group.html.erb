@@ -12,10 +12,7 @@
   </thead>
   <tbody>
     <% @paginated_restricted_items.each_with_index do |item, counter| %>
-      <% 
-      #document = @solr_docs.select{|doc| doc.id == item.work_id}[0] 
-       document = SolrDocument.find(item.work_id)
-      %>
+      <% document = @solr_docs.select{|doc| doc.id == item.work_id}[0] %>
       <%= render 'morphosource/my/cart/list_restricted_items', document: document, counter: counter, item: item %>
     <% end %>
   </tbody>

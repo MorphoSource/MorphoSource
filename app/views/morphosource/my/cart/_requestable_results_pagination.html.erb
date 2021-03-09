@@ -1,7 +1,19 @@
-<div class="row record-padding">
-	<div class="col-md-9">
-		<div class="pagination">
-			<%= paginate @paginated_restricted_items, outer_window: 2, theme: 'blacklight', param_name: :rpage %>
-		</div>
+<div class="row record-padding paginate-wrapper">
+
+	<div class="col-md-12 col-lg-2">
+	  <%= form_tag '', method: :get, :id => 'restricted_rows_per_page' do %>
+	    <div class="select-tag">
+	      Rows per page <%= select_tag :rows, options_for_select(Hyrax.config.teams_rows_per_page_range, selected: params[:rows] || Hyrax.config.teams_show_work_item_rows), onchange: "$('#restricted_rows_per_page').submit();" %> 
+	    </div>
+	  <% end %>
 	</div>
-</div>
+
+	<div class="col-md-12 col-lg-2">
+		<div>Showing <%= page_entries_info @paginated_restricted_items %></div>
+	</div>
+
+	<div class="col-md-12 col-lg-8">
+		<%= paginate @paginated_restricted_items, outer_window: 2, theme: 'blacklight', param_name: :rpage %>
+	</div>
+
+</div><!-- /row -->

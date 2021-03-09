@@ -131,6 +131,16 @@ class Collection < ActiveFedora::Base
     user_groups.each(&:save)
   end
 
+  def remove_parent_membership(parent, user=nil)
+    # do not remove the selected user from the collection members
+    members = parent.group_members - [user]
+    DEFAULT_GROUP_ROLES.each do |role|
+      members.each do |member|
+        send(role).delete(member)
+      end
+    end
+  end
+
   # override the method from models/concerns/hyrax/collection_behavior.rb to apply collection permissions to works
   def add_member_objects(new_member_ids)
     Array(new_member_ids).collect do |member_id|

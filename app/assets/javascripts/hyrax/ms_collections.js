@@ -19,4 +19,11 @@ Blacklight.onLoad(function () {
     $(modalId).modal('show');
   });
 
+  function addDataAttributesToModal(modalId, dataAttributes, $dataEl) {
+    // Remove and add new data attributes
+    dataAttributes.forEach(function(attribute) {
+      $(modalId).removeAttr('data-' + attribute).attr('data-' + attribute, $dataEl.data(attribute));
+    });
+  }
+
 });

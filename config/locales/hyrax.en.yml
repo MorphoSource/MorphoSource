@@ -85,12 +85,12 @@ en:
         media_types_and_modalities: Media Types and Modalities
         media_types: Media Types
         taxonomies: Browse Taxonomy
-        Mesh: Mesh or Point Cloud 
-        CTImageSeries: CT Image Series 
+        Mesh: Mesh or Point Cloud
+        CTImageSeries: CT Image Series
         PhotogrammetryImageSeries: Photogrammetry Image Series
         Image: Image
         Video: Video
-        Other: Other 
+        Other: Other
         modalities: Modalities
       page_description:
         categories:
@@ -214,7 +214,7 @@ en:
           title: Taxonomy
     dashboard:
       proxy_help: Select contributor users who can deposit media on your behalf. You will be considered the depositor of these works. Both you and your proxy user will be able to make changes to these works. You can revoke a proxy by clicking the Delete Proxy button. Currently, you can not revoke the proxy user’s ability to edit works they previously submitted, although this feature will be available soon.
-      authorize_proxies: Proxy Users Who Can Add Media On My Behalf 
+      authorize_proxies: Proxy Users Who Can Add Media On My Behalf
       current_proxies: Current Proxy Users
       current_proxy_for: Users On Whose Behalf I Can Add Media
 
@@ -258,7 +258,7 @@ en:
             label: 'Public view'
         form_relationships:
           modals:
-            remove_this_project_description: Removing this project will not remove it from the repository.  It will only remove the project from this team. Are you sure you want to remove this project?
+            remove_this_project_description: Removing this project will not remove it from the repository.  It will only remove the project from this team. You will remain a project manager, but all other members of the team will be removed from the project, even if they were members before the project was added to the team. Are you sure you want to remove this project?
         form_share:
           manager: 'Manager'
           editor: 'Editor'

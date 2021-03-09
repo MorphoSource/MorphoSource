@@ -35,7 +35,6 @@ module Hyrax
         # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         def assign_nested_attributes_for_collection(env)
           attributes_collection = env.attributes.delete(:member_of_collections_attributes)
-
           return assign_for_collection_ids(env) unless attributes_collection
 
           emit_deprecation if env.attributes.delete(:member_of_collection_ids)
@@ -51,7 +50,7 @@ module Hyrax
             if existing_collections.include?(attributes['id'])
               remove(env.curation_concern, attributes['id']) if has_destroy_flag?(attributes)
             else
-              # customize (Hyrax 2.4.1) : 
+              # customize (Hyrax 2.4.1) :
               # below is a temporary bug fix for MR-596. re-apply this fix after updating Hyrax to
               # a version newer than 2.4.1
               add(env, attributes['id']) unless
@@ -110,13 +109,23 @@ module Hyrax
           collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
 
           return unless env.current_ability.can?(:deposit, collection)
+
           env.curation_concern.member_of_collections << collection
+
+          # apply the collection's permission template when updating media
+          # the permission template is applied by Hyrax to works created in a collection by
+          # /app/actors/hyrax/actors/apply_permission_template_actor.rb
+          if env.curation_concern.persisted?
+            Hyrax::PermissionTemplateApplicator.apply(collection.permission_template).to(model: env.curation_concern)
+          end
         end
 
         # Remove the object from the members set and the ordered members list
         def remove(curation_concern, id)
           collection = Collection.find(id)
           curation_concern.member_of_collections.delete(collection)
+          # remove any team access grants
+          collection.remove_team_access_grants(curation_concern)
         end
 
         # Determines if a hash contains a truthy _destroy key.

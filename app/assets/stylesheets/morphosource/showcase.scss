@@ -16,7 +16,12 @@ html {
   }
 }
 
-.showcase.teams, .showcase.media-works, .showcase.browse, .showcase.organizations { 
+.showcase.teams, 
+.showcase.media-works, 
+.showcase.browse, 
+.showcase.organizations, 
+.showcase.dl-request, 
+.showcase.cart { 
   .super-title {
     font-size: 18px;
     color: #888;

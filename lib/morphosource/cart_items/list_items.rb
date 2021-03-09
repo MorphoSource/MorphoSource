@@ -99,7 +99,7 @@ module Morphosource
       end
 
       def rows_from_params
-        request.params[:rows].nil? ? Hyrax.config.show_work_item_rows : request.params[:rows].to_i
+        request.params[:rows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:rows].to_i
       end
 
       # pagination methods - restricted
@@ -122,7 +122,7 @@ module Morphosource
       end
 
       def restricted_rows_from_params
-        request.params[:rrows].nil? ? Hyrax.config.show_work_item_rows : request.params[:rrows].to_i
+        request.params[:rows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:rows].to_i
       end
 
       # media cart page

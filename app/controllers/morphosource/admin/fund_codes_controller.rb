@@ -79,10 +79,12 @@ module Morphosource
       end
 
       def params_managers
+        return [] if !fund_code_params[:managers].present?
         fund_code_params[:managers].split(',').map { |id| User.find(id) if User.exists?(id) }.compact
       end
 
       def params_standard_members
+        return [] if !fund_code_params[:standard_members].present?
         fund_code_params[:standard_members].split(',').map { |id| User.find(id) if User.exists?(id) }.compact
       end
     end

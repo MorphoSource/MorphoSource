@@ -29,6 +29,9 @@ https://www.jqueryscript.net/loading/Simple-jQuery-Loading-Spinner-Overlay-Plugi
   top: 0;
   width: 100%;
   z-index: 1020;
+  .loading {
+    background-image: none !important;
+  }
 }
 
 .loading_wrp .x16 span {

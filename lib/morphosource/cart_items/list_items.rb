@@ -4,7 +4,7 @@ module Morphosource
 
       def get_items(page)
         @items = items(page)
-        #@solr_docs = solr_docs(page)
+        @solr_docs = solr_docs(page)
       end
 
       def options(page)

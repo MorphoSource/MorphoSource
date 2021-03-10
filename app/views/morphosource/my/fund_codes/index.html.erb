@@ -1,0 +1,93 @@
+<% provide :page_title, 'Fund Codes' %>
+
+<% if @current_fund_code.present? %>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title h2"><%= t('.edit_fund_code_members') %></h2>
+        </div>
+        <div class="panel-body">
+          <%= simple_form_for @current_fund_code, url: main_app.my_fund_codes_update_path do |f| %>
+            <%= f.input :title, disabled: true %>
+            <%= f.input :description, disabled: true %>
+            <%= f.input :standard_members, input_html: { data: { standard_members: @standard_members_select2 } } %>
+            <%= f.submit class: 'btn btn-sm btn-primary' %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title h2"><%= t('.current_fund_codes') %></h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-striped datatable">
+          <thead>
+            <th><%= t('.header.fund_code') %></th>
+            <th><%= t('.header.description') %></th>
+            <th><%= t('.header.membership') %></th>
+            <th><%= t('.header.managers') %></th>
+            <th><%= t('.header.standard_members') %></th>
+            <th><%= t('.header.actions') %></th>
+          </thead>
+          <tbody>
+          <% @fund_codes.each do |fc| %>
+            <tr>
+              <td data-sort="<%= fc.title %>"><%= fc.title %></td>
+              <td data-sort="<%= fc.description %>"><%= fc.description %></td> 
+              <% if @managed_fund_codes.include?(fc) %>
+                <td data-sort="manager">Manager</td>
+              <% else %>
+                <td data-sort="standard">Standard</td>
+              <% end %>
+              <% if fc.managers.present? %>
+                <td>
+                  <ul class="fc-managers">
+                    <% fc.managers.each do |u| %>
+                      <li>
+                          <%= link_to((u.display_name || u.email), Hyrax::Engine.routes.url_helpers.user_path(u)) %>
+                      </li>
+                    <% end %>
+                  </ul>
+                </td>
+              <% else %>
+                <td><%= t('.no_users') %></td>
+              <% end %>
+              <% if fc.standard_members.present? %>
+                <td>
+                  <ul class="fc-managers">
+                    <% fc.standard_members.each do |u| %>
+                      <li>
+                          <%= link_to((u.display_name || u.email), Hyrax::Engine.routes.url_helpers.user_path(u)) %>
+                      </li>
+                    <% end %>
+                  </ul>
+                </td>
+              <% else %>
+                <td><%= t('.no_users') %></td>
+              <% end %>
+              <td>
+                <% if @managed_fund_codes.include?(fc) %>
+                  <%= link_to 'Edit Members', main_app.my_fund_codes_path(:id => fc.id), class: 'btn btn-sm btn-primary' %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $( document ).ready(function() {
+    $('#fund_code_standard_members').userSearchMultiple($('#fund_code_standard_members').data('standard-members'));
+  });
+</script>

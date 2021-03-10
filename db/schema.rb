@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_27_181321) do
+ActiveRecord::Schema.define(version: 2021_03_05_184729) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -144,6 +144,25 @@ ActiveRecord::Schema.define(version: 2020_07_27_181321) do
     t.integer "user_id"
     t.index ["file_id"], name: "index_file_view_stats_on_file_id"
     t.index ["user_id"], name: "index_file_view_stats_on_user_id"
+  end
+
+  create_table "fund_code_memberships", force: :cascade do |t|
+    t.bigint "fund_code_id"
+    t.bigint "user_id"
+    t.boolean "manager", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fund_code_id"], name: "index_fund_code_memberships_on_fund_code_id"
+    t.index ["user_id"], name: "index_fund_code_memberships_on_user_id"
+  end
+
+  create_table "fund_codes", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_fund_codes_on_user_id"
   end
 
   create_table "hyrax_collection_types", force: :cascade do |t|
@@ -633,4 +652,7 @@ ActiveRecord::Schema.define(version: 2020_07_27_181321) do
     t.index ["work_id"], name: "index_work_view_stats_on_work_id"
   end
 
+  add_foreign_key "fund_code_memberships", "fund_codes"
+  add_foreign_key "fund_code_memberships", "users"
+  add_foreign_key "fund_codes", "users"
 end

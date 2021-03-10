@@ -1,0 +1,11 @@
+en:
+  simple_form:
+    labels:
+      fund_code:
+        title: Fund Code
+    hints:
+      fund_code:
+        title: The specific code, title, or other designator for the fund code. 
+        description: The purpose and context of the fund code.
+        managers: Users who can add or remove additional standard member users. Managers can also use the fund code for media submissions.
+        standard_members: Users who can use the fund code for media submissions. 

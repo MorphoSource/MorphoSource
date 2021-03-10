@@ -11,10 +11,13 @@ en:
     admin:
       sidebar:
         downloads: 'Downloads'
+        fund_codes: 'Fund Codes'
         media_cart: 'Media Cart'
         previous_downloads: 'Previous Downloads'
         requests: 'Requests'
         manage_requests: 'Manage Requests'
+      fund_codes:
+        header: 'Fund Code Control Panel'
     base:
       form_progress:
         required_format: 'File formats match selected media type'
@@ -28,6 +31,8 @@ en:
           button_label: 'Add a Project'
     dashboard:
       my:
+        fund_codes:
+          header: 'Fund Codes'
         heading:
           file_visibility: 'File Visibility'
           date_downloaded: 'Date Downloaded'

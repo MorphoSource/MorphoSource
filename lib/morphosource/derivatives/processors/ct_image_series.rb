@@ -48,7 +48,7 @@ module Morphosource::Derivatives::Processors
         
         @x_spacing = directives.fetch(:x_spacing, 1).presence || 1
         @y_spacing = directives.fetch(:y_spacing, 1).presence || 1
-        @z_spacing = directives.fetch(:z_spacing, 0).presence
+        @z_spacing = directives.fetch(:z_spacing, 0).presence || 0
         @slice_thickness = directives.fetch(:slice_thickness, 0).presence || 0
         if z_spacing == 0 && slice_thickness == 0
           puts('first if hit')
@@ -149,18 +149,52 @@ module Morphosource::Derivatives::Processors
     end
 
     def extract_image_metadata
-      x = []
-      y = []
+      files = {}
       z = 0
       Dir.foreach(input_path) do |f|
         next if f == '.' or f == '..'
         x_dim, y_dim = image_dims(File.join(input_path, File.basename(f)))
-        x << x_dim if x_dim
-        y << y_dim if y_dim
-        z += 1 if x_dim && y_dim
+        if x_dim.present? && y_dim.present?
+          dim_object = { x: x_dim, y: y_dim }
+          files[dim_object] = [] if !files.key?(dim_object)
+          files[dim_object] << File.basename(f)
+          z += 1
+        end
       end
-      set_series_metadata(x, y, z)
+      correct_dims = nil
+      if files.keys.length == 1
+        correct_dims = files.keys.first
+      else
+        # find largest dimension and delete others
+        correct_dims = files.max_by { |k, v| v.length }[0]
+        files_to_delete = files.select { |k, v| k != correct_dims }
+        files_to_delete.each do |k, v|
+          v.each { |f| FileUtils.remove_file(File.join(input_path, File.basename(f))) }
+        end
+      end
+      if correct_dims.present? && z != 0
+        @x = correct_dims[:x]
+        @y = correct_dims[:y]
+        @z = files[correct_dims].length
+        @linear_scale_factor = linear_scale_factor
+      else
+        raise "No images or images with dimension error located in image series archive"
+      end
     end
+
+    # def extract_image_metadata
+    #   x = []
+    #   y = []
+    #   z = 0
+    #   Dir.foreach(input_path) do |f|
+    #     next if f == '.' or f == '..'
+    #     x_dim, y_dim = image_dims(File.join(input_path, File.basename(f)))
+    #     x << x_dim if x_dim
+    #     y << y_dim if y_dim
+    #     z += 1 if x_dim && y_dim
+    #   end
+    #   set_series_metadata(x, y, z)
+    # end
 
     def image_dims(f)
       w = nil
@@ -174,16 +208,16 @@ module Morphosource::Derivatives::Processors
       return w, h
     end
 
-    def set_series_metadata(x, y, z)
-      if x.uniq.length != 1 || y.uniq.length != 1 || z == 0
-        raise "No images or different types of images located in image series archive"
-      else
-        @x = x.first
-        @y = y.first
-        @z = z
-        @linear_scale_factor = linear_scale_factor
-      end
-    end
+    # def set_series_metadata(x, y, z)
+    #   if x.uniq.length != 1 || y.uniq.length != 1 || z == 0
+    #     raise "No images or different types of images located in image series archive"
+    #   else
+    #     @x = x.first
+    #     @y = y.first
+    #     @z = z
+    #     @linear_scale_factor = linear_scale_factor
+    #   end
+    # end
 
     def vf # voxel volume factor, i.e. approx. length on a side in pixels
       400.0
@@ -213,6 +247,7 @@ module Morphosource::Derivatives::Processors
       z_total = ( z_spacing.to_f * (z.to_f - 1.0) ) + slice_thickness.to_f
       new_slice_thickness = ( slice_thickness.to_f * z.to_f) / new_dim(z)
       new_z = ( z_total  - new_slice_thickness ) / ( new_dim(z) - 1 ) 
+      new_z = 0.0 if new_z < 0.0
 
       return new_x, new_y, new_z, new_slice_thickness
     end

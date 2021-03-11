@@ -85,41 +85,70 @@ RSpec.describe Collection, type: :model do
     end
   end
 
-  describe '#copy_parent_membership' do
-    let(:parent)            { Collection.create(title: ['Parent'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-    let(:parent_manager)    { User.create(email: 'manager@email.com', password: 'password') }
-    let(:parent_editor)     { User.create(email: 'editor@email.com', password: 'password') }
-    let(:parent_depositor)  { User.create(email: 'depositor@email.com', password: 'password') }
-    let(:parent_downloader) { User.create(email: 'downloader@email.com', password: 'password') }
-    let(:parent_viewer)     { User.create(email: 'viewer@email.com', password: 'password') }
+  describe '#copy_parent_membership, #remove_parent_membership' do
+    # let(:parent)            { Collection.create(title: ['Parent'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:team_manager)    { User.create(email: 'manager@email.com', password: 'password') }
+    let(:team_editor)     { User.create(email: 'editor@email.com', password: 'password') }
+    let(:team_depositor)  { User.create(email: 'depositor@email.com', password: 'password') }
+    let(:team_downloader) { User.create(email: 'downloader@email.com', password: 'password') }
+    let(:team_viewer)     { User.create(email: 'viewer@email.com', password: 'password') }
 
     before do
-      allow(Collection).to receive(:find).with(parent.id).and_return(parent)
-      allow(Role).to receive(:find_by).and_call_original
+      team.create_collection_groups
+      project.create_collection_groups
 
-      [parent, project].each do |collection|
-        collection.create_collection_groups
-        Collection::DEFAULT_GROUP_ROLES.each do |role|
-          group = collection.send("#{role}_group")
-          allow(Role).to receive(:find_by).with(name: collection.id.concat("_#{role}")).and_return(group)
-        end
-      end
-
-      parent.managers << parent_manager
-      parent.editors << parent_editor
-      parent.depositors << parent_depositor
-      parent.downloaders << parent_downloader
-      parent.viewers << parent_viewer
-      parent.user_groups.each(&:save)
-      project.copy_parent_membership(parent.id)
+      team.managers << team_manager
+      team.editors << team_editor
+      team.depositors << team_depositor
+      team.downloaders << team_downloader
+      team.viewers << team_viewer
+      team.user_groups.each(&:save)
     end
 
-    it 'copies the parent members to the child collection' do
-      expect(project.managers).to include(parent_manager)
-      expect(project.editors).to include(parent_editor)
-      expect(project.depositors).to include(parent_depositor)
-      expect(project.downloaders).to include(parent_downloader)
-      expect(project.viewers).to include(parent_viewer)
+    describe 'copy_parent_membership' do
+      it 'copies the parent members to the child collection' do
+        project.copy_parent_membership(team.id)
+
+        expect(project.managers).to include(team_manager)
+        expect(project.editors).to include(team_editor)
+        expect(project.depositors).to include(team_depositor)
+        expect(project.downloaders).to include(team_downloader)
+        expect(project.viewers).to include(team_viewer)
+      end
+    end
+
+    describe 'remove_parent_membership' do
+      let(:project_manager)    { User.create(email: 'project_manager@email.com', password: 'password') }
+      let(:project_editor)     { User.create(email: 'project_editor@email.com', password: 'password') }
+      let(:project_depositor)  { User.create(email: 'project_depositor@email.com', password: 'password') }
+      let(:project_downloader) { User.create(email: 'project_downloader@email.com', password: 'password') }
+      let(:project_viewer)     { User.create(email: 'project_viewer@email.com', password: 'password') }
+
+      before do
+       project.managers << project_manager
+       project.editors << project_editor
+       project.depositors << project_depositor
+       project.downloaders << project_downloader
+       project.viewers << project_viewer
+       project.user_groups.each(&:save)
+       project.copy_parent_membership(team.id)
+      end
+
+      it 'removes team members except designated user from the project' do
+        expect(project.managers).to match_array([team_manager, project_manager, user])
+        expect(project.editors).to match_array([team_editor, project_editor])
+        expect(project.depositors).to match_array([team_depositor,project_depositor])
+        expect(project.downloaders).to match_array([team_downloader, project_downloader])
+        expect(project.viewers).to match_array([team_viewer, project_viewer])
+
+        project.remove_parent_membership(team, team_manager)
+
+        expect(project.managers).to match_array([team_manager, project_manager])
+        expect(project.editors).to match_array([ project_editor])
+        expect(project.depositors).to match_array([project_depositor])
+        expect(project.downloaders).to match_array([project_downloader])
+        expect(project.viewers).to match_array([ project_viewer])
+      end
     end
   end
 

@@ -20,6 +20,7 @@ module Hyrax
 
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
+    after_action :update_thumbnail, only: [:update]
 
     # override the layout from WorksControllerBehavior
     def decide_layout
@@ -130,8 +131,6 @@ module Hyrax
         Morphosource::AttachmentService.delete(curation_concern.id, 'agreement')
         params.delete(:media_attachment_delete)
       end
-
-      update_thumbnail
 
       if file_formats_valid? && actor.update(actor_environment)
         after_update_response

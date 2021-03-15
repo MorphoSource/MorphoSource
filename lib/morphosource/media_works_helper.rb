@@ -6,13 +6,34 @@ module Morphosource
     end
 
     def query_collection_information
-      @collection_information = collection_information_service.collection_information
-      @collection_counts = @collection_information['counts'] ||= {}
-      @collection_media_groups = @collection_information['media_groups'] ||= {}
-      @collection_bso_groups = @collection_information['bso_groups'] ||= {}
-      @collection_cho_groups = @collection_information['cho_groups'] ||= {}
-      @collection_object_ids = @collection_information['collection_object_ids'] ||= []
-      @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
+      puts Benchmark.measure {
+        @collection_information = collection_information_service.collection_information
+      }
+      # byebug
+      puts Benchmark.measure {
+        @collection_counts = @collection_information['counts'] ||= {}
+      }
+      # byebug
+      puts Benchmark.measure {
+        @collection_media_groups = @collection_information['media_groups'] ||= {}
+      }
+      # byebug
+      puts Benchmark.measure {
+        @collection_bso_groups = @collection_information['bso_groups'] ||= {}
+      }
+      # byebug
+      puts Benchmark.measure {
+        @collection_cho_groups = @collection_information['cho_groups'] ||= {}
+      }
+      # byebug
+      puts Benchmark.measure {
+        @collection_object_ids = @collection_information['collection_object_ids'] ||= []
+      }
+      # byebug
+      puts Benchmark.measure {
+        @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
+      }
+      # byebug
     end
 
     def media_filter_params
@@ -44,8 +65,8 @@ module Morphosource
       hidden_params.merge!({'brows' => params['brows']}) if params['brows'].present?
       hidden_params.merge!({'crows' => params['crows']}) if params['crows'].present?
       if params['add_works_to_collection'].present?
-        hidden_params.merge!({'add_works_to_collection' => params['add_works_to_collection']}) 
-        hidden_params.merge!({'add_works_to_collection_label[]' => params['add_works_to_collection_label'].first}) 
+        hidden_params.merge!({'add_works_to_collection' => params['add_works_to_collection']})
+        hidden_params.merge!({'add_works_to_collection_label[]' => params['add_works_to_collection_label'].first})
       end
       html = ''
       hidden_params.map do |k,v|
@@ -59,8 +80,8 @@ module Morphosource
       params = request.params
       hidden_params.merge!({'view' => params['view']}) if params['view'].present?
       if params['add_works_to_collection'].present?
-        hidden_params.merge!({'add_works_to_collection' => params['add_works_to_collection']}) 
-        hidden_params.merge!({'add_works_to_collection_label[]' => params['add_works_to_collection_label'].first}) 
+        hidden_params.merge!({'add_works_to_collection' => params['add_works_to_collection']})
+        hidden_params.merge!({'add_works_to_collection_label[]' => params['add_works_to_collection_label'].first})
       end
       html = ''
       hidden_params.map do |k,v|
@@ -111,7 +132,7 @@ module Morphosource
 
     def get_media_extras(docs)
       docs.map do |doc|
-        this_media_extras = { 
+        this_media_extras = {
           'id' => doc.id
         }
 

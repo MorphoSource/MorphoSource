@@ -26,16 +26,47 @@ module Hyrax
       end
 
       def index
-        @user_collections_for_view = collections_service.search_results(:view)
+        # byebug
+        puts Benchmark.measure {
+          @user_collections_for_view = collections_service.search_results(:view)
+        }
+        # byebug
         # The user's collections for the "add to collection" form
-        @user_collections = collections_service.search_results(:deposit)
-        @create_work_presenter = create_work_presenter_class.new(current_user)
-        @user = current_user
+        puts Benchmark.measure {
+          @user_collections = collections_service.search_results(:deposit)
+        }
+        # byebug
+        puts Benchmark.measure {
+          @create_work_presenter = create_work_presenter_class.new(current_user)
+        }
+        # byebug
+
+        puts Benchmark.measure {
+          @user = current_user
+        }
+        # byebug
+
+        puts Benchmark.measure {
         #presenter
-        query_collection_information
-        query_collection_members
-        prepare_instance_variables_for_batch_control_display
-        prepare_for_add_to_collection
+          query_collection_information
+        }
+        # byebug
+
+        puts Benchmark.measure {
+          query_collection_members
+        }
+        # byebug
+
+        puts Benchmark.measure {
+          prepare_instance_variables_for_batch_control_display
+        }
+        # byebug
+
+        puts Benchmark.measure {
+          prepare_for_add_to_collection
+        }
+        # byebug
+
         respond_to do |format|
           format.html {
             if @is_add_to_collection

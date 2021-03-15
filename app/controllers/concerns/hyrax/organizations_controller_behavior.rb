@@ -33,9 +33,18 @@ module Hyrax
         Rails.logger.info("MR-803: organization #{params[:id]} has team: #{@curation_concern.team_id.inspect}")
         redirect_to "/teams/#{@curation_concern.team_id.first}"
       else
-        presenter
-        query_organization_information
-        query_organization_members
+        # puts Benchmark.measure {
+          presenter
+        # }
+        # byebug
+        puts Benchmark.measure {
+          query_organization_information
+        }
+        byebug
+        puts Benchmark.measure {
+          query_organization_members
+        }
+        byebug
       end
     end
 
@@ -69,17 +78,17 @@ module Hyrax
       end
 
       def organization_information_service
-        @organization_information_service ||= information_service_class.new(self, @curation_concern) 
+        @organization_information_service ||= information_service_class.new(self, @curation_concern)
       end
 
       def query_organization_members
-        member_works 
+        member_works
         prepare_docs_and_filters_for_media
         prepare_docs_and_filters_for_po('bso')
         prepare_docs_and_filters_for_po('cho')
       end
-      
-      def member_works 
+
+      def member_works
         @response = member_service.member_media(media_filter_params)
         @media_member_docs = @response.present? ? @response.documents : []
         @media_member_count = @response.total
@@ -172,7 +181,7 @@ module Hyrax
       def params_for_query
         #params.merge(q: params[:cq])
 
-        # setting higher collection limit for paginating the array       
+        # setting higher collection limit for paginating the array
         request_params.merge(q: params[:cq])
       end
   end

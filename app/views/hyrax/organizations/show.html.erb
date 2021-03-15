@@ -14,11 +14,14 @@
               <div class="super-title"><%= @presenter.institution_name&.first %></div>
               <%= @presenter.title.first %>
             </div>
+            <% puts Benchmark.measure { %>
             <div class="text-muted">
-              <%= pluralize(@media_member_count, ' Media') %> · 
-              <%= pluralize(@bso_member_count, ' Specimen') %> · 
+              <%= pluralize(@media_member_count, ' Media') %> ·
+              <%= pluralize(@bso_member_count, ' Specimen') %> ·
               <%= pluralize(@cho_member_count, ' Cultural Heritage Object') %>
             </div>
+          <% } %>
+          <% byebug %>
         </h1>
       </div>
     </div>
@@ -61,8 +64,11 @@
       <div role="tabpanel" class="tab-pane active" id="media">
         <div class="form-tab-content">
           <% if @media_member_count > 0 %>
+          <% puts Benchmark.measure { %>
             <%= render 'hyrax/organizations/media_filters' %>
             <%= render 'hyrax/organizations/tab_media' %>
+            <% } %>
+            <% byebug %>
           <% else %>
             <div class="row">
               <div class="no-result">
@@ -75,6 +81,7 @@
 
       <div role="tabpanel" class="tab-pane" id="biological_specimens">
         <div class="form-tab-content">
+          <% puts Benchmark.measure { %>
           <% if @bso_member_count > 0 %>
             <%= render 'hyrax/organizations/bso_filters' %>
             <div class="row">
@@ -94,12 +101,15 @@
               </div>
             </div>
           <% end %>
+          <% } %>
+          <% byebug %>
         </div>
       </div>
 
       <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
         <div class="form-tab-content">
           <% if @cho_member_count > 0 %>
+          <% puts Benchmark.measure { %>
             <%= render 'hyrax/organizations/cho_filters' %>
             <div class="row">
               <!-- Search bar -->
@@ -111,6 +121,8 @@
               </div>
             </div>
             <%= render 'hyrax/organizations/tab_cho' %>
+            <% } %>
+            <% byebug %>
           <% else %>
             <div class="row">
               <div class="no-result">
@@ -123,7 +135,10 @@
 
       <div role="tabpanel" class="tab-pane" id="about">
         <div class="form-tab-content">
+          <% puts Benchmark.measure { %>
           <%= render 'hyrax/organizations/tab_about', presenter: @presenter %>
+          <% } %>
+          <% byebug %>
         </div>
       </div>
 

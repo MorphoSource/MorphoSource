@@ -16,9 +16,11 @@
   </tr>
   </thead>
   <tbody>
+    <% puts Benchmark.measure { %>
   <% docs.each_with_index do |document, counter| %>
     <% collection_presenter = Hyrax::MyTeamPresenter.new(document, current_ability, nil) %>
     <%= render 'list_collections', collection_presenter: collection_presenter, counter: counter, document: document %>
   <% end %>
+  <% } %>
   </tbody>
 </table>

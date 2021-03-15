@@ -24,12 +24,14 @@
     <div class="panel-body">
       <h2 class="sr-only">Collections listing</h2>
       <%= render 'search_header' %>
-      <%= render 'document_list' %>
+      <% puts Benchmark.measure { %>
+        <%= render 'document_list' %>
+      <% } %>
       <%= render 'results_pagination' %>
     </div>
   </div>
 
-  <!-- Render Modals 
+  <!-- Render Modals
     todo: some of the modals might not be needed and can be removed from here
   -->
   <%#= render 'modal_add_to_collection', source: "my" %>

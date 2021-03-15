@@ -7,7 +7,10 @@
     <%= render 'hyrax/organizations/search_form', tab: "media" %>
   </div>
   <div class="col-xs-12 col-sm-3 col-md-3">
+    <% puts Benchmark.measure { %>
     <%= render 'hyrax/organizations/sort_and_per_page_media' %>
+    <% } %>
+    <% byebug %>
   </div>
 </div>
 
@@ -29,4 +32,3 @@
 <div class="hyc-blacklight hyc-bl-pager">
   <%= render 'hyrax/organizations/paginate_media' %>
 </div>
-

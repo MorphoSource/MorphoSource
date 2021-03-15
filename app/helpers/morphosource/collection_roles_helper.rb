@@ -13,9 +13,16 @@ module Morphosource
     end
 
     def collection_options
-      collections = @current_user.collections_managed
+      # puts Benchmark.measure {
+        collections =     ActiveFedora::Base.where("has_model_ssim:Collection").accessible_by(current_ability, :edit)
+      # }
+      # byebug
       collections.delete(@collection)
-      options_for_select(collections.map { |c| [c.title.first, c.id] })
+      # puts Benchmark.measure {
+        # options_for_select(collections.map { |c| [c.title.first, c.id] })
+        collections.map { |c| [c.title.first, c.id] }
+      # }
+      # byebug
     end
 
     def access_array

@@ -125,22 +125,26 @@ class User < ApplicationRecord
   end
 
   # finds collections for which user belongs to "_managers" role
+  # def collections_managed
+  #   ids = roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
+  #   if ids.present?
+  #     Morphosource::SolrService.new
+  #       .get_docs(nil, fq: ["id:(#{ids.join(' OR ').upcase})"], fl: ["id"])
+  #       .map do |solr_doc|
+  #         begin
+  #           Collection.find(solr_doc["id"])
+  #         rescue ActiveFedora::ObjectNotFoundError
+  #           nil
+  #         end
+  #       end
+  #       .compact
+  #   else
+  #     return []
+  #   end
+  # end
+
   def collections_managed
-    ids = roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
-    if ids.present?
-      Morphosource::SolrService.new
-        .get_docs(nil, fq: ["id:(#{ids.join(' OR ').upcase})"], fl: ["id"])
-        .map do |solr_doc|
-          begin
-            Collection.find(solr_doc["id"])
-          rescue ActiveFedora::ObjectNotFoundError
-            nil
-          end
-        end
-        .compact
-    else
-      return []
-    end
+    ActiveFedora::Base.where("has_model_ssim:Collection").accessible_by(current_ability).count
   end
 
   # finds collection ids for which user belongs to different role
@@ -161,18 +165,18 @@ class User < ApplicationRecord
         depositor_collection_ids << r.name.chomp("_depositors")
       elsif r.name.include? "viewers"
         viewer_collection_ids << r.name.chomp("_viewers")
-      end 
-    end 
+      end
+    end
     all_memberships_collection_ids = (
-            manager_collection_ids + 
+            manager_collection_ids +
             editor_collection_ids +
             depositor_collection_ids +
             downloader_collection_ids +
             viewer_collection_ids
             ).compact
-    return all_memberships_collection_ids, 
-            manager_collection_ids.compact, 
-            editor_collection_ids.compact, 
+    return all_memberships_collection_ids,
+            manager_collection_ids.compact,
+            editor_collection_ids.compact,
             depositor_collection_ids.compact,
             downloader_collection_ids.compact,
             viewer_collection_ids.compact
@@ -188,7 +192,7 @@ class User < ApplicationRecord
   def standard_member_fund_codes
     fund_codes.joins(:fund_code_memberships).where(fund_code_memberships: { manager: false })
   end
-  
+
   private
 
   # Assigns a random string to be used as the user_key

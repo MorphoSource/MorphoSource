@@ -4,11 +4,11 @@ module Morphosource
       include CollectionInformationHelper
       include SolrHelper
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
-    
-      attr_reader :solr, :collection_id, :collection_ids, :collection, :is_org_team, 
+
+      attr_reader :solr, :collection_id, :collection_ids, :collection, :is_org_team,
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
-        :n_idigbio, :collection_project_map, :collection_team_map, :po_counts_by_org, 
+        :n_idigbio, :collection_project_map, :collection_team_map, :po_counts_by_org,
         :organizations, :info, :subcollection_ids
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
@@ -25,7 +25,10 @@ module Morphosource
         @solr = solr_service.new
         @user = user
         @collections = collections
-        query_solr_collection_info
+        puts Benchmark.measure {
+          query_solr_collection_info
+        }
+        # byebug
       end
 
       def call
@@ -34,37 +37,81 @@ module Morphosource
 
       def query_solr_collection_info
 
-        @facet_results, @media_count = media_facet_query_for_collections
+        puts Benchmark.measure {
+          @facet_results, @media_count = media_facet_query_for_collections
+        }
+        # byebug
         # todo: might need to either add user managed media to "manager" count (dedupe needed), or have a separate count for user contributed media
         # @manager_media_count += user_managed_media_count
-        @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
-        @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
-        @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
-        @n_idigbio = bso_idigbio_count
+        puts Benchmark.measure {
+          @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
+        }
+        # byebug
+        puts Benchmark.measure {
+          @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)
+        }
+        # byebug
+        puts Benchmark.measure {
+          @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject)
+        }
+        # byebug
+        puts Benchmark.measure {
+          @n_idigbio = bso_idigbio_count
+        }
+        # byebug
 
-        @collection_project_map, @collection_team_map = collection_id_to_collection_title_map
-        
-        @po_counts_by_org = physical_object_counts_by_organization
-        @organizations = organization_docs
+        puts Benchmark.measure {
+          @collection_project_map, @collection_team_map = collection_id_to_collection_title_map
+        }
+        # byebug
+
+        puts Benchmark.measure {
+          @po_counts_by_org = physical_object_counts_by_organization
+        }
+        # byebug
+        puts Benchmark.measure {
+          @organizations = organization_docs
+        }
+        # byebug
       end
 
       def collection_information
-        @info = { 
-          'counts' => {
-            'media' => media_count,
-            'po' => physical_object_ids.length,
-            'bso' => bso_ids.length,
-            'cho' => cho_ids.length
-          },
-          'collection_object_ids' => physical_object_ids
+        puts Benchmark.measure {
+          @info = {
+            'counts' => {
+              'media' => media_count,
+              'po' => physical_object_ids.length,
+              'bso' => bso_ids.length,
+              'cho' => cho_ids.length
+            },
+            'collection_object_ids' => physical_object_ids
+          }
         }
-        info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
-        info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
-        info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
+        # byebug
 
-        info_po_media_counts_by_organization
+        puts Benchmark.measure {
+          info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
+        }
+        # byebug
 
-        if is_org_team && collection_organization_id.present?
+        puts Benchmark.measure {
+          info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if bso_ids.present?
+        }
+        # byebug
+
+        puts Benchmark.measure {
+          info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
+        }
+        # byebug
+
+        puts Benchmark.measure {
+          info_po_media_counts_by_organization
+        }
+        # byebug
+
+        puts Benchmark.measure {
+          if is_org_team && collection_organization_id.present?
+
           info['media_groups']['origin'] = {
             'team_organization' => n_media_team_organization,
             'team_collection' => media_count - n_media_team_organization
@@ -90,8 +137,10 @@ module Morphosource
             info['organization_object_ids'] = team_org_po_ids
           end
         end
+        }
+        # byebug
 
-        info     
+        info
       end
 
       def solrize_filter_params(params = {})
@@ -108,7 +157,7 @@ module Morphosource
           facet_fields = [
             solrize('physical_object_id', :stored_searchable)
           ]
-          params = { 
+          params = {
             rows: 0,
             fq: [
               "#{solrize('has_model', :symbol)}:Media",
@@ -145,7 +194,7 @@ module Morphosource
             solrize('member_of_collection_ids', :symbol)
           ]
 
-          params = { 
+          params = {
             rows: 0,
             fq: [
               "#{solrize('has_model', :symbol)}:Media",
@@ -166,10 +215,12 @@ module Morphosource
 
             @collection_id = doc.id
             collection_ids << @collection_id
-            @is_org_team = is_team? doc['collection_type_gid_ssim']&.first 
+            @is_org_team = is_team? doc['collection_type_gid_ssim']&.first
 
-            if is_org_team 
+            if is_org_team
+              # byebug
               collection = Collection.find(@collection_id)
+              # byebug
               if collection.organization.present?
                 @collection_organization_id = collection.organization.id
                 @collection_organization_ids << collection.organization.id
@@ -210,7 +261,7 @@ module Morphosource
           combined_query = "(#{query_clauses.join(' OR ')})"
           params[:fq] << combined_query
           solr.get_facet_fields(nil, facet_fields, params)
-
+          # byebug
           return solr.facet_fields(facet_fields), solr.count
         end
 
@@ -231,7 +282,7 @@ module Morphosource
           collection_ids = facet_results[solrize('member_of_collection_ids', :symbol)].keys
           docs = solr.get_docs(query = nil, params = { fq: assemble_or_query('id', collection_ids)} )
           docs.each do |d|
-            if is_project? d['collection_type_gid_ssim']&.first 
+            if is_project? d['collection_type_gid_ssim']&.first
               projects = projects.merge( { d['id'] => d[ solrize('title', :stored_searchable) ]&.first } )
             else
               teams = teams.merge( { d['id'] => d[ solrize('title', :stored_searchable) ]&.first } )
@@ -263,7 +314,7 @@ module Morphosource
                 value.
                   map { |sub_k, sub_v| [collection_team_map[sub_k], sub_v] if collection_team_map.include? sub_k }.
                   compact.
-                  to_h                  
+                  to_h
               ]
             when 'physical_object_id'
               # nil
@@ -282,7 +333,7 @@ module Morphosource
             "#{solrize('fileset_accessibility', :stored_searchable)}:#{value}"
           when 'm_organization'
             assemble_or_query(
-              solrize('physical_object_id', :stored_searchable), 
+              solrize('physical_object_id', :stored_searchable),
               po_ids_by_collection_organization(value)
             )
           when 'm_project'
@@ -296,14 +347,14 @@ module Morphosource
             po_ids = po_ids_by_collection_title(value)
             if po_ids.present?
               assemble_or_query(
-                'id', 
+                'id',
                 po_ids
-              ) 
+              )
             else
               assemble_or_query(
-                'id', 
+                'id',
                 ['none']
-              ) 
+              )
             end
           when 'm_origin'
             if value == 'team_collection'
@@ -323,14 +374,14 @@ module Morphosource
             end
           when 'b_organization', 'c_organization'
             assemble_or_query(
-              'id', 
+              'id',
               po_ids_by_collection_organization(value)
             )
           when 'b_origin', 'c_origin'
             if Collection.find(collection_id).organization.present?
               organization_title = Collection.find(collection_id).organization.title&.first
               organization_po_query = assemble_or_query(
-                'id', 
+                'id',
                 po_ids_by_collection_organization(organization_title)
               )
 

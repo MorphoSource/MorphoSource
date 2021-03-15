@@ -10,10 +10,11 @@
       <%= link_to 'New media', main_app.new_submission_path(restart: true), class: 'btn btn-primary' %>
     <% end %>
   </div>
-
+  <% puts Benchmark.measure { %>
   <div class="row collection-count">
       <%= render 'membership_count' %>
   </div>
+  <% } %>
 <% end %>
 
 <div class="col-md-12">
@@ -44,8 +45,13 @@
       <div role="tabpanel" class="tab-pane active" id="media">
         <div class="form-tab-content">
           <% if @collection_media_groups.present? %>
+          <% puts Benchmark.measure { %>
           <%= render 'media_filters' %>
+          <% } %>
+
+          <% puts Benchmark.measure { %>
           <%= render 'tab_media', presenter: @presenter %>
+          <% } %>
           <% end %>
         </div>
       </div>
@@ -53,14 +59,19 @@
         <div role="tabpanel" class="tab-pane" id="biological_specimens">
           <div class="form-tab-content">
           <% if @collection_bso_groups.present? %>
+          <% puts Benchmark.measure { %>
             <%= render 'bso_filters' %>
+          <% } %>
             <div class="row">
               <!-- Search bar -->
               <div class="col-xs-6">
                 <%= render 'search_form', tab: "biological_specimens" %>
               </div>
               <div class="col-xs-6">
+                <% puts Benchmark.measure { %>
+
                 <%= render 'sort_and_per_page_bso' %>
+                <% } %>
               </div>
             </div>
             <%#= render 'tab_bso' %>

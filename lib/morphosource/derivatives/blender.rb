@@ -28,7 +28,7 @@ module Morphosource::Derivatives
     protected
       def command
         # "#{tool_path}/blender --background --factory-startup --addons io_scene_gltf2 --python #{tool_path}/scripts/blender_derive_mesh.py -- -i #{source_path} -o #{out_path} -u #{units}"
-        "#{tool_path}/blender --background --factory-startup --addons io_scene_gltf2 --python vendor/blender_config/scripts/blender_derive_mesh.py -- -i #{source_path} -o #{out_path} -u #{units}"
+        "#{tool_path}/blender --background --factory-startup --addons io_scene_gltf2 --python vendor/blender_config/scripts/blender_derive_mesh.py -- -i '#{source_path}' -o '#{out_path}' -u '#{units}'"
       end
   end
 end

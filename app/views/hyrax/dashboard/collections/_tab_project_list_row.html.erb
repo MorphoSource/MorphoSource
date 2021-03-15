@@ -1,5 +1,5 @@
 <%# taken from https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collections/_subcollection_list.html.erb %>
-<% 
+<%
 coll = Collection.find(document.id)
 project_presenter = Hyrax::TeamPresenter.new(document, current_ability, request)
 media_count = project_presenter.total_items
@@ -31,10 +31,10 @@ media_count = project_presenter.total_items
   <td><%= permission_badge_by_value(document.visibility) %></td>
   <td>
     <% if can? :edit, parent_id %>
-    <button type="button" class="btn btn-xs btn-danger remove-subcollection-button" 
-    data-id="<%= document.id %>"
-    data-parent-id="<%= parent_id %>"
-    data-post-url="<%= hyrax.dashboard_remove_child_relationship_under_path(parent_id, document.id) %>"><%= t('hyrax.collections.show.buttons.remove_this_sub_collection') %></button>
+      <button type="button" class="btn btn-xs btn-danger remove-subcollection-button"
+      data-id="<%= document.id %>"
+      data-parent-id="<%= parent_id %>"
+      data-post-url="<%= hyrax.dashboard_remove_child_relationship_under_path(parent_id, document.id) %>"><%= t('hyrax.collections.show.buttons.remove_this_sub_collection') %></button>
     <% end %>
   </td>
 </tr>

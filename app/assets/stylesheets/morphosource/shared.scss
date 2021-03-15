@@ -4,9 +4,11 @@ $font-color: #333;
 $button-color: #286090;
 $button-font-color: #fff;
 $button-border-color: #265b89;
+$button-danger-color: #c4302b;
 $button-hover-color: #286090;
 $button-hover-font-color: #fff;
 $button-hover-border-color: #265b89;
+$button-hover-danger-color: #d33a35;
 $button-disabled-color: #ccc;
 $button-disabled-font-color: #eee;
 $button-disabled-border-color: #ccc;
@@ -209,4 +211,8 @@ div.wrapper_for_2 span.input-group-btn.field-controls {
   border: 1px solid #DDDDDD;
   border-radius: 5px;
   padding: 10px;
+}
+
+.select2-container-multi {
+  height: unset !important;
 }

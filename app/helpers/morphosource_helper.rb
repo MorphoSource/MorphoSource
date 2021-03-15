@@ -370,4 +370,10 @@ module MorphosourceHelper
     form.persisted? ? [hyrax, :dashboard, form] : [main_app, form]
   end
 
+  # used when editing team projects, populates select list of projects that can be added to the team
+  def eligible_child_projects
+    projects = ActiveFedora::Base.where("human_readable_type_sim:Project").accessible_by(current_ability, :edit)
+    projects.select { |p| p.member_of_collection_ids.blank? }
+  end
+
 end

@@ -1,39 +1,24 @@
 <div class="modal fade disable-unless-selected <%= id %>" id="add-subcollection-modal-<%= id %>" tabindex="-1" role="dialog" aria-labelledby="add-subcollection-label">
-<% collection = Collection.find id %>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="<%= t('hyrax.dashboard.heading_actions.close') %>"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="add-subcollection-label"><%= t('hyrax.dashboard.collections.actions.add_project_to_Team.label') %></h4>
       </div>
-
       <div class="modal-body">
-        <div class="modal-ajax-alert"></div>
-        <label><%= t('hyrax.dashboard.collections.actions.add_project_to_Team.select_label') %></label>
-        <input type="hidden" name="source" value="<%= source %>" />
-        <select name="child_id">
-          <option value="none"><%= t("hyrax.dashboard.my.action.select") %></option>
-          <% colls = Hyrax::Collections::MsNestedCollectionQueryService.available_project_collections(parent: collection, scope: controller, limit_to_id: nil) %>
-          <% colls.each {|coll| %>
-            <option value="<%= coll.id %>"><%= coll.title.first %></option>
-          <% } %>
-        </select>
+        <%= form_tag(dashboard_create_nest_collection_under_path(id), method: :post, id: 'modal-form', :class => "form-horizontal") do %>
+          <select name="child_id" style="width: 60%">
+            <option value="none"><%= t("hyrax.dashboard.my.action.select") %></option>
+            <% eligible_child_projects.each {|project| %>
+              <option value="<%= project.id %>"><%= project.title.first %></option>
+            <% } %>
+          </select>
       </div>
-
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><%= t('helpers.action.cancel') %></button>
-        <% # '.modal-add-button' and '.modal-submit-button' classes applied below are used for JavaScript targeting %>
-        <button
-          disabled
-          type="button"
-          class="btn btn-primary modal-add-button modal-submit-button"
-          data-post-url="<%= dashboard_create_nest_collection_under_path(collection.id) %>"
-          data-source="<%= source %>">
-          <%= t('hyrax.dashboard.collections.actions.add_project_to_Team.button_label') %>
-        </button>
+        <button type="button" id="modal-cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <%= submit_tag "Submit", name: nil, class: "btn btn-success" %>
+        <% end %>
       </div>
-
     </div>
   </div>
 </div>

@@ -19,7 +19,7 @@ module Morphosource::Derivatives
 
     protected     
       def command
-        "gltf-pipeline -i #{source_path} -o #{out_path} -d"
+        "gltf-pipeline -i '#{source_path}' -o '#{out_path}' -d"
       end
   end
 end

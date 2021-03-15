@@ -192,10 +192,20 @@ $( document ).ready(function() {
       eventFuncs() {
         let self = this;
 
+        // Proxy user select
+        $("select[name='submission[on_behalf_of]']").change(function() {
+          //console.log('proxy user changed');
+          self.triggerChangeVal("select[name='media[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='biological_specimen[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='cultural_heritage_object[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='taxonomy[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='imaging_event[on_behalf_of]']", $(this).val());
+          self.triggerChangeVal("select[name='processing_event[on_behalf_of]']", $(this).val());
+        });
+
         // Media type select
         $("select[name='submission[submission_media_type]']").change(function() {
           console.log('View 1 Step 1 media type changed');
-
 
           self.triggerChangeVal("select[name='media[media_type]']", $(this).val());
           setRawDerivedStatus();
@@ -1316,6 +1326,18 @@ $( document ).ready(function() {
         });
 
         $('#new_media').submit(function(){
+          if (!uploadStatusOK) {
+            // file upload is in progress. Prompt for auto save
+            promptAutoSave(".btn-save-media");
+            return false;
+          }
+          if (!noFileCheck()) {
+            return false;
+          }
+
+          prepareFieldsBeforeSubmit();
+          disablePageAndSave(".btn-save-media");
+
           var createParams = ['organizationCreateParams', 'taxonomyCreateParams',
             'biologicalSpecimenCreateParams', 'culturalHeritageObjectCreateParams', 'deviceCreateParams',
             'deviceOrganizationCreateParams', 'imagingEventCreateParams',
@@ -1435,9 +1457,9 @@ $( document ).ready(function() {
 
       setMediaPermissionFieldEvent() {
         $('form#new_media div,form#new_media a').click(function(event) {
-          console.log('hi');
+          //console.log('in setMediaPermissionFieldEvent');
           if ($(this).hasClass('permissions-field')) {
-            console.log('hi2');
+            //console.log('hi2');
             alert($('#organization-alert-message').text());
             $(this).off(event); // Only fire once
           }

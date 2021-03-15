@@ -1,14 +1,13 @@
+from os import path
+from contextlib import redirect_stdout
+from statistics import mean
+from sys import argv
+import argparse
+import io
 import bpy
 import bpy_types
 import re
 import xml.etree.ElementTree as ET
-
-from os import path
-from statistics import mean
-from sys import argv
-
-import io
-from contextlib import redirect_stdout
 
 def dump(obj):
   for attr in dir(obj):
@@ -41,6 +40,14 @@ def mesh_import(filepath):
     stdout.seek(0) 
     return stdout.read()
 
+if "--" not in argv:
+    argv = [] # as if no args are passed
+else:
+    argv = argv[argv.index("--") + 1:]
+parser = argparse.ArgumentParser(description='Blender mesh characterizer tool')
+parser.add_argument('-i', '--input', help='mesh file to be characterized')
+args = parser.parse_args(argv)
+
 mime_type = {
   '.gltf': 'model/gltf+json',
   '.glb': 'model/gltf+json',
@@ -51,7 +58,7 @@ mime_type = {
   '.x3d': 'model/x3d+xml'
 }
 
-filepath = argv[-1]
+filepath = args.input
 filename = path.split(filepath)[1]
 
 isMesh = re.match('^\.(gltf|glb|obj|ply|stl|wrl|x3d)$', file_suffix(filepath))

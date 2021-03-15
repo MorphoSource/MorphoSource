@@ -9,10 +9,10 @@
       <%= @presenter.permission_badge %>
     </h1>
     <span>
-      <%= @collection_counts['media'] %> Media 
-      <%#= @collection_counts['po'] %> 
-      <span class="bso-count"></span> 
-      <span class="cho-count"></span> 
+      <%= @collection_counts['media'] %> Media
+      <%#= @collection_counts['po'] %>
+      <span class="bso-count"></span>
+      <span class="cho-count"></span>
     </span>
   </div>
   <div class="col-xs-3 show-actions text-right">
@@ -244,14 +244,13 @@
                     <!-- The user should have deposit access to the parent (the collection we are showing) and read access to the child -->
                     <% if @presenter.user_can_nest_collection? %>
 
-                      <!-- temporarily disabling - see MR-963 -->
-                      <%# <%= button_tag t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'), %>
-                            <%# type: 'button',
-                            class: 'btn btn-primary add-subcollection',
-                            title: t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
-                            data: { nestable: true,
-                                    hasaccess: true,
-                                    presenter_id: @presenter.id } %>
+                    <%= button_tag t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
+                          type: 'button',
+                          class: 'btn btn-primary add-subcollection',
+                          title: t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
+                          data: { nestable: true,
+                                  hasaccess: true,
+                                  presenter_id: @presenter.id } %>
 
                       <!-- The user must have the ability to create a new collection of parent's type -->
                       <%# pass the collection type id for Projects so it will redirect user to a new Project form %>

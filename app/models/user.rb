@@ -3,6 +3,9 @@ class User < ApplicationRecord
   require 'securerandom'
 
   has_many :cart_items, primary_key: :ms_id, foreign_key: :user_id
+  has_many :owned_fund_codes, class_name: 'FundCode', foreign_key: :user_id
+  has_many :fund_code_memberships
+  has_many :fund_codes, :through => :fund_code_memberships
 
   paginates_per 10
 
@@ -176,7 +179,16 @@ class User < ApplicationRecord
 
   end
 
+  # Fund code methods
 
+  def managed_fund_codes
+    fund_codes.joins(:fund_code_memberships).where(fund_code_memberships: { manager: true })
+  end
+
+  def standard_member_fund_codes
+    fund_codes.joins(:fund_code_memberships).where(fund_code_memberships: { manager: false })
+  end
+  
   private
 
   # Assigns a random string to be used as the user_key

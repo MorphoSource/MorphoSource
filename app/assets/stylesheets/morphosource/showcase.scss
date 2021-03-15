@@ -620,6 +620,17 @@ html {
     background-color: $button-color;
     color: $button-font-color;
     border-color: $button-border-color;
+    white-space: nowrap;
+  }
+
+  .btn-danger {
+    background-color: $button-danger-color;
+    border-color: $button-danger-color;
+  }
+  .btn-danger:hover {
+    text-decoration: none;
+    background-color: $button-hover-danger-color;
+    border-color: $button-hover-danger-color;
   }
 
   .btn-wide {

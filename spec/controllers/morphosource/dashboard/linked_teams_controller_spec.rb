@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller do
   let(:org1)                  { Organization.create(title: ['new organization'], institution_code: ['ABC']) }
   let!(:org2)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
-  let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+  let!(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:admin)                 { User.create(email: 'email@email.com', password: 'password') }
   let(:team)                  { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: admin.ms_id) }
   let(:params)                { { id: team.id, collection: { organization_id: org1.id } } }
@@ -37,14 +37,11 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
       before do
         allow(subject.current_user).to receive(:admin?).and_return(true)
         request.env['HTTP_REFERER'] = 'original_page'
-
         imagingEvent.ordered_members << media
-
         team.managers << team_manager
         team.depositors << team_depositor
         team.viewers << team_viewer
         team.user_groups.each(&:save)
-
         works.each(&:save)
         works.each(&:reload)
       end
@@ -53,57 +50,81 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
         let(:specimen2)        { BiologicalSpecimen.create(title: ['specimen2'], vouchered: [true], depositor: admin.ms_id, organization_id: [org2.id]) }
         let(:imagingEvent2)    { ImagingEvent.create(title: ['imagingEvent2'], depositor: admin.ms_id, device_id: [device.id], physical_object_id: [specimen2.id], ie_modality: device.modality) }
         let(:media2)           { Media.create(title: ['old media'], depositor: admin.ms_id) }
-        let(:works)             { [imagingEvent, imagingEvent2, media, media2] }
+        let(:works)            { [imagingEvent, imagingEvent2, media, media2] }
 
         before do
           imagingEvent2.ordered_members << media2
-
           media2.read_groups += team.user_groups.map(&:name)
-
           works.each(&:save)
           works.each(&:reload)
-
           post :link_organization, params: params
         end
 
-        it 'clears the old organization' do
+        it 'updates organization link and media permissions' do
+          # it clears the old organization
           expect(org2.reload.team_id).to eq([])
-        end
-        it 'adds the new organization' do
+          # it links the new organization
           expect(org1.reload.team_id).to eq([team.id])
-        end
-        it "removes the linked team's view access from the old organization's media" do
+          # it removes the linked team's view access from the old organization's media
           expect(media2.read_groups).not_to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
           expect(team_manager.can?(:read, media2)).to be(false)
           expect(team_depositor.can?(:read, media2)).to be(false)
           expect(team_viewer.can?(:read, media2)).to be(false)
-        end
-        it "adds view access for the linked team's members to the new organization's media" do
+          # it adds view access for the linked team's members to the new organization's media
           expect(media.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
           expect(team_manager.can?(:read, media)).to be(true)
           expect(team_depositor.can?(:read, media)).to be(true)
           expect(team_viewer.can?(:read, media)).to be(true)
-        end
-        it 'redirects back to the collection dashboard page' do
+          # it redirects back to the collection dashboard page
           expect(response).to redirect_to('original_page')
         end
       end
 
       context 'the team does not already have a linked organization' do
-        before do
-          post :link_organization, params: params
+        context 'the team was created as a team' do
+          before do
+            post :link_organization, params: params
+          end
+          it 'updates organization link and media permissions' do
+            # it adds the new organization
+            expect(org1.reload.team_id).to eq([team.id])
+            # it adds view access for the linked team's members to the new organization's media
+            expect(media.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+            expect(team_manager.can?(:read, media)).to be(true)
+            expect(team_depositor.can?(:read, media)).to be(true)
+            expect(team_viewer.can?(:read, media)).to be(true)
+            # it redirects back to the collection dashboard page
+            expect(response).to redirect_to('original_page')
+          end
         end
-        it 'adds the new organization' do
-          expect(org1.reload.team_id).to eq([team.id])
-        end
-        it "adds view access for the linked team's members to the new organization's media" do
-          expect(media.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
-          expect(team_manager.can?(:read, media)).to be(true)
-          expect(team_depositor.can?(:read, media)).to be(true)
-          expect(team_viewer.can?(:read, media)).to be(true)
-        end
-        it 'redirects back to the collection dashboard page' do
-          expect(response).to redirect_to('original_page')
+        context 'the team was converted from a project' do
+          let!(:project_collection_type)  { Hyrax::CollectionType.create(title: 'Project') }
+          let(:project)                   { Collection.create(title: ['Project_A'], collection_type_gid: project_collection_type.gid, depositor: admin.ms_id) }
+          let(:params)                    { { id: project.id, collection: { organization_id: org1.id } } }
+          let(:project_manager)           { User.create(email: 'manager@test.com', password: 'password') }
+          let(:project_depositor)         { User.create(email: 'depositor@test.com', password: 'password') }
+          let(:project_viewer)            { User.create(email: 'viewer@test.com', password: 'password') }
+          before do
+            project.create_collection_groups
+            project.managers << team_manager
+            project.depositors << team_depositor
+            project.viewers << team_viewer
+            project.user_groups.each(&:save)
+            project.collection_type_gid = team_collection_type.gid
+            project.save!
+            post :link_organization, params: params
+          end
+          it 'updates organization link and media permissions' do
+            # it adds the new organization
+            expect(org1.reload.team_id).to eq([project.id])
+            # it adds view access for the linked team's members to the new organization's media"
+            expect(media.read_groups).to include(project.managers_group.name, project.depositors_group.name, project.viewers_group.name)
+            expect(team_manager.can?(:read, media)).to be(true)
+            expect(team_depositor.can?(:read, media)).to be(true)
+            expect(team_viewer.can?(:read, media)).to be(true)
+            # it redirects back to the collection dashboard page
+            expect(response).to redirect_to('original_page')
+          end
         end
       end
     end
@@ -155,7 +176,7 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
         allow(admin).to receive(:can?).with(:edit, team).and_return(true)
         patch :update_permissions, params: params
       end
-      it 'updates the linked organization with the param values' do
+      it 'updates the linked organization with the param values and redirects back' do
         org2.reload
         expect(org2.download_permission).to eq(download_permission)
         expect(org2.download_reviewer).to eq(download_reviewer)
@@ -168,8 +189,7 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
         expect(org2.funding).to eq(funding)
         expect(org2.publisher).to eq(publisher)
         expect(org2.cite_as).to eq(cite_as)
-      end
-      it 'redirects back' do
+        # it redirects back
         expect(response).to redirect_to('original_page')
       end
     end

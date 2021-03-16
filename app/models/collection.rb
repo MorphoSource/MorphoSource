@@ -188,6 +188,14 @@ class Collection < ActiveFedora::Base
     ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id}").select{ |c| c.class == Collection && c.project? }
   end
 
+  # override Hyrax::CollectionBehavior method to allow collection types to be changed
+  def collection_type_gid=(new_collection_type_gid)
+    new_collection_type = Hyrax::CollectionType.find_by_gid!(new_collection_type_gid)
+    super
+    @collection_type = new_collection_type
+    collection_type_gid
+  end
+
   private
 
     def add_depositor_to_managers

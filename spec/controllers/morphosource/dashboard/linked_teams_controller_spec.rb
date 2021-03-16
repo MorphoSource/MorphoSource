@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller do
   let(:org1)                  { Organization.create(title: ['new organization'], institution_code: ['ABC']) }
   let!(:org2)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
-  let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+  let!(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:admin)                 { User.create(email: 'email@email.com', password: 'password') }
   let(:team)                  { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: admin.ms_id) }
   let(:params)                { { id: team.id, collection: { organization_id: org1.id } } }
@@ -90,20 +90,52 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
       end
 
       context 'the team does not already have a linked organization' do
-        before do
-          post :link_organization, params: params
+        context 'the team was created as a team' do
+          before do
+            post :link_organization, params: params
+          end
+          it 'adds the new organization' do
+            expect(org1.reload.team_id).to eq([team.id])
+          end
+          it "adds view access for the linked team's members to the new organization's media" do
+            expect(media.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+            expect(team_manager.can?(:read, media)).to be(true)
+            expect(team_depositor.can?(:read, media)).to be(true)
+            expect(team_viewer.can?(:read, media)).to be(true)
+          end
+          it 'redirects back to the collection dashboard page' do
+            expect(response).to redirect_to('original_page')
+          end
         end
-        it 'adds the new organization' do
-          expect(org1.reload.team_id).to eq([team.id])
-        end
-        it "adds view access for the linked team's members to the new organization's media" do
-          expect(media.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
-          expect(team_manager.can?(:read, media)).to be(true)
-          expect(team_depositor.can?(:read, media)).to be(true)
-          expect(team_viewer.can?(:read, media)).to be(true)
-        end
-        it 'redirects back to the collection dashboard page' do
-          expect(response).to redirect_to('original_page')
+        context 'the team was converted from a project' do
+          let!(:project_collection_type)  { Hyrax::CollectionType.create(title: 'Project') }
+          let(:project)                   { Collection.create(title: ['Project_A'], collection_type_gid: project_collection_type.gid, depositor: admin.ms_id) }
+          let(:params)                    { { id: project.id, collection: { organization_id: org1.id } } }
+          let(:project_manager)           { User.create(email: 'manager@test.com', password: 'password') }
+          let(:project_depositor)         { User.create(email: 'depositor@test.com', password: 'password') }
+          let(:project_viewer)            { User.create(email: 'viewer@test.com', password: 'password') }
+          before do
+            project.create_collection_groups
+            project.managers << team_manager
+            project.depositors << team_depositor
+            project.viewers << team_viewer
+            project.user_groups.each(&:save)
+            project.collection_type_gid = team_collection_type.gid
+            project.save!
+            post :link_organization, params: params
+          end
+          it 'adds the new organization' do
+            expect(org1.reload.team_id).to eq([project.id])
+          end
+          it "adds view access for the linked team's members to the new organization's media" do
+            expect(media.read_groups).to include(project.managers_group.name, project.depositors_group.name, project.viewers_group.name)
+            expect(team_manager.can?(:read, media)).to be(true)
+            expect(team_depositor.can?(:read, media)).to be(true)
+            expect(team_viewer.can?(:read, media)).to be(true)
+          end
+          it 'redirects back to the collection dashboard page' do
+            expect(response).to redirect_to('original_page')
+          end
         end
       end
     end

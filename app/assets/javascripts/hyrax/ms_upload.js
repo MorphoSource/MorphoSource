@@ -19,11 +19,13 @@ $( document ).ready(function() {
     // currently the fileupload widget is on media edit page and submission flow
     $('#fileupload')
       .bind('fileuploadstart', function (e, data) {
+        $('[id="add-files"]').hide();
+        $('[id="file-upload-cancel-btn"]').show();
         uploadStatusOK = false;
       })
       .bind('fileuploadcompleted', function (e, data) {
         console.log('fileuploadcompleted');
-        $('.fileinput-button').hide();
+        $('[id="add-files"]').hide();
         $('.dropzone').hide();
         uploadStatusOK = true;
         justUploaded = 1;
@@ -40,13 +42,14 @@ $( document ).ready(function() {
       }) */
       .bind('fileuploadfail', function (e, data) {
         console.log('fileuploadfail');
+        $('[id="add-files"]').show();
         $('[id="file-upload-cancel-btn"]').hide();
         uploadStatusOK = true;
         justUploaded = 0;
       })
       .bind('fileuploaddestroyed', function (e, data) {
         console.log('fileuploaddestroyed');
-        $('.fileinput-button').show();
+        $('[id="add-files"]').show();
         $('.dropzone').show();
         uploadStatusOK = true;
         justUploaded = 0;

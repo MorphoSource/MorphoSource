@@ -191,11 +191,12 @@ div#front-banner iframe {
 }
 
 .inline-button {
-  padding: 3px 6px 3px 6px;
+  padding: 1px 6px;
   background-color: $ms-dark-blue;
   border: 1px solid $ms-dark-blue;
   border-radius: 5px;
   color: #f3f3f3;
+  font-size: 12px;
   font-weight: 300;
   white-space: nowrap;
 }

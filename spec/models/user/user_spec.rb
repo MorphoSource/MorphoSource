@@ -185,7 +185,7 @@ RSpec.describe User, type: :model do
 
       it 'returns ids for manager_roles' do
         all_memberships_collection_ids, manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = user.collections_with_membership_role_ids
-        expect(manager_collection_ids).to eq(["000200000", "000200001", "000200002"])      
+        expect(manager_collection_ids).to eq(["000200000", "000200001", "000200002"])
       end
 
       describe 'return ids for editor roles' do
@@ -194,7 +194,7 @@ RSpec.describe User, type: :model do
         end
         it 'returns ids for the editor_roles' do
           all_memberships_collection_ids, manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = user.collections_with_membership_role_ids
-          expect(editor_collection_ids).to eq(["000200000", "000200001"])      
+          expect(editor_collection_ids).to eq(["000200000", "000200001"])
         end
       end
 
@@ -204,7 +204,7 @@ RSpec.describe User, type: :model do
         end
         it 'returns ids for the viewer_roles' do
           all_memberships_collection_ids, manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = user.collections_with_membership_role_ids
-          expect(viewer_collection_ids).to eq(["000200002"])      
+          expect(viewer_collection_ids).to eq(["000200002"])
         end
       end
 
@@ -238,7 +238,6 @@ RSpec.describe User, type: :model do
 
     it "can return fund codes where user is manager" do
       fund_code.add_user(this_user, true)
-      byebug
       expect(this_user.managed_fund_codes).to match_array([fund_code])
     end
 

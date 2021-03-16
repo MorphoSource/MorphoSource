@@ -39,12 +39,12 @@ RSpec.describe SubmissionsController, type: :controller do
 
     it 'creates a derivative thumbnail' do
       post :create, params: form_params
-      # it updates the thumbnail id
-      expect(media.thumbnail_id).to eq(media.id)
       # the derivative exists
       expect(File.exist?(custom_thumbnail_path)).to be(true)
       # solr is updated with the correct thumbnail path
       expect(solr_doc["thumbnail_path_ss"]).to eq("/downloads/#{media.id}?file=thumbnail")
+      # it updates the thumbnail id
+      expect(media.reload.thumbnail_id).to eq(media.id)
     end
   end
 end
@@ -78,12 +78,12 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
     it 'creates a derivative thumbnail' do
       patch :update, params: create_params
-      # it updates the thumbnail id
-      expect(media.thumbnail_id).to eq(media.id)
       # the derivative exists
       expect(File.exist?(custom_thumbnail_path)).to be(true)
       # solr is updated with the correct thumbnail path
       expect(solr_doc["thumbnail_path_ss"]).to eq("/downloads/#{media.id}?file=thumbnail")
+      # it updates the thumbnail id
+      expect(media.reload.thumbnail_id).to eq(media.id)
     end
   end
 
@@ -98,11 +98,13 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     it 'sets the file set derivative as the thumbnail' do
       patch :update, params: delete_params
       # it updates the thumbnail id
-      expect(media.thumbnail_id).to eq(file_set.id)
+      expect(media.reload.thumbnail_id).to eq(file_set.id)
       # the custom derivative is removed
       expect(File.exist?(custom_thumbnail_path)).to be(false)
       # solr is updated with the correct thumbnail path
       expect(solr_doc["thumbnail_path_ss"]).to eq("/downloads/#{file_set.id}?file=thumbnail")
+      # it updates the thumbnail id
+      expect(media.reload.thumbnail_id).to eq(file_set.id)
     end
   end
 end

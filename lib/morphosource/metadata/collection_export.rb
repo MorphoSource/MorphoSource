@@ -98,7 +98,7 @@ module Morphosource
         if object.is_a? User
           {}
         elsif object.is_a? Media
-          { 'parent_id': object.member_of.map { |p| p.id }, 'visibility': object.visibility, 'file': object.file_sets&.first.label }
+          { 'parent_id': object.member_of.map { |p| p.id }, 'visibility': object.visibility, 'file': object.file_sets&.first&.label }
         else
           { 'parent_id': object.member_of.map { |p| p.id }, 'visibility': object.visibility }
         end

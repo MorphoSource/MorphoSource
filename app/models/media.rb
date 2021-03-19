@@ -190,6 +190,10 @@ class Media < Morphosource::Works::Base
     physical_objects.select(&:specimen?)
   end
 
+  def cultural_heritage_objects
+    physical_objects.select(&:cho?)
+  end
+
   def object_titles
     physical_objects.map(&:title)
   end
@@ -211,6 +215,10 @@ class Media < Morphosource::Works::Base
 
   def imaging_event
     ancestors.find(&:imaging_event?)
+  end
+
+  def processing_event
+    ancestors.find(&:processing_event?)
   end
 
   def related_media

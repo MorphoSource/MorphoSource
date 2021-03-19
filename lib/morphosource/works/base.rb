@@ -59,6 +59,10 @@ module Morphosource
         self.class == ImagingEvent
       end
 
+      def processing_event?
+        self.class == ProcessingEvent
+      end
+
       def user_with_ownership
         User.find_by(ms_id: owner)&.ms_id || depositor
       end

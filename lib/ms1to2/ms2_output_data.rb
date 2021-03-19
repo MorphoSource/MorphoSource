@@ -1,13 +1,15 @@
+require 'csv'
+
 module Ms1to2
   class Ms2OutputData
     def self.standard_tables
-      ['media', 'imaging_event', 'processing_event', 'biological_specimen', 
+      ['media', 'imaging_event', 'processing_event', 'biological_specimen', 'cultural_heritage_object',
        'taxonomy', 'device', 'organization', 'collection', 'f_to_i', 'user']
     end
 
     attr_accessor *standard_tables, :output_path
 
-    def initialize(output_path)
+    def initialize(output_path = nil)
       standard_tables.each { |t| instance_variable_set "@#{t}", {} }
       @output_path = output_path
     end

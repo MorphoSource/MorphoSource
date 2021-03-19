@@ -59,60 +59,12 @@ module Morphosource
         @user = (Array(@collection) + @media + @biological_specimen_object + @cultural_heritage_object + @processing_event + @imaging_event + @device).map { |o| User.find_by(ms_id: o.depositor) }.compact.uniq
       end
 
-      def export(csv_path)
-        output_data.output_path = csv_path
-        output_data.export_data
-      end
-
       def models
         [
           'collection', 'media', 'processing_event', 'imaging_event', 'device',
           'biological_specimen', 'taxonomy', 'cultural_heritage_object', 'organization', 'user'
         ]
       end
-
-      # def collection
-      #   output_data.collection = create_table(current_collection)
-      # end
-
-      # def media
-      #   output_data.media = create_table(@media)
-      # end
-
-
-      # def processing_event
-      #   output_data.processing_event = create_table(@processing_event)
-      # end
-
-      # def imaging_event
-      #   output_data.imaging_event = create_table(@imaging_event)
-      # end
-
-      # def device
-      #   output_data.device = create_table(@device)
-      # end
-
-      # def biological_specimen
-      #   output_data.biological_specimen = create_table(@biological_specimen_object
-      #   )
-      # end
-
-      # def taxonomy
-      #   output_data.taxonomy = create_table(@taxonomy)
-      # end
-
-      # def cultural_heritage_object
-      #   output_data.cultural_heritage_object = create_table(@cultural_heritage_object
-      #   )
-      # end
-
-      # def organization
-      #   output_data.organization = create_table(@organization)
-      # end
-
-      # def user
-      #   output_data.user = create_table(@user)
-      # end
 
       def model_to_output(model)
         output_data.instance_variable_set("@#{model}", create_table(instance_variable_get("@#{model}")))
@@ -122,6 +74,11 @@ module Morphosource
         Array(objects).each_with_object({}) do |obj, h|
           h[obj.id] = metadata_attributes(obj)
         end
+      end
+
+      def export(csv_path)
+        output_data.output_path = csv_path
+        output_data.export_data
       end
 
       private

@@ -2,10 +2,11 @@ module Morphosource
   extend ActiveSupport::Autoload
 
   autoload :Configurable
+  autoload :CrossrefDoiMinter
   autoload :Derivatives
   autoload :IDigBio
+  autoload :Metadata
   autoload :Minter
-  autoload :CrossrefDoiMinter
 
   include Morphosource::Configurable
 

@@ -2,6 +2,7 @@ class FundCode < ApplicationRecord
   belongs_to :user
   has_many :fund_code_memberships, :dependent => :destroy
   has_many :members, :through => :fund_code_memberships, :source => :user
+  has_many :fund_code_media_associations
 
   def add_user(user, manager = false)
     return nil if fund_code_memberships.where(user_id: user.id).present?

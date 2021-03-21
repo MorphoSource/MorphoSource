@@ -20,6 +20,7 @@ module Hyrax
 
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
+    after_action :set_fund_code, only: [:create, :update]
     after_action :update_thumbnail, only: [:update]
 
     # override the layout from WorksControllerBehavior
@@ -382,5 +383,34 @@ module Hyrax
         end
       end
 
+      def set_fund_code
+        if current_user.admin? 
+          if params[:media][:select_fund_code].present?
+            activate_fund_code
+          end
+
+          if params[:media][:select_new_fund_code].present?
+            set_new_fund_code
+          end
+        end
+      end
+
+      def activate_fund_code
+        return nil if !params[:media][:select_fund_code].present?
+        if FundCodeMediaAssociation.exists?(params[:media][:select_fund_code])
+          fcma = FundCodeMediaAssociation.find(params[:media][:select_fund_code])
+          if fcma.media == media.id
+            fcma.update(active: true)
+          end
+        end
+      end
+
+      def set_new_fund_code
+        return nil if !params[:media][:select_new_fund_code].present?
+        if FundCode.exists?(params[:media][:select_new_fund_code])
+          fc = FundCode.find(params[:media][:select_new_fund_code])
+          media.new_fund_code_association(fc)
+        end
+      end
   end
 end

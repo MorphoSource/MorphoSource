@@ -5,6 +5,8 @@ module Morphosource
       def get_items(page)
         @items = items(page)
         @solr_docs = solr_docs(page)
+
+        @item_count = count_text(@items.size)
       end
 
       def options(page)

@@ -209,6 +209,7 @@ module Ms1to2
     end
 
     def get_table(m)
+      return {} if !File.exists?(File.join(input_path, csvfile(m)))
       {}.tap do |t|
         CSVParser.new(File.join(input_path, csvfile(m))).each do |attrs|
           t[attrs[:id].first] = attrs unless attrs[:id].nil?

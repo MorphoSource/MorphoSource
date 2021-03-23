@@ -107,6 +107,7 @@ module Ms1to2
     def import_standard(m)
       opts = { :model => m.to_s }
       opts[:depositor] = @admin_user.user_key
+      return nil if !File.exists?(File.join(input_path, csvfile(m)))
       csv_importer = ::Importer::CSVImporter.new(
         File.join(input_path, csvfile(m)),
         '',
@@ -136,16 +137,17 @@ module Ms1to2
       ids.each do |id|
         if combined_table.key?(id)
           # prepare
+          current_model = to_model(id, @ie.keys, @pe.keys)
           attrs = combined_table[id]
           attrs.delete(:collection_id)
-          csv_importer = ::Importer::CSVImporter.new('', input_path, { :model => to_model(id).to_s })
+          csv_importer = ::Importer::CSVImporter.new('', input_path, { :model => current_model.to_s })
 
-          if !to_model(id).to_s.constantize.exists?(id)
+          if !current_model.to_s.constantize.exists?(id)
             # create
             csv_importer.import_batch_object(attrs)
           elsif ( update &&
-            update_models.include?(to_model(id)) &&
-            ( !update_only_if_no_file || !has_original_file?(id, to_model(id)) ) )
+            update_models.include?(current_model) &&
+            ( !update_only_if_no_file || !has_original_file?(id, current_model) ) )
             # update
             csv_importer.update_batch_object(attrs)
           end
@@ -153,14 +155,13 @@ module Ms1to2
       end
     end
 
-    def to_model(id)
-      case id.sub(/^[0]*/,"")[0]
-        when 'I'
-          :ImagingEvent
-        when 'P'
-          :ProcessingEvent
-        else
-          :Media
+    def to_model(id, ie_keys=[], pe_keys=[])
+      if ie_keys.include?(id) || id.sub(/^[0]*/,"")[0] == 'I'
+        :ImagingEvent
+      elsif pe_keys.include?(id) || id.sub(/^[0]*/,"")[0] == 'P'
+        :ProcessingEvent
+      else
+        :Media
       end
     end
 
@@ -228,7 +229,7 @@ module Ms1to2
     end
 
     def models
-      [:Collection, :Organization, :Device, :Taxonomy, :BiologicalSpecimen, :Media]
+      [:Collection, :Organization, :Device, :Taxonomy, :BiologicalSpecimen, :CulturalHeritageObject, :Media]
     end
 
     def coll_models
@@ -236,7 +237,7 @@ module Ms1to2
     end
 
     def update_models
-      [:Organization, :Device, :Taxonomy, :BiologicalSpecimen, :Media]
+      [:Organization, :Device, :Taxonomy, :BiologicalSpecimen, :CulturalHeritageObject, :Media]
     end
   end
 end

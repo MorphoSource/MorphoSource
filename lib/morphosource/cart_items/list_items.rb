@@ -10,34 +10,36 @@ module Morphosource
       end
 
       def options(page)
-        case page
-        when 'cart'
-          item_ids = :item_ids_in_cart
-          order = 'created_at DESC'
-          work_ids = :work_ids_in_cart
-        when 'downloads'
-          item_ids = :downloaded_items
-          order = 'date_downloaded DESC'
-          work_ids = :uniq_downloaded_work_ids
-        when 'my_requests'
-          item_ids = :my_requests_ids
-          order = 'created_at DESC'
-          work_ids = :my_requests_work_ids
-        when 'new'
-          item_ids = :newly_requested_item_ids
-          order = 'user_id DESC'
-          order2 = "use desc"
-          work_ids = :newly_requested_item_work_ids
-        when 'previous'
-          item_ids = :previously_requested_item_ids
-          order = 'user_id DESC'
-          order2 = "use desc"
-          work_ids = :previously_requested_items_work_ids
+        @options_page ||= begin
+          case page
+          when 'cart'
+            item_ids = :item_ids_in_cart
+            order = 'created_at DESC'
+            work_ids = :work_ids_in_cart
+          when 'downloads'
+            item_ids = :downloaded_items
+            order = 'date_downloaded DESC'
+            work_ids = :uniq_downloaded_work_ids
+          when 'my_requests'
+            item_ids = :my_requests_ids
+            order = 'created_at DESC'
+            work_ids = :my_requests_work_ids
+          when 'new'
+            item_ids = :newly_requested_item_ids
+            order = 'user_id DESC'
+            order2 = "use desc"
+            work_ids = :newly_requested_item_work_ids
+          when 'previous'
+            item_ids = :previously_requested_item_ids
+            order = 'user_id DESC'
+            order2 = "use desc"
+            work_ids = :previously_requested_items_work_ids
+          end
+          { item_ids: item_ids,
+            order: order,
+            order2: order2,
+            work_ids: work_ids }
         end
-        { item_ids: item_ids,
-          order: order,
-          order2: order2,
-          work_ids: work_ids }
       end
 
       def items(page)

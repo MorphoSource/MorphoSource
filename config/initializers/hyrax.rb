@@ -326,7 +326,7 @@ Hyrax.config do |config|
   # ingest files from the file system that are not part of the BrowseEverything
   # mount point.
   #
-  config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_ms1/', '/vagrant/downloads/']
+  config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_ms1/', '/vagrant/downloads/', '/opt/morphosource/root/tmp/']
 
   config.index_related_works = true
 end

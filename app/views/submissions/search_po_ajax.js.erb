@@ -1,4 +1,4 @@
 // Receives Ruby variables @docs for MS search results, @idigbio for iDigBio search results
 $("#submission_po_search_results_container").html(
-  "<%= escape_javascript(render(partial: 'submissions/physical_object/physical_object_search_results', locals: { po_type: @po_type, docs: @docs, idigbio: @idigbio, show: true, loading: false })) %>"
+  "<%= escape_javascript(render(partial: 'submissions/physical_object/physical_object_search_results', locals: { po_type: @po_type, docs: @docs, docs_idigbio_uuids: @docs_idigbio_uuids, idigbio: @idigbio, show: true, loading: false })) %>"
 );

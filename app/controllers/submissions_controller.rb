@@ -47,8 +47,8 @@ class SubmissionsController < ApplicationController
     @po_type = submission_params[:biological_specimen_or_cultural_heritage_object]
     if @po_type == 'bso'
       @docs = search_biospec
+      @docs_idigbio_uuids = @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq
       @idigbio = search_idigbio
-      @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])} unless (@docs.nil? || @idigbio.nil?)
     elsif @po_type == 'cho'
       @docs = search_cho
       @idigbio = []
@@ -767,7 +767,8 @@ class SubmissionsController < ApplicationController
                 :taxonomy_search,
                 :organization_search,
                 :taxonomy_params_array,
-                :organization_for_attachment
+                :organization_for_attachment,
+                :fund_code
         )
     )
   end

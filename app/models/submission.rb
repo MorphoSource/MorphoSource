@@ -51,7 +51,8 @@ class Submission
                 :organization_search,
                 :taxonomy_params_array,
                 :organization_for_attachment,
-                :on_behalf_of
+                :on_behalf_of,
+                :fund_code
 
                 
   MEDIA_DERIVED = 'Derived'

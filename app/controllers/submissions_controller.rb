@@ -385,6 +385,7 @@ class SubmissionsController < ApplicationController
       create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
       # Morphosource::CustomThumbnails
       create_thumbnail if work == 'media'
+      set_new_fund_code if work == 'media' && @submission.fund_code.present?
     end
   end
 
@@ -561,6 +562,15 @@ class SubmissionsController < ApplicationController
       'processing_event' => ['pe_description'],
       'media' => ['agreement']
     }
+  end
+
+  def set_new_fund_code
+    return nil if !FundCode.exists?(@submission.fund_code) || !@submission.media_id.present?
+    FundCodeMediaAssociation.new(
+      fund_code: FundCode.find(@submission.fund_code),
+      media: @submission.media_id,
+      active: true
+    ).save!
   end
 
   # Utility functions

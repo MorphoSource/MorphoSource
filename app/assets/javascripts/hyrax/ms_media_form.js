@@ -399,13 +399,18 @@ $( document ).ready(function() {
       if (selectData) {
         for (const device of selectData.devices) {
           console.log(device);
+          if (device.creator) {
+            var title = device.creator + ' ' + device.title;
+          } else {
+            var title = device.title;
+          }
           $('#imaging_event_select_device_id').
             append($('<option></option>')
               .attr('value', device.id)
               .attr('data-modality', device.modality)
               .attr('data-creator', device.creator)
               .attr('data-description', device.description)
-              .text(device.title)
+              .text(title)
             );
         }
       }

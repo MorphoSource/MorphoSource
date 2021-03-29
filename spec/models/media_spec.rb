@@ -456,5 +456,20 @@ RSpec.describe Media do
       end
     end
 
+    describe 'fund code associations' do
+      let(:user) { User.create(email: 'user@email.com', password: 'password') }
+      let(:fund_code) { FundCode.new(title: 'Test Title', description: 'Test Description', user: user) }
+      let(:media) { Media.create(title: ['title'], media_type: ['Image'], visibility: 'open') }
+
+      before do
+        media.save!
+        media.new_fund_code_association(fund_code)
+      end
+
+      it 'returns fund code and fund code associations' do
+        expect(media.fund_code_associations.first).to eq(FundCodeMediaAssociation.first)
+        expect(media.fund_codes.first).to eq(fund_code)
+      end
+    end
   end
 end

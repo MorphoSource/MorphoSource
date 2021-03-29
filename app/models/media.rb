@@ -400,6 +400,10 @@ class Media < Morphosource::Works::Base
     return fcma
   end
 
+  def active_fund_code_association
+    fund_code_associations.where(active: true)&.first
+  end
+
   private
 
     def add_id_to_title

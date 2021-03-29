@@ -12,8 +12,6 @@ module Hyrax
     self.terms += [
       :institution_code,
       :catalog_number,
-      :description,
-      :title,
       :is_pak,
       :is_built_in_fiducials_present,
       :snl_assembler,

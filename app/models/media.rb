@@ -379,6 +379,31 @@ class Media < Morphosource::Works::Base
     @original_related_media_ids.sort != related_media_ids.sort
   end
 
+  # Fund Code Methods
+
+  def fund_code_associations
+    FundCodeMediaAssociation
+      .joins(:fund_code)
+      .select('fund_code_media_associations.*, fund_codes.title, fund_codes.description')
+      .where(media: id)
+  end
+
+  def fund_codes
+    FundCode
+      .joins(:fund_code_media_associations)
+      .where(fund_code_media_associations: { media: id })
+  end
+
+  def new_fund_code_association(fund_code)
+    return nil if fund_codes.where(id: fund_code.id).present?
+    fcma = FundCodeMediaAssociation.new(fund_code: fund_code, media: id, active: true).save!
+    return fcma
+  end
+
+  def active_fund_code_association
+    fund_code_associations.where(active: true)&.first
+  end
+
   private
 
     def add_id_to_title

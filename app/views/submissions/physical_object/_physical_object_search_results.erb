@@ -35,14 +35,23 @@
                         <% obj_url = Rails.application.routes.url_helpers.hyrax_cultural_heritage_object_path(doc.id)%>
                       <% end %>
 
-                      <div>
-                        <%= link_to obj_url, target: '_blank' do %>
-                          See on MorphoSource <i class="fas fa-external-link-alt"></i>
+                      <div style='font-size: smaller;'>
+                        <% if doc.idigbio_uuid.present? %>
+                          <%= link_to doc.idigbio_url, target: '_blank' do %>
+                            iDigBio Linked
+                          <% end %>
+                          ·
                         <% end %>
-                      </div>                    
+                        <%= link_to obj_url, target: '_blank' do %>
+                          In MorphoSource
+                        <% end %>
+                           
+                      </div> 
+
+                                    
                     </div>
                     
-                    <div class="col-sm-3 text-right no-padding">
+                    <div class="col-sm-3 no-padding">
                       <a href="#" id="<%= doc.id %>" class="btn btn-primary use-morphosource-object">Use</a>
                     </div>
                   </div>
@@ -67,11 +76,15 @@
                       <div class="col-sm-9 text-left">
                         <div><span><%= "#{idb['data']['dwc:institutionCode']}:" %><wbr><%= "#{idb['data']['dwc:collectionCode']}:" %><wbr><%= "#{idb['data']['dwc:catalogNumber']}" %></span></div>
                         <div><em><%= "#{idb['data']['dwc:genus']} #{idb['data']['dwc:specificEpithet']}" %></em></div>
-                        <div><a href="https://www.idigbio.org/portal/records/<%= idb['uuid'] %>" target="_blank">See on iDigBio <i class="fas fa-external-link-alt"></i></a></div>
+                        <div style="font-size: smaller;"><a href="https://www.idigbio.org/portal/records/<%= idb['uuid'] %>" target="_blank">View at iDigBio</a></div>
                       </div>
                       
-                      <div class="col-sm-3 text-right no-padding">
-                        <a href="#" id="<%= idb['uuid'] %>" data-recordset="<%= idb['indexTerms']['recordset'] %>" class="btn btn-primary import-idigbio-object">Import</a>
+                      <div class="col-sm-3 no-padding" >
+                        <% if docs_idigbio_uuids.include?(idb['uuid']) %>
+                          <span style="font-size: smaller;"><i>Previously imported. Select from other column.</i></span>
+                        <% else %>
+                          <a href="#" id="<%= idb['uuid'] %>" data-recordset="<%= idb['indexTerms']['recordset'] %>" class="btn btn-primary import-idigbio-object">Import</a>
+                        <% end %>
                       </div>
                     </div>
                   <% end %>

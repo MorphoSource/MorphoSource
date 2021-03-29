@@ -144,13 +144,18 @@
 
   function listDevices(devices) {
     for (const device of devices) {
+      if (device.creator) {
+        var title = device.creator + ' ' + device.title;
+      } else {
+        var title = device.title;
+      }
       $('form#submission_device_select_form select#submission_device_id')
         .append($('<option></option>')
           .attr('value', device.id)
           .attr('data-modality', device.modality)
           .attr('data-creator', device.creator)
           .attr('data-description', device.description)
-          .text(device.title)
+          .text(title)
         );
     }
   }

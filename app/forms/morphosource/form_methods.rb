@@ -42,6 +42,12 @@ module Morphosource
     def select_taxonomy_id; end
 
     # @return [NilClass]
+    def select_fund_code; end
+
+    # @return [NilClass]
+    def select_new_fund_code; end
+
+    # @return [NilClass]
     def taxonomy_search; end
 
     def member_of_works_json(work_type=nil)

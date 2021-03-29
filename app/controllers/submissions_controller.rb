@@ -47,8 +47,8 @@ class SubmissionsController < ApplicationController
     @po_type = submission_params[:biological_specimen_or_cultural_heritage_object]
     if @po_type == 'bso'
       @docs = search_biospec
+      @docs_idigbio_uuids = @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq
       @idigbio = search_idigbio
-      @idigbio.reject!{|i| @docs.map{|d| d.idigbio_uuid}.flatten.compact.uniq.include?(i['uuid'])} unless (@docs.nil? || @idigbio.nil?)
     elsif @po_type == 'cho'
       @docs = search_cho
       @idigbio = []
@@ -385,6 +385,7 @@ class SubmissionsController < ApplicationController
       create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
       # Morphosource::CustomThumbnails
       create_thumbnail if work == 'media'
+      set_new_fund_code if work == 'media' && @submission.fund_code.present?
     end
   end
 
@@ -561,6 +562,15 @@ class SubmissionsController < ApplicationController
       'processing_event' => ['pe_description'],
       'media' => ['agreement']
     }
+  end
+
+  def set_new_fund_code
+    return nil if !FundCode.exists?(@submission.fund_code) || !@submission.media_id.present?
+    FundCodeMediaAssociation.new(
+      fund_code: FundCode.find(@submission.fund_code),
+      media: @submission.media_id,
+      active: true
+    ).save!
   end
 
   # Utility functions
@@ -767,7 +777,8 @@ class SubmissionsController < ApplicationController
                 :taxonomy_search,
                 :organization_search,
                 :taxonomy_params_array,
-                :organization_for_attachment
+                :organization_for_attachment,
+                :fund_code
         )
     )
   end

@@ -31,6 +31,7 @@ module Hyrax
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
       :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list,
+      :fund_codes, :fund_code_associations,
       # Permissions
       :permits_commercial_use, :permits_3d_use, :required_archival_of_published_derivatives,
       :morphosource_use_agreement_type, :download_reviewer,
@@ -532,6 +533,9 @@ module Hyrax
       else
         imaging_event_exist = false
       end # end if imaging_event present?
+
+      @fund_code_associations = media.fund_code_associations
+      @fund_codes = media.fund_codes
 
     end
 

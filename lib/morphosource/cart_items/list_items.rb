@@ -4,6 +4,7 @@ module Morphosource
 
       def get_items(page)
         @items = items(page)
+        @paginated_items = i_paginated_items
         @solr_docs = solr_docs(page)
 
         @item_count = count_text(@items.size)
@@ -82,6 +83,25 @@ module Morphosource
       def undownloadable_items
         items_in_cart.select(&:restricted?)
       end
+
+      # pagination methods 
+      def i_paginated_items
+        Kaminari.paginate_array(@items, total_count: i_total_items).page(i_current_page).per(rows_from_params)
+      end
+
+      def i_total_items
+        @items.count
+      end
+
+      def i_current_page
+        page = request.params[:ipage].nil? ? 1 : request.params[:ipage].to_i
+        page > i_total_pages ? i_total_pages : page
+      end
+
+      def i_total_pages
+        (i_total_items.to_f / rows_from_params.to_f).ceil
+      end
+
 
       # pagination methods - unrestricted
       def paginated_unrestricted_items

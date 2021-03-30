@@ -14,7 +14,7 @@ module Morphosource
         end
 
         def my_active_requests
- byebug
+ byebug # where is this method called?
           @my_active_requests ||= my_requests.select{ |item| ["Approved","Requested","Cleared"].include? item.request_status }
         end
 

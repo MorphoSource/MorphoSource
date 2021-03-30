@@ -19,7 +19,7 @@
   </tr>
   </thead>
   <tbody>
-    <% @items.each_with_index do |item, counter| %>
+    <% @paginated_items.each_with_index do |item, counter| %>
       <% document = @solr_docs.select{|doc| doc.id == item.work_id}[0] %>
       <%= render 'morphosource/my/requests/list_works', document: document, counter: counter, item: item, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
     <% end %>

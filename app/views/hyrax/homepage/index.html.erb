@@ -95,7 +95,7 @@
     <div class="row">
       <div class="col-xs-6 showcase-label">Users</div>
       <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(User.count, :delimiter => ',') %>
+        <%= number_with_delimiter(User.registered.count, :delimiter => ',') %>
       </div>
     </div>
     <div class="row">

@@ -5,11 +5,16 @@ module Morphosource
       module MyRequests
 
         # all a user's current and past requests (items where user is requestor)
+#        def my_requests_NOT_USED
+#          @my_requests ||= cart_items.select{ |item| item.date_requested? || item.date_cleared? }
+#        end
+
         def my_requests
-          @my_requests ||= cart_items.select{ |item| item.date_requested? || item.date_cleared? }
+          @my_requests ||= cart_items.where(date_requested: 100.year.ago..DateTime.current).or(cart_items.where(date_cleared: 100.year.ago..DateTime.current))
         end
 
         def my_active_requests
+ byebug
           @my_active_requests ||= my_requests.select{ |item| ["Approved","Requested","Cleared"].include? item.request_status }
         end
 

@@ -42,4 +42,6 @@ Rails.application.configure do
 
   # these collections appear in the featured projects section on the homepage. If this is empty, the homepage shows 6 random collections that the user has access to view.
   config.featured_project_ids = []
+
+  config.active_job.queue_adapter = :inline
 end

@@ -47,7 +47,7 @@ en:
         media_processing: 'Since your media has been derived from some other parent media, it is possible to provide details about what processing was used to create this media. You can enter these details here.'
         media_details: 'This is the last step, you''re almost done. First, upload your media. Then provide us with some final details about the media. You can also control publication settings and access to the media here.'
         eo_search: |
-          Thanks for that. Now we need to learn more about the physical object your media represents.
+          Thanks for that. Now we need to learn more about the engineering object your media represents.
           If the object is already on MorphoSource, this will be easy - just search for your specimen and select it.
           Otherwise, create a new cultural heritage object record.'
       body_text:
@@ -78,3 +78,4 @@ en:
         idigbio_id: 'Biological Specimens in IDigBio'
         submission_media_type: 'What type of media are you uploading?'
         submission_modality: 'How was this media imaged? In other words, what modality was used?'
+        engineering_object_search_identifier: 'Identifier'

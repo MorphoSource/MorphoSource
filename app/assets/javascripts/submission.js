@@ -492,6 +492,13 @@ $( document ).ready(function() {
               $('#submission_po_search_results').addClass('hide').removeClass('show');
               $('#submission_po_search_ajax').addClass('show').removeClass('hide');
               return true;
+            } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'eo') {
+              console.log('toggling viewability');
+              $('#eo_search_non_search_options').addClass('hide').removeClass('show');
+              $('#submission_po_search_loading').addClass('show').removeClass('hide');
+              $('#submission_po_search_results').addClass('hide').removeClass('show');
+              $('#submission_po_search_ajax').addClass('show').removeClass('hide');
+              return true;
             }
           } else {
             return false;
@@ -509,6 +516,8 @@ $( document ).ready(function() {
               $('#bso_search_non_search_options').addClass('show').removeClass('hide');
             } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'cho') {
               $('#cho_search_non_search_options').addClass('show').removeClass('hide');
+            } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'eo') {
+              $('#eo_search_non_search_options').addClass('show').removeClass('hide');
             }
         });
 
@@ -527,6 +536,12 @@ $( document ).ready(function() {
               self.form.setSidebarViewFade([3, 4, 5, 6]);
             } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'cho' && $(this).attr('id')) {
               data.culturalHeritageObjectId = $(this).attr('id');
+
+              self.form.setSidebarViewCheck([3, 4, 6]);
+              self.form.setSidebarViewFade([3, 4, 5, 6]);
+
+            } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'eo' && $(this).attr('id')) {
+              data.engineeringObjectId = $(this).attr('id');
 
               self.form.setSidebarViewCheck([3, 4, 6]);
               self.form.setSidebarViewFade([3, 4, 5, 6]);

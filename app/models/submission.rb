@@ -50,7 +50,8 @@ class Submission
                 :taxonomy_search,
                 :organization_search,
                 :taxonomy_params_array,
-                :organization_for_attachment
+                :organization_for_attachment,
+                :engineering_object_search_identifier
 
                 
   MEDIA_DERIVED = 'Derived'

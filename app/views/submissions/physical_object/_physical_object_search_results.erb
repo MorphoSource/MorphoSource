@@ -31,6 +31,8 @@
                       <% if po_type == 'bso' %>
                         <div><em><%= "#{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_genus.first unless BiologicalSpecimen.find(doc.id).taxonomies.first.nil?} #{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_species.first unless BiologicalSpecimen.find(doc.id).taxonomies.first.nil?}" %></em></div>
                         <% obj_url = Rails.application.routes.url_helpers.hyrax_biological_specimen_path(doc.id) %>
+                      <% elsif po_type == 'eo' %>
+                        <% obj_url = Rails.application.routes.url_helpers.hyrax_engineering_object_path(doc.id)%>
                       <% else %>
                         <% obj_url = Rails.application.routes.url_helpers.hyrax_cultural_heritage_object_path(doc.id)%>
                       <% end %>

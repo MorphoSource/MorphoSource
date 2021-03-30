@@ -52,6 +52,9 @@ class SubmissionsController < ApplicationController
     elsif @po_type == 'cho'
       @docs = search_cho
       @idigbio = []
+    elsif @po_type == 'eo'
+      @docs = search_eo
+      @idigbio = []
     end
     respond_to do |format|
       format.js
@@ -690,6 +693,15 @@ class SubmissionsController < ApplicationController
     Morphosource::PhysicalObjectsSearchService.call(CulturalHeritageObject, search_params)
   end
 
+  def search_eo
+    search_params = {}
+    eo_search_params = submission_params.select{ |k,v| k.match(/^engineering_object_search_/) }.select{ |k,v| v.present? }
+    eo_search_params.each do |k,v|
+      search_params[k.sub('engineering_object_search_', '')] = v
+    end
+    Morphosource::PhysicalObjectsSearchService.call(EngineeringObject, search_params)
+  end
+
   def store_submission
     session[:submission] = { biospec_id: @submission.biospec_id,
                               cho_id: @submission.cho_id,
@@ -767,7 +779,8 @@ class SubmissionsController < ApplicationController
                 :taxonomy_search,
                 :organization_search,
                 :taxonomy_params_array,
-                :organization_for_attachment
+                :organization_for_attachment,
+                :engineering_object_search_identifier
         )
     )
   end

@@ -24,7 +24,9 @@ module Morphosource
         # Find all CartItems corresponding to those media and select only the ones that have been requested or cleared (will not return items that have been added to a user's cart but have not been requested)
         def requested_items
           items = CartItem.where(work_id: reviewed_media_ids)
-          items.select{ |i| i.date_requested? || i.date_cleared? }
+          tmp = items.select{ |i| i.date_requested? || i.date_cleared? }
+byebug
+          return tmp
         end
 
         # media works where user is reviewer
@@ -33,10 +35,36 @@ module Morphosource
         end
 
         def newly_requested_items
+          @new_requests ||= CartItem.where(
+            work_id: reviewed_media_ids,
+            date_downloaded: nil, 
+            date_requested: 100.year.ago..DateTime.current,
+            date_approved: nil, 
+            date_denied: nil, 
+            date_canceled: nil, 
+            date_expired: nil, 
+            date_cleared: nil
+          ) 
+        end
+
+        def newly_requested_items_NOT_USED
           requests.select{ |item| item.request_status == "Requested" }
         end
 
         def previously_requested_items
+          @previous_requests ||= CartItem.where(
+            work_id: reviewed_media_ids,
+            date_downloaded: nil, 
+            date_requested: 100.year.ago..DateTime.current,
+            date_approved: 100.year.ago..DateTime.current,
+            date_denied: nil, 
+            date_canceled: nil, 
+            date_expired: DateTime.current.to_date..100.years.from_now.to_date, 
+            date_cleared: nil
+          ) 
+        end
+
+        def previously_requested_items_NOT_USED
           requests - new_requests
         end
 

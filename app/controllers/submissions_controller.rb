@@ -431,6 +431,10 @@ class SubmissionsController < ApplicationController
       model_params.merge!(addl_params)
       @cho_create_params = model_params
 
+    when 'engineering_object'
+      model_params.merge!(addl_params)
+      @eo_create_params = model_params
+
     when 'device'
       if @submission.device_organization_id == 'submission_organization'
         @submission.device_organization_id = @submission.organization_id
@@ -455,6 +459,11 @@ class SubmissionsController < ApplicationController
           raise StandardError.new "Debug no cho id #{@submission.cultural_heritage_object_id}"
         end
         addl_params.merge!({ physical_object_id: [@submission.cultural_heritage_object_id] })
+      elsif @submission.biological_specimen_or_cultural_heritage_object == 'eo'
+        if !@submission.engineering_object_id.present?
+          raise StandardError.new "Debug no eo id #{@submission.engineering_object_id}"
+        end
+        addl_params.merge!({ physical_object_id: [@submission.engineering_object_id] })
       end
       if !@submission.device_id.present?
           raise StandardError.new "Debug no device id #{@submission.device_id}"
@@ -780,7 +789,8 @@ class SubmissionsController < ApplicationController
                 :organization_search,
                 :taxonomy_params_array,
                 :organization_for_attachment,
-                :engineering_object_search_identifier
+                :engineering_object_search_identifier,
+                :engineering_object_id
         )
     )
   end
@@ -790,6 +800,7 @@ class SubmissionsController < ApplicationController
     organization_id = params[:organization_id]
     biological_specimen_id = params[:biological_specimen_id]
     cultural_heritage_object_id = params[:cultural_heritage_object_id]
+    engineering_object_id = params[:engineering_object_id]
 
     organization = nil
 
@@ -809,6 +820,11 @@ class SubmissionsController < ApplicationController
       cho = CulturalHeritageObject.find(cultural_heritage_object_id)
       if cho.organizations.present?
         organization = cho.organizations.first
+      end
+    elsif engineering_object_id.present? && engineering_object_id != 'new'
+      eo = EngineeringObject.find(engineering_object_id)
+      if eo.organizations.present?
+        organization = eo.organizations.first
       end
     end
   end

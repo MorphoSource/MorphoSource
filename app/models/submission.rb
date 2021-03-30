@@ -51,9 +51,9 @@ class Submission
                 :organization_search,
                 :taxonomy_params_array,
                 :organization_for_attachment,
-                :engineering_object_search_identifier
+                :engineering_object_search_identifier,
+                :engineering_object_id
 
-                
   MEDIA_DERIVED = 'Derived'
   MEDIA_RAW = 'Raw'
   PHYSICAL_OBJECT_BSO = { code: 'bso',
@@ -62,4 +62,8 @@ class Submission
   PHYSICAL_OBJECT_CHO = { code: 'cho',
                           klass: CulturalHeritageObject,
                           label: CulturalHeritageObject.human_readable_type }
+  PHYSICAL_OBJECT_EO = { code: 'eo',
+                         klass: EngineeringObject,
+                         label: EngineeringObject.human_readable_type }
+
 end

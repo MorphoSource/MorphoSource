@@ -2,6 +2,7 @@
 #  `rails generate hyrax:work EngineeringObject`
 class EngineeringObject < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
+  include Morphosource::PhysicalObjectBehavior
 
   self.indexer = EngineeringObjectIndexer
   # Change this to restrict which works can be added as a child.

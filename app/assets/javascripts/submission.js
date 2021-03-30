@@ -19,7 +19,8 @@ $( document ).ready(function() {
           'organization_id', 'no_organization', 'will_create_organization',
           'taxonomy_id_array', 'taxonomy_gbif_key_array', 'will_create_taxonomy',
           'device_id', 'will_create_device', 'device_organization_id',
-          'device_no_organization', 'will_create_device_organization'];
+          'device_no_organization', 'will_create_device_organization',
+          'engineering_object_id'];
 
         for (let param of submissionParamsArray) {
           if (sessionState.form_data && sessionState.form_data.hasOwnProperty(param)) {
@@ -37,7 +38,8 @@ $( document ).ready(function() {
           'device': 'deviceCreateParams',
           'device_organization': 'deviceOrganizationCreateParams',
           'imaging_event': 'imagingEventCreateParams',
-          'processing_event': 'processingEventCreateParams'
+          'processing_event': 'processingEventCreateParams',
+          'engineering_object': 'engineeringObjectCreateParams',
         };
 
         for (let workName in createParamsHash) {
@@ -118,7 +120,9 @@ $( document ).ready(function() {
         let createParams = ['organizationCreateParams', 'taxonomyCreateParams',
           'biologicalSpecimenCreateParams', 'culturalHeritageObjectCreateParams', 'deviceCreateParams',
           'deviceOrganizationCreateParams', 'imagingEventCreateParams',
-          'processingEventCreateParams'];
+          'processingEventCreateParams',
+          'engineeringObjectCreateParams'
+        ];
 
         saveDataObj = [];
 
@@ -457,9 +461,9 @@ $( document ).ready(function() {
 
         $('#btn_object_type_engineering').click(function(event){
           event.preventDefault();
-          console.log('View 3 physical object type cultural continue button');
+          console.log('View 3 physical object type engineering continue button');
 
-          data.biologicalSpecimenOrCulturalHeritageObject = 'cho';
+          data.biologicalSpecimenOrCulturalHeritageObject = 'eo';
           $('#submission_cho_search_section').addClass('hide').removeClass('show');
           $('#submission_bso_search_section').addClass('hide').removeClass('show');
           $('#submission_eo_search_section').addClass('show').removeClass('hide');
@@ -541,6 +545,7 @@ $( document ).ready(function() {
               self.form.setSidebarViewFade([3, 4, 5, 6]);
 
             } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'eo' && $(this).attr('id')) {
+              console.log("in eo- use");
               data.engineeringObjectId = $(this).attr('id');
 
               self.form.setSidebarViewCheck([3, 4, 6]);
@@ -647,6 +652,7 @@ $( document ).ready(function() {
 
           $('#submission_cho_search_section').addClass('hide').removeClass('show');
           $('#submission_bso_search_section').addClass('hide').removeClass('show');
+          $('#submission_eo_search_section').addClass('hide').removeClass('show');
           $('#submission_physical_object_type_section').addClass('show').removeClass('hide');
           console.log(data);
         });
@@ -801,6 +807,9 @@ $( document ).ready(function() {
           this.form.setSidebarViewFade([5, 6]);
           this.form.setVisibleView(7); // view 7 media device
         } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'cho') {
+          this.form.setSidebarViewFade(5); // fade out view 5 taxonomy
+          this.form.setVisibleView(6); // view 6 details
+        } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'eo') {
           this.form.setSidebarViewFade(5); // fade out view 5 taxonomy
           this.form.setVisibleView(6); // view 6 details
         } else {
@@ -1006,6 +1015,23 @@ $( document ).ready(function() {
           data.biologicalSpecimenOrCulturalHeritageObject = 'cho';
           data.willCreateCulturalHeritageObject = true;
           data.culturalHeritageObjectCreateParams = $('form#new_cultural_heritage_object').serializeArray();
+          data.savedStep = 6;
+
+          self.form.setSidebarViewCheck(6);
+          self.form.setVisibleView(7); // view 7 media device
+
+          console.log(data);
+        });
+
+        // cho details listeners
+        $('form#new_engineering_object').submit(function(event){
+          event.preventDefault();
+          console.log('View 6 create EO and continue button');
+
+          data.setPhysicalObjectDefaults();
+          data.biologicalSpecimenOrCulturalHeritageObject = 'eo';
+          data.willCreateEngineeringObject = true;
+          data.engineeringObjectCreateParams = $('form#new_engineering_object').serializeArray();
           data.savedStep = 6;
 
           self.form.setSidebarViewCheck(6);
@@ -1499,7 +1525,8 @@ $( document ).ready(function() {
           'parent_media_list': this.data.parentMediaList,
           'organization_id': this.data.organizationId,
           'biological_specimen_id': this.data.biologicalSpecimenId,
-          'cultural_heritage_object_id': this.data.culturalHeritageObjectId
+          'cultural_heritage_object_id': this.data.culturalHeritageObjectId,
+          'engineering_object_id': this.engineeringObjectId
          },
          function(getData){
           console.log('Got organization default fields');
@@ -1760,6 +1787,7 @@ $( document ).ready(function() {
       }
 
       setVisibility(idArray) {
+        console.log('setVisibility=[' + idArray.join(', ') + ']');
         $('.submission_section').addClass('hide').removeClass('show');
         $(idArray.join(', ')).addClass('show').removeClass('hide');
       }

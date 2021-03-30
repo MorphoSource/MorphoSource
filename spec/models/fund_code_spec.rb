@@ -4,6 +4,7 @@ RSpec.describe FundCode do
   it { should belong_to(:user) }
   it { should have_many(:fund_code_memberships) }
   it { should have_many(:members) }
+  it { should have_many(:fund_code_media_associations) }
 
   describe "instance" do
     let(:creator) { User.create(email: 'admin@email.com', password: 'password')}

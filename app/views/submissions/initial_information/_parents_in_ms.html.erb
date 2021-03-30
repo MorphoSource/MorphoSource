@@ -60,12 +60,16 @@ $(function(){
   $('#submission_parent_media_search').autocomplete({
     select: function(event, ui) {
         event.preventDefault();
-        $("input.parent_id").val(ui.item.value);
-        $("input.parent_title").val(ui.item.label);
+        if (ui.item.value) {
+          $("input.parent_id").val(ui.item.value);
+          $("input.parent_title").val(ui.item.label);
+        }
     },
     focus: function(event, ui) {
       event.preventDefault();
-      $("#submission_parent_media_search").val(ui.item.label);
+      if (ui.item.value) {
+        $("#submission_parent_media_search").val(ui.item.label);
+      }
     },
     source: function (request, response) {
       $.ajax({
@@ -86,6 +90,12 @@ $(function(){
           response(results);
         }
       });
+    },
+    response: function (event, ui) {
+      if (!ui.content.length) {
+        var noResult = { value: '',label: 'No Results Found' };
+        ui.content.push(noResult);
+      }
     },
     autoFocus: true
   });

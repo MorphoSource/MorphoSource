@@ -16,7 +16,17 @@
           </div>
         <% end %>
 
-      	<div class="row">
+        <% if current_user.fund_codes.present? %>
+          <div class="row">
+            <div class="col-sm-6 col-sm-offset-3 no-padding">
+              <%= f.input :fund_code, label: 'What fund code supports this deposit?', 
+                collection: current_user.fund_codes, prompt: "None (Data Supported By MorphoSource)" %>
+            </div>
+          </div>
+          
+        <% end %>
+
+      	<div class="row mt-2">
           <div class="col-sm-6 col-sm-offset-3 no-padding">
       		  <%= render_edit_field_partial('submission_media_type', f: f) %>
           </div>

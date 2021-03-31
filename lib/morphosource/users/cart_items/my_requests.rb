@@ -9,12 +9,12 @@ module Morphosource
 #          @my_requests ||= cart_items.select{ |item| item.date_requested? || item.date_cleared? }
 #        end
 
-        def my_requests
-          @my_requests ||= cart_items.where(date_requested: 100.year.ago..DateTime.current).or(cart_items.where(date_cleared: 100.year.ago..DateTime.current))
+        def my_requests(param_page=1, param_rows=10)
+          @my_requests ||= cart_items.where(date_requested: 100.year.ago..DateTime.current).or(cart_items.where(date_cleared: 100.year.ago..DateTime.current)).order('created_at DESC').page(param_page).per(param_rows)
         end
 
         def my_active_requests
- byebug # where is this method called?
+          # this method is called in the Media page
           @my_active_requests ||= my_requests.select{ |item| ["Approved","Requested","Cleared"].include? item.request_status }
         end
 

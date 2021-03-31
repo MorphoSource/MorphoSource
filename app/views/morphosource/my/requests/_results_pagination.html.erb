@@ -9,11 +9,11 @@
 	</div>
 
 	<div class="col-md-12 col-lg-2">
-		<div>Showing <%= page_entries_info @paginated_items %></div>
+		<div>Showing <%= page_entries_info @items %></div>
 	</div>
 
 	<div class="col-md-12 col-lg-8">
-		<%= paginate @paginated_items, outer_window: 2, theme: 'blacklight', param_name: :ipage %>
+		<%= paginate @items, outer_window: 2, theme: 'blacklight', param_name: :page %>
 	</div>
 
 </div><!-- /row -->

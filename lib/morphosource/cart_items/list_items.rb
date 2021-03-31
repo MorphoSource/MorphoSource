@@ -4,10 +4,10 @@ module Morphosource
 
       def get_items(page)
         @items = items(page)
-        @paginated_items = i_paginated_items
-        @solr_docs = solr_docs(page)
-
-        @item_count = count_text(@items.size)
+#        @paginated_items = i_paginated_items
+#        @solr_docs = solr_docs(page)
+#        @item_count = count_text(@items.size)
+        @item_count = @items.total_count
       end
 
       def options(page)
@@ -22,9 +22,10 @@ module Morphosource
             order = 'date_downloaded DESC'
             work_ids = :uniq_downloaded_work_ids
           when 'my_requests'
-            item_ids = :my_requests_ids
-            order = 'created_at DESC'
-            work_ids = :my_requests_work_ids
+            items = :my_requests
+            #item_ids = :my_requests_ids
+            #order = 'created_at DESC'
+            #work_ids = :my_requests_work_ids
           when 'new'
             item_ids = :newly_requested_item_ids
             order = 'user_id DESC'
@@ -36,7 +37,8 @@ module Morphosource
             order2 = "use desc"
             work_ids = :previously_requested_items_work_ids
           end
-          { item_ids: item_ids,
+          { items: items,
+            item_ids: item_ids,
             order: order,
             order2: order2,
             work_ids: work_ids }
@@ -44,6 +46,15 @@ module Morphosource
       end
 
       def items(page)
+        #cart_items = self.send(options(page)[:items], page_from_params, rows_from_params)
+        case page
+        when 'my_requests'
+          cart_items = my_requests(page_from_params, rows_from_params)
+        end
+        return cart_items 
+
+
+byebug
         ids = self.send(options(page)[:item_ids])
         order = options(page)[:order]
         # if request manager new/previous
@@ -84,6 +95,14 @@ module Morphosource
         items_in_cart.select(&:restricted?)
       end
 
+      def page_from_params
+        params[:page] ||= 1
+      end
+
+      def rows_from_params
+        request.params[:rows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:rows].to_i
+      end
+
       # pagination methods 
       def i_paginated_items
         Kaminari.paginate_array(@items, total_count: i_total_items).page(i_current_page).per(rows_from_params)
@@ -122,10 +141,6 @@ module Morphosource
         (total_items.to_f / rows_from_params.to_f).ceil
       end
 
-      def rows_from_params
-        request.params[:rows].nil? ? Hyrax.config.teams_show_work_item_rows : request.params[:rows].to_i
-      end
-
       # pagination methods - restricted
       def paginated_restricted_items
         Kaminari.paginate_array(@restricted_items, total_count: restricted_total_items).page(restricted_current_page).per(restricted_rows_from_params)
@@ -156,7 +171,7 @@ module Morphosource
       delegate :downloaded_items, :downloaded_work_ids, to: :current_user
 
       # my requests page
-      delegate :my_requests_ids, :my_requests_work_ids, to: :current_user
+      delegate :my_requests, :my_requests_ids, :my_requests_work_ids, to: :current_user
 
       # request manager - new requests
       delegate :newly_requested_item_ids, :newly_requested_item_work_ids, to: :current_user

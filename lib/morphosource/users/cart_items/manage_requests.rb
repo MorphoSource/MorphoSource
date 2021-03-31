@@ -42,7 +42,7 @@ module Morphosource
             date_canceled: nil, 
             date_expired: nil, 
             date_cleared: nil
-          ) 
+          ).order('user_id DESC').order('use desc')
         end
 
 #        def newly_requested_items_NOT_USED
@@ -59,16 +59,16 @@ module Morphosource
             date_canceled: nil, 
             date_expired: DateTime.current.to_date..100.years.from_now.to_date, 
             date_cleared: nil
-          ) 
+          ).order('user_id DESC').order('use desc')
         end
 
 #        def previously_requested_items_NOT_USED
 #          requests - new_requests
 #        end
 
-        def previously_requested_item_ids
-          previous_requests.map(&:id)
-        end
+#        def previously_requested_item_ids
+#          previous_requests.map(&:id)
+#        end
 
 #        def requested_item_ids_NOT_USED
 #          requests.map(&:id)
@@ -78,29 +78,29 @@ module Morphosource
 #          requests.map(&:work_id)
 #        end
 
-        def newly_requested_item_ids
-          new_requests.map(&:id)
-        end
+#        def newly_requested_item_ids
+#          new_requests.map(&:id)
+#        end
+#
+#        def newly_requested_item_work_ids
+#          new_requests.map(&:work_id)
+#        end
+#
+#        def newly_requested_items_user_ids
+#          new_requests.map(&:user_id)
+#        end
 
-        def newly_requested_item_work_ids
-          new_requests.map(&:work_id)
-        end
-
-        def newly_requested_items_user_ids
-          new_requests.map(&:user_id)
-        end
-
-        def previously_requested_item_ids
-          previous_requests.map(&:id)
-        end
-
-        def previously_requested_items_work_ids
-          previous_requests.map(&:work_id)
-        end
-
-        def previously_requested_items_user_ids
-          previous_requests.map(&:user_id)
-        end
+#        def previously_requested_item_ids
+#          previous_requests.map(&:id)
+#        end
+#
+#        def previously_requested_items_work_ids
+#          previous_requests.map(&:work_id)
+#        end
+#
+#        def previously_requested_items_user_ids
+#          previous_requests.map(&:user_id)
+#        end
       end
     end
   end

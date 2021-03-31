@@ -7,66 +7,77 @@ module Morphosource
 #        @paginated_items = i_paginated_items
 #        @solr_docs = solr_docs(page)
 #        @item_count = count_text(@items.size)
-        @item_count = @items.total_count
+          
+#        @item_count = @items.total_count
       end
 
-      def options(page)
-        @options_page ||= begin
-          case page
-          when 'cart'
-            item_ids = :item_ids_in_cart
-            order = 'created_at DESC'
-            work_ids = :work_ids_in_cart
-          when 'downloads'
-            item_ids = :downloaded_items
-            order = 'date_downloaded DESC'
-            work_ids = :uniq_downloaded_work_ids
-          when 'my_requests'
-            items = :my_requests
-            #item_ids = :my_requests_ids
-            #order = 'created_at DESC'
-            #work_ids = :my_requests_work_ids
-          when 'new'
-            item_ids = :newly_requested_item_ids
-            order = 'user_id DESC'
-            order2 = "use desc"
-            work_ids = :newly_requested_item_work_ids
-          when 'previous'
-            item_ids = :previously_requested_item_ids
-            order = 'user_id DESC'
-            order2 = "use desc"
-            work_ids = :previously_requested_items_work_ids
-          end
-          { items: items,
-            item_ids: item_ids,
-            order: order,
-            order2: order2,
-            work_ids: work_ids }
-        end
-      end
+      #def options(page)
+      #  @options_page ||= begin
+      #    case page
+      #    when 'cart'
+      #      item_ids = :item_ids_in_cart
+      #      order = 'created_at DESC'
+      #      work_ids = :work_ids_in_cart
+      #    when 'downloads'
+      #      item_ids = :downloaded_items
+      #      order = 'date_downloaded DESC'
+      #      work_ids = :uniq_downloaded_work_ids
+      #    when 'my_requests'
+      #      items = :my_requests
+      #      #item_ids = :my_requests_ids
+      #      #order = 'created_at DESC'
+      #      #work_ids = :my_requests_work_ids
+      #    when 'new'
+      #      item_ids = :newly_requested_item_ids
+      #      order = 'user_id DESC'
+      #      order2 = "use desc"
+      #      work_ids = :newly_requested_item_work_ids
+      #    when 'previous'
+      #      item_ids = :previously_requested_item_ids
+      #      order = 'user_id DESC'
+      #      order2 = "use desc"
+      #      work_ids = :previously_requested_items_work_ids
+      #    end
+      #    { items: items,
+      #      item_ids: item_ids,
+      #      order: order,
+      #      order2: order2,
+      #      work_ids: work_ids }
+      #  end
+      #end
 
       def items(page)
         #cart_items = self.send(options(page)[:items], page_from_params, rows_from_params)
         case page
+        when 'cart'
+          cart_items = @unrestricted_items
         when 'my_requests'
           cart_items = my_requests(page_from_params, rows_from_params)
+          @item_count = cart_items.total_count
+        when 'new'
+          cart_items = newly_requested_items
+          @item_count = cart_items.count
+        when 'previous'
+          cart_items = previously_requested_items
+          @item_count = cart_items.count
+        when 'downloads'
+          cart_items = downloaded_items(page_from_params, rows_from_params)
+          @item_count = cart_items.total_count
         end
         return cart_items 
-
-
-byebug
-        ids = self.send(options(page)[:item_ids])
-        order = options(page)[:order]
-        # if request manager new/previous
-        if @tab
-          order2 = options(page)[:order2]
-          CartItem.where(id: ids).order(order).order(order2)
-        else
-          CartItem.where(id: ids).order(order).page params[:page]
-        end
+#byebug
+#        ids = self.send(options(page)[:item_ids])
+#        order = options(page)[:order]
+#        # if request manager new/previous
+#        if @tab
+#          order2 = options(page)[:order2]
+#          CartItem.where(id: ids).order(order).order(order2)
+#        else
+#          CartItem.where(id: ids).order(order).page params[:page]
+#        end
       end
 
-      def solr_docs(page)
+      def solr_docs_NOT_USED(page)
         work_ids = self.send(options(page)[:work_ids]).uniq
 
         ActiveFedora::SolrService.query(ActiveFedora::SolrQueryBuilder.construct_query_for_ids([work_ids]), rows: 999999, method: :post).map{ |doc| SolrDocument.new(doc) }
@@ -104,22 +115,22 @@ byebug
       end
 
       # pagination methods 
-      def i_paginated_items
-        Kaminari.paginate_array(@items, total_count: i_total_items).page(i_current_page).per(rows_from_params)
-      end
-
-      def i_total_items
-        @items.count
-      end
-
-      def i_current_page
-        page = request.params[:ipage].nil? ? 1 : request.params[:ipage].to_i
-        page > i_total_pages ? i_total_pages : page
-      end
-
-      def i_total_pages
-        (i_total_items.to_f / rows_from_params.to_f).ceil
-      end
+#      def i_paginated_items
+#        Kaminari.paginate_array(@items, total_count: i_total_items).page(i_current_page).per(rows_from_params)
+#      end
+#
+#      def i_total_items
+#        @items.count
+#      end
+#
+#      def i_current_page
+#        page = request.params[:ipage].nil? ? 1 : request.params[:ipage].to_i
+#        page > i_total_pages ? i_total_pages : page
+#      end
+#
+#      def i_total_pages
+#        (i_total_items.to_f / rows_from_params.to_f).ceil
+#      end
 
 
       # pagination methods - unrestricted
@@ -165,7 +176,7 @@ byebug
       end
 
       # media cart page
-      delegate :item_ids_in_cart, :work_ids_in_cart, to: :current_user
+      delegate :downloadable_items_in_cart, :item_ids_in_cart, :work_ids_in_cart, to: :current_user
 
       # downloads page
       delegate :downloaded_items, :downloaded_work_ids, to: :current_user

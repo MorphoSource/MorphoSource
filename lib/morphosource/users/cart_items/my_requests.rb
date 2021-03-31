@@ -31,13 +31,13 @@ module Morphosource
           my_approved_requests.map(&:work_id)
         end
 
-        def my_requests_ids
-          my_requests.map(&:id)
-        end
-
-        def my_requests_work_ids
-          my_requests.map(&:work_id)
-        end
+#        def my_requests_ids
+#          my_requests.map(&:id)
+#        end
+#
+#        def my_requests_work_ids
+#          my_requests.map(&:work_id)
+#        end
 
         def my_active_requests_work_ids
           my_active_requests.map(&:work_id)

@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
     get 'media/:id', to: 'media#showcase'
+    get 'media/:id/thumbnail', to: 'media#thumbnail'
     # redirect the default BSO/CHO view to showcase view, except for certain action (e.g. new)
     get 'concern/biological_specimens/new', to: 'biological_specimens#new'
     get 'concern/cultural_heritage_objects/new', to: 'cultural_heritage_objects#new'
@@ -26,6 +27,7 @@ Rails.application.routes.draw do
     # in case we need to reference the old edit page. remove this hyraxedit route later
     get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
     put 'concern/media/:id/mint_doi', to: 'media#mint_doi', as: :media_mint_doi
+    get 'concern/media/:id/thumbnail', to: 'media#thumbnail'
     get 'concern/parent/:parent_id/media/:id', to: 'media#showcase'
     # setup temp routes for the default views (for debugging)
     # remove them later if no longer needed
@@ -190,6 +192,10 @@ Rails.application.routes.draw do
   # all
   get 'catalog/all', to: 'all_catalog#index', as: 'all_search'
   get 'all_catalog/facet/:id', to: 'all_catalog#facet'
+
+  # API routes
+  get 'api/media', to: 'media_catalog#index', as: 'api_media_search', defaults: { format: 'json' }
+  get 'api/media/:id', to: 'catalog#show', as: 'api_media_show', defaults: { format: 'json' }
 
   devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'

@@ -25,8 +25,16 @@ class SolrDocument
   use_extension(Blacklight::Document::DublinCore)
 
   # Do content negotiation for AF models.
-
   use_extension( Hydra::ContentNegotiation )
+
+  # MorphoSource semantic field mapping
+  use_extension(Blacklight::Document::Morphosource)
+
+  # API fields
+
+  def has_model
+    self[Solrizer.solr_name('has_model', :symbol)]
+  end
 
   # Add custom metadata fields to show view
   def in_works_ids

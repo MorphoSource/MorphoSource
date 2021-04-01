@@ -1,3 +1,5 @@
+require 'csv'
+
 # facets moved to work-specific catalog controllers
 # all_catalog displays all works, but is only available to admins
 
@@ -36,6 +38,8 @@ class CatalogController < ApplicationController
     config.view.gallery.partials = [:index_header, :index]
     #config.view.slideshow.partials = [:index]
 
+    config.max_per_page = 1000000
+
     ## Default parameters to send to solr for all search-like requests. See also SolrHelper#solr_search_params
     config.default_solr_params = {
       qt: "search",
@@ -47,6 +51,9 @@ class CatalogController < ApplicationController
     config.index.title_field = solr_name("title", :stored_searchable)
     config.index.display_type_field = solr_name("has_model", :symbol)
     config.index.thumbnail_field = 'thumbnail_path_ss'
+
+    # turn on csv response
+    config.index.respond_to.csv = true
 
     # solr fields that will be treated as facets by the blacklight application
     # The ordering of the field names is the order of the display
@@ -105,84 +112,9 @@ class CatalogController < ApplicationController
     config.add_show_field solr_name("resource_type", :stored_searchable), label: "Resource Type"
     config.add_show_field solr_name("format", :stored_searchable)
     config.add_show_field solr_name("identifier", :stored_searchable)
-
-    # Media Custom Fields
-
-    config.add_show_field solr_name('agreement_uri', :stored_searchable)
-    config.add_show_field solr_name('cite_as', :stored_searchable)
-    config.add_show_field solr_name('funding', :stored_searchable)
-    config.add_show_field solr_name('map_type', :stored_searchable)
-    config.add_show_field solr_name('media_type', :stored_searchable)
-    config.add_show_field solr_name('orientation', :stored_searchable)
-    config.add_show_field solr_name('part', :stored_searchable)
-    config.add_show_field solr_name('rights_holder', :stored_searchable)
-    config.add_show_field solr_name('scale_bar', :stored_searchable)
-    config.add_show_field solr_name('series_type', :stored_searchable)
-    config.add_show_field solr_name('short_description', :stored_searchable)
-    config.add_show_field solr_name('side', :stored_searchable)
-    config.add_show_field solr_name('slice_thickness', :stored_searchable)
-    config.add_show_field solr_name('unit', :stored_searchable)
-    config.add_show_field solr_name('x_spacing', :stored_searchable)
-    config.add_show_field solr_name('y_spacing', :stored_searchable)
-    config.add_show_field solr_name('z_spacing', :stored_searchable)
-
-    # Physical Object Fields
-
-    config.add_show_field solr_name('physical_object_type', :stored_searchable)
-    config.add_show_field solr_name('bibliographic_citation', :stored_searchable)
-    config.add_show_field solr_name('catalog_number', :stored_searchable)
-    config.add_show_field solr_name('collection_code', :stored_searchable)
-    config.add_show_field solr_name('institution_code', :stored_searchable)
-    config.add_show_field solr_name('current_location', :stored_searchable)
-    config.add_show_field solr_name('numeric_time', :stored_searchable)
-    config.add_show_field solr_name('original_location', :stored_searchable)
-    config.add_show_field solr_name('periodic_time', :stored_searchable)
-    config.add_show_field solr_name('vouchered', :stored_searchable)
-
-    # Biological Specimens
-    config.add_show_field solr_name('idigbio_recordset_id', :stored_searchable)
-    config.add_show_field solr_name('idigbio_uuid', :stored_searchable)
-    config.add_show_field solr_name('is_type_specimen', :stored_searchable)
-    config.add_show_field solr_name('occurrence_id', :stored_searchable)
-    config.add_show_field solr_name('sex', :stored_searchable)
-    config.add_show_field solr_name('taxonomy', :stored_searchable)
-
-    # CHOs
-    config.add_show_field solr_name('cho_type', :stored_searchable)
-    config.add_show_field solr_name('material', :stored_searchable)
-    config.add_show_field solr_name('short_title', :stored_searchable)
-
+    
     # Processing Events
     config.add_show_field solr_name('processing_activity', :stored_searchable)
-
-    # Organizations (PO institution and collection code fields above also used for organizations)
-    config.add_show_field solr_name('institution_name', :stored_searchable)
-
-    # "fielded" search configuration. Used by pulldown among other places.
-    # For supported keys in hash, see rdoc for Blacklight::SearchFields
-    #
-    # Search fields will inherit the :qt solr request handler from
-    # config[:default_solr_parameters], OR can specify a different one
-    # with a :qt key/value. Below examples inherit, except for subject
-    # that specifies the same :qt as default for our own internal
-    # testing purposes.
-    #
-    # The :key is what will be used to identify this BL search field internally,
-    # as well as in URLs -- so changing it after deployment may break bookmarked
-    # urls.  A display label will be automatically calculated from the :key,
-    # or can be specified manually to be different.
-    #
-    # This one uses all the defaults set by the solr request handler. Which
-    # solr request handler? The one set in config[:default_solr_parameters][:qt],
-    # since we aren't specifying it otherwise.
-    config.add_search_field('all_fields', label: 'All Fields') do |field|
-      all_names = config.show_fields.values.map(&:field).join(" ")
-      title_name = solr_name("title", :stored_searchable)
-      field.solr_parameters = {
-        qf: "#{all_names} file_format_tesim all_text_timv",
-        pf: title_name.to_s
-      }
-    end
 
     # Now we see how to over-ride Solr request handler defaults, in this
     # case for a BL "search field", which is really a dismax aggregate
@@ -338,6 +270,43 @@ class CatalogController < ApplicationController
     # If there are more than this many search results, no spelling ("did you
     # mean") suggestion is offered.
     config.spell_max = 5
+  end
+
+  # get search results from the solr index
+  def index
+    (@response, @document_list) = search_results(params)
+    @document_type = document_type
+    respond_to do |format|
+      format.html { store_preferred_view }
+      format.rss  { render :layout => false }
+      format.atom { render :layout => false }
+      format.csv  do
+        @new_document_list = @document_list.map { |d| d.to_semantic_values }
+      end
+      format.json do
+        @presenter = Blacklight::JsonPresenter.new(@response,
+                                                   @document_list.map { |d| d.to_semantic_values },
+                                                   facets_from_request,
+                                                   blacklight_config)
+      end
+      additional_response_formats(format)
+      document_export_formats(format)
+    end
+  end
+
+  # get a single document from the index
+  # to add responses for formats other than html or json see _Blacklight::Document::Export_
+  def show
+    @response, @document = fetch params[:id]
+    respond_to do |format|
+      format.html { setup_next_and_previous_documents }
+      format.json { render json: { response: { @document.has_model.first.underscore => @document.to_semantic_values } } }
+      additional_export_formats(@document, format)
+    end
+  end
+
+  def document_type
+    'doc'
   end
 
   # disable the bookmark control from displaying in gallery view

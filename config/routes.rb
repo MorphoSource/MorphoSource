@@ -389,4 +389,7 @@ Rails.application.routes.draw do
   post 'users/:id/make_contributor' => 'contributors#make_contributor', as: 'make_contributor'
   post 'users/:id/remove_contributor' => 'contributors#remove_contributor', as: 'remove_contributor'
 
+  # Routes for editing/updating password from profile page
+  get 'dashboard/profiles/:id/edit_password' => 'morphosource/dashboard/profiles#edit_password', as: 'profile_edit_password'
+  patch 'dashboard/profiles/:id/update_password' => 'morphosource/dashboard/profiles#update_password', as: 'profile_update_password'
 end

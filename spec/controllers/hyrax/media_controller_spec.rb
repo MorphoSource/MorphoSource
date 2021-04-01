@@ -392,6 +392,9 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     let(:file_set_2)   { FileSet.new(visibility: "open") }
     let(:file_set_3)   { FileSet.new(visibility: "open") }
 
+    let(:fund_code1) { FundCode.new(title: 'Test Fund Code 1', user: depositor)}
+    let(:fund_code2) { FundCode.new(title: 'Test Fund Code 2', user: depositor)}
+
     before do
       sign_in depositor
       allow(Hyrax::CurationConcern).to receive(:actor).and_return(actor)
@@ -405,6 +408,9 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       curation_concern.ordered_members << file_set_1 << file_set_2 << file_set_3
 
       allow(subject).to receive(:attributes_for_actor).and_return( { "media_type" => ["Image"]} )
+
+      fund_code1.save!
+      fund_code2.save!
     end
 
     # Meets one of the conditions to update file visibility
@@ -516,6 +522,37 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
         it 'displays a flash message' do
           expect(response.flash[:notice]).to eq("Work \"#{curation_concern}\" successfully updated.")
+        end
+      end
+    end
+
+    context 'fund code setting and creation' do 
+      context 'media has no current fund code' do
+        before do 
+          allow(subject.current_user).to receive(:admin?).and_return(true)
+        end
+
+        it 'admin user can successfully add new fund code' do
+          patch :update, params: { id: curation_concern, media: {select_new_fund_code: fund_code1.id}, action: "update" }
+          expect(curation_concern.fund_codes).to include(fund_code1)
+        end
+      end
+
+      context 'media has already been associated to fund codes' do
+        before do 
+          allow(subject.current_user).to receive(:admin?).and_return(true)
+          patch :update, params: { id: curation_concern, media: {select_new_fund_code: fund_code1.id}, action: "update" }
+          patch :update, params: { id: curation_concern, media: {select_new_fund_code: fund_code2.id}, action: "update" }
+        end
+
+        it 'second fund code associated is active' do
+          expect(curation_concern.active_fund_code_association.fund_code_id).to eq(fund_code2.id)
+        end
+
+        it 'admin user can activate another fund code' do
+          inactive_fund_code = curation_concern.fund_code_associations.where(active: false).first
+          patch :update, params: { id: curation_concern, media: {select_fund_code: inactive_fund_code.id}, action: "update" }
+          expect(curation_concern.active_fund_code_association.fund_code_id).to eq(fund_code1.id)
         end
       end
     end

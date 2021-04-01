@@ -11,7 +11,7 @@ $( document ).ready(function() {
       }
 
       constructSubmissionParams(sessionState) {
-        var submissionParamsArray = ['saved_step', 'submission_media_type',
+        var submissionParamsArray = ['saved_step', 'fund_code', 'submission_media_type',
           'submission_modality', 'raw_or_derived_media', 'parent_media_list',
           'parent_media_not_in_ms', 'biological_specimen_or_cultural_heritage_object',
           'biological_specimen_id', 'idigbio_id', 'will_create_biological_specimen',
@@ -300,6 +300,7 @@ $( document ).ready(function() {
           event.preventDefault();
           console.log('View 1 Continue Button');
 
+          data.fundCode = $( "select#submission_fund_code").val();
           data.submissionMediaType = $( "select#submission_submission_media_type").val();
           data.submissionModality = $( "select#submission_submission_modality").val();
           data.savedStep = 1;

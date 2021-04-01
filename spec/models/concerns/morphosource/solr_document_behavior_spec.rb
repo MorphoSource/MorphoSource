@@ -11,6 +11,10 @@ RSpec.describe 'Morphosource::SolrDocumentBehavior', type: :model do
       it 'returns a link to the idigbio id' do
         expect(document.object_record_source).to eq("<a href=\"https://www.idigbio.org/portal/records/idigbioid\">iDigBio</a>")
       end
+
+      it 'returns the raw idigbio url' do
+        expect(document.idigbio_url).to eq("https://www.idigbio.org/portal/records/idigbioid")
+      end
     end
     context 'record does not have an idigbio id' do
       let(:attributes)  { { } }

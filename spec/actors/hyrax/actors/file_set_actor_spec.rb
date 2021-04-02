@@ -3,7 +3,7 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::Actors::FileSetActor do
   include ActionDispatch::TestProcess
-  let(:user)          { User.new(id: 1) }
+  let(:user)          { User.create(id: 1, email: 'email@email.com', password: 'password') }
   let(:work)          { Media.new(title: ["Test Media Work"]) }
 
   describe "#attach_to_work" do

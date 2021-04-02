@@ -7,7 +7,7 @@ RSpec.describe Hyrax::Actors::TaxonomyActor do
   let(:next_actor) { double(create: true, update: true) }
   subject { described_class.new(next_actor) }
   let(:work) { Taxonomy.new }
-  let(:ability) { Ability.new(User.new(id: 5)) }
+  let(:ability) { Ability.new(User.create(id: 5, email: 'email@email.com', password: 'password')) }
   let(:rank_attrs) { { "taxonomy_domain" => ["Domain"],
                   "taxonomy_kingdom" => ["Kingdom"],
                   "taxonomy_phylum" => ["Phylum"],

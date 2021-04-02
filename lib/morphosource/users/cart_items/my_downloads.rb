@@ -5,8 +5,8 @@ module Morphosource
 
         def downloaded_items(param_page=1, param_rows=10)
           @downloads ||= cart_items.where(
-            date_downloaded: 100.year.ago..DateTime.current
-          ).order('date_downloaded DESC').page(param_page).per(param_rows)
+            "date_downloaded IS NOT NULL"
+            ).order('date_downloaded DESC').page(param_page).per(param_rows)
         end
 
 #        def downloaded_items

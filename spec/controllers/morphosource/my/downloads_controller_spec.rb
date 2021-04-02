@@ -16,9 +16,10 @@ RSpec.describe Morphosource::My::DownloadsController, :type => :controller  do
     include_examples '#index'
     include_examples '#get_items instance variables', 'downloads'
 
-    it 'does not retrieve documents for undownloaded works' do
-      expect(subject.instance_variable_get(:@solr_docs)).not_to include(doc3,doc5,doc6)
-    end
+    #todo: remove this later if @solr_docs is no longer needed
+    #it 'does not retrieve documents for undownloaded works' do
+    #  expect(subject.instance_variable_get(:@solr_docs)).not_to include(doc3,doc5,doc6)
+    #end
 
     it 'does not retrieve items for undownloaded works' do
       expect(subject.instance_variable_get(:@items)).not_to include(cartItem3,cartItem5,cartItem6)

@@ -50,16 +50,8 @@ module Morphosource
 #        end
 
         def previously_requested_items
-          @previous_requests ||= CartItem.where(
-            work_id: reviewed_media_ids,
-            date_downloaded: nil, 
-            date_requested: 100.year.ago..DateTime.current,
-            date_approved: 100.year.ago..DateTime.current,
-            date_denied: nil, 
-            date_canceled: nil, 
-            date_expired: DateTime.current.to_date..100.years.from_now.to_date, 
-            date_cleared: nil
-          ).order('user_id DESC').order('use desc')
+          @previous_requests ||= 
+            CartItem.where(work_id: reviewed_media_ids).where("date_approved IS NOT NULL OR date_cleared IS NOT NULL OR date_canceled IS NOT NULL OR date_denied IS NOT NULL OR date_expired < now()").order('user_id DESC').order('use desc')
         end
 
 #        def previously_requested_items_NOT_USED

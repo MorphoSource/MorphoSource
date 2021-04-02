@@ -53,16 +53,16 @@ module Morphosource
           cart_items = @unrestricted_items
         when 'my_requests'
           cart_items = my_requests(page_from_params, rows_from_params)
-          @item_count = cart_items.total_count
+          @item_count = count_text(cart_items.total_count)
         when 'new'
           cart_items = newly_requested_items
-          @item_count = cart_items.count
+          @item_count = count_text(cart_items.count)
         when 'previous'
           cart_items = previously_requested_items
-          @item_count = cart_items.count
+          @item_count = count_text(cart_items.count)
         when 'downloads'
           cart_items = downloaded_items(page_from_params, rows_from_params)
-          @item_count = cart_items.total_count
+          @item_count = count_text(cart_items.total_count)
         end
         return cart_items 
 #byebug

@@ -87,5 +87,15 @@ RSpec.describe CollectionsCatalogController, :type => :controller do
         end
       end
     end
+
+    describe 'search fields' do
+      let(:search_fields) { config.search_fields }
+      describe 'all_fields' do
+        subject { search_fields['all_fields'] }
+        it 'includes id' do
+          expect(subject.solr_parameters[:qf]).to include('id')
+        end
+      end
+    end
   end
 end

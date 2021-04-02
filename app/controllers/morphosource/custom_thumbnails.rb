@@ -27,8 +27,8 @@ module Morphosource
       media.save
     end
 
-    def thumbnail
-      @thumbnail ||= params[:custom_thumbnail]
+    def custom_thumbnail
+      @custom_thumbnail ||= params[:custom_thumbnail]
     end
 
     # media == new_media if new submission
@@ -47,7 +47,7 @@ module Morphosource
     end
 
     def thumbnail_format_valid?
-      Morphosource::MEDIA_FORMATS['Image'][:extensions].include? File.extname(thumbnail.original_filename).downcase
+      Morphosource::MEDIA_FORMATS['Image'][:extensions].include? File.extname(custom_thumbnail.original_filename).downcase
     end
 
     def make_derivative_directory
@@ -57,15 +57,15 @@ module Morphosource
     def create_derivative
       begin
         ::Morphosource::Derivatives::CroppedImageDerivatives.create(
-          thumbnail.path,
+          custom_thumbnail.path,
           outputs: [{
             label: :thumbnail,
             url: thumbnail_url,
           }]
         )
       ensure
-        thumbnail.tempfile.close
-        thumbnail.tempfile.unlink
+        custom_thumbnail.tempfile.close
+        custom_thumbnail.tempfile.unlink
       end
     end
 

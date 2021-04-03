@@ -4,11 +4,6 @@ module Morphosource
     module CartItems
       module MyRequests
 
-        # all a user's current and past requests (items where user is requestor)
-#        def my_requests_NOT_USED
-#          @my_requests ||= cart_items.select{ |item| item.date_requested? || item.date_cleared? }
-#        end
-
         def my_requests(param_page=1, param_rows=10)
           @my_requests ||= cart_items.where(
             "date_requested IS NOT NULL OR date_cleared IS NOT NULL"
@@ -16,7 +11,7 @@ module Morphosource
         end
 
         def my_active_requests
-          # this method is called in the Media page
+          # this method is called in the Media page.  Might need to be optimized 
           @my_active_requests ||= my_requests.select{ |item| ["Approved","Requested","Cleared"].include? item.request_status }
         end
 
@@ -32,14 +27,6 @@ module Morphosource
         def my_approved_requests_work_ids
           my_approved_requests.map(&:work_id)
         end
-
-#        def my_requests_ids
-#          my_requests.map(&:id)
-#        end
-#
-#        def my_requests_work_ids
-#          my_requests.map(&:work_id)
-#        end
 
         def my_active_requests_work_ids
           my_active_requests.map(&:work_id)

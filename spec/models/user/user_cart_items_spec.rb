@@ -158,9 +158,6 @@ RSpec.describe User, type: :model do
     # not requested
     let!(:cart_item7) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work4.id ) }
 
-#    describe '#requests' do
-#      it { expect(user.requests).to match_array([cart_item1,cart_item2,cart_item3,cart_item4,cart_item5,cart_item6]) }
-#    end
     describe '#previously_requested_items' do
       it { expect(user.previously_requested_items).to match_array([cart_item2,cart_item3,cart_item4,cart_item5,cart_item6])}
     end

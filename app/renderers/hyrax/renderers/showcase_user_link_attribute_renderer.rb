@@ -5,7 +5,7 @@ module Hyrax
       def user_link(user)
         markup = ''
         ms_id = user.ms_id
-        display_text = user.name
+        display_text = user.name_or_email
         url = "/users/" + ms_id
         link = link_to(display_text, "#{url}")
         link.html_safe

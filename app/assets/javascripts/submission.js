@@ -201,6 +201,13 @@ $( document ).ready(function() {
           self.triggerChangeVal("select[name='taxonomy[on_behalf_of]']", $(this).val());
           self.triggerChangeVal("select[name='imaging_event[on_behalf_of]']", $(this).val());
           self.triggerChangeVal("select[name='processing_event[on_behalf_of]']", $(this).val());
+          // set the reviewer
+          var reviewer = {
+            "id": $(this).val(),
+            "user_key": $(this).val(),
+            "text": $("select[name='submission[on_behalf_of]'] option:selected").text()
+          }
+          $('#media_download_reviewer').userSearchMultiple(reviewer);
         });
 
         // Media type select

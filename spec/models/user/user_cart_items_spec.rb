@@ -109,14 +109,6 @@ RSpec.describe User, type: :model do
     describe '#my_requests' do
       it { expect(user.my_requests).to match_array([cart_item1, cart_item2, cart_item3]) }
     end
-
-    describe '#my_requests_ids' do
-      it { expect(user.my_requests_ids).to match_array([cart_item1.id, cart_item2.id, cart_item3.id])}
-    end
-
-    describe '#my_requests_work_ids' do
-      it { expect(user.my_requests_work_ids).to match_array([cart_item1.work_id, cart_item2.work_id, cart_item3.work_id])}
-    end
   end
 
   describe "a user's active requests" do
@@ -140,9 +132,6 @@ RSpec.describe User, type: :model do
     describe '#my_active_requests' do
       it { expect(user.my_active_requests).to match_array([cart_item1, cart_item2, cart_item3]) }
     end
-    describe '#my_active_requests_work_ids' do
-      it { expect(user.my_active_requests_work_ids).to match_array([cart_item1.work_id, cart_item2.work_id, cart_item3.work_id]) }
-    end
   end
 
   describe 'items requested from the user' do
@@ -154,6 +143,7 @@ RSpec.describe User, type: :model do
     # requested items
     # requested
     let!(:cart_item1) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday) }
+
     # approved
     let!(:cart_item2) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work2.id, date_requested: Date.yesterday, date_approved: Date.yesterday) }
     # cleared
@@ -164,26 +154,12 @@ RSpec.describe User, type: :model do
     let!(:cart_item5) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday) }
     # canceled
     let!(:cart_item6) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_canceled: Date.today) }
+
     # not requested
     let!(:cart_item7) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work4.id ) }
 
-    describe '#requests' do
-      it { expect(user.requests).to match_array([cart_item1,cart_item2,cart_item3,cart_item4,cart_item5,cart_item6]) }
-    end
-    describe '#requested_item_ids' do
-      it { expect(user.requested_item_ids).to match_array([cart_item1.id,cart_item2.id,cart_item3.id,cart_item4.id,cart_item5.id,cart_item6.id])}
-    end
-    describe '#requested_items_work_ids' do
-      it { expect(user.requested_items_work_ids).to match_array([cart_item1.work_id,cart_item2.work_id,cart_item3.work_id,cart_item4.work_id,cart_item5.work_id,cart_item6.work_id])}
-    end
-    describe '#newly_requested_items_user_ids' do
-      it { expect(user.newly_requested_items_user_ids.uniq).to match_array([some_user.ms_id]) }
-    end
     describe '#previously_requested_items' do
       it { expect(user.previously_requested_items).to match_array([cart_item2,cart_item3,cart_item4,cart_item5,cart_item6])}
-    end
-    describe '#previously_requested_items_user_ids' do
-      it { expect(user.previously_requested_items_user_ids.uniq).to match_array([some_user.ms_id]) }
     end
   end
 
@@ -196,11 +172,6 @@ RSpec.describe User, type: :model do
     describe '#downloaded_items' do
       it "returns items the user has downloaded" do
         expect(user.downloaded_items).to match_array([cart_item2])
-      end
-    end
-    describe '#downloaded_work_ids' do
-      it "returns the work ids for items the user has downloaded" do
-        expect(user.downloaded_work_ids).to match_array([cart_item2.work_id])
       end
     end
   end

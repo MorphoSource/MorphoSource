@@ -39,7 +39,7 @@ po_type, po_title, taxonomy = object_details(document)
   <td><%= date(item,'cleared') %></td>
   <td><%= date(item,'downloaded') %></td>
   <% if item.editable? %>
-    <td><button class='btn btn-primary' data-toggle="modal" data-target="#pageModal" data-item-id= <%= item.id %>>Edit Expiration</button></td>
+    <td><button class='btn btn-primary' data-toggle="modal" data-target="#pageModal" data-item-id= <%= item.id %>>Edit Exp.</button></td>
   <% else %>
     <td></td>
   <% end %>

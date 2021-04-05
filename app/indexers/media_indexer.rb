@@ -32,6 +32,7 @@ class MediaIndexer < Morphosource::WorkIndexer
       physical_objects = object.physical_objects
       if physical_objects.present?
         physical_object_id = physical_objects.map(&:id)
+        physical_object_title = physical_objects.map { |po| po.title&.first }.compact
         physical_object_type = physical_objects.first.specimen? ? "Biological Specimen" : "Cultural Heritage Object"
         types = physical_objects.map(&:class).uniq
         if types == [CulturalHeritageObject]
@@ -62,6 +63,7 @@ class MediaIndexer < Morphosource::WorkIndexer
         end
       else
         physical_object_type = nil
+        physical_object_title = nil
         physical_object_id = nil
         taxonomy_titles = nil
         organization_titles = nil
@@ -71,9 +73,11 @@ class MediaIndexer < Morphosource::WorkIndexer
       # add physical object facet
       solr_doc['media_physical_object_type_tesim'] = physical_object_type
       solr_doc['media_physical_object_type_sim'] = physical_object_type
-      # physical_object_ids
+      # physical_object_ids and titles
       solr_doc['physical_object_id_ssim'] = physical_object_id
       solr_doc['physical_object_id_tesim'] = physical_object_id
+      solr_doc['physical_object_title_ssim'] = physical_object_title
+      solr_doc['physical_object_title_tesim'] = physical_object_title
 
       # add taxonomies
       solr_doc['taxonomy_tesim'] = taxonomy_titles

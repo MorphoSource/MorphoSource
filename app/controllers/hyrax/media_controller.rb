@@ -237,6 +237,14 @@ module Hyrax
       redirect_to(main_app.media_showcase_path(id: params[:id])) and return
     end
 
+    # media thumbnail route to get to 2D preview image
+    def thumbnail
+      redirect_to(main_app.download_path(
+        id: curation_concern.thumbnail.present? ? curation_concern.thumbnail.id : curation_concern.id, 
+        file: 'thumbnail'
+      )) and return
+    end
+
     private
 
       # Checks that uploaded files are the correct format for selected media type.

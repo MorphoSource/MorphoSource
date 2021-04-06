@@ -1,5 +1,5 @@
 module Qa::Authorities
-  class FindParentMediaToAdd < Qa::Authorities::FindWorks
+  class FindParentMediaToAdd < Qa::Authorities::FindMedia
 
     include MorphosourceHelper
     include Morphosource::PresenterMethods
@@ -13,13 +13,16 @@ module Qa::Authorities
       # exclude the media itself and child media
       current_media_id = controller.request.parameters['current_media_id']
       current_media = Media.where('id' => current_media_id).first
-      exclude_list = [current_media_id] + child_media_ids(current_media, 5, []).flatten.uniq
+      exclude_list = [current_media_id] + current_media.child_media_ids
+byebug
+
       docs = response.documents
       docs.map do |doc|
         unless exclude_list.include?(doc.id) 
           id = doc.id
           title = doc.title
-          { id: id, label: title, value: id }
+          object_title = Media.find(doc.id).physical_objects&.first&.title
+          { id: id, label: title, value: id, object_title: object_title }
         end
       end.compact
     end

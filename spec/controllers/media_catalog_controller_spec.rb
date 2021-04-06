@@ -154,5 +154,29 @@ RSpec.describe MediaCatalogController, :type => :controller do
         end
       end
     end
+
+    describe 'show fields' do
+      let(:show_fields) { config.show_fields }
+      describe 'media' do
+        describe 'media_modality' do
+          subject { show_fields["media_modality_tesim"] }
+          it 'has the correct attributes' do
+            expect(subject.key).to eq("media_modality_tesim")
+            expect(subject.field).to eq("media_modality_tesim")
+            expect(subject.label).to eq("Media Modality Tesim")
+          end
+        end
+      end
+    end
+
+    describe 'search fields' do
+      let(:search_fields) { config.search_fields }
+      describe 'all_fields' do
+        subject { search_fields['all_fields'] }
+        it 'includes media modality' do
+          expect(subject.solr_parameters[:qf]).to include('media_modality_tesim')
+        end
+      end
+    end
   end
 end

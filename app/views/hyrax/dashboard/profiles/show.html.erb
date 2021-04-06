@@ -1,0 +1,31 @@
+<% provide :page_header do %>
+  <h1><span class="fa fa-id-card" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.profile") %></h1>
+  <% if can? :edit, current_user %>
+    <div class="pull-right">
+      <%= link_to hyrax.edit_dashboard_profile_path(@user), class: "btn btn-primary" do %>
+        <%= t("hyrax.edit_profile") %>
+      <% end %>
+      <%= link_to main_app.profile_edit_password_path(@user), class: "btn btn-primary" do %>
+        <%= t("hyrax.update_password") %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="list-group col-md-5 col-sm-8">
+      <%= render "hyrax/users/vitals", user: @user %>
+
+      <div class="list-group-item">
+        <%= render 'hyrax/users/user_info', user: @user %>
+      </div>
+
+      <% if @presenter.trophies.any? %>
+        <div class="list-group-item">
+          <%= render 'hyrax/users/contributions', presenter: @presenter %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

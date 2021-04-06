@@ -8,7 +8,7 @@ module Morphosource
       
       def index
         get_items('cart')
-        get_restricted_items
+        #get_restricted_items
         render 'morphosource/my/cart/index'
       end
 

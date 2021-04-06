@@ -16,7 +16,7 @@ module Hyrax
     # override Hydra::AccessControlsEnforcement to include 'download' access in @discovery_permissions
     self.search_builder_class = Morphosource::WorkSearchBuilder
 
-    skip_authorize_resource only: :showcase
+    skip_authorize_resource only: [:showcase, :thumbnail]
 
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
@@ -235,6 +235,18 @@ module Hyrax
     # disable manifest method since we are using a separate controller now
     def manifest
       redirect_to(main_app.media_showcase_path(id: params[:id])) and return
+    end
+
+    # media thumbnail route to get to 2D preview image
+    def thumbnail
+      if current_user.can?(:read, curation_concern)
+        redirect_to(main_app.download_path(
+          id: curation_concern.thumbnail.present? ? curation_concern.thumbnail.id : curation_concern.id, 
+          file: 'thumbnail'
+        )) and return
+      else
+        redirect_to(main_app.media_showcase_path(id: curation_concern.id)) and return
+      end
     end
 
     private

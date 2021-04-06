@@ -133,5 +133,29 @@ RSpec.describe OrganizationsCatalogController, :type => :controller do
         end
       end
     end
+
+    describe 'show fields' do
+      let(:show_fields) { config.show_fields }
+      describe 'organizations' do
+        describe 'institution name' do
+          subject { show_fields["institution_name_tesim"] }
+          it 'has the correct attributes' do
+            expect(subject.key).to eq("institution_name_tesim")
+            expect(subject.field).to eq("institution_name_tesim")
+            expect(subject.label).to eq("Institution Name Tesim")
+          end
+        end
+      end
+    end
+
+    describe 'search fields' do
+      let(:search_fields) { config.search_fields }
+      describe 'all_fields' do
+        subject { search_fields['all_fields'] }
+        it 'includes institution_name' do
+          expect(subject.solr_parameters[:qf]).to include('institution_name_tesim')
+        end
+      end
+    end
   end
 end

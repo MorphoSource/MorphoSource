@@ -33,7 +33,7 @@
       </thead>
       <tbody>
         <% use_requests(items,use).each_with_index do |item, counter| %>
-          <% document = @solr_docs.select{|doc| doc.id == item.work_id}[0] %>
+          <% document = SolrDocument.find(item.work_id) %>
           <%= render 'morphosource/my/request_manager/previous/list_works' , document: document, counter: counter, item: item, presenter: Hyrax::WorkShowPresenter.new(document, current_ability)%>
         <% end %>
       </tbody>

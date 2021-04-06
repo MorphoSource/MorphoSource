@@ -126,5 +126,29 @@ RSpec.describe ObjectsCatalogController, type: :controller do
         end
       end
     end
+
+    describe 'show fields' do
+      let(:show_fields) { config.show_fields }
+      describe 'objects' do
+        describe 'taxonomy' do
+          subject { show_fields["taxonomy_tesim"] }
+          it 'has the correct attributes' do
+            expect(subject.key).to eq("taxonomy_tesim")
+            expect(subject.field).to eq("taxonomy_tesim")
+            expect(subject.label).to eq("Taxonomy Tesim")
+          end
+        end
+      end
+    end
+
+    describe 'search fields' do
+      let(:search_fields) { config.search_fields }
+      describe 'all_fields' do
+        subject { search_fields['all_fields'] }
+        it 'includes taxonomy' do
+          expect(subject.solr_parameters[:qf]).to include('taxonomy_tesim')
+        end
+      end
+    end
   end
 end

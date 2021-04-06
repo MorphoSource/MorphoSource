@@ -40,6 +40,7 @@ class Hyrax::DownloadsController
       return default_file unless file_reference
       if file_reference == 'thumbnail'
         file_path = Morphosource::DerivativePath.derivative_path_for_reference(params[asset_param_key], file_reference)
+        return Rails.root.join("app", "assets", "images", "work.png").to_s if !File.exist?(file_path)
       else
         file_set = file_set_from_access_control_id(params[asset_param_key])
         return default_file unless file_set && file_set.id

@@ -23,7 +23,7 @@
       </thead>
       <tbody>
         <% use_requests(items,use).each do |item| %>
-          <% doc = find_document(@solr_docs, item) %>
+          <% doc = SolrDocument.find(item.work_id) %>
           <%= render 'morphosource/my/request_manager/new/list_works', item: item, document: doc %>
         <% end %>
       </tbody>

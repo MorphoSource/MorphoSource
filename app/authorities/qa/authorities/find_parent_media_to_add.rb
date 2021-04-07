@@ -14,8 +14,6 @@ module Qa::Authorities
       current_media_id = controller.request.parameters['current_media_id']
       current_media = Media.where('id' => current_media_id).first
       exclude_list = [current_media_id] + current_media.child_media_ids
-byebug
-
       docs = response.documents
       docs.map do |doc|
         unless exclude_list.include?(doc.id) 

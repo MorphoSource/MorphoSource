@@ -47,7 +47,13 @@ class CartItem < ApplicationRecord
   end
 
   def work
-    @work ||= Media.find(work_id)
+    @work ||= begin
+      begin
+        return Media.find(work_id)
+      rescue
+        return nil
+      end
+    end
   end
 
   def user
@@ -64,6 +70,7 @@ class CartItem < ApplicationRecord
   end
 
   def downloadable?
+    return false unless work.present?
     case
       when work.open? then true
       when user.ms_id == work.download_reviewer.first then true

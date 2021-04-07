@@ -13,7 +13,9 @@
   <tbody>
     <% @paginated_unrestricted_items.each_with_index do |item, counter| %>
       <% document = solr_doc_find(item.work_id) %>
-      <%= render 'morphosource/my/cart/list_works', document: document, counter: counter, item: item, presenter: Hyrax::MediaPresenter.new(document, current_ability) %>
+      <% if document.present? %>
+        <%= render 'morphosource/my/cart/list_works', document: document, counter: counter, item: item, presenter: Hyrax::MediaPresenter.new(document, current_ability) %>
+      <% end %>
     <% end %>
   </tbody>
 </table>

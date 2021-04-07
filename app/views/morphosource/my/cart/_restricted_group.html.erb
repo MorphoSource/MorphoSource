@@ -13,7 +13,9 @@
   <tbody>
     <% @paginated_restricted_items.each_with_index do |item, counter| %>
       <% document = solr_doc_find(item.work_id) %>
-      <%= render 'morphosource/my/cart/list_restricted_items', document: document, counter: counter, item: item %>
+      <% if document.present? %>
+        <%= render 'morphosource/my/cart/list_restricted_items', document: document, counter: counter, item: item %>
+      <% end %>
     <% end %>
   </tbody>
 </table>

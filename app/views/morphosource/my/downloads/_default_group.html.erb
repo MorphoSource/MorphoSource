@@ -10,12 +10,9 @@
   </thead>
   <tbody>
     <% @items.each_with_index do |item, counter| %>
-      <% begin %>
-        <% document = SolrDocument.find(item.work_id) %>
-        <% if document.present? %>
-          <%= render 'morphosource/my/downloads/list_works', document: document, counter: counter, item: item, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
-        <% end %>
-      <% rescue %>
+      <% document = solr_doc_find(item.work_id) %>
+      <% if document.present? %>
+        <%= render 'morphosource/my/downloads/list_works', document: document, counter: counter, item: item, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
       <% end %>
     <% end %>
   </tbody>

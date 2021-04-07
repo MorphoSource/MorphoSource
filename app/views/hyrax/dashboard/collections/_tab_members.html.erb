@@ -35,27 +35,40 @@
             </div>
 
             <!-- Add group form -->
-            <div class="form-add-group-sharing-wrapper" data-id="<%= @form.id %>">
-              <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'group-participants-form'}) do |f| %>
-
+            <!-- Disable for admins - taking too long to load -->
+            <% if current_user.admin? %>
+              <div class="form-add-group-sharing-wrapper">
                 <div class="row form-inline sharing-row-form add-groups">
                   <div class="col-sm-6 col-md-3 col-lg-3">
                     <label><%= t('.add_users_from_project_or_team') %>:</label>
                   </div>
                   <div class="col-sm-6 col-md-3 col-lg-3">
-                    <%= f.hidden_field_tag('collection_roles[agent_type]', 'group') %>
-                    <%= f.select 'collection_roles[team_collection_id]', collection_options, { prompt: "Select a group..." }, class: 'form-control' %>
-                  </div>
-                  <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
-                    <label>as</label>
-                    <%= f.select 'collection_roles[access]', ms_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
-                  </div>
-                  <div class="col-sm-6 col-md-3 col-lg-3">
-                    <%= submit_tag 'Add', class: 'btn btn-info edit-collection-add-group-sharing-button', :disabled => true %>
+                    <p>Adding projects and teams disabled for admin accounts</p>
                   </div>
                 </div><!-- /.form-inline -->
-              <% end %>
-            </div>
+              </div>
+            <% else %>
+              <div class="form-add-group-sharing-wrapper" data-id="<%= @form.id %>">
+                <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'group-participants-form'}) do |f| %>
+                  <div class="row form-inline sharing-row-form add-groups">
+                    <div class="col-sm-6 col-md-3 col-lg-3">
+                      <label><%= t('.add_users_from_project_or_team') %>:</label>
+                    </div>
+                    <div class="col-sm-6 col-md-3 col-lg-3">
+                      <%= f.hidden_field_tag('collection_roles[agent_type]', 'group') %>
+                      <%= f.select 'collection_roles[team_collection_id]', collection_options, { prompt: "Select a group..." }, class: 'form-control' %>
+                    </div>
+                    <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
+                      <label>as</label>
+                      <%= f.select 'collection_roles[access]', ms_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                    </div>
+                    <div class="col-sm-6 col-md-3 col-lg-3">
+                      <%= submit_tag 'Add', class: 'btn btn-info edit-collection-add-group-sharing-button', :disabled => true %>
+                    </div>
+                  </div><!-- /.form-inline -->
+                <% end %>
+              </div>
+            <% end %>
 
           </section>
 

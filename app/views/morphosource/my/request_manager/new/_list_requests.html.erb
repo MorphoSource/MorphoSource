@@ -23,8 +23,10 @@
       </thead>
       <tbody>
         <% use_requests(items,use).each do |item| %>
-          <% doc = SolrDocument.find(item.work_id) %>
-          <%= render 'morphosource/my/request_manager/new/list_works', item: item, document: doc %>
+          <% doc = solr_doc_find(item.work_id) %>
+          <% if doc.present? %>
+              <%= render 'morphosource/my/request_manager/new/list_works', item: item, document: doc %>
+          <% end %>
         <% end %>
       </tbody>
     </table>

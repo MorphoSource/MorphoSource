@@ -221,6 +221,14 @@ class Media < Morphosource::Works::Base
     ancestors.find(&:processing_event?)
   end
 
+  def child_media
+    descendants.select { |d| d.class == Media }
+  end
+
+  def child_media_ids
+    child_media&.map{ |o| o.id }
+  end
+
   def related_media
     return [] unless imaging_event.present?
     imaging_event.descendants.select { |d| d.class == Media && d.id != self.id}

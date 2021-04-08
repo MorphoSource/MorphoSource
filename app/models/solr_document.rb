@@ -67,6 +67,10 @@ class SolrDocument
     self[Solrizer.solr_name('funding', :stored_searchable)]
   end
 
+  def proxy_depositor
+    self["proxy_depositor_ssim"]&.first
+  end
+
   def fileset_visibility
     self[Solrizer.solr_name('fileset_visibility', :stored_searchable)]
   end

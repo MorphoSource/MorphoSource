@@ -73,6 +73,11 @@ class User < ApplicationRecord
     display_name.blank? ? ms_id : display_name
   end
 
+  # display email if display name does not exist
+  def name_or_email
+    display_name.blank? ? email : display_name
+  end
+
   def registered?
     groups.include? 'registered'
   end

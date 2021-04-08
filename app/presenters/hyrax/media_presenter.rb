@@ -26,7 +26,7 @@ module Hyrax
       :sibling_media_id_list, :parent_media_count, :direct_parent_members, :this_media_member,
       :this_media_and_parents_id_list, :this_media_and_parents_members,
       :processing_events, :processing_events_data, :processing_event_count, :this_media_processing_event,
-      :processing_activity_count, :data_managed_by, :download_permission, :ark, :doi, :lens,
+      :processing_activity_count, :data_managed_by, :data_uploaded_by, :download_permission, :ark, :doi, :lens,
       :raw_or_derived, :is_absentee_parent,
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
@@ -199,6 +199,7 @@ module Hyrax
     def get_showcase_data
       # todo: need to get the user name (and a link to user) from the email address
       @data_managed_by = solr_document.depositor
+      @data_uploaded_by = solr_document.proxy_depositor
 
       @download_permission = get_download_permission(media)
 

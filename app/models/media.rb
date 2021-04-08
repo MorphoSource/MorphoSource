@@ -141,6 +141,10 @@ class Media < Morphosource::Works::Base
     publication_status == "open"
   end
 
+  def private?
+    publication_status == "private"
+  end
+
   # true if publication status is open, restricted, lease
   def can_add_to_cart?
     case publication_status

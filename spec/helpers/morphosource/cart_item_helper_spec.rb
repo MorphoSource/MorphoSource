@@ -247,10 +247,10 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
   describe '#choose_cart_button' do
     let(:restricted_media)  { Media.create(title: ['restricted media'], visibility: 'open', fileset_accessibility: ['restricted_download']) }
+    let(:private_media)     { Media.create(title: ['private media'], visibility: 'restricted', fileset_accessibility: ['private']) }
 
     before do
       allow(helper).to receive(:current_user).and_return(current_user)
-      assign(:curation_concern, restricted_media)
     end
 
     context 'user is not signed in' do
@@ -264,23 +264,101 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
     context 'the user is signed in' do
       let(:current_user)  { User.create(email: 'email@email.com', password: 'password') }
 
-      context 'media is not in the user cart' do
-        before do
-          allow(current_user).to receive(:work_ids_in_cart).and_return([])
+      before do
+        assign(:curation_concern, restricted_media)
+      end
+
+      context 'media is private' do
+        context 'user has view access only' do
+          before do
+            assign(:curation_concern, private_media)
+          end
+
+          it 'returns nothing' do
+            expect(helper.choose_cart_button).to eq(nil)
+          end
         end
 
-        it 'returns the add to cart button' do
-          expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{restricted_media.id}\">Add to Cart</a>")
+        context 'user has edit access' do
+          before do
+            private_media.edit_users += [current_user]
+            private_media.save
+            assign(:curation_concern, private_media)
+          end
+
+          context 'media is not in the media cart' do
+            before do
+              allow(current_user).to receive(:work_ids_in_cart).and_return([])
+            end
+
+            it 'returns the add to cart button' do
+              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{private_media.id}\">Add to Cart</a>")
+            end
+          end
+
+          context 'media is in the media cart' do
+            before do
+              allow(current_user).to receive(:work_ids_in_cart).and_return([private_media.id])
+            end
+
+            it 'returns the in cart button' do
+              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" href=\"/dashboard/my/cart\">Item in Cart</a>")
+            end
+          end
+        end
+
+        context 'user has download access' do
+          before do
+            private_media.download_users += [current_user]
+            private_media.save
+            assign(:curation_concern, private_media)
+          end
+
+          context 'media is not in the media cart' do
+            before do
+              allow(current_user).to receive(:work_ids_in_cart).and_return([])
+            end
+
+            it 'returns the add to cart button' do
+              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{private_media.id}\">Add to Cart</a>")
+            end
+          end
+
+          context 'media is in the media cart' do
+            before do
+              allow(current_user).to receive(:work_ids_in_cart).and_return([private_media.id])
+            end
+
+            it 'returns the in cart button' do
+              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" href=\"/dashboard/my/cart\">Item in Cart</a>")
+            end
+          end
         end
       end
 
-      context 'media is in the user cart' do
+      context 'media is restricted download or open' do
         before do
-          allow(current_user).to receive(:work_ids_in_cart).and_return([restricted_media.id])
+          assign(:curation_concern, restricted_media)
         end
 
-        it 'returns the in cart button' do
-          expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" href=\"/dashboard/my/cart\">Item in Cart</a>")
+        context 'media is not in the user cart' do
+          before do
+            allow(current_user).to receive(:work_ids_in_cart).and_return([])
+          end
+
+          it 'returns the add to cart button' do
+            expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{restricted_media.id}\">Add to Cart</a>")
+          end
+        end
+
+        context 'media is in the user cart' do
+          before do
+            allow(current_user).to receive(:work_ids_in_cart).and_return([restricted_media.id])
+          end
+
+          it 'returns the in cart button' do
+            expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" href=\"/dashboard/my/cart\">Item in Cart</a>")
+          end
         end
       end
     end

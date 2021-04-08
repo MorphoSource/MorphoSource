@@ -45,15 +45,20 @@ module Morphosource::CartItemHelper
   end
 
   # media showcase cart button options
+  # if a user is not signed in, show the disabled buttons
+  # if the media is open or restricted download, show the 'add to cart' or 'in cart' buttons
+  # if the media is private:
+    # if the user can edit or download, show the 'add to cart' or 'in cart' buttons
+    # if the user can view only, show nothig
   def choose_cart_button
-    if current_user
+    if !current_user
+      disabled_cart_button
+    elsif !media.private? || current_user.can?(:download, media)
       if media_in_cart?
         in_cart_button
       else
         add_to_cart_button
       end
-    else
-      disabled_cart_button
     end
   end
 

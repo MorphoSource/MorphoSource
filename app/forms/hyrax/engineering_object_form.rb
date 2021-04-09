@@ -17,6 +17,7 @@ module Hyrax
       :snl_assembler,
       :assembly_date,
       :preparation_notes,
+      :anonymize_origin,
     ]
 
     self.required_fields = [
@@ -32,6 +33,7 @@ module Hyrax
       :snl_assembler,
       :assembly_date,
       :preparation_notes,
+      :anonymize_origin,
     ]
 
     def self.build_permitted_params
@@ -44,6 +46,7 @@ module Hyrax
                 :snl_assembler,
                 :assembly_date,
                 :preparation_notes,
+                :anonymize_origin,
               ]
     end
   end

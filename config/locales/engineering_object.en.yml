@@ -16,3 +16,4 @@ en:
         snl_assembler: 'SNL Assembler - creator/collector'
         assembly_date: 'Assembly Date'
         preparation_notes: 'Object preparation/creation description/notes'
+        anonymize_origin: "Anonymize Origin"

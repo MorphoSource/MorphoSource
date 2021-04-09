@@ -30,6 +30,10 @@ class Media < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
+  def anonymize_origin?
+    self.anonymize_origin && self.anonymize_origin.first == 'Anonymize Origin'
+  end
+
   def self.parent_works(work)
     if work.in_works.empty?
       return []

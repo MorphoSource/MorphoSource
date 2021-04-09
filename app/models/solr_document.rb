@@ -878,6 +878,10 @@ class SolrDocument
     self[Solrizer.solr_name('gbif_key', :stored_searchable)]
   end
 
+  def anonymize_origin
+    self[Solrizer.solr_name('anonymize_origin', :stored_searchable)]
+  end
+
   # Derivative download field
   def access_control_id
     self[Solrizer.solr_name('accessControl', :symbol)]

@@ -81,6 +81,11 @@ module Morphosource
       property :preview_mode, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/previewMode") do |index|
         index.as :stored_searchable
       end
+
+      # Anonymize Origin
+      property :anonymize_origin, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/anonymizeOrigin") do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

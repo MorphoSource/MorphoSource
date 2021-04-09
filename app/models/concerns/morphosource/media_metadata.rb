@@ -110,6 +110,11 @@ module Morphosource
       property :map_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mapType") do |index|
         index.as :stored_searchable, :facetable
       end
+
+      # anonymize_origin
+      property :anonymize_origin, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/anonymizeOrigin") do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

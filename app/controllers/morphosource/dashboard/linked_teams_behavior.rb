@@ -17,6 +17,10 @@ module Morphosource
         media.each do |m|
           m.read_groups += @groups
           m.save
+          m.file_sets.each do |f|
+            f.read_groups += @groups
+            f.save
+          end
         end
       end
 
@@ -34,6 +38,10 @@ module Morphosource
         media.each do |m|
           m.read_groups -= @groups
           m.save
+          m.file_sets.each do |f|
+            f.read_groups -= @groups
+            f.save
+          end
         end
       end
 

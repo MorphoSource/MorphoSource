@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller do
   let(:org1)                  { Organization.create(title: ['new organization'], institution_code: ['ABC']) }
-  let!(:org2)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
-  let!(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+  let!(:org2)                 { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
+  let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:admin)                 { User.create(email: 'email@email.com', password: 'password') }
   let(:team)                  { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: admin.ms_id) }
   let(:params)                { { id: team.id, collection: { organization_id: org1.id } } }
@@ -29,15 +29,17 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
       let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
       let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: admin.ms_id, device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
       let(:media)            { Media.create(title: ['new media'], depositor: admin.ms_id) }
+      let(:file_set)         { FileSet.create }
       let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }
       let(:team_depositor)   { User.create(email: 'depositor@test.com', password: 'password') }
       let(:team_viewer)      { User.create(email: 'viewer@test.com', password: 'password') }
-      let(:works)             { [imagingEvent, media] }
+      let(:works)            { [imagingEvent, media, file_set] }
 
       before do
         allow(subject.current_user).to receive(:admin?).and_return(true)
         request.env['HTTP_REFERER'] = 'original_page'
         imagingEvent.ordered_members << media
+        media.ordered_members << file_set
         team.managers << team_manager
         team.depositors << team_depositor
         team.viewers << team_viewer
@@ -50,17 +52,20 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
         let(:specimen2)        { BiologicalSpecimen.create(title: ['specimen2'], vouchered: [true], depositor: admin.ms_id, organization_id: [org2.id]) }
         let(:imagingEvent2)    { ImagingEvent.create(title: ['imagingEvent2'], depositor: admin.ms_id, device_id: [device.id], physical_object_id: [specimen2.id], ie_modality: device.modality) }
         let(:media2)           { Media.create(title: ['old media'], depositor: admin.ms_id) }
-        let(:works)            { [imagingEvent, imagingEvent2, media, media2] }
+        let(:file_set2)        { FileSet.create }
+        let(:works)            { [imagingEvent, imagingEvent2, media, media2, file_set2] }
 
         before do
           imagingEvent2.ordered_members << media2
+          media2.ordered_members << file_set2
           media2.read_groups += team.user_groups.map(&:name)
+          file_set2.read_groups += team.user_groups.map(&:name)
           works.each(&:save)
           works.each(&:reload)
           post :link_organization, params: params
         end
 
-        it 'updates organization link and media permissions' do
+        it 'updates organization link, media and file set permissions' do
           # it clears the old organization
           expect(org2.reload.team_id).to eq([])
           # it links the new organization
@@ -70,11 +75,21 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
           expect(team_manager.can?(:read, media2)).to be(false)
           expect(team_depositor.can?(:read, media2)).to be(false)
           expect(team_viewer.can?(:read, media2)).to be(false)
+          # it removes the linked team's view access from the old organization's file_set
+          expect(file_set2.read_groups).not_to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+          expect(team_manager.can?(:read, file_set2)).to be(false)
+          expect(team_depositor.can?(:read, file_set2)).to be(false)
+          expect(team_viewer.can?(:read, file_set2)).to be(false)
           # it adds view access for the linked team's members to the new organization's media
           expect(media.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
           expect(team_manager.can?(:read, media)).to be(true)
           expect(team_depositor.can?(:read, media)).to be(true)
           expect(team_viewer.can?(:read, media)).to be(true)
+          # it adds view access for the linked team's members to the new organization's file_set
+          expect(file_set.reload.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+          expect(team_manager.can?(:read, file_set)).to be(true)
+          expect(team_depositor.can?(:read, file_set)).to be(true)
+          expect(team_viewer.can?(:read, file_set)).to be(true)
           # it redirects back to the collection dashboard page
           expect(response).to redirect_to('original_page')
         end
@@ -93,6 +108,11 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
             expect(team_manager.can?(:read, media)).to be(true)
             expect(team_depositor.can?(:read, media)).to be(true)
             expect(team_viewer.can?(:read, media)).to be(true)
+            # it adds view access for the linked team's members to the new organization's file_set
+            expect(file_set.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+            expect(team_manager.can?(:read, file_set)).to be(true)
+            expect(team_depositor.can?(:read, file_set)).to be(true)
+            expect(team_viewer.can?(:read, file_set)).to be(true)
             # it redirects back to the collection dashboard page
             expect(response).to redirect_to('original_page')
           end
@@ -117,11 +137,16 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
           it 'updates organization link and media permissions' do
             # it adds the new organization
             expect(org1.reload.team_id).to eq([project.id])
-            # it adds view access for the linked team's members to the new organization's media"
+            # it adds view access for the linked team's members to the new organization's media
             expect(media.read_groups).to include(project.managers_group.name, project.depositors_group.name, project.viewers_group.name)
             expect(team_manager.can?(:read, media)).to be(true)
             expect(team_depositor.can?(:read, media)).to be(true)
             expect(team_viewer.can?(:read, media)).to be(true)
+            # it adds view access for the linked team's members to the new organization's file set
+            expect(file_set.read_groups).to include(project.managers_group.name, project.depositors_group.name, project.viewers_group.name)
+            expect(team_manager.can?(:read, file_set)).to be(true)
+            expect(team_depositor.can?(:read, file_set)).to be(true)
+            expect(team_viewer.can?(:read, file_set)).to be(true)
             # it redirects back to the collection dashboard page
             expect(response).to redirect_to('original_page')
           end

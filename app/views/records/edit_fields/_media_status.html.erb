@@ -1,0 +1,6 @@
+<%= f.input :media_status, as: :select,
+    collection: ["Current", "Superceded", "Outdated"],
+    label: 'Media Status',
+    include_blank: true,
+    input_html: { class: 'form-control' }
+%>

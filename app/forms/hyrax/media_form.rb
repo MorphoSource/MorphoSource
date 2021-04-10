@@ -66,12 +66,13 @@ module Hyrax
       :publisher,
       :cite_as,
       :preview_mode,
-      :anonymize_origin
+      :anonymize_origin,
+      :media_status,
     ]
 
     self.required_fields = [:media_type]
 
-    self.single_valued_fields = [:short_description, :description, :media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :series_type, :unit, :identifier, :related_url, :download_reviewer, :agreement_uri, :permits_3d_use, :permits_commercial_use, :required_archival_of_published_derivatives, :morphosource_use_agreement_type, :preview_mode, :anonymize_origin]
+    self.single_valued_fields = [:short_description, :description, :media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :series_type, :unit, :identifier, :related_url, :download_reviewer, :agreement_uri, :permits_3d_use, :permits_commercial_use, :required_archival_of_published_derivatives, :morphosource_use_agreement_type, :preview_mode, :anonymize_origin, :media_status]
 
     self.permissions_terms = [ :download_reviewer, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode, :anonymize_origin]
 

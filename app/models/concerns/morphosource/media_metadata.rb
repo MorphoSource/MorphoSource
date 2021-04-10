@@ -34,6 +34,10 @@ module Morphosource
         index.as :stored_searchable
       end
 
+      property :media_status, predicate: ::RDF::URI.new("http://rs.tdwg.org/ac/terms/mediaStatus") do |index|
+        index.as :stored_searchable
+      end
+
       # Fields not present on edit/show form
       property :legacy_media_file_id, predicate: ::RDF::URI.new("http://rs.tdwg.org/ac/terms/providerManagedID") do |index|
         index.as :stored_searchable

@@ -14,6 +14,7 @@ module Hyrax
       :permits_3d_use,
       :physical_object_id,
       :anonymize_origin,
+      :media_status,
       to: :solr_document
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,

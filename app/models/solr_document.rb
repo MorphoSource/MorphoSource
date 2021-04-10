@@ -83,6 +83,10 @@ class SolrDocument
     self[Solrizer.solr_name('orientation', :stored_searchable)]
   end
 
+  def media_status
+    self[Solrizer.solr_name('media_status', :stored_searchable)]
+  end
+
   def part
     self[Solrizer.solr_name('part', :stored_searchable)]
   end

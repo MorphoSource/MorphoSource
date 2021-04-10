@@ -18,6 +18,7 @@ module Hyrax
       :assembly_date,
       :preparation_notes,
       :anonymize_origin,
+      :anonymize_meta_data,
     ]
 
     self.required_fields = [
@@ -34,6 +35,7 @@ module Hyrax
       :assembly_date,
       :preparation_notes,
       :anonymize_origin,
+      :anonymize_meta_data,
     ]
 
     def self.build_permitted_params
@@ -47,6 +49,7 @@ module Hyrax
                 :assembly_date,
                 :preparation_notes,
                 :anonymize_origin,
+                :anonymize_meta_data,
               ]
     end
   end

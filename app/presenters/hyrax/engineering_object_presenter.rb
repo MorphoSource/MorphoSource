@@ -4,7 +4,7 @@ module Hyrax
   class EngineeringObjectPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :institution_code, :catalog_number, :desription, :is_pak, :anonymize_origin, :is_built_in_fiducials_present, :snl_assembler, :assembly_date, :preparation_notes, to: :solr_document
+    delegate :institution_code, :catalog_number, :desription, :is_pak, :anonymize_origin, :anonymize_meta_data, :is_built_in_fiducials_present, :snl_assembler, :assembly_date, :preparation_notes, to: :solr_document
 
     def related_media_ids 
       ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
@@ -24,6 +24,10 @@ module Hyrax
 
     def anonymize_origin?
       anonymize_origin && anonymize_origin.first == 'Anonymize Origin'
+    end
+
+    def anonymize_meta_data?
+      anonymize_meta_data && anonymize_meta_data.first == 'Anonymize Meta Data'
     end
 
     def date_created_label

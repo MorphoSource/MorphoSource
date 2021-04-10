@@ -25,6 +25,10 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
+      property :anonymize_meta_data, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/anonymize_meta_data") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
       property :is_built_in_fiducials_present, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/is_built_in_fiducials_present") do |index|
         index.as :stored_searchable, :facetable
       end

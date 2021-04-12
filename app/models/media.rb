@@ -281,6 +281,22 @@ class Media < Morphosource::Works::Base
     taxonomies.map{ |t| t.title.first }
   end
 
+  def member_of_teams
+    member_of_collections.select { |c| c.team? }
+  end
+
+  def member_of_team_ids
+    member_of_teams.map(&:id)
+  end
+
+  def member_of_projects
+    member_of_collections.select { |c| c.project? } 
+  end
+
+  def member_of_project_ids
+    member_of_projects.map(&:id)
+  end
+
   def ark_resource_type
     # Valid ARK resource types:
     # 'Audiovisual', 'Collection', 'DataPaper', 'Dataset', 'Event', 'Image',

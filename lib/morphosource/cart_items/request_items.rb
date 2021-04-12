@@ -12,20 +12,15 @@ module Morphosource
       end
 
       def make_request(items)        
-byebug
         items = Array(items)
         items.each do |item|
           item.update_attributes(date_cleared: nil, date_requested: Time.now, use: @intended_use)
         end
-byebug
       end
 
       def re_request(items)
-byebug
         mark_as('in_cart',items,value: false)
         create_new_items(items)
-byebug
-
       end
 
       def requested(items)

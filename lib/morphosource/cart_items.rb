@@ -109,7 +109,6 @@ module Morphosource
     end
 
     def create_new_items(old_items,requested='requested')
-byebug
       works = get_media_by_items(old_items)
       create_instance_variables_for_flash
       works.each do |work|
@@ -127,7 +126,6 @@ byebug
           end
         end
       end
-byebug
     end
 
     def create_instance_variables_for_flash

@@ -33,7 +33,7 @@ module Morphosource
         end
 
         def read_groups
-          view_groups = current_ability.user_groups.select{ |group| group.include? 'viewers' }
+          view_groups = current_ability.user_groups - ["public", "registered"]
           view_groups.empty? ? nil_group : view_groups
         end
 

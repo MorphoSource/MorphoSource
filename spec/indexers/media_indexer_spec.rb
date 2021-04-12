@@ -21,6 +21,8 @@ RSpec.describe MediaIndexer do
       organization_titles: ["Organization 1", "Organization 2"],
       organization_id: ["org123"],
       member_of_public_collection_ids: ['id1','id2','id3'],
+      member_of_team_ids: ['id1','id2','id3'],
+      member_of_project_ids: ['id1','id2','id3'],
       taxonomies_titles: ['taxonomy1', 'taxonomy2']
     } }
 
@@ -52,6 +54,15 @@ RSpec.describe MediaIndexer do
     end
     it 'indexes public collection membership' do
       expect(subject['member_of_public_collection_ids_ssim']).to eq field_values[:member_of_public_collection_ids]
+    end
+    it 'indexes team ids' do
+      expect(subject['member_of_team_ids_ssim']).to eq(field_values[:member_of_team_ids])
+    end
+    it 'indexes project ids' do
+      expect(subject['member_of_project_ids_ssim']).to eq(field_values[:member_of_project_ids])
+    end
+    it 'indexes publication status' do
+      expect(subject['publication_status_ssi']).to eq('Restricted Download')
     end
   end
 
@@ -109,6 +120,30 @@ RSpec.describe MediaIndexer do
     it 'indexes taxonomies' do
       expect(subject['taxonomy_tesim']).to match_array(taxonomy.title)
       expect(subject['taxonomy_ssim']).to match_array(taxonomy.title)
+    end
+  end
+
+  describe 'publication status' do
+    context 'media is open' do
+      before do
+        media.fileset_accessibility = ['open']
+      end
+      it 'is Open Download' do
+        expect(subject['publication_status_ssi']).to eq('Open Download')
+      end
+    end
+    context 'media is resticted download' do
+      it 'is Restricted Download' do
+        expect(subject['publication_status_ssi']).to eq('Restricted Download')
+      end
+    end
+    context 'media is private' do
+      before do
+        media.fileset_accessibility = ['private']
+      end
+      it 'is Private' do
+        expect(subject['publication_status_ssi']).to eq('Private')
+      end
     end
   end
 end

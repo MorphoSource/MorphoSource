@@ -424,15 +424,15 @@ RSpec.describe Media do
     end
 
     describe 'related media ids' do
-      #- Specimen1 
-      #  
-      #  - IE1 
-      #    
-      #    - PE1 
-      #      - Media1 
-      #    
-      #    - PE2 
-      #      - Media2 
+      #- Specimen1
+      #
+      #  - IE1
+      #
+      #    - PE1
+      #      - Media1
+      #
+      #    - PE2
+      #      - Media2
       let(:specimen)                { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
       let(:media1)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
       let(:media2)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
@@ -469,6 +469,29 @@ RSpec.describe Media do
       it 'returns fund code and fund code associations' do
         expect(media.fund_code_associations.first).to eq(FundCodeMediaAssociation.first)
         expect(media.fund_codes.first).to eq(fund_code)
+      end
+    end
+
+    describe 'member of teams and projects' do
+      let(:media) { Media.create(title: ['title'], media_type: ['Image'], visibility: 'open') }
+      let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
+      let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
+      let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
+      let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid) }
+
+      before do
+        media.member_of_collections << team << project
+        media.save
+      end
+
+      it 'returns team membership' do
+        expect(media.member_of_teams).to match_array([team])
+        expect(media.member_of_team_ids).to match_array([team.id])
+      end
+
+      it 'returns project membership' do
+        expect(media.member_of_projects).to match_array([project])
+        expect(media.member_of_project_ids).to match_array([project.id])
       end
     end
   end

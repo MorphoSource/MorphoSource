@@ -92,8 +92,26 @@ class MediaIndexer < Morphosource::WorkIndexer
       # add public collection membership facet
       solr_doc['member_of_public_collection_ids_ssim'] = object.member_of_public_collection_ids
 
+      # team
+      solr_doc['member_of_team_ids_ssim'] = object.member_of_team_ids
+      # project
+      solr_doc['member_of_project_ids_ssim'] = object.member_of_project_ids
+
+      solr_doc['publication_status_ssi'] = publication_status
+
       # related media ids
       solr_doc['imaging_event_id_tesim'] = object.imaging_event&.id
    end
+  end
+
+  def publication_status
+    fa = object.fileset_accessibility
+    if fa == ["open"]
+      "Open Download"
+    elsif fa == ["private"]
+      "Private"
+    elsif fa == ["restricted_download"]
+      "Restricted Download"
+    end
   end
 end

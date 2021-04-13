@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_21_200753) do
+ActiveRecord::Schema.define(version: 2021_04_12_200726) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -171,6 +171,10 @@ ActiveRecord::Schema.define(version: 2021_03_21_200753) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.datetime "expires_at"
+    t.float "storage_limit_tb"
+    t.boolean "external_user", default: false, null: false
+    t.float "external_user_additional_rate_percent"
     t.index ["user_id"], name: "index_fund_codes_on_user_id"
   end
 

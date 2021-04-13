@@ -46,7 +46,7 @@ module Morphosource
       end
 
       def params_standard_members
-        fund_code_params[:standard_members].split(',').map { |id| User.find(id) if User.exists?(id) }.compact
+        fund_code_params[:standard_members].split(',').map { |id| User.find_by_user_key(id.strip) }.compact
       end
     end
   end

@@ -141,6 +141,10 @@ class Media < Morphosource::Works::Base
     publication_status == "open"
   end
 
+  def private?
+    publication_status == "private"
+  end
+
   # true if publication status is open, restricted, lease
   def can_add_to_cart?
     case publication_status
@@ -221,6 +225,14 @@ class Media < Morphosource::Works::Base
     ancestors.find(&:processing_event?)
   end
 
+  def child_media
+    descendants.select { |d| d.class == Media }
+  end
+
+  def child_media_ids
+    child_media&.map{ |o| o.id }
+  end
+
   def related_media
     return [] unless imaging_event.present?
     imaging_event.descendants.select { |d| d.class == Media && d.id != self.id}
@@ -267,6 +279,22 @@ class Media < Morphosource::Works::Base
 
   def taxonomies_titles
     taxonomies.map{ |t| t.title.first }
+  end
+
+  def member_of_teams
+    member_of_collections.select { |c| c.team? }
+  end
+
+  def member_of_team_ids
+    member_of_teams.map(&:id)
+  end
+
+  def member_of_projects
+    member_of_collections.select { |c| c.project? } 
+  end
+
+  def member_of_project_ids
+    member_of_projects.map(&:id)
   end
 
   def ark_resource_type

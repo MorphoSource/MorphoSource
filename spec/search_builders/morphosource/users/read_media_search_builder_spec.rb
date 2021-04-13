@@ -22,7 +22,7 @@ RSpec.describe Morphosource::Users::ReadMediaSearchBuilder do
     end
 
     it 'filters media with with read access granted to the user through a group' do
-      expect(subject.send(:read_grants_filters)).to match_array(["({!terms f=download_access_group_ssim}test_downloaders)", "({!terms f=read_access_group_ssim}test_viewers)"])
+      expect(subject.send(:read_grants_filters)).to match_array(["({!terms f=download_access_group_ssim}test_downloaders)", "({!terms f=read_access_group_ssim}test_viewers,test_downloaders)"])
     end
   end
 end

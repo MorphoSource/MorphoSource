@@ -90,7 +90,8 @@ module Hyrax
 
     # old_specimens, new_specimens, old_parent_ancestors, new_parent_ancestors methods used by update_media_team_access
     def old_specimens
-      select_specimens((@original_parents + old_parent_ancestors).uniq.select(&:imaging_event?).map(&:objects).flatten)
+      orig_parents = @original_parents || []
+      select_specimens((orig_parents + old_parent_ancestors).uniq.select(&:imaging_event?).map(&:objects).flatten)
     end
 
     def new_specimens

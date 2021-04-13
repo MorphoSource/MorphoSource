@@ -12,7 +12,19 @@
             <%= f.input :title, disabled: true %>
             <%= f.input :description, disabled: true %>
             <%= f.input :standard_members, input_html: { data: { standard_members: @standard_members_select2 } } %>
-            <%= f.submit class: 'btn btn-sm btn-primary' %>
+
+            <div class="form-group fund_code_expires_at disabled">
+            <label class="control-label disabled" for="fund_code_expires_at">
+              <%= t('simple_form.labels.fund_code.expires_at') %>
+            </label>
+            <p class="help-block">
+              <%= t('simple_form.hints.fund_code.expires_at') %>
+            </p>
+            <%= f.date_field :expires_at, disabled: true, class: 'datepicker form-control' %>
+          </div>
+
+          <%= f.input :storage_limit_tb, disabled: true %>
+          <%= f.submit class: 'btn btn-sm btn-primary' %>
           <% end %>
         </div>
       </div>
@@ -27,13 +39,15 @@
         <h2 class="panel-title h2"><%= t('.current_fund_codes') %></h3>
       </div>
       <div class="panel-body">
-        <table class="table table-striped datatable">
+        <table class="table table-striped datatable" style="font-size: smaller;">
           <thead>
             <th><%= t('.header.fund_code') %></th>
             <th><%= t('.header.description') %></th>
             <th><%= t('.header.membership') %></th>
             <th><%= t('.header.managers') %></th>
             <th><%= t('.header.standard_members') %></th>
+            <th><%= t('simple_form.abbreviated_labels.fund_code.expires_at') %></th>
+            <th><%= t('simple_form.abbreviated_labels.fund_code.storage_limit_tb') %></th>
             <th><%= t('.header.actions') %></th>
           </thead>
           <tbody>
@@ -72,6 +86,8 @@
               <% else %>
                 <td><%= t('.no_users') %></td>
               <% end %>
+              <td data-sort="<%= fc.expires_at %>"><%= fc.expires_at.present? ? fc.expires_at.strftime("%m-%d-%Y") : "" %></td>
+              <td data-sort="<%= fc.storage_limit_tb %>"><%= fc.storage_limit_tb %></td>
               <td>
                 <% if @managed_fund_codes.include?(fc) %>
                   <%= link_to 'Edit Members', main_app.my_fund_codes_path(:id => fc.id), class: 'btn btn-sm btn-primary' %>

@@ -18,7 +18,7 @@ module Morphosource::Derivatives::Processors
     class_attribute :timeout
 
     def acceptable_archive_mesh_formats
-      ['.obj', '.ply', '.gltf', '.glb']
+      ['.obj', '.ply', '.gltf', '.glb', '.stl', '.x3d', '.bin', '.wrl']
     end
 
     def process

@@ -21,7 +21,7 @@ RSpec.describe Morphosource::My::FundCodesController, :type => :controller do
           id: fc.id,
           fund_code: 
           { 
-            standard_members: "#{member1.id}, #{member2.id}" 
+            standard_members: "#{member1.user_key},#{member2.user_key}" 
           }
         } 
       }

@@ -201,6 +201,13 @@ $( document ).ready(function() {
           self.triggerChangeVal("select[name='taxonomy[on_behalf_of]']", $(this).val());
           self.triggerChangeVal("select[name='imaging_event[on_behalf_of]']", $(this).val());
           self.triggerChangeVal("select[name='processing_event[on_behalf_of]']", $(this).val());
+          // set the reviewer
+          var reviewer = {
+            "id": $(this).val(),
+            "user_key": $(this).val(),
+            "text": $("select[name='submission[on_behalf_of]'] option:selected").text()
+          }
+          $('#media_download_reviewer').userSearchMultiple(reviewer);
         });
 
         // Media type select
@@ -654,7 +661,7 @@ $( document ).ready(function() {
             data.setOrganizationDefaults();
             data.organizationId = selectedOrganizationID;
             data.organizationCollectionCode = $('#organization_search_form input.organization_collection_code').val().split(',');
-            data.organizationInstitutionCode = $('#organization_search_form input.organization_institution_code').val();
+            data.organizationInstitutionCode = $('#organization_search_form input.organization_institution_code').val().split(',');
             data.noOrganization = false;
             data.willCreateOrganization = false;
             data.savedStep = 4;
@@ -743,9 +750,11 @@ $( document ).ready(function() {
       populatePhysicalObjectInstitutionCollectionCodes() {
         $("#biological_specimen_institution_code").empty();
         $("#cultural_heritage_object_institution_code").empty();
-        $("#biological_specimen_institution_code").append($('<option>', {value: data.organizationInstitutionCode, text: data.organizationInstitutionCode}));
+        data.organizationInstitutionCode.forEach((institution_code) => {
+          $("#biological_specimen_institution_code").append($('<option>', {value: institution_code, text: institution_code}));
+          $("#cultural_heritage_object_institution_code").append($('<option>', {value: institution_code, text: institution_code}));
+        });
         $("#biological_specimen_institution_code").append($('<option>'));
-        $("#cultural_heritage_object_institution_code").append($('<option>', {value: data.organizationInstitutionCode, text: data.organizationInstitutionCode}));
         $("#cultural_heritage_object_institution_code").append($('<option>'));
 
         $("#biological_specimen_collection_code").empty();

@@ -64,7 +64,7 @@ $(function(){
           console.log(results);
           for (const org of results) {
             org.title = org.label;
-            var institutionCode = org.institution_code ? org.institution_code[0] : '';
+            var institutionCode = org.institution_code ? org.institution_code.join('/') : '';
             var collectionCodes = org.collection_code ? org.collection_code.join('/') : '';
             org.label = [org.title[0] + ' (' + institutionCode + ':' + collectionCodes + ')'];
           }

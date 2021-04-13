@@ -9,14 +9,18 @@ RSpec.describe Morphosource::UserWorksSearchService do
   let(:scope)     { double(blacklight_config: CatalogController.blacklight_config, current_ability: ability) }
 
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
+  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
   let(:projectA)                { Collection.create(title: ['Project_A'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
   let(:projectB)                { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
+  let(:team)                    { Collection.create(title: ['Linked Team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
 
   before do
     projectA.create_collection_groups
     Morphosource::Collections::PermissionsCreateService.create_default(collection: projectA)
     projectB.create_collection_groups
     Morphosource::Collections::PermissionsCreateService.create_default(collection: projectB)
+    team.create_collection_groups
+    Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
   end
 
   describe '.call' do
@@ -51,6 +55,10 @@ RSpec.describe Morphosource::UserWorksSearchService do
       let!(:projectB_open)          { Media.create(id: 'projectBopen', title: ['shared open download'], visibility: 'open') }
       let!(:projectB_restricted)    { Media.create(id: 'projectBrestricted', title: ['shared restricted download'], visibility: 'restricted') }
 
+      # user has access to these media through an org-linked team
+      let!(:org_open)          { Media.create(id: 'orgOpen', title: ['shared open view'], visibility: 'open') }
+      let!(:org_restricted)    { Media.create(id: 'orgRestricted', title: ['shared restricted view'], visibility: 'restricted') }
+
       before do
         # add depositor as edit user for their media
         restricted_deposited.edit_users += [user]
@@ -59,6 +67,10 @@ RSpec.describe Morphosource::UserWorksSearchService do
         # add media to their projects
         projectA.add_member_objects([projectA_open.id, projectA_restricted.id])
         projectB.add_member_objects([projectB_open.id, projectB_restricted.id])
+        # give view access to all of the organization's linked team members
+        org_open.read_groups += team.user_groups
+        org_restricted.read_groups += team.user_groups
+        [org_open, org_restricted].each(&:save)
       end
 
       describe 'read access' do
@@ -68,13 +80,16 @@ RSpec.describe Morphosource::UserWorksSearchService do
           # give user read access to works in projectA and projectB
           add_user_to_project(projectA, :viewers_group)
           add_user_to_project(projectB, :downloaders_group)
-          # subject.instance_variable_set(:@scope, scope)
+          # add user as an editor to the org linked team
+          add_user_to_project(team, :editors_group)
         end
 
         let(:view_media_ids)  {ids([projectA_open,
                                     projectA_restricted,
                                     projectB_open,
-                                    projectB_restricted]) }
+                                    projectB_restricted,
+                                    org_open,
+                                    org_restricted]) }
 
 
         it 'returns media the user has been granted view access to, and does not return publicly viewable media' do

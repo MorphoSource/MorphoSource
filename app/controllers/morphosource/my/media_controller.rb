@@ -3,6 +3,17 @@ module Morphosource
     class MediaController < WorksController
       include MediaControllerBehavior
 
+      def self.configure_facets
+        configure_blacklight do |config|
+          config.add_facet_field "publication_status_ssi"
+          config.add_facet_field "human_readable_media_type_tesim"
+          organization
+          project
+          team
+        end
+      end
+      configure_facets
+
       def index
         prepare_page_variables
         super

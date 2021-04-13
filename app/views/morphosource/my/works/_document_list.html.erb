@@ -1,16 +1,4 @@
-<% @all_checked = false %>
-<%# @user = current_user %>
-<% if documents.empty? %>
-  <div class="alert alert-warning" role="alert"><%= t('hyrax.collection.document_list.no_visible_works') %></div>
-<% else %>
-  <% @document_list = documents %>
-  <% if work_type == "media" %>
-    <%= render 'show_media_document_list', documents: documents %>
-  <% elsif work_type == "biological_specimen" %>
-    <%= render 'show_biological_specimen_document_list', documents: documents %>
-  <% elsif work_type == "cultural_heritage_object" %>
-    <%= render 'show_cultural_heritage_object_document_list', documents: documents %>
-  <% else %>
-    ERROR: no work_type
-  <% end %>
-<% end %>
+<% # container for all documents in index view -%>
+<div class="table-responsive" id="documents">
+  <%= render 'default_group', docs: @response.docs %>
+</div>

@@ -24,15 +24,13 @@
     <!-- Nav tabs -->
 
     <!-- Tab panes -->
-    <div class="tab-content">
-      <% if @tab == :media %>
-        <%= render 'morphosource/my/media/tab_panel' %>
-      <% elsif @tab == :specimens %>
-        <%= render 'morphosource/my/specimens/tab_panel' %>
-      <% elsif @tab == :chos %>
-        <%= render 'morphosource/my/cultural_heritage_objects/tab_panel' %>
-      <% end %>
-    </div><!-- /tab-content -->
+
+    <div class="panel-body">
+        <%= render 'search_header' %> 
+        <h2 class="sr-only">Works listing</h2>
+        <%= render 'document_list' %>
+        <%= render 'results_pagination' %>
+    </div>
 
   </div><!-- /panel panel-default tabs -->
 

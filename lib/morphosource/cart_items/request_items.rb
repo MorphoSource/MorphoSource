@@ -13,6 +13,7 @@ module Morphosource
       def create_new_requested_item(work_id)
         item = create_cart_item(work_id)
         make_request(item)
+        return item
       end
 
       def make_request(items)        

@@ -38,7 +38,6 @@ module Morphosource
       end
 
       def send_batch_request_messages(items)
-        host = Hyrax.config.host_name
         requestor = current_user
         # send message for each reviewer
         reviewers = []
@@ -54,10 +53,10 @@ module Morphosource
           reviewer = User.where(ms_id: reviewer_id).first
           if reviewer.present?
             message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + count.to_s + " media.  Please review in <a href='http://#{host}/dashboard/my/request_manager'>Manage Requests</a> page." 
-            Hyrax::MessengerService.deliver(::User.batch_user, reviewer, message_to_reviewer, "You have download request to review")
+            Hyrax::MessengerService.deliver(email_sender, reviewer, message_to_reviewer, "You have download request to review")
 
             message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + count.to_s + " media.  You can view your requests in <a href='http://#{host}/dashboard/my/requests'>My Requests</a> page." 
-            Hyrax::MessengerService.deliver(::User.batch_user, requestor, message_to_requestor, "You have sent a download request")
+            Hyrax::MessengerService.deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
           end
         end
       end
@@ -68,12 +67,11 @@ module Morphosource
           requestor = current_user
           reviewer = User.where(ms_id:work.reviewer.first).first
           if reviewer.present?
-            host = Hyrax.config.host_name
             message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + message_content(item, work) + "Please review in <a href='http://#{host}/dashboard/my/request_manager'>Manage Requests</a> page." 
-            Hyrax::MessengerService.deliver(::User.batch_user, reviewer, message_to_reviewer, "You have download request to review")
+            Hyrax::MessengerService.deliver(email_sender, reviewer, message_to_reviewer, "You have download request to review")
 
             message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + message_content(item, work) + "You can view your requests in <a href='http://#{host}/dashboard/my/requests'>My Requests</a> page." 
-            Hyrax::MessengerService.deliver(::User.batch_user, requestor, message_to_requestor, "You have sent a download request")
+            Hyrax::MessengerService.deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
 
             # arguments passed to messenger_service: (sender, recipients, body, subject, *args)
           end
@@ -82,7 +80,6 @@ module Morphosource
 
       def message_content(item, work)
         return @message_content if @message_content.present?
-        host = Hyrax.config.host_name
         content = "the media <b><a href='http://#{host}/media/#{work.id}'>#{work.title.first}</a></b>"
         object = work.objects&.first
         if object.present?
@@ -93,9 +90,17 @@ module Morphosource
               " <b><a href='http://#{host}/cultural_heritage_objects/#{object.id}'>#{object.title.first}</a>" + "</b>" 
           end
         end
-        content += " for intended use: <i>\"" + item.use + "\"</i>.  " 
-        @message_content = content.html_safe
+        content += " for intended use: <i>\"" + item.use + "\"</i>" if item.use.present?
+        @message_content = content.html_safe + ".  "
         return @message_content
+      end
+
+      def email_sender
+        @email_sender ||= ::User.batch_user
+      end
+
+      def host
+        @host ||= Hyrax.config.host_name
       end
 
       def cancel_request
@@ -126,12 +131,12 @@ module Morphosource
           elsif my_cleared_requests_work_ids.include?(work_id)
             make_request(item)
           else
-            create_new_requested_item(work_id)
+            item = create_new_requested_item(work_id)
           end
+          send_request_message(item)
         else
           flash[:alert] = 'You are not authorized to request this work.'
         end
-        send_request_message(item)
         redirect_back(fallback_location: my_requests_path)
       end
     end

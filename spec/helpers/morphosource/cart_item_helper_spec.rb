@@ -171,7 +171,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           assign(:curation_concern, open_media)
         end
         it 'displays the disabled download button' do
-          expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"\">Download</a>")
+          expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"javascript:void(0)\">Download</a>")
         end
       end
 
@@ -224,7 +224,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           end
 
           it 'returns the download requested button' do
-            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" disabled=\"disabled\" href=\"\">Download Requested</a>")
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" disabled=\"disabled\" href=\"javascript:void(0)\">Download Requested</a>")
           end
         end
 
@@ -257,7 +257,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       let(:current_user)  { nil }
 
       it 'returns the disabled add to cart button' do
-        expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"\">Add to Cart</a>")
+        expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"javascript:void(0)\">Add to Cart</a>")
       end
     end
 

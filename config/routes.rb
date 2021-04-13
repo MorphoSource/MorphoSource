@@ -52,6 +52,18 @@ Rails.application.routes.draw do
     end
   end
 
+  scope module: :morphosource do
+    scope :dashboard do
+      namespace :my do
+        resources :media, only: [:index], controller: 'media'
+        resources :specimens, only: [:index],
+        controller: 'specimens'
+        resources :cultural_heritage_objects, only: [:index],
+        controller: 'cultural_heritage_objects'
+      end
+    end
+  end
+
   scope module: :hyrax do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]
@@ -135,10 +147,10 @@ Rails.application.routes.draw do
       namespace :my do
         resources :teams, only: [:index], controller: 'teams'
         resources :projects, only: [:index], controller: 'teams'
-        resources :media, only: [:index], controller: 'media_works'
+        # resources :media, only: [:index], controller: 'morphosource/my/media'
       end
     end
-    #get 'dashboard/my/media', controller: 'my/media_works', action: :index
+    # get 'dashboard/my/media', controller: 'my/media', action: :index, as: 'my_media_index'
     get 'dashboard/my/media/specimens', to: 'my/media_works#specimens'
     get 'dashboard/my/media/chos', to: 'my/media_works#chos'
 

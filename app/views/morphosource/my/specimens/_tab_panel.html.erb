@@ -1,0 +1,20 @@
+<div role="tabpanel" class="tab-pane" id="biological_specimens">
+  <div class="form-tab-content">
+  <% if @collection_bso_groups.present? %>
+    <%= render 'bso_filters' %>
+    <div class="row">
+      <!-- Search bar -->
+      <div class="col-xs-6">
+        <%= render 'search_form', tab: "biological_specimens" %>
+      </div>
+      <div class="col-xs-6">
+        <%= render 'sort_and_per_page_bso' %>
+      </div>
+    </div>
+    <%#= render 'tab_bso' %>
+    <%= render_async bso_tab_url, event_name: "bso-loaded" do %>
+      <div class="ui-loading-whole-page" style="height:200px"></div>
+    <% end %>
+  <% end %>
+  </div>
+</div>

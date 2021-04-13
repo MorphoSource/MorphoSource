@@ -15,5 +15,13 @@ module Hyrax
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       render 'showcase', presenter: @presenter
     end
+
+    def new
+      build_form
+      #@presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      #@presenter.get_organization_data
+      render '/hyrax/base/new' #, presenter: @presenter
+    end
+
   end
 end

@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   # todo: clean up and rewrite the rules
   scope module: :hyrax do
     get 'engineering_objects/:id', to: 'engineering_objects#showcase'
+    get 'concern/engineering_objects/new', to: 'engineering_objects#new'
     get 'concern/engineering_objects/:id', to: 'engineering_objects#showcase', as: 'engineering_object_showcase'
 
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'

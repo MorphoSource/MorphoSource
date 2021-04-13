@@ -46,11 +46,11 @@ RSpec.describe MediaIndexer do
     end
     it 'indexes human_readable_media_type' do
       expect(subject['human_readable_media_type_tesim']).to eq field_values[:human_readable_media_type]
-      expect(subject['human_readable_media_type_sim']).to eq field_values[:human_readable_media_type]
+      expect(subject['human_readable_media_type_ssim']).to eq field_values[:human_readable_media_type]
     end
     it 'indexes media_modality' do
       expect(subject['media_modality_tesim']).to eq field_values[:modality]
-      expect(subject['media_modality_sim']).to eq field_values[:modality]
+      expect(subject['media_modality_ssim']).to eq field_values[:modality]
     end
     it 'indexes public collection membership' do
       expect(subject['member_of_public_collection_ids_ssim']).to eq field_values[:member_of_public_collection_ids]
@@ -117,9 +117,21 @@ RSpec.describe MediaIndexer do
       expect(subject['physical_object_id_tesim']).to match_array([specimen.id, cho.id])
     end
 
+    it 'indexes physical object type' do
+      expect(subject['media_physical_object_type_ssim']).to eq("Biological Specimen")
+      expect(subject['media_physical_object_type_tesim']).to eq("Biological Specimen")
+    end
+
     it 'indexes taxonomies' do
       expect(subject['taxonomy_tesim']).to match_array(taxonomy.title)
       expect(subject['taxonomy_ssim']).to match_array(taxonomy.title)
+    end
+
+    it 'indexes organizations' do
+      expect(subject['media_organization_tesim']).to match_array([organization.title.first, organization.title.first])
+      expect(subject['media_organization_ssim']).to match_array([organization.title.first, organization.title.first])
+      expect(subject['media_organization_id_ssim']).to match_array([organization.id, organization.id])
+      expect(subject['media_organization_id_tesim']).to match_array([organization.id, organization.id])
     end
   end
 

@@ -68,7 +68,7 @@ module Morphosource
           reviewer = User.where(ms_id:work.reviewer.first).first
           if reviewer.present?
             message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + message_content(item, work) + "Please review in <a href='http://#{host}/dashboard/my/request_manager'>Manage Requests</a> page." 
-            Hyrax::MessengerService.deliver(email_sender, reviewer, message_to_reviewer, "You have download request to review")
+            Hyrax::MessengerService.deliver(email_sender, reviewer, message_to_reviewer, "You have a download request to review")
 
             message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + message_content(item, work) + "You can view your requests in <a href='http://#{host}/dashboard/my/requests'>My Requests</a> page." 
             Hyrax::MessengerService.deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")

@@ -14,7 +14,8 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
         { fund_code: 
           { 
             title: 'Test Title', 
-            description: 'Test Description', 
+            description: 'Test Description',
+            external_user: false,
           }
         } 
       }
@@ -45,9 +46,10 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
         { fund_code: 
           { 
             title: 'Test Title', 
-            description: 'Test Description', 
-            managers: manager.id.to_s, 
-            standard_members: "#{member1.id}, #{member2.id}" 
+            description: 'Test Description',
+            external_user: false,
+            managers: manager.user_key.to_s, 
+            standard_members: "#{member1.user_key},#{member2.user_key}"
           } 
         } 
       }
@@ -77,7 +79,8 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
         { fund_code: 
           { 
             title: 'Test Title', 
-            description: 'Test Description', 
+            description: 'Test Description',
+            external_user: false
           }
         } 
       }
@@ -106,7 +109,8 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
           fund_code: 
           { 
             title: 'New Title', 
-            description: 'New Description', 
+            description: 'New Description',
+            external_user: false
           }
         } 
       }
@@ -132,8 +136,9 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
           id: fc.id,
           fund_code: 
           { 
-            managers: manager.id.to_s, 
-            standard_members: "#{member1.id}, #{member2.id}" 
+            external_user: false,
+            managers: manager.user_key.to_s, 
+            standard_members: "#{member1.user_key}, #{member2.user_key}" 
           }
         } 
       }
@@ -157,7 +162,8 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
           fund_code: 
           { 
             title: 'New Title', 
-            description: 'New Description', 
+            description: 'New Description',
+            external_user: false
           }
         } 
       }

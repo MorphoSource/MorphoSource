@@ -25,7 +25,15 @@ module Morphosource
 
       def create
         if fund_code_params[:title].present? && fund_code_params[:description].present?
-          fc = FundCode.new(title: fund_code_params[:title], description: fund_code_params[:description], user: current_user)
+          fc = FundCode.new(
+            title: fund_code_params[:title], 
+            description: fund_code_params[:description], 
+            expires_at: fund_code_params[:expires_at],
+            storage_limit_tb: fund_code_params[:storage_limit_tb],
+            external_user: fund_code_params[:external_user],
+            external_user_additional_rate_percent: fund_code_params[:external_user_additional_rate_percent],
+            user: current_user
+          )
           params_managers.each { |u| fc.add_user(u, true) }
           params_standard_members.each { |u| fc.add_user(u, false) }
           fc.save!
@@ -51,7 +59,16 @@ module Morphosource
           demoted_members.each { |m| fc.make_user_standard(m) } # demote standard members
           members_to_delete.each { |m| fc.delete_user(m) } # delete remaining old members
 
-          fc.update({ title: fund_code_params[:title], description: fund_code_params[:description]})
+          fc.update(
+            { 
+              title: fund_code_params[:title], 
+              description: fund_code_params[:description],
+              expires_at: fund_code_params[:expires_at],
+              storage_limit_tb: fund_code_params[:storage_limit_tb],
+              external_user: fund_code_params[:external_user],
+              external_user_additional_rate_percent: fund_code_params[:external_user_additional_rate_percent],
+            }
+          )
         end
 
         redirect_to main_app.admin_fund_codes_path
@@ -75,17 +92,17 @@ module Morphosource
       end
 
       def fund_code_params
-        @fund_code_params ||= params.fetch(:fund_code, {}).permit(:title, :description, :managers, :standard_members)
+        @fund_code_params ||= params.fetch(:fund_code, {}).permit(:title, :description, :managers, :standard_members, :expires_at, :storage_limit_tb, :external_user, :external_user_additional_rate_percent)
       end
 
       def params_managers
         return [] if !fund_code_params[:managers].present?
-        fund_code_params[:managers].split(',').map { |id| User.find(id) if User.exists?(id) }.compact
+        fund_code_params[:managers].split(',').map { |id| User.find_by_user_key(id.strip) }.compact
       end
 
       def params_standard_members
         return [] if !fund_code_params[:standard_members].present?
-        fund_code_params[:standard_members].split(',').map { |id| User.find(id) if User.exists?(id) }.compact
+        fund_code_params[:standard_members].split(',').map { |id| User.find_by_user_key(id.strip) }.compact
       end
     end
   end

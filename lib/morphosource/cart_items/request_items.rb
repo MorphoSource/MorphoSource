@@ -3,7 +3,11 @@ module Morphosource
     module RequestItems
 
       def get_intended_use
-        @intended_use = params[:intended_use].first
+        if params[:intended_use].present?
+          @intended_use = params[:intended_use].first
+        else
+          @intended_use = ''
+        end
       end
 
       def create_new_requested_item(work_id)

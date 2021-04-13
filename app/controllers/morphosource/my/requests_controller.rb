@@ -15,11 +15,8 @@ module Morphosource
 
       def request_item
         @items = undownloadable(@items)
-byebug
         re_request(inactive(@items)) unless inactive(@items).empty?
-#byebug
         make_request(unrequested(@items)) unless unrequested(@items).empty?
-byebug
         send_request_messages(@items)
         flash[:notice] = item_count_text.concat(' Requested')
         redirect_back(fallback_location: my_requests_path)
@@ -27,39 +24,42 @@ byebug
 
       def request_again
         re_request(@items)
-byebug
-send_request_messages(@items)
+        send_request_messages(@items)
+        flash[:notice] = item_count_text.concat(' Requested')
         redirect_back(fallback_location: my_requests_path)
       end
 
       def send_request_messages(items)
         if items.count == 1
-          item = items.first
-        byebug
-          send_request_message(item)
+          send_request_message(items.first)
+        else
+          send_batch_request_messages(items)
         end
-
       end
 
-      def send_request_messages_TEMP(items)
+      def send_batch_request_messages(items)
+        host = Hyrax.config.host_name
         requestor = current_user
-
         # send message for each reviewer
         reviewers = []
         items.each do |item|
-          reviewers << item.reviewer
+          work = Media.find(item.work_id)
+          if work.present?
+            reviewer_id = work.reviewer.first
+            reviewers << reviewer_id
+          end
         end
+        reviewer_counts = reviewers.group_by{|e| e}.map{|k, v| [k, v.length]}.to_h
+        reviewer_counts.each do |reviewer_id, count|
+          reviewer = User.where(ms_id: reviewer_id).first
+          if reviewer.present?
+            message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + count.to_s + " media.  Please review in <a href='http://#{host}/dashboard/my/request_manager'>Manage Requests</a> page." 
+            Hyrax::MessengerService.deliver(::User.batch_user, reviewer, message_to_reviewer, "You have download request to review")
 
-
-        content =  items.count.to_s + " media "
-        content += " for intended use: <i>" + items.first.use + "</i>.  " 
-
-        message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + content + "Please review in <a href='http://#{Hyrax.config.host_name}/dashboard/my/request_manager'>Manage Requests</a> page." 
-        Hyrax::MessengerService.deliver(::User.batch_user, reviewer, message_to_reviewer, "You have download request to review")
-        
-        message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + content + "You can manage your requests in <a href='http://#{Hyrax.config.host_name}/dashboard/my/requests'>My Requests</a> page." 
-        Hyrax::MessengerService.deliver(::User.batch_user, requestor, message_to_requestor, "You have sent a download request")
-
+            message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + count.to_s + " media.  You can view your requests in <a href='http://#{host}/dashboard/my/requests'>My Requests</a> page." 
+            Hyrax::MessengerService.deliver(::User.batch_user, requestor, message_to_requestor, "You have sent a download request")
+          end
+        end
       end
       
       def send_request_message(item)
@@ -93,7 +93,7 @@ send_request_messages(@items)
               " <b><a href='http://#{host}/cultural_heritage_objects/#{object.id}'>#{object.title.first}</a>" + "</b>" 
           end
         end
-        content += " for intended use: <i>" + item.use + "</i>.  " 
+        content += " for intended use: <i>\"" + item.use + "\"</i>.  " 
         @message_content = content.html_safe
         return @message_content
       end

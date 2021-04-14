@@ -12,7 +12,7 @@
   </thead>
   <tbody>
   <% docs.each_with_index do |document, counter| %>
-      <%= render 'list_works', document: document, counter: counter, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
+      <%= render 'show_media_document_list', document: document, counter: counter, presenter: Hyrax::WorkShowPresenter.new(document, current_ability) %>
   <% end %>
   </tbody>
 </table>

@@ -23,17 +23,17 @@ module Morphosource
       #}
 
       PUBLICATION_LABEL_TEXT = {
-        open: "Open Download",
-        restricted: "Restricted Download",
-        preview: "No Download",
-        hidden: "Hidden",
-        private: "Private",
-        embargo: "Embargo",
-        lease: "Lease"
+        "open": "Open Download",
+        "restricted": "Restricted Download",
+        "preview": "No Download",
+        "hidden": "Hidden",
+        "private": "Private",
+        "embargo": "Embargo",
+        "lease": "Lease"
       }
 
       def initialize(status)
-        @status = status
+        @status = status.to_sym
       end
 
       def render
@@ -44,17 +44,17 @@ module Morphosource
       private
 
         def dom_label_class
-          PUBLICATION_LABEL_CLASS.fetch(@status.to_sym)
+          PUBLICATION_LABEL_CLASS.fetch(@status)
         end
 
         def dom_label_style
-          PUBLICATION_LABEL_STYLE.fetch(@status.to_sym)
+          PUBLICATION_LABEL_STYLE.fetch(@status)
         end
 
         def text
           #I18n.t("morphosource.publication_status.#{@status}.text")
-          PUBLICATION_LABEL_TEXT.fetch(@status.to_sym)
+          PUBLICATION_LABEL_TEXT.fetch(@status)
         end
-    
+
   end
 end

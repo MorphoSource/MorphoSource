@@ -193,12 +193,11 @@ module MorphosourceHelper
   end
 
   def render_publication_status_badge(document)
-    media = Media.find(document.id)
-
+    publication_status = document["publication_status_ssi"]
     path = edit_polymorphic_path([main_app, document], anchor: 'share')
 
     link_to(
-      publication_badge(media.publication_status),
+      publication_badge(publication_status),
       path,
       id: "permission_#{document.id}",
       class: 'visibility-link'

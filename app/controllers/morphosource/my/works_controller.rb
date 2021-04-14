@@ -26,7 +26,6 @@ module Morphosource
       end
 
       def index_response
-        byebug
         respond_to do |format|
           format.html {
             render 'morphosource/my/works/index'

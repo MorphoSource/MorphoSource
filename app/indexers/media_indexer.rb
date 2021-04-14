@@ -122,13 +122,13 @@ class MediaIndexer < Morphosource::WorkIndexer
   end
 
   def publication_status
-    fa = object.fileset_accessibility
-    if fa == ["open"]
-      "Open Download"
-    elsif fa == ["private"]
-      "Private"
-    elsif fa == ["restricted_download"]
-      "Restricted Download"
+    fa = object.fileset_accessibility.first
+    if fa == "open"
+      "open"
+    elsif fa == "private"
+      "private"
+    elsif fa == "restricted_download"
+      "restricted"
     end
   end
 end

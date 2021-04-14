@@ -16,6 +16,7 @@ class Submission
                 :will_create_biological_specimen,
                 :cultural_heritage_object_id,
                 :will_create_cultural_heritage_object,
+                :will_create_engineering_object,
                 :organization_id,
                 :no_organization,
                 :will_create_organization,

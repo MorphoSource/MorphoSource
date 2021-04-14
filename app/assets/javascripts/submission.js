@@ -16,6 +16,7 @@ $( document ).ready(function() {
           'parent_media_not_in_ms', 'biological_specimen_or_cultural_heritage_object',
           'biological_specimen_id', 'idigbio_id', 'will_create_biological_specimen',
           'cultural_heritage_object_id', 'will_create_cultural_heritage_object',
+          'will_create_engineering_object',
           'organization_id', 'no_organization', 'will_create_organization',
           'taxonomy_id_array', 'taxonomy_gbif_key_array', 'will_create_taxonomy',
           'device_id', 'will_create_device', 'device_organization_id',
@@ -602,10 +603,16 @@ $( document ).ready(function() {
 
         $('#submission_will_create_eo').click(function(event){
           event.preventDefault();
-          console.log('View 3 create new physical object button');
+          console.log('View 3 create new engineering object button');
 
-          data.willCreateEngineeringObject = true;
+          data.willCreateCulturalHeritageObject = true;
           data.savedStep = 3;
+
+          // Set EO details form to visible
+          $('#submission_bso_create_section').addClass('hide').removeClass('show');
+          $('#submission_cho_create_section').addClass('hide').removeClass('show');
+          $('#submission_eo_create_section').addClass('show').removeClass('hide');
+
           self.form.setSidebarViewCheck(3);
           self.form.setSidebarViewFade(3);
           self.form.setVisibleView(4); // view 4 create organization
@@ -635,6 +642,7 @@ $( document ).ready(function() {
 
           // Set CHO details form to visible
           $('#submission_bso_create_section').addClass('hide').removeClass('show');
+          $('#submission_eo_create_section').addClass('hide').removeClass('show');
           $('#submission_cho_create_section').addClass('show').removeClass('hide');
 
           self.form.setSidebarViewCheck(3);
@@ -785,19 +793,26 @@ $( document ).ready(function() {
       populatePhysicalObjectInstitutionCollectionCodes() {
         $("#biological_specimen_institution_code").empty();
         $("#cultural_heritage_object_institution_code").empty();
+        $("#engineering_object_institution_code").empty();
+
         $("#biological_specimen_institution_code").append($('<option>', {value: data.organizationInstitutionCode, text: data.organizationInstitutionCode}));
         $("#biological_specimen_institution_code").append($('<option>'));
         $("#cultural_heritage_object_institution_code").append($('<option>', {value: data.organizationInstitutionCode, text: data.organizationInstitutionCode}));
         $("#cultural_heritage_object_institution_code").append($('<option>'));
+        $("#engineering_object_institution_code").append($('<option>', {value: data.organizationInstitutionCode, text: data.organizationInstitutionCode}));
+        $("#engineering_object_institution_code").append($('<option>'));
 
         $("#biological_specimen_collection_code").empty();
         $("#cultural_heritage_object_collection_code").empty();
+        $("#engineering_object_collection_code").empty();
         data.organizationCollectionCode.forEach((collection_code) => {
           $("#biological_specimen_collection_code").append($('<option>', {value: collection_code, text: collection_code}));
           $("#cultural_heritage_object_collection_code").append($('<option>', {value: collection_code, text: collection_code}));
+          $("#engineering_object_collection_code").append($('<option>', {value: collection_code, text: collection_code}));
         });
         $("#biological_specimen_collection_code").append($('<option>'));
         $("#cultural_heritage_object_collection_code").append($('<option>'));
+        $("#engineering_object_collection_code").append($('<option>'));
       }
 
       next() {
@@ -1391,6 +1406,7 @@ $( document ).ready(function() {
         $('#new_media').submit(function(){
           var createParams = ['organizationCreateParams', 'taxonomyCreateParams',
             'biologicalSpecimenCreateParams', 'culturalHeritageObjectCreateParams', 'deviceCreateParams',
+            'engineeringObjectCreateParams',
             'deviceOrganizationCreateParams', 'imagingEventCreateParams',
             'processingEventCreateParams'];
 

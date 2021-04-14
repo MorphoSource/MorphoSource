@@ -12,4 +12,11 @@
   >
     <%= render(partial: 'submissions/physical_object/cho_create') %>
   </div>
+
+  <div
+    id="submission_eo_create_section"
+    class="<%= @submission.biological_specimen_or_cultural_heritage_object == 'eo' ? '' : 'hide' %>"
+  >
+    <%= render(partial: 'submissions/physical_object/eo_create') %>
+  </div>
 </div>

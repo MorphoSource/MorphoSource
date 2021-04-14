@@ -1,4 +1,4 @@
-<div id="submission_create_cho_details">
+<div id="submission_create_eo_details">
   <%= simple_form_for @eo_form, wrapper: :showcase_default do |f| %>
     <div class="row">
       <!-- left column  -->
@@ -6,14 +6,12 @@
 
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
-            <span class="h2">OBJECT IDENTIFIERS AND EXTERNAL LINKS</span>
+            <span class="h2">ENGINEERING OBJECT IDENTIFIERS AND EXTERNAL LINKS</span>
           </div>
 
           <div class="content-block">
             <%= f.input :institution_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
-            <%= f.input :collection_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
-            <%= f.input :short_title, label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :identifier, as: :multi_value %>
             <%= f.input :related_url, as: :multi_value %>
           </div>
@@ -21,24 +19,9 @@
 
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
-            <span class="h2">TIME AND PLACE DETAILS</span>
+            <span class="h2"></span>
           </div>
 
-          <div class="content-block">
-            <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
-            <%= f.input :numeric_time, label: 'Absolute Age' %>
-            <%= f.input :original_location, label: 'Locality' %>
-            <!--  todo: the html below can be removed if simpleform config wrapper can be used.  In that case, we need to figure out pass the content for the tooltip
-            <div class="form-group row">
-                <div class="col-xs-12 showcase-label">
-                    <label class="control-label">Geographical coordinates</label><span class="glyphicon glyphicon-question-sign tooltip-icon" data-original-title="" title=""></span>
-                </div>
-            </div>
-            -->
-            <%= f.input 'Locality Geographical Coordinates', tooltip_wrapper: false, value_wrapper: false %>
-            <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
-            <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
-          </div>
         </div>
 
       </div>

@@ -377,7 +377,7 @@ class SubmissionsController < ApplicationController
   private
 
   def works
-    ['taxonomy', 'biological_specimen', 'cultural_heritage_object', 'imaging_event', 'processing_event', 'media']
+    ['taxonomy', 'biological_specimen', 'cultural_heritage_object', 'engineering_object', 'imaging_event', 'processing_event', 'media']
   end
 
   def create_work_if_needed(work, params)
@@ -658,6 +658,7 @@ class SubmissionsController < ApplicationController
   def instantiate_work_forms
     @biological_specimen_form = Hyrax::WorkFormService.build(BiologicalSpecimen.new, current_ability, self)
     @cho_form = Hyrax::WorkFormService.build(CulturalHeritageObject.new, current_ability, self)
+    @eo_form = Hyrax::WorkFormService.build(EngineeringObject.new, current_ability, self)
     @device_form = Hyrax::WorkFormService.build(Device.new, current_ability, self)
     @imaging_event_form = Hyrax::WorkFormService.build(ImagingEvent.new, current_ability, self)
     @processing_event_form = Hyrax::WorkFormService.build(ProcessingEvent.new, current_ability, self)
@@ -755,6 +756,7 @@ class SubmissionsController < ApplicationController
                 :will_create_biological_specimen,
                 :cultural_heritage_object_id,
                 :will_create_cultural_heritage_object,
+                :will_create_engineering_object,
                 :organization_id,
                 :no_organization,
                 :will_create_organization,

@@ -19,11 +19,19 @@
 
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
-            <span class="h2"></span>
+            <span class="h2">ENGINEERING OBJECT META DATA</span>
           </div>
-
+          <%= f.input :is_pak, collection: ['Yes', 'No'] %>
+          <%= f.input :is_built_in_fiducials_present, collection: ['Yes', 'No'] %>
+          <%= f.input :snl_assembler %>
+          <div class="row">
+            <div class="col-xs-6 showcase-label">Assembly Date</div>
+            <div class="col-xs-6 showcase-value">
+            <%= f.date_field :assembly_date, wrapper: :inline, value: f.object.assembly_date || Date.today, class: 'datepicker form-control' %>
+              </div>
+          </div>
+          <%= f.input :preparation_notes %>
         </div>
-
       </div>
       <!-- /left column  -->
 

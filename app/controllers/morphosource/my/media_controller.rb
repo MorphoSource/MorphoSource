@@ -7,9 +7,9 @@ module Morphosource
         configure_blacklight do |config|
           config.add_facet_field "publication_status_ssi"
           config.add_facet_field "human_readable_media_type_tesim"
-          organization
-          project
-          team
+          config.add_facet_field "media_organization_ssim"
+          config.add_facet_field "member_of_project_ids_ssim"
+          config.add_facet_field "member_of_team_ids_ssim"  
         end
       end
       configure_facets

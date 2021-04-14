@@ -5,7 +5,8 @@ module Morphosource
       
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
     
-      attr_reader :scope, :solr, :facet_results, :media_count, :bso_ids, :cho_ids, :n_idigbio, :info
+      attr_reader :scope, :solr, :facet_results, :media_count, :physical_object_ids, 
+        :bso_ids, :cho_ids, :n_idigbio, :info
       delegate :repository, to: :scope
 
       SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
@@ -14,13 +15,15 @@ module Morphosource
         @solr = solr_service.new
         @scope = scope
         @organization = org
-        @bso_ids = bso_ids
-        @cho_ids = cho_ids
         query_solr_org_info
       end
 
       def query_solr_org_info
         @facet_results, @media_count = media_facet_query_with_builder
+
+        @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
+        @bso_ids = bso_ids
+        @cho_ids = cho_ids
         @n_idigbio = bso_idigbio_count
       end
 
@@ -28,9 +31,11 @@ module Morphosource
         @info = { 
           'counts' => {
             'media' => media_count,
-            'po' => bso_ids.length + cho_ids.length
-          }
+            'po' => physical_object_ids.length
+          },
+          'organization_object_ids' => physical_object_ids
         }
+
         info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
         info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if @bso_ids.present?
         info['cho_groups'] = { 'organization' => {} } if @cho_ids.present?
@@ -47,7 +52,7 @@ module Morphosource
           params = {
             fl: 'id',
             fq: [
-              "(organization_id_ssim:#{@organization.id})",
+              po_core_fq,
               "(has_model_ssim:BiologicalSpecimen)"
             ]
           }
@@ -58,11 +63,21 @@ module Morphosource
           params = {
             fl: 'id',
             fq: [
-              "(organization_id_ssim:#{@organization.id})",
+              po_core_fq,
               "(has_model_ssim:CulturalHeritageObject)"
             ]
           }
           solr.get_docs(nil, params).map(&:values).flatten
+        end
+        
+        def po_core_fq
+          if physical_object_ids.present? && @organization.organization_type&.first == "Scanning Facility"
+            "(#{assemble_or_query('id', physical_object_ids)})"
+          elsif physical_object_ids.present? && @organization.organization_type&.first == "Collection and Scanning Facility"
+            "((#{assemble_or_query('id', physical_object_ids)}) OR (organization_id_ssim:#{@organization.id}))"
+          else
+            "(organization_id_ssim:#{@organization.id})"
+          end
         end
 
 
@@ -79,7 +94,7 @@ module Morphosource
           params = { 
             rows: 0,
             fq: [
-              "(media_organization_id_ssim:#{@organization.id})",
+              media_core_fq,
               "#{solrize('has_model', :symbol)}:Media",
             ]
           }
@@ -90,16 +105,27 @@ module Morphosource
         def media_facet_query_with_builder
           facet_fields = [
             solrize('media_type', :stored_searchable),
-            solrize('fileset_accessibility', :stored_searchable)
+            solrize('fileset_accessibility', :stored_searchable),
+            solrize('physical_object_id', :stored_searchable),
           ]
           
           fq = [
-            "(media_organization_id_ssim:#{@organization.id})",
+            media_core_fq,
             "#{solrize('has_model', :symbol)}:Media",
           ]
           
           result = query_solr_with_fq(query_builder: works_search_builder, fq_params: fq, facet_fields: facet_fields)
           return facet_field_hash(result, facet_fields), result['response']['numFound'].to_i
+        end
+
+        def media_core_fq
+          if @organization.organization_type&.first == "Scanning Facility"
+            "(media_device_facility_organization_id_ssim:#{@organization.id})"
+          elsif @organization.organization_type&.first == "Collection and Scanning Facility"
+            "(media_device_facility_organization_id_ssim:#{@organization.id}) OR (media_organization_id_ssim:#{@organization.id})"
+          else
+            "(media_organization_id_ssim:#{@organization.id})"
+          end
         end
 
         def query_solr_with_fq(query_builder:, fq_params:, facet_fields:)

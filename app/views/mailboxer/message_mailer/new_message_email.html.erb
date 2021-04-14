@@ -1,14 +1,9 @@
 <%# From https://github.com/mailboxer/mailboxer/blob/master/app/views/mailboxer/message_mailer/new_message_email.html.erb %>
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-  </head>
-  <body>
-    <p><%= @subject %></p>
-    <blockquote>
-      <p><%= raw @message.body %></p>
-    </blockquote>
-    <p>Please visit <%= link_to "MorphoSource", root_url %> for more information.</p>
-  </body>
+<head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type" /></head>
+<body><%#= @subject %>
+<p><%= raw @message.body %></p>
+<p>Please visit <%= link_to "MorphoSource", root_url %> for more information.</p>
+</body>
 </html>

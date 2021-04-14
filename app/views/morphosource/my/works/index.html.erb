@@ -1,0 +1,37 @@
+<% content_for :body_css_classes do %>showcase showcase-edit media-works<% end %>
+<% provide :page_title, "Media and Objects" %>
+
+<% provide :page_header do %>
+  <div class="col-xs-9 title">
+    <h1><span class="fa fa-cube %>" aria-hidden="true"></span> Media and Objects</h1>
+  </div>
+  <div class="col-xs-3 show-actions text-right">
+    <% if can?(:create, Media) %>
+      <%= link_to 'New media', main_app.new_submission_path(restart: true), class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+
+  <div class="row collection-count">
+      <%= render 'morphosource/my/works/membership_count' %>
+  </div>
+<% end %>
+
+<div class="col-md-12">
+
+  <div class="panel panel-default tabs" role="main">
+
+    <%= render 'nav_tabs' %>
+    <!-- Nav tabs -->
+
+    <!-- Tab panes -->
+
+    <div class="panel-body">
+        <%= render 'search_header' %>
+        <h2 class="sr-only">Works listing</h2>
+        <%= render 'document_list' %>
+        <%= render 'results_pagination' %>
+    </div>
+
+  </div><!-- /panel panel-default tabs -->
+
+</div><!-- div hyc-container -->

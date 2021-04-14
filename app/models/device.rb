@@ -15,4 +15,8 @@ class Device < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
+
+  def organization
+    member_of.select { |m| m.class == Organization }&.first
+  end
 end

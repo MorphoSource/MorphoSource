@@ -9,7 +9,7 @@ module Morphosource
           # clear catalog facet fields
           config.facet_fields = {}
           config.add_facet_field "publication_status_ssi", label: "Publication Status"
-          config.add_facet_field "human_readable_media_type_tesim", label: "Media Type"
+          config.add_facet_field "human_readable_media_type_ssim", label: "Media Type"
           # change to ids?
           config.add_facet_field "media_organization_ssim", label: "Organization"
           config.add_facet_field "member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id

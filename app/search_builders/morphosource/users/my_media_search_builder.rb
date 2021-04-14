@@ -40,7 +40,7 @@ module Morphosource
         end
 
         def edit_user_params
-          ["({!terms f=edit_access_person_ssim}#{current_ability.current_user.id})"]
+          ["({!terms f=edit_access_person_ssim}#{current_ability.current_user.ms_id})"]
         end
 
         def read_groups

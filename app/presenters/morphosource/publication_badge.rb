@@ -5,6 +5,7 @@ module Morphosource
       PUBLICATION_LABEL_CLASS = {
         open: "label-success",
         restricted: "label-info",
+        restricted_download: "label-info",
         preview: "label-info",
         hidden: "label-info",
         private: "label-danger",
@@ -25,6 +26,7 @@ module Morphosource
       PUBLICATION_LABEL_TEXT = {
         "open": "Open Download",
         "restricted": "Restricted Download",
+        "restricted_download": "Restricted Download",
         "preview": "No Download",
         "hidden": "Hidden",
         "private": "Private",

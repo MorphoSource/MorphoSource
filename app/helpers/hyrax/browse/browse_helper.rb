@@ -8,7 +8,7 @@ module Hyrax::Browse::BrowseHelper
 
   def get_media_po_type_info
     facets, @total_media = browse_service.media_po_type_facets
-    po_type_facets = facets["media_physical_object_type_sim"]
+    po_type_facets = facets["media_physical_object_type_ssim"]
     @total_bso_media = po_type_facets["Biological Specimen"] || 0
     @total_cho_media = po_type_facets["Cultural Heritage Object"] || 0
   end
@@ -56,7 +56,7 @@ module Hyrax::Browse::BrowseHelper
   def get_media_type_and_modality_info
     facets, @total_media = browse_service.media_type_and_modality_facets
     @media_type_facets = facets[Solrizer.solr_name('media_type', :facetable)]
-    @modality_facets = facets[Solrizer.solr_name('media_modality', :facetable)]
+    @modality_facets = facets['media_modality_ssim']
   end
 
   def total_media

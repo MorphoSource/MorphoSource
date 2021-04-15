@@ -7,6 +7,10 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
 
   include_context 'cart items'
 
+  before do
+    allow(subject).to receive(:email_sender) { User.first }
+  end
+
   describe "GET #index" do
 
     let(:user1) { User.create(email: "user1@test.com", password: "password")}

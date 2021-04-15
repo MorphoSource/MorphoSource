@@ -75,7 +75,7 @@ module Morphosource::CartItemHelper
   end
 
   def download_requested_button
-    link_to 'Download Requested','', class: 'btn btn-default', role: 'button', disabled: true
+    link_to 'Download Requested', 'javascript:void(0)', class: 'btn btn-default', role: 'button', disabled: true
   end
 
   def request_download_button
@@ -83,11 +83,11 @@ module Morphosource::CartItemHelper
   end
 
   def disabled_request_download_button
-    link_to "Request Download", '', class: 'btn btn-default', role: 'button', disabled: true
+    link_to "Request Download", 'javascript:void(0)', class: 'btn btn-default', role: 'button', disabled: true
   end
 
   def disabled_download_button
-    link_to "Download", '', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;' ,disabled: true
+    link_to "Download", 'javascript:void(0)', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;' ,disabled: true
   end
 
   def in_cart_button
@@ -99,7 +99,7 @@ module Morphosource::CartItemHelper
   end
 
   def disabled_cart_button
-    link_to "Add to Cart", '', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;', disabled: true
+    link_to "Add to Cart", 'javascript:void(0)', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;', disabled: true
   end
 
   # No longer used

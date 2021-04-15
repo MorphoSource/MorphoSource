@@ -222,6 +222,8 @@ Hyrax.config do |config|
   # ID of a media work to be used as the front page preview
   config.front_page_media = Rails.env.production? ? '000009951' : nil
 
+  config.host_name = ENV['HOST_NAME'].present? ? ENV['HOST_NAME'] : 'morphosource.org'
+  
   # Temporary paths to hold uploads before they are ingested into FCrepo
   # These must be lambdas that return a Pathname. Can be configured separately
   config.upload_path = ->() { ENV['HYRAX_UPLOAD_PATH'].present? ? ENV['HYRAX_UPLOAD_PATH'] : Rails.root + 'tmp' + 'uploads' }

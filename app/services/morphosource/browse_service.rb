@@ -2,7 +2,7 @@ module Morphosource
   class BrowseService
     include Blacklight::AccessControls::Catalog
     include Blacklight::Base
-  
+
     attr_reader :solr
 
     #copy_blacklight_config_from(::CatalogController)
@@ -80,8 +80,9 @@ module Morphosource
 
     def media_po_type_facets
       facet_fields = [
-        Solrizer.solr_name('media_physical_object_type', :facetable)
+        'media_physical_object_type_ssim'
       ]
+
       params = {
         fl: 'id',
         fq: ["has_model_ssim:Media"]
@@ -117,7 +118,7 @@ module Morphosource
     def media_type_and_modality_facets
       facet_fields = [
         Solrizer.solr_name("media_type", :facetable),
-        Solrizer.solr_name("media_modality", :facetable)
+        "media_modality_ssim"
       ]
       params = {
         fl: 'id',

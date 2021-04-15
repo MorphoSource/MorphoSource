@@ -24,7 +24,7 @@ module Morphosource
       end
 
       def batch_actions_partial
-        @batch_actions_partial = adding_to_collection? ? 'batch_actions_add_to_collection' : 'batch_actions'
+        @batch_actions_partial = adding_to_collection? ? 'morphosource/my/media/batch_actions_add_to_collection' : 'morphosource/my/media/batch_actions'
       end
 
     end

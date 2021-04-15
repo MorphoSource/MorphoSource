@@ -26,9 +26,15 @@
     <!-- Tab panes -->
 
     <div class="panel-body">
-        <%= render 'search_header' %>
         <!-- <h2 class="sr-only">Works listing</h2> -->
-        <%= render 'show_media_document_list' %>
+        <% if @tab == :media %>
+          <%= render 'tab_media', presenter: @presenter %>
+          <%# <%= render 'morphosource/my/media/document_list' %>
+        <% else %>
+        <!-- search_header has batch actions, pagination, and search bar -->
+          <%= render 'search_header' %>
+          <%= render 'document_list' %>
+        <% end %>
         <%= render 'results_pagination' %>
     </div>
 

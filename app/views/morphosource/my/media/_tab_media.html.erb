@@ -1,0 +1,52 @@
+<%= render 'did_you_mean' %>
+
+<%= render 'facets' %>
+<%= render 'constraints' %>
+
+<div class="row">
+  <% if @document_list.count > 0 %>
+  <div class="col-xs-12 col-sm-12 col-md-7 batch-action-buttons">
+    <div class="row">
+      <%= render @batch_actions_partial %>
+    </div>
+  </div>
+  <% end %>
+
+  <!-- Search bar -->
+  <div class="col-xs-12 col-sm-9 col-md-4">
+    <%= render 'search_form', tab: "media" %>
+  </div>
+  <div class="col-xs-12 col-sm-3 col-md-1">
+    <%= render 'sort_and_per_page_media' %>
+  </div>
+</div>
+
+<%# if @media_member_count > 0 %>
+  <%# if document_index_view_type == :gallery %>
+  <%#div class="col-xs-12 text-muted">
+    <input type="checkbox" id="select-all-for-download" /> Select all
+  </div>
+  <% end %>
+<%# end %>
+
+<% if @document_list.count > 0 %>
+  <!-- Works -->
+  <div class="hyc-blacklight hyc-bl-results">
+    <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
+      <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
+
+      <%# <%= render_document_index @paged_media_member_docs, work_type: 'media'%>
+      <%= render 'morphosource/my/media/document_list' %>
+
+    <% end # / form_tag %>
+  </div>
+  <!-- <div class="hyc-blacklight hyc-bl-pager">
+    <%# <%= render 'paginate_media' %> %>
+  </div> -->
+<% else %>
+  <div class="row">
+    <div class="no-result">
+      No media found.
+    </div>
+  </div>
+<% end # if @media_member_count > 0 %>

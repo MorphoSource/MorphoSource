@@ -53,6 +53,10 @@ module Morphosource
 
       private
 
+      def search_action_url(*args)
+        main_app.my_media_index_path(*args)
+      end
+
       def save_tab
         @tab = :media
       end

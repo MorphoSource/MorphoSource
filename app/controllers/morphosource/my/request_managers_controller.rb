@@ -70,7 +70,7 @@ module Morphosource
             "<li><a href='http://#{host_name}/dashboard/my/cart'>View my media cart</a></li>" +
             "<li><a href='http://#{host_name}/dashboard/my/requests'>View my requests</a></li>" +
             "<p>Please contact <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> if you have a question related to this request.</p>" 
-            Hyrax::MessengerService.deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
+            deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
           end
         end
       end
@@ -85,7 +85,7 @@ module Morphosource
             "<li><a href='http://#{host_name}/dashboard/my/cart'>View my media cart</a></li>" +
             "<li><a href='http://#{host_name}/dashboard/my/requests'>View my requests</a></li>" +
             "<p>Please contact <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> if you have a question related to this request.</p>" 
-            Hyrax::MessengerService.deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
+            deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
           end
         end
       end

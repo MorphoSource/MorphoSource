@@ -27,6 +27,15 @@ module Morphosource
         return @cart_item_message_content
       end
 
+      def deliver(sender, recipient, message, subject)
+        begin
+          Hyrax::MessengerService.deliver(sender, recipient, message, subject)
+          # arguments passed to messenger_service: (sender, recipients, body, subject, *args)
+        rescue => e
+          Rails.logger.debug "Error sending message. Exception: #{ e.message }"
+        end
+      end
+
     end
   end
 end

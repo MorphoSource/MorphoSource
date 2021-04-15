@@ -3,6 +3,7 @@ module Morphosource
     class RequestsController < Hyrax::MyController
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
+      include Morphosource::CartItems::RequestMessages
       with_themed_layout 'morphosource_dashboard'      
 
       before_action :get_items_by_id, except: [:index]
@@ -52,11 +53,11 @@ module Morphosource
         reviewer_counts.each do |reviewer_id, count|
           reviewer = User.where(ms_id: reviewer_id).first
           if reviewer.present?
-            message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + count.to_s + " media.  Please review in <a href='http://#{host}/dashboard/my/request_manager'>Manage Requests</a> page." 
-            Hyrax::MessengerService.deliver(email_sender, reviewer, message_to_reviewer, "You have download request to review")
+            message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + count.to_s + " media.  Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard."
+            deliver(email_sender, reviewer, message_to_reviewer, "You have download request to review")
 
-            message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + count.to_s + " media.  You can view your requests in <a href='http://#{host}/dashboard/my/requests'>My Requests</a> page." 
-            Hyrax::MessengerService.deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
+            message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + count.to_s + " media.  You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard."
+            deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
           end
         end
       end
@@ -67,40 +68,13 @@ module Morphosource
           requestor = current_user
           reviewer = User.where(ms_id:work.reviewer.first).first
           if reviewer.present?
-            message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + message_content(item, work) + "Please review in <a href='http://#{host}/dashboard/my/request_manager'>Manage Requests</a> page." 
-            Hyrax::MessengerService.deliver(email_sender, reviewer, message_to_reviewer, "You have a download request to review")
+            message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + cart_item_message_content(item, work) + "Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard."
+            deliver(email_sender, reviewer, message_to_reviewer, "You have a download request to review")
 
-            message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + message_content(item, work) + "You can view your requests in <a href='http://#{host}/dashboard/my/requests'>My Requests</a> page." 
-            Hyrax::MessengerService.deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
-
-            # arguments passed to messenger_service: (sender, recipients, body, subject, *args)
+            message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + cart_item_message_content(item, work) + "You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard."
+            deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
           end
         end
-      end
-
-      def message_content(item, work)
-        return @message_content if @message_content.present?
-        content = "the media <b><a href='http://#{host}/media/#{work.id}'>#{work.title.first}</a></b>"
-        object = work.objects&.first
-        if object.present?
-          if object.specimen?
-            content += " of " + work.physical_object_type.downcase + " <b><a href='http://#{host}/biological_specimens/#{object.id}'>#{object.title.first}</a>" + "</b>" + " (" + object.taxonomies_titles&.first + ")"
-          else
-            content += " of " + work.physical_object_type.downcase + 
-              " <b><a href='http://#{host}/cultural_heritage_objects/#{object.id}'>#{object.title.first}</a>" + "</b>" 
-          end
-        end
-        content += " for intended use: <i>\"" + item.use + "\"</i>" if item.use.present?
-        @message_content = content.html_safe + ".  "
-        return @message_content
-      end
-
-      def email_sender
-        @email_sender ||= ::User.batch_user
-      end
-
-      def host
-        @host ||= Hyrax.config.host_name
       end
 
       def cancel_request

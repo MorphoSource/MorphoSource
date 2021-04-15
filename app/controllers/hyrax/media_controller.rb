@@ -239,7 +239,7 @@ module Hyrax
 
     # media thumbnail route to get to 2D preview image
     def thumbnail
-      if current_user.can?(:read, curation_concern)
+      if authorize!(:read, curation_concern)
         redirect_to(main_app.download_path(
           id: curation_concern.thumbnail.present? ? curation_concern.thumbnail.id : curation_concern.id, 
           file: 'thumbnail'

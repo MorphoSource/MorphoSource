@@ -3,6 +3,7 @@ module Morphosource
     class OrganizationMemberService
       include Blacklight::AccessControls::Catalog
       include Blacklight::Base
+      include SolrHelper
     
       attr_reader :solr
 
@@ -16,50 +17,40 @@ module Morphosource
       end
 
       def member_media(fq_params = [])
-        core_fq = "(media_organization_id_ssim:#{@organization.id})"
-        core_fq += " AND (has_model_ssim:Media)"
-        fq_params << core_fq 
+        fq_params << media_core_fq + " AND (has_model_ssim:Media)"
         available_member_works_filter_query(fq_params: fq_params)
       end
 
-      def member_bso(fq_params = [])
-        @member_bso ||= (
-          core_fq = "(organization_id_ssim:#{@organization.id})"
-          core_fq += " AND (has_model_ssim:BiologicalSpecimen)"
-          fq_params << core_fq 
-          available_member_works_filter_query(fq_params: fq_params, object_model: BiologicalSpecimen)
-        )
+      def media_core_fq
+        if @organization.organization_type&.first == "Scanning Facility"
+          "(media_device_facility_organization_id_ssim:#{@organization.id})"
+        elsif @organization.organization_type&.first == "Collection and Scanning Facility"
+          "((media_device_facility_organization_id_ssim:#{@organization.id}) OR (media_organization_id_ssim:#{@organization.id}))"
+        else
+          "(media_organization_id_ssim:#{@organization.id})"
+        end
       end
 
-      def member_cho(fq_params = [])
-        @member_cho ||= (
-          core_fq = "(organization_id_ssim:#{@organization.id})"
-          core_fq += " AND (has_model_ssim:CulturalHeritageObject)"
-          fq_params << core_fq 
-          available_member_works_filter_query(fq_params: fq_params, object_model: CulturalHeritageObject)
-        )
+      def member_bso(object_ids = [], fq_params = [])
+        fq_params << po_core_fq(object_ids) + " AND (has_model_ssim:BiologicalSpecimen)"
+        available_member_works_filter_query(fq_params: fq_params, object_model: BiologicalSpecimen)
+      end
+
+      def member_cho(object_ids = [], fq_params = [])
+        fq_params << po_core_fq(object_ids) + " AND (has_model_ssim:CulturalHeritageObject)"
+        available_member_works_filter_query(fq_params: fq_params, object_model: CulturalHeritageObject)
+      end
+
+      def po_core_fq(object_ids = [])
+        if object_ids.present? && @organization.organization_type&.first == "Scanning Facility"
+          "(#{assemble_or_query('id', object_ids)})"
+        elsif object_ids.present? && @organization.organization_type&.first == "Collection and Scanning Facility"
+          "((#{assemble_or_query('id', object_ids)}) OR (organization_id_ssim:#{@organization.id}))"
+        else
+          "(organization_id_ssim:#{@organization.id})"
+        end
       end
   
-#      def bso_ids
-#        return [] unless @member_bso.present?
-#        @bso_ids ||= (
-#          @member_bso.documents.map { |o| o.id }
-#        )
-#      end
-#
-#      def cho_ids
-#        return [] unless @cho_ids.present?
-#        @cho_ids ||= (
-#          @member_cho.documents.map { |o| o.id }
-#        )
-#      end
-
-      def assemble_or_query(field, values)
-        return "" if !field.present? || !values.present?
-        field + ':(' + values.join(' OR ').upcase + ')'
-      end
-
-
       private
 
         def available_member_works_filter_query(fq_params: [], object_model: nil)
@@ -114,10 +105,6 @@ module Morphosource
         def start_param(rows = 10)
           page = @params[:page].presence || 1
           ((page.to_i - 1) * rows.to_i).to_s
-        end
-  
-        def solr_service
-          Morphosource::SolrService
         end
     end
   end

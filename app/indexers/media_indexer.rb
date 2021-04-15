@@ -101,7 +101,15 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['publication_status_ssi'] = publication_status
 
       # related media ids
-      solr_doc['imaging_event_id_tesim'] = object.imaging_event&.id
+      ie = object.imaging_event
+      solr_doc['imaging_event_id_tesim'] = ie&.id
+
+      facility_org = ie&.device&.organization
+      facility_org_title = facility_org&.title&.first
+      solr_doc['media_device_facility_organization_tesim'] = facility_org_title
+      solr_doc['media_device_facility_organization_ssim'] = facility_org_title
+      solr_doc['media_device_facility_organization_id_tesim'] = facility_org&.id
+      solr_doc['media_device_facility_organization_id_ssim'] = facility_org&.id
    end
   end
 

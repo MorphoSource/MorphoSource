@@ -89,7 +89,10 @@
               <td data-sort="<%= fc.external_user_additional_rate_percent %>"><%= fc.external_user_additional_rate_percent %></td> 
               <td>
                 <%= link_to 'Edit', main_app.admin_fund_codes_path(:id => fc.id), class: 'btn btn-sm btn-primary' %>
-                <%= link_to 'Delete', main_app.admin_fund_codes_delete_path(:id => fc.id), class: 'btn btn-sm btn-danger', method: :delete, :data => {:confirm => 'Are you sure you want to delete this fund code?'} %>
+                <%= link_to 'Delete', main_app.admin_fund_codes_delete_path(:id => fc.id), class: "btn btn-sm btn-danger #{fc.fund_code_media_associations.present? ? 'disabled' : ''}", method: :delete, :data => {:confirm => 'Are you sure you want to delete this fund code?'} %>
+                <% if fc.fund_code_media_associations.present? %>
+                  <div><i>Can't delete, has media.</i></div>
+                <% end %>
               </td>
             </tr>
           <% end %>

@@ -31,6 +31,8 @@
               </div>
           </div>
           <%= f.input :preparation_notes %>
+          <%= f.input :anonymize_origin, collection: ['NOT Anonymize Origin', 'Anonymize Origin'] %>
+          <%= f.input :anonymize_meta_data, collection: ['NOT Anonymize Meta Data', 'Anonymize Meta Data'] %>
         </div>
       </div>
       <!-- /left column  -->

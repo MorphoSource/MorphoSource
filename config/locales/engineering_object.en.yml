@@ -18,3 +18,12 @@ en:
         preparation_notes: 'Object preparation/creation description/notes'
         anonymize_origin: "Anonymize Origin"
         anonymize_meta_data: "Anonymize Meta Data"
+    hints:
+      engineering_object:
+        is_pak: Is PAK
+        is_built_in_fiducials_present: 'Built-in Fiducials Present?'
+        snl_assembler: 'SNL Assembler - creator/collector'
+        assembly_date: 'Assembly Date'
+        preparation_notes: 'Object preparation/creation description/notes'
+        anonymize_origin: "Anonymize Origin"
+        anonymize_meta_data: "Anonymize Meta Data"

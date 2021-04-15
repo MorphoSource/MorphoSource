@@ -3,12 +3,12 @@ module Hyrax
     class EngineeringObjectActor < Hyrax::Actors::BaseActor
 
       def create(env)
-        env.attributes['title'] = [ generated_title(env) ]
+        env.attributes['title'] = [ generated_title(env) ] if env.attributes['title'].blank?
         super
       end
 
       def update(env)
-        env.attributes['title'] = [ generated_title(env) ]
+        env.attributes['title'] = [ generated_title(env) ] if env.attributes['title'].blank?
         super
       end
 
@@ -44,6 +44,8 @@ module Hyrax
         return title unless title.empty?
 
         title = identifier_generated_title(attrs['identifier'])
+
+        title || "Engineering Object"
       end
 
       private

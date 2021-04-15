@@ -72,7 +72,12 @@ class SubmissionsController < ApplicationController
 
   def organization_for_recordset
     recordset_id = params[:recordset_id]
-    organization = Organization.where(recordset_id: recordset_id)&.first
+
+    if Organization.where(recordset_id: recordset_id).count == 1
+      organization = Organization.where(recordset_id: recordset_id).first
+    else
+      organization = nil
+    end
 
     if organization.present?
       status = 'OK'

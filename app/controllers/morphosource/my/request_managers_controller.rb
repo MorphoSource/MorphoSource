@@ -67,7 +67,7 @@ module Morphosource
           requestor = User.where(ms_id: requestor_id).first
           if requestor.present?
             message_to_requestor = "<p>Your download request has been #{action} for #{count} media.</p>" +
-            "<li><a href='http://#{host_name}/dashboard/my/requests'>View my media cart</a></li>" +
+            "<li><a href='http://#{host_name}/dashboard/my/cart'>View my media cart</a></li>" +
             "<li><a href='http://#{host_name}/dashboard/my/requests'>View my requests</a></li>" +
             "<p>Please contact <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> if you have a question related to this request.</p>" 
             Hyrax::MessengerService.deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
@@ -82,7 +82,7 @@ module Morphosource
           requestor = User.where(ms_id:item.user_id).first
           if requestor.present?
             message_to_requestor = "<p>Your download request has been #{action} for " + cart_item_message_content(item, work) + "</p>" +
-            "<li><a href='http://#{host_name}/dashboard/my/requests'>View my media cart</a></li>" +
+            "<li><a href='http://#{host_name}/dashboard/my/cart'>View my media cart</a></li>" +
             "<li><a href='http://#{host_name}/dashboard/my/requests'>View my requests</a></li>" +
             "<p>Please contact <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> if you have a question related to this request.</p>" 
             Hyrax::MessengerService.deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")

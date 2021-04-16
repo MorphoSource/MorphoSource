@@ -435,13 +435,12 @@ module Hyrax
 
     attr_writer :batch_user_key
     def batch_user_key
-      #@batch_user_key ||= 'batchuser@example.com'
-      @batch_user_key ||= '1' # user with key '1' (admin@email.com)
+      @batch_user_key ||= 'morphosource@duke.edu'
     end
 
     attr_writer :audit_user_key
     def audit_user_key
-      @audit_user_key ||= 'audituser@example.com'
+      @audit_user_key ||= 'morphosource@duke.edu'
     end
 
     # NOTE: This used to be called `working_path` in CurationConcerns

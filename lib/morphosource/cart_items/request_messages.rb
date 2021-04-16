@@ -7,7 +7,8 @@ module Morphosource
       end
 
       def email_sender
-        @email_sender ||= ::User.batch_user
+        # todo: look up sender from config instead
+        @email_sender ||= User.where(email: 'morphosource@duke.edu')&.first
       end
 
       def cart_item_message_content(item, work)

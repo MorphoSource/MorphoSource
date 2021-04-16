@@ -1,13 +1,34 @@
 .list-filters {
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
 }
 
 .list-filters fieldset {
-
+  margin-right: 10px;
+  margin-bottom: 10px;
+  min-width: 150px;
 }
 
 .list-filters button {
-  background-color: gray;
-  color: black;
+  max-width: 200px !important;
+  min-width: 200px !important;
+  background-color: #fff !important;
+  color: black !important;
+}
+
+@media only screen and (max-width: 760px) {
+  .list-filters {
+    flex-wrap: wrap;
+  }
+
+  .list-filters fieldset {
+    // flex: 1 1 0;
+    width: 100%;
+  }
+
+  .list-filters button {
+    max-width: 100% !important;
+    min-width: 100% !important;
+  }
 }

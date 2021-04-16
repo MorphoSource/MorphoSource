@@ -101,10 +101,9 @@ RSpec.describe MediaIndexer do
     let(:organization)  { Organization.create(title: ['Organization']) }
     let(:taxonomy)      { Taxonomy.create(title: ['taxonomy title']) }
     let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
-    let(:cho)           { CulturalHeritageObject.create(title: ['CHO'], vouchered: ['Yes'], organization_id: [organization.id]) }
     let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], physical_object_id: [cho.id, specimen.id], ie_modality: device.modality) }
-    let(:works)         { [specimen, cho, media, imaging_event] }
+    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
+    let(:works)         { [specimen, media, imaging_event] }
 
     before do
       imaging_event.ordered_members << media
@@ -113,8 +112,8 @@ RSpec.describe MediaIndexer do
     end
 
     it 'indexes physical object id' do
-      expect(subject['physical_object_id_ssim']).to match_array([specimen.id, cho.id])
-      expect(subject['physical_object_id_tesim']).to match_array([specimen.id, cho.id])
+      expect(subject['physical_object_id_ssim']).to match_array([specimen.id])
+      expect(subject['physical_object_id_tesim']).to match_array([specimen.id])
     end
 
     it 'indexes physical object type' do
@@ -128,10 +127,10 @@ RSpec.describe MediaIndexer do
     end
 
     it 'indexes organizations' do
-      expect(subject['media_organization_tesim']).to match_array([organization.title.first, organization.title.first])
-      expect(subject['media_organization_ssim']).to match_array([organization.title.first, organization.title.first])
-      expect(subject['media_organization_id_ssim']).to match_array([organization.id, organization.id])
-      expect(subject['media_organization_id_tesim']).to match_array([organization.id, organization.id])
+      expect(subject['media_organization_tesim']).to match_array([organization.title.first])
+      expect(subject['media_organization_ssim']).to match_array([organization.title.first])
+      expect(subject['media_organization_id_ssim']).to match_array([organization.id])
+      expect(subject['media_organization_id_tesim']).to match_array([organization.id])
     end
   end
 

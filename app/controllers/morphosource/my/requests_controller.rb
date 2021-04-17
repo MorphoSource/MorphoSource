@@ -42,22 +42,28 @@ module Morphosource
         requestor = current_user
         # send message for each reviewer
         reviewers = []
+        reviewer_items = {}
         items.each do |item|
           work = Media.find(item.work_id)
           if work.present?
             reviewer_id = work.reviewer.first
             reviewers << reviewer_id
+            reviewer_items[reviewer_id] = item # store the item for sending details if single item
           end
         end
         reviewer_counts = reviewers.group_by{|e| e}.map{|k, v| [k, v.length]}.to_h
         reviewer_counts.each do |reviewer_id, count|
           reviewer = User.where(ms_id: reviewer_id).first
           if reviewer.present?
-            message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + count.to_s + " media.  Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard."
-            deliver(email_sender, reviewer, message_to_reviewer, "You have download request to review")
+            if count == 1
+              send_request_message(reviewer_items[reviewer_id])
+            else
+              message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + count.to_s + " media.  Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard."
+              deliver(email_sender, reviewer, message_to_reviewer, "You have download request to review")
 
-            message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + count.to_s + " media.  You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard."
-            deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
+              message_to_requestor = "You have sent a download request to <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> for downloading " + count.to_s + " media.  You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard."
+              deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
+            end
           end
         end
       end

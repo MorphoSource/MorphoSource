@@ -57,20 +57,25 @@ module Morphosource
       def send_batch_response_messages(items, action)
         reviewer = current_user
         # send message for each requestor
-
         requestors = []
+        requestor_items = {}
         items.each do |item|
           requestors << item.user_id
+          requestor_items[item.user_id] = item # store the item for sending details if single item
         end
         requestor_counts = requestors.group_by{|e| e}.map{|k, v| [k, v.length]}.to_h
         requestor_counts.each do |requestor_id, count|
           requestor = User.where(ms_id: requestor_id).first
           if requestor.present?
-            message_to_requestor = "<p>Your download request has been #{action} for #{count} media.</p>" +
-            "<li><a href='http://#{host_name}/dashboard/my/cart'>View my media cart</a></li>" +
-            "<li><a href='http://#{host_name}/dashboard/my/requests'>View my requests</a></li>" +
-            "<p>Please contact <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> if you have a question related to this request.</p>" 
-            deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
+            if count == 1
+              send_response_message(requestor_items[requestor_id], action)
+            else
+              message_to_requestor = "<p>Your download request has been #{action} for #{count} media.</p>" +
+              "<li><a href='http://#{host_name}/dashboard/my/cart'>View my media cart</a></li>" +
+              "<li><a href='http://#{host_name}/dashboard/my/requests'>View my requests</a></li>" +
+              "<p>Please contact <a href='mailto:#{reviewer.email}'>#{reviewer.name_or_email}</a> if you have a question related to this request.</p>" 
+              deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
+            end
           end
         end
       end

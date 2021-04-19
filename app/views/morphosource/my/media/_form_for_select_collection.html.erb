@@ -13,11 +13,11 @@
             <div class="collection-list">
               <fieldset>
               <ul>
-                <% if @add_works_to_collection.present? %>
+                <% if @collection.present? %>
                   <div class="add-works">
                     The selected media will be added to:
-                    <%= text_field_tag 'member_of_collection_label', @add_works_to_collection_label, disabled: true %>
-                    <%= hidden_field_tag 'member_of_collection_ids', @add_works_to_collection %>
+                    <%= text_field_tag 'member_of_collection_label', @collection.title.first, disabled: true %>
+                    <%= hidden_field_tag 'member_of_collection_ids', @collection.id %>
                   </div>
                 <% else %>
                   <legend><%= t("hyrax.collection.select_form.select_heading") %></legend>

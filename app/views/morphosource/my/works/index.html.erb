@@ -1,41 +1,20 @@
 <% content_for :body_css_classes do %>showcase showcase-edit media-works<% end %>
-<% provide :page_title, "Media and Objects" %>
 
-<% provide :page_header do %>
-  <div class="col-xs-9 title">
-    <h1><span class="fa fa-cube %>" aria-hidden="true"></span> Media and Objects</h1>
-  </div>
-  <div class="col-xs-3 show-actions text-right">
-    <% if can?(:create, Media) %>
-      <%= link_to 'New media', main_app.new_submission_path(restart: true), class: 'btn btn-primary' %>
-    <% end %>
-  </div>
+<% provide :page_title, @page_title %>
 
-  <div class="row collection-count">
-      <%= render 'morphosource/my/works/membership_count' %>
-  </div>
-<% end %>
+<%= render 'page_header' %>
 
 <div class="col-md-12">
 
   <div class="panel panel-default tabs" role="main">
 
     <%= render 'nav_tabs' %>
-    <!-- Nav tabs -->
-
-    <!-- Tab panes -->
 
     <div class="panel-body">
-        <!-- <h2 class="sr-only">Works listing</h2> -->
-        <% if @tab == :media %>
-          <%= render 'tab_media', presenter: @presenter %>
-          <%# <%= render 'morphosource/my/media/document_list' %>
-        <% else %>
-        <!-- search_header has batch actions, pagination, and search bar -->
-          <%= render 'search_header' %>
-          <%= render 'document_list' %>
-        <% end %>
-        <%= render 'results_pagination' %>
+      <!-- search_header has batch actions, pagination, and search bar -->
+      <%= render 'search_header' %>
+      <%= render 'document_list' %>
+      <%= render 'results_pagination' %>
     </div>
 
   </div><!-- /panel panel-default tabs -->

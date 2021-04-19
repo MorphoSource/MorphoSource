@@ -56,8 +56,9 @@ Rails.application.routes.draw do
     scope :dashboard do
       namespace :my do
         resources :media, only: [:index], controller: 'media'
+        resources :media, path: "media/:collection_id", only: [:index], controller: 'add_media', as: 'add_media'
         resources :specimens, only: [:index],
-        controller: 'specimens'
+        controller: 'biological_specimens'
         resources :cultural_heritage_objects, only: [:index],
         controller: 'cultural_heritage_objects'
       end

@@ -9,7 +9,7 @@ module Morphosource
 
       with_themed_layout 'morphosource_dashboard'
 
-      before_action :save_tab, only: [:index]
+      before_action :tab_variables, only: [:index]
 
       def index
         # The user's collections for the "add to collection" form

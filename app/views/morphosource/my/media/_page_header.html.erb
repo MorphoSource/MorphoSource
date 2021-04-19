@@ -1,0 +1,14 @@
+<% provide :page_header do %>
+  <div class="col-xs-9 title">
+    <h1><span class="fa fa-cube %>" aria-hidden="true"></span> Media and Objects</h1>
+  </div>
+  <div class="col-xs-3 show-actions text-right">
+    <% if can?(:create, Media) %>
+      <%= link_to 'New media', main_app.new_submission_path(restart: true), class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+
+  <div class="row collection-count">
+      <%= render 'morphosource/my/works/membership_count' %>
+  </div>
+<% end %>

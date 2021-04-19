@@ -1,11 +1,10 @@
 module Morphosource
   module My
-    class MediaController < WorksController
-      include MediaControllerBehavior
+    class BiologicalSpecimensController < WorksController
 
       def self.configure_facets
         configure_blacklight do |config|
-          config.search_builder_class = Morphosource::Users::MyMediaSearchBuilder
+          config.search_builder_class = Morphosource::Users::MySpecimensSearchBuilder
           # clear catalog facet fields
           config.facet_fields = {}
           config.add_facet_field "publication_status_ssi", label: "Publication Status"
@@ -16,24 +15,27 @@ module Morphosource
           config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
         end
       end
-      configure_facets      
+      configure_facets
 
-      def search_builder_class
-        Morphosource::Users::MyMediaSearchBuilder
+      def index
+        super
       end
 
       private
 
+        def search_builder_class
+          Morphosource::Users::MySpecimensSearchBuilder
+        end
+
         def search_action_url(*args)
-          main_app.my_media_index_path(*args)
+          main_app.my_specimens_path(*args)
         end
 
         def tab_variables
-          @tab = :media
+          @tab = :specimens
           @page_title = 'Media and Objects'
-          @add_to_collection_button_label = t('hyrax.dashboard.my.action.add_to_collection')
-          @batch_actions_partial = 'morphosource/my/media/batch_actions'
         end
+
     end
   end
 end

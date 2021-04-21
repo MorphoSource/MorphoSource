@@ -8,6 +8,6 @@
   <%= submit_tag("Delete Selected", class: 'batch-all-button btn btn-sm btn-default submits-batches disabled', disabled: 'disabled', data: { confirm: "Deleting a file from #{application_name} is permanent. Click OK to delete this file from #{application_name}, or Cancel to cancel this operation" }) %>
 <% end %>
 
-<%= button_tag @add_to_collection_button_label,
+<%= button_tag t('hyrax.dashboard.my.action.add_to_collection'),
     class: 'btn btn-sm btn-default submits-batches submits-batches-add disabled', disabled: 'disabled',
     data: { toggle: "modal", target: "#collection-list-container" } %>

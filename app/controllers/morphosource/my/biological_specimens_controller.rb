@@ -4,15 +4,15 @@ module Morphosource
 
       def self.configure_facets
         configure_blacklight do |config|
+          config.http_method = :post
           config.search_builder_class = Morphosource::Users::MySpecimensSearchBuilder
           # clear catalog facet fields
           config.facet_fields = {}
-          config.add_facet_field "publication_status_ssi", label: "Publication Status"
-          config.add_facet_field "human_readable_media_type_ssim", label: "Media Type"
+          # source
           # change to ids?
-          config.add_facet_field "media_organization_ssim", label: "Organization"
-          config.add_facet_field "member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id
-          config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
+          config.add_facet_field "organization_ssim", label: "Organization"
+          config.add_facet_field "media_member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id
+          config.add_facet_field "media_member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
         end
       end
       configure_facets
@@ -33,7 +33,6 @@ module Morphosource
 
         def tab_variables
           @tab = :specimens
-          @page_title = 'Media and Objects'
         end
 
     end

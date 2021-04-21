@@ -25,6 +25,10 @@ module Morphosource
           hyrax.my_works_path
         end
       end
-    end    
+
+      def total_viewable_media(id)
+        ActiveFedora::Base.where("physical_object_id_tesim:#{id} AND has_model_ssim:Media").accessible_by(current_ability).count
+      end
+    end
   end
 end

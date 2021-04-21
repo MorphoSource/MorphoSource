@@ -74,6 +74,23 @@ module Morphosource::PhysicalObjectBehavior
     end
   end
 
+  def media_member_of_team_ids
+    media_collection_ids_of_type("Team")
+  end
+
+  def media_member_of_project_ids
+    media_collection_ids_of_type("Project")
+  end
+
+  def media_collection_ids_of_type(type)
+    collection_ids = media.map(&:member_of_collection_ids).reject(&:blank?)
+    return [] if collection_ids.empty?
+    qry = "(id:(#{collection_ids.join(' OR ')}) AND human_readable_type_tesim:#{type})"
+    collections = ActiveFedora::SolrService.query(qry, rows: 999999)
+    collections.map(&:id)
+  end
+
+
   def media_member_of_public_collection_ids
     public_media.each_with_object([]) do |m, collections|
       m.member_of_public_collection_ids.each do |id|

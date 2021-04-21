@@ -1,10 +1,10 @@
 module Morphosource
   module My
     class MediaController < WorksController
-      include MediaControllerBehavior
 
       def self.configure_facets
         configure_blacklight do |config|
+          config.http_method = :post
           config.search_builder_class = Morphosource::Users::MyMediaSearchBuilder
           # clear catalog facet fields
           config.facet_fields = {}
@@ -16,7 +16,7 @@ module Morphosource
           config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
         end
       end
-      configure_facets      
+      configure_facets
 
       def search_builder_class
         Morphosource::Users::MyMediaSearchBuilder
@@ -30,9 +30,6 @@ module Morphosource
 
         def tab_variables
           @tab = :media
-          @page_title = 'Media and Objects'
-          @add_to_collection_button_label = t('hyrax.dashboard.my.action.add_to_collection')
-          @batch_actions_partial = 'morphosource/my/media/batch_actions'
         end
     end
   end

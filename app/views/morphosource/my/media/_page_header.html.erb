@@ -1,6 +1,6 @@
 <% provide :page_header do %>
   <div class="col-xs-9 title">
-    <h1><span class="fa fa-cube %>" aria-hidden="true"></span> Media and Objects</h1>
+    <h1><span class="fa fa-cube %>" aria-hidden="true"></span> <%= @page_title || t("morphosource.dashboard.my.media_objects.title") %></h1>
   </div>
   <div class="col-xs-3 show-actions text-right">
     <% if can?(:create, Media) %>
@@ -9,6 +9,6 @@
   </div>
 
   <div class="row collection-count">
-      <%= render 'morphosource/my/works/membership_count' %>
+      <%= render 'membership_count' %>
   </div>
 <% end %>

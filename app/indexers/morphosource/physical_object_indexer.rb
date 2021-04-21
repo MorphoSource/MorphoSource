@@ -29,13 +29,15 @@ module Morphosource
 
         # organization facet
         solr_doc['organization_tesim'] = organization_titles
-        solr_doc['organization_sim'] = organization_titles
+        solr_doc['organization_ssim'] = organization_titles
         solr_doc['organization_id_ssim'] = object.organization_id
         # media types facet
         solr_doc['public_media_type_tesim'] = public_human_readable_media_types
         solr_doc['public_media_type_ssim'] = public_human_readable_media_types
         # media collections
         solr_doc['media_member_of_public_collection_ids_ssim'] = media_member_of_public_collection_ids
+        solr_doc['media_member_of_project_ids_ssim'] = object.media_member_of_project_ids
+        solr_doc['media_member_of_team_ids_ssim'] = object.media_member_of_team_ids
         # media tags
         solr_doc['public_media_keyword_tesim'] = public_media_keyword
         solr_doc['public_media_keyword_ssim'] = public_media_keyword

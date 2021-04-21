@@ -18,13 +18,13 @@ class AllCatalogController < CatalogController
     config.add_facet_field solr_name("human_readable_media_type", :facetable), label: "Media Type", limit: 5
     config.add_facet_field solr_name("media_modality", :facetable), label: "Media Modality", limit: 6
     config.add_facet_field solr_name("media_physical_object_type", :facetable), label: "Media Object Type", limit: 5
-    config.add_facet_field solr_name("media_organization", :facetable), label: "Media Organization", limit: 5
+    config.add_facet_field "media_organization_ssim", label: "Media Organization", limit: 5
     config.add_facet_field solr_name("keyword", :facetable), label: "Media Tag", limit: 5
     config.add_facet_field solr_name('member_of_collections', :symbol), label: 'Media Team / Project', limit: 5
     # objects
     config.add_facet_field solr_name("creator", :facetable), label: "Object Creator", limit: 5
     # organization
-    config.add_facet_field solr_name("organization", :facetable), label: "Object Organization", limit: 5
+    config.add_facet_field "organization_ssim", label: "Object Organization", limit: 5
     # media types - human_readable_media_type for child   media
     # media collection
     config.add_facet_field solr_name("media_collections", :facetable), label: "Object Media Team / Project", limit: 5

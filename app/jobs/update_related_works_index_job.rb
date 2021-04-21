@@ -10,7 +10,9 @@ class UpdateRelatedWorksIndexJob < Hyrax::ApplicationJob
     if works.first.collection?
       reindex_collections(works)
     else
-      works.each(&:update_index)
+      works.each do |work|
+        work.update_index if ::ActiveFedora::Base.exists?(work.id)
+      end
     end
   end
 

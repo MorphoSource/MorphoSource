@@ -193,6 +193,7 @@ module MorphosourceHelper
   end
 
   def render_publication_status_badge(document)
+    return if document["fileset_accessibility_ssim"].nil?
     publication_status = document[ "fileset_accessibility_ssim"].first
     path = edit_polymorphic_path([main_app, document], anchor: 'share')
 

@@ -66,6 +66,7 @@ module Hyrax
         @organization_media_groups = @organization_information['media_groups'] ||= {}
         @organization_bso_groups = @organization_information['bso_groups'] ||= {}
         @organization_cho_groups = @organization_information['cho_groups'] ||= {}
+        @organization_object_ids = @organization_information['organization_object_ids'] ||= []
       end
 
       def organization_information_service
@@ -85,12 +86,12 @@ module Hyrax
         @media_member_count = @response.total
         @paged_media_member_docs = paginated_media_item_list
 
-        @bso_response = member_service.member_bso(bso_filter_params)
+        @bso_response = member_service.member_bso(@organization_object_ids, bso_filter_params)
         @bso_member_docs = @bso_response.present? ? @bso_response.documents : []
         @bso_member_count = @bso_response.total
         @paged_bso_member_docs = paginated_bso_item_list
 
-        @cho_response = member_service.member_cho
+        @cho_response = member_service.member_cho(@organization_object_ids)
         @cho_member_docs = @cho_response.present? ? @cho_response.documents : []
         @cho_member_count = @cho_response.total
         @paged_cho_member_docs = paginated_cho_item_list

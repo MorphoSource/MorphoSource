@@ -296,6 +296,11 @@ module Hyrax
       @banner_image ||= 'https://user-images.githubusercontent.com/101482/29949206-ffa60d2c-8e67-11e7-988d-4910b8787d56.jpg'
     end
 
+    attr_writer :host_name
+    def host_name
+      @host_name ||= "morphosource.org"
+    end
+
     attr_writer :front_page_media
     def front_page_media
       @front_page_media ||= nil
@@ -430,13 +435,12 @@ module Hyrax
 
     attr_writer :batch_user_key
     def batch_user_key
-      #@batch_user_key ||= 'batchuser@example.com'
-      @batch_user_key ||= '1' # user with key '1' (admin@email.com)
+      @batch_user_key ||= 'morphosource@duke.edu'
     end
 
     attr_writer :audit_user_key
     def audit_user_key
-      @audit_user_key ||= 'audituser@example.com'
+      @audit_user_key ||= 'morphosource@duke.edu'
     end
 
     # NOTE: This used to be called `working_path` in CurationConcerns

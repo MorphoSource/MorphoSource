@@ -63,6 +63,10 @@ module Morphosource
         self.class == ProcessingEvent
       end
 
+      def device?
+        self.class == Device
+      end
+
       def user_with_ownership
         User.find_by(ms_id: owner)&.ms_id || depositor
       end

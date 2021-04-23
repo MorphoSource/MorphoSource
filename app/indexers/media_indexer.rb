@@ -22,14 +22,19 @@ class MediaIndexer < Morphosource::WorkIndexer
       # add media type facet
       mt = object.human_readable_media_type
       solr_doc['human_readable_media_type_tesim'] = mt
+      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
       solr_doc['human_readable_media_type_sim'] = mt
+      solr_doc['human_readable_media_type_ssim'] = mt
       # add modality facet
       modality = object.modality
       solr_doc['media_modality_tesim'] = modality
+      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
       solr_doc['media_modality_sim'] = modality
+      solr_doc['media_modality_ssim'] = modality
 
       # data processing for subsequent fields
       physical_objects = object.physical_objects
+
       if physical_objects.present?
         physical_object_id = physical_objects.map(&:id)
         physical_object_title = physical_objects.map { |po| po.title&.first }.compact
@@ -72,7 +77,9 @@ class MediaIndexer < Morphosource::WorkIndexer
 
       # add physical object facet
       solr_doc['media_physical_object_type_tesim'] = physical_object_type
+      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
       solr_doc['media_physical_object_type_sim'] = physical_object_type
+      solr_doc['media_physical_object_type_ssim'] = physical_object_type
       # physical_object_ids and titles
       solr_doc['physical_object_id_ssim'] = physical_object_id
       solr_doc['physical_object_id_tesim'] = physical_object_id
@@ -85,6 +92,8 @@ class MediaIndexer < Morphosource::WorkIndexer
 
       # add organization facet
       solr_doc['media_organization_tesim'] = organization_titles
+      solr_doc['media_organization_ssim'] = organization_titles
+      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
       solr_doc['media_organization_sim'] = organization_titles
       solr_doc['media_organization_id_ssim'] = organization_id
       solr_doc['media_organization_id_tesim'] = organization_id
@@ -100,7 +109,15 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['publication_status_ssi'] = publication_status
 
       # related media ids
-      solr_doc['imaging_event_id_tesim'] = object.imaging_event&.id
+      ie = object.imaging_event
+      solr_doc['imaging_event_id_tesim'] = ie&.id
+
+      facility_org = ie&.device&.organization
+      facility_org_title = facility_org&.title&.first
+      solr_doc['media_device_facility_organization_tesim'] = facility_org_title
+      solr_doc['media_device_facility_organization_ssim'] = facility_org_title
+      solr_doc['media_device_facility_organization_id_tesim'] = facility_org&.id
+      solr_doc['media_device_facility_organization_id_ssim'] = facility_org&.id
    end
   end
 

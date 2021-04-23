@@ -202,6 +202,10 @@ class Media < Morphosource::Works::Base
     physical_objects.map(&:title)
   end
 
+  def object_title
+    object_titles&.flatten&.first&.first
+  end
+
   def physical_objects
     ancestors.select(&:imaging_event?).map(&:objects).flatten
   end

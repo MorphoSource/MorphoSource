@@ -7,6 +7,10 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
   include_context 'cart items'
 
+  before do
+    allow(subject).to receive(:email_sender) { User.first }
+  end
+
   describe "GET #index" do
 
     before do

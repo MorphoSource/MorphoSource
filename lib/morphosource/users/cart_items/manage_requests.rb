@@ -16,6 +16,7 @@ module Morphosource
 
         # media works where user is reviewer
         def reviewed_media_ids
+byebug
           @media ||= Morphosource::ReviewedMediaSearchService.call({ ms_id: ms_id }).map(&:id)
         end
 
@@ -33,7 +34,7 @@ module Morphosource
 
         def previously_requested_items
           @previous_requests ||= 
-            CartItem.where(work_id: reviewed_media_ids).where("date_approved IS NOT NULL OR date_cleared IS NOT NULL OR date_canceled IS NOT NULL OR date_denied IS NOT NULL OR date_expired < now()").order('user_id DESC').order('use desc')
+            CartItem.where("array_to_string(reviewers, '||') ILIKE :id", id: ms_id).where("date_approved IS NOT NULL OR date_cleared IS NOT NULL OR date_canceled IS NOT NULL OR date_denied IS NOT NULL OR date_expired < now()").order('user_id DESC').order('use desc')
         end
 
       end

@@ -24,7 +24,6 @@ module Morphosource
           cart_items = downloaded_items(page_from_params, rows_from_params)
           @item_count = count_text(cart_items.total_count)
         end
-byebug
         return cart_items 
       end
 

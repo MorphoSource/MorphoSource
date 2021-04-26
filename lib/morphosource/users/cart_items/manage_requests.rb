@@ -15,14 +15,13 @@ module Morphosource
         end
 
         # media works where user is reviewer
-        def reviewed_media_ids
-byebug
-          @media ||= Morphosource::ReviewedMediaSearchService.call({ ms_id: ms_id }).map(&:id)
-        end
+        #def reviewed_media_ids_NOT_USED
+        #  @media ||= Morphosource::ReviewedMediaSearchService.call({ ms_id: ms_id }).map(&:id)
+        #end
+            #work_id: reviewed_media_ids,
 
         def newly_requested_items
-          @new_requests ||= CartItem.where(
-            work_id: reviewed_media_ids,
+          @new_requests ||= CartItem.where("array_to_string(reviewers, '||') ILIKE :id", id: ms_id).where(
             date_downloaded: nil, 
             date_approved: nil, 
             date_denied: nil, 

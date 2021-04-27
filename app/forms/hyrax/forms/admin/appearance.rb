@@ -56,7 +56,7 @@ module Hyrax
 
         # The background color for "primary" buttons
         def primary_button_background_color
-          block_for('primary_button_background_color', '#ff861f')
+          block_for('primary_button_background_color', '#286090')
         end
 
         # The border color for "primary" buttons

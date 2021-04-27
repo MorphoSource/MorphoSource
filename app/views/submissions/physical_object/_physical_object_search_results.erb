@@ -21,8 +21,14 @@
 
               <div id="submission_link_po" class="<%= po_type == 'bso' ? 'col-xs-12 col-md-6' : 'col-sm-8 col-sm-offset-2' %>" style='margin-bottom: 2em;'>
                 <div class="row list-item">
-                  <b><%= t('morphosource.submission.morphosource_search_results') %></b>
+                  <b><%= t('morphosource.submission.morphosource_search_results') %> (<%= docs.count %>)</b>
                 </div>
+
+                <% if docs.count >= 100 %>
+                  <div class="row vertical-align list-item object-search-result row-striped" style="font-size: smaller; text-align: left;">
+                    <i>You have reached the maximum number of search results for physical objects in MorphoSource. You may find additional results if you narrow your search further.</i>
+                  </div>
+                <% end %>
               
                 <% docs.each do |doc| %>
                   <div class="row vertical-align list-item object-search-result row-striped">
@@ -68,8 +74,14 @@
               <% else %>
                 <div id="submission_link_idigbio" class="col-xs-12 col-md-6" style='margin-bottom: 2em;'>
                   <div class="row list-item">
-                    <b><%= t('morphosource.submission.idigbio_search_results') %></b>
+                    <b><%= t('morphosource.submission.idigbio_search_results') %>  (<%= idigbio.count %>)</b>
                   </div>
+
+                  <% if idigbio.count >= 100 %>
+                    <div class="row vertical-align list-item object-search-result row-striped" style="font-size: smaller; text-align: left;">
+                      <i>You have reached the maximum number of search results for biological specimens in iDigBio. You may find additional results if you narrow your search further.</i>
+                    </div>
+                  <% end %>
                 
                   <% idigbio.each do |idb| %>
                     <div class="row vertical-align list-item object-search-result row-striped">

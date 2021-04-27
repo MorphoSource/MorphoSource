@@ -24,7 +24,7 @@ en:
       continue_with_selected_parent: "Continue with selected parent"
       parents_not_in_morphosource: 'Parent not in MorphoSource'
       taxonomy_select: 'Select a taxonomy to associate with this biological specimen, or enter a new taxonomy'
-      idigbio_search_results: 'Biological Specimens in IDigBio'
+      idigbio_search_results: 'Biological Specimens in iDigBio'
       idigbio_empty_search_results: 'No Biological Specimens found in IDigBio that match the search criteria.'
       morphosource_search_results: 'Physical Objects in MorphoSource'
       morphosource_empty_search_results: 'No Biological Specimens found in MorphoSource that match the search criteria.'

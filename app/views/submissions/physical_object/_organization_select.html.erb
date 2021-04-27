@@ -20,9 +20,12 @@
 
 <script>
 $(function(){
-  $('#submission_organization_search').autocomplete({
+  $('#submission_organization_search').submissionAutocomplete({
+    url: "<%= find_organization_autocomplete_url %>",
     select: function(event, ui) {
-        event.preventDefault();
+      event.preventDefault();
+      console.log(ui);
+      if (ui.item.value && ui.item.value != -1) {
         // Add data to form fields
         $("#submission_organization_search").val(ui.item.label);
         $("#organization_search_form input.organization_id").val(ui.item.value);
@@ -48,31 +51,20 @@ $(function(){
         $('#submission_create_organization_form_section').addClass('hide').removeClass('show');
         $('#submission_no_organization_section').addClass('hide').removeClass('show');
         $('#submission_select_organization').removeAttr('disabled');
-
+      }
     },
-    focus: function(event, ui) {
-      event.preventDefault();
-      $('submission_organization_search').val(ui.item.label);
-    },
-    source: function (request, response) {
-      $.ajax({
-        url: "<%= find_organization_autocomplete_url %>" + request.term,
-        type: 'GET',
-        dataType: 'json',
-        complete: function (xhr, status) {
-          var results = $.parseJSON(xhr.responseText);
-          console.log(results);
-          for (const org of results) {
-            org.title = org.label;
-            var institutionCode = org.institution_code ? org.institution_code.join('/') : '';
-            var collectionCodes = org.collection_code ? org.collection_code.join('/') : '';
-            org.label = [org.title[0] + ' (' + institutionCode + ':' + collectionCodes + ')'];
-          }
-          response(results);
-        }
-      });
-    },
-    autoFocus: true
+    complete: function (xhr, status) {
+      var results = $.parseJSON(xhr.responseText);
+      console.log(results);
+      for (const org of results) {
+        org.title = org.label;
+        var institutionCode = org.institution_code ? org.institution_code.join('/') : '';
+        var collectionCodes = org.collection_code ? org.collection_code.join('/') : '';
+        org.label = [org.title[0] + ' (' + institutionCode + ':' + collectionCodes + ')'];
+      }
+      console.log(results);
+      return results;
+    }
   });
 });
 </script>

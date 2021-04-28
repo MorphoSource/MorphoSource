@@ -17,6 +17,11 @@
   color: black !important;
 }
 
+.constraint-value {
+  background-color: #286090 !important;
+  border-color: #286090 !important;
+}
+
 @media only screen and (max-width: 760px) {
   .list-filters {
     flex-wrap: wrap;

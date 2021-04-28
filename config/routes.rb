@@ -57,11 +57,16 @@ Rails.application.routes.draw do
       namespace :my do
         resources :media, only: [:index], controller: 'media'
         resources :media, path: "media/:collection_id", only: [:index], controller: 'add_media', as: 'add_media'
-        resources :specimens, only: [:index],
-        controller: 'biological_specimens'
-        resources :cultural_heritage_objects, only: [:index],
-        controller: 'cultural_heritage_objects'
+        resources :specimens, only: [:index], controller: 'biological_specimens'
+        resources :cultural_heritage_objects, only: [:index], controller: 'cultural_heritage_objects'
       end
+    end
+  end
+
+  resources :football_players do
+    collection do
+      get  'selected', :action => 'list_selected'
+      post 'selected', :action => 'change_selected'
     end
   end
 

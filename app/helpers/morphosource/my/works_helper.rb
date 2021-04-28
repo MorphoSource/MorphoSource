@@ -7,7 +7,6 @@ module Morphosource
       end
 
       def search_action_for_dashboard
-        byebug
         case params[:controller]
         when "hyrax/my/collections"
           hyrax.my_collections_path

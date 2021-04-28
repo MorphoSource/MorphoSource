@@ -997,16 +997,12 @@ $( document ).ready(function() {
 
       eventFuncs() {
         let self = this;
-
         // Select device events
         $('select[name="submission[device_id]"]').change(function(event){
-          console.log('Select changed');
-
+          console.log($(this).find(':selected').data('modality'));
+          console.log(data.submissionModality);
           if ($(this).val()){
-            if ($(this).find(':selected').data('modality') == data.submissionModality) {
-              console.log('Value provided and validated');
-              console.log($(this).find(':selected').data('modality'));
-              console.log(data.submissionModality);
+            if ($(this).find(':selected').data('modality').includes(data.submissionModality)) {
               self.toggleSelectDeviceVisibility($(this).find(':selected'));
               $('#submission_select_device_continue').removeAttr('disabled');
             } else {

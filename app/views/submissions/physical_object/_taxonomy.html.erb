@@ -5,7 +5,6 @@
       <h4><%= t('morphosource.submission.header_text.po_taxonomy') %></h4>
     </div>
   
-   
     <div id="submission_select_taxonomy_section">
       <%= simple_form_for @submission, html: { id: :taxonomy_search_form } do |f| %>
         <div class="row">
@@ -52,8 +51,6 @@
       </div>
     </div>
 
-
-
     <div id="submission_taxonomy_continue_section">
       <div class="row">
         <a href="#" id="submission_select_taxonomy_submit" class="btn btn-primary btn-continue" disabled>
@@ -62,49 +59,42 @@
       </div>  
     </div>
 
-    
-
   </div>
 </div>
 
 <script>
 $(function(){
-  $('#submission_taxonomy_search').autocomplete({
+  $('#submission_taxonomy_search').submissionAutocomplete({
+    url: "<%= find_taxonomy_submission_autocomplete_url %>",
     select: function(event, ui) {
-        event.preventDefault();
+      event.preventDefault();
+
+      if (ui.item.value && ui.item.value != -1) {
         $("input.taxonomy_id").val(ui.item.value);
-        console.log(ui.item.value);
         $("input.taxonomy_gbif_key").val(ui.item.gbif_key);
-        console.log(ui.item.gbif_key);
         $("input.taxonomy_title").val(build_name_no_formatting(ui.item.name, ui.item.rank));
-        console.log(build_name_no_formatting(ui.item.name, ui.item.rank));
 
         $('a#btn_add_taxonomy').trigger('click');
         $("#submission_taxonomy_search").val('');
+      }
     },
-    source: function (request, response) {
-      $.ajax({
-        url: "<%= find_taxonomy_submission_autocomplete_url %>" + request.term,
-        type: 'GET',
-        dataType: 'json',
-        complete: function (xhr, status) {
-          var results = $.parseJSON(xhr.responseText);
-          response(results);
-        }
-      });
-    },
-    autoFocus: false
   }).autocomplete('instance')._renderItem = function(ul, item) {
     // Overwrite default autocomplete list display
-    return $(
-      "<li><div style='border-bottom: 1px solid #D2D2D2;'>" + 
-      build_name(item.name, item.rank) + 
-      "<br/><span style='font-size: small;'>" + 
-      item.higher_taxonomy + 
-      "</span><br/>" +
-      item.source_info + 
-      "</div></li>"
-    ).appendTo(ul);
+    if (item.value && item.value != -1) {
+      return $(
+        "<li><div style='border-bottom: 1px solid #D2D2D2;'>" + 
+        build_name(item.name, item.rank) + 
+        "<br/><span style='font-size: small;'>" + 
+        item.higher_taxonomy + 
+        "</span><br/>" +
+        item.source_info + 
+        "</div></li>"
+      ).appendTo(ul);
+    } else {
+      return $("<li>")
+        .append("<div>" + item.label + "</div>")
+        .appendTo(ul);
+    }
   };
 
   var build_name = function(name, rank) {

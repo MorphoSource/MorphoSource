@@ -2,25 +2,26 @@ module Morphosource
   class PhysicalObjectsSearchService
     include SolrHelper
 
-    attr_reader :solr, :taxonomy_genus, :taxonomy_species, :model, :params
+    attr_reader :solr, :taxonomy_genus, :taxonomy_species, :model, :params, :rows
 
     SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
 
-    def self.call(model, params={})
-      new(model, params).call
+    def self.call(model, params={}, rows=100)
+      new(model, params, rows).call
     end
 
-    def initialize(model, params={})
+    def initialize(model, params={}, rows=100)
       @solr = solr_service.new
       @model = model
       @taxonomy_genus = params.delete('taxonomy_genus')
       @taxonomy_species = params.delete('taxonomy_species')
       @params = params
+      @rows = rows
     end
 
     def call
       qry = assemble_query
-      hits = solr.get_docs(qry)
+      hits = solr.get_docs(qry, { rows: rows })
       hits = filter_on_taxonomy(hits) if (taxonomy_genus.present? || taxonomy_species.present?)
       hits.map { |hit| SolrDocument.new(hit) }
     end

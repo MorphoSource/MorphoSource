@@ -47,36 +47,24 @@
 
   // Search Organizations
   $(function() {
-    var search_url = "<%= find_organization_with_devices_autocomplete_url %>";
 
-    $('#submission_device_select_organization_search').autocomplete({
-
+    $('#submission_device_select_organization_search').submissionAutocomplete({
+      url: "<%= find_organization_with_devices_autocomplete_url %>",
       select: function(event, ui) {
         event.preventDefault();
 
-        organization = ui.item;
+        if (ui.item.value && ui.item.value != -1) {
+          organization = ui.item;
+          populateOrganizationName(organization.label);
+          clearList();
 
-        populateOrganizationName(organization.label);
-        clearList();
-
-        if (organization.devices) {
-          devices = organizationDevices(organization)
-          enableDeviceList();
-          listDevices(devices);
-        }
-      },
-      source: function (request, response) {
-        $.ajax({
-          url: search_url + request.term,
-          type: 'GET',
-          dataType: 'json',
-          complete: function (xhr, status) {
-            var results = $.parseJSON(xhr.responseText);
-            response(results);
+          if (organization.devices) {
+            devices = organizationDevices(organization)
+            enableDeviceList();
+            listDevices(devices);
           }
-        });
-      },
-      autoFocus: true
+        }
+      }
     });
   });
 
@@ -84,7 +72,7 @@
   $('#submission_select_device_no_organization').click(function(event) {
     event.preventDefault();
 
-    search_url = "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization";
+    var search_url = "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization";
 
     removePreviousSelection();
 

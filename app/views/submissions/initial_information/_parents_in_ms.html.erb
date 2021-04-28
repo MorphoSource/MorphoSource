@@ -57,47 +57,29 @@
 
 <script>
 $(function(){
-  $('#submission_parent_media_search').autocomplete({
+  $('#submission_parent_media_search').submissionAutocomplete({
+    url: "<%= find_media_autocomplete_url %>",
     select: function(event, ui) {
-        event.preventDefault();
-        if (ui.item.value) {
-          $("input.parent_id").val(ui.item.value);
-          $("input.parent_title").val(ui.item.label);
-        }
-    },
-    focus: function(event, ui) {
       event.preventDefault();
-      if (ui.item.value) {
+      if (ui.item.value && ui.item.value != -1) {
+        $("input.parent_id").val(ui.item.value);
+        $("input.parent_title").val(ui.item.label);
         $("#submission_parent_media_search").val(ui.item.label);
       }
     },
-    source: function (request, response) {
-      $.ajax({
-        url: "<%= find_media_autocomplete_url %>" + request.term,
-        type: 'GET',
-        dataType: 'json',
-        complete: function (xhr, status) {
-          var results = $.parseJSON(xhr.responseText);
+    complete: function (xhr, status) {
+      var results = $.parseJSON(xhr.responseText);
 
-          for (const media of results) {
-            media.title = media.label;
-            media.label = ['Media ' + media.id + ': ' + media.title];
-            if (media.object_title) {
-              media.label[0] = media.label[0] + ' [Object: ' + media.object_title + ']'
-            }
-          }
-
-          response(results);
+      for (const media of results) {
+        media.title = media.label;
+        media.label = ['Media ' + media.id + ': ' + media.title];
+        if (media.object_title) {
+          media.label[0] = media.label[0] + ' [Object: ' + media.object_title + ']'
         }
-      });
-    },
-    response: function (event, ui) {
-      if (!ui.content.length) {
-        var noResult = { value: '',label: 'No Results Found' };
-        ui.content.push(noResult);
       }
-    },
-    autoFocus: true
+
+      return results;
+    }
   });
 });    
 </script>

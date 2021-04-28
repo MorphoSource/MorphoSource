@@ -16,6 +16,7 @@ en:
       fund_code:
         title: The specific code, title, or other designator for the fund code. 
         description: The purpose and context of the fund code.
+        identifier: Internal cost object code used within Duke accounting systems to charge and track the fund code.
         managers: Users who can add or remove additional standard member users. Managers can also use the fund code for media submissions.
         standard_members: Users who can use the fund code for media submissions. 
         expires_at: End of the "initial service period" agreed upon by fund code purchaser. Any remaining funds from this code after this period must continue to be used to support the data associated with it until the funds are spent, regardless of the initial service period end date. The code cannot be used to add new data after the date, even if this code's maximum storage amount has not been reached. Certain other obligations may terminate at the end of the service period as well.

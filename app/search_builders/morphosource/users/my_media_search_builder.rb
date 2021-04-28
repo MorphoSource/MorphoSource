@@ -1,10 +1,12 @@
 # Retrieves all media a user can edit or has been granted read access to through a role (collection members group)
 module Morphosource
   module Users
-    class MyMediaSearchBuilder < Hyrax::WorksSearchBuilder
+    # class MyMediaSearchBuilder < Hyrax::WorksSearchBuilder
+    class MyMediaSearchBuilder < Hyrax::CatalogSearchBuilder
 
       include Hyrax::My::SearchBuilderBehavior
 
+      # self.default_processor_chain += [:apply_read_edit_filters, :filter_collection_facet_for_access]
       self.default_processor_chain += [:apply_read_edit_filters]
 
       def models
@@ -55,6 +57,18 @@ module Morphosource
         # if both read_groups and download_groups are empty, this makes sure that the search returns 0
         def nil_group
           ['nil_viewers']
+        end
+
+        # only return facet counts for collections that this user has access to see
+        def filter_collection_facet_for_access(solr_parameters)
+          return if current_ability.admin?
+
+          collection_ids = Hyrax::Collections::PermissionsService.collection_ids_for_view(ability: current_ability).map { |id| "^#{id}$" }
+          solr_parameters['f.member_of_project_ids_ssim.facet.matches'] = if collection_ids.present?
+                                                                               collection_ids.join('|')
+                                                                             else
+                                                                               "^$"
+                                                                             end
         end
 
     end

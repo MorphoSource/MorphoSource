@@ -33,6 +33,7 @@ module Morphosource
 
         def tab_variables
           @tab = :chos
+          @viewable_collections_ids = viewable_collections_ids
         end
 
     end

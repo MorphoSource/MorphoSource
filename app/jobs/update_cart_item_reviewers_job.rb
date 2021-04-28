@@ -7,7 +7,7 @@ class UpdateCartItemReviewersJob < Hyrax::ApplicationJob
     cart_items = CartItem.where(work_id: media.id)
     cart_items.each do |item|
       item.reviewers = media.reviewer
-      item.save!
+      item.save
     end
   end
 end

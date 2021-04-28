@@ -18,7 +18,7 @@ module Hyrax
         env.attributes['keyword'] = split_keywords(env)
         super
         if env.attributes['download_reviewer'] != env.curation_concern.download_reviewer
-          UpdateCartItemReviewersJob.perform_later(env.curation_concern) 
+          UpdateCartItemReviewersJob.perform_now(env.curation_concern) 
         end
       end
 

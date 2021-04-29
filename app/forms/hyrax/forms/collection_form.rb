@@ -55,7 +55,7 @@ module Hyrax
                                  end
       end
 
-      # @return [Hash] All FileSets in the collection, file.to_s is the key, file.id is the value
+      # @return [Hash] All Media in the collection, media.id is both the key and value
       def select_files
         Hash[all_files_with_access]
       end
@@ -128,7 +128,7 @@ module Hyrax
       private
 
       def all_files_with_access
-        member_presenters(member_work_ids).flat_map(&:file_set_presenters).map { |x| [x.to_s, x.id] }
+        member_presenters(member_work_ids).map { |m| [m.id, m.id] }
       end
 
       # Override this method if you have a different way of getting the member's ids

@@ -74,7 +74,7 @@ module Hyrax
       end
 
       def show
-        # if the current user has edit permission, redirect to edit 
+        # if the current user has edit permission, redirect to edit
         if current_user and can? :edit, @collection
           tab = request.params[:tab]
           edit_path = edit_dashboard_collection_url + '&' + request.params.slice!(:action, :id, :controller, :locale, :tab).to_query
@@ -89,7 +89,7 @@ module Hyrax
           else
             redirect_to root_url
           end
-        else          
+        else
           # run the presenter and other methods (same as the team_presenter methods) necessary for
           # displaying teams and project show page content
           presenter
@@ -202,6 +202,7 @@ module Hyrax
           process_banner_input
           process_logo_input
         end
+        update_thumbnail
         process_member_changes
         @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
         # we don't have to reindex the full graph when updating collection
@@ -658,6 +659,11 @@ module Hyrax
 
         def valid_url?(url)
           (url =~ URI.regexp(['http', 'https']))
+        end
+
+        def update_thumbnail
+          media = Media.where(id: params[:collection][:representative_id]).first
+          @collection.thumbnail_id = media.try(:thumbnail_id)
         end
 
 

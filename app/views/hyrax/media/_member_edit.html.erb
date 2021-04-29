@@ -17,7 +17,9 @@ file_set = member_edit
               method: :delete, title: t('.delete_title', file_set: file_set),
               data: { confirm: t('.delete_confirm', file_set: file_set, application_name: application_name) } %>
         <% else %>
-          <a class="link-disabled tooltip-icon" data-original-title="" title="The files of this media cannot be deleted because the media has child media.">Delete</a>
+          <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
+              method: :delete, title: t('.delete_title', file_set: file_set),
+              data: { confirm: t('.delete_confirm_parent', file_set: file_set, application_name: application_name) } %>
         <% end %>
       <% end %>
     <% end %>

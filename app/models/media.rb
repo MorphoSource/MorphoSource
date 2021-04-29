@@ -4,7 +4,7 @@ class Media < Morphosource::Works::Base
   after_create :mint_ark
   before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids
   before_validation :normalize_download_reviewer
-  after_update :update_ark_status
+  after_update :update_ark_status, :update_cartitem_reviewer
 
   after_initialize do
     if self.new_record?
@@ -435,6 +435,13 @@ class Media < Morphosource::Works::Base
   def active_fund_code_association
     fund_code_associations.where(active: true)&.first
   end
+
+  def update_cartitem_reviewer
+    if self.download_reviewer_changed?
+      UpdateCartItemReviewersJob.perform_now(self) 
+    end
+  end
+
 
   private
 

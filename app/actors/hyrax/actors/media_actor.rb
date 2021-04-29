@@ -17,9 +17,6 @@ module Hyrax
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
         super
-        if env.attributes['download_reviewer'] != env.curation_concern.download_reviewer
-          UpdateCartItemReviewersJob.perform_now(env.curation_concern) 
-        end
       end
 
       def generated_title(env)

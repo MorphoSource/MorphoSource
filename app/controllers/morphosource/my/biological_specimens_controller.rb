@@ -33,7 +33,6 @@ module Morphosource
 
         def tab_variables
           @tab = :specimens
-          @viewable_collections_ids = viewable_collections_ids
         end
 
     end

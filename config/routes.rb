@@ -63,13 +63,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :football_players do
-    collection do
-      get  'selected', :action => 'list_selected'
-      post 'selected', :action => 'change_selected'
-    end
-  end
-
   scope module: :hyrax do
     resources :teams, controller: 'teams', only: [:show]
     resources :projects, controller: 'teams', only: [:show]

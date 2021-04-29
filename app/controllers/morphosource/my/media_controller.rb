@@ -30,7 +30,6 @@ module Morphosource
 
         def tab_variables
           @tab = :media
-          @viewable_collections_ids = viewable_collections_ids
         end
     end
   end

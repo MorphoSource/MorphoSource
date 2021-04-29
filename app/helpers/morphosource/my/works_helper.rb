@@ -20,6 +20,8 @@ module Morphosource
           hyrax.dashboard_collections_path
         when "morphosource/my/media"
           main_app.my_media_index_path
+        when "morphosource/my/add_media"
+          main_app.my_add_media_index_path
         when "morphosource/my/specimens"
           main_app.my_specimens_path
         when "morphosource/my/cultural_heritage_objects"

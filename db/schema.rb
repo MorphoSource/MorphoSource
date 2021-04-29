@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_28_214239) do
+ActiveRecord::Schema.define(version: 2021_04_29_181038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -144,6 +144,21 @@ ActiveRecord::Schema.define(version: 2021_04_28_214239) do
     t.integer "user_id"
     t.index ["file_id"], name: "index_file_view_stats_on_file_id"
     t.index ["user_id"], name: "index_file_view_stats_on_user_id"
+  end
+
+  create_table "fund_code_charges", force: :cascade do |t|
+    t.bigint "fund_code_id"
+    t.text "description"
+    t.date "start_date"
+    t.date "end_date"
+    t.decimal "billing_rate"
+    t.string "billing_unit"
+    t.decimal "units_consumed"
+    t.decimal "amount"
+    t.string "service_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fund_code_id"], name: "index_fund_code_charges_on_fund_code_id"
   end
 
   create_table "fund_code_media_associations", force: :cascade do |t|

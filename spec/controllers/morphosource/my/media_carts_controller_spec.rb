@@ -18,6 +18,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
     it 'retrieves a formatted count of restricted items in the cart' do
       expect(subject.instance_variable_get(:@restricted_count)).to eq('1 Item')
+      # TEST
     end
 
     it 'retrieves restricted items in the cart' do

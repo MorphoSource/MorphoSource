@@ -438,7 +438,7 @@ class Media < Morphosource::Works::Base
 
   def update_cartitem_reviewer
     if self.download_reviewer_changed?
-      UpdateCartItemReviewersJob.perform_now(self) 
+      UpdateCartItemReviewersJob.perform_later(self) 
     end
   end
 

@@ -57,8 +57,11 @@ module Morphosource
     def create_cart_item(work_id)
       work = Media.find(work_id)
       if work.can_add_to_cart? || (current_user.can? :download, work.id)
-        CartItem.create({user_id: current_user.ms_id, work_id: work.id})
+        item = CartItem.create({user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer})
+      else
+        item = nil
       end
+      return item
     end
 
     def mark_as(action,items=@items,value: nil)

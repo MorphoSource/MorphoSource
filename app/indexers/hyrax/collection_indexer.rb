@@ -4,7 +4,7 @@ module Hyrax
 
     STORED_LONG = Solrizer::Descriptor.new(:long, :stored)
 
-    self.thumbnail_path_service = Morphosource::CollectionThumbnailPathService
+    self.thumbnail_path_service = Hyrax::CollectionThumbnailPathService
 
     # @yield [Hash] calls the yielded block with the solr document
     # @return [Hash] the solr document WITH all changes

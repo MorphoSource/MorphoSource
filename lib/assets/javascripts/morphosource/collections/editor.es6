@@ -9,8 +9,10 @@ import tabifyForm from 'hyrax/tabbed_form'
 // that part is edit
 export default class {
   constructor(elem) {
+    console.log('elem: ' + elem)
     let field = elem.find('#collection_representative_id')
     this.thumbnailSelect = new ThumbnailSelect(this.url(), field)
+    console.log("url: " + this.url())
     tabifyForm(elem.find('form.editor'))
 
     let participants = new Participants(elem.find('#participants'))

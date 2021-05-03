@@ -20,9 +20,9 @@
 //= require dataTables/bootstrap/3/jquery.dataTables.bootstrap
 //= require blacklight/blacklight
 
+//= require_tree .
 //= require hyrax
 //= require select2
-//= require_tree .
 //= require morphosource/ms_collections_v2
 //= require morphosource/ms_app
 //= require morphosource/ms_editor
@@ -30,6 +30,7 @@
 //= require morphosource/media/select_publication_status
 //= require morphosource/media/tags
 //= require morphosource/collections/select_visibility_status
+//= require morphosource/collections/editor
 //= require morphosource/ms_save_work_control
 //= require morphosource/ms_control
 //= require morphosource/ms_registry
@@ -44,3 +45,4 @@
 //= require morphosource/field_manager
 //= require morphosource/ms_autocomplete
 //= require morphosource/autocomplete/ms_resource
+//= require morphosource/ms_thumbnail_select

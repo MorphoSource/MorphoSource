@@ -20,9 +20,9 @@
 //= require dataTables/bootstrap/3/jquery.dataTables.bootstrap
 //= require blacklight/blacklight
 
+//= require_tree .
 //= require hyrax
 //= require select2
-//= require_tree .
 //= require morphosource/ms_collections_v2
 //= require morphosource/ms_app
 //= require morphosource/ms_editor

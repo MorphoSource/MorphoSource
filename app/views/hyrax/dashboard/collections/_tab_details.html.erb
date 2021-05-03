@@ -2,7 +2,7 @@
 
   <div class="col-sm-6">
     <div class="content-block">
-
+      
       <h2>GENERAL DETAILS</h2>
       <%= render_edit_field_partial('title', f: f) %>
       <%= render_edit_field_partial('description', f: f) %>
@@ -16,7 +16,7 @@
           Visibility
         </div>
         <div class="col-xs-6 showcase-value">
-
+          
           <div class="m-0 p-0 text-nowrap">
           <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
             <span class="label" id="current_visibility_value_for_collection">
@@ -34,8 +34,8 @@
       <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>
       <% if f.object.persisted? %>
         <%# we're loading these values dynamically to speed page load %>
-        <%= f.input :representative_id, label: 'Media ID for Thumbnail',
-                    input_html: { data: { text: f.object.representative_id } } %>
+        <%= f.input :thumbnail_id,
+                    input_html: { data: { text: f.object.thumbnail_title } } %>
       <% end %>
 
     </div>
@@ -67,3 +67,4 @@
     <input type="hidden" name="batch_document_ids[]" value="<%= batch_item %>" />
   <% end %>
 <% end %>
+

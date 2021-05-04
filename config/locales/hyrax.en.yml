@@ -77,6 +77,10 @@ en:
         physical_object_types: Physical Object Types
         media_types_and_modalities: Media Types and Modalities
         taxonomy: Biological Taxonomy
+    transfers:
+      new:
+        confirm: Are you sure you want to transfer ownership of this media to another user?  Click Ok to transfer or Cancel to return to the transfer screen.
+        header: Transfer Ownership
     browse:
       title:
         categories: Browse Categories

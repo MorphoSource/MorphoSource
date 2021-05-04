@@ -5,7 +5,6 @@ module Morphosource
     # @param [User] user
     # @param [TrueClass, FalseClass] reset
     def self.call(work, user, reset)
-byebug
       work.proxy_depositor = work.depositor
       #work.permissions = [] 
       work.edit_users += [user] 

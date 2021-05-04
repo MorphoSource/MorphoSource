@@ -1,0 +1,28 @@
+<% content_for :body_css_classes do %>showcase transfer<% end %>
+<% provide :page_header do %>
+  <h1><span class="fa fa-arrows-h" aria-hidden="true"></span>  <%= t("hyrax.dashboard.transfer_of_ownership") %></h1>
+<% end %>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <h2><%= t("hyrax.dashboard.transfers_sent") %></h2>
+        <div class="panel-body">
+          <%= @presenter.render_sent_transfers %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <h2><%= t("hyrax.dashboard.transfers_received") %></h2>
+        <div class="panel-body">
+          <%= @presenter.render_received_transfers %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

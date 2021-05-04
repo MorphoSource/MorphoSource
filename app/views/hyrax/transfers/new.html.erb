@@ -1,0 +1,19 @@
+<% content_for :body_css_classes do %>showcase transfer<% end %>
+<% provide :page_header do %>
+  <h1><i class="fa fa-arrow-circle-right" aria-hidden="true"></i><%= t(:'.title', work_title: @proxy_deposit_request.to_s) %></h1>
+<% end %>
+
+<div class="container">
+	<span class="sr-only"><%= t(:'.sr_only_description', work_title: @proxy_deposit_request.to_s) %></span>
+	<%= simple_form_for @proxy_deposit_request,
+	             url: hyrax.work_transfers_path(@work) do |f| %>
+		<p>Use this form to request transfer of the media to another user.  After receiving a transfer request, the recipient will have options to retain or remove your access to the media.</p>
+	  <%= f.input :transfer_to, label: 'Select a user for transfering the media ownership to:',
+	        placeholder: t(:'.placeholder') %>
+	  <%= f.input :sender_comment, label: 'Comment to be sent to the user:' %>
+
+	  <div class="form-actions">
+	    <%= f.submit class: 'btn btn-primary', value: 'Request Transfer', data: { confirm: t('.confirm') } %>
+	  </div>
+	<% end %>
+</div>

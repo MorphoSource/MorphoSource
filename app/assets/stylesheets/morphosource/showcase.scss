@@ -706,7 +706,9 @@ html {
     }
   }
 
-  h1 {
+  h1, .main-header h1 {
+    font-size: 24px;
+    margin-left: 0;
     margin-top: 10px;
   }
   h2 {
@@ -1167,3 +1169,39 @@ html {
   /* /media showcase specific styles */
 
 }
+
+/* Media transfer page specific */
+.showcase.transfer {
+
+  .row {
+    padding: 0;
+  }
+
+  h1, .main-header h1 {
+    font-size: 20px;
+  }
+  h2 {
+    margin-left: 15px;
+    font-size: 15px;
+  }
+
+  .container {
+    table {
+      table-layout: fixed;
+    }
+    th, td {
+      font-size: 12px;
+    }
+    padding: 0 20px;
+    form {
+      max-width: 600px;
+    }
+    .row {
+      padding: 0 26px 0 0;
+    }
+    .title, .comment {
+      max-width: 250px;
+    }
+  }
+}
+/* /Media transfer page specific */

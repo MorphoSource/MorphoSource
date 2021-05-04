@@ -29,6 +29,8 @@ module Morphosource
 
         # organization facet
         solr_doc['organization_tesim'] = organization_titles
+        # TODO - remove _sim after catalog controller updates
+        solr_doc['organization_sim'] = organization_titles
         solr_doc['organization_ssim'] = organization_titles
         solr_doc['organization_id_ssim'] = object.organization_id
         # media types facet

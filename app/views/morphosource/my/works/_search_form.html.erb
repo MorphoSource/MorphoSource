@@ -1,12 +1,12 @@
-<%= form_tag media_works_url(tab), method: :get, class: "search-query-form form-horizontal search-form", role: "search" do %>
+<%= form_tag search_action_url, method: :get, class: "search-query-form form-horizontal search-form", role: "search" do %>
   <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :search_field, :qt, :page, :utf8)) %>
   <div class="form-group">
     <div class="input-group">
-      <%= text_field_tag :q, 
-        current_search_parameters, 
-        class: "q form-control", 
-          id: "search-field-header", 
-          placeholder: ( tab == 'media' ) ? 
+      <%= text_field_tag :q,
+        current_search_parameters,
+        class: "q form-control",
+          id: "search-field-header",
+          placeholder: ( @tab == :media ) ?
             t("morphosource.search.form.q.media.placeholder") :
             t("morphosource.search.form.q.object.placeholder")
       %>

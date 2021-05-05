@@ -106,4 +106,39 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
     end
   end
 
+  describe '#update' do
+    let(:params)  { { "id" => team.id, "collection" => { "representative_id" => media.id } } }
+
+    before do
+      team.edit_users += [user]
+      team.save
+    end
+
+    it 'calls update_thumbnail' do
+      expect(subject).to receive(:update_thumbnail)
+      put :update, params: params
+    end
+  end
+
+  describe 'update_thumbnail' do
+    let(:params)  { { id: team.id, collection: { representative_id: media.id } } }
+
+    before do
+      allow(subject).to receive(:params).and_return(params)
+      subject.instance_variable_set(:@collection, team)
+      subject.send(:update_thumbnail)
+    end
+
+    context 'user inputs a representative_id' do
+      it 'sets the thumbnail id to the media thumbnail id' do
+        expect(team.thumbnail_id).to eq(media.thumbnail_id)
+      end
+    end
+    context 'user does not input a representative_id' do
+      it 'sets the thumbnail id to nil' do
+        expect(team.thumbnail_id).to eq(nil)
+      end
+    end
+  end
+
 end

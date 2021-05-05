@@ -37,7 +37,8 @@ module Morphosource
     # override to include download users
     # edit implies read, so read_users is the union of edit and read users
     def read_users(id)
-      rp = super
+      @doc = get_doc(id)
+      rp = Array(@doc["read_access_person_ssim"]) + Array(@doc["read_access_person_ssim"])
       rp |= edit_users(id)
       rp |= download_users(id)
       Rails.logger.debug("[CANCAN] read_users: #{rp.inspect}")
@@ -45,9 +46,10 @@ module Morphosource
     end
 
     # override to include download groups
-    # edit implies read, so read_groups is the union of edit and read groups
+    # edit and download imply read, so read_groups is the union of edit, download, and read groups
     def read_groups(id)
-      rg = super
+      @doc = get_doc(id)
+      rg = Array(@doc["read_access_group_ssim"])
       rg |= edit_groups(id)
       rg |= download_groups(id)
       Rails.logger.debug("[CANCAN] read_groups: #{rg.inspect}")

@@ -1,0 +1,38 @@
+.list-filters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.list-filters fieldset {
+  margin-right: 10px;
+  margin-bottom: 10px;
+  min-width: 150px;
+}
+
+.list-filters button {
+  max-width: 200px !important;
+  min-width: 200px !important;
+  background-color: #fff !important;
+  color: black !important;
+}
+
+.constraint-value {
+  background-color: #286090 !important;
+  border-color: #286090 !important;
+}
+
+@media only screen and (max-width: 760px) {
+  .list-filters {
+    flex-wrap: wrap;
+  }
+
+  .list-filters fieldset {
+    width: 100%;
+  }
+
+  .list-filters button {
+    max-width: 100% !important;
+    min-width: 100% !important;
+  }
+}

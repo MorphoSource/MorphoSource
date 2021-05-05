@@ -22,7 +22,7 @@ module Morphosource
           main_app.my_media_index_path
         when "morphosource/my/add_media"
           main_app.my_add_media_index_path
-        when "morphosource/my/specimens"
+        when "morphosource/my/biological_specimens"
           main_app.my_specimens_path
         when "morphosource/my/cultural_heritage_objects"
           main_app.my_cultural_heritage_objects_path

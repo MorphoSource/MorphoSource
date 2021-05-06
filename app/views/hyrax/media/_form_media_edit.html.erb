@@ -152,6 +152,13 @@
 </div>
 
 
+
+<%= render_async '/works/000200122/transfers/new', event_name: "share-tab-loaded" do %>
+  <div class="ui-loading-whole-page" style="height:200px"></div>
+<% end %>
+
+
+
 <%= render 'modal_new_physical_object' %>
 <%= render 'modal_select_parent_media' %>
 <%= render 'modal_select_parent_media_new_processing_event' %>

@@ -4,8 +4,7 @@ module Hyrax
     before_action :load_proxy_deposit_request, only: :create
     load_and_authorize_resource :proxy_deposit_request, parent: false, except: :index
     before_action :authorize_depositor_by_id, only: [:new, :create]
-
-    with_themed_layout 'morphosource_dashboard'
+    with_themed_layout :decide_layout
 
     # Catch permission errors
     # TODO: Isn't this already handled?
@@ -19,19 +18,21 @@ module Hyrax
     end
 
     def new
-      add_breadcrumb t(:'hyrax.controls.home'), root_path
-      add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-      add_breadcrumb t(:'hyrax.transfers.new.header'), hyrax.new_work_transfer_path
+      #add_breadcrumb t(:'hyrax.controls.home'), root_path
+      #add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+      #add_breadcrumb t(:'hyrax.transfers.new.header'), hyrax.new_work_transfer_path
       @work = Hyrax::WorkRelation.new.find(params[:id])
     end
 
     def create
       @proxy_deposit_request.sending_user = current_user
       if @proxy_deposit_request.save
-        redirect_to hyrax.transfers_path, notice: "Transfer request created"
+        #redirect_to hyrax.transfers_path, notice: "Transfer request created"
+        redirect_to main_app.media_showcase_edit_path(params[:id]), notice: "Transfer request sent."
       else
-        @work = Hyrax::WorkRelation.new.find(params[:id])
-        render :new
+        #@work = Hyrax::WorkRelation.new.find(params[:id])
+        #render :new
+        redirect_to main_app.media_showcase_edit_path(params[:id]), notice: "Transfer request not sent.  Possibly there is a pending request already.  Please check in your Transfer dashboard."
       end
     end
 
@@ -81,6 +82,16 @@ module Hyrax
 
       def proxy_deposit_request_params
         params.require(:proxy_deposit_request).permit(:transfer_to, :sender_comment)
+      end
+
+      def decide_layout
+        layout = case action_name
+                 when 'new'
+                   'embedded_page'
+                 else
+                   'morphosource_dashboard'
+                 end
+        File.join(theme, layout)
       end
   end
 end

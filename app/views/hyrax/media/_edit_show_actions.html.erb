@@ -3,9 +3,6 @@
     <% if presenter.editor? %>
       <%= f.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if f.object.persisted? %>
       <%= f.submit class: 'btn btn-primary btn-save btn-save-media', onclick: "confirmation_needed = false\;", id: "with_files_submit", name: "save_with_files", value: "Save", data: { :disable_with => false } %>
-      <% if can? :transfer, @presenter.id %>
-        <%= link_to "Transfer", hyrax.new_work_transfer_path(@presenter.id), class: 'btn btn-primary' %>
-      <% end %>
       <% unless @presenter.has_child_media? %>
         <% unless @presenter.is_published? %>
           <%= link_to "Delete", [main_app, @presenter],

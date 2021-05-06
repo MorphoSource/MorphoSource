@@ -1,19 +1,20 @@
-<% content_for :body_css_classes do %>showcase transfer<% end %>
-<% provide :page_header do %>
-  <h1><i class="fa fa-arrow-circle-right" aria-hidden="true"></i><%= t(:'.title', work_title: @proxy_deposit_request.to_s) %></h1>
-<% end %>
+<div class="col-sm-6">
+  <div class="content-block">
 
-<div class="container">
-	<span class="sr-only"><%= t(:'.sr_only_description', work_title: @proxy_deposit_request.to_s) %></span>
-	<%= simple_form_for @proxy_deposit_request,
-	             url: hyrax.work_transfers_path(@work) do |f| %>
-		<p>Use this form to request transfer of the media to another user.  After receiving a transfer request, the recipient will have options to retain or remove your access to the media.</p>
-	  <%= f.input :transfer_to, label: 'Select a user for transfering the media ownership to:',
-	        placeholder: t(:'.placeholder') %>
-	  <%= f.input :sender_comment, label: 'Comment to be sent to the user:' %>
+		<h2>Transfer Media Ownership</h2>
+		<span class="sr-only"><%= t(:'.sr_only_description', work_title: @proxy_deposit_request.to_s) %></span>
+		<%= simple_form_for @proxy_deposit_request,
+		             url: hyrax.work_transfers_path(@work) do |f| %>
+			<p>Use this form to request transfer of the media to another user.  After receiving a transfer request, the recipient will have options to retain or remove your access to the media.</p>
+		  <%= f.input :transfer_to, label: 'Select a user for transfering the media ownership to:',
+		        placeholder: t(:'.placeholder') %>
+		  <%= f.input :sender_comment, label: 'Comment to be sent to the user:' %>
 
-	  <div class="form-actions">
-	    <%= f.submit class: 'btn btn-primary', value: 'Request Transfer', data: { confirm: t('.confirm') } %>
-	  </div>
-	<% end %>
+		  <div class="form-actions">
+		    <%#= f.submit class: 'btn btn-primary', value: 'Request Transfer', data: { confirm: t('.confirm') } %>
+				<input type="button" id="btn-transfer-submit" name="commit" value="Request Transfer" class="btn btn-primary" data-confirm="Are you sure you want to transfer ownership of this media to another user?  Click Ok to transfer or Cancel to return to the transfer screen." data-disable-with="Transfer">
+		  </div>
+		<% end %>
+
+	</div>
 </div>

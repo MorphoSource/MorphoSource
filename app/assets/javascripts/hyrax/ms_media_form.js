@@ -1,3 +1,14 @@
+/* Media Share tab specific */
+document.addEventListener("share-tab-loaded", function(event) {
+
+  $('#btn-transfer-submit').click(function() {
+
+    $('#new_proxy_deposit_request').submit();
+
+  });
+
+});
+
 $( document ).ready(function() {
 
   if ( $('form[id*="edit_media"]').length ||

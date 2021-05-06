@@ -42,7 +42,7 @@ module Morphosource
       # Overrides https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/facets_helper_behavior.rb#L63
       # Removes projects and teams from facets when the user does not have read access to them.
       def render_facet_item(facet_field, item)
-        return nil if filtered_facet?(facet_field) && item_unauthorized?(item)
+        return nil if !current_user.admin? && filtered_facet?(facet_field) && item_unauthorized?(item)
         super
       end
 

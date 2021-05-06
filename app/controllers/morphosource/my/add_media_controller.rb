@@ -16,6 +16,11 @@ module Morphosource
           main_app.my_add_media_index_path(*args)
         end
 
+        # The url of the "more" link for additional facet values
+        def search_facet_path(args = {})
+          main_app.my_dashboard_add_media_facet_path(args[:id])
+        end
+
         def tab_variables
           @collection = Collection.find(params[:collection_id])
           @tab = :add_media

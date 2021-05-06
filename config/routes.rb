@@ -59,6 +59,12 @@ Rails.application.routes.draw do
         resources :media, path: "media/:collection_id", only: [:index], controller: 'add_media', as: 'add_media'
         resources :specimens, only: [:index], controller: 'biological_specimens'
         resources :cultural_heritage_objects, only: [:index], controller: 'cultural_heritage_objects'
+
+        get '/media/facet/:id', to: 'media#facet', as: 'dashboard_media_facet'
+        get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
+        get '/specimens/facet/:id', to: 'biological_specimens#facet', as: 'dashboard_specimens_facet'
+        get '/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'dashboard_chos_facet'
+
       end
     end
   end

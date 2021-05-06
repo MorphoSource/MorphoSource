@@ -28,11 +28,11 @@ module Hyrax
       @proxy_deposit_request.sending_user = current_user
       if @proxy_deposit_request.save
         #redirect_to hyrax.transfers_path, notice: "Transfer request created"
-        redirect_to main_app.media_showcase_edit_path(params[:id]), notice: "Transfer request sent."
+        redirect_to main_app.media_showcase_edit_path(params[:id]), notice: "Transfer request has been sent."
       else
         #@work = Hyrax::WorkRelation.new.find(params[:id])
         #render :new
-        redirect_to main_app.media_showcase_edit_path(params[:id]), notice: "Transfer request not sent.  Possibly there is a pending request already.  Please check in your Transfer dashboard."
+        redirect_to main_app.media_showcase_edit_path(params[:id]) + '#share', alert: "Sorry, transfer request was not sent.  Please make sure there is no pending request already, and also select a valid user with contributor access."
       end
     end
 

@@ -11,10 +11,12 @@
 		  <%= f.input :sender_comment, label: 'Comment to be sent to the user:' %>
 
 		  <div class="form-actions">
-		    <%#= f.submit class: 'btn btn-primary', value: 'Request Transfer', data: { confirm: t('.confirm') } %>
-				<input type="button" id="btn-transfer-submit" name="commit" value="Request Transfer" class="btn btn-primary" data-confirm="Are you sure you want to transfer ownership of this media to another user?  Click Ok to transfer or Cancel to return to the transfer screen." data-disable-with="Transfer">
+		    <%#= f.submit class: 'btn btn-primary', value: 'Request Transfer (old)', data: { confirm: t('.confirm') } %>
+				<input type="button" id="btn-transfer-submit" name="commit" value="Request Transfer" class="btn btn-primary" data-confirm="Are you sure you want to transfer ownership of this media to another user?  Click Ok to transfer or Cancel to return to the transfer screen." data-disable-with="Submitting...">
 		  </div>
 		<% end %>
 
 	</div>
 </div>
+
+

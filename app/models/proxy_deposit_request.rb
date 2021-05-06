@@ -42,6 +42,7 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   validates :sending_user, :work_id, presence: true
   validate :transfer_to_should_be_a_valid_username
+  validate :transfer_to_should_be_a_contributor
   validate :sending_user_should_not_be_receiving_user
   validate :should_not_be_already_part_of_a_transfer
 
@@ -61,6 +62,10 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   private
+
+    def transfer_to_should_be_a_contributor
+      errors.add(:transfer_to, "must have contributor access") unless receiving_user.contributor?
+    end
 
     def transfer_to_should_be_a_valid_username
       errors.add(:transfer_to, "must be an existing user") unless receiving_user

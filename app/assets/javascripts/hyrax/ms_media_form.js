@@ -1,10 +1,15 @@
 /* Media Share tab specific */
 document.addEventListener("share-tab-loaded", function(event) {
 
+  var transferToSelect = $('#proxy_deposit_request_transfer_to');
+  transferToSelect.userSearch();
+
   $('#btn-transfer-submit').click(function() {
-
-    $('#new_proxy_deposit_request').submit();
-
+    if (transferToSelect.val().length == 0) {
+      alert('Please select a user');
+    } else if (confirm('Are you sure you want to transfer ownership of this work to another user? Click Ok to transfer or Cancel to return to the transfer screen')) {
+        $('#new_proxy_deposit_request').submit();
+    }
   });
 
 });

@@ -39,7 +39,7 @@
         <% if can? :transfer, @presenter.id %>
           <li role="presentation" id="tab-share" class="">
             <a href="#share" aria-controls="share" role="tab" data-toggle="tab" aria-expanded="false">
-              <i class="fas fa-exchange-alt"></i> Share
+              <i class="fa fa-share-alt"></i> Share
             </a>
           </li>
         <% end %>
@@ -105,12 +105,7 @@
         <div role="tabpanel" class="tab-pane" id="share">
           <div class="form-tab-content">
 
-
-
-
-
-
-
+            <%# the form is outside of the tab container %>
 
           </div>
         </div>

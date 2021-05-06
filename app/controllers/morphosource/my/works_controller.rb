@@ -23,10 +23,6 @@ module Morphosource
         (@response, @document_list) = query_solr
         @viewable_collections_ids = viewable_collections_ids
         prepare_instance_variables_for_batch_control_display
-        index_response
-      end
-
-      def index_response
         respond_to do |format|
           format.html {
             render 'morphosource/my/works/index'
@@ -35,6 +31,7 @@ module Morphosource
           format.atom { render layout: false }
         end
       end
+      
     end
   end
 end

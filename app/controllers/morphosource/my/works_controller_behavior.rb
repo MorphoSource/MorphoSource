@@ -34,6 +34,7 @@ module Morphosource
         response["numFound"]
       end
 
+      # used to filter collection facets
       def viewable_collections_ids
         ActiveFedora::Base.where("has_model_ssim:Collection").accessible_by(current_ability, :read).map(&:id)
       end

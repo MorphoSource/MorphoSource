@@ -1,12 +1,10 @@
 # Retrieves all media a user can edit or has been granted read access to through a role (collection members group)
 module Morphosource
   module Users
-    # class MyMediaSearchBuilder < Hyrax::WorksSearchBuilder
     class MyMediaSearchBuilder < Hyrax::CatalogSearchBuilder
 
       include Hyrax::My::SearchBuilderBehavior
 
-      # self.default_processor_chain += [:apply_read_edit_filters, :filter_collection_facet_for_access]
       self.default_processor_chain += [:apply_read_edit_filters]
 
       def models

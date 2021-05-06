@@ -10,8 +10,7 @@ module Morphosource
           config.facet_fields = {}
           config.add_facet_field "publication_status_ssi", label: "Publication Status"
           config.add_facet_field "human_readable_media_type_ssim", label: "Media Type"
-          # change to ids?
-          config.add_facet_field "media_organization_ssim", label: "Organization", limit: 10
+          config.add_facet_field "media_organization_id_ssim", label: "Organization", helper_method: :organization_title_by_id, limit: 10
           config.add_facet_field "member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id, limit: 10
           config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id, limit: 10
         end

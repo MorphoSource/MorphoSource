@@ -15,19 +15,19 @@ module Morphosource
       end
       configure_facets
 
-      private
-
-        def search_builder_class
-          if current_user.admin?
-            Morphosource::Users::EditSpecimensSearchBuilder
-          else
-            Morphosource::Users::MySpecimensSearchBuilder
-          end
+      def search_builder_class
+        if current_user.admin?
+          Morphosource::Users::EditSpecimensSearchBuilder
+        else
+          Morphosource::Users::MySpecimensSearchBuilder
         end
+      end
+
+      private
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
-          main_app.my_dashboard_biological_specimen_facet_path(args[:id])
+          main_app.my_dashboard_specimens_facet_path(args[:id])
         end
 
         def search_action_url(*args)

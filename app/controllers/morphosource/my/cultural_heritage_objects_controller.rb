@@ -16,15 +16,15 @@ module Morphosource
       end
       configure_facets
 
-      private
-
-        def search_builder_class
-          if current_user.admin?
-            Morphosource::Users::EditChosSearchBuilder
-          else
-            Morphosource::Users::MyChosSearchBuilder
-          end
+      def search_builder_class
+        if current_user.admin?
+          Morphosource::Users::EditChosSearchBuilder
+        else
+          Morphosource::Users::MyChosSearchBuilder
         end
+      end
+
+      private
 
         def search_action_url(*args)
           main_app.my_cultural_heritage_objects_path(*args)

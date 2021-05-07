@@ -35,7 +35,7 @@ class FundCode < ApplicationRecord
   end
 
   def media_ids
-    fund_code_media_associations.pluck(:media)
+    fund_code_media_associations.where(active: true).pluck(:media)
   end
 
   def media

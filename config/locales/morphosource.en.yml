@@ -12,12 +12,15 @@ en:
       sidebar:
         downloads: 'Downloads'
         fund_codes: 'Fund Codes'
+        fund_code_charges: 'Fund Code Charges'
         media_cart: 'Media Cart'
         previous_downloads: 'Previous Downloads'
         requests: 'Requests'
         manage_requests: 'Manage Requests'
       fund_codes:
         header: 'Fund Code Control Panel'
+      fund_code_charges:
+        header: 'Fund Code Charges'
     base:
       form_progress:
         required_format: 'File formats match selected media type'

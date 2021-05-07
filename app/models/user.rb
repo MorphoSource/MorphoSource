@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_many :fund_code_memberships
   has_many :fund_codes, :through => :fund_code_memberships
 
+  has_secure_token
+
   paginates_per 10
 
   # assign user a ms_id to use as user_key

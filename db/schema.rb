@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_29_181038) do
+ActiveRecord::Schema.define(version: 2021_05_05_203237) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -656,9 +656,11 @@ ActiveRecord::Schema.define(version: 2021_04_29_181038) do
     t.string "ms_id", null: false
     t.string "ms1_password_hash"
     t.boolean "ms1_user", default: false
+    t.string "token"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["ms_id"], name: "index_users_on_ms_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["token"], name: "index_users_on_token", unique: true
   end
 
   create_table "version_committers", force: :cascade do |t|

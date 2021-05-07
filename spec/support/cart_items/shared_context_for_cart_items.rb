@@ -19,13 +19,13 @@ RSpec.shared_context 'cart items', :shared_context => :metadata do
   let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['open'], download_reviewer: ['xxx'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
   let(:work7)         { Media.create(id: "ggg", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
 
-  let(:cartItem1)     { CartItem.create( user_id: current_user.ms_id, work_id: work1.id, in_cart: true, date_requested: Date.yesterday, date_downloaded: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
-  let(:cartItem2)     { CartItem.create( user_id: current_user.ms_id, work_id: work2.id, in_cart: true, date_downloaded: Date.yesterday) }
-  let(:cartItem3)     { CartItem.create( user_id: current_user.ms_id, work_id: work3.id, in_cart: true, date_downloaded: nil) }
-  let(:cartItem4)     { CartItem.create( user_id: current_user.ms_id, work_id: work4.id, in_cart: false, date_downloaded: Date.yesterday) }
-  let(:cartItem5)     { CartItem.create( user_id: current_user.ms_id, work_id: work5.id, in_cart: false, date_downloaded: nil, date_requested: Date.yesterday) }
-  let(:cartItem6)     { CartItem.create( user_id: current_user.ms_id, work_id: work6.id, in_cart: false, date_downloaded: nil) }
-  let(:cartItem7)     { CartItem.create( user_id: current_user.ms_id, work_id: work7.id, in_cart: false, date_downloaded: nil) }
+  let(:cartItem1)     { CartItem.create( user_id: current_user.ms_id, work_id: work1.id, in_cart: true, date_requested: Date.yesterday, date_downloaded: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow, reviewers: [depositor.ms_id]) }
+  let(:cartItem2)     { CartItem.create( user_id: current_user.ms_id, work_id: work2.id, in_cart: true, date_downloaded: Date.yesterday, reviewers: [depositor.ms_id]) }
+  let(:cartItem3)     { CartItem.create( user_id: current_user.ms_id, work_id: work3.id, in_cart: true, date_downloaded: nil, reviewers: [depositor.ms_id]) }
+  let(:cartItem4)     { CartItem.create( user_id: current_user.ms_id, work_id: work4.id, in_cart: false, date_downloaded: Date.yesterday, reviewers: [depositor.ms_id]) }
+  let(:cartItem5)     { CartItem.create( user_id: current_user.ms_id, work_id: work5.id, in_cart: false, date_downloaded: nil, date_requested: Date.yesterday, reviewers: [depositor.ms_id]) }
+  let(:cartItem6)     { CartItem.create( user_id: current_user.ms_id, work_id: work6.id, in_cart: false, date_downloaded: nil, reviewers: [depositor.ms_id]) }
+  let(:cartItem7)     { CartItem.create( user_id: current_user.ms_id, work_id: work7.id, in_cart: false, date_downloaded: nil, reviewers: [depositor.ms_id]) }
 
   let(:doc1)          { SolrDocument.new(id: work1.id) }
   let(:doc2)          { SolrDocument.new(id: work2.id) }

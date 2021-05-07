@@ -1,5 +1,6 @@
 module Qa::Authorities
   class FindCulturalHeritageObjects < Qa::Authorities::FindWorks
+    self.search_builder_class = Morphosource::FindPhysicalObjectsSearchBuilder
 
     include MorphosourceHelper
 

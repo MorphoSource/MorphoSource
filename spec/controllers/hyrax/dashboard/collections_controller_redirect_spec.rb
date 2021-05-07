@@ -30,7 +30,7 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
     end
     it 'edit access users should be redirected to edit page' do
       get :show, params: { id: team.id }
-      expect(response).to redirect_to "/dashboard/collections/000200000/edit?locale=en&"
+      expect(response).to redirect_to "/dashboard/collections/#{team.id}/edit?locale=en&"
     end
   end
 
@@ -41,7 +41,7 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
     end
     it 'read access users should be redirected to public view' do
       get :show, params: { id: team.id }
-      expect(response).to redirect_to "/teams/000200000?locale=en"
+      expect(response).to redirect_to "/teams/#{team.id}?locale=en"
     end
   end
 

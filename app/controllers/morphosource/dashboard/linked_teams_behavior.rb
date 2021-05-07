@@ -15,11 +15,11 @@ module Morphosource
       def add_read_permissions
         media = @organization.outside_media
         media.each do |m|
-          m.read_groups += @groups
-          m.save
+          media_read_groups = m.read_groups + @groups
+          UpdateWorkReadGroupsJob.perform_later(m, media_read_groups)
           m.file_sets.each do |f|
-            f.read_groups += @groups
-            f.save
+            f_read_groups = f.read_groups + @groups
+            UpdateWorkReadGroupsJob.perform_later(f, f_read_groups)
           end
         end
       end
@@ -36,11 +36,11 @@ module Morphosource
       def remove_read_permissions
         media = @old_org.outside_media
         media.each do |m|
-          m.read_groups -= @groups
-          m.save
+          media_read_groups = m.read_groups - @groups
+          UpdateWorkReadGroupsJob.perform_later(m, media_read_groups)
           m.file_sets.each do |f|
-            f.read_groups -= @groups
-            f.save
+            f_read_groups = f.read_groups - @groups
+            UpdateWorkReadGroupsJob.perform_later(f, f_read_groups)
           end
         end
       end

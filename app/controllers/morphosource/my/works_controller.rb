@@ -1,7 +1,7 @@
 module Morphosource
   module My
     class WorksController < Hyrax::My::WorksController
-      include WorksControllerBehavior
+      include Morphosource::My::WorksControllerBehavior
       include Morphosource::My::WorksHelper
 
       class_attribute :create_work_presenter_class
@@ -31,7 +31,7 @@ module Morphosource
           format.atom { render layout: false }
         end
       end
-      
+
     end
   end
 end

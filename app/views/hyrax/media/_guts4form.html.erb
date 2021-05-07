@@ -36,6 +36,7 @@
             </a>
           </li>
         <% end %>
+        <%#  todo: this checking can? :transfer should be moved inside the tab when adding share media functionality later %>
         <% if can? :transfer, @presenter.id %>
           <li role="presentation" id="tab-share" class="">
             <a href="#share" aria-controls="share" role="tab" data-toggle="tab" aria-expanded="false">

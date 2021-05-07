@@ -94,15 +94,15 @@ class ProxyDepositRequest < ActiveRecord::Base
 
     def send_request_transfer_message_as_part_of_create
       transfer_link = "<a href='http://#{host_name}/dashboard/transfers'>Transfers of Ownership</a>"
-      message = "#{user_email_link([sending_user])} has requested to transfer #{message_content} to you.  Please review this request in your #{transfer_link} dashboard."
+      message = "#{user_email_link([sending_user])} has requested to transfer the ownership of #{message_content} to you.  Please view, accept or reject this request in your #{transfer_link} dashboard."
       message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
-      deliver_message(email_sender, receiving_user, message.html_safe, "You have a media ownership change request")
+      deliver_message(email_sender, receiving_user, message.html_safe, "You have a media transfer request")
     end
 
     def send_request_transfer_message_as_part_of_update
-      message = "Your transfer request of #{message_content} has been #{status}."
+      message = "Your request to transfer ownership of #{message_content} to #{user_email_link([receiving_user])} has been #{status}."
       message += "<p>Please contact #{user_email_link([receiving_user])} if you have a question related to this request.</p>" 
-      deliver_message(email_sender, sending_user, message.html_safe, "Media ownership change #{status}")
+      deliver_message(email_sender, sending_user, message.html_safe, "Media transfer request #{status}")
     end
 
     def message_content

@@ -12,15 +12,40 @@ RSpec.describe 'dashboard my pages routing', type: :routing do
     expect(:get => '/dashboard/my/projects').to route_to(route)
   end
 
-  it 'has my media and bso and cho routes' do
-    route = { controller: 'hyrax/my/media_works', action: 'index' }
+  it 'has my media routes' do
+    # index
+    route = { controller: 'morphosource/my/media', action: 'index' }
     expect(:get => '/dashboard/my/media').to route_to(route)
+    # facet
+    route = { controller: 'morphosource/my/media', action: 'facet', id: 'foobar' }
+    expect(:get => '/dashboard/my/media/facet/foobar').to route_to(route)
+  end
 
-    route = { controller: 'hyrax/my/media_works', "action"=>"specimens" }
-    expect(:get => '/dashboard/my/media/specimens').to route_to(route)
+  it 'has my add media routes' do
+    # index
+    route = { controller: 'morphosource/my/add_media', action: 'index', collection_id: 'foobar' }
+    expect(:get => '/dashboard/my/media/foobar').to route_to(route)
+    # facet
+    route = { controller: 'morphosource/my/add_media', action: 'facet', collection_id: 'foobar', id: 'foobar' }
+    expect(:get => '/dashboard/my/media/foobar/facet/foobar').to route_to(route)
+  end
 
-    route = { controller: 'hyrax/my/media_works', "action"=>"chos" }
-    expect(:get => '/dashboard/my/media/chos').to route_to(route)
+  it 'has my specimens routes' do
+    # index
+    route = { controller: 'morphosource/my/biological_specimens', action: 'index' }
+    expect(:get => '/dashboard/my/specimens').to route_to(route)
+    # facet
+    route = { controller: 'morphosource/my/biological_specimens', action: 'facet', id: 'foobar' }
+    expect(:get => '/dashboard/my/specimens/facet/foobar').to route_to(route)
+  end
+
+  it 'has my chos routes' do
+    # index
+    route = { controller: 'morphosource/my/cultural_heritage_objects', action: 'index' }
+    expect(:get => '/dashboard/my/cultural_heritage_objects').to route_to(route)
+    # facet
+    route = { controller: 'morphosource/my/cultural_heritage_objects', action: 'facet', id: 'foobar' }
+    expect(:get => '/dashboard/my/cultural_heritage_objects/facet/foobar').to route_to(route)
   end
 
 end

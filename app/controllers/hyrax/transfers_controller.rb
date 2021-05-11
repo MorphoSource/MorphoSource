@@ -40,7 +40,7 @@ module Hyrax
       add_breadcrumb t(:'hyrax.controls.home'), root_path
       add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
       add_breadcrumb t(:'hyrax.admin.sidebar.transfers'), hyrax.transfers_path
-      @presenter = TransfersPresenter.new(current_user, view_context)
+      @presenter = MsTransfersPresenter.new(current_user, view_context, request)
     end
 
     # Kicks of a job that completes the transfer. If params[:reset] is set, it will revoke

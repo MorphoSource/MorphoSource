@@ -8,6 +8,7 @@ module Morphosource
           config.search_builder_class = self.new.search_builder_class
           # clear catalog facet fields
           config.facet_fields = {}
+          config.add_facet_field "record_source_ssim", label: "Source"
           config.add_facet_field "organization_id_ssim", label: "Organization", helper_method: :organization_title_by_id, limit: 10
           config.add_facet_field "media_member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id, limit: 10
           config.add_facet_field "media_member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id, limit: 10

@@ -15,6 +15,7 @@ class BiologicalSpecimenIndexer < Morphosource::PhysicalObjectIndexer
      solr_doc['taxonomy_tesim'] = object.taxonomies_titles
      solr_doc['taxonomy_ssim'] = object.taxonomies_titles
      solr_doc['external_taxonomy_tesim'] = object.gbif_taxonomy_terms
+     solr_doc['record_source_ssim'] = object.record_source
     end
   end
 end

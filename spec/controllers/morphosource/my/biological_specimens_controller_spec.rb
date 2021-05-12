@@ -11,9 +11,15 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
       allow_any_instance_of(described_class).to receive(:search_builder_class).and_return("search_builder_class")
       described_class.configure_facets
     end
+    describe 'source' do
+      subject { facet_fields['record_source_ssim']}
+      it 'has a record source facet' do
+        expect(subject.label).to eq("Source")
+      end
+    end
     describe 'organization' do
       subject { facet_fields['organization_id_ssim']}
-      it 'has a publication status facet' do
+      it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
         expect(subject.limit).to eq(10)
         expect(subject.helper_method).to eq(:organization_title_by_id)

@@ -138,7 +138,7 @@ module MorphosourceHelper
   end
 
   def find_taxonomy_submission_autocomplete_url
-    'search_taxonomy_ajax?type[]=Taxonomy&id=NA&q='
+    '/submissions/search_taxonomy_ajax?type[]=Taxonomy&id=NA&q='
   end
 
   def find_taxonomy_submission_autocomplete_url_bso_edit

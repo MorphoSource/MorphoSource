@@ -23,18 +23,28 @@ class ProxyDepositRequest < ActiveRecord::Base
   belongs_to :sending_user, class_name: 'User'
 
   # @param [User] user - the person who needs to take action on the ownership transfer request
+  # @param [number_of_days] - for pulling either all transfers, or just x number of days
   # @return [Enumerable] a set of requests that the given user can act upon to claim the ownership transfer
   # @note We are iterating through the found objects and querying SOLR each time. Assuming we are rendering this result in a view,
   #       this is reasonable. In the view we will render the #to_s of the associated work. So we may as well preload the SOLR document.
-  def self.incoming_for(user:)
-    where(receiving_user: user).reject(&:deleted_work?)
+  def self.incoming_for(user:, number_of_days:)
+    if number_of_days == 'all'
+      where(receiving_user: user).order('created_at desc').reject(&:deleted_work?)
+    else
+      where(receiving_user: user).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc').reject(&:deleted_work?)
+    end
   end
 
   # @param [User] user - the person who requested that a work be transfer to someone else
+  # @param [number_of_days] - for pulling either all transfers, or just x number of days
   # @return [Enumerable] a set of requests created by the given user
   # @todo Should I skip deleted works as indicated in the .incoming_for method?
-  def self.outgoing_for(user:)
-    where(sending_user: user)
+  def self.outgoing_for(user:, number_of_days:)
+    if number_of_days == 'all'
+      where(sending_user: user).order('created_at desc')
+    else
+      where(sending_user: user).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
+    end
   end
 
   # attribute work_id exists as result of renaming in db migrations.

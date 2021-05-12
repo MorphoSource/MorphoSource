@@ -413,6 +413,21 @@ module Hyrax
       @show_work_item_rows ||= 10 # rows on show view
     end
 
+    attr_writer :select_number_of_days
+    def select_number_of_days
+      [30, 10, 9, 8, 7, 5, "all"]
+    end
+
+    attr_writer :default_show_work_item_rows
+    def default_show_work_item_rows
+      @default_show_work_item_rows ||= 10 # default rows per page 
+    end
+
+    attr_writer :default_rows_per_page_range
+    def default_rows_per_page_range
+      [10, 20, 40, 60, 80, 100] # rows per page that users can choose
+    end
+
     attr_writer :teams_show_work_item_rows
     def teams_show_work_item_rows
       @teams_show_work_item_rows ||= 10 # default rows per page on teams/project show view

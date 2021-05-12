@@ -1,5 +1,5 @@
 module Hyrax
-  class MsTransfersPresenter < TransfersPresenter
+  class MsTransfersPresenter # taken from Hyrax::TransfersPresenter
     def initialize(current_user, view_context, request)
       @current_user = current_user
       @view_context = view_context
@@ -10,7 +10,7 @@ module Hyrax
       if outgoing_proxy_deposits.present?
         render 'hyrax/transfers/sent', outgoing_proxy_deposits: paginated_outgoing_proxy_deposits
       else
-        t('hyrax.dashboard.no_transfers')
+        "No records"
       end
     end
 
@@ -18,11 +18,36 @@ module Hyrax
       if incoming_proxy_deposits.present?
         render 'hyrax/transfers/received', incoming_proxy_deposits: paginated_incoming_proxy_deposits
       else
-        t('hyrax.dashboard.no_transfer_requests')
+        "No records"
       end
     end
 
     private
+
+      attr_reader :current_user, :view_context, :since
+      delegate :render, :t, to: :view_context
+
+      def incoming_proxy_deposits
+        @incoming ||= begin
+          if @request.params['days'].present?
+            number_of_days = @request.params['days']
+          else
+            number_of_days = 30
+          end
+          ProxyDepositRequest.incoming_for(user: current_user, number_of_days: number_of_days)
+        end
+      end
+
+      def outgoing_proxy_deposits
+        @outgoing ||= begin
+          if @request.params['sdays'].present?
+            number_of_days = @request.params['sdays']
+          else
+            number_of_days = 30
+          end
+          ProxyDepositRequest.outgoing_for(user: current_user, number_of_days: number_of_days)
+        end
+      end
 
       # pagination methods - incoming
       def paginated_incoming_proxy_deposits
@@ -43,7 +68,7 @@ module Hyrax
       end
 
       def incoming_rows_from_params
-        @request.params[:rows].nil? ? Hyrax.config.teams_show_work_item_rows : @request.params[:rows].to_i
+        @request.params[:rows].nil? ? Hyrax.config.default_show_work_item_rows : @request.params[:rows].to_i
       end
 
       # pagination methods - outgoing
@@ -65,7 +90,7 @@ module Hyrax
       end
 
       def outgoing_rows_from_params
-        @request.params[:srows].nil? ? Hyrax.config.teams_show_work_item_rows : @request.params[:srows].to_i
+        @request.params[:srows].nil? ? Hyrax.config.default_show_work_item_rows : @request.params[:srows].to_i
       end
 
   end

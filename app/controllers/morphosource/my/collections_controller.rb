@@ -1,6 +1,6 @@
-module Hyrax
+module Morphosource
   module My
-    class TeamsController < Hyrax::MyController
+    class CollectionsController < Hyrax::MyController
       include Morphosource::My::CollectionsControllerBehavior
       include Morphosource::CollectionHelper
       helper_method :page_is_project?, :ms_dashboard_my_collection_link, :hidden_params_for_filters, :visibility_label,
@@ -16,7 +16,6 @@ module Hyrax
       self.information_service_class = Morphosource::Collections::TeamsInformationService
 
       def index
-        byebug
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         collection_type_list_presenter

@@ -1,0 +1,20 @@
+<% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
+<% provide :page_title, t("hyrax.admin.sidebar.projects") %>
+<% provide :page_header do %>
+  <div class="col-xs-9 title">
+
+    <h1><span class="fa fa-folder-open" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.projects") %></h1>
+  </div>
+  <div class="col-xs-3 show-actions text-right">
+    <%byebug%>
+    <% if can?(:create_any, Collection) && @collection_type_list_presenter.any? %>
+      <% # link directly to create collection form with type %>
+      <%= link_to(t('helpers.action.projects.new'), append_collection_type_url(dashboard_projects_new_path), class: 'btn btn-primary') %>
+    <% end %>
+  </div>
+
+  <% @collection_counts.each do |membership, count| %>
+    <%= render 'membership_count', membership: membership, count: count %>
+  <% end %>
+
+<% end %>

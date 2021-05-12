@@ -66,6 +66,8 @@ Rails.application.routes.draw do
         get '/specimens/facet/:id', to: 'biological_specimens#facet', as: 'dashboard_specimens_facet'
         get '/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'dashboard_chos_facet'
 
+        resources :teams, only: [:index], controller: 'teams', as: 'teams'
+        resources :projects, only: [:index], controller: 'projects', as: 'projects'
       end
     end
   end
@@ -145,13 +147,13 @@ Rails.application.routes.draw do
     #get 'dashboard/my/projects', controller: 'my/teams', action: :index
 
     # Rails.application.routes.url_helpers.my_media_index_path
-    scope :dashboard do
-      namespace :my do
-        resources :teams, only: [:index], controller: 'teams'
-        resources :projects, only: [:index], controller: 'teams'
-        # resources :media, only: [:index], controller: 'morphosource/my/media'
-      end
-    end
+    # scope :dashboard do
+    #   namespace :my do
+    #     resources :teams, only: [:index], controller: 'teams'
+    #     resources :projects, only: [:index], controller: 'teams'
+    #     # resources :media, only: [:index], controller: 'morphosource/my/media'
+    #   end
+    # end
 
     scope :browse do
       resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'
@@ -342,8 +344,19 @@ Rails.application.routes.draw do
 
   # when creating a collection, use the morphosource collections controller
   scope module: :morphosource do
-    scope module: :dashboard do
-      resources :collections, only: [:create]
+    namespace :dashboard do
+      namespace :teams do
+        get 'new'
+      end
+      namespace :projects do
+        get 'new'
+      end
+
+
+        # resources :teams, only: [:new, :create, :edit]
+        # resources :projects, only: [:create, :edit]
+      # resources :collections, only: [:create]
+
       # resources :collections, only: [:update_members]
     end
   end

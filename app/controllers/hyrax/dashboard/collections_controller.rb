@@ -62,6 +62,7 @@ module Hyrax
       end
 
       def new
+        byebug
         # Coming from the UI, a collection type id should always be present.  Coming from the API, if a collection type id is not specified,
         # use the default collection type (provides backward compatibility with versions < Hyrax 2.1.0)
         collection_type_id = params[:collection_type_id].presence || default_collection_type.id
@@ -100,6 +101,7 @@ module Hyrax
       end
 
       def edit
+        byebug
         # this is called when user save the collection form on the show action
         # if needed, redirect show to edit if user has permission to save
         presenter

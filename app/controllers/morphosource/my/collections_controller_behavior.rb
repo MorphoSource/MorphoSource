@@ -1,7 +1,7 @@
 # Cloned from CollectionsControllerBehavior to set TeamPresenter
-module Hyrax
+module Morphosource
   module My
-    module MyTeamsControllerBehavior
+    module CollectionsControllerBehavior
       extend ActiveSupport::Concern
       include Blacklight::AccessControls::Catalog
       include Blacklight::Base

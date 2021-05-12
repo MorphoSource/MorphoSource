@@ -75,6 +75,14 @@ class BiologicalSpecimen < Morphosource::Works::Base
     other_taxonomies.reject{|taxonomy| taxonomy.trusted == ["Yes"] || taxonomy.gbif_key.present? }
   end
 
+  def record_source
+    if idigbio_uuid.present?
+      'iDigBio Aggregator'
+    else
+      'User Created'
+    end
+  end
+
   private
     def add_id_to_title # this is non-functional!!
       unless self.title && self.id && self.title.first.to_s.start_with?("S#{self.id.to_s}: ")

@@ -37,6 +37,7 @@ module Morphosource
 
         def tab_variables
           @tab = :chos
+          @tab_title = 'Cultural Heritage Objects // MorphoSource'
         end
 
     end

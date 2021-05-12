@@ -1711,23 +1711,4 @@ $( document ).ready(function() {
 
     cookie_expired_days = 7;
 
-    setupTooltip();
-    var data = new SubmissionData();
-    var submissionForm = new SubmissionForm(data);
-
-    console.log(data);
-
-    // Submissions Utility Functions
-    var camelcaseToUnderscore = function(x) {
-      return x.split(/(?=[A-Z])/).join('_').toLowerCase();
-    };
-
-    var underscoreToCamelCase = function(x) {
-      return s.replace(/([-_][a-z])/ig, ($1) => {
-        return $1.toUpperCase()
-          .replace('-', '')
-          .replace('_', '');
-      });
-    };
-  } // end if the page is submission flow page
-});
+    

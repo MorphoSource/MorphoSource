@@ -993,15 +993,6 @@ $( document ).ready(function() {
 
       eventFuncs() {
         let self = this;
-<<<<<<< HEAD
-        // Select device events
-        $('select[name="submission[device_id]"]').change(function(event){
-          console.log($(this).find(':selected').data('modality'));
-          console.log(data.submissionModality);
-          if ($(this).val()){
-            if ($(this).find(':selected').data('modality').includes(data.submissionModality)) {
-              self.toggleSelectDeviceVisibility($(this).find(':selected'));
-=======
 
         // Device organization select
 
@@ -1102,7 +1093,6 @@ $( document ).ready(function() {
               console.log(deviceObj.modality);
               console.log(data.submissionModality);
               self.toggleSelectDeviceVisibility(deviceObj);
->>>>>>> 05c017f7... Organization/device fields are now select2-based and use local data
               $('#submission_select_device_continue').removeAttr('disabled');
             } else {
               console.log(deviceObj.modality);
@@ -1711,4 +1701,23 @@ $( document ).ready(function() {
 
     cookie_expired_days = 7;
 
-    
+    setupTooltip();
+    var data = new SubmissionData();
+    var submissionForm = new SubmissionForm(data);
+
+    console.log(data);
+
+    // Submissions Utility Functions
+    var camelcaseToUnderscore = function(x) {
+      return x.split(/(?=[A-Z])/).join('_').toLowerCase();
+    };
+
+    var underscoreToCamelCase = function(x) {
+      return s.replace(/([-_][a-z])/ig, ($1) => {
+        return $1.toUpperCase()
+          .replace('-', '')
+          .replace('_', '');
+      });
+    };
+  } // end if the page is submission flow page
+});

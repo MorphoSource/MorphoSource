@@ -286,8 +286,17 @@ module Hyrax
 
     attr_writer :index_related_works
     def index_related_works
-      # This image can be used for free and without attribution. See here for source and license: https://github.com/samvera/hyrax/issues/1551#issuecomment-326624909
       @index_related_works ||= false
+    end
+
+    attr_writer :unknown_ct_scanner
+    def unknown_ct_scanner
+      @unknown_ct_scanner ||= nil
+    end
+
+    attr_writer :null_organization_id
+    def null_organization_id
+      @null_organization_id ||= nil
     end
 
     attr_writer :banner_image

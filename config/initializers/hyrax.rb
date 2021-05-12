@@ -332,6 +332,12 @@ Hyrax.config do |config|
   config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_ms1/', '/vagrant/downloads/', '/opt/morphosource/root/tmp/']
 
   config.index_related_works = true
+
+  # Organization work ID for organization that includes "non-organization" devices
+  config.null_organization_id = Rails.env.production? ? '000332114' : nil
+
+  # Device work ID for unknown CT scanner
+  config.unknown_ct_scanner = Rails.env.production? ? '00000D567' : nil
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

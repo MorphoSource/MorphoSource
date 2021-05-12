@@ -23,6 +23,10 @@ module Morphosource
         end
       end
 
+      def self.all_solr
+        Morphosource::SolrService.new.get_docs("#{Solrizer.solr_name('has_model', :symbol)}:#{name}")
+      end
+
       def descendants
         @descendants = ActiveFedora::Base.find(member_ids)
         get_all_children(@descendants)

@@ -286,7 +286,7 @@ module Hyrax
 
     attr_writer :index_related_works
     def index_related_works
-      @index_related_works ||= nil
+      @index_related_works ||= false
     end
 
     attr_writer :unknown_ct_scanner
@@ -296,7 +296,7 @@ module Hyrax
 
     attr_writer :null_organization_id
     def null_organization_id
-      @null_organization_id ||= false
+      @null_organization_id ||= nil
     end
 
     attr_writer :banner_image

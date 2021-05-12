@@ -23,15 +23,6 @@ class Organization < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
-  def self.select2ize
-    all_solr.map do |o|
-      {
-        id: o['id'],
-        text: "#{[o['institution_name_tesim']&.first, o['title_tesim']&.first].compact.join(', ')} (#{o['institution_code_tesim']&.join('/')}:#{o['collection_code_tesim']&.join('/')})"
-      }
-    end
-  end
-
   def normalize_download_reviewer
     self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
   end

@@ -22,6 +22,12 @@
   border-color: #286090 !important;
 }
 
+.ms-works-pagination-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 @media only screen and (max-width: 760px) {
   .list-filters {
     flex-wrap: wrap;

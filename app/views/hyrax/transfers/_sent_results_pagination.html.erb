@@ -13,7 +13,7 @@
   </div>
 
   <div class="col-md-12 col-lg-8">
-    <%= paginate outgoing_proxy_deposits, outer_window: 2, theme: 'blacklight', param_name: :spage %>
+    <%= paginate outgoing_proxy_deposits, outer_window: 2, theme: 'blacklight', param_name: :spage, :params => { :anchor => 'sent' } %>
   </div>
 
 </div><!-- /row -->

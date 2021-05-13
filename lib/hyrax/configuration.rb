@@ -415,7 +415,7 @@ module Hyrax
 
     attr_writer :select_number_of_days
     def select_number_of_days
-      [30, 10, 9, 8, 7, 5, "all"]
+      [30, 60, 90, 120, "all"]
     end
 
     attr_writer :default_show_work_item_rows

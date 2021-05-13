@@ -1177,37 +1177,27 @@ html {
 /* Media transfer page specific */
 .showcase.transfer {
 
-  .row {
-    padding: 0;
-  }
-
   h1, .main-header h1 {
     font-size: 28px;
     .fa {
       font-size: 35px;
     }
   }
-  h2 {
-    margin-left: 15px;
-    font-size: 15px;
+  table {
+    table-layout: fixed;
   }
-  .container {
-    padding: 0;
-    table {
-      table-layout: fixed;
+  th, td {
+    font-size: 12px;
+    .btn {
+      min-width: 60px;
+      margin-right: 2px;
     }
-    th, td {
-      font-size: 12px;
-    }
-    form {
-      max-width: 600px;
-    }
-    .row {
-      padding: 0 26px 0 0;
-    }
-    .title, .comment {
-      max-width: 250px;
-    }
+  }
+  form {
+    max-width: 600px;
+  }
+  .title, .comment {
+    max-width: 250px;
   }
 }
 /* /Media transfer page specific */

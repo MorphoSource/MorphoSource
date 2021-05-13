@@ -1,37 +1,69 @@
-<% content_for :body_css_classes do %>showcase transfer<% end %>
+<% content_for :page_title do %>Transfers of Ownership // MorphoSource<% end %>
+<% content_for :body_css_classes do %>dashboard showcase showcase-edit transfer<% end %>
 <% provide :page_header do %>
-  <h1><span class="fa fa-exchange-alt" aria-hidden="true"></span>  <%= t("hyrax.dashboard.transfer_of_ownership") %></h1>
+  <h1><%= t("hyrax.dashboard.transfer_of_ownership") %></h1>
 <% end %>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <h2><%= t("hyrax.dashboard.transfers_received") %></h2>
-        <div class="pull-right">
-          <%= form_tag '', method: :get, :id => 'number_of_days' do %>
-              Days to Show: <%= select_tag :days, options_for_select(Hyrax.config.select_number_of_days, selected: params[:days] || 30), onchange: "$('#number_of_days').submit();" %> 
-          <% end %>
-        </div>
-        <div class="panel-body">
-          <%= @presenter.render_received_transfers %>
+<div class="col-md-12">
+  <div class="panel panel-default tabs" role="main">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" id="tab-received" class="active">
+        <a href="#received" aria-controls="received" role="tab" data-toggle="tab" aria-expanded="false">
+          <i class="fa fa-arrow-down"></i> Transfer Received
+        </a>
+      </li>
+      <li role="presentation" id="tab-sent" class="">
+        <a href="#sent" aria-controls="sent" role="tab" data-toggle="tab" aria-expanded="false">
+          <i class="fa fa-arrow-up"></i> Transfer Sent
+        </a>
+      </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+
+      <div role="tabpanel" class="tab-pane active" id="received">
+        <div class="form-tab-content">
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="panel panel-default">
+                <div class="pull-right">
+                  <%= form_tag '', method: :get, :id => 'number_of_days' do %>
+                      <label>Show transfers for <%= select_tag :days, options_for_select(Hyrax.config.select_number_of_days, selected: params[:days] || 30), onchange: "$('#number_of_days').submit();" %> days</label>
+                  <% end %>
+                </div>
+                <div class="panel-body">
+                  <%= @presenter.render_received_transfers %>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <h2><%= t("hyrax.dashboard.transfers_sent") %></h2>
-        <div class="pull-right">
-          <%= form_tag '', method: :get, :id => 's_number_of_days' do %>
-              Days to Show: <%= select_tag :sdays, options_for_select(Hyrax.config.select_number_of_days, selected: params[:sdays] || 30), onchange: "$('#s_number_of_days').submit();" %> 
-          <% end %>
-        </div>
-        <div class="panel-body">
-          <%= @presenter.render_sent_transfers %>
+
+      <div role="tabpanel" class="tab-pane" id="sent">
+        <div class="form-tab-content">
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="panel panel-default">
+                <div class="pull-right">
+                  <%= form_tag '', method: :get, :id => 's_number_of_days' do %>
+                      <label>Show transfers for <%= select_tag :sdays, options_for_select(Hyrax.config.select_number_of_days, selected: params[:sdays] || 30), onchange: "$('#s_number_of_days').submit();" %> days</label>
+                  <% end %>
+                </div>
+                <div class="panel-body">
+                  <%= @presenter.render_sent_transfers %>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
+
   </div>
 </div>

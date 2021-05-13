@@ -122,12 +122,14 @@ module Morphosource
           begin
             query_builder.merge(q: query_params)
             query_builder.merge(fq: fq_params)
+            query_builder.merge('facet.limit' => -1)
             query_builder.rows = rows
             query_builder.start = start
             repository.search(query_builder.query)
           ensure
             query_builder.merge(q: initial_q)
             query_builder.merge(fq: initial_fq)
+            query_builder.merge('facet.limit' => -1)
             query_builder.rows = initial_rows
             query_builder.start = initial_start
           end

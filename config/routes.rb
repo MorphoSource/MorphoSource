@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
     get 'media/:id', to: 'media#showcase'
+    get 'media/:id/edit', to: 'media#edit', as: :media_showcase_edit
     get 'media/:id/thumbnail', to: 'media#thumbnail'
     # redirect the default BSO/CHO view to showcase view, except for certain action (e.g. new)
     get 'concern/biological_specimens/new', to: 'biological_specimens#new'

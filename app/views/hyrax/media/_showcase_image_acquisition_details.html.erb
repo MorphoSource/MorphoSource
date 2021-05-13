@@ -101,7 +101,7 @@
             processing_activity_items: pe[:processing_activity_items],
             processing_member: pe[:child_members].first,
             parent_member: pe[:parent_members].first,
-            creator: pe[:creator]&.first,
+            creator: pe[:creator]&.join(', '),
             date_created: pe[:date_created]&.first,
             software: pe[:software]&.first,
             description: pe[:description]&.first,

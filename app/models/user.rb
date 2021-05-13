@@ -112,6 +112,28 @@ class User < ApplicationRecord
     end
   end
 
+  def charge_api_user?
+    groups.include? 'charge_api'
+  end
+
+  def make_charge_api_user
+    if charge_api_user?
+      puts "Can't add - #{display_name} is already a charge API user"
+    else
+      charge_api_group.users += [self]
+      puts "#{display_name} is now a charge API user"
+    end
+  end
+
+  def remove_charge_api_user
+    if !charge_api_user?
+      puts "Can't remove - #{display_name} is not a charge API user"
+    else
+      charge_api_group.users -= [self]
+      puts "#{display_name} charge api user status removed"
+    end
+  end
+
   # true if user has download access or an approved cart item
   def has_download_access_or_approval?(media_id)
     (self.can? :download, media_id) || (approved_to_download? media_id)
@@ -212,6 +234,10 @@ class User < ApplicationRecord
 
   def contributor_group
     Role.find_by(name: 'contributor')
+  end
+
+  def charge_api_group
+    Role.find_by(name: 'charge_api')
   end
 
   # Fixes errors from incrementer not advancing to account for console-created users

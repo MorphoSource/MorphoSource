@@ -383,6 +383,11 @@ namespace :morphosource do
     Role.find_or_create_by(name: 'contributor')
   end
 
+  desc 'Set Up Fund Code Charge API User Role'
+  task :create_charge_api_role => :environment do
+    Role.find_or_create_by(name: 'charge_api')
+  end
+
   desc 'MorphoSource Setup'
   task :setup  => :environment do
     # default admin set
@@ -393,6 +398,8 @@ namespace :morphosource do
     Rake::Task['morphosource:create_admin_role'].invoke
     # contributor role
     Rake::Task['morphosource:create_contributor_role'].invoke
+    # charge api role
+    Rake::Task['morphosource:create_charge_api_role'].invoke
   end
 
 end

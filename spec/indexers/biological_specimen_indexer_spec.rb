@@ -6,7 +6,8 @@ RSpec.describe BiologicalSpecimenIndexer do
 
   describe 'custom fields' do
     let(:field_values) { {
-      taxonomies_titles: ['Genus > Species']
+      taxonomies_titles: ['Genus > Species'],
+      record_source: 'iDigBio Aggregator'
     } }
 
     before do
@@ -18,6 +19,10 @@ RSpec.describe BiologicalSpecimenIndexer do
     it 'indexes taxonomies' do
       expect(subject['taxonomy_ssim']).to match_array field_values[:taxonomies_titles]
       expect(subject['taxonomy_ssim']).to match_array field_values[:taxonomies_titles]
+    end
+
+    it 'indexes record source' do
+      expect(subject['record_source_ssim']).to eq field_values[:record_source]
     end
   end
 end

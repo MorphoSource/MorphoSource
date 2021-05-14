@@ -151,8 +151,9 @@
   </div>
 </div>
 
+
 <div class="row related_form share" style="display:none">
-  <%= render_async '/works/000200122/transfers/new', event_name: "share-tab-loaded" do %>
+  <%= render_async hyrax.new_work_transfer_path(@presenter.id), event_name: "share-tab-loaded" do %>
     <div class="ui-loading-whole-page" style="height:200px"></div>
   <% end %>
 </div>

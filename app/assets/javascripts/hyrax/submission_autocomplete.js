@@ -19,7 +19,7 @@
       source: function (request, response) {
         $.ajax({
           url: url + request.term,
-          timeout: 10000,
+          timeout: 30000,
           type: 'GET',
           dataType: 'json',
           complete: function (xhr, status) {

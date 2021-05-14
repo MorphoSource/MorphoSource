@@ -37,6 +37,7 @@ module Morphosource
 
         def tab_variables
           @tab = :specimens
+          @tab_title = 'Specimens // MorphoSource'
         end
 
     end

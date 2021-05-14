@@ -26,6 +26,7 @@ module Morphosource
           @tab = :add_media
           @page_title = t("morphosource.dashboard.my.add_media.title") + @collection.title.first
           @add_to_collection_button_label = t("morphosource.dashboard.my.add_media.add_media_button") + @collection.title.first
+          @tab_title = 'Add Media // MorphoSource'
         end
 
         def collection_not_found

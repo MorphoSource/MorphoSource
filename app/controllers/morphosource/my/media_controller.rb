@@ -38,6 +38,7 @@ module Morphosource
 
         def tab_variables
           @tab = :media
+          @tab_title = 'Media // MorphoSource'
         end
     end
   end

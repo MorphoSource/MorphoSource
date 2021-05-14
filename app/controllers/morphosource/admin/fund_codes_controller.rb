@@ -89,7 +89,7 @@ module Morphosource
       end
 
       def select2ize(users)
-        users.map { |u| { id: u.id, user_key: u.id.to_s, text: u.email } }.to_json
+        users.map { |u| { id: u.id, user_key: u.user_key, text: u.email } }.to_json
       end
 
       def fund_code_params

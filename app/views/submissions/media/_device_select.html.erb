@@ -2,7 +2,7 @@
   <div class="row form-group">
     <div class="col-xs-12 col-sm-6 col-sm-offset-3">
 
-      <div class="organization-select2-container">
+      <div class="submission-select2-container">
         <%= f.input :organization_search, 
           label: 'First, find the organization that manages the device.',
           input_html: {
@@ -25,7 +25,7 @@
         </div>
       <% end %>
 
-      <div class="organization-select2-container mt-3">
+      <div class="submission-select2-container mt-3">
         <%= f.input :device_id,
           collection: [],
           label: 'Then select from devices associated with the organization.',

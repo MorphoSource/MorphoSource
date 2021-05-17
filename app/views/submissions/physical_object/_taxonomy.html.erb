@@ -8,16 +8,11 @@
     <div id="submission_select_taxonomy_section">
       <%= simple_form_for @submission, html: { id: :taxonomy_search_form } do |f| %>
         <div class="row">
-          <div class="col-xs-12 col-sm-6 col-sm-offset-3 no-padding">
-            <%= f.input :taxonomy_search,
-            placeholder: "Enter taxonomy keywords (species, genus, higher terms)",
-            input_html: { class: 'form-control' } %>
+          <div class="col-sm-6 col-sm-offset-3 no-padding submission-select2-container">
+            <%= f.input_field :taxonomy_search %>
           </div>
         </div>
 
-        <div>
-          <a id="btn_add_taxonomy" class="hide btn btn-primary">Add</a>
-        </div>
         <div id="taxonomies" class="row">
           <input class="taxonomy_title" type="hidden" name="taxonomy_title" value="" />
           <input class="taxonomy_id" type="hidden" name="taxonomy_id" value="" />
@@ -61,67 +56,3 @@
 
   </div>
 </div>
-
-<script>
-$(function(){
-  $('#submission_taxonomy_search').submissionAutocomplete({
-    url: "<%= find_taxonomy_submission_autocomplete_url %>",
-    select: function(event, ui) {
-      event.preventDefault();
-
-      if (ui.item.value && ui.item.value != -1) {
-        $("input.taxonomy_id").val(ui.item.value);
-        $("input.taxonomy_gbif_key").val(ui.item.gbif_key);
-        $("input.taxonomy_title").val(build_name_no_formatting(ui.item.name, ui.item.rank));
-
-        $('a#btn_add_taxonomy').trigger('click');
-        $("#submission_taxonomy_search").val('');
-      }
-    },
-  }).autocomplete('instance')._renderItem = function(ul, item) {
-    // Overwrite default autocomplete list display
-    if (item.value && item.value != -1) {
-      return $(
-        "<li><div style='border-bottom: 1px solid #D2D2D2;'>" + 
-        build_name(item.name, item.rank) + 
-        "<br/><span style='font-size: small;'>" + 
-        item.higher_taxonomy + 
-        "</span><br/>" +
-        item.source_info + 
-        "</div></li>"
-      ).appendTo(ul);
-    } else {
-      return $("<li>")
-        .append("<div>" + item.label + "</div>")
-        .appendTo(ul);
-    }
-  };
-
-  var build_name = function(name, rank) {
-    var s = "";
-    if (rank) {
-      if (rank == 'GENUS' || rank == 'SPECIES' || rank == 'SUBSPECIES') {
-        s = s + "<i>" + name + "</i>";
-      } else {
-        s = s + name;
-      }
-      s = s + " (" + rank.toLowerCase() + ")";
-    } else {
-      s = s + "<i>" + name + "</i>";
-    }
-    return s;
-  }
-
-  var build_name_no_formatting = function(name, rank) {
-    var s = name;
-    if (rank) {
-      s = s + " (" + rank.toLowerCase() + ")";
-    }
-    return s;
-  }
-
-});
-</script>
-
-
-

@@ -36,14 +36,11 @@
             </a>
           </li>
         <% end %>
-        <%#  todo: this checking can? :transfer should be moved inside the tab when adding share media functionality later %>
-        <% if can? :transfer, @presenter.id %>
-          <li role="presentation" id="tab-share" class="">
-            <a href="#share" aria-controls="share" role="tab" data-toggle="tab" aria-expanded="false">
-              <i class="fa fa-share-alt"></i> Share
-            </a>
-          </li>
-        <% end %>
+        <li role="presentation" id="tab-share" class="">
+          <a href="#share" aria-controls="share" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fa fa-share-alt"></i> Share
+          </a>
+        </li>
         <li role="presentation" id="tab-file-upload" class="">
           <a href="#file-upload" aria-controls="file-upload" role="tab" data-toggle="tab" aria-expanded="false">
             <i class="fa fa-upload"></i> File Upload
@@ -106,7 +103,7 @@
         <div role="tabpanel" class="tab-pane" id="share">
           <div class="form-tab-content">
 
-            <%# the form is outside of the tab container %>
+            <%= render 'tab_share', f: f %>
 
           </div>
         </div>

@@ -5,6 +5,8 @@
   var orgData = <%= @organizations_select2.to_json.html_safe %>;
   var nullOrg = <%= @null_organization.to_json.html_safe %>;
   var deviceData = <%= @devices_with_ids.to_json.html_safe %>;
+  var findMediaUrl = "<%= find_media_autocomplete_url.html_safe %>";
+  var findTaxonomyUrl = "<%= find_taxonomy_submission_autocomplete_url.html_safe %>";
 </script>
 
 <div class="submission_flow" id="submission_new">

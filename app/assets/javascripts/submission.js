@@ -335,6 +335,66 @@ $( document ).ready(function() {
       eventFuncs() {
         let self = this;
 
+        $('#submission_parent_media_search').select2({
+          placeholder: "Enter parent media ID",
+          minimumInputLength: 2,
+          ajax: {
+            url: findMediaUrl, // Defined in submission new.html.erb
+            dataType: 'json',
+            quietMillis: 500,
+            data: function (term, page) {
+              return {
+                q: term, // search term
+              };
+            },
+            results: function (data, page) { // parse the results into the format expected by Select2.
+              console.log(data);
+              var modified_data = $.map(data, function (val, i) {
+                var result_text = 'Media ' + val.id + ': ' + val.label;
+                if (val.object_title) {
+                  result_text = result_text + ' [Object: ' + val.object_title + ']'
+                }
+                return { id: val.id, text: result_text };
+              });
+              console.log(modified_data);
+
+              return { 
+                results: modified_data
+              };
+            },
+            cache: true
+          }
+        });
+
+        $('#submission_parent_media_search').on('select2-selecting', function (e) {
+          console.log(JSON.stringify(e.choice));
+          var item = e.choice;
+
+          if (e.choice && e.choice.id) {
+            $("input.parent_id").val(item.id);
+            $("input.parent_title").val(item.text);
+
+            var currentParentList = $('input[id="submission_parent_media_list"]').val();
+            var selectedId = $("input.parent_id").val();
+            if (currentParentList.indexOf(selectedId) != -1) {
+              // parent has already been added
+              // todo: see if it is possible to exclude the already-added parents from the autocomplete dropdown
+              alert('Add new distinct parent media or select parent not available.');
+            } else {
+              if (currentParentList != '')
+                currentParentList += ',';
+              currentParentList += selectedId;
+              self.triggerChangeVal('input[id="submission_parent_media_list"]', currentParentList);
+              // display a new parent media row
+              $('.parent_row:last-child').after(self.newParentRow(selectedId));
+            }
+            $("input.parent_id").val('');
+            $("input.parent_title").val('');
+            e.preventDefault();
+            $('#submission_parent_media_search').select2('close');
+          }
+        });
+
         // Parent Media Selected
         $('input[id="submission_parent_media_list"]').change(function(){
           if ($(this).val()) {
@@ -381,35 +441,6 @@ $( document ).ready(function() {
           self.form.setSidebarViewFade(2);
 
           console.log(data);
-        });
-
-        $('#btn_add_parent').click(function(event){
-          event.preventDefault();
-          var currentParentList = $('input[id="submission_parent_media_list"]').val();
-          var selectedId = $("input.parent_id").val();
-          if (currentParentList.indexOf(selectedId) != -1) {
-            // parent has already been added
-            // todo: see if it is possible to exclude the already-added parents from the autocomplete dropdown
-            alert('Add new distinct parent media or select parent not available.');
-          } else {
-            if (currentParentList != '')
-              currentParentList += ',';
-            currentParentList += selectedId;
-            self.triggerChangeVal('input[id="submission_parent_media_list"]', currentParentList);
-            // display a new parent media row
-            $('.parent_row:last-child').after(self.newParentRow(selectedId));
-          }
-          $('input[id="submission_parent_media_search"]').val('');
-          $("input.parent_id").val('');
-          $("input.parent_title").val('');
-        });
-
-        $('input#submission_parent_media_search').on('keypress',function(e) {
-          if (e.which == 13) {
-            // pressing enter key on this field should add a parent instead of submitting the form
-            event.preventDefault();
-            $('#btn_add_parent').trigger('click');
-          }
         });
 
         $('div#parents').on('click', '#btn-remove-parent', function(event){
@@ -810,90 +841,109 @@ $( document ).ready(function() {
       eventFuncs() {
         let self = this;
 
-        $('#submission_select_taxonomy_submit').click(function(event){
-          $('form#taxonomy_search_form').submit();
+        // Select taxonomy
+
+        $('#submission_taxonomy_search').select2({
+          placeholder: "Enter taxonomy keywords (species, genus, higher terms)",
+          minimumInputLength: 2,
+          ajax: {
+            url: findTaxonomyUrl, // Defined in submission new.html.erb
+            dataType: 'json',
+            quietMillis: 500,
+            data: function (term, page) {
+              return {
+                q: term, // search term
+              };
+            },
+            results: function (data, page) { // parse the results into the format expected by Select2.
+              console.log(data);
+              return { 
+                results: data
+              };
+            },
+            cache: true
+          },
+          formatResult: formatTaxonomy,
+          formatSelection: formatTaxonomy
         });
 
-        $('form#taxonomy_search_form').submit(function(event){
-          event.preventDefault();
-          console.log('View 5 Continue with selected taxonomy button');
+        function formatTaxonomy(taxon) {
+          return "<div>" + 
+            buildName(taxon.name, taxon.rank) + 
+            "<br/><span style='font-size: small;'>" + 
+            taxon.higher_taxonomy + 
+            "</span><br/>" +
+            taxon.source_info + 
+            "</div>";
+        }
 
-          if ((data.willCreateTaxonomy) ||
-              (data.taxonomyIdArray && data.taxonomyIdArray.length) ||
-              (data.taxonomyGbifKeyArray && data.taxonomyGbifKeyArray.length)
-          ) {
-            if (data.willCreateTaxonomy) {
-              data.taxonomyCreateParams = $('#new_taxonomy').serializeArray();
+        function buildName(name, rank) {
+          var s = "";
+          if (rank) {
+            if (rank == 'GENUS' || rank == 'SPECIES' || rank == 'SUBSPECIES') {
+              s = s + "<i>" + name + "</i>";
             } else {
-              data.taxonomyCreateParams = null;
+              s = s + name;
+            }
+            s = s + " (" + rank.toLowerCase() + ")";
+          } else {
+            s = s + "<i>" + name + "</i>";
+          }
+          return s;
+        }
+
+        $('#submission_taxonomy_search').on('select2-selecting', function (e) {
+          console.log(JSON.stringify(e.choice));
+          var item = e.choice;
+
+          if (e.choice && e.choice.id) {
+            $("input.taxonomy_id").val(item.id);
+            $("input.taxonomy_gbif_key").val(item.gbif_key);
+            $("input.taxonomy_title").val(buildNameNoFormatting(item.name, item.rank));
+
+            var newId = $("input.taxonomy_id").val();
+            var newGbifKey = $("input.taxonomy_gbif_key").val();
+
+            if (newId && newId.indexOf('gbif:') == -1) {
+              if (!Array.isArray(data.taxonomyIdArray)) {
+                data.taxonomyIdArray = [];
+              }
+              data.taxonomyIdArray.push(newId);
             }
 
-            data.savedStep = 5;
-            self.form.setSidebarViewCheck(5);
-            self.form.setVisibleView(6); // view 6 create physical object details
-          }
-
-          console.log(data);
-        });
-
-        $('#submission_show_create_taxonomy').click(function(event){
-          event.preventDefault();
-          data.willCreateTaxonomy = true;
-          self.toggleCreateTaxonomyVisibility();
-          $('#submission_select_taxonomy_submit').removeAttr('disabled');
-
-        });
-
-        $('#taxonomy-create-close').click(function(event){
-          event.preventDefault();
-          data.willCreateTaxonomy = false;
-
-          $('#submission_create_taxonomy_button_section').addClass('show').removeClass('hide');
-          $('#submission_create_taxonomy_form_section').addClass('hide').removeClass('show');
-
-          if (
-            (!data.taxonomyIdArray || !data.taxonomyIdArray.length) &&
-            (!data.taxonomyGbifKeyArray || !data.taxonomyGbifKeyArray.length)
-          ) {
-            $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
-          }
-        });
-
-        $('#btn_add_taxonomy').click(function(event){
-          event.preventDefault();
-          console.log('View 5 add taxonomy to list button');
-
-          var newId = $("input.taxonomy_id").val();
-          var newGbifKey = $("input.taxonomy_gbif_key").val();
-
-          if (newId && newId.indexOf('gbif:') == -1) {
-            if (!Array.isArray(data.taxonomyIdArray)) {
-              data.taxonomyIdArray = [];
+            if (newGbifKey) {
+              if (!Array.isArray(data.taxonomyGbifKeyArray)) {
+                data.taxonomyGbifKeyArray = [];
+              }
+              data.taxonomyGbifKeyArray.push(newGbifKey);
             }
-            data.taxonomyIdArray.push(newId);
-          }
 
-          if (newGbifKey) {
-            if (!Array.isArray(data.taxonomyGbifKeyArray)) {
-              data.taxonomyGbifKeyArray = [];
+            // Display a new taxonomy row
+            if (newId || newGbifKey) {
+              $('.taxonomy_row:last-child').after(self.newTaxonomyRow(newId, newGbifKey));
             }
-            data.taxonomyGbifKeyArray.push(newGbifKey);
+
+            // Clear temp values for new taxonomy to be added
+            $("input.taxonomy_id").val('');
+            $("input.taxonomy_gbif_key").val('');
+            $("input.taxonomy_title").val('');
+
+            // Clear select2
+            e.preventDefault();
+            $('#submission_taxonomy_search').select2('close');
+
+            // Enable step completion
+            $('#submission_select_taxonomy_submit').removeAttr('disabled');
           }
-
-          // Display a new taxonomy row
-          if (newId || newGbifKey) {
-            $('.taxonomy_row:last-child').after(self.newTaxonomyRow(newId, newGbifKey));
-          }
-
-          // Clear temp values for new taxonomy to be added
-          $('input[id="submission_taxonomy_search"]').val('');
-          $("input.taxonomy_id").val('');
-          $("input.taxonomy_gbif_key").val('');
-          $("input.taxonomy_title").val('');
-
-          // Enable step completion
-          $('#submission_select_taxonomy_submit').removeAttr('disabled');
         });
+
+        function buildNameNoFormatting(name, rank) {
+          var s = name;
+          if (rank) {
+            s = s + " (" + rank.toLowerCase() + ")";
+          }
+          return s;
+        }
 
         $('div#taxonomies').on('click', '#btn-remove-taxonomy', function(event){
             event.preventDefault();
@@ -920,6 +970,59 @@ $( document ).ready(function() {
             ) {
               $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
             }
+        });
+
+        // Create taxonomy
+
+        $('#submission_show_create_taxonomy').click(function(event){
+          event.preventDefault();
+          data.willCreateTaxonomy = true;
+          self.toggleCreateTaxonomyVisibility();
+          $('#submission_select_taxonomy_submit').removeAttr('disabled');
+
+        });
+
+        $('#taxonomy-create-close').click(function(event){
+          event.preventDefault();
+          data.willCreateTaxonomy = false;
+
+          $('#submission_create_taxonomy_button_section').addClass('show').removeClass('hide');
+          $('#submission_create_taxonomy_form_section').addClass('hide').removeClass('show');
+
+          if (
+            (!data.taxonomyIdArray || !data.taxonomyIdArray.length) &&
+            (!data.taxonomyGbifKeyArray || !data.taxonomyGbifKeyArray.length)
+          ) {
+            $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
+          }
+        });
+
+        // Continue button
+
+        $('#submission_select_taxonomy_submit').click(function(event){
+          $('form#taxonomy_search_form').submit();
+        });
+
+        $('form#taxonomy_search_form').submit(function(event){
+          event.preventDefault();
+          console.log('View 5 Continue with selected taxonomy button');
+
+          if ((data.willCreateTaxonomy) ||
+              (data.taxonomyIdArray && data.taxonomyIdArray.length) ||
+              (data.taxonomyGbifKeyArray && data.taxonomyGbifKeyArray.length)
+          ) {
+            if (data.willCreateTaxonomy) {
+              data.taxonomyCreateParams = $('#new_taxonomy').serializeArray();
+            } else {
+              data.taxonomyCreateParams = null;
+            }
+
+            data.savedStep = 5;
+            self.form.setSidebarViewCheck(5);
+            self.form.setVisibleView(6); // view 6 create physical object details
+          }
+
+          console.log(data);
         });
       }
 
@@ -1410,7 +1513,7 @@ $( document ).ready(function() {
         this.setMediaPermissionFieldEvent();
 
         // Comment out for debug ability to access any step any time
-        this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        // this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
       }
 
       setMediaPermissionFieldEvent() {

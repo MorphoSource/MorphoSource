@@ -1,9 +1,16 @@
+<%  #added admin_set_id to prevent permissions_attributes being rejected from the params
+    #https://github.com/samvera/hyrax/blob/v2.9.0/app/forms/hyrax/forms/work_form.rb#L164
+if Flipflop.assign_admin_set? %>
+  <%# TODO: consider `Hyrax::AdminSetOptionsPresenter.select_options_for(controller: controller)` instead %>
+  <%= f.input :admin_set_id, as: :hidden %>
+<% end %>
+
+
 <h2><%= t('.add_sharing') %></h2>
 
 <% depositor = f.object.depositor %>
 
-<div class="alert alert-info hidden" id="save_perm_note">Permissions are
-  <strong>not</strong> saved until the &quot;Save&quot; button is pressed at the bottom of the page.</div>
+<div class="alert alert-info hidden" id="save_perm_note">Permissions have <strong>not</strong> been saved yet.  Please make sure to click the &quot;Save&quot; button to update the changes.</div>
 
 <div class="alert alert-warning hidden" role="alert" id="permissions_error">
   <span id="permissions_error_text"></span>

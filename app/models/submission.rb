@@ -54,7 +54,6 @@ class Submission
                 :on_behalf_of,
                 :fund_code
 
-                
   MEDIA_DERIVED = 'Derived'
   MEDIA_RAW = 'Raw'
   PHYSICAL_OBJECT_BSO = { code: 'bso',

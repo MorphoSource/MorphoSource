@@ -286,8 +286,17 @@ module Hyrax
 
     attr_writer :index_related_works
     def index_related_works
-      # This image can be used for free and without attribution. See here for source and license: https://github.com/samvera/hyrax/issues/1551#issuecomment-326624909
       @index_related_works ||= false
+    end
+
+    attr_writer :unknown_ct_scanner
+    def unknown_ct_scanner
+      @unknown_ct_scanner ||= nil
+    end
+
+    attr_writer :null_organization_id
+    def null_organization_id
+      @null_organization_id ||= nil
     end
 
     attr_writer :banner_image
@@ -411,6 +420,21 @@ module Hyrax
     attr_writer :show_work_item_rows
     def show_work_item_rows
       @show_work_item_rows ||= 10 # rows on show view
+    end
+
+    attr_writer :select_number_of_days
+    def select_number_of_days
+      [30, 60, 90, 120, "all"]
+    end
+
+    attr_writer :default_show_work_item_rows
+    def default_show_work_item_rows
+      @default_show_work_item_rows ||= 10 # default rows per page 
+    end
+
+    attr_writer :default_rows_per_page_range
+    def default_rows_per_page_range
+      [10, 20, 40, 60, 80, 100] # rows per page that users can choose
     end
 
     attr_writer :teams_show_work_item_rows

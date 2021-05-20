@@ -335,6 +335,66 @@ $( document ).ready(function() {
       eventFuncs() {
         let self = this;
 
+        $('#submission_parent_media_search').select2({
+          placeholder: "Enter parent media ID",
+          minimumInputLength: 2,
+          ajax: {
+            url: findMediaUrl, // Defined in submission new.html.erb
+            dataType: 'json',
+            quietMillis: 500,
+            data: function (term, page) {
+              return {
+                q: term, // search term
+              };
+            },
+            results: function (data, page) { // parse the results into the format expected by Select2.
+              console.log(data);
+              var modified_data = $.map(data, function (val, i) {
+                var result_text = 'Media ' + val.id + ': ' + val.label;
+                if (val.object_title) {
+                  result_text = result_text + ' [Object: ' + val.object_title + ']'
+                }
+                return { id: val.id, text: result_text };
+              });
+              console.log(modified_data);
+
+              return { 
+                results: modified_data
+              };
+            },
+            cache: true
+          }
+        });
+
+        $('#submission_parent_media_search').on('select2-selecting', function (e) {
+          console.log(JSON.stringify(e.choice));
+          var item = e.choice;
+
+          if (e.choice && e.choice.id) {
+            $("input.parent_id").val(item.id);
+            $("input.parent_title").val(item.text);
+
+            var currentParentList = $('input[id="submission_parent_media_list"]').val();
+            var selectedId = $("input.parent_id").val();
+            if (currentParentList.indexOf(selectedId) != -1) {
+              // parent has already been added
+              // todo: see if it is possible to exclude the already-added parents from the autocomplete dropdown
+              alert('Add new distinct parent media or select parent not available.');
+            } else {
+              if (currentParentList != '')
+                currentParentList += ',';
+              currentParentList += selectedId;
+              self.triggerChangeVal('input[id="submission_parent_media_list"]', currentParentList);
+              // display a new parent media row
+              $('.parent_row:last-child').after(self.newParentRow(selectedId));
+            }
+            $("input.parent_id").val('');
+            $("input.parent_title").val('');
+            e.preventDefault();
+            $('#submission_parent_media_search').select2('close');
+          }
+        });
+
         // Parent Media Selected
         $('input[id="submission_parent_media_list"]').change(function(){
           if ($(this).val()) {
@@ -381,35 +441,6 @@ $( document ).ready(function() {
           self.form.setSidebarViewFade(2);
 
           console.log(data);
-        });
-
-        $('#btn_add_parent').click(function(event){
-          event.preventDefault();
-          var currentParentList = $('input[id="submission_parent_media_list"]').val();
-          var selectedId = $("input.parent_id").val();
-          if (currentParentList.indexOf(selectedId) != -1) {
-            // parent has already been added
-            // todo: see if it is possible to exclude the already-added parents from the autocomplete dropdown
-            alert('Add new distinct parent media or select parent not available.');
-          } else {
-            if (currentParentList != '')
-              currentParentList += ',';
-            currentParentList += selectedId;
-            self.triggerChangeVal('input[id="submission_parent_media_list"]', currentParentList);
-            // display a new parent media row
-            $('.parent_row:last-child').after(self.newParentRow(selectedId));
-          }
-          $('input[id="submission_parent_media_search"]').val('');
-          $("input.parent_id").val('');
-          $("input.parent_title").val('');
-        });
-
-        $('input#submission_parent_media_search').on('keypress',function(e) {
-          if (e.which == 13) {
-            // pressing enter key on this field should add a parent instead of submitting the form
-            event.preventDefault();
-            $('#btn_add_parent').trigger('click');
-          }
         });
 
         $('div#parents').on('click', '#btn-remove-parent', function(event){
@@ -634,10 +665,44 @@ $( document ).ready(function() {
         let self = this;
 
         // Select Organization Events
+        $("#submission_organization_search").select2({
+          data: orgData, // Defined in new.html.erb view
+          placeholder: 'Enter institution or organization name or codes'
+        });
+
+        $('#submission_organization_search').on('select2-selecting', function (e) {
+          console.log(JSON.stringify(e.choice));
+          var item = e.choice;
+
+          if (e.choice && e.choice.id) {
+            $("#organization_search_form input.organization_id").val(item.id);
+            $("#organization_search_form input.organization_title").val(item.title);
+            $("#organization_search_form input.organization_label").val(item.text);
+
+            $("#organization_search_form input.organization_collection_code").val(item.collection_code);
+            $("#organization_search_form input.organization_institution_code").val(item.institution_code);
+
+            // Display selected organization
+            $('#submission_organization_select_display').addClass('show').removeClass('hide');
+            for (const prop in item) {
+              if (item[prop]) {
+                $('#submission_organization_select_display #'+prop).text(item[prop]);
+              }     
+            }
+
+            // Other UI control
+            $('#submission_create_organization_button_section').addClass('hide').removeClass('show');
+            $('#submission_create_organization_form_section').addClass('hide').removeClass('show');
+            $('#submission_no_organization_section').addClass('hide').removeClass('show');
+            $('#submission_select_organization').removeAttr('disabled');
+          }
+        });
+
+
         $('#submission_organization_select_display_container').on(
           'click', '#organization-select-close', function(event){
             // Remove data values
-            $("#submission_organization_search").val('');
+            $("#submission_organization_search").select2('val', null);
             $("#organization_search_form input.organization_id").val('');
             $("#organization_search_form input.organization_title").val('');
             $("#organization_search_form input.organization_label").val('');
@@ -660,8 +725,8 @@ $( document ).ready(function() {
           if (selectedOrganizationID) {
             data.setOrganizationDefaults();
             data.organizationId = selectedOrganizationID;
-            data.organizationCollectionCode = $('#organization_search_form input.organization_collection_code').val().split(',');
-            data.organizationInstitutionCode = $('#organization_search_form input.organization_institution_code').val().split(',');
+            data.organizationCollectionCode = $('#organization_search_form input.organization_collection_code').val().split(', ');
+            data.organizationInstitutionCode = $('#organization_search_form input.organization_institution_code').val().split(', ');
             data.noOrganization = false;
             data.willCreateOrganization = false;
             data.savedStep = 4;
@@ -707,44 +772,6 @@ $( document ).ready(function() {
           $('#submission_no_organization_display_section').addClass('hide').removeClass('show');
           console.log(data);
         });
-
-        // Commenting out create organization events for now
-        // Create Organization Events
-
-        // $('#submission_show_create_organization').click(function(event){
-        //   event.preventDefault();
-        //   self.toggleCreateOrganizationVisibility();
-        // });
-
-        // $('#organization-create-close').click(function(event){
-        //   event.preventDefault();
-        //   $('#submission_select_organization_section').addClass('show').removeClass('hide');
-        //   $('#submission_create_organization_button_section').addClass('show').removeClass('hide');
-        //   $('#submission_no_organization_section').addClass('show').removeClass('hide');
-        //   $('#submission_create_organization_form_section').addClass('hide').removeClass('show');
-        // });
-
-        // $('form#new_organization').submit(function(event){
-        //   event.preventDefault();
-        //   console.log('View 4 create organization and continue button');
-
-        //   data.setOrganizationDefaults();
-        //   data.noOrganization = false;
-        //   data.willCreateOrganization = true;
-        //   data.organizationCreateParams = $('#new_organization').serializeArray();
-        //   data.organizationInstitutionCode = $('#organization_institution_code').val();
-        //   data.organizationCollectionCode = [];
-        //   $("[name='organization[collection_code][]']").map((index, collection_code) => {
-        //     if ($(collection_code).val()) {
-        //       data.organizationCollectionCode.push($(collection_code).val());
-        //     }
-        //   });
-        //   data.savedStep = 4;
-        //   self.populatePhysicalObjectInstitutionCollectionCodes();
-        //   self.next();
-
-        //   console.log(data);
-        // });
       }
 
       populatePhysicalObjectInstitutionCollectionCodes() {
@@ -814,90 +841,109 @@ $( document ).ready(function() {
       eventFuncs() {
         let self = this;
 
-        $('#submission_select_taxonomy_submit').click(function(event){
-          $('form#taxonomy_search_form').submit();
+        // Select taxonomy
+
+        $('#submission_taxonomy_search').select2({
+          placeholder: "Enter taxonomy keywords (species, genus, higher terms)",
+          minimumInputLength: 2,
+          ajax: {
+            url: findTaxonomyUrl, // Defined in submission new.html.erb
+            dataType: 'json',
+            quietMillis: 500,
+            data: function (term, page) {
+              return {
+                q: term, // search term
+              };
+            },
+            results: function (data, page) { // parse the results into the format expected by Select2.
+              console.log(data);
+              return { 
+                results: data
+              };
+            },
+            cache: true
+          },
+          formatResult: formatTaxonomy,
+          formatSelection: formatTaxonomy
         });
 
-        $('form#taxonomy_search_form').submit(function(event){
-          event.preventDefault();
-          console.log('View 5 Continue with selected taxonomy button');
+        function formatTaxonomy(taxon) {
+          return "<div>" + 
+            buildName(taxon.name, taxon.rank) + 
+            "<br/><span style='font-size: small;'>" + 
+            taxon.higher_taxonomy + 
+            "</span><br/>" +
+            taxon.source_info + 
+            "</div>";
+        }
 
-          if ((data.willCreateTaxonomy) ||
-              (data.taxonomyIdArray && data.taxonomyIdArray.length) ||
-              (data.taxonomyGbifKeyArray && data.taxonomyGbifKeyArray.length)
-          ) {
-            if (data.willCreateTaxonomy) {
-              data.taxonomyCreateParams = $('#new_taxonomy').serializeArray();
+        function buildName(name, rank) {
+          var s = "";
+          if (rank) {
+            if (rank == 'GENUS' || rank == 'SPECIES' || rank == 'SUBSPECIES') {
+              s = s + "<i>" + name + "</i>";
             } else {
-              data.taxonomyCreateParams = null;
+              s = s + name;
+            }
+            s = s + " (" + rank.toLowerCase() + ")";
+          } else {
+            s = s + "<i>" + name + "</i>";
+          }
+          return s;
+        }
+
+        $('#submission_taxonomy_search').on('select2-selecting', function (e) {
+          console.log(JSON.stringify(e.choice));
+          var item = e.choice;
+
+          if (e.choice && e.choice.id) {
+            $("input.taxonomy_id").val(item.id);
+            $("input.taxonomy_gbif_key").val(item.gbif_key);
+            $("input.taxonomy_title").val(buildNameNoFormatting(item.name, item.rank));
+
+            var newId = $("input.taxonomy_id").val();
+            var newGbifKey = $("input.taxonomy_gbif_key").val();
+
+            if (newId && newId.indexOf('gbif:') == -1) {
+              if (!Array.isArray(data.taxonomyIdArray)) {
+                data.taxonomyIdArray = [];
+              }
+              data.taxonomyIdArray.push(newId);
             }
 
-            data.savedStep = 5;
-            self.form.setSidebarViewCheck(5);
-            self.form.setVisibleView(6); // view 6 create physical object details
-          }
-
-          console.log(data);
-        });
-
-        $('#submission_show_create_taxonomy').click(function(event){
-          event.preventDefault();
-          data.willCreateTaxonomy = true;
-          self.toggleCreateTaxonomyVisibility();
-          $('#submission_select_taxonomy_submit').removeAttr('disabled');
-
-        });
-
-        $('#taxonomy-create-close').click(function(event){
-          event.preventDefault();
-          data.willCreateTaxonomy = false;
-
-          $('#submission_create_taxonomy_button_section').addClass('show').removeClass('hide');
-          $('#submission_create_taxonomy_form_section').addClass('hide').removeClass('show');
-
-          if (
-            (!data.taxonomyIdArray || !data.taxonomyIdArray.length) &&
-            (!data.taxonomyGbifKeyArray || !data.taxonomyGbifKeyArray.length)
-          ) {
-            $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
-          }
-        });
-
-        $('#btn_add_taxonomy').click(function(event){
-          event.preventDefault();
-          console.log('View 5 add taxonomy to list button');
-
-          var newId = $("input.taxonomy_id").val();
-          var newGbifKey = $("input.taxonomy_gbif_key").val();
-
-          if (newId && newId.indexOf('gbif:') == -1) {
-            if (!Array.isArray(data.taxonomyIdArray)) {
-              data.taxonomyIdArray = [];
+            if (newGbifKey) {
+              if (!Array.isArray(data.taxonomyGbifKeyArray)) {
+                data.taxonomyGbifKeyArray = [];
+              }
+              data.taxonomyGbifKeyArray.push(newGbifKey);
             }
-            data.taxonomyIdArray.push(newId);
-          }
 
-          if (newGbifKey) {
-            if (!Array.isArray(data.taxonomyGbifKeyArray)) {
-              data.taxonomyGbifKeyArray = [];
+            // Display a new taxonomy row
+            if (newId || newGbifKey) {
+              $('.taxonomy_row:last-child').after(self.newTaxonomyRow(newId, newGbifKey));
             }
-            data.taxonomyGbifKeyArray.push(newGbifKey);
+
+            // Clear temp values for new taxonomy to be added
+            $("input.taxonomy_id").val('');
+            $("input.taxonomy_gbif_key").val('');
+            $("input.taxonomy_title").val('');
+
+            // Clear select2
+            e.preventDefault();
+            $('#submission_taxonomy_search').select2('close');
+
+            // Enable step completion
+            $('#submission_select_taxonomy_submit').removeAttr('disabled');
           }
-
-          // Display a new taxonomy row
-          if (newId || newGbifKey) {
-            $('.taxonomy_row:last-child').after(self.newTaxonomyRow(newId, newGbifKey));
-          }
-
-          // Clear temp values for new taxonomy to be added
-          $('input[id="submission_taxonomy_search"]').val('');
-          $("input.taxonomy_id").val('');
-          $("input.taxonomy_gbif_key").val('');
-          $("input.taxonomy_title").val('');
-
-          // Enable step completion
-          $('#submission_select_taxonomy_submit').removeAttr('disabled');
         });
+
+        function buildNameNoFormatting(name, rank) {
+          var s = name;
+          if (rank) {
+            s = s + " (" + rank.toLowerCase() + ")";
+          }
+          return s;
+        }
 
         $('div#taxonomies').on('click', '#btn-remove-taxonomy', function(event){
             event.preventDefault();
@@ -924,6 +970,59 @@ $( document ).ready(function() {
             ) {
               $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
             }
+        });
+
+        // Create taxonomy
+
+        $('#submission_show_create_taxonomy').click(function(event){
+          event.preventDefault();
+          data.willCreateTaxonomy = true;
+          self.toggleCreateTaxonomyVisibility();
+          $('#submission_select_taxonomy_submit').removeAttr('disabled');
+
+        });
+
+        $('#taxonomy-create-close').click(function(event){
+          event.preventDefault();
+          data.willCreateTaxonomy = false;
+
+          $('#submission_create_taxonomy_button_section').addClass('show').removeClass('hide');
+          $('#submission_create_taxonomy_form_section').addClass('hide').removeClass('show');
+
+          if (
+            (!data.taxonomyIdArray || !data.taxonomyIdArray.length) &&
+            (!data.taxonomyGbifKeyArray || !data.taxonomyGbifKeyArray.length)
+          ) {
+            $('#submission_select_taxonomy_submit').attr('disabled', 'disabled');
+          }
+        });
+
+        // Continue button
+
+        $('#submission_select_taxonomy_submit').click(function(event){
+          $('form#taxonomy_search_form').submit();
+        });
+
+        $('form#taxonomy_search_form').submit(function(event){
+          event.preventDefault();
+          console.log('View 5 Continue with selected taxonomy button');
+
+          if ((data.willCreateTaxonomy) ||
+              (data.taxonomyIdArray && data.taxonomyIdArray.length) ||
+              (data.taxonomyGbifKeyArray && data.taxonomyGbifKeyArray.length)
+          ) {
+            if (data.willCreateTaxonomy) {
+              data.taxonomyCreateParams = $('#new_taxonomy').serializeArray();
+            } else {
+              data.taxonomyCreateParams = null;
+            }
+
+            data.savedStep = 5;
+            self.form.setSidebarViewCheck(5);
+            self.form.setVisibleView(6); // view 6 create physical object details
+          }
+
+          console.log(data);
         });
       }
 
@@ -997,32 +1096,131 @@ $( document ).ready(function() {
 
       eventFuncs() {
         let self = this;
-        // Select device events
-        $('select[name="submission[device_id]"]').change(function(event){
-          console.log($(this).find(':selected').data('modality'));
-          console.log(data.submissionModality);
-          if ($(this).val()){
-            if ($(this).find(':selected').data('modality').includes(data.submissionModality)) {
-              self.toggleSelectDeviceVisibility($(this).find(':selected'));
+
+        // Device organization select
+
+        $("#submission_device_select_organization_search").select2({
+          data: orgData,
+          placeholder: 'Enter institution or organization name or codes'
+        });
+
+        $('#submission_device_select_organization_search').on('select2-selecting', function (e) {
+          console.log(JSON.stringify(e.choice));
+          var item = e.choice;
+
+          if (e.choice && e.choice.id) {
+            console.log(e.choice);
+            clearList();
+            removePreviousSelection();
+
+            var devices = $.map(e.choice.devices, function( val, i ) {
+              return deviceData[val];
+            });
+            if (devices) {
+              enableDeviceList();
+              listDevices(devices);
+            }
+          }
+        });
+
+        // No organization select
+
+        $('#submission_select_device_no_organization').click(function(event) {
+          event.preventDefault();
+          console.log(nullOrg);
+          if (nullOrg) {
+            clearList();
+            removePreviousSelection();
+            
+            $("#submission_device_select_organization_search").select2('data', nullOrg);
+
+            var devices = $.map(nullOrg.devices, function( val, i ) {
+              return deviceData[val];
+            });
+            if (devices) {
+              enableDeviceList();
+              listDevices(devices);
+            }
+          }
+        });
+
+        // Organization utility function
+
+        function clearList() {
+          $('form#submission_device_select_form select#submission_device_id option').each(function () {
+            $("#submission_device_id").select2('val', null);
+            if ($(this).attr('value')) {
+              $(this).remove();
+            }
+          });
+        }
+
+        function removePreviousSelection() {
+          $("#submission_device_id").select2('val', null);
+          $('#submission_device_select_display').addClass('hide').removeClass('show');
+          $('#submission_select_device_continue').attr('disabled', 'disabled');
+        }
+
+        function enableDeviceList() {
+          $('form#submission_device_select_form select#submission_device_id').removeAttr('disabled');
+          $('form#submission_device_select_form div.submission_device_id label').removeClass('disabled');
+        }
+
+        function listDevices(devices) {
+          for (const device of devices) {
+            $('form#submission_device_select_form select#submission_device_id')
+              .append($('<option></option>')
+                .attr('value', device.id)
+                .attr('data-modality', device.modality)
+                .attr('data-description', device.description)
+                .text(device.text)
+              );
+          }
+        }
+
+        // Device select
+
+        $("#submission_device_id").select2({
+          placeholder: 'Select device'
+        });
+
+        $('#submission_device_id').on('select2-selecting', function (e) {
+          console.log(JSON.stringify(e.choice));
+          var item = e.choice;
+
+
+          if (e.choice && e.choice.id) {
+            var deviceObj = deviceData[e.choice.id]
+            if (deviceObj && deviceObj.modality && data.submissionModality && deviceObj.modality == data.submissionModality) {
+              console.log('Value provided and validated');
+              console.log(deviceObj.modality);
+              console.log(data.submissionModality);
+              self.toggleSelectDeviceVisibility(deviceObj);
               $('#submission_select_device_continue').removeAttr('disabled');
             } else {
+              console.log(deviceObj.modality);
+              console.log(data.submissionModality);
               alert('Modality of selected device must match modality entered in Initial Information step.');
-              $(this).val('');
               $('#submission_select_device_continue').attr('disabled', 'disabled');
+              e.preventDefault();
             }
-         } else {
-          $('#submission_select_device_continue').attr('disabled', 'disabled');
-         }
+          } else {
+            $("#submission_device_id").select2('val', null);
+            $('#submission_select_device_continue').attr('disabled', 'disabled');
+            e.preventDefault();
+          }
         });
 
         $('#submission_device_select_display_container').on(
           'click', '#device-select-close', function(event){
-            $('select[name="submission[device_id]"]').val('');
+            $("#submission_device_id").select2('val', null);
             $('#submission_select_device_section').addClass('show').removeClass('hide');
             $('#submission_create_device_button_section').addClass('show').removeClass('hide');
             $('#submission_device_select_display').addClass('hide').removeClass('show');
             $('#submission_select_device_continue').attr('disabled', 'disabled');
         });
+
+        // Continue
 
         $('#submission_select_device_continue').click(function(event) {
           event.preventDefault();
@@ -1043,163 +1241,20 @@ $( document ).ready(function() {
 
           console.log(data);
         });
-
-        // Commenting out all events related to creating devices for now!
-
-      //   // Create device events
-      //   $('#submission_show_create_device').click(function(event){
-      //     event.preventDefault();
-      //     self.toggleCreateDeviceVisibility();
-      //   });
-
-      //   $('#submission_create_device_continue').click(function(event){
-      //     event.preventDefault();
-      //     console.log('View 10 create device and continue button');
-
-      //     // Check device organization...
-      //     if ($("#device_organization_search_form input.device_organization_id").val()) {
-      //       data.setDeviceOrganizationDefaults();
-      //       data.deviceOrganizationId =
-      //         $("#device_organization_search_form input.device_organization_id").val();
-      //       data.noDeviceOrganization = false;
-      //       data.willCreateDeviceOrganization = false;
-      //     } else if (data.willCreateDeviceOrganization) {
-      //       if ($('form#new_device_organization')[0].checkValidity()) {
-      //         data.setDeviceOrganizationDefaults();
-      //         data.deviceOrganizationCreateParams = $('#new_device_organization').serializeArray();
-      //         data.willCreateDeviceOrganization = true;
-      //         data.noDeviceOrganization = false;
-      //       } else {
-      //         $('form#new_device_organization').find(':submit').click();
-      //         return false;
-      //       }
-      //     } else if (data.noDeviceOrganization === true) {
-      //       data.setDeviceOrganizationDefaults();
-      //       data.noDeviceOrganization = true;
-      //       data.willCreateDeviceOrganization = false;
-      //     } else {
-      //       $('div#device_create_organization_section').addClass('div-invalid');
-      //       return false;
-      //     }
-
-      //     if ($('form#new_device')[0].checkValidity()) {
-      //       // Does modality match previously selected?
-      //       var modalityMatch = false;
-      //       $('select[name="device[modality][]"]').each(function() {
-      //         if ($(this).val() == data.submissionModality) { modalityMatch = true; }
-      //       });
-
-      //       if (modalityMatch) {
-      //         data.setDeviceDefaults();
-      //         data.willCreateDevice = true;
-      //         data.deviceCreateParams = $('#new_device').serializeArray();
-      //         data.savedStep = 7;
-
-      //         self.next();
-      //         console.log(data);
-      //       } else {
-      //         alert('At least one device modality selection must match modality entered in Initial Information step.');
-      //       }
-      //     } else {
-      //       $('form#new_device').find(':submit').click(); // Submit to show errors
-      //       return false;
-      //     }
-
-      //     return false;
-      //   });
-
-      //   $('#submission_create_device_close').click(function(event){
-      //     event.preventDefault();
-      //     $('#submission_create_device_form_section').addClass('hide').removeClass('show');
-      //     $('#submission_select_device_section').addClass('show').removeClass('hide');
-      //     $('#submission_create_device_button_section').addClass('show').removeClass('hide');
-      //   });
-
-      //   // Device organization events
-
-      //   // Device organization select events
-      //   $('#device_organization_select_display_container').on(
-      //     'click', '#device-organization-select-close', function(event){
-      //       // Remove data values
-      //       $("#submission_device_organization_search").val('');
-      //       $("#device_organization_search_form input.device_organization_id").val('');
-      //       $("#device_organization_search_form input.device_organization_title").val('');
-      //       $("#device_organization_search_form input.device_organization_label").val('');
-      //       data.setDeviceOrganizationDefaults();
-
-      //       // UI visibility
-      //       $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
-      //       $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
-      //       $('#device_organization_select_display_container').addClass('hide').removeClass('show');
-      //   });
-
-
-      //   // Device organization create events
-      //   $('form#new_device_organization').submit(function(event){
-      //     event.preventDefault();
-      //   });
-
-      //   $('#submission_show_create_device_organization').click(function(event){
-      //     event.preventDefault();
-      //     console.log('View 10 create device organization button');
-
-      //     data.setDeviceOrganizationDefaults();
-      //     data.willCreateDeviceOrganization = true;
-      //     $('select[name="submission[device_organization_id]"]').val('');
-      //     self.toggleCreateDeviceOrganizationVisibility();
-      //   });
-
-      //   $('#device-organization-create-close').click(function(event){
-      //     event.preventDefault();
-
-      //     data.setDeviceOrganizationDefaults();
-      //     $('#submission_select_device_organization_section').addClass('show').removeClass('hide');
-      //     $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
-      //     $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
-      //     $('#submission_create_device_organization_form_section').addClass('hide').removeClass('show');
-      //   });
-
-
-      //   // Device organization no organization events
-      //   $('#submission_no_device_organization').click(function(event){
-      //     event.preventDefault();
-      //     console.log('View 10 no device organization button');
-
-      //     data.setDeviceOrganizationDefaults();
-      //     data.noDeviceOrganization = true;
-      //     data.willCreateDeviceOrganization = false;
-      //     $('select[name="submission[device_organization_id]"]').val('');
-      //     self.toggleNoDeviceOrganizationVisibility();
-
-      //     console.log(data);
-      //   });
-
-      //   $('#no-device-organization-close').click(function(event){
-      //     event.preventDefault();
-      //     console.log('closing no device organization pane');
-
-      //     data.setDeviceOrganizationDefaults();
-      //     $('#submission_select_device_organization_section').addClass('show').removeClass('hide');
-      //     $('#submission_create_device_organization_button_section').addClass('show').removeClass('hide');
-      //     $('#submission_no_device_organization_section').addClass('show').removeClass('hide');
-      //     $('#submission_no_device_organization_display_section').addClass('hide').removeClass('show');
-      //     console.log(data);
-      //   });
-
       }
 
-      showDeviceSelectDisplay(selectedOpt) {
-        $('#device-display-title').text(selectedOpt.text());
-        $('#device-display-creator').text(selectedOpt.data('creator'));
-        $('#device-display-modality').text(selectedOpt.data('modality'));
-        $('#device-display-description').text(selectedOpt.data('description'));
+      showDeviceSelectDisplay(deviceObj) {
+        $('#device-display-title').text(deviceObj.title);
+        $('#device-display-creator').text(deviceObj.creator);
+        $('#device-display-modality').text(deviceObj.modality);
+        $('#device-display-description').text(deviceObj.description);
         $('#submission_device_select_display').addClass('show').removeClass('hide');
       }
 
-      toggleSelectDeviceVisibility(selectedOpt) {
+      toggleSelectDeviceVisibility(deviceObj) {
         $('#submission_create_device_button_section').addClass('hide').removeClass('show');
         $('#submission_create_device_form_section').addClass('hide').removeClass('show');
-        this.showDeviceSelectDisplay(selectedOpt);
+        this.showDeviceSelectDisplay(deviceObj);
       }
 
       toggleCreateDeviceVisibility() {
@@ -1475,7 +1530,7 @@ $( document ).ready(function() {
       setDefaultMediaPermissionFields() {
         let self = this;
 
-        $.get('organization_default_media_fields',
+        $.get('/submissions/organization_default_media_fields',
          {
           'parent_media_list': this.data.parentMediaList,
           'organization_id': this.data.organizationId,

@@ -2,32 +2,41 @@
   <div class="row form-group">
     <div class="col-xs-12 col-sm-6 col-sm-offset-3">
 
+      <div class="submission-select2-container">
+        <%= f.input :organization_search, 
+          label: 'First, find the organization that manages the device.',
+          input_html: {
+            id: :submission_device_select_organization_search,
+            class: 'mb-1',
+            style: 'padding: 0; border: none;'
+          }
+        %>
+      </div>
 
-        <%= f.input :organization_search,
-        placeholder: 'Enter complete words in institution or organization name or codes',
-        label: 'First, find the organization that manages the device.',
-        input_html: {
-          class: 'form-control mb-1',
-          id: :submission_device_select_organization_search
-        } %>
-
+      <% if Hyrax.config.null_organization_id.present? && Organization.exists?(Hyrax.config.null_organization_id) %>
         <div class='mb-1'>
           <b><%= t('morphosource.submission.or') %></b>
         </div>
 
-        <div class='mb-3'>
+        <div>
           <a href="#" id="submission_select_device_no_organization" class="btn btn-primary btn-continue">
             <%= t('morphosource.submission.no_organization') %>
           </a>
         </div>
+      <% end %>
 
+      <div class="submission-select2-container mt-3">
         <%= f.input :device_id,
           collection: [],
-          prompt: 'Select device',
           label: 'Then select from devices associated with the organization.',
           required: true,
-          wrapper_html: { class: 'required-flag-hidden' }
+          wrapper_html: { class: 'required-flag-hidden' },
+          input_html: {
+            style: 'padding: 0; border: none;'
+          },
+          disabled: true
         %>
+      </div>
     </div>
   </div>
 <% end %>
@@ -37,120 +46,3 @@
     <%= t('morphosource.submission.continue') %>
   </a>
 </div>
-
-<script>
-  var admin = <%= current_user.admin? %>;
-  // device names (in lowercase) belonging to 'No Organization' that should be filtered out of device list if user is not an admin
-  var filteredDevices = ['unknown ct scanner'];
-  // label of 'No Organization' organization
-  var unknownLabel = 'No Institution, No Organization';
-
-  // Search Organizations
-  $(function() {
-
-    $('#submission_device_select_organization_search').submissionAutocomplete({
-      url: "<%= find_organization_with_devices_autocomplete_url %>",
-      select: function(event, ui) {
-        event.preventDefault();
-
-        if (ui.item.value && ui.item.value != -1) {
-          organization = ui.item;
-          populateOrganizationName(organization.label);
-          clearList();
-
-          if (organization.devices) {
-            devices = organizationDevices(organization)
-            enableDeviceList();
-            listDevices(devices);
-          }
-        }
-      }
-    });
-  });
-
-  // Click 'No Organization Button'
-  $('#submission_select_device_no_organization').click(function(event) {
-    event.preventDefault();
-
-    var search_url = "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization";
-
-    removePreviousSelection();
-
-    $.ajax({
-      url: search_url,
-      type: 'GET',
-      dataType: 'json',
-      complete: function (xhr, status) {
-        results = $.parseJSON(xhr.responseText);
-        organization = results[0]
-        devices = organization['devices']
-
-        if (!admin) {
-          devices = removeUnknownDevices(devices);
-        }
-
-        populateOrganizationName(organization['label']);
-        clearList();
-        listDevices(devices);
-      }
-    });
-  });
-
-  function populateOrganizationName(name) {
-    $("#submission_device_select_organization_search").val(name);
-  }
-
-  function clearList() {
-    $('form#submission_device_select_form select#submission_device_id option').each(function () {
-      if ($(this).attr('value')) {
-        $(this).remove();
-      }
-    });
-  }
-
-  function organizationDevices(organization) {
-    if (unknownOrganization(organization) && !admin) {
-      devices = removeUnknownDevices(organization.devices);
-    } else {
-      devices = organization.devices;
-    }
-    return devices
-  }
-
-  // filter out any devices with title included in filteredDevices
-  function removeUnknownDevices(devices) {
-    return $.grep(devices, function(e) { return !(new RegExp(filteredDevices.join("|")).test(e.title[0].toLowerCase())) });
-  }
-
-  function unknownOrganization(organization) {
-    return organization.label == unknownLabel
-  }
-
-  function enableDeviceList() {
-    $('form#submission_device_select_form select#submission_device_id').removeAttr('disabled');
-  }
-
-  function listDevices(devices) {
-    for (const device of devices) {
-      if (device.creator) {
-        var title = device.creator + ' ' + device.title;
-      } else {
-        var title = device.title;
-      }
-      $('form#submission_device_select_form select#submission_device_id')
-        .append($('<option></option>')
-          .attr('value', device.id)
-          .attr('data-modality', device.modality)
-          .attr('data-creator', device.creator)
-          .attr('data-description', device.description)
-          .text(title)
-        );
-    }
-  }
-
-  function removePreviousSelection() {
-    $('select[name="submission[device_id]"]').val('');
-    $('#submission_device_select_display').addClass('hide').removeClass('show');
-    $('#submission_select_device_continue').attr('disabled', 'disabled');
-  }
-</script>

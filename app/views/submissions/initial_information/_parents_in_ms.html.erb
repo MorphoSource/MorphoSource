@@ -7,20 +7,12 @@
 
     <%= simple_form_for @submission, html: { id: :parent_search_form } do |f| %>
       <div class="row">
-        <div class="col-xs-10 col-sm-5 col-sm-offset-3 no-padding">
-          <%= f.input :parent_media_search,
-            placeholder: "Enter parent media ID here",
-            input_html: {
-              class: 'form-control'
-            } 
-          %>
-        </div>
-        <div class="col-xs-2 col-sm-1 text-left">
-          <a id="btn_add_parent" class="btn btn-primary">Add</a>
+        <div class="col-sm-6 col-sm-offset-3 no-padding submission-select2-container">
+          <%= f.input_field :parent_media_search %>
         </div>
       </div>
 
-      <div id="parents" class="row form-group">
+      <div id="parents" class="row form-group" style="padding-top: 0; padding-bottom: 0;">
         <input class="parent_title" type="hidden" name="parent_title" value="" />
         <input class="parent_id" type="hidden" name="parent_id" value="" />
         <div class="parent_row"></div>
@@ -57,29 +49,29 @@
 
 <script>
 $(function(){
-  $('#submission_parent_media_search').submissionAutocomplete({
-    url: "<%= find_media_autocomplete_url %>",
-    select: function(event, ui) {
-      event.preventDefault();
-      if (ui.item.value && ui.item.value != -1) {
-        $("input.parent_id").val(ui.item.value);
-        $("input.parent_title").val(ui.item.label);
-        $("#submission_parent_media_search").val(ui.item.label);
-      }
-    },
-    complete: function (xhr, status) {
-      var results = $.parseJSON(xhr.responseText);
+  // $('#submission_parent_media_search').submissionAutocomplete({
+  //   url: "<%= find_media_autocomplete_url %>",
+  //   select: function(event, ui) {
+  //     event.preventDefault();
+  //     if (ui.item.value && ui.item.value != -1) {
+  //       $("input.parent_id").val(ui.item.value);
+  //       $("input.parent_title").val(ui.item.label);
+  //       $("#submission_parent_media_search").val(ui.item.label);
+  //     }
+  //   },
+  //   complete: function (xhr, status) {
+  //     var results = $.parseJSON(xhr.responseText);
 
-      for (const media of results) {
-        media.title = media.label;
-        media.label = ['Media ' + media.id + ': ' + media.title];
-        if (media.object_title) {
-          media.label[0] = media.label[0] + ' [Object: ' + media.object_title + ']'
-        }
-      }
+  //     for (const media of results) {
+  //       media.title = media.label;
+  //       media.label = ['Media ' + media.id + ': ' + media.title];
+  //       if (media.object_title) {
+  //         media.label[0] = media.label[0] + ' [Object: ' + media.object_title + ']'
+  //       }
+  //     }
 
-      return results;
-    }
-  });
+  //     return results;
+  //   }
+  // });
 });    
 </script>

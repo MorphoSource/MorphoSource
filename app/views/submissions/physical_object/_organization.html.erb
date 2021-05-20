@@ -20,32 +20,14 @@
       </div>
     </div>
 
-    <!-- Commenting out the create organization section for now -->
-
-    <!-- <div id="submission_create_organization_button_section"> -->
-      <!-- <div class="row"> -->
-        <!-- <b><%# t('morphosource.submission.or') %></b> -->
-      <!-- </div> -->
-
-      <!-- <div class="row"> -->
-        <!-- <a href="#" id="submission_show_create_organization" class="btn btn-primary btn-continue"> -->
-          <%# t('morphosource.submission.new_organization') %>
-        <!-- </a> -->
-      <!-- </div> -->
-    <!-- </div> -->
-
-    <!-- <div id="submission_create_organization_form_section" class="hide">   -->
-      <%# render(partial: 'submissions/physical_object/organization_create') %>
-    <!-- </div> -->
-
     <!-- only admins can select 'no organization' -->
     <% if current_user.admin? %>
       <div id="submission_no_organization_section">
-        <div class="row">
+        <div class="mb-1">
           <b><%= t('morphosource.submission.or') %></b>
         </div>
 
-        <div class="row">
+        <div>
           <a href="#" id="submission_no_organization" class="btn btn-primary btn-continue">
             <%= t('morphosource.submission.no_organization') %>
           </a>

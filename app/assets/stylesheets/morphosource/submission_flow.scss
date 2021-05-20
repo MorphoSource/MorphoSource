@@ -1,7 +1,17 @@
 @import 'shared';
 
+
+
 .submission_flow {
   background-color: white;
+
+  .submission-select2-container .select2-container, .select2-choice, .select2-arrow {
+    height: 34px;
+  }
+
+  .submission-select2-container .select2-choice, .select2-arrow {
+    padding-top: 4px;
+  }
 
   .ui-loading {
     background: image-url('loading.gif') center center no-repeat;

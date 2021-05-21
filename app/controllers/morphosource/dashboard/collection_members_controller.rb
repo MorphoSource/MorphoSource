@@ -24,6 +24,8 @@ module Morphosource
       end
 
       def update_physical_object_index
+        return if params["batch_document_ids"].blank?
+
         member_ids = params["batch_document_ids"]
         member_ids.each do |id|
           member = Media.find(id)

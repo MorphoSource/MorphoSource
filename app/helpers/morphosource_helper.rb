@@ -4,6 +4,50 @@ module MorphosourceHelper
   include MediaFinderHelper
   include Hyrax::Renderers
 
+  # param access: string e.g. "000200160_managers"
+  def user_and_access(access, user_list)
+    source = ''
+    accessArray = access.split('_')
+    if accessArray.length > 1
+      id = accessArray[0]
+      role_title = accessArray[1]
+      collection = Collection.find(id)
+      if collection.present? 
+        if collection.project?
+          source += role_title.capitalize + ' of project ' + collection.title.first 
+        elsif collection.team?
+          source += role_title.capitalize + ' of team ' + collection.title.first 
+          if collection.organization_name.present?
+            source += ' (' + collection.organization_name.first + ')'
+          end
+        else
+byebug
+        end
+      end
+    else
+byebug
+    end
+    return source
+  end
+
+  def user_list_by_role(access)
+    list = []
+    Role.find_by(name: access)&.users&.each do |u| 
+      if u.display_name
+        list << u.display_name
+      else
+        list << u.email
+      end
+    end 
+    return list
+  end
+
+  def user_display(user_key)
+    user = ::User.find_by_user_key(user_key)
+    return user_key if user.nil?
+    user.display_name.present? ? user.display_name : user.email
+  end
+
   def solr_doc_find(id)
     begin
       return SolrDocument.find(id)

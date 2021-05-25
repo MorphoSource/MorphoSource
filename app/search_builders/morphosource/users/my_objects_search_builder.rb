@@ -24,6 +24,7 @@ module Morphosource
         end
 
         def my_media
+          repository.blacklight_config.max_per_page = 999999
           repository.search(Morphosource::Users::MyMediaSearchBuilder.new(@scope).rows(999999).query)
         end
 

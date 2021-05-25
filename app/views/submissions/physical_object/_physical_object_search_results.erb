@@ -8,7 +8,7 @@
           <i id="po-search-results-close" class="fas fa-times clickable" style='float: right;'></i>
         </div>
         <div class="row">
-          <% if (docs.nil? || docs.empty?) && (idigbio.nil? || idigbio.empty?) %>
+          <% if (docs.nil? || docs.empty?) && (idigbio.try(:default_message).present? || idigbio.nil? || idigbio.empty?) %>
             <div id="empty_search_results">
                 <%= t('morphosource.submission.po_empty_search_results') %>
             </div>
@@ -29,7 +29,7 @@
                     <i>You have reached the maximum number of search results for physical objects in MorphoSource. You may find additional results if you narrow your search further.</i>
                   </div>
                 <% end %>
-              
+
                 <% docs.each do |doc| %>
                   <div class="row vertical-align list-item object-search-result row-striped">
                     <div class="col-sm-9 text-left">
@@ -51,12 +51,12 @@
                         <%= link_to obj_url, target: '_blank' do %>
                           In MorphoSource
                         <% end %>
-                           
-                      </div> 
 
-                                    
+                      </div>
+
+
                     </div>
-                    
+
                     <div class="col-sm-3 no-padding">
                       <a href="#" id="<%= doc.id %>" class="btn btn-primary use-morphosource-object">Use</a>
                     </div>
@@ -67,7 +67,13 @@
             <% end %>
 
             <% if po_type == 'bso' %>
-              <% if (idigbio.nil? || idigbio.empty?) %>
+              <% if idigbio.try(:default_message).present? %>
+                <div id="empty_search_results">
+                  iDigBio search returned the message:
+                  <br>
+                  <%= idigbio.default_message %>
+                </div>
+              <% elsif (idigbio.nil? || idigbio.empty?) %>
                 <div id="empty_search_results">
                   <%= t('morphosource.submission.idigbio_empty_search_results') %>
                 </div>
@@ -82,7 +88,7 @@
                       <i>You have reached the maximum number of search results for biological specimens in iDigBio. You may find additional results if you narrow your search further.</i>
                     </div>
                   <% end %>
-                
+
                   <% idigbio.each do |idb| %>
                     <div class="row vertical-align list-item object-search-result row-striped">
                       <div class="col-sm-9 text-left">
@@ -90,7 +96,7 @@
                         <div><em><%= "#{idb['data']['dwc:genus']} #{idb['data']['dwc:specificEpithet']}" %></em></div>
                         <div style="font-size: smaller;"><a href="https://www.idigbio.org/portal/records/<%= idb['uuid'] %>" target="_blank">View at iDigBio</a></div>
                       </div>
-                      
+
                       <div class="col-sm-3 no-padding" >
                         <% if docs_idigbio_uuids.include?(idb['uuid']) %>
                           <span style="font-size: smaller;"><i>Previously imported. Select from other column.</i></span>

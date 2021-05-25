@@ -23,14 +23,16 @@ if Flipflop.assign_admin_set? %>
 
 <fieldset class="form-group row permission-add-user">
   <legend class="col-sm-3 permissions-add-user-label">
-    <%= t('hyrax.admin.admin_sets.form_participants.add_user') %>
+    Add Individual User: 
   </legend>
-  <div class="col-sm-9 form-inline">
+  <div class="col-sm-5 form-inline">
     <label for="new_user_name_skel" class="sr-only"><%= t('hyrax.account_label') %> (without the <%= t('hyrax.directory.suffix') %> part)</label>
     <%= text_field_tag 'new_user_name_skel', nil %>
     <label for="new_user_permission_skel" class="sr-only">Access type to grant</label>
+  </div>
+  <div class="col-sm-4 form-inline">
     <%= select_tag 'new_user_permission_skel', options_for_select(Hyrax.config.permission_options), class: 'form-control' %>
-    <button class="btn btn-default" id="add_new_user_skel">
+    <button class="btn btn-sm btn-primary" id="add_new_user_skel">
       <span>Add<span class="sr-only"> this <%= t('hyrax.account_label') %></span></span>
     </button>
     <br /> <span id="directory_user_result"></span>
@@ -39,18 +41,23 @@ if Flipflop.assign_admin_set? %>
 
 <h2><%= t('.currently_sharing') %></h2>
 
-<table class="table">
-  <tr id="file_permissions">
-    <td width="20%">
-      <%= Hyrax.config.owner_permission_levels.keys[0] %>
-    </td>
-    <td width="60%">
-      <%= label_tag :owner_access, class: "control-label" do %>
-        Depositor (<span id="file_owner" data-depositor="<%= depositor %>"><%= link_to_profile depositor %></span>)
-      <% end %>
-    </td>
-  </tr>
 
+<section class="section-collection-sharing">
+
+<table id="share-datatable" class="table">
+  <!--thead>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </thead-->
+  <tr id="file_permissions">
+    <%# this tr is needed for adding new individual user access %>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
   <%= f.fields_for :permissions do |permission_fields| %>
     <% 
     role_name = permission_fields.object.agent_name
@@ -64,8 +71,7 @@ if Flipflop.assign_admin_set? %>
       <%# individual based access %>
         <tr>
           <td>
-            Individual access
-          </td>
+            Individual
           <td>
             <%= permission_fields.label :agent_name, class: "fw-normal" do %>
               <%= user_display(permission_fields.object.agent_name) %>
@@ -73,30 +79,50 @@ if Flipflop.assign_admin_set? %>
           </td>
           <td>
             <%= permission_fields.select :access, Hyrax.config.permission_levels, {}, class: 'form-control select_perm' %>
-            <button class="btn close remove_perm" data-index="<%= permission_fields.index %>">&times;</button>
+          </td>
+          <td>
+            <button class="btn btn-sm remove_perm" data-index="<%= permission_fields.index %>">Remove access</button>
           </td>
         </tr>
       <% end %>
     <% else %>
       <tr>
         <td>
-          <%= permission_fields.label :agent_name, class: "control-label" do %>
+          <%= permission_fields.label :agent_name, class: "control-label fw-normal" do %>
             <%#= user_display_name_and_key(permission_fields.object.agent_name) %>
-            <%= user_and_access(role_name, user_list) %>
+            <%= user_and_access(role_name) %>
           <% end %>
         </td>
         <td>
-          <%= safe_join(user_list, "<br />".html_safe) %>
+          <%= safe_join(user_list, ", ".html_safe) %>
         </td>
+        <td></td>
+        <td></td>
       </tr>
     <% end %>
     
   <% end %>
 </table>
 
+</section>
+
 <script type="text/x-tmpl" id="tmpl-work-grant">
 <tr>
+  <td>Individual</td>
+  <td><label class="control-label">{%= o.name %}</label></td>
   <td>{%= o.accessLabel %}</td>
-  <td><label class="control-label">{%= o.name %}</label> <button class="btn close">&times;</button></td>
+  <td><button class="btn btn-sm">Remove access</button></td>
 </tr>
+</script>
+
+<script>
+//  $(document).ready(function() {
+//    var shareTable = $('#share-datatable').DataTable({
+//      bPaginate: false,
+//      bInfo: false,
+//      bDestroy: true,
+//      bLengthChange: false, // hide the show number of entries dropdown
+//      bFilter: false // hide search box
+//    });
+//  });
 </script>

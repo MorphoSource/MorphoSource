@@ -322,6 +322,12 @@ html {
       background-color: $button-hover-color;
       border-color: $button-hover-border-color;
     }
+    .btn-disabled:hover {
+      cursor: not-allowed;
+      color: $button-disabled-font-color;
+      background-color: $button-disabled-color;
+      border-color: $button-disabled-border-color;      
+    }
     .dropdown-menu {
       .btn {
         text-align: left;

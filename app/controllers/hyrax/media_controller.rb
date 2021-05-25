@@ -8,6 +8,7 @@ module Hyrax
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
     include Morphosource::CustomThumbnails
+    include Morphosource::MessageHelper
     self.curation_concern_type = ::Media
 
     # Use this line if you want to use a custom presenter
@@ -18,10 +19,12 @@ module Hyrax
 
     skip_authorize_resource only: [:showcase, :thumbnail]
 
+    before_action :save_individual_access, only: [:update]
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
     after_action :set_fund_code, only: [:update]
     after_action :update_thumbnail, only: [:update]
+    after_action :deliver_individual_access_messages, only: [:update]
 
     # override the layout from WorksControllerBehavior
     def decide_layout
@@ -424,5 +427,51 @@ module Hyrax
           media.new_fund_code_association(fc)
         end
       end
+
+      def save_individual_access
+        @saved_edit_users = curation_concern.edit_users
+        @saved_read_users = curation_concern.read_users
+      end
+
+      def deliver_individual_access_messages
+        media_link = "<b><a href='http://#{host_name}/media/#{curation_concern.id}'>Media #{curation_concern.id}: #{curation_concern.title.first}</a></b>"
+        contact_message = "<p>Please contact #{user_email_link([current_user])} if you have a question related to this media access.</p>" 
+
+        unless curation_concern.edit_users.sort == @saved_edit_users.sort          
+          # find new EDIT access user(s) 
+          new_edit_users = curation_concern.edit_users - @saved_edit_users
+          new_edit_users.each do |user_key|
+            message = "You now have edit access to #{media_link}." + contact_message
+            receiving_user = ::User.find_by_user_key(user_key)
+            deliver_message(email_sender, receiving_user, message.html_safe, "You have been given access to a media")
+          end
+          # find EDIT access user(s) removed
+          removed_edit_users = @saved_edit_users - curation_concern.edit_users
+          removed_edit_users.each do |user_key|
+            message = "Your access to #{media_link} has been removed." + contact_message
+            receiving_user = ::User.find_by_user_key(user_key)
+            deliver_message(email_sender, receiving_user, message.html_safe, "Your access to a media has been removed")
+          end
+        end
+
+        unless curation_concern.read_users.sort == @saved_read_users.sort
+          # find new READ access user(s) 
+          new_read_users = curation_concern.read_users - @saved_read_users
+          new_read_users.each do |user_key|
+            message = "You now have read access to #{media_link}." + contact_message
+            receiving_user = ::User.find_by_user_key(user_key)
+            deliver_message(email_sender, receiving_user, message.html_safe, "You have been given access to a media")
+          end
+          # find READ access user(s) removed
+          removed_read_users = @saved_read_users - curation_concern.read_users
+          removed_read_users.each do |user_key|
+            message = "Your access to #{media_link} has been removed." + contact_message
+            receiving_user = ::User.find_by_user_key(user_key)
+            deliver_message(email_sender, receiving_user, message.html_safe, "Your access to a media has been removed")
+          end
+        end        
+
+      end
+
   end
 end

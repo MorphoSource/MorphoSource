@@ -5,7 +5,7 @@ module MorphosourceHelper
   include Hyrax::Renderers
 
   # param access: string e.g. "000200160_managers"
-  def user_and_access(access, user_list)
+  def user_and_access(access)
     source = ''
     accessArray = access.split('_')
     if accessArray.length > 1
@@ -14,20 +14,16 @@ module MorphosourceHelper
       collection = Collection.find(id)
       if collection.present? 
         if collection.project?
-          source += role_title.capitalize + ' of project ' + collection.title.first 
+          source += role_title.capitalize + ' of project ' + '<a href="/projects/' + collection.id + '">' + collection.title.first + '</a>' 
         elsif collection.team?
-          source += role_title.capitalize + ' of team ' + collection.title.first 
+          source += role_title.capitalize + ' of team ' + '<a href="/teams/' + collection.id + '">' + collection.title.first + '</a>'
           if collection.organization_name.present?
-            source += ' (' + collection.organization_name.first + ')'
+            source += ' (<a href="/concern/organizations/' + collection.organization.id + '">' + collection.organization_name.first + '</a>)'
           end
-        else
-byebug
         end
       end
-    else
-byebug
     end
-    return source
+    return source.html_safe
   end
 
   def user_list_by_role(access)

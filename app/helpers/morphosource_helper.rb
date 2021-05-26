@@ -30,23 +30,18 @@ module MorphosourceHelper
     return individual_list, group_list
   end
 
-  # param access: string e.g. "000200160_managers"
-  def user_and_access(access)
-    source = ''
-    accessArray = access.split('_')
-    if accessArray.length > 1
-      id = accessArray[0]
-      role_title = accessArray[1]
-      collection = Collection.find(id)
-      if collection.present? 
-        if collection.project?
-          source += role_title.capitalize + ' of project ' + '<a href="/projects/' + collection.id + '">' + collection.title.first + '</a>' 
-        elsif collection.team?
-          source += role_title.capitalize + ' of team ' + '<a href="/teams/' + collection.id + '">' + collection.title.first + '</a>'
-          if collection.organization_name.present?
-            source += ' (<a href="/concern/organizations/' + collection.organization.id + '">' + collection.organization_name.first + '</a>)'
-          end
+  def group_title_link(id)
+    collection = Collection.find(id)
+    if collection.present? 
+      if collection.project?
+        source = 'Project: ' + '<a href="/projects/' + collection.id + '">' + collection.title.first + '</a>' 
+      elsif collection.team?
+        source = 'Team: ' + '<a href="/teams/' + collection.id + '">' + collection.title.first + '</a>'
+        if collection.organization_name.present?
+          source += ' (' + collection.organization_name.first + ')'
         end
+      else
+        source = "(unknown)"
       end
     end
     return source.html_safe

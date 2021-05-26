@@ -41,66 +41,56 @@ if Flipflop.assign_admin_set? %>
 
 <h2><%= t('.currently_sharing') %></h2>
 
+<% individual_list, group_list = grouped_access_list(f) %>
+<% if group_list.count > 0 %>
+  <p>This media belongs to one or more projects or teams. It is shared with the members of those projects or teams. To modify the access each project or team member has to this media, see the project or team edit page.</p>
+<% end %>
 
 <section class="section-collection-sharing">
 
-<table id="share-datatable" class="table">
-  <!--thead>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </thead-->
-  <tr id="file_permissions">
-    <%# this tr is needed for adding new individual user access %>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>
-      Data manager
-    </td>
-    <td>
-      <%= user_display(depositor) %>
-    </td>
-    <td></td>
-    <td></td>
-  </tr>
-
-  <% 
-  individual_list, group_list = grouped_access_list(f)
-  %>
-
-  <% individual_list.each do |permission_fields| %>
-    <tr>
-      <td>
-        Individual
-      <td>
-        <%= permission_fields.label :agent_name, class: "fw-normal" do %>
-          <%= user_display(permission_fields.object.agent_name) %>
-        <% end %>
-      </td>
-      <td>
-        <%= permission_fields.select :access, Hyrax.config.permission_levels, {}, class: 'form-control select_perm' %>
-      </td>
-      <td>
-        <button class="btn btn-sm remove_perm" data-index="<%= permission_fields.index %>">Remove access</button>
-      </td>
-    </tr>
-    <%= permission_fields.hidden_field :id %>    
-  <% end %>
-
-  <% group_list.each do |group, users| %>
-    <tr>
-      <td><%= group %></td>
-      <td><%= users %></td>
+  <table id="share-datatable" class="table">
+    <tr id="file_permissions">
+      <%# this tr is needed for adding new individual user access %>
+      <td></td>
+      <td></td>
       <td></td>
       <td></td>
     </tr>
-  <% end %>
-</table>
+    <tr>
+      <td>Data manager</td>
+      <td><%= user_display(depositor) %></td>
+      <td></td>
+      <td></td>
+    </tr>
+
+    <% individual_list.each do |permission_fields| %>
+      <tr>
+        <td>
+          Individual
+        <td>
+          <%= permission_fields.label :agent_name, class: "fw-normal" do %>
+            <%= user_display(permission_fields.object.agent_name) %>
+          <% end %>
+        </td>
+        <td>
+          <%= permission_fields.select :access, Hyrax.config.permission_levels, {}, class: 'form-control select_perm' %>
+        </td>
+        <td>
+          <button class="btn btn-sm remove_perm" data-index="<%= permission_fields.index %>">Remove access</button>
+        </td>
+      </tr>
+      <%= permission_fields.hidden_field :id %>    
+    <% end %>
+
+    <% group_list.each do |group, users| %>
+      <tr>
+        <td><%= group_title_link(group) %></td>
+        <td><%= users %></td>
+        <td></td>
+        <td></td>
+      </tr>
+    <% end %>
+  </table>
 
 </section>
 
@@ -111,16 +101,4 @@ if Flipflop.assign_admin_set? %>
   <td>{%= o.accessLabel %}</td>
   <td><button class="btn btn-sm">Remove access</button></td>
 </tr>
-</script>
-
-<script>
-//  $(document).ready(function() {
-//    var shareTable = $('#share-datatable').DataTable({
-//      bPaginate: false,
-//      bInfo: false,
-//      bDestroy: true,
-//      bLengthChange: false, // hide the show number of entries dropdown
-//      bFilter: false // hide search box
-//    });
-//  });
 </script>

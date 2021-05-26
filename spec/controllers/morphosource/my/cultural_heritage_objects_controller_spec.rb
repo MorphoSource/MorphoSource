@@ -12,11 +12,10 @@ RSpec.describe Morphosource::My::CulturalHeritageObjectsController, type: :contr
       described_class.configure_facets
     end
     describe 'organization' do
-      subject { facet_fields['organization_id_ssim']}
-      it 'has a publication status facet' do
+      subject { facet_fields['organization_ssim']}
+      it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
         expect(subject.limit).to eq(10)
-        expect(subject.helper_method).to eq(:organization_title_by_id)
       end
     end
     describe 'project' do

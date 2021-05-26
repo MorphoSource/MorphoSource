@@ -63,15 +63,6 @@ module Morphosource
         !@viewable_collections_ids.include? item.value
       end
 
-      # collection_title_by_id
-      def organization_title_by_id(id)
-        solr_docs = controller.repository.find(id).docs
-        return nil if solr_docs.empty?
-        solr_field = solr_docs.first["title_tesim"]
-        return nil if solr_field.nil?
-        solr_field.first
-      end
-
     end
   end
 end

@@ -109,6 +109,6 @@ Rails.application.configure do
   config.session_store :active_record_store, :key => '_morpho_source_sf_session'
 
   # these collections appear in the featured projects section on the homepage. If this is empty, the homepage shows 6 random collections that the user has access to view.
-  config.featured_project_ids = ['00000C211','0000C1055','00000C887','00000C427','00000C945','0000C1213']
+  config.featured_project_ids = ['000345596', '00000C211','0000C1055','00000C887','00000C427','00000C945']
 
 end

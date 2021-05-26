@@ -6,6 +6,10 @@ module Morphosource
 
       before_action :authorize_collection_access
 
+      def search_builder_class
+        Morphosource::Users::EditMediaSearchBuilder
+      end
+
       private
 
         def authorize_collection_access

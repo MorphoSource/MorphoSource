@@ -35,14 +35,18 @@ module Morphosource
       end
 
       # on object tabs, count of media per object that the user has at least view access to
+      # def total_viewable_media(id)
+      #   ActiveFedora::Base.where("physical_object_id_tesim:#{id} AND has_model_ssim:Media").accessible_by(current_ability).count
+      # end
+
       def total_viewable_media(id)
-        ActiveFedora::Base.where("physical_object_id_tesim:#{id} AND has_model_ssim:Media").accessible_by(current_ability).count
+        Morphosource::PhysicalObjectMediaSearchService.new(self, id).search_results.count
       end
 
       # Overrides https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/facets_helper_behavior.rb#L63
       # Removes projects and teams from facets when the user does not have read access to them.
       def render_facet_item(facet_field, item)
-        return nil if !current_user.admin? && filtered_facet?(facet_field) && item_unauthorized?(item)
+        return nil if (!current_user.admin? && filtered_facet?(facet_field) && item_unauthorized?(item))
         super
       end
 

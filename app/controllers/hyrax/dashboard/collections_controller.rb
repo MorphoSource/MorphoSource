@@ -204,6 +204,7 @@ module Hyrax
         end
         update_thumbnail
         process_member_changes
+        update_physical_object_index
         @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
         # we don't have to reindex the full graph when updating collection
         @collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
@@ -666,6 +667,18 @@ module Hyrax
           @collection.thumbnail_id = media.try(:thumbnail_id)
         end
 
+        def update_physical_object_index
+          return if params["batch_document_ids"].blank?
+          
+          member_ids = params["batch_document_ids"]
+          member_ids.each do |id|
+            member = Media.find(id)
+            object_id = member.physical_object_id
+            next if object_id.blank?
+
+            ActiveFedora::Base.where(id: object_id).first.try(:update_index)
+          end
+        end
 
 
         # todo: delete later since we should be able to use morphosource_dashboard for all dashboard layout

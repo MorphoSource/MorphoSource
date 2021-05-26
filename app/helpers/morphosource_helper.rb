@@ -4,6 +4,32 @@ module MorphosourceHelper
   include MediaFinderHelper
   include Hyrax::Renderers
 
+  def grouped_access_list(f)
+    depositor = f.object.depositor
+    groups = []
+    individual_list = []
+    access_user_list = {}
+    f.fields_for :permissions do |permission_fields| 
+      role_name = permission_fields.object.agent_name
+      user_list = user_list_by_role(role_name) 
+      # skip the public, registered, and depositor perms as they are displayed first at the top 
+      next if ( ['admin', 'public', 'registered', depositor].include? role_name.downcase )     
+      if user_list.empty? 
+        unless role_name.include? '_'
+          individual_list << permission_fields
+        end
+      else
+        groups << role_name.split('_').first
+        access_user_list[role_name] = user_list.join(', ')
+      end
+    end 
+    group_list = {}
+    groups.uniq.each do |g|
+      group_list[g] = access_user_list.select { |k,v| k.include? g }.values.join(', ')
+    end
+    return individual_list, group_list
+  end
+
   # param access: string e.g. "000200160_managers"
   def user_and_access(access)
     source = ''
@@ -30,10 +56,14 @@ module MorphosourceHelper
     list = []
     Role.find_by(name: access)&.users&.each do |u| 
       if u.display_name
-        list << u.display_name
+        user_display = u.display_name
       else
-        list << u.email
+        user_display = u.email
       end
+      if access.split('_').length == 2      
+        user_display += " (" + access.split('_')[1].singularize + ")"
+      end
+      list << user_display
     end 
     return list
   end

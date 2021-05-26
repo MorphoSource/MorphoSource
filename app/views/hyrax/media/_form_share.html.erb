@@ -49,16 +49,16 @@ if Flipflop.assign_admin_set? %>
 <section class="section-collection-sharing">
 
   <table id="share-datatable" class="table">
+    <tr>
+      <td>Data manager</td>
+      <td><%= user_display(depositor) %></td>
+      <td></td>
+      <td></td>
+    </tr>
     <tr id="file_permissions">
       <%# this tr is needed for adding new individual user access %>
       <td></td>
       <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Data manager</td>
-      <td><%= user_display(depositor) %></td>
       <td></td>
       <td></td>
     </tr>

@@ -18,11 +18,10 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
       end
     end
     describe 'organization' do
-      subject { facet_fields['organization_id_ssim']}
+      subject { facet_fields['organization_ssim']}
       it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
         expect(subject.limit).to eq(10)
-        expect(subject.helper_method).to eq(:organization_title_by_id)
       end
     end
     describe 'project' do

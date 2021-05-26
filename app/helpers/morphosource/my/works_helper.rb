@@ -53,7 +53,7 @@ module Morphosource
       def unauthorized_facet_item?(facet_field, item)
         return false unless filtered_facet?(facet_field)
         return false if current_user && current_user.admin?
-        return true if current_user && item_unauthorized?(item)
+        return true if item_unauthorized?(item)
         false
       end
 

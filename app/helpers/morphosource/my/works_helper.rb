@@ -34,11 +34,6 @@ module Morphosource
         end
       end
 
-      # on object tabs, count of media per object that the user has at least view access to
-      # def total_viewable_media(id)
-      #   ActiveFedora::Base.where("physical_object_id_tesim:#{id} AND has_model_ssim:Media").accessible_by(current_ability).count
-      # end
-
       def total_viewable_media(id)
         Morphosource::PhysicalObjectMediaSearchService.new(self, id).search_results.count
       end

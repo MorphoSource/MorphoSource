@@ -31,6 +31,10 @@ input.disabled {
 
 .showcase-edit {
 
+  .permissions-add-user-label, .permissions-add-group-label {
+    padding: 7px 4px;
+  }
+
   .attachment-input .hint {
     font-size: 10px;
     color: #666;

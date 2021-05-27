@@ -22,10 +22,10 @@ if Flipflop.assign_admin_set? %>
 </p>
 
 <fieldset class="form-group row permission-add-user">
-  <legend class="col-sm-3 permissions-add-user-label">
+  <legend class="col-sm-4 permissions-add-user-label">
     Add Individual User: 
   </legend>
-  <div class="col-sm-5 form-inline">
+  <div class="col-sm-4 form-inline">
     <label for="new_user_name_skel" class="sr-only"><%= t('hyrax.account_label') %> (without the <%= t('hyrax.directory.suffix') %> part)</label>
     <%= text_field_tag 'new_user_name_skel', nil %>
     <label for="new_user_permission_skel" class="sr-only">Access type to grant</label>
@@ -96,9 +96,9 @@ if Flipflop.assign_admin_set? %>
 </section>
 
 <script type="text/x-tmpl" id="tmpl-work-grant">
-<tr>
+<tr class="alert-info">
   <td>Individual</td>
-  <td><label class="control-label">{%= o.email %}</label><span class="hidden">{%= o.name %}</span></td>
+  <td>{%= o.email %}<span class="hidden">{%= o.name %}</span></td>
   <td>{%= o.accessLabel %}</td>
   <td><button class="btn btn-sm">Remove access</button></td>
 </tr>

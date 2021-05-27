@@ -32,6 +32,13 @@ module Morphosource
         end
       end
 
+      # displays values and pagination links for a single facet field
+      # overrides Blacklight 6.23.0 app/controllers/concerns/blacklight/catalog
+      def facet
+        @viewable_collections_ids = collections_service.search_results(:read).map(&:id)
+        super
+      end
+
     end
   end
 end

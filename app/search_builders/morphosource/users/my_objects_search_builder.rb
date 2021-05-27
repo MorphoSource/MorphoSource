@@ -19,7 +19,7 @@ module Morphosource
         end
 
         def object_ids
-          ids = my_media.response['docs'].map { |d| d["physical_object_id_ssim"].first }
+          ids = my_media.response['docs'].map { |d| d["physical_object_id_ssim"].try(:first) }.compact
           ids.blank? ? ['none'] : ids
         end
 

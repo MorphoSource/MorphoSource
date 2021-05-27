@@ -1345,6 +1345,22 @@ $( document ).ready(function() {
           event.preventDefault();
           console.log('View 12 create processing event button');
 
+
+
+          /* For RAW, get creator and creation date from imaging event 
+             For DERIVED, get them from processing event (and fall back on imaging event) */
+          if (data.rawOrDerivedMedia == 'derived') {
+            var defaultCreator = $('#processing_event_creator').val();
+            console.log('derived=' + defaultCreator)
+          } else {
+            var defaultCreator = $('#imaging_event_creator').val();
+          }
+          console.log('setting defaultCreator ', defaultCreator);
+          $('#media_creator').val(defaultCreator);
+
+
+
+
           data.processingEventCreateParams = $('form#new_processing_event').serializeArray();
           data.savedStep = 9;
           self.form.setSidebarViewCheck(9);

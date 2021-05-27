@@ -435,7 +435,7 @@ module Hyrax
 
       def deliver_individual_access_messages
         media_link = "<b><a href='http://#{host_name}/media/#{curation_concern.id}'>Media #{curation_concern.id}: #{curation_concern.title.first}</a></b>"
-        contact_message = "<p>Please contact #{user_email_link([current_user])} if you have a question related to this media access.</p>" 
+        contact_message = "<p>Please contact #{user_email_link([current_user])} if you have a question related to this media access settings.</p>" 
 
         unless curation_concern.edit_users.sort == @saved_edit_users.sort          
           # find new EDIT access user(s) 

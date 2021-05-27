@@ -443,14 +443,14 @@ module Hyrax
           new_edit_users.each do |user_key|
             message = "You now have edit access to #{media_link}." + contact_message
             receiving_user = ::User.find_by_user_key(user_key)
-            deliver_message(email_sender, receiving_user, message.html_safe, "You have been given access to a media")
+            deliver_message(email_sender, receiving_user, message.html_safe, "You have been given edit access to a media")
           end
           # find EDIT access user(s) removed
           removed_edit_users = @saved_edit_users - curation_concern.edit_users
           removed_edit_users.each do |user_key|
-            message = "Your access to #{media_link} has been removed." + contact_message
+            message = "Your edit access to #{media_link} has been removed." + contact_message
             receiving_user = ::User.find_by_user_key(user_key)
-            deliver_message(email_sender, receiving_user, message.html_safe, "Your access to a media has been removed")
+            deliver_message(email_sender, receiving_user, message.html_safe, "Your edit access to a media has been removed")
           end
         end
 
@@ -460,14 +460,14 @@ module Hyrax
           new_read_users.each do |user_key|
             message = "You now have read access to #{media_link}." + contact_message
             receiving_user = ::User.find_by_user_key(user_key)
-            deliver_message(email_sender, receiving_user, message.html_safe, "You have been given access to a media")
+            deliver_message(email_sender, receiving_user, message.html_safe, "You have been given read access to a media")
           end
           # find READ access user(s) removed
           removed_read_users = @saved_read_users - curation_concern.read_users
           removed_read_users.each do |user_key|
-            message = "Your access to #{media_link} has been removed." + contact_message
+            message = "Your read access to #{media_link} has been removed." + contact_message
             receiving_user = ::User.find_by_user_key(user_key)
-            deliver_message(email_sender, receiving_user, message.html_safe, "Your access to a media has been removed")
+            deliver_message(email_sender, receiving_user, message.html_safe, "Your read access to a media has been removed")
           end
         end        
 

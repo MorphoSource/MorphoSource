@@ -4,10 +4,19 @@ module Morphosource
     extend ActiveSupport::Autoload
     extend Hydra::Derivatives
 
-    autoload :MeshDerivatives
-    autoload :CTImageSeriesDerivatives
     autoload :CroppedImageDerivatives
+    autoload :CTImageSeriesDerivatives
+    autoload :MeshDerivatives
     autoload :Processors
+
+    autoload :Alembic
+    autoload :Blender
+    autoload :Dcmcjpeg
+    autoload :Dcmdjpeg
+    autoload :DerivativeTool
+    autoload :Fiji
+    autoload :GltfPipeline
+    autoload :Img2dcm
 
     def self.blender_path
       Hyrax.config.blender_path

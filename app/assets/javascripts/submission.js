@@ -1,6 +1,7 @@
 /*jshint esversion: 6 */
 
 $( document ).ready(function() {
+
   if ($('div[class="submission_flow"]').length) { // check if the page is submission flow page
     class SubmissionData {
       constructor(sessionState=null) {
@@ -1315,6 +1316,10 @@ $( document ).ready(function() {
           event.preventDefault();
           console.log('View 11 create imaging event button');
 
+          /* For RAW, get creator and creation date from imaging event 
+             For DERIVED, get them from processing event (and fall back on imaging event) */
+          $('[name="media[creator][]"]').eq(0).val($('#imaging_event_creator').val());
+
           data.imagingEventCreateParams = $('#new_imaging_event').serializeArray();
           data.savedStep = 8;
 
@@ -1345,21 +1350,21 @@ $( document ).ready(function() {
           event.preventDefault();
           console.log('View 12 create processing event button');
 
-
-
           /* For RAW, get creator and creation date from imaging event 
              For DERIVED, get them from processing event (and fall back on imaging event) */
           if (data.rawOrDerivedMedia == 'derived') {
-            var defaultCreator = $('#processing_event_creator').val();
-            console.log('derived=' + defaultCreator)
-          } else {
-            var defaultCreator = $('#imaging_event_creator').val();
+            var PE_CreatorsCount = $('[name="processing_event[creator][]"]').length;
+            $('[name="processing_event[creator][]"]').each(function(index) { 
+              if ($(this).val() != '') {
+                console.log('setting default creator from PE: '+$(this).val());
+                $('[name="media[creator][]"]').eq(index).val($(this).val());
+              }
+              // add another creator field if needed
+              if (PE_CreatorsCount != index + 1) {
+                $(".media_creator").find("button.add").last().trigger("click");
+              }
+            });
           }
-          console.log('setting defaultCreator ', defaultCreator);
-          $('#media_creator').val(defaultCreator);
-
-
-
 
           data.processingEventCreateParams = $('form#new_processing_event').serializeArray();
           data.savedStep = 9;

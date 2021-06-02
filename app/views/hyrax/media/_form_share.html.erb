@@ -1,0 +1,111 @@
+<%  #added admin_set_id to prevent permissions_attributes being rejected from the params
+    #https://github.com/samvera/hyrax/blob/v2.9.0/app/forms/hyrax/forms/work_form.rb#L164
+if Flipflop.assign_admin_set? %>
+  <%# TODO: consider `Hyrax::AdminSetOptionsPresenter.select_options_for(controller: controller)` instead %>
+  <%= f.input :admin_set_id, as: :hidden %>
+<% end %>
+
+
+<h2><%= t('.add_sharing') %></h2>
+
+<% depositor = f.object.depositor %>
+
+<div class="alert alert-info hidden" id="save_perm_note">Permissions have <strong>not</strong> been saved yet.  Please make sure to click the &quot;Save&quot; button to update the changes.</div>
+
+<div class="alert alert-warning hidden" role="alert" id="permissions_error">
+  <span id="permissions_error_text"></span>
+</div>
+
+<p class="sr-only">Use the add button to give access to one <%= t('hyrax.account_label') %> at a time (it will be added to the list below).
+  Select the user, by name or <%= t('hyrax.account_label') %>. Then select the access level you wish to grant and click on Add this
+  <%= t('hyrax.account_label') %> to complete adding the permission.
+</p>
+
+<fieldset class="form-group row permission-add-user">
+  <legend class="col-sm-4 permissions-add-user-label">
+    Add Individual User: 
+  </legend>
+  <div class="col-sm-4 form-inline">
+    <label for="new_user_name_skel" class="sr-only"><%= t('hyrax.account_label') %> (without the <%= t('hyrax.directory.suffix') %> part)</label>
+    <%= text_field_tag 'new_user_name_skel', nil %>
+    <label for="new_user_permission_skel" class="sr-only">Access type to grant</label>
+  </div>
+  <div class="col-sm-4 form-inline">
+    <%= select_tag 'new_user_permission_skel', options_for_select(Hyrax.config.permission_options), class: 'form-control' %>
+    <button class="btn btn-sm btn-primary" id="add_new_user_skel">
+      <span>Add<span class="sr-only"> this <%= t('hyrax.account_label') %></span></span>
+    </button>
+    <br /> <span id="directory_user_result"></span>
+  </div>
+</fieldset>
+
+<h2><%= t('.currently_sharing') %></h2>
+
+<% individual_list, group_list = grouped_access_list(f) %>
+<% if group_list.count > 0 %>
+  <p>This media belongs to one or more projects or teams. It is shared with the members of those projects or teams. To modify the access each project or team member has to this media, see the project or team edit page.</p>
+<% end %>
+
+<section class="section-collection-sharing">
+
+  <table id="share-datatable" class="table">
+    <tr>
+      <td>Data manager</td>
+      <td><%= user_display(depositor) %></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr id="file_permissions">
+      <input type="hidden" id="selected-individual-email" name="selected-individual-email" value="" />
+      <%# this tr is needed for adding new individual user access %>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+
+    <% individual_list.each do |permission_fields| %>
+      <tr>
+        <td>
+          Individual
+        <td>
+          <%= permission_fields.label :agent_name, class: "fw-normal" do %>
+            <%= user_display(permission_fields.object.agent_name) %>
+          <% end %>
+        </td>
+        <td>
+          <%= permission_fields.select :access, Hyrax.config.permission_levels, {}, class: 'form-control select_perm' %>
+        </td>
+        <td>
+          <button class="btn btn-sm remove_perm" data-index="<%= permission_fields.index %>">Remove access</button>
+        </td>
+      </tr>
+      <%= permission_fields.hidden_field :id %>    
+    <% end %>
+
+    <% group_list.each do |group, users| %>
+      <tr>
+        <td><%= group_title_link(group) %></td>
+        <td><%= users %></td>
+        <td></td>
+        <td></td>
+      </tr>
+    <% end %>
+  </table>
+
+</section>
+
+<script type="text/x-tmpl" id="tmpl-work-grant">
+<tr class="alert-info">
+  <td>Individual</td>
+  <td>{%= o.email %}<span class="hidden">{%= o.name %}</span></td>
+  <td>{%= o.accessLabel %}</td>
+  <td><button class="btn btn-sm">Remove access</button></td>
+</tr>
+</script>
+
+<script>
+$('#add_new_user_skel').click(function() {
+  $('#selected-individual-email').val($('#select2-chosen-1').text())
+});
+</script>

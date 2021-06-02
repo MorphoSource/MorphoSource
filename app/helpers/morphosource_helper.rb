@@ -384,4 +384,69 @@ module MorphosourceHelper
     projects.select { |p| p.member_of_collection_ids.blank? }
   end
 
+  def grouped_access_list(f)
+    depositor = f.object.depositor
+    groups = []
+    individual_list = []
+    access_user_list = {}
+    f.fields_for :permissions do |permission_fields| 
+      role_name = permission_fields.object.agent_name
+      user_list = user_list_by_role(role_name) 
+      # skip the public, registered, and depositor perms as they are displayed first at the top 
+      next if ( ['admin', 'public', 'registered', depositor].include? role_name.downcase )     
+      if user_list.empty? 
+        unless role_name.include? '_'
+          individual_list << permission_fields
+        end
+      else
+        groups << role_name.split('_').first
+        access_user_list[role_name] = user_list.join(', ')
+      end
+    end 
+    group_list = {}
+    groups.uniq.each do |g|
+      group_list[g] = access_user_list.select { |k,v| k.include? g }.values.join(', ')
+    end
+    return individual_list, group_list
+  end
+
+  def group_title_link(id)
+    collection = Collection.find(id)
+    if collection.present? 
+      if collection.project?
+        source = 'Project: ' + '<a href="/projects/' + collection.id + '">' + collection.title.first + '</a>' 
+      elsif collection.team?
+        source = 'Team: ' + '<a href="/teams/' + collection.id + '">' + collection.title.first + '</a>'
+        if collection.organization_name.present?
+          source += ' (' + collection.organization_name.first + ')'
+        end
+      else
+        source = "(unknown)"
+      end
+    end
+    return source.html_safe
+  end
+
+  def user_list_by_role(access)
+    list = []
+    Role.find_by(name: access)&.users&.each do |u| 
+      if u.display_name
+        user_display = u.display_name
+      else
+        user_display = u.email
+      end
+      if access.split('_').length == 2      
+        user_display += " (" + access.split('_')[1].singularize + ")"
+      end
+      list << user_display
+    end 
+    return list
+  end
+
+  def user_display(user_key)
+    user = ::User.find_by_user_key(user_key)
+    return user_key if user.nil?
+    user.display_name.present? ? user.display_name : user.email
+  end
+
 end

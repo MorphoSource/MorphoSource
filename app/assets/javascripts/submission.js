@@ -1319,6 +1319,7 @@ $( document ).ready(function() {
           /* For RAW, get creator and creation date from imaging event 
              For DERIVED, get them from processing event (and fall back on imaging event) */
           $('[name="media[creator][]"]').eq(0).val($('#imaging_event_creator').val());
+          $('[name="media[date_created]"]').val($('#imaging_event_date_created').val());
 
           data.imagingEventCreateParams = $('#new_imaging_event').serializeArray();
           data.savedStep = 8;
@@ -1364,6 +1365,9 @@ $( document ).ready(function() {
                 $(".media_creator").find("button.add").last().trigger("click");
               }
             });
+            if ($('#processing_event_date_created').val() != '') {
+              $('[name="media[date_created]"]').val($('#processing_event_date_created').val());
+            }
           }
 
           data.processingEventCreateParams = $('form#new_processing_event').serializeArray();

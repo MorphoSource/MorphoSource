@@ -3,7 +3,7 @@ include ActionDispatch::TestProcess
 include Warden::Test::Helpers
 
 RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controller do
-  let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
+  let(:user)  { User.create(email: 'user@email.com', password: 'password') }
 
   describe ".configure_facets" do
     let(:facet_fields)  { described_class.blacklight_config.facet_fields}
@@ -21,14 +21,14 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
       subject { facet_fields['organization_ssim']}
       it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
-        expect(subject.limit).to eq(10)
+        expect(subject.limit).to eq(nil)
       end
     end
     describe 'project' do
       subject { facet_fields['media_member_of_project_ids_ssim'] }
       it 'has a project facet' do
         expect(subject.label).to eq("Project")
-        expect(subject.limit).to eq(10)
+        expect(subject.limit).to eq(nil)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end
@@ -36,7 +36,7 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
       subject { facet_fields['media_member_of_team_ids_ssim'] }
       it 'has a team facet' do
         expect(subject.label).to eq("Team")
-        expect(subject.limit).to eq(10)
+        expect(subject.limit).to eq(nil)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end

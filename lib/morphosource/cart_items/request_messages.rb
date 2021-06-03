@@ -24,7 +24,10 @@ module Morphosource
         object = work.objects&.first
         if object.present?
           if object.specimen?
-            content += " of " + work.physical_object_type.downcase + " <b><a href='http://#{host_name}/biological_specimens/#{object.id}'>#{object.title.first}</a>" + "</b>" + " (<i>" + object.taxonomies_titles&.first + "</i>)"
+            content += " of " + work.physical_object_type.downcase + " <b><a href='http://#{host_name}/biological_specimens/#{object.id}'>#{object.title.first}</a>" + "</b>"
+            if object.taxonomies_titles.present?
+              content += " (<i>" + object.taxonomies_titles.first + "</i>)"
+            end
           else
             content += " of " + work.physical_object_type.downcase + 
               " <b><a href='http://#{host_name}/cultural_heritage_objects/#{object.id}'>#{object.title.first}</a>" + "</b>" 

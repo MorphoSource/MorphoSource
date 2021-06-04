@@ -24,10 +24,12 @@ module Morphosource
     end
 
     def call
-      if !fund_code.present? || !fund_code.identifier.present?
+      if !fund_code.present? || !fund_code.identifier.present? || !fund_code.chargeable
         return {
           status: 'failure',
-          message: 'Fund code not present or fund code identifier not present',
+          fund_code: fund_code&.id,
+          identifier: fund_code&.identifier,
+          message: 'Fund code not present, not chargeable, or fund code identifier not present',
           charges: []
         }
       end
@@ -41,11 +43,16 @@ module Morphosource
 
         return {
           status: 'success',
+          fund_code: fund_code&.id,
+          identifier: fund_code&.identifier,
+          message: 'Charge(s) successfully generated',
           charges: charges
         }
       else 
         return {
           status: 'failure',
+          fund_code: fund_code&.id,
+          identifier: fund_code&.identifier,
           message: 'No charge possible. Either no media, no filesets, or no units consumed.',
           charges: []
         }

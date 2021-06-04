@@ -19,13 +19,13 @@ module Morphosource
         end
 
         def object_ids
-          ids = my_media.response['docs'].map { |d| d["physical_object_id_ssim"].first }
+          ids = my_media_object_ids
           ids.blank? ? ['none'] : ids
         end
 
-        def my_media
+        def my_media_object_ids
           repository.blacklight_config.max_per_page = 999999
-          repository.search(Morphosource::Users::MyMediaSearchBuilder.new(@scope).rows(999999).query)
+          repository.search(Morphosource::Users::MyMediaObjectsSearchBuilder.new(@scope).rows(999999).query).response['docs'].map { |d| d["physical_object_id_ssim"].try(:first) }.compact
         end
 
     end

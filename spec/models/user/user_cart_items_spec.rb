@@ -142,21 +142,21 @@ RSpec.describe User, type: :model do
 
     # requested items
     # requested
-    let!(:cart_item1) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday) }
+    let!(:cart_item1) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, reviewers: [user.ms_id]) }
 
     # approved
-    let!(:cart_item2) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work2.id, date_requested: Date.yesterday, date_approved: Date.yesterday) }
+    let!(:cart_item2) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work2.id, date_requested: Date.yesterday, date_approved: Date.yesterday, reviewers: [user.ms_id]) }
     # cleared
-    let!(:cart_item3) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work3.id, date_cleared: Date.yesterday) }
+    let!(:cart_item3) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work3.id, date_cleared: Date.yesterday, reviewers: [user.ms_id]) }
     # denied
-    let!(:cart_item4) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_denied: Date.yesterday) }
+    let!(:cart_item4) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_denied: Date.yesterday, reviewers: [user.ms_id]) }
     # expired
-    let!(:cart_item5) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday) }
+    let!(:cart_item5) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday, reviewers: [user.ms_id]) }
     # canceled
-    let!(:cart_item6) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_canceled: Date.today) }
+    let!(:cart_item6) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_canceled: Date.today, reviewers: [user.ms_id]) }
 
     # not requested
-    let!(:cart_item7) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work4.id ) }
+    let!(:cart_item7) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work4.id, reviewers: [user.ms_id] ) }
 
     describe '#previously_requested_items' do
       it { expect(user.previously_requested_items).to match_array([cart_item2,cart_item3,cart_item4,cart_item5,cart_item6])}

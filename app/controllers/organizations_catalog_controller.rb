@@ -6,6 +6,8 @@ class OrganizationsCatalogController < CatalogController
     # disable thumbnails
     config.index.thumbnail_field = ''
 
+    config.max_per_page = 1000000
+
     # facets
     # type of organization
     config.add_facet_field solr_name("organization_type", :facetable), label: "Type", limit: 5

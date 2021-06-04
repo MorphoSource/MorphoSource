@@ -55,7 +55,7 @@ module Hyrax
                                  end
       end
 
-      # @return [Hash] All FileSets in the collection, file.to_s is the key, file.id is the value
+      # @return [Hash] All Media in the collection, media.id is both the key and value
       def select_files
         Hash[all_files_with_access]
       end
@@ -128,7 +128,14 @@ module Hyrax
       private
 
       def all_files_with_access
-        member_presenters(member_work_ids).flat_map(&:file_set_presenters).map { |x| [x.to_s, x.id] }
+        # if team w/ a linked organization, use collection member service
+        # otherwise just get member work ids
+        if self.model.team? && self.model.organization.present?
+          object_ids = Morphosource::Collections::CollectionInformationService.new(scope: @scope, collection_id: id).collection_information["organization_object_ids"]
+          Morphosource::Collections::CollectionMemberService.new(scope: @scope, collection: self.model, params:{}).all_member_media(object_ids).response['docs'].map{ |doc| [doc['id'], doc['id']] }
+        else
+          member_presenters(member_work_ids).map { |m| [m.id, m.id] }
+        end
       end
 
       # Override this method if you have a different way of getting the member's ids

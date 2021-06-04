@@ -23,6 +23,10 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
       cartItem3.user_id = user2.ms_id
       cartItem5.user_id = user3.ms_id
       cartItem7.user_id = user4.ms_id
+      cartItem1.reviewers = [current_user.ms_id]
+      cartItem3.reviewers = [current_user.ms_id]
+      cartItem5.reviewers = [current_user.ms_id]
+      cartItem7.reviewers = [current_user.ms_id]
       [cartItem1,cartItem3,cartItem5,cartItem7].each(&:save)
       [work1,work3,work5,work7].each do |work|
         work.download_reviewer = [current_user.ms_id]

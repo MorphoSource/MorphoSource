@@ -129,6 +129,20 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
         end
       end
 
+      describe '#media_member_of_team_ids' do
+        it 'returns media team ids' do
+          expect(specimen.media_member_of_team_ids).to match_array([team.id])
+          expect(cho.media_member_of_team_ids).to match_array([team.id])
+        end
+      end
+
+      describe '#media_member_of_project_ids' do
+        it 'returns media project ids' do
+          expect(specimen.media_member_of_project_ids).to match_array([project.id])
+          expect(cho.media_member_of_project_ids).to match_array([project.id])
+        end
+      end
+
       describe '#media_member_of_public_collection_ids' do
         before do
           public_media.member_of_collections << project

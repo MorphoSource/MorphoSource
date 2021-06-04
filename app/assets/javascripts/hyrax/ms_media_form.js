@@ -1,3 +1,20 @@
+/* Media Share tab specific */
+document.addEventListener("share-tab-loaded", function(event) {
+
+  var transferToSelect = $('#proxy_deposit_request_transfer_to');
+  transferToSelect.userSearch();
+
+  $('#btn-transfer-submit').click(function() {
+    if (transferToSelect.val().length == 0) {
+      alert('Please select a user');
+    } else if (confirm('Are you sure you want to transfer ownership of this work to another user? Click Ok to transfer or Cancel to return to the transfer screen')) {
+        disablePage();
+        $('#new_proxy_deposit_request').submit();
+    }
+  });
+
+});
+
 $( document ).ready(function() {
 
   if ( $('form[id*="edit_media"]').length ||
@@ -563,7 +580,7 @@ $( document ).ready(function() {
         if ($('#imaging_event_ie_modality').length)
           var imagingEventModality = $('#imaging_event_ie_modality').val();
         if (deviceModality && imagingEventModality) {
-          if (deviceModality === imagingEventModality) {
+          if (deviceModality.includes(imagingEventModality)) {
             return true;
           } else {
             alert('Device modality does not match imaging event modality.');

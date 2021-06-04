@@ -1,0 +1,7 @@
+en:
+  morphosource:
+    dashboard:
+      my:
+        add_media:
+          title: "Select existing media to include in "
+          add_media_button: "Add media to " 

@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     get 'biological_specimens/:id', to: 'biological_specimens#showcase'
     get 'cultural_heritage_objects/:id', to: 'cultural_heritage_objects#showcase'
     get 'media/:id', to: 'media#showcase'
+    get 'media/:id/edit', to: 'media#edit', as: :media_showcase_edit
     get 'media/:id/thumbnail', to: 'media#thumbnail'
     # redirect the default BSO/CHO view to showcase view, except for certain action (e.g. new)
     get 'concern/biological_specimens/new', to: 'biological_specimens#new'
@@ -48,6 +49,23 @@ Rails.application.routes.draw do
       member do
         post 'media_owner_update'
         patch 'media_owner_update'
+      end
+    end
+  end
+
+  scope module: :morphosource do
+    scope :dashboard do
+      namespace :my do
+        resources :media, only: [:index], controller: 'media'
+        resources :media, path: "media/:collection_id", only: [:index], controller: 'add_media', as: 'add_media'
+        resources :specimens, only: [:index], controller: 'biological_specimens'
+        resources :cultural_heritage_objects, only: [:index], controller: 'cultural_heritage_objects'
+
+        get '/media/facet/:id', to: 'media#facet', as: 'dashboard_media_facet'
+        get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
+        get '/specimens/facet/:id', to: 'biological_specimens#facet', as: 'dashboard_specimens_facet'
+        get '/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'dashboard_chos_facet'
+
       end
     end
   end
@@ -109,10 +127,6 @@ Rails.application.routes.draw do
     # cho pagination
     get 'project_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
     get 'team_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
-    # dashboard media/object paging
-    get 'media_works_paging/dashboard/my/media', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=media" }
-    get 'media_works_paging/dashboard/my/media/specimens', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=biological_specimens" }
-    get 'media_works_paging/dashboard/my/media/chos', to: redirect { |params, request| "/dashboard/my/media/?#{request.params.to_query}&tab=cultural_heritage_objects" }
     # my teams/projects paging
     get 'my_projects_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/projects/?#{request.params.to_query}" }
     get 'my_teams_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/teams/?#{request.params.to_query}" }
@@ -135,12 +149,9 @@ Rails.application.routes.draw do
       namespace :my do
         resources :teams, only: [:index], controller: 'teams'
         resources :projects, only: [:index], controller: 'teams'
-        resources :media, only: [:index], controller: 'media_works'
+        # resources :media, only: [:index], controller: 'morphosource/my/media'
       end
     end
-    #get 'dashboard/my/media', controller: 'my/media_works', action: :index
-    get 'dashboard/my/media/specimens', to: 'my/media_works#specimens'
-    get 'dashboard/my/media/chos', to: 'my/media_works#chos'
 
     scope :browse do
       resources :teams, only: [:index], controller: 'browse_teams', as: 'browse_teams'

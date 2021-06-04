@@ -38,8 +38,6 @@ class CatalogController < ApplicationController
     config.view.gallery.partials = [:index_header, :index]
     #config.view.slideshow.partials = [:index]
 
-    config.max_per_page = 1000000
-
     ## Default parameters to send to solr for all search-like requests. See also SolrHelper#solr_search_params
     config.default_solr_params = {
       qt: "search",

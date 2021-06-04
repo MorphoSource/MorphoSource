@@ -122,7 +122,7 @@ module MorphosourceHelper
   end
 
   def find_media_autocomplete_url
-    Rails.application.routes.url_helpers.qa_path + '/search/find_media?type[]=Media&id=NA&q='
+    Rails.application.routes.url_helpers.qa_path + '/search/find_media?type[]=Media&id=NA'
   end
 
   def find_organization_autocomplete_url
@@ -138,7 +138,7 @@ module MorphosourceHelper
   end
 
   def find_taxonomy_submission_autocomplete_url
-    'search_taxonomy_ajax?type[]=Taxonomy&id=NA&q='
+    '/submissions/search_taxonomy_ajax?type[]=Taxonomy&id=NA&q='
   end
 
   def find_taxonomy_submission_autocomplete_url_bso_edit
@@ -193,12 +193,12 @@ module MorphosourceHelper
   end
 
   def render_publication_status_badge(document)
-    media = Media.find(document.id)
-
+    return if document["fileset_accessibility_ssim"].nil?
+    publication_status = document[ "fileset_accessibility_ssim"].first
     path = edit_polymorphic_path([main_app, document], anchor: 'share')
 
     link_to(
-      publication_badge(media.publication_status),
+      publication_badge(publication_status),
       path,
       id: "permission_#{document.id}",
       class: 'visibility-link'
@@ -206,8 +206,8 @@ module MorphosourceHelper
   end
 
   def render_view_link_publication_status_badge(document)
-    media = Media.find(document.id)
-    badge = publication_badge(media.publication_status)
+    publication_status = document[ "fileset_accessibility_ssim"].first
+    badge = publication_badge(publication_status)
 
     link_to(badge, polymorphic_path([main_app, document]), id:"permission_#{document.id}", class: 'visibility-link')
   end
@@ -382,6 +382,71 @@ module MorphosourceHelper
   def eligible_child_projects
     projects = ActiveFedora::Base.where("human_readable_type_sim:Project").accessible_by(current_ability, :edit)
     projects.select { |p| p.member_of_collection_ids.blank? }
+  end
+
+  def grouped_access_list(f)
+    depositor = f.object.depositor
+    groups = []
+    individual_list = []
+    access_user_list = {}
+    f.fields_for :permissions do |permission_fields| 
+      role_name = permission_fields.object.agent_name
+      user_list = user_list_by_role(role_name) 
+      # skip the public, registered, and depositor perms as they are displayed first at the top 
+      next if ( ['admin', 'public', 'registered', depositor].include? role_name.downcase )     
+      if user_list.empty? 
+        unless role_name.include? '_'
+          individual_list << permission_fields
+        end
+      else
+        groups << role_name.split('_').first
+        access_user_list[role_name] = user_list.join(', ')
+      end
+    end 
+    group_list = {}
+    groups.uniq.each do |g|
+      group_list[g] = access_user_list.select { |k,v| k.include? g }.values.join(', ')
+    end
+    return individual_list, group_list
+  end
+
+  def group_title_link(id)
+    collection = Collection.find(id)
+    if collection.present? 
+      if collection.project?
+        source = 'Project: ' + '<a href="/projects/' + collection.id + '">' + collection.title.first + '</a>' 
+      elsif collection.team?
+        source = 'Team: ' + '<a href="/teams/' + collection.id + '">' + collection.title.first + '</a>'
+        if collection.organization_name.present?
+          source += ' (' + collection.organization_name.first + ')'
+        end
+      else
+        source = "(unknown)"
+      end
+    end
+    return source.html_safe
+  end
+
+  def user_list_by_role(access)
+    list = []
+    Role.find_by(name: access)&.users&.each do |u| 
+      if u.display_name
+        user_display = u.display_name
+      else
+        user_display = u.email
+      end
+      if access.split('_').length == 2      
+        user_display += " (" + access.split('_')[1].singularize + ")"
+      end
+      list << user_display
+    end 
+    return list
+  end
+
+  def user_display(user_key)
+    user = ::User.find_by_user_key(user_key)
+    return user_key if user.nil?
+    user.display_name.present? ? user.display_name : user.email
   end
 
 end

@@ -1,0 +1,102 @@
+.ms-list-filters {
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  fieldset {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    min-width: 150px;
+  }
+
+  button {
+    border: 1px solid #d4d4d4 !important;
+    max-width: 150px !important;
+    min-width: 150px !important;
+    background-color: #fff !important;
+    color: black !important;
+    padding: 2px 3px 2px 8px;
+    font-size: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .caret {
+    margin-right: 8px;
+    margin-top: 6px;
+  }
+
+  li {
+    padding: 1px 2px 1px 2px;
+    font-size: 12px;
+  }
+}
+
+.ms-constraints-container {
+  .constraint-value {
+    background-color: #fff !important;
+    color: black !important;
+    border: 1px solid #d4d4d4 !important;
+    color: black !important;
+    font-size: 12px;
+    padding: 2px 8px 2px 8px !important;
+  }
+  // caret in filtering by
+  .filterName:after {
+    font-size: 9px !important;
+    color: black;
+  }
+
+  .dropdown-toggle {
+    background-color: #286090 !important;
+    color: #fff !important;
+    border-color: #265b89 !important;
+    border-radius: 90px !important;
+    min-width: 18px !important;
+    max-width: 18px !important;
+    width: 18px !important;
+    min-height: 18px !important;
+    max-height: 18px !important;
+    height: 18px !important;
+    margin-left: 3px !important;
+    margin-top: 3px !important;
+  }
+
+  .appliedFilter .glyphicon-remove {
+    right: 9px;
+    top: -4px;
+  }
+
+  #startOverLink {
+    padding: 0px 6px 0px 6px !important;
+  }
+
+  .start-over {
+    background-color: #286090 !important;
+    border-color: #286090 !important;
+    padding: 2px 6px 2px 0px !important;
+  }
+}
+
+.ms-works-pagination-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 760px) {
+  .list-filters {
+    flex-wrap: wrap;
+  }
+
+  .list-filters fieldset {
+    width: 100%;
+  }
+
+  .list-filters button {
+    max-width: 100% !important;
+    min-width: 100% !important;
+  }
+}

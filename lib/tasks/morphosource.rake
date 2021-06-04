@@ -402,4 +402,23 @@ namespace :morphosource do
     Rake::Task['morphosource:create_charge_api_role'].invoke
   end
 
+  desc 'Update reviewers column for all cart items'
+  task :update_cartitem_reviewers => :environment do
+    CartItem.find_each do |item|
+      unless item.date_downloaded.present?
+        begin
+          media = Media.find(item.work_id)
+          if media.present?
+            item.reviewers = media.reviewer
+            item.save
+            puts("CartItem #{item.id} updated")
+          end
+        rescue
+          puts "Exception on finding media #{item.work_id}"
+          # most likely LDP gone exception
+        end
+      end
+    end
+  end
+
 end

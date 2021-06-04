@@ -96,7 +96,8 @@ module Morphosource
             fq: [
               media_core_fq,
               "#{solrize('has_model', :symbol)}:Media",
-            ]
+            ],
+            "facet.limit": -1
           }
           solr.get_facet_fields(nil, facet_fields, params)
           return solr.facet_fields(facet_fields), solr.count
@@ -135,12 +136,14 @@ module Morphosource
           begin
             query_builder.merge(fq: initial_fq + fq_params)
             query_builder.merge('facet.field' => initial_facet_fields + facet_fields)
+            query_builder.merge('facet.limit' => -1)
             query_builder.merge(rows: 99999)
             #repository.search(query_builder.with(query_params).query)
             repository.search(query_builder.query)
           ensure
             query_builder.merge(fq: initial_fq)
             query_builder.merge('facet.field' => initial_facet_fields)
+            query_builder.merge('facet.limit' => -1)
             query_builder.merge(rows: initial_rows)
           end
         end

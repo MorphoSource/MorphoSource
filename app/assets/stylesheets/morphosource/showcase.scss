@@ -16,12 +16,16 @@ html {
   }
 }
 
+/*
 .showcase.teams, 
 .showcase.media-works, 
 .showcase.browse, 
 .showcase.organizations, 
 .showcase.dl-request, 
-.showcase.cart { 
+.showcase.cart,
+.showcase.transfer
+*/
+.showcase { 
   .super-title {
     font-size: 18px;
     color: #888;
@@ -317,6 +321,12 @@ html {
       color: $button-hover-font-color;
       background-color: $button-hover-color;
       border-color: $button-hover-border-color;
+    }
+    .btn-disabled:hover {
+      cursor: not-allowed;
+      color: $button-disabled-font-color;
+      background-color: $button-disabled-color;
+      border-color: $button-disabled-border-color;      
     }
     .dropdown-menu {
       .btn {
@@ -706,7 +716,9 @@ html {
     }
   }
 
-  h1 {
+  h1, .main-header h1 {
+    font-size: 24px;
+    margin-left: 0;
     margin-top: 10px;
   }
   h2 {
@@ -1167,3 +1179,31 @@ html {
   /* /media showcase specific styles */
 
 }
+
+/* Media transfer page specific */
+.showcase.transfer {
+
+  h1, .main-header h1 {
+    font-size: 28px;
+    .fa {
+      font-size: 35px;
+    }
+  }
+  table {
+    table-layout: fixed;
+  }
+  th, td {
+    font-size: 12px;
+    .btn {
+      min-width: 60px;
+      margin-right: 2px;
+    }
+  }
+  form {
+    max-width: 600px;
+  }
+  .title, .comment {
+    max-width: 250px;
+  }
+}
+/* /Media transfer page specific */

@@ -1,0 +1,9 @@
+<% provide :page_header do %>
+  <div class="col-xs-9 title">
+    <h1><span class="fa fa-cube %>" aria-hidden="true"></span> <%= @page_title || "Media and Objects" %></h1>
+  </div>
+
+  <div class="row collection-count">
+      <%= render 'membership_count' %>
+  </div>
+<% end %>

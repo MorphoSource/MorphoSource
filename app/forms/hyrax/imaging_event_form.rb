@@ -71,7 +71,6 @@ module Hyrax
 
     self.single_valued_fields = [
         :description,
-        :creator,
         :ie_modality,
         :device_id,
         :date_created,

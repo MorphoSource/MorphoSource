@@ -1318,7 +1318,17 @@ $( document ).ready(function() {
 
           /* For RAW, get creator and creation date from imaging event 
              For DERIVED, get them from processing event (and fall back on imaging event) */
-          $('[name="media[creator][]"]').eq(0).val($('#imaging_event_creator').val());
+          var IE_CreatorsCount = $('[name="imaging_event[creator][]"]').length;
+          $('[name="imaging_event[creator][]"]').each(function(index) { 
+            if ($(this).val() != '') {
+              console.log('setting default creator from IE: '+$(this).val());
+              $('[name="media[creator][]"]').eq(index).val($(this).val());
+            }
+            // add another creator field if needed
+            if (IE_CreatorsCount != index + 1) {
+              $(".media_creator").find("button.add").last().trigger("click");
+            }
+          });
           $('[name="media[date_created]"]').val($('#imaging_event_date_created').val());
 
           data.imagingEventCreateParams = $('#new_imaging_event').serializeArray();
@@ -1355,16 +1365,20 @@ $( document ).ready(function() {
              For DERIVED, get them from processing event (and fall back on imaging event) */
           if (data.rawOrDerivedMedia == 'derived') {
             var PE_CreatorsCount = $('[name="processing_event[creator][]"]').length;
-            $('[name="processing_event[creator][]"]').each(function(index) { 
-              if ($(this).val() != '') {
-                console.log('setting default creator from PE: '+$(this).val());
-                $('[name="media[creator][]"]').eq(index).val($(this).val());
-              }
-              // add another creator field if needed
-              if (PE_CreatorsCount != index + 1) {
-                $(".media_creator").find("button.add").last().trigger("click");
-              }
-            });
+            if (PE_CreatorsCount > 0 && $('[name="processing_event[creator][]"]').eq(0).val() != '') {
+              // remove all media creators before adding
+              $(".media_creator").find("button.remove:not(:first)").trigger("click");
+              $('[name="processing_event[creator][]"]').each(function(index) { 
+                if ($(this).val() != '') {
+                  console.log('setting default creator from PE: '+$(this).val());
+                  $('[name="media[creator][]"]').eq(index).val($(this).val());
+                }
+                // add another creator field if needed
+                if (PE_CreatorsCount != index + 1) {
+                  $(".media_creator").find("button.add").last().trigger("click");
+                }
+              });
+            }
             if ($('#processing_event_date_created').val() != '') {
               $('[name="media[date_created]"]').val($('#processing_event_date_created').val());
             }

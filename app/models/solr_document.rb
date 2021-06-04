@@ -880,6 +880,30 @@ class SolrDocument
     self["download_access_person_ssim"]
   end
 
+  def download_access_groups
+    self["download_access_group_ssim"]
+  end
+
+  def download_access_person
+    self["download_access_person_ssim"]
+  end
+
+  def read_access_group
+    self["read_access_group_ssim"]
+  end
+
+  def read_access_person
+    self["read_access_person_ssim"]
+  end
+
+  def edit_access_group
+    self["edit_access_group_ssim"]
+  end
+
+  def edit_access_person
+    self["edit_access_person_ssim"]
+  end
+
   # Request Management
   def reviewer
     self["download_reviewer_ssim"].presence || self["owner_ssim"].presence || self["depositor_ssim"]

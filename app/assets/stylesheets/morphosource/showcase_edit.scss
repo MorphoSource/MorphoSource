@@ -31,6 +31,10 @@ input.disabled {
 
 .showcase-edit {
 
+  .permissions-add-user-label, .permissions-add-group-label {
+    padding: 7px 4px;
+  }
+
   .attachment-input .hint {
     font-size: 10px;
     color: #666;
@@ -453,6 +457,59 @@ input.disabled {
     }
   }
 
+  .section-add-sharing {
+    h3 {
+      font-size: 16px;
+      font-weight: bold;
+      padding: 0 10px;
+    }
+
+    .form-inline label {
+      padding-right: 0;
+      text-align: left;
+      width: auto;
+      font-size: 13px;
+    }
+
+    .select2-container, select {
+      width: 100% !important;
+    }
+
+    .add-users > div,
+    .add-groups > div {
+      text-align: left;
+      margin-bottom: 6px;
+    }
+    td {
+      border-top: none !important;
+    }
+  }
+
+  .section-collection-sharing {
+    select {
+      width: fit-content;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: bold;
+      padding: 0 10px;
+    }
+    .share-status {
+      th {
+        text-align: left;
+      }
+      th, td {
+        width:auto;
+      }
+      th.icon, td.icon {
+        width:40px;
+      }
+    }
+    td {
+      border-top: none !important;
+    }
+  }
+
 } /* / .showcase-edit */
 
 
@@ -530,46 +587,6 @@ input.disabled {
       }
       input {
         max-width: 90px;
-      }
-    }
-  }
-
-  .section-add-sharing {
-
-    .form-inline label {
-      padding-right: 0;
-      text-align: left;
-      width: auto;
-      font-size: 13px;
-    }
-
-    .select2-container, select {
-      width: 100% !important;
-    }
-
-    .add-users > div,
-    .add-groups > div {
-      text-align: left;
-      margin-bottom: 6px;
-    }
-
-  }
-
-  .section-collection-sharing {
-    h3 {
-      font-size: 16px;
-      font-weight: bold;
-      padding: 0 10px;
-    }
-    .share-status {
-      th {
-        text-align: left;
-      }
-      th, td {
-        width:auto;
-      }
-      th.icon, td.icon {
-        width:40px;
       }
     }
   }

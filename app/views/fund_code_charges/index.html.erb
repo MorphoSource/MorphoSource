@@ -1,0 +1,85 @@
+<% provide :page_title, 'Fund Code Charges' %>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title h2"><%= "Search Fund Code Charges" %></h2>
+      </div>
+      <div class="panel-body">
+        <%= simple_form_for :search, url: main_app.fund_code_charges_path, method: "GET" do |f| %>
+          
+          <div class="form-group search_start_date">
+            <label class="control-label" for="search_start_date">
+              <%= t('simple_form.labels.fund_code_charges.start_date') %>
+            </label>
+            <p class="help-block">
+              <%= t('simple_form.hints.fund_code_charges.start_date') %>
+            </p>
+            <%= f.date_field :start_date, value: @start_date, class: 'datepicker form-control' %>
+          </div>
+
+          <div class="form-group search_end_date">
+            <label class="control-label" for="search_end_date">
+              <%= t('simple_form.labels.fund_code_charges.end_date') %>
+            </label>
+            <p class="help-block">
+              <%= t('simple_form.hints.fund_code_charges.end_date') %>
+            </p>
+            <%= f.date_field :end_date, value: @end_date, class: 'datepicker form-control' %>
+          </div>
+
+          <%= f.submit 'Search', class: 'btn btn-primary' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <%= link_to 'Download CSV', main_app.fund_code_charges_csv_path(start_date: @start_date, end_date: @end_date), class: 'btn btn-primary' %>
+    <%= link_to 'JSON Format', main_app.fund_code_charges_json_path(start_date: @start_date, end_date: @end_date), class: 'btn btn-primary' %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h2 class="panel-title h2"><%= t('.fund_code_charges') %></h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-striped datatable" style="font-size: smaller;">
+          <thead>
+            <th><%= t('.header.fund_code_identifier') %></th>
+            <th><%= t('.header.description') %></th>
+            <th><%= t('.header.amount') %></th>
+            <th><%= t('.header.units_consumed') %></th>
+            <th><%= t('.header.billing_rate') %></th>
+            <th><%= t('.header.billing_unit') %></th>
+            <th><%= t('.header.start_date') %></th>
+            <th><%= t('.header.end_date') %></th>
+            <th><%= t('.header.service_type') %></th>
+          </thead>
+          <tbody>
+          <% @charges.each do |charge| %>
+            <% c = charge.to_h(:csv) %>
+            <tr>
+              <td data-sort="<%= c[:fund_code] %>"><%= c[:fund_code] %></td>
+              <td data-sort="<%= c[:description] %>"><%= c[:description] %></td> 
+              <td data-sort="<%= number_with_precision(c[:amount], precision: 2)  %>"><%= number_with_precision(c[:amount], precision: 2) %></td> 
+              <td data-sort="<%= number_with_precision(c[:units_consumed], precision: 2) %>"><%= number_with_precision(c[:units_consumed], precision: 2) %></td> 
+              <td data-sort="<%= c[:billing_rate] %>"><%= c[:billing_rate] %></td>
+              <td data-sort="<%= c[:billing_unit] %>"><%= c[:billing_unit] %></td>
+              <td data-sort="<%= c[:start_date] %>"><%= c[:start_date] %></td>
+              <td data-sort="<%= c[:end_date] %>"><%= c[:end_date] %></td>
+              <td data-sort="<%= c[:service_type] %>"><%= c[:service_type] %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

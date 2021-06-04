@@ -1,103 +1,111 @@
 <% provide :page_title, 'Fund Code Control Panel' %>
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title h2"><%= "#{@form_type} Fund Code" %></h2>
-      </div>
-      <div class="panel-body">
-        <%= simple_form_for @current_fund_code, url: @form_url do |f| %>
-          <%= f.input :title, required: true %>
-          <%= f.input :description, required: true %>
-          <%= f.input :managers, input_html: { data: { managers: @managers_select2 } } %>
-          <%= f.input :standard_members, input_html: { data: { standard_members: @standard_members_select2 } } %>
+<div class="fund-codes">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title h2"><%= "#{@form_type} Fund Code" %></h2>
+        </div>
+        <div class="panel-body">
+          <%= simple_form_for @current_fund_code, url: @form_url do |f| %>
+            <%= f.input :title, required: true %>
+            <%= f.input :description, required: true %>
+            <%= f.input :identifier, required: true %>
+            <%= f.input :managers, input_html: { data: { managers: @managers_select2 } } %>
+            <%= f.input :standard_members, input_html: { data: { standard_members: @standard_members_select2 } } %>
 
-          <div class="form-group fund_code_expires_at">
-            <label class="control-label" for="fund_code_expires_at">
-              <%= t('simple_form.labels.fund_code.expires_at') %>
-            </label>
-            <p class="help-block">
-              <%= t('simple_form.hints.fund_code.expires_at') %>
-            </p>
-            <%= f.date_field :expires_at, class: 'datepicker form-control' %>
-          </div>
+            <div class="form-group fund_code_expires_at">
+              <label class="control-label" for="fund_code_expires_at">
+                <%= t('simple_form.labels.fund_code.expires_at') %>
+              </label>
+              <p class="help-block">
+                <%= t('simple_form.hints.fund_code.expires_at') %>
+              </p>
+              <%= f.date_field :expires_at, class: 'datepicker form-control' %>
+            </div>
 
-          <%= f.input :storage_limit_tb %>
-          <%= f.input :external_user, as: :select, include_blank: false %>
-          <%= f.input :external_user_additional_rate_percent %>
-          <%= f.submit class: 'btn btn-sm btn-primary' %>
-        <% end %>
+            <%= f.input :storage_limit_tb %>
+            <%= f.input :external_user, as: :select, include_blank: false %>
+            <%= f.input :external_user_additional_rate_percent %>
+            <%= f.input :chargeable, as: :select, include_blank: false %>
+            <%= f.submit class: 'btn btn-sm btn-primary' %>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title h2"><%= t('.current_fund_codes') %></h3>
-      </div>
-      <div class="panel-body">
-        <table class="table table-striped datatable" style="font-size: smaller;">
-          <thead>
-            <th><%= t('.header.fund_code') %></th>
-            <th><%= t('.header.description') %></th>
-            <th><%= t('.header.managers') %></th>
-            <th><%= t('.header.standard_members') %></th>
-            <th><%= t('simple_form.abbreviated_labels.fund_code.expires_at') %></th>
-            <th><%= t('simple_form.abbreviated_labels.fund_code.storage_limit_tb') %></th>
-            <th><%= t('simple_form.abbreviated_labels.fund_code.external_user') %></th>
-            <th><%= t('simple_form.abbreviated_labels.fund_code.external_user_additional_rate_percent') %></th>
-            <th><%= t('.header.actions') %></th>
-          </thead>
-          <tbody>
-          <% @fund_codes.each do |fc| %>
-            <tr>
-              <td data-sort="<%= fc.title %>"><%= fc.title %></td>
-              <td data-sort="<%= fc.description %>"><%= fc.description %></td> 
-              <% if fc.managers.present? %>
-                <td>
-                  <ul class="fc-managers">
-                    <% fc.managers.each do |u| %>
-                      <li>
-                          <%= link_to((u.display_name || u.email), Hyrax::Engine.routes.url_helpers.user_path(u)) %>
-                      </li>
-                    <% end %>
-                  </ul>
-                </td>
-              <% else %>
-                <td><%= t('.no_users') %></td>
-              <% end %>
-              <% if fc.standard_members.present? %>
-                <td>
-                  <ul class="fc-managers">
-                    <% fc.standard_members.each do |u| %>
-                      <li>
-                          <%= link_to((u.display_name || u.email), Hyrax::Engine.routes.url_helpers.user_path(u)) %>
-                      </li>
-                    <% end %>
-                  </ul>
-                </td>
-              <% else %>
-                <td><%= t('.no_users') %></td>
-              <% end %>
-              <td data-sort="<%= fc.expires_at %>"><%= fc.expires_at.present? ? fc.expires_at.strftime("%m-%d-%Y") : "" %></td>
-              <td data-sort="<%= fc.storage_limit_tb %>"><%= fc.storage_limit_tb %></td> 
-              <td data-sort="<%= fc.external_user %>"><%= fc.external_user ? "Yes" : "No" %></td>
-              <td data-sort="<%= fc.external_user_additional_rate_percent %>"><%= fc.external_user_additional_rate_percent %></td> 
-              <td>
-                <%= link_to 'Edit', main_app.admin_fund_codes_path(:id => fc.id), class: 'btn btn-sm btn-primary' %>
-                <%= link_to 'Delete', main_app.admin_fund_codes_delete_path(:id => fc.id), class: "btn btn-sm btn-danger #{fc.fund_code_media_associations.present? ? 'disabled' : ''}", method: :delete, :data => {:confirm => 'Are you sure you want to delete this fund code?'} %>
-                <% if fc.fund_code_media_associations.present? %>
-                  <div><i>Can't delete, has media.</i></div>
+  <div class="row fund-codes-table-container">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title h2"><%= t('.current_fund_codes') %></h3>
+        </div>
+        <div class="panel-body">
+          <table class="table table-striped datatable" style="font-size: smaller;">
+            <thead>
+              <th><%= t('.header.fund_code') %></th>
+              <th><%= t('.header.description') %></th>
+              <th><%= t('.header.identifier') %></th>
+              <th><%= t('.header.managers') %></th>
+              <th><%= t('.header.standard_members') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.expires_at') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.storage_limit_tb') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.external_user') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.external_user_additional_rate_percent') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.chargeable') %></th>
+              <th><%= t('.header.actions') %></th>
+            </thead>
+            <tbody>
+            <% @fund_codes.each do |fc| %>
+              <tr>
+                <td data-sort="<%= fc.title %>"><%= fc.title %></td>
+                <td data-sort="<%= fc.description %>"><%= fc.description %></td> 
+                <td data-sort="<%= fc.identifier %>"><%= fc.identifier %></td> 
+                <% if fc.managers.present? %>
+                  <td>
+                    <div class="fc-managers">
+                      <% fc.managers.each do |u| %>
+                        <div>
+                            <%= link_to((u.display_name || u.email), Hyrax::Engine.routes.url_helpers.user_path(u)) %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </td>
+                <% else %>
+                  <td><%= t('.no_users') %></td>
                 <% end %>
-              </td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
+                <% if fc.standard_members.present? %>
+                  <td>
+                    <div class="fc-managers">
+                      <% fc.standard_members.each do |u| %>
+                        <div>
+                            <%= link_to((u.display_name || u.email), Hyrax::Engine.routes.url_helpers.user_path(u)) %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </td>
+                <% else %>
+                  <td><%= t('.no_users') %></td>
+                <% end %>
+                <td data-sort="<%= fc.expires_at %>"><%= fc.expires_at.present? ? fc.expires_at.strftime("%m-%d-%Y") : "" %></td>
+                <td data-sort="<%= fc.storage_limit_tb %>"><%= fc.storage_limit_tb %></td> 
+                <td data-sort="<%= fc.external_user %>"><%= fc.external_user ? "Yes" : "No" %></td>
+                <td data-sort="<%= fc.external_user_additional_rate_percent %>"><%= fc.external_user_additional_rate_percent %></td> 
+                <td data-sort="<%= fc.chargeable %>"><%= fc.chargeable ? "Yes" : "No" %></td> 
+                <td>
+                  <%= link_to 'Edit', main_app.admin_fund_codes_path(:id => fc.id), class: 'btn btn-sm btn-primary' %>
+                  <%= link_to 'Delete', main_app.admin_fund_codes_delete_path(:id => fc.id), class: "btn btn-sm btn-danger #{fc.fund_code_media_associations.present? ? 'disabled' : ''}", method: :delete, :data => {:confirm => 'Are you sure you want to delete this fund code?'} %>
+                  <% if fc.fund_code_media_associations.present? %>
+                    <div><i>Can't delete, has media.</i></div>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

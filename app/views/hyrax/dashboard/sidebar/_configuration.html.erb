@@ -29,8 +29,11 @@
       <% end %>
     </li>
     <%= menu.nav_link(main_app.admin_fund_codes_path) do %>
-        <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_codes') %></span>
-      <% end %>
+      <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_codes') %></span>
+    <% end %>
+    <%= menu.nav_link(main_app.fund_code_charges_path) do %>
+      <span class="fa fas fa-money-check-alt" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_code_charges') %></span>
+    <% end %>
     <% if can?(:manage, Sipity::WorkflowResponsibility) %>
       <%= menu.nav_link(hyrax.admin_workflow_roles_path) do %>
         <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.workflow_roles') %></span>

@@ -27,11 +27,13 @@ module Morphosource
         if fund_code_params[:title].present? && fund_code_params[:description].present?
           fc = FundCode.new(
             title: fund_code_params[:title], 
-            description: fund_code_params[:description], 
+            description: fund_code_params[:description],
+            identifier: fund_code_params[:identifier],
             expires_at: fund_code_params[:expires_at],
             storage_limit_tb: fund_code_params[:storage_limit_tb],
             external_user: fund_code_params[:external_user],
             external_user_additional_rate_percent: fund_code_params[:external_user_additional_rate_percent],
+            chargeable: fund_code_params[:chargeable],
             user: current_user
           )
           params_managers.each { |u| fc.add_user(u, true) }
@@ -68,6 +70,7 @@ module Morphosource
               storage_limit_tb: fund_code_params[:storage_limit_tb],
               external_user: fund_code_params[:external_user],
               external_user_additional_rate_percent: fund_code_params[:external_user_additional_rate_percent],
+              chargeable: fund_code_params[:chargeable]
             }
           )
         end
@@ -93,7 +96,18 @@ module Morphosource
       end
 
       def fund_code_params
-        @fund_code_params ||= params.fetch(:fund_code, {}).permit(:title, :description, :identifier, :managers, :standard_members, :expires_at, :storage_limit_tb, :external_user, :external_user_additional_rate_percent)
+        @fund_code_params ||= params.fetch(:fund_code, {}).permit(
+          :title, 
+          :description, 
+          :identifier, 
+          :managers, 
+          :standard_members, 
+          :expires_at, 
+          :storage_limit_tb, 
+          :external_user, 
+          :external_user_additional_rate_percent, 
+          :chargeable
+        )
       end
 
       def params_managers

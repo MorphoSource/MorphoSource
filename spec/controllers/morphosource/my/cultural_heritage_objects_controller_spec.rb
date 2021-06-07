@@ -51,10 +51,27 @@ RSpec.describe Morphosource::My::CulturalHeritageObjectsController, type: :contr
         sign_in user
         get :index
       end
+      it 'sets the facet limit to nil' do
+        facet_limits = subject.instance_variable_get(:@blacklight_config).facet_fields.each_with_object([]){|(k,v),limits| limits << v.limit}
+        expect(facet_limits.uniq).to match_array([nil])
+      end
       it 'renders the specimens page with the correct variables' do
         expect(response).to render_template("morphosource/my/works/index")
         expect(response.status).to eq(200)
         expect(subject.instance_variable_get(:@tab)).to eq(:chos)
+      end
+    end
+    context 'user is an admin' do
+      let(:admins)  { Role.create(name: 'admin') }
+      before do
+        admins.users += [user]
+        user.save!
+        sign_in user
+        get :index
+      end
+      it 'sets the individual facet limits to 15' do
+        facet_limits = subject.instance_variable_get(:@blacklight_config).facet_fields.each_with_object([]){|(k,v),limits| limits << v.limit}
+        expect(facet_limits.uniq).to match_array([15])
       end
     end
   end

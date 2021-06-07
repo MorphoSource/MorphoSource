@@ -31,7 +31,9 @@ module Blacklight
           ark: Solrizer.solr_name('ark', :stored_searchable),
           doi: Solrizer.solr_name('doi', :stored_searchable),
           date_uploaded: 'date_uploaded_dtsi',
-          date_modified: 'date_modified_dtsi'
+          date_modified: 'date_modified_dtsi',
+          legacy_media_group_id: Solrizer.solr_name('legacy_media_group_id', :stored_searchable),
+          legacy_media_file_id: Solrizer.solr_name('legacy_media_file_id', :stored_searchable)
         }
       end
 

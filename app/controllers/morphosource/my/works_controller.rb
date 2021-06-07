@@ -45,9 +45,7 @@ module Morphosource
       def ms_default_facet_limit
         current_user.admin? ? 15 : nil
       end
-
-      def tab_variables
-      end
+      
     end
   end
 end

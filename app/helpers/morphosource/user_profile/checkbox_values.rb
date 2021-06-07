@@ -34,7 +34,8 @@ module Morphosource::UserProfile::CheckboxValues
     "Research",
     "Art",
     "Personal Interest",
-    "3D Printing"]
+    "3D Printing",
+    "Commercial Use"]
 
   SOFTWARE =
     ["I Do Not Know/I Have No Preference",

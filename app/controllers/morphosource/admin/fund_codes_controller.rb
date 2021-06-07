@@ -61,18 +61,19 @@ module Morphosource
           demoted_members.each { |m| fc.make_user_standard(m) } # demote standard members
           members_to_delete.each { |m| fc.delete_user(m) } # delete remaining old members
 
-          fc.update(
-            { 
-              title: fund_code_params[:title], 
-              description: fund_code_params[:description],
-              identifier: fund_code_params[:identifier],
-              expires_at: fund_code_params[:expires_at],
-              storage_limit_tb: fund_code_params[:storage_limit_tb],
-              external_user: fund_code_params[:external_user],
-              external_user_additional_rate_percent: fund_code_params[:external_user_additional_rate_percent],
-              chargeable: fund_code_params[:chargeable]
-            }
-          )
+          attrs = { 
+            title: fund_code_params[:title], 
+            description: fund_code_params[:description],
+            identifier: fund_code_params[:identifier],
+            expires_at: fund_code_params[:expires_at],
+            storage_limit_tb: fund_code_params[:storage_limit_tb],
+            external_user: fund_code_params[:external_user],
+            external_user_additional_rate_percent: fund_code_params[:external_user_additional_rate_percent]
+          }
+
+          attrs[:chargeable] = fund_code_params[:chargeable] if fund_code_params[:chargeable].present?
+
+          fc.update(attrs)
         end
 
         redirect_to main_app.admin_fund_codes_path

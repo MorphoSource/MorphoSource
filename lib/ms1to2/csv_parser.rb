@@ -5,11 +5,12 @@ module Ms1to2
   class CSVParser
     include Enumerable
 
-    attr_reader :file_name, :skip_blanks
+    attr_reader :file_name, :skip_blanks, :split_values
 
-    def initialize(file_name, skip_blanks=true)
+    def initialize(file_name, skip_blanks = true, split_values = true)
       @file_name = file_name
       @skip_blanks = skip_blanks
+      @split_values = split_values
     end
 
     def headers
@@ -52,7 +53,11 @@ module Ms1to2
     def extract_multi_value_field(header, val, processed, key = nil)
       key ||= header.to_sym
       processed[key] ||= []
-      processed[key] += val.split(";").map(&:strip)
+      if split_values
+        processed[key] += val.split(";").map(&:strip)
+      else
+        processed[key] += val.present? ? Array(val) : []
+      end
     end
 
     def as_csv_table

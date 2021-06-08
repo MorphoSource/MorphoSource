@@ -91,6 +91,7 @@ module Ms1to2
       )
       .ms2_attributes
       .except(:id)
+      new_row[:media][:media_file] = mf[:media]
 
 
       return new_row

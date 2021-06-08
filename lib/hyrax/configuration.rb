@@ -559,7 +559,8 @@ module Hyrax
 
     attr_writer :permission_levels
     def permission_levels
-      @permission_levels ||= { "View/Download" => "read",
+      @permission_levels ||= { "View access" => "read",
+                               "Download access" => "download",
                                "Edit access" => "edit" }
     end
 
@@ -571,7 +572,8 @@ module Hyrax
     attr_writer :permission_options
     def permission_options
       @permission_options ||= { "Choose Access" => "none",
-                                "View/Download" => "read",
+                                "View" => "read",
+                                "Download" => "download",
                                 "Edit" => "edit" }
     end
 

@@ -68,18 +68,22 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     let!(:file_set3)        { FileSet.create() }
     let!(:media4)           { Media.create(title: ['media4']) }
     let!(:file_set4)        { FileSet.create() }
+    let!(:media5)           { Media.create(title: ['media5']) }
+    let!(:file_set5)        { FileSet.create() }
 
-    let(:media)             { [media1, media2, media3, media4] }
-    let(:works)             { [media1, media2, media3, media4, file_set1, file_set2, file_set3, file_set4, specimen, cho, imaging_event, processing_event, organization, device] }
+    let(:media)             { [media1, media2, media3, media4, media5] }
+    let(:works)             { [media1, media2, media3, media4, media5, file_set1, file_set2, file_set3, file_set4, file_set5, specimen, cho, imaging_event, processing_event, organization, device] }
 
     before do
       media3.read_users += [old_user]
       media4.edit_users += [old_user]
+      media5.download_users += [old_user]
       media1.ordered_members << file_set1
       media2.ordered_members << file_set2
       media3.ordered_members << file_set3
       media4.ordered_members << file_set4
-      [media1, media2, media3, media4].each(&:save!)
+      media5.ordered_members << file_set5
+      [media1, media2, media3, media4, media5].each(&:save!)
       media.each { |m| InheritPermissionsJob.perform_now(m) }
       subject
       works.each(&:reload)
@@ -103,6 +107,8 @@ RSpec.describe Morphosource::Users::AccountMergerService do
         expect(file_set3.read_users).to include(new_user.ms_id)
         expect(media4.edit_users).to include(new_user.ms_id)
         expect(file_set4.edit_users).to include(new_user.ms_id)
+        expect(media5.download_users).to include(new_user.ms_id)
+        expect(file_set5.download_users).to include(new_user.ms_id)
       end
     end
   end
@@ -184,6 +190,21 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     end
   end
 
+  describe 'transfer_cart_items' do
+    let(:cart_item) { CartItem.create(user_id: old_user.ms_id, work_id: 'media_id', action_by: old_user.ms_id, reviewers: [old_user.ms_id]) }
+
+    before do
+      allow_any_instance_of(described_class).to receive(:cart_items).and_return([cart_item])
+      subject
+    end
+
+    it 'associates the cart item with the new user' do
+      expect(cart_item.user_id).to eq(new_user.ms_id)
+      expect(cart_item.action_by).to eq(new_user.ms_id)
+      expect(cart_item.reviewers).to match_array([new_user.ms_id])
+    end
+  end
+
   describe 'works' do
     # user roles
     let!(:deposited_work)       { Media.create(title: ['deposited work'], depositor: old_user.ms_id) }
@@ -193,27 +214,24 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     let!(:on_behalf_of_work)    { Media.create(title: ['on behalf of work'], on_behalf_of: old_user.ms_id) }
     # user permissions
     let!(:edit_access_work)     { Media.create(title: ['edit access work']) }
+    let!(:download_access_work) { Media.create(title: ['download access work']) }
     let!(:read_access_work)     { Media.create(title: ['read access work']) }
     # unassociated work
     let!(:another_work)         { Media.create(title: ['another work'], depositor: new_user.ms_id) }
 
     subject { described_class.new(old_user.email, new_user.email) }
 
+    let(:user_works)  { [deposited_work, owned_work, reviewed_work, proxy_deposited_work, on_behalf_of_work, edit_access_work, download_access_work, read_access_work] }
+
     before do
       edit_access_work.edit_users += [old_user]
+      download_access_work.download_users += [old_user]
       read_access_work.read_users += [old_user]
-      [edit_access_work, read_access_work].each(&:save!)
+      [edit_access_work, download_access_work, read_access_work].each(&:save!)
     end
 
     it 'returns all works associated with the old user' do
-      expect(subject.works).to include(deposited_work)
-      expect(subject.works).to include(owned_work)
-      expect(subject.works).to include(reviewed_work)
-      expect(subject.works).to include(proxy_deposited_work)
-      expect(subject.works).to include(on_behalf_of_work)
-      expect(subject.works).to include(edit_access_work)
-      expect(subject.works).to include(read_access_work)
-      expect(subject.works).not_to include(another_work)
+      expect(subject.works).to match_array(user_works)
     end
   end
 
@@ -244,6 +262,23 @@ RSpec.describe Morphosource::Users::AccountMergerService do
       expect(subject.proxy_rights).to include(grantor_proxy)
       expect(subject.proxy_rights).to include(grantee_proxy)
       expect(subject.proxy_rights).not_to include(another_proxy)
+    end
+  end
+
+  describe 'cart_items' do
+    let(:another_user)  { User.create(email: 'another@email.com', password: 'password') }
+    let(:media)         { Media.create(title: ['media']) }
+    let(:owned_item)    { CartItem.create(user_id: old_user.ms_id, work_id: media.id) }
+    let(:acted_on_item) { CartItem.create(user_id: another_user.ms_id, work_id: media.id, action_by: old_user.ms_id) }
+    let(:reviewed_item) { CartItem.create(user_id: another_user.ms_id, work_id: media.id, reviewers: [old_user.ms_id]) }
+    let(:another_item)  { CartItem.create(user_id: another_user.ms_id, work_id: media.id) }
+
+    let(:old_user_items { [owned_item, acted_on_item, reviewed_item] }
+
+    subject { described_class.new(old_user.email, new_user.email) }
+
+    it 'returns all cart items associated with the user' do
+      expect(subject.cart_items).to match_array(old_user_items)
     end
   end
 end

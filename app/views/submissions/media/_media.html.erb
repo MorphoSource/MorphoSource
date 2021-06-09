@@ -52,6 +52,13 @@
               <%= f.input :orientation, as: :multi_value %>
               <%= f.input :short_description, label: 'Short description' %>
               <%= render_edit_field_partial('description', f: f) %>
+              <%= f.input :creator, as: :multi_value %>
+              <div class="row">
+                <div class="col-xs-6 showcase-label">Date created</div>
+                <div class="col-xs-6 showcase-value">
+                <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created || Date.today, class: 'datepicker form-control' %>
+                  </div>
+              </div>
             </div>
           </div>
 

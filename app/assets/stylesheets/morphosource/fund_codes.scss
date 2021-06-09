@@ -1,0 +1,18 @@
+.fund-codes {
+	table {
+		font-size: smaller;
+		overflow-wrap: break-word;
+	}
+
+	.table-striped > tbody > tr:nth-of-type(even) {
+	  background-color: #ffffff;
+	}
+
+	.fund-codes-table-container {
+		display: table;
+	}
+
+	div.fc-managers div {
+		margin-bottom: 10px;
+	}
+}

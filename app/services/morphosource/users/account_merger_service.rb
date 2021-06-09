@@ -23,9 +23,7 @@ module Morphosource
         Hyrax.config.index_related_works = false
         works.each do |work|
           transfer_roles(work)
-          if work.media?
-            transfer_individual_access(work)
-          end
+          transfer_individual_access(work)
           work.save!
           transfer_fileset_access(work)
         end

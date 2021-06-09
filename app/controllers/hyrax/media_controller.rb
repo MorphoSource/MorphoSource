@@ -19,6 +19,7 @@ module Hyrax
 
     skip_authorize_resource only: [:showcase, :thumbnail]
 
+    before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
@@ -425,6 +426,33 @@ module Hyrax
         if FundCode.exists?(fc_id)
           fc = FundCode.find(fc_id)
           media.new_fund_code_association(fc)
+        end
+      end
+
+      def validate_individual_access
+        if params["media"]["permissions_attributes"].present?
+          non_contributors = []
+          params["media"]["permissions_attributes"].each do |k, v| 
+            if v[:type] == "person" && v[:access] == "edit"
+              if v[:name].present?
+                user = ::User.find_by_user_key(v[:name])
+              elsif v[:agent_name].present?
+                user = ::User.find_by_user_key(v[:agent_name])
+              end
+              if user.present?
+                unless user.contributor?
+                  params["media"]["permissions_attributes"].delete(k)
+                  non_contributors << user.name_or_email 
+                end
+              else
+                params["media"]["permissions_attributes"].delete(k)
+                flash[:error] = "Sorry, there is an issue finding the user."
+              end
+            end
+          end
+          if non_contributors.present?
+            flash[:error] = "Sorry, access cannot be given to users who are not contributors: " + non_contributors.join(", ")
+          end
         end
       end
 

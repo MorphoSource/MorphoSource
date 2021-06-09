@@ -81,6 +81,8 @@ if Flipflop.assign_admin_set? %>
         </td>
       </tr>
       <%= permission_fields.hidden_field :id %>    
+      <%= permission_fields.hidden_field :type %>
+      <%= permission_fields.hidden_field :agent_name %>
     <% end %>
 
     <% group_list.each do |group, users| %>

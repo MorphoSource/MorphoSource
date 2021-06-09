@@ -273,7 +273,7 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     let(:reviewed_item) { CartItem.create(user_id: another_user.ms_id, work_id: media.id, reviewers: [old_user.ms_id]) }
     let(:another_item)  { CartItem.create(user_id: another_user.ms_id, work_id: media.id) }
 
-    let(:old_user_items { [owned_item, acted_on_item, reviewed_item] }
+    let(:old_user_items){ [owned_item, acted_on_item, reviewed_item] }
 
     subject { described_class.new(old_user.email, new_user.email) }
 

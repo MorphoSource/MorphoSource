@@ -3,7 +3,7 @@ include ActionDispatch::TestProcess
 include Warden::Test::Helpers
 
 RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controller do
-  let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
+  let(:user)  { User.create(email: 'user@email.com', password: 'password') }
 
   describe ".configure_facets" do
     let(:facet_fields)  { described_class.blacklight_config.facet_fields}
@@ -21,14 +21,14 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
       subject { facet_fields['organization_ssim']}
       it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
-        expect(subject.limit).to eq(10)
+        expect(subject.limit).to eq(nil)
       end
     end
     describe 'project' do
       subject { facet_fields['media_member_of_project_ids_ssim'] }
       it 'has a project facet' do
         expect(subject.label).to eq("Project")
-        expect(subject.limit).to eq(10)
+        expect(subject.limit).to eq(nil)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end
@@ -36,7 +36,7 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
       subject { facet_fields['media_member_of_team_ids_ssim'] }
       it 'has a team facet' do
         expect(subject.label).to eq("Team")
-        expect(subject.limit).to eq(10)
+        expect(subject.limit).to eq(nil)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end
@@ -57,10 +57,27 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
         sign_in user
         get :index
       end
+      it 'sets the facet limit to nil' do
+        facet_limits = subject.instance_variable_get(:@blacklight_config).facet_fields.each_with_object([]){|(k,v),limits| limits << v.limit}
+        expect(facet_limits.uniq).to match_array([nil])
+      end
       it 'renders the specimens page with the correct variables' do
         expect(response).to render_template("morphosource/my/works/index")
         expect(response.status).to eq(200)
         expect(subject.instance_variable_get(:@tab)).to eq(:specimens)
+      end
+    end
+    context 'user is an admin' do
+      let(:admins)  { Role.create(name: 'admin') }
+      before do
+        admins.users += [user]
+        user.save!
+        sign_in user
+        get :index
+      end
+      it 'sets the individual facet limits to 15' do
+        facet_limits = subject.instance_variable_get(:@blacklight_config).facet_fields.each_with_object([]){|(k,v),limits| limits << v.limit}
+        expect(facet_limits.uniq).to match_array([15])
       end
     end
   end

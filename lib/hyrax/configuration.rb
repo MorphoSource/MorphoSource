@@ -575,6 +575,21 @@ module Hyrax
                                 "Edit" => "edit" }
     end
 
+    attr_writer :ms_permission_levels
+    def ms_permission_levels
+      @ms_permission_levels ||= { "View access" => "read",
+                               "Download access" => "download",
+                               "Edit access" => "edit" }
+    end
+
+    attr_writer :ms_permission_options
+    def ms_permission_options
+      @ms_permission_options ||= { "Choose Access" => "none",
+                                "View" => "read",
+                                "Download" => "download",
+                                "Edit" => "edit" }
+    end
+
     attr_writer :translate_uri_to_id
 
     def translate_uri_to_id

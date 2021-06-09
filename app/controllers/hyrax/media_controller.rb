@@ -19,6 +19,7 @@ module Hyrax
 
     skip_authorize_resource only: [:showcase, :thumbnail]
 
+    before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
@@ -428,9 +429,37 @@ module Hyrax
         end
       end
 
+      def validate_individual_access
+        if params["media"]["permissions_attributes"].present?
+          non_contributors = []
+          params["media"]["permissions_attributes"].each do |k, v| 
+            if v[:type] == "person" && v[:access] == "edit"
+              if v[:name].present?
+                user = ::User.find_by_user_key(v[:name])
+              elsif v[:agent_name].present?
+                user = ::User.find_by_user_key(v[:agent_name])
+              end
+              if user.present?
+                unless user.contributor?
+                  params["media"]["permissions_attributes"].delete(k)
+                  non_contributors << user.name_or_email 
+                end
+              else
+                params["media"]["permissions_attributes"].delete(k)
+                flash[:error] = "Sorry, there is an issue finding the user."
+              end
+            end
+          end
+          if non_contributors.present?
+            flash[:error] = "Sorry, access cannot be given to users who are not contributors: " + non_contributors.join(", ")
+          end
+        end
+      end
+
       def save_individual_access
         @saved_edit_users = curation_concern.edit_users
         @saved_read_users = curation_concern.read_users
+        @saved_download_users = curation_concern.download_users
       end
 
       def deliver_individual_access_messages
@@ -454,20 +483,37 @@ module Hyrax
           end
         end
 
+        unless curation_concern.download_users.sort == @saved_download_users.sort
+          # find new DOWNLOAD access user(s) 
+          new_download_users = curation_concern.download_users - @saved_download_users
+          new_download_users.each do |user_key|
+            message = "You now have download access to #{media_link}." + contact_message
+            receiving_user = ::User.find_by_user_key(user_key)
+            deliver_message(email_sender, receiving_user, message.html_safe, "You have been given download access to a media")
+          end
+          # find DOWNLOAD access user(s) removed
+          removed_download_users = @saved_download_users - curation_concern.download_users
+          removed_download_users.each do |user_key|
+            message = "Your download access to #{media_link} has been removed." + contact_message
+            receiving_user = ::User.find_by_user_key(user_key)
+            deliver_message(email_sender, receiving_user, message.html_safe, "Your download access to a media has been removed")
+          end
+        end        
+
         unless curation_concern.read_users.sort == @saved_read_users.sort
           # find new READ access user(s) 
           new_read_users = curation_concern.read_users - @saved_read_users
           new_read_users.each do |user_key|
-            message = "You now have read access to #{media_link}." + contact_message
+            message = "You now have view access to #{media_link}." + contact_message
             receiving_user = ::User.find_by_user_key(user_key)
-            deliver_message(email_sender, receiving_user, message.html_safe, "You have been given read access to a media")
+            deliver_message(email_sender, receiving_user, message.html_safe, "You have been given view access to a media")
           end
           # find READ access user(s) removed
           removed_read_users = @saved_read_users - curation_concern.read_users
           removed_read_users.each do |user_key|
-            message = "Your read access to #{media_link} has been removed." + contact_message
+            message = "Your view access to #{media_link} has been removed." + contact_message
             receiving_user = ::User.find_by_user_key(user_key)
-            deliver_message(email_sender, receiving_user, message.html_safe, "Your read access to a media has been removed")
+            deliver_message(email_sender, receiving_user, message.html_safe, "Your view access to a media has been removed")
           end
         end        
 

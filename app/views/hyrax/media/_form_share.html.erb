@@ -31,7 +31,7 @@ if Flipflop.assign_admin_set? %>
     <label for="new_user_permission_skel" class="sr-only">Access type to grant</label>
   </div>
   <div class="col-sm-4 form-inline">
-    <%= select_tag 'new_user_permission_skel', options_for_select(Hyrax.config.permission_options), class: 'form-control' %>
+    <%= select_tag 'new_user_permission_skel', options_for_select(Hyrax.config.ms_permission_options), class: 'form-control' %>
     <button class="btn btn-sm btn-primary" id="add_new_user_skel">
       <span>Add<span class="sr-only"> this <%= t('hyrax.account_label') %></span></span>
     </button>
@@ -74,13 +74,15 @@ if Flipflop.assign_admin_set? %>
           <% end %>
         </td>
         <td>
-          <%= permission_fields.select :access, Hyrax.config.permission_levels, {}, class: 'form-control select_perm' %>
+          <%= permission_fields.select :access, Hyrax.config.ms_permission_levels, {}, class: 'form-control select_perm' %>
         </td>
         <td>
           <button class="btn btn-sm remove_perm" data-index="<%= permission_fields.index %>">Remove access</button>
         </td>
       </tr>
       <%= permission_fields.hidden_field :id %>    
+      <%= permission_fields.hidden_field :type %>
+      <%= permission_fields.hidden_field :agent_name %>
     <% end %>
 
     <% group_list.each do |group, users| %>

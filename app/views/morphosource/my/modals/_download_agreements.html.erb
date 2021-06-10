@@ -6,6 +6,20 @@
         <h2>User Agreements</h2>
       </div>
       <div class="modal-body">
+
+<div class="">
+  <div class="checkbox-form-group">
+
+<%= form_for current_user,
+             url: '',
+             html: { multipart: true } do |f| %>
+
+      <%#= render partial: 'hyrax/dashboard/profiles/checkbox_columns', locals: {field: 'demographics', values: Morphosource::UserProfile::CheckboxValues::DEMOGRAPHICS, f: f} %>
+<% end %>
+
+  </div>
+</div>
+
         <div class="agreement-content">
           <p>To download the selected media, you must agree to the following download agreements. Please review these agreements and familiarize yourself with any restrictions on media use included in them. Other restrictions or provisions may apply to media use, reuse, citation, or other factors. Please see specific media pages for all permission details.</p>
           <div class="agreement-items-wrapper">

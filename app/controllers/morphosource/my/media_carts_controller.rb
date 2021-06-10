@@ -15,7 +15,8 @@ module Morphosource
       def download
         get_downloadable_items
         get_work_ids_by_items
-        redirect_to main_app.zip_path(ids: @work_ids)
+        usage = request.params['usage'].present? ? request.params['usage'] : ''
+        redirect_to main_app.zip_path(ids: @work_ids, usage: usage)
       end
 
       def destroy

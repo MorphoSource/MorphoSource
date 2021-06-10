@@ -1,3 +1,61 @@
+.landing-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+
+  img {
+    margin-right: 20px;
+  }
+
+  span {
+    font-size: larger;
+  }
+}
+
+.landing {
+  h2 {
+    border-bottom: 3px solid #337ab7;
+    padding: 6px 8px 6px 0;
+    margin: 10px 0 20px 0;
+  }
+
+  p {
+    font-size: larger;
+  }
+
+  .action-section {
+    margin-bottom: 30px;
+  }
+
+  .list-category {
+    font-size: larger;
+    margin-bottom: 10px;
+  }
+
+  .list-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+
+    a {
+      font-size: larger;
+    }
+  }
+
+  .fa, .fas {
+    margin-right: 10px;
+  }
+
+  .material-icons {
+    margin-left: 5px !important;
+  }
+
+  .material-icons.md-18 {
+    font-size: 18px;
+  }
+}
+
 .ms-list-filters {
 
   display: flex;

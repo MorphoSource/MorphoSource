@@ -179,30 +179,30 @@ RSpec.describe Hyrax::MediaPresenter do
                    depositor:        user)
     end
 
-    
-    it { 
+
+    it {
       is_expected.to have_attributes(title: ["#{title.first}"], publisher: publisher, identifier: identifier, keyword: keyword, date_created: date_created, related_url: related_url, rights_statement: rights_statement, agreement_uri: agreement_uri, cite_as: cite_as, funding: funding, map_type: map_type, media_type:  media_type, orientation: orientation, part: part, rights_holder: rights_holder,
-    scale_bar: scale_bar, side: side, unit: unit, x_spacing: x_spacing, y_spacing: y_spacing, z_spacing: z_spacing) 
+    scale_bar: scale_bar, side: side, unit: unit, x_spacing: x_spacing, y_spacing: y_spacing, z_spacing: z_spacing)
     }
-    
+
     context '#is_published?' do
       subject { presenter.is_published? }
-      it { 
+      it {
         presenter.get_showcase_data
-        is_expected.to be true 
+        is_expected.to be true
       }
     end
 
     context 'preview_mode default value' do
       subject { presenter.preview_mode.first }
-      it { 
+      it {
         is_expected.to eq 'Interactive/Embeddable'
       }
     end
 
     context '#preview_in_3D?' do
       subject { presenter.preview_in_3D? }
-      it { 
+      it {
         is_expected.to be true
       }
     end
@@ -230,4 +230,141 @@ RSpec.describe Hyrax::MediaPresenter do
     end
   end
 
+  describe 'ordered_processing_events' do
+    let(:media)  { Media.create(id: presenter.id, title: ['media']) }
+    let(:parent_media)  { Media.create(title: ['parent_media']) }
+    let(:grandparent_media)  { Media.create(title: ['grandparent_media']) }
+    let(:great_grandparent_media)  { Media.create(title: ['great_grandparent_media']) }
+
+    let(:processing_event_1)  { ProcessingEvent.create(title: ['processing event 1']) }
+    let(:processing_event_2)  { ProcessingEvent.create(title: ['processing event 2']) }
+    let(:processing_event_3)  { ProcessingEvent.create(title: ['processing event 3']) }
+    let(:processing_event_4)  { ProcessingEvent.create(title: ['processing event 4']) }
+
+    subject { presenter.send(:ordered_processing_events, direct_parent_id) }
+
+    before do
+      presenter.instance_variable_set(:@media, media)
+      allow(presenter).to receive(:top_parent_media_id).and_return(direct_parent_id)
+    end
+
+    context 'raw media only' do
+      let(:direct_parent_id)  { nil }
+
+      it 'returns an empty array' do
+        expect(subject).to eq([])
+      end
+    end
+
+    context 'derived media only' do
+      let(:direct_parent_id)    { nil }
+
+      before do
+        processing_event_1.ordered_members << media
+        processing_event_1.save!
+      end
+
+      it 'returns the only processing event' do
+        expect(subject).to eq([processing_event_1])
+      end
+    end
+
+    context '2nd level derived media' do
+      let(:direct_parent_id) { parent_media.id }
+
+      context 'direct parent is raw' do
+        before do
+          parent_media.ordered_members << processing_event_1
+          processing_event_1.ordered_members << media
+          [processing_event_1, parent_media].each(&:save!)
+        end
+
+        it 'returns one processing event' do
+          expect(subject).to eq([processing_event_1])
+        end
+      end
+
+      context 'direct parent is derived' do
+        before do
+          processing_event_1.ordered_members << parent_media
+          parent_media.ordered_members << processing_event_2
+          processing_event_2.ordered_members << media
+          [processing_event_1, parent_media, processing_event_2].each(&:save!)
+        end
+
+        it 'returns the two processing events in order' do
+          expect(subject).to eq([processing_event_1, processing_event_2])
+        end
+      end
+    end
+
+    context 'fourth level derived media' do
+      let(:direct_parent_id) { great_grandparent_media.id }
+
+      context 'direct parent is raw' do
+        before do
+          great_grandparent_media.ordered_members << processing_event_1
+          processing_event_1.ordered_members << grandparent_media
+          grandparent_media.ordered_members << processing_event_2
+          processing_event_2.ordered_members << parent_media
+          parent_media.ordered_members << processing_event_3
+          processing_event_3.ordered_members << media
+          [great_grandparent_media, processing_event_1, grandparent_media, processing_event_2, parent_media, processing_event_3].each(&:save!)
+        end
+
+        it 'returns two processing events in order' do
+          expect(subject).to eq([processing_event_1, processing_event_2, processing_event_3])
+        end
+      end
+
+      context 'direct parent is derived' do
+        before do
+          processing_event_1.ordered_members << great_grandparent_media
+          great_grandparent_media.ordered_members << processing_event_2
+          processing_event_2.ordered_members << grandparent_media
+          grandparent_media.ordered_members << processing_event_3
+          processing_event_3.ordered_members << parent_media
+          parent_media.ordered_members << processing_event_4
+          processing_event_4.ordered_members << media
+          [processing_event_1, great_grandparent_media, processing_event_2, grandparent_media, processing_event_3, parent_media, processing_event_4].each(&:save!)
+        end
+
+        it 'returns the four processing events in order' do
+          expect(subject).to eq([processing_event_1, processing_event_2, processing_event_3, processing_event_4])
+        end
+      end
+    end
+    context 'third level derived media' do
+      let(:direct_parent_id) { grandparent_media.id }
+
+      context 'direct parent is raw' do
+        before do
+          grandparent_media.ordered_members << processing_event_1
+          processing_event_1.ordered_members << parent_media
+          parent_media.ordered_members << processing_event_2
+          processing_event_2.ordered_members << media
+          [grandparent_media, processing_event_1, parent_media, processing_event_2].each(&:save!)
+        end
+
+        it 'returns two processing events in order' do
+          expect(subject).to eq([processing_event_1, processing_event_2])
+        end
+      end
+
+      context 'direct parent is derived' do
+        before do
+          processing_event_1.ordered_members << grandparent_media
+          grandparent_media.ordered_members << processing_event_2
+          processing_event_2.ordered_members << parent_media
+          parent_media.ordered_members << processing_event_3
+          processing_event_3.ordered_members << media
+          [processing_event_1, grandparent_media, processing_event_2, parent_media, processing_event_3].each(&:save!)
+        end
+
+        it 'returns the three processing events in order' do
+          expect(subject).to eq([processing_event_1, processing_event_2, processing_event_3])
+        end
+      end
+    end
+  end
 end

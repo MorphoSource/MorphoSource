@@ -25,17 +25,7 @@ module Morphosource
 
       def create
         if fund_code_params[:title].present? && fund_code_params[:description].present?
-          fc = FundCode.new(
-            title: fund_code_params[:title], 
-            description: fund_code_params[:description],
-            identifier: fund_code_params[:identifier],
-            expires_at: fund_code_params[:expires_at],
-            storage_limit_tb: fund_code_params[:storage_limit_tb],
-            external_user: fund_code_params[:external_user],
-            external_user_additional_rate_percent: fund_code_params[:external_user_additional_rate_percent],
-            chargeable: fund_code_params[:chargeable],
-            user: current_user
-          )
+          fc = FundCode.new( params_attributes.merge(user: current_user) )
           params_managers.each { |u| fc.add_user(u, true) }
           params_standard_members.each { |u| fc.add_user(u, false) }
           fc.save!
@@ -61,19 +51,7 @@ module Morphosource
           demoted_members.each { |m| fc.make_user_standard(m) } # demote standard members
           members_to_delete.each { |m| fc.delete_user(m) } # delete remaining old members
 
-          attrs = { 
-            title: fund_code_params[:title], 
-            description: fund_code_params[:description],
-            identifier: fund_code_params[:identifier],
-            expires_at: fund_code_params[:expires_at],
-            storage_limit_tb: fund_code_params[:storage_limit_tb],
-            external_user: fund_code_params[:external_user],
-            external_user_additional_rate_percent: fund_code_params[:external_user_additional_rate_percent]
-          }
-
-          attrs[:chargeable] = fund_code_params[:chargeable] if fund_code_params[:chargeable].present?
-
-          fc.update(attrs)
+          fc.update(params_attributes)
         end
 
         redirect_to main_app.admin_fund_codes_path
@@ -100,7 +78,8 @@ module Morphosource
         @fund_code_params ||= params.fetch(:fund_code, {}).permit(
           :title, 
           :description, 
-          :identifier, 
+          :identifier,
+          :invoice_number, 
           :managers, 
           :standard_members, 
           :expires_at, 
@@ -109,6 +88,20 @@ module Morphosource
           :external_user_additional_rate_percent, 
           :chargeable
         )
+      end
+
+      def params_attributes
+        fund_code_params.slice(
+          :title, 
+          :description, 
+          :identifier,
+          :invoice_number, 
+          :expires_at, 
+          :storage_limit_tb, 
+          :external_user,
+          :external_user_additional_rate_percent,
+          :chargeable
+        ).select { |k, v| v.present? }
       end
 
       def params_managers

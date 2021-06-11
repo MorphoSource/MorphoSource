@@ -12,6 +12,7 @@
             <%= f.input :title, required: true %>
             <%= f.input :description, required: true %>
             <%= f.input :identifier, required: true %>
+            <%= f.input :invoice_number %>
             <%= f.input :managers, input_html: { data: { managers: @managers_select2 } } %>
             <%= f.input :standard_members, input_html: { data: { standard_members: @standard_members_select2 } } %>
 
@@ -48,6 +49,7 @@
               <th><%= t('.header.fund_code') %></th>
               <th><%= t('.header.description') %></th>
               <th><%= t('.header.identifier') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.invoice_number') %></th>
               <th><%= t('.header.managers') %></th>
               <th><%= t('.header.standard_members') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.expires_at') %></th>
@@ -63,6 +65,7 @@
                 <td data-sort="<%= fc.title %>"><%= fc.title %></td>
                 <td data-sort="<%= fc.description %>"><%= fc.description %></td> 
                 <td data-sort="<%= fc.identifier %>"><%= fc.identifier %></td> 
+                <td data-sort="<%= fc.invoice_number %>"><%= fc.invoice_number %></td> 
                 <% if fc.managers.present? %>
                   <td>
                     <div class="fc-managers">

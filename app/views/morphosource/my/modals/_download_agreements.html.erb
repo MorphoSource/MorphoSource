@@ -4,10 +4,36 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span id="close-modal" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h2>User Agreements</h2>
+        <h2>Download Usage</h2>
       </div>
       <div class="modal-body">
 
+        <label>Please describe your intended usage:</label>
+        <textarea id="custom-usage" rows="3" class="w-100"></textarea>
+        <i>50 characters minimum</i>
+
+        <p>Please select one or more categories that match your intended usage:</p>
+        <input id="get-profile-intent" type="checkbox" /> Use the information from my user profile to fill in the intended use categories.
+
+        <div class="checkbox-form-group">
+          <% @user = current_user %>
+          <%= form_for @user,
+                       url: '',
+                       html: { multipart: true } do |f| %>
+
+              <div class="profile-checkbox-list">
+                <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
+                <% intended_use.each do |use| %>
+                  <%= f.check_box 'intent', { multiple: true, checked: (@user.intent.include? use) }, use, false %>
+                  <%= f.label :intent, use %>
+                  <br/>
+                <% end %>
+                <%= f.label 'Other: ' %>
+                <%= f.text_field 'intent', { multiple: true, value: @user.other_intent } %>
+              </div>
+
+          <% end %>
+        </div>
 
         <div class="agreement-content">
           <p>To download the selected media, you must agree to the following download agreements. Please review these agreements and familiarize yourself with any restrictions on media use included in them. Other restrictions or provisions may apply to media use, reuse, citation, or other factors. Please see specific media pages for all permission details.</p>

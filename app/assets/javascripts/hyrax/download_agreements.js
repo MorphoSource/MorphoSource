@@ -69,16 +69,28 @@ $( document ).ready(function() {
 
 
 
-        usage = "";
+        usage = $('#custom-usage').val();
+// need to check for 50 char min
 
 
 
-
-        $('#link-to-download-item-'+itemId).attr('href', $('#link-to-download-item-'+itemId).attr('href') + "&usage=" + usage); 
-        $('#link-to-download-item-'+itemId).trigger('click');      
+        usage_list = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
+          return $(el).val();
+        }).get().join(',');
+        //console.log('usage_list: '+ usage_list);
+        link = $('#link-to-download-item-'+itemId).attr('href') + 
+          "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usage_list);
+        $('#link-to-download-item-'+itemId).attr('href', link); 
+        $('#link-to-download-item-'+itemId).trigger('click');    
       } else {
         console.log('error: itemId missing');
       }
+    });
+
+    $(document).on('click', '#get-profile-intent', function(){
+      isChecked = $(this).prop('checked');
+      $('.profile-checkbox-list input').attr("disabled", isChecked);
+      $('form.edit_user')[0].reset(); // reset 
     });
 
   }

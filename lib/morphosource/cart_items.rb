@@ -56,10 +56,11 @@ module Morphosource
 
     def create_cart_item(work_id)
       usage = request.params['usage']
+      usage_list = request.params['usage_list']
 byebug
       work = Media.find(work_id)
       if work.can_add_to_cart? || (current_user.can? :download, work.id)
-        item = CartItem.create({user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer, download_usage: usage})
+        item = CartItem.create({user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer, download_usage: usage, download_usage_list: usage_list})
       else
         item = nil
       end
@@ -114,7 +115,6 @@ byebug
     end
 
     def create_new_items(old_items,requested='requested')
-byebug
       works = get_media_by_items(old_items)
       create_instance_variables_for_flash
       works.each do |work|

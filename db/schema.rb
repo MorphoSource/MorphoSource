@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_10_214335) do
+ActiveRecord::Schema.define(version: 2021_06_11_190706) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2021_06_10_214335) do
     t.string "action_by"
     t.string "reviewers", default: [], array: true
     t.string "download_usage"
+    t.string "download_usage_list"
     t.index ["user_id"], name: "index_cart_items_on_user_id"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end

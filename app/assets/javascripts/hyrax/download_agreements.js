@@ -49,11 +49,7 @@ $( document ).ready(function() {
     }
   
     $(document).on('click', '#modal-agree', function(){
-      if($(this).prop('checked')){
-        $('#modal-download').removeAttr('disabled');
-      } else {
-        $('#modal-download').attr('disabled', 'disabled');
-      }
+      checkAndShowDownload();
     });
 
     $(document).on('click', '#modal-download', function(){
@@ -66,25 +62,34 @@ $( document ).ready(function() {
         jQuery('#hidden-file-download')[0].click();
       } else if (itemId != '') { 
 
+        var usage = $('#custom-usage').val();
+        if (usage.length < 50) {
+          alert('Please enter a minimum of 50 characters for your intended usage');
+        } else {
+          var usage_list = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
+            return $(el).val();
+          })
+          var other = $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val();
+          if (other != '') {
+            usage_list.push(other);
+          }        
+          //console.log('usage_list: '+ usage_list);
+          var link = $('#link-to-download-item-'+itemId).attr('href') + 
+            "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usage_list.get().join(';'));
+          $('#link-to-download-item-'+itemId).attr('href', link); 
+          $('#link-to-download-item-'+itemId).trigger('click');    
+        }
 
 
-
-        usage = $('#custom-usage').val();
-// need to check for 50 char min
-
-
-
-        usage_list = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
-          return $(el).val();
-        }).get().join(',');
-        //console.log('usage_list: '+ usage_list);
-        link = $('#link-to-download-item-'+itemId).attr('href') + 
-          "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usage_list);
-        $('#link-to-download-item-'+itemId).attr('href', link); 
-        $('#link-to-download-item-'+itemId).trigger('click');    
       } else {
         console.log('error: itemId missing');
       }
+    });
+
+    $('#custom-usage').keyup(function() {
+      var textlen = $(this).val().length;
+      $('#rchars').text(textlen);
+      checkAndShowDownload();
     });
 
     $(document).on('click', '#get-profile-intent', function(){
@@ -95,6 +100,20 @@ $( document ).ready(function() {
 
   }
 });
+
+function checkAndShowDownload() {
+  if ($('#modal-agree').prop('checked')) {
+    if ($('#custom-usage').val().length >= 50) {
+      $('#char-alert').removeClass('text-alert');
+      $('#modal-download').removeAttr('disabled');
+    } else {
+      $('#char-alert').addClass('text-alert');
+      $('#modal-download').attr('disabled', 'disabled');
+    }
+  } else {
+    $('#modal-download').attr('disabled', 'disabled');
+  }  
+}
 
 function showAgreementModal() {
   $('#downloadAgreementsModal').modal('show');

@@ -5,6 +5,7 @@ module Ms1to2
 	autoload :UserImporter
 	autoload :Normalizer
 	autoload :UserNormalizer
+	autoload :Ms1BatchFileConverter
 	autoload :Ms1InputData
 	autoload :Ms2OutputData
 end

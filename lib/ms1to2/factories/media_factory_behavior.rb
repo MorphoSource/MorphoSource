@@ -40,6 +40,10 @@ module Ms1to2
         }
       end
 
+      def derive_depositor(user_id)
+        Array(user_id).first
+      end
+
       def derive_part(mf, mg)
         mf[:element].presence || mg[:element].presence || []
       end

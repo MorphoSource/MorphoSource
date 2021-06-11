@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_22_224150) do
+ActiveRecord::Schema.define(version: 2021_06_10_214335) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 2021_04_22_224150) do
     t.string "user_id", null: false
     t.string "action_by"
     t.string "reviewers", default: [], array: true
+    t.string "download_usage"
     t.index ["user_id"], name: "index_cart_items_on_user_id"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end
@@ -147,6 +148,21 @@ ActiveRecord::Schema.define(version: 2021_04_22_224150) do
     t.index ["user_id"], name: "index_file_view_stats_on_user_id"
   end
 
+  create_table "fund_code_charges", force: :cascade do |t|
+    t.bigint "fund_code_id"
+    t.text "description"
+    t.date "start_date"
+    t.date "end_date"
+    t.decimal "billing_rate"
+    t.string "billing_unit"
+    t.decimal "units_consumed"
+    t.decimal "amount"
+    t.string "service_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fund_code_id"], name: "index_fund_code_charges_on_fund_code_id"
+  end
+
   create_table "fund_code_media_associations", force: :cascade do |t|
     t.bigint "fund_code_id"
     t.string "media", null: false
@@ -176,6 +192,8 @@ ActiveRecord::Schema.define(version: 2021_04_22_224150) do
     t.float "storage_limit_tb"
     t.boolean "external_user", default: false, null: false
     t.float "external_user_additional_rate_percent"
+    t.string "identifier"
+    t.boolean "chargeable", default: false, null: false
     t.index ["user_id"], name: "index_fund_codes_on_user_id"
   end
 
@@ -641,9 +659,11 @@ ActiveRecord::Schema.define(version: 2021_04_22_224150) do
     t.string "ms_id", null: false
     t.string "ms1_password_hash"
     t.boolean "ms1_user", default: false
+    t.string "token"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["ms_id"], name: "index_users_on_ms_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["token"], name: "index_users_on_token", unique: true
   end
 
   create_table "version_committers", force: :cascade do |t|

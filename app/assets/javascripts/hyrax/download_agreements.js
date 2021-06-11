@@ -66,9 +66,15 @@ $( document ).ready(function() {
         jQuery('#hidden-file-download')[0].click();
       } else if (itemId != '') { 
 
-        
-        $('#link-to-download-item-'+itemId).attr('href', $('#link-to-download-item-'+itemId).attr('href') + "&usage=foobar"); 
-        console.log($('#link-to-download-item-'+itemId).attr('href'));
+
+
+
+        usage = "";
+
+
+
+
+        $('#link-to-download-item-'+itemId).attr('href', $('#link-to-download-item-'+itemId).attr('href') + "&usage=" + usage); 
         $('#link-to-download-item-'+itemId).trigger('click');      
       } else {
         console.log('error: itemId missing');

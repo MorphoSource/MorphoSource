@@ -28,6 +28,7 @@
       </div>
     </div>
   </td>
+  <td><%= item.download_usage %></td>
   <td>
     <% if document.fileset_accessibility&.first == "restricted_download" %>
       <span class="label label-danger">Restricted</span>
@@ -37,6 +38,5 @@
   </td>
 
   <td class="date"><%= date(item,'downloaded') %></td>
-
 
 </tr>

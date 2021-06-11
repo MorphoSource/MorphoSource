@@ -9,6 +9,28 @@
   </ol>
 </nav>
 
+        <div class="checkbox-form-group">
+
+          <% @user = current_user %>
+          <%= form_for @user,
+                       url: '',
+                       html: { multipart: true } do |f| %>
+
+              <div class="checkbox-list">
+                <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
+                <% intended_use.each do |use| %>
+                  <%= f.check_box 'intent', { multiple: true, checked: (@user.intent.include? use) }, use, false %>
+                  <%= f.label :intent, use %>
+                  <br/>
+                <% end %>
+                <%= f.label 'Other: ' %>
+                <%= f.text_field 'intent', { multiple: true, value: @user.other_intent } %>
+              </div>
+
+          <% end %>
+
+        </div>
+
 <div class="row">
   <div class="col-xs-12 main-header">
     <h1>

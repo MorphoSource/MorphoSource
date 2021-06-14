@@ -95,7 +95,11 @@ $( document ).ready(function() {
     $(document).on('click', '#get-profile-intent', function(){
       isChecked = $(this).prop('checked');
       $('.profile-checkbox-list input').attr("disabled", isChecked);
-      $('form.edit_user')[0].reset(); // reset 
+      if (isChecked)
+        $('.modal-body .checkbox-form-group').addClass('text-disabled');
+      else
+        $('.modal-body .checkbox-form-group').removeClass('text-disabled');
+      $('form.edit_user')[0].reset(); 
     });
 
   }

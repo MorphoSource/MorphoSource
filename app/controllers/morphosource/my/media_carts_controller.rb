@@ -17,7 +17,6 @@ module Morphosource
         get_work_ids_by_items
         usage = request.params['usage'].present? ? request.params['usage'] : ''
         usage_list = request.params['usage_list'].present? ? request.params['usage_list'] : ''
-byebug
         redirect_to main_app.zip_path(ids: @work_ids, usage: usage, usage_list: usage_list)
       end
 

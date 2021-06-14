@@ -26,6 +26,20 @@ html {
 .showcase.transfer
 */
 .showcase { 
+
+  .modal-dialog.modal-wide {
+    width: 720px;
+    @media (min-width: 769px) {
+      width: 950px;
+    }
+  }
+
+  label.cb {
+    display: block;
+    margin-top: -22px;
+    margin-left: 18px;
+    font-weight: normal;
+  }
   .super-title {
     font-size: 18px;
     color: #888;

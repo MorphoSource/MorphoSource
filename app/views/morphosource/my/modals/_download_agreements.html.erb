@@ -1,6 +1,10 @@
+<% 
+@user = current_user 
+disable_get_profile = @user.intent.present? ? "" : "disabled"
+%>
 <div class="modal fade" id="downloadAgreementsModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
 
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-wide">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span id="close-modal" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -12,11 +16,14 @@
         <textarea id="custom-usage" rows="3" class="w-100"></textarea>
         <i id="char-alert">50 characters minimum: <span id="rchars">0</span></i>
 
-        <p>Please select one or more categories that match your intended usage:</p>
-        <input id="get-profile-intent" type="checkbox" /> Use the information from my user profile to fill in the intended use categories.
-
-        <div class="checkbox-form-group">
-          <% @user = current_user %>
+        <p style="margin-top:20px"><label>Please select one or more categories that match your intended usage:</label></p>
+        <div class="row">
+          <div class="col-xs-12">
+            <input id="get-profile-intent" type="checkbox" <%= disable_get_profile %> /> 
+            <label class="cb">Use the information from my user profile to fill in the intended use categories.</label>
+          </div>
+        </div>
+        <div class="checkbox-form-group row">
           <%= form_for @user,
                        url: '',
                        html: { multipart: true } do |f| %>
@@ -24,16 +31,19 @@
               <div class="profile-checkbox-list">
                 <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
                 <% intended_use.each do |use| %>
+                  <div class="col-xs-6">
                   <%= f.check_box 'intent', { multiple: true, checked: (@user.intent.include? use) }, use, false %>
-                  <%= f.label :intent, use %>
-                  <br/>
+                  <%= f.label :intent, use, :class => 'cb' %>
+                  </div>
                 <% end %>
-                <%= f.label 'Other: ' %>
-                <%= f.text_field 'intent', { multiple: true, value: @user.other_intent } %>
+                <div class="col-xs-6">
+                  Other: <%= f.text_field 'intent', { multiple: true, value: @user.other_intent } %>
+                </div>
               </div>
 
           <% end %>
         </div>
+
 
         <div class="agreement-content">
           <p>To download the selected media, you must agree to the following download agreements. Please review these agreements and familiarize yourself with any restrictions on media use included in them. Other restrictions or provisions may apply to media use, reuse, citation, or other factors. Please see specific media pages for all permission details.</p>

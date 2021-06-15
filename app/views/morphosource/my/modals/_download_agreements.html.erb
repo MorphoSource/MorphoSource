@@ -1,7 +1,4 @@
-<% 
-@user = current_user 
-disable_get_profile = @user.intent.present? ? "" : "disabled"
-%>
+<% @user = current_user %>
 <div class="modal fade" id="downloadAgreementsModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
 
   <div class="modal-dialog modal-wide">
@@ -19,11 +16,15 @@ disable_get_profile = @user.intent.present? ? "" : "disabled"
         <p style="margin-top:20px"><label>Please select one or more categories that match your intended usage:</label></p>
         <div class="row">
           <div class="col-xs-12">
-            <label class="switch">
-              <input id="get-profile-intent" type="checkbox" <%= disable_get_profile %> /> 
-              <span class="slider round"></span>
-            </label>
-            <label class="switch-label">Use the information from my user profile to fill in the intended use categories.</label>
+            <% if @user.intent.present? %>
+              <label class="switch">
+                <input id="get-profile-intent" type="checkbox" /> 
+                <span class="slider round"></span>
+              </label>
+              <label class="switch-label">Use the information from my user profile to fill in the intended use categories.</label>
+            <% else %>
+              <p><i>In the future, if you complete the Intended Use section of your User Profile, you can finish this section with one easy click.</i></p>
+            <% end %>
           </div>
         </div>
         <div class="checkbox-form-group row">

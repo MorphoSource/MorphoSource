@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-xs-6 showcase-label">Date created</div>
         <div class="col-xs-6 showcase-value">
-        <%= p.date_field :date_created, wrapper: :inline, value: p.object.date_created || Date.today, class: 'datepicker form-control' %>
+        <%= p.date_field :date_created, wrapper: :inline, value: p.object.date_created, class: 'datepicker form-control' %>
         </div>
     </div>
     <%= p.input :software, as: :multi_value %>

@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-xs-6 showcase-label">Date created</div>
         <div class="col-xs-6 showcase-value">
-        <%= i.date_field :date_created, wrapper: :inline, value: i.object.date_created || Date.today, class: 'datepicker form-control' %>
+        <%= i.date_field :date_created, wrapper: :inline, value: i.object.date_created, class: 'datepicker form-control' %>
         </div>
     </div>
     <%= render_edit_field_partial('software', f: i) %>

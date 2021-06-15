@@ -19,8 +19,11 @@ disable_get_profile = @user.intent.present? ? "" : "disabled"
         <p style="margin-top:20px"><label>Please select one or more categories that match your intended usage:</label></p>
         <div class="row">
           <div class="col-xs-12">
-            <input id="get-profile-intent" type="checkbox" <%= disable_get_profile %> /> 
-            <label class="cb">Use the information from my user profile to fill in the intended use categories.</label>
+            <label class="switch">
+              <input id="get-profile-intent" type="checkbox" <%= disable_get_profile %> /> 
+              <span class="slider round"></span>
+            </label>
+            <label class="switch-label">Use the information from my user profile to fill in the intended use categories.</label>
           </div>
         </div>
         <div class="checkbox-form-group row">

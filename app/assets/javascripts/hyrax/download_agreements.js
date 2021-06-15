@@ -96,9 +96,9 @@ $( document ).ready(function() {
       isChecked = $(this).prop('checked');
       $('.profile-checkbox-list input').attr("disabled", isChecked);
       if (isChecked)
-        $('.modal-body .checkbox-form-group').addClass('text-disabled');
+        $('.modal-body .checkbox-form-group input').addClass('disabled');
       else
-        $('.modal-body .checkbox-form-group').removeClass('text-disabled');
+        $('.modal-body .checkbox-form-group input').removeClass('disabled');
       $('form.edit_user')[0].reset(); 
     });
 

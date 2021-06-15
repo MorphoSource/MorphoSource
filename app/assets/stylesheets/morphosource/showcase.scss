@@ -11,8 +11,11 @@ html {
 }
 
 .showcase.cart {
-  input.batch_document_selector, input.disabled {
+  input.batch_document_selector, input[type=checkbox].disabled {
     margin: 4px 0 0;
+  }
+  input[type=text].disabled {
+    margin: unset;
   }
 }
 
@@ -32,6 +35,11 @@ html {
     @media (min-width: 769px) {
       width: 950px;
     }
+  }
+
+  .switch-label {
+    font-size: 13px;
+    vertical-align: bottom;
   }
 
   label.cb {

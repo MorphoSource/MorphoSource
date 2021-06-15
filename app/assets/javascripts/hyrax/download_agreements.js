@@ -57,30 +57,36 @@ $( document ).ready(function() {
       console.log(' downloading item '+ itemId);
       $('#downloadAgreementsModal').modal('hide');
       if (itemId == 'SELECTED') {
+        console.log('item(s) selected in cart');
+        var usage = $('#custom-usage').val();
+        var usage_list = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
+          return $(el).val();
+        })
+        var other = $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val();
+        if (other != '') {
+          usage_list.push(other);
+        }        
+        $('#batch_usage').val(usage);
+        $('#batch_usage_list').val(usage_list.get().join(';'));
         downloadForm.submit();
       } else if (itemId == 'CURRENT') { 
+        console.log('current item download in media page');
+
         jQuery('#hidden-file-download')[0].click();
       } else if (itemId != '') { 
-
+        console.log("(single) download item button in cart");
         var usage = $('#custom-usage').val();
-        if (usage.length < 50) {
-          alert('Please enter a minimum of 50 characters for your intended usage');
-        } else {
-          var usage_list = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
-            return $(el).val();
-          })
-          var other = $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val();
-          if (other != '') {
-            usage_list.push(other);
-          }        
-          //console.log('usage_list: '+ usage_list);
-          var link = $('#link-to-download-item-'+itemId).attr('href') + 
-            "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usage_list.get().join(';'));
-          $('#link-to-download-item-'+itemId).attr('href', link); 
-          $('#link-to-download-item-'+itemId).trigger('click');    
-        }
-
-
+        var usage_list = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
+          return $(el).val();
+        })
+        var other = $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val();
+        if (other != '') {
+          usage_list.push(other);
+        }        
+        var link = $('#link-to-download-item-'+itemId).attr('href') + 
+          "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usage_list.get().join(';'));
+        $('#link-to-download-item-'+itemId).attr('href', link); 
+        $('#link-to-download-item-'+itemId).trigger('click');    
       } else {
         console.log('error: itemId missing');
       }

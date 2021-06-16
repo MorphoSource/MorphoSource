@@ -338,6 +338,14 @@ Hyrax.config do |config|
 
   # Device work ID for unknown CT scanner
   config.unknown_ct_scanner = Rails.env.production? ? '00000D567' : nil
+
+  # Packrat API fields
+  config.packrat_api_endpoint_client_id = ENV.fetch('ENDPOINT_CLIENT_ID', 'packrat-production')
+  config.packrat_api_service_url = ENV.fetch('SERVICE_URL', 'https://packrat.oit.duke.edu')
+  config.packrat_api_oidc_long_lived_token = ENV.fetch('OIDC_LONG_LIVED_TOKEN', nil)
+  config.packrat_api_idms_token_exchange_url = ENV.fetch('IDMS_TOKEN_EXCHANGE_URL', 'https://idms-web-ws.oit.duke.edu/idm-ws/clientSecret/createClientToken')
+  config.packrat_api_endpoint = ENV.fetch('PACKRAT_API_ENDPOINT', '/api/v2')
+  config.packrat_api_volume_id = ENV.fetch('PACKRAT_API_VOLUME_ID', 1931)
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

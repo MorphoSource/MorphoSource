@@ -632,6 +632,37 @@ module Hyrax
                     end
     end
 
+    # Packrat API fields
+    attr_writer :packrat_api_endpoint_client_id
+    def packrat_api_endpoint_client_id
+      @packrat_api_endpoint_client_id ||= nil
+    end
+
+    attr_writer :packrat_api_service_url
+    def packrat_api_service_url
+      @packrat_api_service_url ||= nil
+    end
+
+    attr_writer :packrat_api_oidc_long_lived_token
+    def packrat_api_oidc_long_lived_token
+      @packrat_api_oidc_long_lived_token ||= nil
+    end
+
+    attr_writer :packrat_api_idms_token_exchange_url
+    def packrat_api_idms_token_exchange_url
+      @packrat_api_idms_token_exchange_url ||= nil
+    end
+
+    attr_writer :packrat_api_endpoint
+    def packrat_api_endpoint
+      @packrat_api_endpoint ||= nil
+    end
+
+    attr_writer :packrat_api_volume_id
+    def packrat_api_volume_id
+      @packrat_api_volume_id ||= nil
+    end
+
     attr_accessor :nested_relationship_reindexer
 
     def default_nested_relationship_reindexer

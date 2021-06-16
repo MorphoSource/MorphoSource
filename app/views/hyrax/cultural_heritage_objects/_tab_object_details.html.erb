@@ -30,7 +30,7 @@
       <div class="row">
         <div class="col-xs-6 showcase-label"><%= @presenter.date_created_label %></div>
         <div class="col-xs-6 showcase-value">
-        <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created || Date.today, class: 'datepicker form-control' %>
+        <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
           </div>
       </div>
       <%= @presenter.attribute_to_html(:date_uploaded, render_as: :showcase_date, include_empty: true, html_dl: false) %>

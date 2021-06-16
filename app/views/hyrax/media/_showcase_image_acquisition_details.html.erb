@@ -1,7 +1,7 @@
 <div class="row image-acq-detail">
   <div class="col-sm-12">
 
-    <h2>IMAGE ACQUISITION AND PROCESSING IN DETAIL 
+    <h2>IMAGE ACQUISITION AND PROCESSING IN DETAIL
       <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-image-acquisition-in-detail" class="btn collapse-block-image-acquisition-in-detail"><span class="glyphicon glyphicon-triangle-top collapse-block-image-acquisition-in-detail"></span></a>
     </h2>
 
@@ -9,7 +9,7 @@
 
       <div class="row">
         <div class="content-block-lg col-xs-12">
-          
+
           <div class="row" style="background-color: #efefef; margin-bottom: 20px">
             <h3 style='font-weight: 500; padding-left: 15px; margin-top: 10px;'><i class="fas fa-camera fa-lg" style="width: 30px; text-align: center;"></i> <span>STEP 1: IMAGE ACQUISITION</span></h3>
           </div>
@@ -33,24 +33,24 @@
                 <%= presenter.attribute_to_html(:imaging_event_software, label: 'Software', render_as: :showcase_default, include_empty: true, html_dl: false) %>
                 <%= presenter.attribute_to_html(:imaging_event_description, label: 'Description', render_as: :showcase_default, include_empty: true, html_dl: false) %>
                 <%= presenter.attribute_to_html(
-                  :imaging_event_description_attachment, 
-                  link_label: 'Description Attachment', 
-                  render_as: :showcase_attachment, 
-                  include_empty: true, 
+                  :imaging_event_description_attachment,
+                  link_label: 'Description Attachment',
+                  render_as: :showcase_attachment,
+                  include_empty: true,
                   text_if_empty: 'None',
-                  html_dl: false) 
+                  html_dl: false)
                 %>
                 <%= presenter.attribute_to_html(
-                  :imaging_event_reference_attachment, 
-                  link_label: 'Photographic Reference', 
-                  render_as: :showcase_attachment, 
-                  include_empty: true, 
+                  :imaging_event_reference_attachment,
+                  link_label: 'Photographic Reference',
+                  render_as: :showcase_attachment,
+                  include_empty: true,
                   text_if_empty: 'None',
-                  html_dl: false) 
+                  html_dl: false)
                 %>
 
                 <% if presenter.imaging_event_modality.presence %>
-                  <% if presenter.imaging_event_modality == "Photogrammetry" || 
+                  <% if presenter.imaging_event_modality == "Photogrammetry" ||
                        presenter.imaging_event_modality == "Photography" %>
                     <%= render "showcase_modality_photogrammetry_attributes", presenter: @presenter %>
                   <% elsif presenter.imaging_event_modality.upcase.include? "X-RAY COMPUTED TOMOGRAPHY" %>
@@ -63,10 +63,12 @@
             </div>
 
             <div class="col-sm-6">
-              <% if @presenter.is_absentee_parent == false %>
+              <% if @presenter.direct_parent_members_raw_or_derived == "Derived" %>
+                <%# Leave blank if no raw media parent %>
+              <% elsif @presenter.is_absentee_parent == false %>
                 <div class="content-block">
                   <h2>Media produced by this event on MorphoSource</h2>
-                  <% 
+                  <%
                   members = presenter.direct_parent_members
                   parent_member =  members.first
                   %>
@@ -82,7 +84,7 @@
                         <% end %>
                         <%= parent_member.file_format %><br>
                       </div>
-                    </div>              
+                    </div>
                   <% end %>
                 </div>
               <% end %>
@@ -94,9 +96,8 @@
       </div><!-- /row -->
 
       <% if @presenter.raw_or_derived == "Derived" %>
-
         <% @presenter.processing_events_data.each_with_index.map do |pe, i| %>
-          <%= render @presenter.showcase_image_acquisition_details_processing_partial, 
+          <%= render @presenter.showcase_image_acquisition_details_processing_partial,
             presenter: @presenter,
             processing_activity_items: pe[:processing_activity_items],
             processing_member: pe[:child_members].first,
@@ -111,7 +112,7 @@
         <% end %>
 
       <% end %>
-    
+
     </div><!-- /collapse-block-image-acquisition-in-detail -->
 
   </div>

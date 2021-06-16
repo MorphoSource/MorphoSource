@@ -1,6 +1,6 @@
 <div style='padding-left: 15px; padding-right: 15px;'>
-  Physical object 
-  <!-- <%= member_counter %> 
+  Physical object
+  <!-- <%= member_counter %>
       # todo: later on we will need to handle more than 1 parent
   -->
   <% if @presenter.physical_object_link.present? %>
@@ -8,6 +8,8 @@
   <% end %>
   was imaged to create
   <% if @presenter.is_absentee_parent == true %>
+    undeposited raw media.
+  <% elsif @presenter.direct_parent_members_raw_or_derived == "Derived" %>
     undeposited raw media.
   <% else %>
     <% if @presenter.raw_or_derived == "Raw" %>
@@ -18,5 +20,5 @@
       .
   <% end %>
   <% end %>
-  
+
 </div>

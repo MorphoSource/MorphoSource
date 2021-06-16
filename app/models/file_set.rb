@@ -104,4 +104,8 @@ class FileSet < ActiveFedora::Base
   def media?
     false
   end
+
+  def processing_event?
+    false
+  end
 end

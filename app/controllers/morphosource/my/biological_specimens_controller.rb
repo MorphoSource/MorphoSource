@@ -26,6 +26,10 @@ module Morphosource
 
       private
 
+        def filtered_facets
+          ["media_member_of_project_ids_ssim", "media_member_of_team_ids_ssim"] 
+        end
+
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
           main_app.my_dashboard_specimens_facet_path(args[:id])

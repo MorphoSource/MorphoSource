@@ -10,15 +10,15 @@ html {
   box-sizing: inherit !important;
 }
 
+
 .showcase.cart {
   input.batch_document_selector, input[type=checkbox].disabled {
-    margin: 4px 0 0;
+    margin: 4px 0 0 !important;
   }
   input[type=text].disabled {
     margin: unset;
   }
 }
-
 /*
 .showcase.teams, 
 .showcase.media-works, 
@@ -29,6 +29,12 @@ html {
 .showcase.transfer
 */
 .showcase { 
+
+  input.batch_document_selector,
+  input.disabled {
+    margin: initial;
+    padding: 5px 10px;
+  }
 
   .modal-dialog.modal-wide {
     width: 720px;

@@ -4,9 +4,11 @@ module Morphosource
   autoload :Configurable
   autoload :CrossrefDoiMinter
   autoload :Derivatives
+  autoload :Gbif
   autoload :IDigBio
   autoload :Metadata
   autoload :Minter
+  autoload :PackratApi
 
   include Morphosource::Configurable
 

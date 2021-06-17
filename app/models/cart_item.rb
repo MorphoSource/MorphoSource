@@ -31,7 +31,7 @@ class CartItem < ApplicationRecord
   end
 
   def restricted?
-    !downloadable?
+    !downloadable? && has_file_uploaded?
   end
 
   def editable?
@@ -79,6 +79,10 @@ class CartItem < ApplicationRecord
       when user.can?(:download, work) then true
       else false
     end
+  end
+
+  def has_file_uploaded?
+    return work.file_sets.present?
   end
 
   def user_is_reviewer_or_has_ownership?

@@ -43,7 +43,7 @@ module Morphosource
 
     def create_downloaded_item(work_id)
       item = create_cart_item(work_id)
-      item.update_attributes(in_cart: false, date_downloaded: Time.now)
+      item.update_attributes(in_cart: false, date_downloaded: Time.now) if item.present?
     end
 
     def downloadable_item_for_work?(work_id)
@@ -55,10 +55,10 @@ module Morphosource
     end
 
     def create_cart_item(work_id)
-      usage = request.params['usage']
-      usage_list = request.params['usage_list']
       work = Media.find(work_id)
-      if work.can_add_to_cart? || (current_user.can? :download, work.id)
+      if work.file_sets.present? && ( work.can_add_to_cart? || (current_user.can? :download, work.id) )
+        usage = request.params['usage']
+        usage_list = request.params['usage_list']
         item = CartItem.create({user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer, download_usage: usage, download_usage_list: usage_list})
       else
         item = nil

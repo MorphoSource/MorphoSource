@@ -48,7 +48,7 @@ module Morphosource
       end
 
       def downloadable_items
-        items_in_cart.select(&:downloadable?)
+        items_in_cart.select { |i| i.downloadable? && i.has_file_uploaded? }
       end
 
       def undownloadable_items

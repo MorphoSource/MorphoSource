@@ -341,7 +341,7 @@ module Hyrax
       @this_media_and_parents_id_list = parent_media_id_list << solr_document.id
       @this_media_and_parents_members = parent_media_members << this_media_member
 
-      # start with the top media in the hierarchy and get processing events in order
+      # start with the current media and go up to top media in the hierarchy and get processing events in order
       @processing_events = ordered_processing_events(direct_parent_id)
 
       processing_event_ids = []
@@ -387,7 +387,6 @@ module Hyrax
         .inject(0) { |sum, x| sum + x }
       @this_media_processing_event = processing_events
         .find { |pe| pe.member_ids.include? solr_document.id }
-
       # If processing events exist and the topmost PE has no parent members, this hierarchy is absentee parent
       @is_absentee_parent = @processing_events_data&.first&.[](:parent_members) == []
 
@@ -710,19 +709,27 @@ module Hyrax
 
       def ordered_processing_events(direct_parent_id)
         ordered_events = []
-        parent = direct_parent_id.present? ? Media.find(direct_parent_id) : @media
-        # get the first processing_event if the direct parent is derived
-        ordered_events << parent.in_works.select(&:processing_event?).first
-        parent_id = parent.id
+        return ordered_events if @media.is_raw?
+        ordered_events << @media.processing_event
+        return ordered_events unless direct_parent_id.present? # derived with absentee parent
         # collect the processing events between the direct parent and @media in order
-        while parent_id != id do
-          child_processing_event = parent.members.select(&:processing_event?).first
-          ordered_events << child_processing_event
-          parent = child_processing_event.members.first
-          parent_id = parent.id
+        immediate_parent = @media.processing_event&.in_works.select(&:media?).first
+        return ordered_events unless immediate_parent.present?
+        ordered_events << immediate_parent.processing_event
+        while immediate_parent.id != direct_parent_id do
+          immediate_parent = immediate_parent.processing_event.in_works.select(&:media?).first
+          ordered_events << immediate_parent.processing_event if immediate_parent.present?
         end
-        ordered_events.compact
+        ordered_events.compact.reverse
       end
 
   end
 end
+
+
+
+
+
+
+
+

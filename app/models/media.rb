@@ -229,6 +229,10 @@ class Media < Morphosource::Works::Base
     ancestors.find(&:processing_event?)
   end
 
+  def is_raw?
+    processing_event.nil?
+  end
+
   def child_media
     descendants.select { |d| d.class == Media }
   end

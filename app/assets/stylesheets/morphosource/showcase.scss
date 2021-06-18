@@ -37,9 +37,9 @@ html {
   }
 
   .modal-dialog.modal-wide {
-    width: 720px;
+    width: 90%;
     @media (min-width: 769px) {
-      width: 950px;
+      max-width: 950px;
     }
   }
 

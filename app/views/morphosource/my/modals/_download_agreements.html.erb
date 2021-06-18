@@ -34,12 +34,12 @@
               <div class="profile-checkbox-list">
                 <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
                 <% intended_use.each do |use| %>
-                  <div class="col-xs-6">
+                  <div class="col-xs-12 col-sm-6">
                   <%= f.check_box 'intent', { multiple: true, checked: (@user.intent.include? use) }, use, false %>
                   <%= f.label :intent, use, :class => 'cb' %>
                   </div>
                 <% end %>
-                <div class="col-xs-6">
+                <div class="col-xs-12 col-sm-6">
                   Other: <%= f.text_field 'intent', { multiple: true, value: @user.other_intent } %>
                 </div>
               </div>

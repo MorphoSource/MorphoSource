@@ -709,19 +709,32 @@ module Hyrax
 
       def ordered_processing_events(direct_parent_id)
         ordered_events = []
-        return ordered_events unless direct_parent_id.present?
+        return ordered_events if @media.is_raw?
         ordered_events << @media.processing_event
+        return ordered_events unless direct_parent_id.present? # derived with absentee parent
+
         # collect the processing events between the direct parent and @media in order
         immediate_parent = @media.processing_event&.in_works.select(&:media?).first
+byebug                
+        return ordered_events unless immediate_parent.present?
+        ordered_events << immediate_parent.processing_event
+
+byebug                
         while immediate_parent.id != direct_parent_id do
-          ordered_events << immediate_parent.processing_event if immediate_parent.present?
           immediate_parent = immediate_parent.processing_event.in_works.select(&:media?).first
+          ordered_events << immediate_parent.processing_event if immediate_parent.present?
         end
-        ordered_events.compact.reverse
+
+        tmp = ordered_events.compact.reverse
+        byebug
+        return tmp
       end
 
   end
 end
+
+
+
 
 
 

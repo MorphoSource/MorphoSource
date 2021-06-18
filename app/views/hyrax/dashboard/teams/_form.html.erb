@@ -278,9 +278,8 @@
 
   </div> <!-- end collection-controls -->
 
-
-
-<% if @presenter.collection_type_is_nestable? && !has_collection_search_parameters? %>
+<%# only render add project modal if collection is a team %>
+<% if @presenter.collection_type.title == "Team" %>
   <%#= render 'hyrax/my/collections/modal_add_to_collection', source: 'show' %>
   <%= render 'hyrax/my/collections/modal_add_project', id: @presenter.id, source: 'show' %>
   <%#= render 'hyrax/dashboard/collections/modal_parent_collection_remove_deny', source: 'show' %>

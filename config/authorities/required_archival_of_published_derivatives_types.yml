@@ -1,7 +1,7 @@
 terms:
-  - id: OnAnyRepository
-    term: On Any Repository
   - id: OnMorphoSource
     term: On MorphoSource
+  - id: OnAnyRepository
+    term: On Any Repository
   - id: EncouragedButNotRequired
     term: Encouraged But Not Required

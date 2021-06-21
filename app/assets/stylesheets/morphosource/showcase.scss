@@ -48,6 +48,16 @@ html {
     vertical-align: bottom;
   }
 
+  .profile-checkbox-list {
+    [type="checkbox"] {
+      width: 11px;
+      margin-top: 0;
+      vertical-align: top;
+    }
+    label.cb {
+      font-size: 12px;
+    }    
+  }
   label.cb {
     display: block;
     margin-top: -22px;

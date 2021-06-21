@@ -31,7 +31,7 @@ class CartItem < ApplicationRecord
   end
 
   def restricted?
-    !downloadable? && has_file_uploaded?
+    !downloadable?
   end
 
   def editable?

@@ -143,9 +143,10 @@ module Morphosource::CartItemHelper
         else
           content_tag(:button, 'Item in Cart', class: "btn btn-success", disabled: true)
         end
+      elsif item.request_status == "Denied"
+      
       else
-        # if this is being called only on my request page, no need to display download item button
-        #make_button(item,"Download Item",:download_items_path,"btn btn-info",:get,'')
+        make_button(item,"Download Item",:download_items_path,"btn btn-info",:get,'')
       end
     else
       case item.request_status

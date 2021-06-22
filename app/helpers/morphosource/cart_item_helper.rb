@@ -143,10 +143,11 @@ module Morphosource::CartItemHelper
         else
           content_tag(:button, 'Item in Cart', class: "btn btn-success", disabled: true)
         end
-      elsif item.request_status == "Denied"
-      
-      else
-        make_button(item,"Download Item",:download_items_path,"btn btn-info",:get,'')
+      elsif item.request_status != "Denied" && 
+        item.request_status != "Canceled" &&
+        item.request_status != "Expired" &&
+        item.request_status != "Cleared" 
+          make_button(item,"Download Item",:download_items_path,"btn btn-info",:get,'')
       end
     else
       case item.request_status

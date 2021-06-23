@@ -3,6 +3,7 @@ $( document ).ready(function() {
   var downloadForm = $('form#form-download-selected');
   var isMediaPage = ($('#media-page-download-agreements').length);
   var isCartPage = (downloadForm.length);
+  var isRequestPage = ($('.my-requests').length);
 
   if ( isCartPage ) {
     
@@ -23,6 +24,13 @@ $( document ).ready(function() {
       showAgreementModal();
     });
 
+    $('#unrestricted_documents input[type="checkbox"]').bind('click', function(e) {
+      set_agreements();
+    });
+
+  }
+
+  if ( isCartPage || isRequestPage ) {
     $('.btn-download-item').bind('click', function(e) { 
       // download item clicked
       e.preventDefault();
@@ -30,14 +38,9 @@ $( document ).ready(function() {
       set_agreements(itemId);
       showAgreementModal();
     });
-
-    $('#unrestricted_documents input[type="checkbox"]').bind('click', function(e) {
-      set_agreements();
-    });
-
   }
 
-  if ( isMediaPage || isCartPage ) {
+  if ( isMediaPage || isCartPage || isRequestPage ) {
 
     function usageList() {
       var usage_list_array = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
@@ -80,10 +83,11 @@ $( document ).ready(function() {
         $('#hidden-file-download').attr('href', link); 
         jQuery('#hidden-file-download')[0].click();
       } else if (itemId != '') { 
-        console.log("(single) download item button in cart");
+        console.log("(single) download item button in cart or my request");
         var link = $('#link-to-download-item-'+itemId).attr('href') + 
           "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usageList());
         $('#link-to-download-item-'+itemId).attr('href', link); 
+        //alert(link);
         $('#link-to-download-item-'+itemId).trigger('click');    
       } else {
         console.log('error: itemId missing');

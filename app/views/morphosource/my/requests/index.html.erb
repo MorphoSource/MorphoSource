@@ -1,4 +1,4 @@
-<% content_for :body_css_classes do %>showcase dl-request<% end %> 
+<% content_for :body_css_classes do %>showcase dl-request my-requests<% end %> 
 <% provide :page_title, "My Requests" %>
 
 <nav class="breadcrumb" role="region" aria-label="Breadcrumb">
@@ -26,6 +26,7 @@
 </div>
 
 <%= render 'morphosource/my/modals/page_modal' %>
+<%= render 'morphosource/my/modals/download_agreements' %>
 
 <script>
   <%= render partial: 'morphosource/my/scripts/scripts', formats: [:js] %>

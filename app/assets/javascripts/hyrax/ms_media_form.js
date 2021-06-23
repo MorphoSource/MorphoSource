@@ -268,6 +268,16 @@ $( document ).ready(function() {
 
     } // /setupRightsHolder
 
+    var thumbField = document.getElementById("custom_thumbnail");
+    thumbField.onchange = function() {
+      if(this.files[0].size > 500000){
+        $('#custom_thumbnail_hint').addClass('text-alert').html('Thumbnail size must be<br/>500KB or smaller');
+        this.value = "";
+      } else {
+        $('#custom_thumbnail_hint').removeClass('text-alert').html('');        
+      }
+    };
+
   } // end if media form page
 
   jQuery.fn.extend({

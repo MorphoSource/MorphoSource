@@ -36,6 +36,12 @@ html {
     padding: 5px 10px;
   }
 
+  .hint-sm {
+    font-weight: normal;
+    font-size: 11px;
+    font-style: italic;
+  }
+
   .modal-dialog.modal-wide {
     width: 90%;
     @media (min-width: 769px) {

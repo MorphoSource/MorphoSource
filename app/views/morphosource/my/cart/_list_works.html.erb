@@ -40,5 +40,5 @@
       <%= link_to item.id, main_app.download_items_path(item_id: item.id), class: "hide", id: 'link-to-download-item-'+item.id.to_s, method: :get %>
     <% end %>
   </td>
-  <%= render 'morphosource/my/cart/download_agreements_container', presenter: presenter, item_id: item.id, user: @user %>
+  <%= render 'morphosource/my/cart/download_agreements_container', presenter: presenter, item_id: item.id %>
 </tr>

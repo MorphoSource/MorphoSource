@@ -48,7 +48,7 @@
 </script>
 
 <%# hidden div and modal for download agreement %>
-<% if @user.present? %>
+<% if current_user.present? %>
   <%= render 'download_agreements_container', presenter: @presenter %>
-  <%= render 'morphosource/my/modals/download_agreements', user: @user %>
+  <%= render 'morphosource/my/modals/download_agreements' %>
 <% end %>

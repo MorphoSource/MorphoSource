@@ -47,7 +47,6 @@ module Hyrax
     end
 
     def showcase
-      @user = current_user
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
       @presenter.get_showcase_data
       set_flash

@@ -15,7 +15,7 @@
         <p style="margin-top:20px"><label>Please select one or more categories that match your intended usage:</label></p>
         <div class="row">
           <div class="col-xs-12">
-            <% if user.intent.present? %>
+            <% if current_user.intent.present? %>
               <label class="switch">
                 <input id="get-profile-intent" type="checkbox" /> 
                 <span class="slider round"></span>
@@ -27,7 +27,7 @@
           </div>
         </div>
         <div class="checkbox-form-group row">
-          <%= form_for user,
+          <%= form_for current_user,
                        url: '',
                        html: { multipart: true } do |f| %>
 
@@ -35,12 +35,12 @@
                 <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
                 <% intended_use.each do |use| %>
                   <div class="col-xs-12 col-sm-6">
-                  <%= f.check_box 'intent', { multiple: true, checked: (user.intent.include? use) }, use, false %>
+                  <%= f.check_box 'intent', { multiple: true, checked: (current_user.intent.include? use) }, use, false %>
                   <%= f.label :intent, use, :class => 'cb' %>
                   </div>
                 <% end %>
                 <div class="col-xs-12 col-sm-6">
-                  Other: <%= f.text_field 'intent', { multiple: true, value: user.other_intent } %>
+                  Other: <%= f.text_field 'intent', { multiple: true, value: current_user.other_intent } %>
                 </div>
               </div>
 

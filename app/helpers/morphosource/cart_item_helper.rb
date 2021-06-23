@@ -143,11 +143,9 @@ module Morphosource::CartItemHelper
         else
           content_tag(:button, 'Item in Cart', class: "btn btn-success", disabled: true)
         end
-      elsif item.request_status != "Denied" && 
-        item.request_status != "Canceled" &&
-        item.request_status != "Expired" &&
-        item.request_status != "Cleared" 
-          make_button(item,"Download Item",:download_items_path,"btn btn-info",:get,'')
+      else 
+        make_download_button(item)
+        #make_button(item,"Download Item",:download_items_path,css_class,:get,'')
       end
     else
       case item.request_status
@@ -183,6 +181,12 @@ module Morphosource::CartItemHelper
 
   def make_button(item,text,path,button_class,method,style)
     link_to text, main_app.send(path, item_id: item.id), class: button_class, style: style, method: method
+  end
+
+  def make_download_button(item)
+    tags = ( button_tag("Download Item", class: "btn-download-item btn btn-info btn-xs", data: {item_id: item.id}) ) + 
+      ( link_to item.id, main_app.download_items_path(item_id: item.id), class: "hide", id: 'link-to-download-item-'+item.id.to_s, method: :get )
+    return tags
   end
 
   def date(item,attribute)

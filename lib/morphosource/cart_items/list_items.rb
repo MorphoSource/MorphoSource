@@ -55,6 +55,10 @@ module Morphosource
         items_in_cart.select(&:restricted?)
       end
 
+      def downloadable_all_items
+        cart_items.select(&:downloadable?)
+      end
+
       def page_from_params
         params[:page] ||= 1
       end

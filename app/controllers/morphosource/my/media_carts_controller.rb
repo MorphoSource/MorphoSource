@@ -32,7 +32,11 @@ module Morphosource
       # if a user selects items, get only those - otherwise get all downloadable items
       # an item is downloadable if it is in the cart and downloadable
       def get_downloadable_items
-        @items = id_params ? get_items_by_id(id_params) & downloadable_items : downloadable_items
+        if request.referer.include? 'requests'
+          @items = id_params ? get_items_by_id(id_params) & downloadable_all_items : downloadable_all_items
+        else
+          @items = id_params ? get_items_by_id(id_params) & downloadable_items : downloadable_items
+        end
       end
 
       def destroy_flash

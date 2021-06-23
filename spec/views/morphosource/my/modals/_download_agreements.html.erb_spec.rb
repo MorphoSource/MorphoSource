@@ -38,9 +38,8 @@ RSpec.describe 'morphosource/my/modals/download_agreements.html.erb', type: :vie
   describe 'render the agreement modal' do
 
 		before do	  
-      view.instance_variable_set(:@user, user)
       allow(media_presenter).to receive(:media).and_return(media)
-      render 'morphosource/my/modals/download_agreements'
+      render 'morphosource/my/modals/download_agreements', user: user
   	end
 
     it 'contains the agreement modal id, with checkbox, and disabled button' do

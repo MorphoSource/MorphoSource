@@ -11,6 +11,8 @@ module Morphosource
 
       before_action :tab_variables, only: [:index]
 
+      before_action :set_facet_limit, only: [:index]
+
       def index
         # The user's collections for the "add to collection" form
         @user_collections = collections_service.search_results(:deposit)
@@ -37,6 +39,11 @@ module Morphosource
       def facet
         @viewable_collections_ids = collections_service.search_results(:read).map(&:id)
         super
+      end
+
+      # sets the facet limit for dashboard media & objects pages
+      def ms_default_facet_limit
+        current_user.admin? ? 15 : nil
       end
 
     end

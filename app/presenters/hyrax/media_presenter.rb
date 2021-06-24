@@ -341,13 +341,12 @@ module Hyrax
       @this_media_and_parents_id_list = parent_media_id_list << solr_document.id
       @this_media_and_parents_members = parent_media_members << this_media_member
 
-      # get processing event:  media < processing_event
-      # then get processing event data: activity items, child/parent IDs and member presenters
-      @processing_events = ProcessingEvent
-        .where('member_ids_ssim' => this_media_and_parents_id_list)
-        .sort_by { |x| this_media_and_parents_id_list.index(x.member_ids&.first) || -1 }
+      # start with the current media and go up to top media in the hierarchy and get processing events in order
+      @processing_events = ordered_processing_events(direct_parent_id)
+
       processing_event_ids = []
       @processing_events_data = []
+
       processing_events.each do |pe|
         processing_event_ids << pe.id
 
@@ -388,7 +387,6 @@ module Hyrax
         .inject(0) { |sum, x| sum + x }
       @this_media_processing_event = processing_events
         .find { |pe| pe.member_ids.include? solr_document.id }
-
       # If processing events exist and the topmost PE has no parent members, this hierarchy is absentee parent
       @is_absentee_parent = @processing_events_data&.first&.[](:parent_members) == []
 
@@ -400,7 +398,7 @@ module Hyrax
         @imaging_event_editable = false
         @direct_parent_first_member = @direct_parent_members.first
         @raw_or_derived = "Derived"
-        @direct_parent_members_raw_or_derived = "Raw"
+        @direct_parent_members_raw_or_derived = direct_parent_raw_or_derived?(target_media)
       else
         @imaging_event_editable = true
         # check if this is a Derived media with "absentee parent" by checking if PE exists
@@ -425,8 +423,8 @@ module Hyrax
       if @imaging_event.present?
         imaging_event_exist = true
 
-        physical_object = ActiveFedora::Base.find(@imaging_event.physical_object_id.to_a)&.first if @imaging_event.physical_object_id.present? 
-        if physical_object.present? 
+        physical_object = ActiveFedora::Base.find(@imaging_event.physical_object_id.to_a)&.first if @imaging_event.physical_object_id.present?
+        if physical_object.present?
           if physical_object.class == BiologicalSpecimen
             biological_specimen = physical_object
             @physical_object_title = biological_specimen.title.first
@@ -471,7 +469,7 @@ module Hyrax
           @device_and_facility = @device_label
           @device_and_facility += ", " + @device_organization_institution if @device_organization_institution.present?
           @device_link = "/concern/devices/" + device.id
-          
+
           @device_description = device.description&.first
           @device_modality = device.modality&.first
           @device_modality_term = Morphosource::ModalitiesService.new.label(device.modality&.first)
@@ -705,5 +703,33 @@ module Hyrax
         display_value
       end
 
+      def direct_parent_raw_or_derived?(direct_parent)
+        direct_parent.in_works.first.processing_event? ? "Derived" : "Raw"
+      end
+
+      def ordered_processing_events(direct_parent_id)
+        ordered_events = []
+        return ordered_events if @media.is_raw?
+        ordered_events << @media.processing_event
+        return ordered_events unless direct_parent_id.present? # derived with absentee parent
+        # collect the processing events between the direct parent and @media in order
+        immediate_parent = @media.processing_event&.in_works.select(&:media?).first
+        return ordered_events unless immediate_parent.present?
+        ordered_events << immediate_parent.processing_event
+        while immediate_parent.id != direct_parent_id do
+          immediate_parent = immediate_parent.processing_event.in_works.select(&:media?).first
+          ordered_events << immediate_parent.processing_event if immediate_parent.present?
+        end
+        ordered_events.compact.reverse
+      end
+
   end
 end
+
+
+
+
+
+
+
+

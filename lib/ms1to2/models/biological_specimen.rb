@@ -44,7 +44,7 @@ module Ms1to2
       end
 
       def expected_special_fields
-        [:depositor, :parent_id, :collection_id]
+        [:depositor, :parent_id]
       end
     end
   end

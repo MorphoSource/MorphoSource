@@ -195,6 +195,7 @@ ActiveRecord::Schema.define(version: 2021_06_11_190706) do
     t.float "external_user_additional_rate_percent"
     t.string "identifier"
     t.boolean "chargeable", default: false, null: false
+    t.string "invoice_number"
     t.index ["user_id"], name: "index_fund_codes_on_user_id"
   end
 

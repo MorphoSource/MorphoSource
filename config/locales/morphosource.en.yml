@@ -12,12 +12,15 @@ en:
       sidebar:
         downloads: 'Downloads'
         fund_codes: 'Fund Codes'
+        fund_code_charges: 'Fund Code Charges'
         media_cart: 'Media Cart'
         previous_downloads: 'Previous Downloads'
         requests: 'Requests'
         manage_requests: 'Manage Requests'
       fund_codes:
         header: 'Fund Code Control Panel'
+      fund_code_charges:
+        header: 'Fund Code Charges'
     base:
       form_progress:
         required_format: 'File formats match selected media type'
@@ -30,6 +33,18 @@ en:
           desc: 'Add a project to this team'
           button_label: 'Add a Project'
     dashboard:
+      landing_page:
+        title: 'MorphoSource Dashboard'
+        full_text:
+          become_a_contributor: In order to upload media or create projects or teams on MorphoSource, you must first request contributor status. Send an email to the MorphoSource administrators (<a href="mailto:morphosource@duke.edu">morphosource@duke.edu</a>) with your name, academic affiliation, the email address of your MorphoSource account, the source and nature of the data you plan to contribute, and, if possible, an estimate of the overall size of the data.
+        hints:
+          new_media: You can add media to an existing project or team during the Media Details step of submission. Alternately, go to the project or team page and submit your media from there.
+          my_projects: All projects you created or are a member of are listed here.
+          my_teams: All teams you created or are a member of are listed here.
+          my_media_and_objects: You can see all the media you have view, download, or edit access to here. You can also see all physical objects associated with those media.
+          my_media_cart: If you have previously added media to your cart, they are listed here. You can download some or all of those media together at once. You can also start a download request for one or more restricted media you have previously added to your media cart.
+          my_pending_requests: If you have previously requested to download restricted media, you can view the status of those requests here.
+          requests_manager: If you have published media with restricted download and other users have requested access, those requests are here. You can approve, deny, or clear requests.
       my:
         fund_codes:
           header: 'Fund Codes'

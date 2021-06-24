@@ -5,10 +5,12 @@ module Ms1to2
   class CSVParser
     include Enumerable
 
-    attr_reader :file_name
+    attr_reader :file_name, :skip_blanks, :split_values
 
-    def initialize(file_name)
+    def initialize(file_name, skip_blanks = true, split_values = true)
       @file_name = file_name
+      @skip_blanks = skip_blanks
+      @split_values = split_values
     end
 
     def headers
@@ -19,6 +21,12 @@ module Ms1to2
     def each(&_block)
       as_csv_table.each do |row|
         yield attributes(headers, row)
+      end
+    end
+
+    def each_with_index(&_block)
+      as_csv_table.each_with_index do |row, index|
+        yield attributes(headers, row), index
       end
     end
 
@@ -37,14 +45,19 @@ module Ms1to2
     end
 
     def extract_field(header, val, processed)
-      return unless val
+      return if skip_blanks && !val.present?
+      val = '' if !val.present?
       extract_multi_value_field(header, val, processed)
     end
 
     def extract_multi_value_field(header, val, processed, key = nil)
       key ||= header.to_sym
       processed[key] ||= []
-      processed[key] += val.split(";").map(&:strip)
+      if split_values
+        processed[key] += val.split(";").map(&:strip)
+      else
+        processed[key] += val.present? ? Array(val) : []
+      end
     end
 
     def as_csv_table

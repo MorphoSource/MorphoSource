@@ -575,6 +575,21 @@ module Hyrax
                                 "Edit" => "edit" }
     end
 
+    attr_writer :ms_permission_levels
+    def ms_permission_levels
+      @ms_permission_levels ||= { "View access" => "read",
+                               "Download access" => "download",
+                               "Edit access" => "edit" }
+    end
+
+    attr_writer :ms_permission_options
+    def ms_permission_options
+      @ms_permission_options ||= { "Choose Access" => "none",
+                                "View" => "read",
+                                "Download" => "download",
+                                "Edit" => "edit" }
+    end
+
     attr_writer :translate_uri_to_id
 
     def translate_uri_to_id
@@ -615,6 +630,37 @@ module Hyrax
                     else
                       default_uploader_config
                     end
+    end
+
+    # Packrat API fields
+    attr_writer :packrat_api_endpoint_client_id
+    def packrat_api_endpoint_client_id
+      @packrat_api_endpoint_client_id ||= nil
+    end
+
+    attr_writer :packrat_api_service_url
+    def packrat_api_service_url
+      @packrat_api_service_url ||= nil
+    end
+
+    attr_writer :packrat_api_oidc_long_lived_token
+    def packrat_api_oidc_long_lived_token
+      @packrat_api_oidc_long_lived_token ||= nil
+    end
+
+    attr_writer :packrat_api_idms_token_exchange_url
+    def packrat_api_idms_token_exchange_url
+      @packrat_api_idms_token_exchange_url ||= nil
+    end
+
+    attr_writer :packrat_api_endpoint
+    def packrat_api_endpoint
+      @packrat_api_endpoint ||= nil
+    end
+
+    attr_writer :packrat_api_volume_id
+    def packrat_api_volume_id
+      @packrat_api_volume_id ||= nil
     end
 
     attr_accessor :nested_relationship_reindexer

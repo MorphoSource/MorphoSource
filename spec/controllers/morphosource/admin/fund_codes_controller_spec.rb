@@ -16,6 +16,7 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
             title: 'Test Title', 
             description: 'Test Description',
             external_user: false,
+            chargeable: false
           }
         } 
       }
@@ -48,6 +49,7 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
             title: 'Test Title', 
             description: 'Test Description',
             external_user: false,
+            chargeable: false,
             managers: manager.user_key.to_s, 
             standard_members: "#{member1.user_key},#{member2.user_key}"
           } 
@@ -80,7 +82,8 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
           { 
             title: 'Test Title', 
             description: 'Test Description',
-            external_user: false
+            external_user: false,
+            chargeable: false
           }
         } 
       }
@@ -95,7 +98,7 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
 
   describe 'PATCH #update' do
     let(:user) { User.create(email: 'user@email.com', password: 'password')}
-    let(:fc) { FundCode.new(title: 'Test Title', description: 'Test Description', user: user)}
+    let(:fc) { FundCode.new(title: 'Test Title', description: 'Test Description', chargeable: false, user: user)}
 
     before do 
       allow(controller).to receive(:current_user) { user }
@@ -179,7 +182,7 @@ RSpec.describe Morphosource::Admin::FundCodesController, :type => :controller do
 
   describe 'DELETE #delete' do
     let(:user) { User.create(email: 'user@email.com', password: 'password')}
-    let(:fc) { FundCode.new(title: 'Test Title', description: 'Test Description', user: user)}
+    let(:fc) { FundCode.new(title: 'Test Title', description: 'Test Description', chargeable: false, user: user)}
     let(:delete_params) { { id: fc.id } }
 
     before do 

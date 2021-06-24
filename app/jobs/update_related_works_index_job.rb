@@ -2,7 +2,7 @@
 
 # Called from Morphosource::IndexRelatedWorks
 
-class UpdateRelatedWorksIndexJob < Hyrax::ApplicationJob
+class UpdateRelatedWorksIndexJob < ApplicationJob
 
   def perform(works)
     return if works.blank?

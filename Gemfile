@@ -44,6 +44,9 @@ gem 'resque'
 gem 'resque-pool'
 gem 'resque-web', require: 'resque_web'
 
+# for storing and reading ActiveJob status
+gem 'activejob-status'
+
 gem 'puma', '~> 3.12'
 
 gem 'rubyzip'

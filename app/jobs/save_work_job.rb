@@ -1,4 +1,4 @@
-class SaveWorkJob < Hyrax::ApplicationJob
+class SaveWorkJob < ApplicationJob
 
   queue_as Hyrax.config.reindex_queue_name
 

@@ -1,4 +1,4 @@
-class UpdateWorkMetadataJob < Hyrax::ApplicationJob
+class UpdateWorkMetadataJob < ApplicationJob
 
   queue_as Hyrax.config.reindex_queue_name
 

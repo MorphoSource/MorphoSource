@@ -41,9 +41,29 @@ module Morphosource
       my_active_requests.find{|item| item.work_id == work_id}
     end
 
+    def usage
+      @usage ||= begin
+        if request.params['usage'].present?
+          ActionController::Base.helpers.sanitize(request.params['usage'])
+        else
+          nil
+        end
+      end
+    end
+
+    def usage_list
+      @usage_list ||= begin
+        if request.params['usage_list'].present?
+          @usage_list ||= ActionController::Base.helpers.sanitize(request.params['usage_list'])
+        else
+          nil
+        end
+      end
+    end
+
     def create_downloaded_item(work_id)
       item = create_cart_item(work_id)
-      item.update_attributes(in_cart: false, date_downloaded: Time.now)
+      item.update_attributes(in_cart: false, date_downloaded: Time.now, download_usage: usage, download_usage_list: usage_list) if item.present?
     end
 
     def downloadable_item_for_work?(work_id)
@@ -72,6 +92,8 @@ module Morphosource
         item.date_cleared = nil
         item.send(attribute, value)
         item.action_by = current_user.ms_id if manager_action
+        item.download_usage = usage if usage.present?
+        item.download_usage_list = usage_list if usage_list.present?
         item.save
       end
     end

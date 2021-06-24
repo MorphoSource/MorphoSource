@@ -38,6 +38,7 @@ RSpec.describe 'morphosource/my/modals/download_agreements.html.erb', type: :vie
   describe 'render the agreement modal' do
 
 		before do	  
+      allow(view).to receive(:current_user).and_return(user)
       allow(media_presenter).to receive(:media).and_return(media)
       render 'morphosource/my/modals/download_agreements'
   	end

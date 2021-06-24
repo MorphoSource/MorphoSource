@@ -7,6 +7,10 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
   include_context 'cart items'
 
+  before do
+    allow(controller).to receive(:is_requests_page?).and_return(false)
+  end
+
   describe "GET #index" do
 
     before do

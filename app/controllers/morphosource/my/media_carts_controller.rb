@@ -27,12 +27,17 @@ module Morphosource
         redirect_back(fallback_location: my_cart_path)
       end
 
+      def is_requests_page?
+        request.referer.include? 'requests'
+      end
+
+
       private
 
       # if a user selects items, get only those - otherwise get all downloadable items
       # an item is downloadable if it is in the cart and downloadable
       def get_downloadable_items
-        if request.referer.include? 'requests'
+        if is_requests_page? 
           @items = id_params ? get_items_by_id(id_params) & downloadable_all_items : downloadable_all_items
         else
           @items = id_params ? get_items_by_id(id_params) & downloadable_items : downloadable_items

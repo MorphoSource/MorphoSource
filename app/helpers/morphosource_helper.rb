@@ -380,8 +380,11 @@ module MorphosourceHelper
 
   # used when editing team projects, populates select list of projects that can be added to the team
   def eligible_child_projects
-    projects = ActiveFedora::Base.where("human_readable_type_sim:Project").accessible_by(current_ability, :edit)
-    projects.select { |p| p.member_of_collection_ids.blank? }
+    if current_user.admin?
+      Morphosource::SolrService.new.get_docs('human_readable_type_sim:Project NOT member_of_collection_ids_ssim:*')
+    else
+      Morphosource::Collections::NestedCollectionQueryService.available_project_collections(parent: @collection, scope: controller)
+    end
   end
 
   def grouped_access_list(f)
@@ -389,12 +392,12 @@ module MorphosourceHelper
     groups = []
     individual_list = []
     access_user_list = {}
-    f.fields_for :permissions do |permission_fields| 
+    f.fields_for :permissions do |permission_fields|
       role_name = permission_fields.object.agent_name
-      user_list = user_list_by_role(role_name) 
-      # skip the public, registered, and depositor perms as they are displayed first at the top 
-      next if ( ['admin', 'public', 'registered', depositor].include? role_name.downcase )     
-      if user_list.empty? 
+      user_list = user_list_by_role(role_name)
+      # skip the public, registered, and depositor perms as they are displayed first at the top
+      next if ( ['admin', 'public', 'registered', depositor].include? role_name.downcase )
+      if user_list.empty?
         unless role_name.include? '_'
           individual_list << permission_fields
         end
@@ -402,7 +405,7 @@ module MorphosourceHelper
         groups << role_name.split('_').first
         access_user_list[role_name] = user_list.join(', ')
       end
-    end 
+    end
     group_list = {}
     groups.uniq.each do |g|
       group_list[g] = access_user_list.select { |k,v| k.include? g }.values.join(', ')
@@ -412,9 +415,9 @@ module MorphosourceHelper
 
   def group_title_link(id)
     collection = Collection.find(id)
-    if collection.present? 
+    if collection.present?
       if collection.project?
-        source = 'Project: ' + '<a href="/projects/' + collection.id + '">' + collection.title.first + '</a>' 
+        source = 'Project: ' + '<a href="/projects/' + collection.id + '">' + collection.title.first + '</a>'
       elsif collection.team?
         source = 'Team: ' + '<a href="/teams/' + collection.id + '">' + collection.title.first + '</a>'
         if collection.organization_name.present?
@@ -429,17 +432,17 @@ module MorphosourceHelper
 
   def user_list_by_role(access)
     list = []
-    Role.find_by(name: access)&.users&.each do |u| 
+    Role.find_by(name: access)&.users&.each do |u|
       if u.display_name
         user_display = u.display_name
       else
         user_display = u.email
       end
-      if access.split('_').length == 2      
+      if access.split('_').length == 2
         user_display += " (" + access.split('_')[1].singularize + ")"
       end
       list << user_display
-    end 
+    end
     return list
   end
 

@@ -9,8 +9,9 @@
         <%= form_tag(dashboard_create_nest_collection_under_path(id), method: :post, id: 'modal-form', :class => "form-horizontal") do %>
           <select name="child_id" style="width: 60%">
             <option value="none"><%= t("hyrax.dashboard.my.action.select") %></option>
+            <%# list of projects the user can edit and that don't have a parent already %>
             <% eligible_child_projects.each {|project| %>
-              <option value="<%= project.id %>"><%= project.title.first %></option>
+              <option value="<%= project["id"] %>"><%= project["title_tesim"].first %></option>
             <% } %>
           </select>
       </div>

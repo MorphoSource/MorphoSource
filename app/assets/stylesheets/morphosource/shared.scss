@@ -86,6 +86,9 @@ $ms-dark-blue: #002c64;
 .text-disabled {
   color: $disabled-font-color;
 }
+.outline-red {
+  outline: 1px solid red;
+}
 .fw-normal {
   font-weight: normal !important;
 }
@@ -173,13 +176,13 @@ $ms-dark-blue: #002c64;
     font-size:22px;
   }
   .agreement-content {
-    font-size: 11px;
+    font-size: 14px;
     li {
-      font-size: 11px;
+      font-size: 12px;
       margin-left: -20px;
     }
     .agreement-items-wrapper {
-      font-size: 11px;
+      font-size: 12px;
     }      
   }
 }

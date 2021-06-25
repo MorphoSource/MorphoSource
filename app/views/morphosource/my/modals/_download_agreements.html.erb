@@ -8,11 +8,11 @@
       </div>
       <div class="modal-body">
 
-        <label>Please describe your intended usage:</label>
+        <label id="describe-usage">Please describe your intended usage:</label>
         <textarea id="custom-usage" rows="3" class="w-100"></textarea>
         <i id="char-alert">50 characters minimum: <span id="rchars">0</span></i>
 
-        <p style="margin-top:20px"><label>Please select one or more categories that match your intended usage:</label></p>
+        <p style="margin-top:20px"><label id="select-categories">Please select one or more categories that match your intended usage:</label></p>
         <div class="row">
           <div class="col-xs-12">
             <% if current_user.intent.present? %>

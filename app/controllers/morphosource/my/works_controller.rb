@@ -4,7 +4,8 @@ module Morphosource
       include Morphosource::My::WorksControllerBehavior
       include Morphosource::My::WorksHelper
 
-      class_attribute :create_work_presenter_class
+      class_attribute :create_work_presenter_class, :filtered_facets
+      
       self.create_work_presenter_class = Hyrax::SelectTypeListPresenter
 
       with_themed_layout 'morphosource_dashboard'
@@ -23,7 +24,8 @@ module Morphosource
         @create_work_presenter = create_work_presenter_class.new(current_user)
         @user = current_user
         (@response, @document_list) = query_solr
-        @viewable_collections_ids = collections_service.search_results(:read).map(&:id)
+        get_viewable_collections_ids
+        filter_facets
         prepare_instance_variables_for_batch_control_display
         respond_to do |format|
           format.html {
@@ -34,16 +36,32 @@ module Morphosource
         end
       end
 
+      # remove collections from team and project facets that the user is not able to view
+      def filter_facets
+        return if current_user.admin?
+        filtered_facets.each do |facet|
+          items = @response.aggregations[facet].items
+          unauthorized_items = unauthorized_items(items)
+          unauthorized_items.each do |item|
+            items.delete(item)
+          end
+        end
+      end
+
       # displays values and pagination links for a single facet field
       # overrides Blacklight 6.23.0 app/controllers/concerns/blacklight/catalog
       def facet
-        @viewable_collections_ids = collections_service.search_results(:read).map(&:id)
+        get_viewable_collections_ids
         super
       end
 
       # sets the facet limit for dashboard media & objects pages
       def ms_default_facet_limit
-        current_user.admin? ? 15 : nil
+        current_user.admin? ? 15 : 999999
+      end
+
+      def get_viewable_collections_ids
+        @viewable_collections_ids ||= Hyrax::Collections::PermissionsService.collection_ids_for_view(ability: current_ability)
       end
 
     end

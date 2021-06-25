@@ -38,33 +38,6 @@ module Morphosource
         Morphosource::PhysicalObjectMediaSearchService.new(self, id).search_results.count
       end
 
-      # Overrides https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/facets_helper_behavior.rb#L63
-      # Removes projects and teams from facets when the user does not have read access to them.
-      def render_facet_item(facet_field, item)
-        return nil if unauthorized_facet_item?(facet_field, item)
-        super
-      end
-
-      def unauthorized_facet_item?(facet_field, item)
-        return false unless filtered_facet?(facet_field)
-        return false if current_user && current_user.admin?
-        return true if item_unauthorized?(item)
-        false
-      end
-
-      def filtered_facet?(facet_field)
-        filtered_facets = ["member_of_project_ids_ssim",
-                           "member_of_team_ids_ssim",
-                           "media_member_of_project_ids_ssim",
-                           "media_member_of_team_ids_ssim"]
-        filtered_facets.include? facet_field
-      end
-
-      # An item is unauthorized if its value (collection id) is not included in the array of ids a user is able to read.
-      def item_unauthorized?(item)
-        !@viewable_collections_ids.include? item.value
-      end
-
     end
   end
 end

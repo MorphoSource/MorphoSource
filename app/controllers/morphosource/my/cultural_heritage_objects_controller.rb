@@ -25,6 +25,10 @@ module Morphosource
 
       private
 
+        def filtered_facets
+          ["media_member_of_project_ids_ssim", "media_member_of_team_ids_ssim"]
+        end
+
         def search_action_url(*args)
           main_app.my_cultural_heritage_objects_path(*args)
         end

@@ -351,11 +351,10 @@ module Hyrax
         processing_event_ids << pe.id
 
         processing_activity_items = []
-        pe.processing_activity.each do |processing_activity|
-          processing_activity_items << Hash[processing_activity.split(/\s*,\s*/).map {|el| el.split ': '}]
+        pe.processing_activity.each do |pa|
+          processing_activity_items << processing_activity_hash(pa)
         end
         processing_activity_items.sort_by! { |hsh| hsh["Step"] }
-
         parent_ids = []
         parent_ids = pe.in_work_ids.select { |m_id| parent_media_id_list.include? m_id }
 
@@ -723,13 +722,23 @@ module Hyrax
         ordered_events.compact.reverse
       end
 
+      def processing_activity_hash(pa_string)
+        # match text between 'Step: ' at beginning of line to ', Type: '
+        step = /(?<=^Step: ).*?(?=, Type: )/.match(pa_string)
+        # match text between ', Type: ' and ', Software: '
+        type = /(?<=, Type: ).*?(?=, Software: )/.match(pa_string)
+        # match text between ', Software: ' and ', Description: '
+        software = /(?<=, Software: ).*?(?=, Description: )/.match(pa_string)
+        # match text between ', Description: ' and the end of the line
+        description = /(?<=, Description: ).*?(\z)/.match(pa_string)
+
+        h = {}
+        h["Step"] = step.nil? ? '' : step[0].strip
+        h["Type"] = type.nil? ? '' : type[0].strip
+        h["Software"] = software.nil? ? '' : software[0].strip
+        h["Description"] = description.nil? ? '' : description[0].strip
+        h
+      end
+
   end
 end
-
-
-
-
-
-
-
-

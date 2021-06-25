@@ -15,7 +15,9 @@ module Morphosource
       def download
         get_downloadable_items
         get_work_ids_by_items
-        redirect_to main_app.zip_path(ids: @work_ids)
+        usage = request.params['usage'].present? ? request.params['usage'] : ''
+        usage_list = request.params['usage_list'].present? ? request.params['usage_list'] : ''
+        redirect_to main_app.zip_path(ids: @work_ids, usage: usage, usage_list: usage_list)
       end
 
       def destroy
@@ -25,12 +27,21 @@ module Morphosource
         redirect_back(fallback_location: my_cart_path)
       end
 
+      def is_requests_page?
+        request.referer.include? 'requests'
+      end
+
+
       private
 
       # if a user selects items, get only those - otherwise get all downloadable items
       # an item is downloadable if it is in the cart and downloadable
       def get_downloadable_items
-        @items = id_params ? get_items_by_id(id_params) & downloadable_items : downloadable_items
+        if is_requests_page? 
+          @items = id_params ? get_items_by_id(id_params) & downloadable_all_items : downloadable_all_items
+        else
+          @items = id_params ? get_items_by_id(id_params) & downloadable_items : downloadable_items
+        end
       end
 
       def destroy_flash

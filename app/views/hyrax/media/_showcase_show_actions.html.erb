@@ -1,12 +1,21 @@
 <div class="show-actions">
-  <div class="btn-group" style="display: flex; justify-content: center; flex-wrap: wrap;">
-    <%= hidden_download_link(presenter.id) %>
-    <%= choose_download_button %>
-    <%= choose_cart_button %>
-    <% if presenter.editor? %>
-      <%= edit_work_button %>
-    <% end %>
-  </div>
+  <% if presenter.file_set_list.present? %>
+    <div class="btn-group" style="display: flex; justify-content: center; flex-wrap: wrap;">
+      <%= hidden_download_link(presenter.id) %>
+      <%= choose_download_button %>
+      <%= choose_cart_button %>
+      <% if presenter.editor? %>
+        <%= edit_work_button %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="btn-group">
+      <% if presenter.editor? %>
+        <%= edit_work_button %>
+      <% end %>
+    </div>
+  <% end %>
+
   <% unless signed_in? %>
     <div style="display: flex; justify-content: center;">
       <p style="text-align: center;"><%= login_message %></p>

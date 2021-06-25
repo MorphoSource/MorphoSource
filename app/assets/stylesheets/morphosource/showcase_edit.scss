@@ -16,7 +16,7 @@
   border-color: transparent;
 }
 
-input.disabled {
+input[type=checkbox].disabled {
   padding: 6px 12px;
   margin: inherit;
 }

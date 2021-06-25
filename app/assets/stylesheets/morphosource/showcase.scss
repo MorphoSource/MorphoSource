@@ -1,5 +1,5 @@
 @import 'shared';
-
+ 
 /* set box sizing for the circles and line in between */
 html {
   box-sizing: border-box !important;
@@ -10,12 +10,26 @@ html {
   box-sizing: inherit !important;
 }
 
-.showcase.cart {
-  input.batch_document_selector, input.disabled {
-    margin: 4px 0 0;
-  }
-}
 
+.showcase.cart {
+  input.batch_document_selector, input[type=checkbox].disabled {
+    margin: 4px 0 0 !important;
+  }
+  input[type=text].disabled {
+    margin: unset;
+  }
+
+  .modal-dialog {
+    input[type=checkbox].disabled {
+      margin: 0 !important;
+    }
+    input[type=text].disabled {
+      margin: unset;
+      padding: 1px 2px !important;
+    }
+  }
+
+}
 /*
 .showcase.teams, 
 .showcase.media-works, 
@@ -26,6 +40,51 @@ html {
 .showcase.transfer
 */
 .showcase { 
+
+  input.batch_document_selector,
+  input.disabled {
+    margin: initial;
+    padding: 5px 10px;
+  }
+
+  .modal-dialog {
+    input[type=checkbox].disabled {
+      margin: 0 !important;
+    }
+    input[type=text].disabled {
+      margin: unset;
+      padding: 1px 2px !important;
+    }
+  }
+
+  .modal-dialog.modal-wide {
+    width: 90%;
+    @media (min-width: 769px) {
+      max-width: 950px;
+    }
+  }
+
+  .switch-label {
+    font-size: 13px;
+    vertical-align: bottom;
+  }
+
+  .profile-checkbox-list {
+    [type="checkbox"] {
+      width: 11px;
+      margin-top: 0;
+      vertical-align: top;
+    }
+    label.cb {
+      font-size: 12px;
+    }    
+  }
+  label.cb {
+    display: block;
+    margin-top: -22px;
+    margin-left: 18px;
+    font-weight: normal;
+  }
   .super-title {
     font-size: 18px;
     color: #888;

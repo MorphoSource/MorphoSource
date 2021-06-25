@@ -39,4 +39,5 @@ po_type, po_title, taxonomy = object_details(document)
   <td><%= date(item,'canceled') %></td>
   <td><%= date(item,'expired') %></td>
   <td><%= item_action_button(item) %></td>
+  <%= render 'morphosource/my/cart/download_agreements_container', presenter: presenter, item_id: item.id %>
 </tr>

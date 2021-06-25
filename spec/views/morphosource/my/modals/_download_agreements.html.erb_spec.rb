@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe 'morphosource/my/modals/download_agreements.html.erb', type: :view do
   
+  let(:user)      { User.new( id: 1, email: "example@email.com", display_name: "D. Name", ms_id: "msid123") }
   let(:agreement_uri) {'http://foobar.com/agreement_uri.pdf'}
-
   let(:expected_description) {"Permissive (Commercial Use Permitted, Encouraged But Not Required, 3D Printing Permitted)"}
 
 	let(:work_solr_document) do
@@ -38,6 +38,7 @@ RSpec.describe 'morphosource/my/modals/download_agreements.html.erb', type: :vie
   describe 'render the agreement modal' do
 
 		before do	  
+      allow(view).to receive(:current_user).and_return(user)
       allow(media_presenter).to receive(:media).and_return(media)
       render 'morphosource/my/modals/download_agreements'
   	end

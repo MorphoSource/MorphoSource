@@ -308,38 +308,34 @@ RSpec.describe MorphosourceHelper, type: :helper do
   end
 
   describe 'eligible_child_projects' do
-    let(:depositor)               { User.create(email: 'depositor@email.com', password: 'password') }
-    let(:user)                    { User.create(email: 'email@email.com', password: 'password') }
-    let(:ability)                 { Ability.new(user) }
     let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-    let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
-    let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
-    let!(:projectA)               { Collection.create(title: ['ProjectA'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
-    let(:projectB)                { Collection.create(title: ['ProjectB'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
-    let(:projectC)                { Collection.create(title: ['ProjectC'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
-    let(:projectD)                { Collection.create(title: ['ProjectD'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
-    let(:projects)                { [projectA, projectB, projectC, projectD] }
+    let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
+
+    let(:user)  { double('user') }
 
     before do
-      projects.each do |project|
-        project.create_collection_groups
-        Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
+      allow(helper).to receive(:current_user).and_return(user)
+      helper.instance_variable_set(:@collection, team)
+    end
+
+    context 'user is an admin' do
+      before do
+        allow(user).to receive(:admin?).and_return(true)
       end
-      projectD.member_of_collections << team
-      projectB.edit_users += [user]
-      projectC.managers << user
-      projectC.managers_group.save
-      projectD.managers << user
-      projectD.managers_group.save
-      projects.each(&:save!)
-      user.reload
-      allow(helper).to receive(:current_ability).and_return(ability)
+      it 'calls Morphosource::SolrService' do
+        expect(Morphosource::SolrService).to receive_message_chain(:new, :get_docs).with('human_readable_type_sim:Project NOT member_of_collection_ids_ssim:*')
+        helper.eligible_child_projects
+      end
     end
 
-    it 'returns projects the user can edit, that are not child projects of another team' do
-      # user can't edit projectA, user can edit project D, but it is already a subcollection
-      expect(helper.eligible_child_projects).to match_array([projectB,projectC])
+    context 'user is not an admin' do
+      before do
+        allow(user).to receive(:admin?).and_return(false)
+      end
+      it 'calls Morphosource::Collections::NestedCollectionQueryService' do
+        expect(Morphosource::Collections::NestedCollectionQueryService).to receive(:available_project_collections).with(parent: team, scope: controller)
+        helper.eligible_child_projects
+      end
     end
-
   end
 end

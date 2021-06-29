@@ -421,4 +421,106 @@ namespace :morphosource do
     end
   end
 
+  desc 'Find, generate and assign 2D preview images for project media'
+  task :find_and_set_preview_for_project_media, [:project_id, :delete_only, :delete_dry_run] => :environment do |task, args|
+
+    project_id = args[:project_id]
+    if project_id.nil?
+      puts "no project ID"
+    else
+
+      if args[:delete_only].present? && args[:delete_only] == "true"
+        delete_only = true
+      else
+        delete_only = false
+      end
+      puts "delete_only = " + delete_only.to_s
+      if args[:delete_dry_run].present? && args[:delete_dry_run] == "true"
+        delete_dry_run = true
+      else
+        delete_dry_run = false
+      end
+      puts "delete_dry_run = " + delete_dry_run.to_s
+
+      match_media = {}
+      report_list = []
+      proj_image_qry = "member_of_project_ids_ssim:#{project_id} AND has_model_ssim:Media AND media_type_tesim:Image"
+      media_solr = ActiveFedora::SolrService.query(proj_image_qry, rows: 999999)
+      media_solr.each do |image_media_hit|
+        image_media = Media.find(image_media_hit.id)
+        image_pe = ProcessingEvent.where('member_ids_ssim' => image_media.id)&.first
+        if image_pe.present?
+          ie = ImagingEvent.where('member_ids_ssim' => image_pe.id)&.first
+        end
+        if ie.present?
+          pe_list = ie.members.select{ |o| o.processing_event? } 
+          image_list = []
+          mesh_list = []
+          pe_list.each do |p|
+            medias = p.members.select{ |o| o.media? }
+            medias.each do |m|                                
+              if m.media_type == ["Image"]
+                image_list << m.id 
+              elsif m.media_type == ["Mesh"]
+                mesh_list << m.id
+              end
+            end
+          end
+          if image_list.count == 1 && mesh_list.count == 1 && image_list.first == image_media.id
+            if delete_only == true
+              puts 'Deleting Image ' + image_media.id
+              unless delete_dry_run == true
+                image_media.destroy
+                puts 'Image ' + image_media.id + ' destroyed'
+              end
+            else
+              match_media[mesh_list.first] = image_media.id
+              puts 'MATCH: Image ' + image_media.id + ' will be set as preview for Mesh ' + mesh_list.first  
+              mesh_media = Media.find(mesh_list.first)
+
+              fs = image_media.file_sets&.first
+              if fs.present?
+                new_thumbnail_path = Morphosource::DerivativePath.derivative_path_for_reference(fs.id, 'thumbnail')
+                mesh_thumbnail_path = Hyrax::DerivativePath.derivative_path_for_reference(mesh_media, 'thumbnail')
+                FileUtils.mkdir_p(File.dirname(mesh_thumbnail_path))
+                mesh_thumbnail_url = "file://#{mesh_thumbnail_path}"
+                begin
+                  ::Morphosource::Derivatives::CroppedImageDerivatives.create(
+                    new_thumbnail_path,
+                    outputs: [{
+                      label: :thumbnail,
+                      url: mesh_thumbnail_url,
+                    }]
+                    )
+
+                  mesh_media.thumbnail_id = mesh_media.id
+                  mesh_media.save
+                  puts 'SAVED: Mesh ' + mesh_media.id + ' with Preview Image ' + image_media.id
+                rescue Exception => e
+                  puts "Exception calling CroppedImageDerivatives.create on Mesh " + mesh_media.id + ": " + e.message
+                end
+
+              else
+                puts "File sets not present for Image : " + image_media.id 
+              end
+
+            end
+
+          else
+            
+            puts 'REPORT: IE ' + ie.id + ' has ' + mesh_list.count.to_s + ' mesh type media ' 
+            puts mesh_list.join(', ')
+            puts 'REPORT: IE ' + ie.id + ' has ' + image_list.count.to_s + ' image type media ' 
+            puts image_list.join(', ')
+            report_list << ie.id                
+          end
+        end
+
+      end
+      puts "MATCH MEDIA COUNT: " + match_media.count.to_s
+      puts "REPORT COUNT: " + report_list.count.to_s
+
+    end
+  end # /find_and_set_preview_for_project_media
+
 end

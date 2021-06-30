@@ -10,7 +10,6 @@ module Morphosource
     end
 
     def batch_upload_contributor?
-byebug
       user_groups.include? 'batch_upload_contributor'
     end
 

@@ -86,6 +86,22 @@ RSpec.describe User, type: :model do
       end
     end
 
+    describe '#batch_upload_contributor?' do
+      context 'user is not a batch_upload_contributor' do
+        it 'returns false' do
+          expect(user.batch_upload_contributor?).to be(false)
+        end
+      end
+      context 'user is a batch_upload_contributor' do
+        before do
+          allow(user).to receive(:groups).and_return(['batch_upload_contributor'])
+        end
+        it 'returns true' do
+          expect(user.batch_upload_contributor?).to be(true)
+        end
+      end
+    end
+
     describe '#make_contributor' do
       let(:user) { User.create(email: 'user@email.com', password: 'password') }
       let!(:contributor_group) { Role.create(name: 'contributor') }

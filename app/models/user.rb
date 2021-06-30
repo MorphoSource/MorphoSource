@@ -112,6 +112,10 @@ class User < ApplicationRecord
     end
   end
 
+  def batch_upload_contributor?
+    groups.include? 'batch_upload_contributor'
+  end
+
   def charge_api_user?
     groups.include? 'charge_api'
   end

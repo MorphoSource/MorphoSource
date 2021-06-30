@@ -25,7 +25,7 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
-      property :anonymize_meta_data, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/anonymize_meta_data") do |index|
+      property :anonymize_metadata, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/anonymize_metadata") do |index|
         index.as :stored_searchable, :facetable
       end
 

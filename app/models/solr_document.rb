@@ -886,8 +886,8 @@ class SolrDocument
     self[Solrizer.solr_name('anonymize_origin', :stored_searchable)]
   end
 
-  def anonymize_meta_data
-    self[Solrizer.solr_name('anonymize_meta_data', :stored_searchable)]
+  def anonymize_metadata
+    self[Solrizer.solr_name('anonymize_metadata', :stored_searchable)]
   end
 
   # Derivative download field

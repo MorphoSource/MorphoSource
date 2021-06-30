@@ -6,8 +6,8 @@ class EngineeringObject < Morphosource::Works::Base
 
   self.indexer = EngineeringObjectIndexer
   # Change this to restrict which works can be added as a child.
-  # self.valid_child_concerns = []
-  # validates :title, presence: { message: I18n.t('morphosource.validation.missing.title') }
+  self.valid_child_concerns = []
+  validates :title, presence: { message: I18n.t('morphosource.validation.missing.title') }
 
   include Morphosource::PhysicalObjectMetadata
   include Morphosource::EngineeringObjectMetadata

@@ -9,14 +9,14 @@
 			<%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
 		</div>
 
-    <% unless @presenter.anonymize_meta_data? %>
+    <% unless @presenter.anonymize_metadata? %>
   		<div class="content-block">
   			<%= render @presenter.showcase_collections_partial, presenter: @presenter %>
   		</div>
     <% end %>
 	</div>
 
-  <% unless @presenter.anonymize_meta_data? %>
+  <% unless @presenter.anonymize_metadata? %>
   	<div class="col-sm-6 col-sm-pull-6">
   		<div class="content-block">
   			<%= render @presenter.showcase_general_details_partial, presenter: @presenter %>

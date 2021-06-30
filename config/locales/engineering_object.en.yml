@@ -17,7 +17,7 @@ en:
         assembly_date: 'Assembly Date'
         preparation_notes: 'Object preparation/creation description/notes'
         anonymize_origin: "Anonymize Origin"
-        anonymize_meta_data: "Anonymize Meta Data"
+        anonymize_metadata: "Anonymize Metadata"
     hints:
       engineering_object:
         is_pak: Is PAK
@@ -26,4 +26,4 @@ en:
         assembly_date: 'Assembly Date'
         preparation_notes: 'Object preparation/creation description/notes'
         anonymize_origin: "Anonymize Origin"
-        anonymize_meta_data: "Anonymize Meta Data"
+        anonymize_metadata: "Anonymize Metadata"

@@ -4,7 +4,10 @@ module MassIngest
       extend ActiveSupport::Autoload
 
       autoload :BiologicalSpecimen
+      autoload :CombinedProcessingEventMedia
+      autoload :ImagingEvent
       autoload :MediaGroupIngest
+      autoload :Taxonomy
     end
   end
 end

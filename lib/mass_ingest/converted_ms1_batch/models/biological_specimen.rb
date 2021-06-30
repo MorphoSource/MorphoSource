@@ -1,100 +1,98 @@
 module MassIngest
   module ConvertedMs1Batch
     module Models
-      # Takes multiple individual-media hashes, generates params with relationships and ordering
+      # Takes initial biological specimen attrs and matches to existing, imports from iDigBio, or creates new attributes to work creation
       class BiologicalSpecimen
-        attr_accessor :bso_hash, :depositor, :organization_id
-        attr_accessor :biological_specimen_id, :biological_specimen_matched
-        attr_accessor :biological_specimen_imported, :biological_specimen_params
-        attr_accessor :occurrence_id, :institution_code, :collection_code, :catalog_number
+        attr_accessor :initial_attrs, :depositor, :organization_id
+        attr_accessor :id, :work, :work_imported, :attrs
+        attr_accessor :occurrence_id, :idigbio_uuid, :institution_code, :collection_code, :catalog_number
 
-        def initialize(bso_hash, depositor, organization_id)
-          @bso_hash = bso_hash
+        def initialize(initial_attrs, depositor, organization_id)
+          @initial_attrs = initial_attrs
           @depositor = depositor
           @organization_id = organization_id
 
-          if bso_hash.present? && depositor.present? && organization_id.present?
-            construct_biological_specimen_ingest
+          if initial_attrs.present? && depositor.present? && organization_id.present?
+            prepare_ingest
           end
         end
 
-        def construct_biological_specimen_ingest
-
+        def prepare_ingest
           # match, import, or create BSO
-          if (matched_specimen = match_biological_specimen(bso_hash))
-            @biological_specimen_id = matched_specimen.id
-            @biological_specimen_matched = matched_specimen
-            @biological_specimen_imported = false
-            @biological_specimen_params = nil
-            @occurrence_id = matched_specimen.occurrence_id&.first
-            @institution_code = matched_specimen.institution_code&.first
-            @collection_code = matched_specimen.collection_code&.first
-            @catalog_number = matched_specimen.catalog_number&.first
-          elsif bso_hash[:occurrence_id].present? && (params = import_bso_idigbio(bso_hash[:occurrence_id])).present?
-            @biological_specimen_id = nil
-            @biological_specimen_matched = nil
-            @biological_specimen_imported = true
-            @biological_specimen_params = params
-            @occurrence_id = params['occurrence_id']
-            @institution_code = params['institution_code']
-            @collection_code = params['collection_code']
-            @catalog_number = params['catalog_number']
+          if work.present?
+            @id = work.id
+            @work_imported = false
+            @attrs = nil
+            @occurrence_id = work.occurrence_id&.first
+            @idigbio_uuid = work.idigbio_id&.first
+            @institution_code = work.institution_code&.first
+            @collection_code = work.collection_code&.first
+            @catalog_number = work.catalog_number&.first
+          elsif initial_attrs[:occurrence_id].present? && (imported_attrs = import_work).present?
+            @id = nil
+            @work_imported = true
+            @attrs = imported_attrs
+            @occurrence_id = attrs['occurrence_id']
+            @idigbio_uuid = attrs['idigbio_uuid']
+            @institution_code = attrs['institution_code']
+            @collection_code = attrs['collection_code']
+            @catalog_number = attrs['catalog_number']
           else
-            params = bso_params_from_attrs(bso_hash)
-            @biological_specimen_id = nil
-            @biological_specimen_matched = nil
-            @biological_specimen_imported = false
-            @biological_specimen_params = params
-            @occurrence_id = params[:occurrence_id]&.first
-            @institution_code = params[:institution_code]&.first
-            @collection_code = params[:collection_code]&.first
-            @catalog_number = params[:catalog_number]&.first
+            @id = nil
+            @work_imported = false
+            @attrs = create_new_attributes
+            @occurrence_id = attrs[:occurrence_id]&.first
+            @idigbio_uuid = attrs[:idigbio_uuid]&.first
+            @institution_code = attrs[:institution_code]&.first
+            @collection_code = attrs[:collection_code]&.first
+            @catalog_number = attrs[:catalog_number]&.first
           end
             
           # associate organization if a work is to be created
-          if @biological_specimen_params.present? && @biological_specimen_id.nil?
-            @biological_specimen_params.merge!(
-              organization_id: @organization_id,
-              depositor: @depositor
+          if @attrs.present? && @id.nil?
+            @attrs.merge!(
+              organization_id: [@organization_id],
+              depositor: @depositor.user_key
             )
           end
         end
 
-        def match_biological_specimen(attrs)
-          if (
-              attrs[:id].present? && 
-              ::BiologicalSpecimen.exists?(attrs[:id])
-            )
-            ::BiologicalSpecimen.find(attrs[:id])
-          elsif (
-              attrs[:occurrence_id].present? && 
-              ( oi_bsos = ::BiologicalSpecimen.where(
-                  occurrence_id: attrs[:occurrence_id]
-                )
-              ).present?
-            )
-            oi_bsos.first
-          elsif (
-              attrs[:catalog_number].present? && 
-              ( cc_bsos = ::BiologicalSpecimen.where(
-                  catalog_number: attrs[:catalog_number],
-                  collection_code: attrs[:collection_code],
-                  institution_code: attrs[:institution_code]
-                )
-              ).present?
-            )
-            cc_bsos.first
-          else
-            nil
-          end
+        def work
+          @work ||=
+            if (
+                initial_attrs[:id].present? && 
+                ::BiologicalSpecimen.exists?(initial_attrs[:id]&.first)
+              )
+              ::BiologicalSpecimen.find(initial_attrs[:id])
+            elsif (
+                initial_attrs[:occurrence_id].present? && 
+                ( oi_bsos = ::BiologicalSpecimen.where(
+                    occurrence_id: initial_attrs[:occurrence_id]
+                  )
+                ).present?
+              )
+              oi_bsos.first
+            elsif (
+                initial_attrs[:catalog_number].present? && 
+                ( cc_bsos = ::BiologicalSpecimen.where(
+                    catalog_number: initial_attrs[:catalog_number],
+                    collection_code: initial_attrs[:collection_code],
+                    institution_code: initial_attrs[:institution_code]
+                  )
+                ).present?
+              )
+              cc_bsos.first
+            else
+              nil
+            end
         end
 
-        def import_bso_idigbio(occurrence_id)
-          Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(occurrence_id)
+        def import_work
+          Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(initial_attrs[:occurrence_id])
         end
 
-        def bso_params_from_attrs(attrs)
-          Importer::Factory::BiologicalSpecimenFactory.new(attrs.except(:id)).create_attributes
+        def create_new_attributes
+          Importer::Factory::BiologicalSpecimenFactory.new(initial_attrs.except(:id)).create_attributes
         end
       end
     end

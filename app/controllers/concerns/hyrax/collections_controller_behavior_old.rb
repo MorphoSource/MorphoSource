@@ -1,5 +1,5 @@
 module Hyrax
-  module CollectionsControllerBehavior
+  module OLDCollectionsControllerBehavior
     extend ActiveSupport::Concern
     include Blacklight::AccessControls::Catalog
     include Blacklight::Base
@@ -24,22 +24,67 @@ module Hyrax
       self.membership_service_class = Collections::CollectionMemberService
     end
 
+    # def show
+    #   byebug
+    #   redirect_to_collection_type if @_request.fullpath.include? '/collections/'
+    #   @curation_concern ||= ActiveFedora::Base.find(params[:id])
+    #   presenter
+    #   id = @curation_concern.id
+    #   locale = params[:locale]
+    #   locale = 'en' unless locale.present?
+    #   view = params[:view]
+    #   if collection_object.team?
+    #     url = '/teams/' + id + '?locale=' + locale
+    #     url = url + '&view=' + view if view.present?
+    #     redirect_to url
+    #     #redirect_to controller: 'hyrax/teams', action: 'show', id: id, view: view
+    #   elsif collection_object.project?
+    #     url = '/projects/' + id + '?locale=' + locale
+    #     url = url + '&view=' + view if view.present?
+    #     redirect_to url
+    #   else
+    #     # remaining actions for non team/project collections
+    #     query_collection_members
+    #   end
+    # end
+
     def show
+      redirect_to_collection_type if @_request.fullpath.include? '/collections/'
       @curation_concern ||= ActiveFedora::Base.find(params[:id])
       presenter
       id = @curation_concern.id
       locale = params[:locale]
       locale = 'en' unless locale.present?
       view = params[:view]
+      # if collection_object.team?
+      #   url = '/teams/' + id + '?locale=' + locale
+      #   url = url + '&view=' + view if view.present?
+      #   redirect_to url
+      #   #redirect_to controller: 'hyrax/teams', action: 'show', id: id, view: view
+      # elsif collection_object.project?
+      #   url = '/projects/' + id + '?locale=' + locale
+      #   url = url + '&view=' + view if view.present?
+      #   redirect_to url
+      # else
+        # remaining actions for non team/project collections
+      query_collection_members
+      # end
+    end
+
+    def redirect_to_collection_type
+      id = collection_object.id.to_s
+      locale = params[:locale]
+      locale = 'en' unless locale.present?
+      view = params[:view]
       if collection_object.team?
-        url = '/teams/' + id + '?locale=' + locale 
+        url = '/teams/' + id + '?locale=' + locale
         url = url + '&view=' + view if view.present?
         redirect_to url
         #redirect_to controller: 'hyrax/teams', action: 'show', id: id, view: view
       elsif collection_object.project?
-        url = '/projects/' + id + '?locale=' + locale 
+        url = '/projects/' + id + '?locale=' + locale
         url = url + '&view=' + view if view.present?
-        redirect_to url      
+        redirect_to url
       else
         # remaining actions for non team/project collections
         query_collection_members

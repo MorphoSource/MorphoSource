@@ -1,6 +1,18 @@
 module Morphosource
-  module My
-    class MediaController < Morphosource::My::WorksController
+  module Collections
+    class ProjectsController < Morphosource::CollectionsController
+      include Morphosource::Collections::ProjectsControllerBehavior
+      include Morphosource::Collections::ProjectHelper
+      include Hyrax::BreadcrumbsForCollections
+
+
+      skip_load_and_authorize_resource only: [:show, :media]
+
+      # include Blacklight::Configurable
+
+      def search_builder_class
+        Morphosource::Collections::Projects::MediaSearchBuilder
+      end
 
       def self.configure_facets
         configure_blacklight do |config|
@@ -15,14 +27,14 @@ module Morphosource
           config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
         end
       end
+
+      # include Blacklight::Configurable
+      #
+      # copy_blacklight_config_from(CatalogController)
       configure_facets
 
-      def search_builder_class
-        if current_user.admin?
-          Morphosource::Users::EditMediaSearchBuilder
-        else
-          Morphosource::Users::MyMediaSearchBuilder
-        end
+      def search_builder
+        search_builder_class.new(scope: self, collection: @curation_concern)
       end
 
       private
@@ -33,19 +45,24 @@ module Morphosource
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
-          byebug
           main_app.my_dashboard_media_facet_path(args[:id])
         end
 
+        # link for facet filters
         def search_action_url(*args)
           byebug
-          main_app.my_media_index_path(*args)
+          main_app.project_media_path(*args)
         end
 
-        def tab_variables
-          @tab = :media
-          @tab_title = 'Media // MorphoSource'
-        end
+        # def tab_variables
+        #   @tab = :media
+        #   @tab_title = 'Media // MorphoSource'
+        # end
+
+      def tab
+        :media
+      end
+
     end
   end
 end

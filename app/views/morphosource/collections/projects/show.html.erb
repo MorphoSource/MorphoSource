@@ -1,0 +1,97 @@
+<% content_for :body_css_classes do %>showcase teams<% end %>
+
+<%
+provide :page_title, construct_page_title(@presenter.title)
+%>
+<div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
+  <div class="hyc-header">
+    <% unless @presenter.banner_file.blank? %>
+        <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
+    <% else %>
+        <header class="hyc-generic"></header>
+    <% end %>
+  </div>
+
+  <div class="row team-header">
+
+    <div class="col-xs-12 col-sm-9 col-md-10">
+
+      <% if @presenter.collection_type.machine_id == 'team' && @presenter.collection.organization %>
+        <div class="col-sm-12 col-md-6 flex">
+      <% else %>
+        <div class="col-sm-12 col-md-12 flex">
+      <% end %>
+        <div class="team-logo">
+          <% unless @presenter.logo_record.blank? %>
+            <% lr = @presenter.logo_record.first %>
+            <% if lr[:linkurl].blank? %>
+                <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+            <% else %>
+                <a href="<%= lr[:linkurl] %>">
+                  <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+                </a>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="team-title">
+           <h1>
+              <div id="showcase-title">
+                <%= @presenter.title.first %>
+                <%= @presenter.collection_type_badge %>
+                <%= @presenter.permission_badge %>
+              </div>
+              <div class="text-muted">
+                <%= @media_member_count %> Media
+                <span class="bso-count"></span>
+                <span class="cho-count"></span>
+                 · Managed by: <%= @presenter.collection_managers %>
+              </div>
+          </h1>
+        </div>
+      </div>
+
+      <% if @presenter.collection_type.machine_id == 'team' && @presenter.collection.organization %>
+        <% organization_presenter = Hyrax::OrganizationPresenter.new(@presenter.collection.organization, current_ability, nil) %>
+        <div class="col-sm-12 col-md-6 flex">
+          <%= render 'counts_for_organization', presenter: organization_presenter %>
+        </div>
+      <% end %>
+
+    </div>
+
+    <div class="col-xs-12 col-sm-3 col-md-2 btn-wrapper">
+      <% if can?(:edit, @presenter.solr_document) %>
+        <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary col-xs-12' %>
+      <% end %>
+    </div>
+
+  </div><!-- /row -->
+
+  <!-- Subcollections -->
+  <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>
+      <div class="hyc-blacklight hyc-bl-title">
+        <h4>TEAM PROJECTS</h4>
+      </div>
+      <div class="hyc-blacklight hyc-bl-results">
+        <%= render 'subcollection_list', collection: @subcollection_docs %>
+      </div>
+  <% end %>
+
+  <div class="panel panel-default tabs" role="main">
+    <!-- Nav tabs -->
+    <%= render 'nav_tabs' %>
+    <!-- Tab panes -->
+    <!-- <div class="tab-content"> -->
+
+      <div class="panel-body">
+        <%= render 'search_header' %>
+        <%= render 'document_list' %>
+        <%= render 'results_pagination' %>
+      </div>
+
+
+    <!-- </div><!-- /tab-content -->
+
+  </div><!-- /panel panel-default tabs -->
+
+</div><!-- div hyc-container -->

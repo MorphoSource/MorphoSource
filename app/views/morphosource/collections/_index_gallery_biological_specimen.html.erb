@@ -1,0 +1,12 @@
+<% 
+id = document.id 
+bso = BiologicalSpecimen.find(id)
+%>
+<% doc_presenter = index_presenter(document) %>
+<%# default partial to display solr document fields in catalog index view -%>
+
+<dl class="document-metadata dl-horizontal dl-invert">
+  <dd class="text-truncate"><i><%= bso&.taxonomies_titles&.first %></i></dd>
+  <dd>Total media: <%= render_extra(@bso_extras, id, 'media_count') %></dd>  
+  <dd><%= render_source_of_record(bso) %></dd>
+</dl>

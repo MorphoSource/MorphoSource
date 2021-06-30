@@ -155,7 +155,7 @@ module Hyrax
       end
 
       # media pagination methods
-      def paginated_media_item_list        
+      def paginated_media_item_list
         # Uses kaminari to paginate an array to avoid need for solr documents for items here
         Kaminari.paginate_array(@media_member_docs, total_count: @members_count).page(media_current_page).per(rows_from_params)
       end

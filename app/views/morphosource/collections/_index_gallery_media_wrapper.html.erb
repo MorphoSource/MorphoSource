@@ -1,0 +1,19 @@
+<div class="document col-xs-5 col-sm-4 col-md-3 media">
+  <div class="thumbnail text-center">
+
+    <div class="media text-center">
+
+      <%= check_box_tag "batch_work_ids[]", document.id, false, class:"batch_add_selector", id: "batch_work_#{document.id}" %>
+
+      <%= link_to [main_app, document], class: "media-center", target: :_blank do %>
+        <%= render_thumbnail_tag document, { class: "file_listing_thumbnail" }, { suppress_link: true } %>
+      <% end %>
+    </div>
+
+    <%#= collection_thumbnail(document, {}, counter: document_counter_with_offset(document_counter)) %>
+    <div class="caption text-center">
+      <%= render_document_partials document, blacklight_config.view_config(:gallery).partials, :document_counter => document_counter %>
+    </div>
+  </div>
+</div>
+

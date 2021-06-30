@@ -474,7 +474,7 @@ $( document ).ready(function() {
         });
 
         // po search listeners
-        $('#bso_search_ajax_form, #cho_search_ajax_form').submit(function(event){
+        $('#bso_search_ajax_form, #cho_search_ajax_form, #eo_search_ajax_form').submit(function(event){
           console.log('View 3 BSO or CHO search button');
 
           if ($(this).find('input[type=text]')
@@ -1038,7 +1038,7 @@ $( document ).ready(function() {
           console.log(data);
         });
 
-        // cho details listeners
+        // eo details listeners
         $('form#new_engineering_object').submit(function(event){
           event.preventDefault();
           console.log('View 6 create EO and continue button');

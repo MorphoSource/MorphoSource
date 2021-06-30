@@ -90,6 +90,7 @@
                 <% end %>
                 <td data-sort="<%= fc.expires_at %>"><%= fc.expires_at.present? ? fc.expires_at.strftime("%m-%d-%Y") : "" %></td>
                 <td data-sort="<%= fc.storage_limit_tb %>"><%= fc.storage_limit_tb %></td>
+                <td data-sort="<%= fc.chargeable %>"><%= fc.chargeable ? "Yes" : "No" %></td>
                 <td>
                   <% if @managed_fund_codes.include?(fc) %>
                     <%= link_to 'Edit Members', main_app.my_fund_codes_path(:id => fc.id), class: 'btn btn-sm btn-primary' %>

@@ -1,3 +1,5 @@
+# Merges two accounts owned/managed by the same user.
+# Transfers download history, cart_item approvals, proxy_rights
 module Morphosource
   module Users
     class AccountMergerService
@@ -96,7 +98,7 @@ module Morphosource
 
       def transfer_group_permissions
         @old_user.groups.each do |group|
-          next if group == 'registered'
+          next if @new_user.groups.include? group
           role = Role.find_by(name: group)
           role.users += [@new_user]
           role.users -= [@old_user]

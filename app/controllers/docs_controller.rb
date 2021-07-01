@@ -27,7 +27,6 @@ class DocsController < ApplicationController
   end
 
   def guide
-    outdated_flash
   end
 
   def rss

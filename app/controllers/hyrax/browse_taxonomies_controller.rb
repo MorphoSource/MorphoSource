@@ -13,7 +13,9 @@ class Hyrax::BrowseTaxonomiesController < ApplicationController
       terminal_names = [name: nil, rank: nil]
     end
     @specimens = taxonomy_browse_service.taxonomy_specimens(terminal_names)
-    
+    @root_taxonomy_number = taxonomy_browse_service.count
+    @root_specimen_number = taxonomy_browse_service.taxonomy_specimens_count
+
     respond_to do |format|
       format.html  # index.html.erb
       format.js # index.js.erb

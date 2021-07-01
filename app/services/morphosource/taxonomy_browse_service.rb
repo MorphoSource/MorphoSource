@@ -120,7 +120,6 @@ module Morphosource
             count_names = [name: k, rank: subrank]
           end
           a[k] = { count: v, specimen_count: taxonomy_specimens_count(count_names) } # count specimen numbers
-          
         end
     end
 
@@ -179,30 +178,29 @@ module Morphosource
     end
 
     # Get specimens with published media for GBIF taxonomy rank
-    def taxonomy_specimens(taxonomies)
-      return [] unless taxonomies.present?
-      all_valid_taxonomy_ids = all_taxonomy_ids_for_rank(taxonomies) if taxonomies.first[:name].present? && taxonomies.first[:rank].present?
-      taxonomy_specimen_query(taxonomies.first[:name], all_valid_taxonomy_ids)['response']
+    def taxonomy_specimens(taxonomies = [])
+      taxonomy_specimen_query(taxonomies.map { |t| t[:name] })['response']
     end
 
-    def taxonomy_specimens_count(taxonomies)
-      return 0 unless taxonomies.present?
-      all_valid_taxonomy_ids = all_taxonomy_ids_for_rank(taxonomies) if taxonomies.first[:name].present? && taxonomies.first[:rank].present?
-      taxonomy_specimen_query(taxonomies.first[:name], all_valid_taxonomy_ids)['response']['numFound'].to_i
+    def taxonomy_specimens_count(taxonomies = [])
+      taxonomy_specimen_query(taxonomies.map { |t| t[:name] })['response']['numFound'].to_i
     end
 
-    def taxonomy_specimen_query(name, taxonomy_ids=[])
+    def taxonomy_specimen_query(names = [])
       solr_params = {
         fl: ['id', 'title_tesim', 'taxonomy_tesim', 'taxonomy_id_tesim'],
         fq: [
           "#{solrize('has_model', :symbol)}:BiologicalSpecimen",
-          "#{solrize('external_taxonomy', :symbol)}:#{name.present? ? prepare_value(name) : '*'}",
+          "#{solrize('external_taxonomy', :symbol)}:*",
           "#{solrize('public_media_type', :stored_searchable)}:*",
         ],
         rows: 100
       }
 
-      solr_params[:fq] << assemble_or_query(solrize('taxonomy_id', :stored_searchable), taxonomy_ids) if taxonomy_ids.present?
+      names.each do |n|
+        next unless n.present?
+        solr_params[:fq] << "#{solrize('external_taxonomy', :symbol)}:#{prepare_value(n)}"
+      end
 
       solr.get(nil, solr_params)
     end

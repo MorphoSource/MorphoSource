@@ -6,6 +6,14 @@
         <div class="row list-item" style='text-align: center;'>
           <span class="h4">Taxonomic Names</span>
         </div>
+        <div id="root-link">
+          <div class="row list-item">
+            <div class="col-xs-12">
+              <div><%= link_to 'Root', main_app.browse_taxonomies_path, :remote => true %></div>
+              <div class='smaller-text'>Return to root or top taxonomy</div>
+            </div>
+          </div>
+        </div>
         <div id="current-path">
           <% previous_params = {} %>
           <% higher_names.each do |higher_name| %>
@@ -97,7 +105,7 @@
             </div>
             <% if specimens['numFound'] > 200 %>
               <div style='margin-top: 20px; font-weight: bold'>
-                <%= link_to "See all #{specimens['numFound']} specimens for this taxonomy", main_app.object_search_path( { 'f[external_taxonomy_tesim][]' => specimen_taxonomy_term.present? ? specimen_taxonomy_term.downcase : '' } ) %>
+                <%= link_to "See all #{specimens['numFound']} specimens for this taxonomy", main_app.object_search_path( { 'f[external_taxonomy_ssim]' => specimen_taxonomy_terms } ) %>
               </div>
             <% end %>
           </div>
@@ -108,3 +116,11 @@
     </div>
   </div>
 </div>
+
+<script>
+  $(function(){
+    $('a').click(function() {
+      $('div#taxonomy-browse').addClass('ui-loading-whole-page');
+    });
+  });
+</script>

@@ -196,7 +196,7 @@ module Morphosource
         fl: ['id', 'title_tesim', 'taxonomy_tesim', 'taxonomy_id_tesim'],
         fq: [
           "#{solrize('has_model', :symbol)}:BiologicalSpecimen",
-          "#{solrize('external_taxonomy', :stored_searchable)}:#{name.present? ? prepare_value(name) : '*'}",
+          "#{solrize('external_taxonomy', :symbol)}:#{name.present? ? prepare_value(name) : '*'}",
           "#{solrize('public_media_type', :stored_searchable)}:*",
         ],
         rows: 100

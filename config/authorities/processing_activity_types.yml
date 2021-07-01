@@ -43,11 +43,11 @@ terms:
     term: Sparse Point Cloud and Depth Map to Dense Point Cloud
   - id: Sparse Mesh and Depth Map to Mesh
     term: Sparse Mesh and Depth Map to Mesh
-  - id: "Transform - Reflection"
-    term: "Transform - Reflection"
-  - id: "Transform - Rotation"
-    term: "Transform - Rotation"
-  - id: "Transform - Scale"
-    term: "Transform - Scale"
-  - id: "Transform - Translation"
-    term: "Transform - Translation"
+  - id: "Transform: Reflection"
+    term: "Transform: Reflection"
+  - id: "Transform: Rotation"
+    term: "Transform: Rotation"
+  - id: "Transform: Scale"
+    term: "Transform: Scale"
+  - id: "Transform: Translation"
+    term: "Transform: Translation"

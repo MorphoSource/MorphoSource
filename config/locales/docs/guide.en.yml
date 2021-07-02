@@ -3,5 +3,6 @@ en:
     docs:
       guide:
         title: User Guide
-        last_updated: Last updated 7/1/2021
+        last_updated: Last updated 7/2/2021
         text: "MorphoSource is a complex repository platform, and our team is working hard to generate user-friendly documentation to help users find their way around the site. As part of this process, we have created <a href='https://drive.google.com/drive/folders/1f6g8TxkbOxT504VZOKa-IOVFdBBB7XP-?usp=sharing' target='_blank'>draft documentation</a> and made it available via a publicly accessible Google Drive folder. We will continue to update this documentation and add new documents, tutorials, and slide decks to the folder. The information available in these draft documents will eventually be migrated to the MorphoSource site, but for now we hope users find this to be of assistance."
+        text2: "The <a href='https://www.youtube.com/channel/UCusG--ELmxbSHNuTIcVL5mQ' target='_blank'>MorphoSource YouTube channel</a> has a number of different video tutorials describing and guiding users through various aspects of the site for users who prefer video documentation."

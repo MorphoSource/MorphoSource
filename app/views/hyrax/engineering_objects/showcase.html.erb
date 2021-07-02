@@ -10,23 +10,23 @@
 		</div>
 
     <% unless @presenter.anonymize_metadata? %>
-  		<div class="content-block">
-  			<%= render @presenter.showcase_collections_partial, presenter: @presenter %>
-  		</div>
-    <% end %>
+      <div class="content-block">
+			  <%= render @presenter.showcase_collections_partial, presenter: @presenter %>
+		  </div>
+     <% end %>
 	</div>
 
   <% unless @presenter.anonymize_metadata? %>
-  	<div class="col-sm-6 col-sm-pull-6">
-  		<div class="content-block">
-  			<%= render @presenter.showcase_general_details_partial, presenter: @presenter %>
-  		</div>
-  		<div class="content-block">
-  			<%= render @presenter.showcase_identifiers_and_external_links_partial, presenter: @presenter %>
-  		</div>
-  		<div class="content-block">
-  			<%= render @presenter.showcase_time_and_place_details_partial, presenter: @presenter %>
-  		</div>
-  	</div>
+    <div class="col-sm-6 col-sm-pull-6">
+    	<div class="content-block">
+    		<%= render @presenter.showcase_general_details_partial, presenter: @presenter %>
+    	</div>
+    	<div class="content-block">
+    		<%= render @presenter.showcase_identifiers_and_external_links_partial, presenter: @presenter %>
+    	</div>
+    	<div class="content-block">
+    		<%= render @presenter.showcase_time_and_place_details_partial, presenter: @presenter %>
+    	</div>
+    </div>
   <% end %>
 </div>

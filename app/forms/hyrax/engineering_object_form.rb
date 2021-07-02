@@ -10,7 +10,6 @@ module Hyrax
     self.model_class = ::EngineeringObject
 
     self.terms += [
-      :organization_relationship,
       :organization_id,
       :institution_code,
       :catalog_number,
@@ -28,7 +27,6 @@ module Hyrax
     ]
 
     self.single_valued_fields = [
-      :organization_relationship,
       :institution_code,
       :catalog_number,
       :description,
@@ -44,7 +42,6 @@ module Hyrax
     # These show above the fold
     def primary_terms
       required_fields + [
-        :organization_relationship,
         :institution_code,
         :catalog_number,
         :description,

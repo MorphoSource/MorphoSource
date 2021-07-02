@@ -45,6 +45,8 @@
               <%= f.input :orientation, as: :multi_value %>
               <%= f.input :short_description, label: 'Short description' %>
               <%= render_edit_field_partial('description', f: f) %>
+              <%= render_edit_field_partial('media_status', f: f) %>
+              <%= render_edit_field_partial('anonymize_origin', f: f) %>
             </div>
           </div>
 

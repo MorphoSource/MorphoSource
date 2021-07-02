@@ -5,15 +5,11 @@ module Hyrax
   class EngineeringObjectsController < ApplicationController
     # Adds Hyrax behaviors to the controller.
     include Hyrax::WorksControllerBehavior
-    include Morphosource::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
-    include Morphosource::LinkedTeams::LinkedTeamsManagement
     self.curation_concern_type = ::EngineeringObject
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::EngineeringObjectPresenter
-
-    before_action :record_original_organizations, only: :update
 
     skip_authorize_resource only: :showcase
 
@@ -24,8 +20,7 @@ module Hyrax
                  '1_column'
                when 'showcase'
                  'morphosource_2_columns'
-               #when 'new'
-               #  'morphosource_2_columns'
+               # todo: later might need to add different layout for EDIT or other actions here
                when 'edit'
                  'morphosource_2_columns'
                else
@@ -43,12 +38,9 @@ module Hyrax
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      #@presenter.get_organization_data
       @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
       @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
       @countries_service = Morphosource::CountriesService.new
-      @new_taxonomy_submit_submissions_url = '/submissions/new_taxonomy_submit'
-      @new_taxonomy_form = Hyrax::WorkFormService.build(::Taxonomy.new, current_ability, self)
       render 'edit', presenter: @presenter
     end
 
@@ -56,55 +48,8 @@ module Hyrax
       curation_concern.depositor = current_user.user_key
       curation_concern.admin_set_id = admin_set_id_for_new
       build_form
-      #@presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      #@presenter.get_organization_data
-      render '/hyrax/base/new' #, presenter: @presenter
+      render '/hyrax/base/new'
     end
 
-    def update
-      create_gbif_taxonomies
-      if actor.update(actor_environment)
-        update_media_team_access
-        after_update_response
-      else
-        respond_to do |wants|
-          wants.html do
-            build_form
-            render 'edit', status: :unprocessable_entity
-          end
-          wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
-        end
-      end
-    end
-
-    private
-
-    def create_gbif_taxonomies
-      if params[:engineering_object].present? && params[:engineering_object][:taxonomy_id].present?
-        params[:engineering_object][:taxonomy_id].map! do |t_id|
-          t_id.include?('gbif:') && (new_t_id = new_gbif_taxonomy(t_id)) ? new_t_id : t_id
-        end
-      end
-    end
-
-    def new_gbif_taxonomy(t_id)
-      gbif_key = t_id.sub!('gbif:', '')
-      gbif_params = ActionController::Parameters.new(
-          Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key))
-      taxonomy_params = Hyrax::TaxonomyForm.model_attributes(gbif_params)
-      taxonomy_params.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-      curation_concern = Taxonomy.new
-      env = Hyrax::Actors::Environment.new(curation_concern, current_ability, taxonomy_params)
-      Hyrax::CurationConcern.actor.create(env)
-      curation_concern.id
-    end
-
-    def old_orgs
-      @original_organizations
-    end
-
-    def new_orgs
-      Organization.find(Array(@curation_concern.organization_id))
-    end    
   end
 end

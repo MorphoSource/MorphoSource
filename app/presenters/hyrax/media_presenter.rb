@@ -457,6 +457,17 @@ module Hyrax
             @cho_type = cultural_heritage_object.cho_type
             @material = cultural_heritage_object.material
             @short_title = cultural_heritage_object.short_title
+          elsif physical_object.class == EngineeringObject
+            engineering_object = physical_object
+            @physical_object_title = engineering_object.title.first
+            @physical_object_taxonomy_title = ''
+            @physical_object_id = engineering_object.id
+            @physical_object_link = "/concern/engineering_objects/" + @physical_object_id
+            @vouchered = engineering_object.vouchered
+            @physical_object_type = engineering_object.human_readable_type
+            @institution_code = engineering_object.institution_code
+            @collection_code = engineering_object.collection_code
+            @catalog_number = engineering_object.catalog_number
           end
         end
 

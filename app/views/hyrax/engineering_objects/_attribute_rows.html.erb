@@ -17,13 +17,11 @@
 <%= presenter.attribute_to_html(:catalog_number, html_dl: true) %>
 <%= presenter.attribute_to_html(:collection_code, html_dl: true) %>
 <%= presenter.attribute_to_html(:current_location, html_dl: true) %>
-<%= presenter.attribute_to_html(:geographic_coordinates, label: 'Geographic Coordinates', html_dl: true) %>
-<%= presenter.attribute_to_html(:numeric_time, html_dl: true) %>
-<%= presenter.attribute_to_html(:original_location, html_dl: true) %>
-<%= presenter.attribute_to_html(:periodic_time, html_dl: true) %>
-<%= presenter.attribute_to_html(:vouchered, render_as: :faceted, html_dl: true) %>
 
-<!-- CHOs -->
-<%= presenter.attribute_to_html(:cho_type, html_dl: true) %>
-<%= presenter.attribute_to_html(:material, html_dl: true) %>
-<%= presenter.attribute_to_html(:short_title, html_dl: true) %>
+<!-- EOs -->
+<%= presenter.attribute_to_html(:is_pak, html_dl: true) %>
+<%= presenter.attribute_to_html(:is_built_in_fiducials_present, html_dl: true) %>
+<%= presenter.attribute_to_html(:snl_assembler, html_dl: true) %>
+<%= presenter.attribute_to_html(:assembly_date, html_dl: true) %>
+<%= presenter.attribute_to_html(:anonymize_origin, html_dl: true) %>
+<%= presenter.attribute_to_html(:anonymize_metadata, html_dl: true) %>

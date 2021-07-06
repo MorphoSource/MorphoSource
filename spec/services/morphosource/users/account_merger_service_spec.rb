@@ -191,7 +191,7 @@ RSpec.describe Morphosource::Users::AccountMergerService do
   end
 
   describe 'transfer_cart_items' do
-    let(:cart_item) { CartItem.create(user_id: old_user.ms_id, work_id: 'media_id', action_by: old_user.ms_id, reviewers: [old_user.ms_id]) }
+    let(:cart_item) { CartItem.create(user_id: old_user.ms_id, work_id: 'media_id', action_by: old_user.ms_id) }
 
     before do
       allow_any_instance_of(described_class).to receive(:cart_items).and_return([cart_item])
@@ -201,7 +201,6 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     it 'associates the cart item with the new user' do
       expect(cart_item.user_id).to eq(new_user.ms_id)
       expect(cart_item.action_by).to eq(new_user.ms_id)
-      expect(cart_item.reviewers).to match_array([new_user.ms_id])
     end
   end
 
@@ -270,10 +269,9 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     let(:media)         { Media.create(title: ['media']) }
     let(:owned_item)    { CartItem.create(user_id: old_user.ms_id, work_id: media.id) }
     let(:acted_on_item) { CartItem.create(user_id: another_user.ms_id, work_id: media.id, action_by: old_user.ms_id) }
-    let(:reviewed_item) { CartItem.create(user_id: another_user.ms_id, work_id: media.id, reviewers: [old_user.ms_id]) }
     let(:another_item)  { CartItem.create(user_id: another_user.ms_id, work_id: media.id) }
 
-    let(:old_user_items){ [owned_item, acted_on_item, reviewed_item] }
+    let(:old_user_items){ [owned_item, acted_on_item] }
 
     subject { described_class.new(old_user.email, new_user.email) }
 

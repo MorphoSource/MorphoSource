@@ -25,6 +25,10 @@ module MassIngest
             initial_attrs.except(:id).merge(addl_attrs)
           ).create_attributes
         end
+
+        def to_h
+          instance_values.transform_keys(&:to_sym)
+        end
       end
     end
   end

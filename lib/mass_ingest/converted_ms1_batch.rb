@@ -5,7 +5,7 @@ module MassIngest
     autoload :Factory
     autoload :Models
 
-    autoload :IngestManifest
+    autoload :Manifest
     autoload :MassIngestHelper
     autoload :ValidateManifest
   end

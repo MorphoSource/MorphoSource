@@ -94,6 +94,10 @@ module MassIngest
         def create_new_attributes
           Importer::Factory::BiologicalSpecimenFactory.new(initial_attrs.except(:id)).create_attributes
         end
+
+        def to_h
+          instance_values.transform_keys(&:to_sym)
+        end
       end
     end
   end

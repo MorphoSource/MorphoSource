@@ -6,7 +6,7 @@ module MassIngest
       autoload :BiologicalSpecimen
       autoload :CombinedProcessingEventMedia
       autoload :ImagingEvent
-      autoload :MediaGroupIngest
+      autoload :MediaIePe
       autoload :Taxonomy
     end
   end

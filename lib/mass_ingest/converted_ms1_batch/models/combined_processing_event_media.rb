@@ -46,6 +46,10 @@ module MassIngest
             end
           end
         end
+
+        def to_h
+          instance_values.transform_keys(&:to_sym)
+        end
       end
     end
   end

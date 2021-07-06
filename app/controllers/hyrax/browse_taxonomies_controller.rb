@@ -3,6 +3,7 @@ class Hyrax::BrowseTaxonomiesController < ApplicationController
 
 	def index
     @higher_names = taxonomy_names
+    @specimen_taxonomy_terms = taxonomy_names.map { |t| t[:name] }
     @names = taxonomy_browse_service.call(taxonomy_names)
     if taxonomy_names.present?
       terminal_names = [ taxonomy_names.last ]
@@ -12,6 +13,8 @@ class Hyrax::BrowseTaxonomiesController < ApplicationController
       terminal_names = [name: nil, rank: nil]
     end
     @specimens = taxonomy_browse_service.taxonomy_specimens(terminal_names)
+    @root_taxonomy_number = taxonomy_browse_service.count
+    @root_specimen_number = taxonomy_browse_service.taxonomy_specimens_count
 
     respond_to do |format|
       format.html  # index.html.erb

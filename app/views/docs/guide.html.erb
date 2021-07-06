@@ -1,5 +1,11 @@
 <% provide :page_title, t("morphosource.docs.user_guide.title") %>
 
-<h1>User Guide</h1>
+<h1 class="docs-title"><%= t("morphosource.docs.guide.title") %></h1>
 
-<p>The information previously on this page was outdated, and will be updated soon.</p>
+<div class="docs-content">
+	<p><i><%= t("morphosource.docs.guide.last_updated") %></i></p>
+
+	<p><%= t("morphosource.docs.guide.text").html_safe %></p>
+
+	<p><%= t("morphosource.docs.guide.text2").html_safe %></p>
+</div>

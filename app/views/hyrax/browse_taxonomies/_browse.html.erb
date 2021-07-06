@@ -6,6 +6,18 @@
         <div class="row list-item" style='text-align: center;'>
           <span class="h4">Taxonomic Names</span>
         </div>
+        <div id="root-link">
+          <div class="row list-item">
+            <div class="col-xs-7">
+              <div><%= link_to 'Root', main_app.browse_taxonomies_path, :remote => true %></div>
+              <div class='smaller-text'>Return to root or top taxonomy</div>
+            </div>
+            <div class="col-xs-5 smaller-text">
+              <div><%= pluralize(@root_taxonomy_number, 'taxonomic name') %></div>
+              <div><%= pluralize(@root_specimen_number, 'specimen') %></div>
+            </div>
+          </div>
+        </div>
         <div id="current-path">
           <% previous_params = {} %>
           <% higher_names.each do |higher_name| %>
@@ -31,8 +43,12 @@
                   </div>
                 </div>
                 <div class="col-xs-5 smaller-text">
-                  <div><%= pluralize(higher_name[:count], 'taxonomic name') %></div> 
-                  <div><%= pluralize(higher_name[:specimen_count], 'specimen') %></div>
+                  <div><%= pluralize(higher_name[:count], 'taxonomic name') %></div>
+                  <% if higher_name[:specimen_count].present? %>
+                    <div><%= pluralize(higher_name[:specimen_count], 'specimen') %></div>
+                  <% elsif name == higher_names.last[:name] && specimens['numFound'].present? %>
+                    <div><%= pluralize(specimens['numFound'], 'specimen') %></div>
+                  <% end %>
                 </div>
               </div>
           <% end %>
@@ -65,7 +81,9 @@
                   </div>
                   <div class="col-xs-5 smaller-text">
                     <div><%= pluralize(counts[:count], 'taxonomic name') %></div> 
-                    <div><%= pluralize(counts[:specimen_count], 'specimen') %></div>
+                    <% if counts[:specimen_count].present? %>
+                      <div><%= pluralize(counts[:specimen_count], 'specimen') %></div>
+                    <% end %>
                   </div>
                 </div>
               <% end %>
@@ -95,9 +113,9 @@
                 </div>
               <% end %>
             </div>
-            <% if specimens['numFound'] > 200 %>
+            <% if specimens['numFound'] > 100 %>
               <div style='margin-top: 20px; font-weight: bold'>
-                <%= link_to "See all #{specimens['numFound']} specimens for this taxonomy", main_app.object_search_path( { 'f[external_taxonomy_tesim][]' => specimen_taxonomy_term.present? ? specimen_taxonomy_term.downcase : '' } ) %>
+                <%= link_to "See all #{specimens['numFound']} specimens for this taxonomy", main_app.object_search_path( { 'f[external_taxonomy_ssim]' => specimen_taxonomy_terms } ) %>
               </div>
             <% end %>
           </div>
@@ -108,3 +126,11 @@
     </div>
   </div>
 </div>
+
+<script>
+  $(function(){
+    $('div#taxonomy-select a').click(function() {
+      $('div#taxonomy-browse').addClass('ui-loading-whole-page');
+    });
+  });
+</script>

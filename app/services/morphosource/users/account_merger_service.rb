@@ -3,6 +3,7 @@
 module Morphosource
   module Users
     class AccountMergerService
+      include Morphosource::Users::ServicesSharedBehavior
 
       def self.call(old_email, new_email)
         new(old_email, new_email).call
@@ -45,16 +46,7 @@ module Morphosource
           work.on_behalf_of = @new_user.ms_id
         end
         return unless work.media?
-        if work.download_reviewer.include? @old_user.ms_id
-          work.download_reviewer.delete @old_user.ms_id
-          work.download_reviewer << @new_user.ms_id
-        end
-      end
-
-      def transfer_individual_access(work)
-        transfer_edit_access(work)
-        transfer_download_access(work)
-        transfer_read_access(work)
+        update_download_reviewer(work)
       end
 
       def transfer_fileset_access(work)
@@ -65,27 +57,6 @@ module Morphosource
           transfer_individual_access(file_set)
           file_set.save!
         end
-      end
-
-      def transfer_edit_access(work)
-        return unless work.edit_users.include? @old_user.ms_id
-
-        work.edit_users += [@new_user]
-        work.edit_users -= [@old_user]
-      end
-
-      def transfer_download_access(work)
-        return unless work.download_users.include? @old_user.ms_id
-
-        work.download_users += [@new_user]
-        work.download_users -= [@new_user]
-      end
-
-      def transfer_read_access(work)
-        return unless work.read_users.include? @old_user.ms_id
-
-        work.read_users += [@new_user]
-        work.read_users -= [@old_user]
       end
 
       def transfer_collections
@@ -126,10 +97,6 @@ module Morphosource
           if i.action_by == @old_user.ms_id
             i.action_by = @new_user.ms_id
           end
-          if i.reviewers.include? @old_user.ms_id
-            i.reviewers.delete(@old_user.ms_id)
-            i.reviewers << @new_user.ms_id
-          end
           i.save
         end
       end
@@ -147,7 +114,7 @@ module Morphosource
       end
 
       def cart_items
-        CartItem.where(user_id: @old_user.ms_id).or(CartItem.where(action_by: @old_user.ms_id)).or(CartItem.where("#{"'" + @old_user.ms_id + "'"} = ANY(reviewers)"))
+        CartItem.where(user_id: @old_user.ms_id).or(CartItem.where(action_by: @old_user.ms_id))
       end
 
     end

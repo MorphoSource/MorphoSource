@@ -1,10 +1,10 @@
 module MassIngest
   module ConvertedMs1Batch
     module Models
-      class MediaIePe
+      class MediaIePeManifest
         attr_accessor :imaging_event, :parent, :children
 
-        def initialize(imaging_event, parent, children)
+        def initialize(imaging_event: {}, parent: {}, children: {})
           @imaging_event = imaging_event
           @parent = parent
           @children = children

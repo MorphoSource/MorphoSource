@@ -2,68 +2,67 @@ module MassIngest
   module ConvertedMs1Batch
     module Models
       # Takes initial biological specimen attrs and matches to existing, imports from iDigBio, or creates new attributes to work creation
-      class BiologicalSpecimen
+      class BiologicalSpecimenManifest
         attr_accessor :initial_attrs, :depositor, :organization_id
         attr_accessor :id, :work, :work_imported, :attrs
         attr_accessor :occurrence_id, :idigbio_uuid, :institution_code, :collection_code, :catalog_number
 
-        def initialize(initial_attrs, depositor, organization_id)
+        def initialize(initial_attrs: {}, depositor: nil, organization_id: nil, id: nil, attrs: {}, work_imported: false, **kwargs)
           @initial_attrs = initial_attrs
           @depositor = depositor
           @organization_id = organization_id
+          @id = initial_attrs[:id]&.first || id
+          @work = work
+          @work_imported = work_imported
+          @attrs = attrs
 
-          if initial_attrs.present? && depositor.present? && organization_id.present?
-            prepare_ingest
-          end
-        end
-
-        def prepare_ingest
           # match, import, or create BSO
-          if work.present?
+          if attrs.present?
+            @occurrence_id = @attrs[:occurrence_id]&.first || @attrs['occurrence_id']
+            @idigbio_uuid = @attrs[:idigbio_uuid]&.first || @attrs['idigbio_uuid']
+            @institution_code = @attrs[:institution_code]&.first || @attrs['institution_code']
+            @collection_code = @attrs[:collection_code]&.first || @attrs['collection_code']
+            @catalog_number = @attrs[:catalog_number]&.first || @attrs['catalog_number']
+          elsif work.present?
             @id = work.id
             @work_imported = false
-            @attrs = nil
             @occurrence_id = work.occurrence_id&.first
-            @idigbio_uuid = work.idigbio_id&.first
+            @idigbio_uuid = work.idigbio_uuid&.first
             @institution_code = work.institution_code&.first
             @collection_code = work.collection_code&.first
             @catalog_number = work.catalog_number&.first
           elsif initial_attrs[:occurrence_id].present? && (imported_attrs = import_work).present?
-            @id = nil
-            @work_imported = true
-            @attrs = imported_attrs
-            @occurrence_id = attrs['occurrence_id']
-            @idigbio_uuid = attrs['idigbio_uuid']
-            @institution_code = attrs['institution_code']
-            @collection_code = attrs['collection_code']
-            @catalog_number = attrs['catalog_number']
-          else
-            @id = nil
-            @work_imported = false
-            @attrs = create_new_attributes
-            @occurrence_id = attrs[:occurrence_id]&.first
-            @idigbio_uuid = attrs[:idigbio_uuid]&.first
-            @institution_code = attrs[:institution_code]&.first
-            @collection_code = attrs[:collection_code]&.first
-            @catalog_number = attrs[:catalog_number]&.first
-          end
-            
-          # associate organization if a work is to be created
-          if @attrs.present? && @id.nil?
-            @attrs.merge!(
+            @attrs = imported_attrs.merge( 
               organization_id: [@organization_id],
               depositor: @depositor.user_key
             )
+            @work_imported = true
+            @occurrence_id = @attrs['occurrence_id']
+            @idigbio_uuid = @attrs['idigbio_uuid']
+            @institution_code = @attrs['institution_code']
+            @collection_code = @attrs['collection_code']
+            @catalog_number = @attrs['catalog_number']
+          elsif !attrs.present? && initial_attrs.present?
+            @attrs = create_new_attributes.merge( 
+              organization_id: [@organization_id],
+              depositor: @depositor.user_key
+            )
+            @work_imported = false
+            @occurrence_id = @attrs[:occurrence_id]&.first
+            @idigbio_uuid = @attrs[:idigbio_uuid]&.first
+            @institution_code = @attrs[:institution_code]&.first
+            @collection_code = @attrs[:collection_code]&.first
+            @catalog_number = @attrs[:catalog_number]&.first
           end
         end
 
         def work
           @work ||=
             if (
-                initial_attrs[:id].present? && 
-                ::BiologicalSpecimen.exists?(initial_attrs[:id]&.first)
+                id.present? && 
+                ::BiologicalSpecimen.exists?(id)
               )
-              ::BiologicalSpecimen.find(initial_attrs[:id])
+              ::BiologicalSpecimen.find(id)
             elsif (
                 initial_attrs[:occurrence_id].present? && 
                 ( oi_bsos = ::BiologicalSpecimen.where(

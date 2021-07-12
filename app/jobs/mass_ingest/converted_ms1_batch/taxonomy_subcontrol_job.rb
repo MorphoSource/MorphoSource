@@ -6,29 +6,52 @@ class MassIngest::ConvertedMs1Batch::TaxonomySubcontrolJob < ApplicationJob
   def perform(manifest)
     # Step 0. Initial preparation
     status.update(manifest: manifest)
-    progress.total = 4
     @manifest = manifest
     
-    raise "Totally arbitrary error, nyan"
+    # Submit jobs for new works to be created
+    @manifest[:taxonomy_ingests].each do |t|
+      t[:job] = ::BatchObjectImportJob.perform_later(Taxonomy, t[:attrs], nil, false) if !t[:id].present? # new work to be created
+    end
+
+    # Monitor jobs
+    sleep(1.minute) until monitor_works_to_be_created
+
+    # Finish and report
+    status.update(manifest: @manifest)
+    if @manifest[:taxonomy_ingests].any? { |t| t[:job_exception].present? }
+      exceptions = []
+      @manifest[:taxonomy_ingests].each_with_index do |t, index|
+        if t[:job_exception].present?
+          exceptions << "Taxonomy ingest #{index} failed. Exception: \"#{t[:job_exception]}\". Supplied attributes were: \"#{t[:attrs]}\""
+        end
+      end
+      raise "One or more taxonomy ingests failed. #{exceptions.join('; ')}"
+    end
   end
 
-  def monitor_status(job)
-    status = ActiveJob::Status.get(job)
-    if status[:status] == :failed
-      raise "Job #{job['args'][0]['job_class']} failed. Exception: #{job[:exception]}"
-    elsif status[:status] == :queued || status[:status] == :working
-      return false
-    elsif status[:status] == :completed
-      new_manifest = status[:manifest]
-      if new_manifest.present? && new_manifest.is_a?(Hash)
-        status.update(manifest: new_manifest)
-        @manifest = new_manifest
-        return true
+  def monitor_works_to_be_created
+    jobs_complete = true
+
+    @manifest[:taxonomy_ingests].each do |t|
+      next unless (job = t[:job]).present?
+
+      status = ActiveJob::Status.get(t[:job])
+      t[:job_status] = status[:status]
+      if status[:status] == :queued || status[:status] == :working
+        jobs_complete = false
+      elsif status[:status] == :failed
+        t[:job_exception] = "Job #{job.class} failed. Exception: #{status[:exception]}"
+      elsif status[:status] == :completed
+        if status[:id].present?
+          t[:id] = status[:id]
+        else
+          t[:job_exception] = "Job #{job.class} completed successfully, but produced no work ID."
+        end
       else
-        raise "Job #{job['args'][0]['job_class']} returned a malformed manifest with value #{new_manifest}"
+        t[:job_exception] = "Job #{job.class} produced unexpected status: #{status[:status]}"
       end
-    else
-      raise "Job #{job['args'][0]['job_class']} produced unexpected status: #{job[:status]}"
     end
+
+    return jobs_complete
   end
 end

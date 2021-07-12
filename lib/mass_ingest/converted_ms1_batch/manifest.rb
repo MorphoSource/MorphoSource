@@ -106,10 +106,10 @@ module MassIngest
             rows_to_bso[index] = matching_bso_index
           else
             # proceed with constructing ingest
-            bso_ingest = MassIngest::ConvertedMs1Batch::Models::BiologicalSpecimen.new(
-              bso, 
-              depositor, 
-              organization_id
+            bso_ingest = MassIngest::ConvertedMs1Batch::Models::BiologicalSpecimenManifest.new(
+              initial_attrs: bso, 
+              depositor: depositor, 
+              organization_id: organization_id
             )
             biological_specimen_ingests << bso_ingest
             rows_to_bso[index] = biological_specimen_ingests.count - 1
@@ -151,7 +151,7 @@ module MassIngest
             # skip unless there are taxonomy attributes to use or we can get taxonomy from iDigBio
             next unless taxonomy_attrs.values.any? { |v| v.present? } || bso.work_imported
 
-            bso_taxonomies = MassIngest::ConvertedMs1Batch::Factory::Taxonomy.call(
+            bso_taxonomies = MassIngest::ConvertedMs1Batch::Factory::TaxonomyManifests.call(
               taxonomy_attrs,
               admin_user,
               depositor,
@@ -200,44 +200,59 @@ module MassIngest
           # Is there a parent? If so, get IE and parent PE/media ingest from it. Otherwise, get IE from first child
           if mg[:parents].present?
             parent_row_index = mg[:parents].first
-
             ie_row_index = parent_row_index
+            parent_pe = MassIngest::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
+              initial_attrs: rows[parent_row_index][:processing_event],
+              depositor: depositor
+            )
+            parent_media = MassIngest::ConvertedMs1Batch::Models::MediaManifest.new(
+              initial_attrs: rows[parent_row_index][:media],
+              depositor: depositor,
+              media_path: media_path
+            )
 
             parent = {
               parent_row_index => 
-                MassIngest::ConvertedMs1Batch::Models::CombinedProcessingEventMedia.new(
-                  rows[parent_row_index][:processing_event],
-                  rows[parent_row_index][:media],
-                  depositor,
-                  media_path
-                )
+                MassIngest::ConvertedMs1Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
             }
           else
             ie_row_index = mg[:children].first
           end
 
           imaging_event = {
-            ie_row_index => MassIngest::ConvertedMs1Batch::Models::ImagingEvent.new(
-              rows[ie_row_index][:imaging_event],
-              device_id,
-              device_modality,
-              depositor
+            ie_row_index => MassIngest::ConvertedMs1Batch::Models::ImagingEventManifest.new(
+              initial_attrs: rows[ie_row_index][:imaging_event],
+              device_id: device_id,
+              device_modality: device_modality,
+              depositor: depositor
             )
           }
           
           children = mg[:children].map do |row_index|
+            child_pe = MassIngest::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
+              initial_attrs: rows[row_index][:processing_event],
+              depositor: depositor
+            )
+            child_media = MassIngest::ConvertedMs1Batch::Models::MediaManifest.new(
+              initial_attrs: rows[row_index][:media],
+              depositor: depositor,
+              media_path: media_path
+            )
+
             [
               row_index,
-              MassIngestConvertedMs1Batch::Models::CombinedProcessingEventMedia.new(
-                rows[row_index][:processing_event],
-                rows[row_index][:media],
-                depositor,
-                media_path
+              MassIngestConvertedMs1Batch::Models::MediaPeManifest.new(
+                media: child_media,
+                pe: child_pe
               )
             ]
           end.to_h
 
-          media_ie_pe_ingests << MassIngest::ConvertedMs1Batch::Models::MediaIePe.new(imaging_event, parent, children)
+          media_ie_pe_ingests << MassIngest::ConvertedMs1Batch::Models::MediaIePeManifest.new(
+            imaging_event: imaging_event, 
+            parent: parent, 
+            children: children
+          )
         end
       end
 

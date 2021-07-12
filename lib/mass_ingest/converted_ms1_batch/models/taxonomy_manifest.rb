@@ -2,30 +2,24 @@ module MassIngest
   module ConvertedMs1Batch
     module Models
       # Takes initial taxonomy attrs and matches to existing or creates new attributes for work creation
-      class Taxonomy
+      class TaxonomyManifest
         attr_accessor :initial_attrs, :depositor, :canonical, :id, :work, :attrs
 
-        def initialize(initial_attrs, depositor, canonical = false)
+        def initialize(initial_attrs: {}, depositor: nil, canonical: false, id: nil, attrs: {}, **kwargs)
           @initial_attrs = initial_attrs
           @depositor = depositor
           @canonical = canonical
-
-          prepare_ingest if initial_attrs.present?
+          @id = initial_attrs[:id]&.first || id
+          @work = work
+          if !attrs.present? && !work.present? && initial_attrs.present?
+            @attrs = create_new_attributes
+          else
+            @attrs = attrs
+          end
         end
 
-        def prepare_ingest
-          if initial_attrs[:id]&.first.present? && Taxonomy.exists?(initial_attrs[:id]&.first)
-            # match
-            matched_taxonomy = Taxonomy.find(initial_attrs[:id]&.first)
-            @id = matched_taxonomy.id
-            @work = matched_taxonomy
-            @attrs = nil
-          else
-            # create new
-            @id = nil
-            @work = nil
-            @attrs = create_new_attributes
-          end
+        def work
+          @work ||= ::Taxonomy.find(id) if id.present? && ::Taxonomy.exists?(id) 
         end
 
         def create_new_attributes

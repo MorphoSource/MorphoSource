@@ -2,7 +2,7 @@ module MassIngest
   module ConvertedMs1Batch
     module Factory
       # Create 1+ taxonomy params model instances from input attributes and optional iDigBio UUID
-      class Taxonomy
+      class TaxonomyManifests
         attr_accessor :attrs, :admin_user, :depositor, :idigbio_uuid
         attr_accessor :ingests, :works_attrs
 
@@ -68,7 +68,11 @@ module MassIngest
         end
 
         def new_ingest(ingest_attrs, depositor, canonical = false)
-          ingests << MassIngest::ConvertedMs1Batch::Models::Taxonomy.new(ingest_attrs, depositor, canonical)
+          ingests << MassIngest::ConvertedMs1Batch::Models::TaxonomyManifest.new(
+            initial_attrs: ingest_attrs, 
+            depositor: depositor, 
+            canonical: canonical
+          )
         end
       end
     end

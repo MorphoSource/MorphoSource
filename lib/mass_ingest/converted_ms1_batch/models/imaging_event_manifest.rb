@@ -2,22 +2,25 @@ module MassIngest
   module ConvertedMs1Batch
     module Models
       # Takes initial imaging event attrs and creates new attributes for work creation
-      class ImagingEvent
+      class ImagingEventManifest
         attr_accessor :initial_attrs, :device_id, :device_modality, :depositor, :attrs
 
-        def initialize(initial_attrs, device_id, device_modality, depositor)
+        def initialize(initial_attrs: {}, device_id: nil, device_modality: nil, depositor: nil, attrs: {}, **kwargs)
           @initial_attrs = initial_attrs
           @device_id = device_id
           @device_modality = device_modality
           @depositor = depositor
-
-          @attrs = create_new_attributes if initial_attrs.present?
+          if !attrs.present? && initial_attrs.present?
+            @attrs = create_new_attributes
+          else
+            @attrs = attrs
+          end
         end
 
         def create_new_attributes
           addl_attrs = { 
             device_id: device_id,
-            device_modality: device_modality,
+            ie_modality: device_modality,
             depositor: depositor.user_key
           }
 

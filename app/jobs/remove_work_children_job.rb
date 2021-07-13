@@ -1,5 +1,5 @@
 class RemoveWorkChildrenJob < ApplicationJob
-  queue_as Hyrax.config.reindex_queue_name
+  queue_as Hyrax.config.update_slow_queue_name
 
   # @param [String] parent_id ID string of parent work
   def perform(parent_id)

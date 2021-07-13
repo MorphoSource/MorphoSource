@@ -1,6 +1,6 @@
 class BatchUserImportJob < ApplicationJob
 
-  queue_as Hyrax.config.ingest_queue_name
+  queue_as Hyrax.config.mass_ingest_queue_name
 
   def perform(attributes)
   	if attributes[:contributor] == "true"

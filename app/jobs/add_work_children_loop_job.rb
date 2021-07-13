@@ -1,5 +1,5 @@
 class AddWorkChildrenLoopJob < ApplicationJob
-  queue_as Hyrax.config.reindex_queue_name
+  queue_as Hyrax.config.update_slow_queue_name
 
   # @param [String] parent_id ID string of parent work
   # @param [Array/String] child_ids Array of child work IDs or string of single child ID

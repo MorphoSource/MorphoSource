@@ -1,6 +1,6 @@
 class BatchImportJob < ApplicationJob
 
-  queue_as Hyrax.config.ingest_queue_name
+  queue_as Hyrax.config.mass_ingest_queue_name
 
   def perform(args)
     importer = Importer::CSVImporter.new(args[:manifest_file],

@@ -140,19 +140,6 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       end
     end
 
-    context 'the item is downloadable' do
-      let(:button_content) do
-        %(<a class=\"btn btn-info\" style=\"\" data-method=\"get\" href=\"/download_items?item_id=#{item.id}\">Download Item</a>)
-      end
-
-      before do
-        allow(item).to receive(:downloadable?).and_return(true)
-      end
-
-      it 'creates a "Download Item" button' do
-        expect(item_action_button(item)).to eq(button_content)
-      end
-    end
   end
 
   describe '#choose_download_button' do

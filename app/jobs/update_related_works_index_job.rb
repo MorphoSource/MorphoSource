@@ -3,6 +3,7 @@
 # Called from Morphosource::IndexRelatedWorks
 
 class UpdateRelatedWorksIndexJob < ApplicationJob
+  queue_as Hyrax.config.update_fast_queue_name
 
   def perform(works)
     return if works.blank?

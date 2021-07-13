@@ -19,6 +19,7 @@ module Blacklight
           title: Solrizer.solr_name('title', :stored_searchable),
           media_type: Solrizer.solr_name('human_readable_media_type', :stored_searchable),
           modality: Solrizer.solr_name('media_modality', :stored_searchable),
+          device_facility: Solrizer.solr_name('media_device_facility_organization', :stored_searchable),
           physical_object_id: Solrizer.solr_name('physical_object_id', :symbol),
           physical_object_title: Solrizer.solr_name('physical_object_title', :stored_searchable),
           physical_object_organization: Solrizer.solr_name('media_organization', :stored_searchable),
@@ -31,7 +32,9 @@ module Blacklight
           ark: Solrizer.solr_name('ark', :stored_searchable),
           doi: Solrizer.solr_name('doi', :stored_searchable),
           date_uploaded: 'date_uploaded_dtsi',
-          date_modified: 'date_modified_dtsi'
+          date_modified: 'date_modified_dtsi',
+          legacy_media_group_id: Solrizer.solr_name('legacy_media_group_id', :stored_searchable),
+          legacy_media_file_id: Solrizer.solr_name('legacy_media_file_id', :stored_searchable)
         }
       end
 

@@ -1,5 +1,5 @@
 class AddCollectionMembersJob < ApplicationJob
-  queue_as Hyrax.config.ingest_queue_name
+  queue_as Hyrax.config.update_slow_queue_name
 
   # @param [String] collection_id ID string of collection
   # @param [Array/String] member_ids Array of work IDs or string of single work ID

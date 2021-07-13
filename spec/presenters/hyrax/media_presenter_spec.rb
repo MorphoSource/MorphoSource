@@ -367,4 +367,39 @@ RSpec.describe Hyrax::MediaPresenter do
       end
     end
   end
+
+  describe 'processing_activity_hash' do
+    # typical string
+    let(:step1_string)  { "Step: 1, Type: Test Type, Software: Test Software, Description: Test Description"}
+    let(:step1_hash)    { {"Description"=>"Test Description", "Software"=>"Test Software", "Step"=>"1", "Type"=>"Test Type"} }
+
+    # text contains colons
+    let(:step2_string)  { "Step: 2, Type: Transform: Rotation, Software: Test: Test, Description: Test: Test"}
+    let(:step2_hash)    { {"Description"=>"Test: Test", "Software"=>"Test: Test", "Step"=>"2", "Type"=>"Transform: Rotation"} }
+
+    # text contains match headings
+    let(:step3_string)  { "Step: 3, Type: Type, Software: , Description: Type, Description: , Description: Description"}
+    let(:step3_hash)    { {"Description"=>"Type, Description: , Description: Description", "Software"=>"", "Step"=>"3", "Type"=>"Type"} }
+
+    # headings are empty
+    let(:step4_string)  { "Step: 4, Type: , Software: , Description: "}
+    let(:step4_hash)    { {"Description"=>"", "Software"=>"", "Step"=>"4", "Type"=>""} }
+
+    # the string is empty
+    let(:step5_string)  { "" }
+    let(:step5_hash)    { {"Description"=>"", "Software"=>"", "Step"=>"", "Type"=>""} }
+
+    # the string is nil
+    let(:step6_string)  { nil }
+    let(:step6_hash)    { {"Description"=>"", "Software"=>"", "Step"=>"", "Type"=>""} }
+
+    it 'creates a hash of processing activity components' do
+      expect(presenter.send(:processing_activity_hash, step1_string)).to eq(step1_hash)
+      expect(presenter.send(:processing_activity_hash, step2_string)).to eq(step2_hash)
+      expect(presenter.send(:processing_activity_hash, step3_string)).to eq(step3_hash)
+      expect(presenter.send(:processing_activity_hash, step4_string)).to eq(step4_hash)
+      expect(presenter.send(:processing_activity_hash, step5_string)).to eq(step5_hash)
+      expect(presenter.send(:processing_activity_hash, step6_string)).to eq(step6_hash)
+    end
+  end
 end

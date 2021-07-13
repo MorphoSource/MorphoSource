@@ -96,12 +96,6 @@
               </div>
 
               <%= render_edit_field_partial('download_reviewer', f: f) %>
-              <%= render_edit_field_partial('rights_statement', f: f) %>
-              <%= render_edit_field_partial('license', f: f) %>
-              <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
-              <%= render_edit_field_partial('permits_commercial_use', f: f) %>
-              <%= render_edit_field_partial('permits_3d_use', f: f) %>
-              <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f) %>
 
               <%= f.input :rights_holder, as: :multi_value %>
               <div id='media_rights_holder_visible' class="row media_rights_holder">
@@ -123,6 +117,14 @@
                   </ul>
                 </div>
               </div>
+
+              <%= render_edit_field_partial('rights_statement', f: f) %>
+              <%= render_edit_field_partial('license', f: f) %>
+              
+              <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
+              <%= render_edit_field_partial('permits_commercial_use', f: f) %>
+              <%= render_edit_field_partial('permits_3d_use', f: f) %>
+              <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f) %>
 
               <%= render_edit_field_partial('funding', f: f) %>
               <%= render_edit_field_partial('publisher', f: f) %>

@@ -189,24 +189,38 @@ module Hyrax
     end
 
     # @!attribute [w] ingest_queue_name
-    #   ActiveJob queue to handle ingest-like jobs.
+    #   ActiveJob queue to handle default Hyrax jobs or jobs that need to be run as soon as possible.
     attr_writer :ingest_queue_name
     def ingest_queue_name
       @ingest_queue_name ||= :default
     end
 
-    # @!attribute [w] reindex_queue_name
-    #   ActiveJob queue to handle reindex-like jobs.
-    attr_writer :reindex_queue_name
-    def reindex_queue_name
-      @reindex_queue_name ||= :reindex
-    end
-
     # @!attribute [w] heavy_queue_name
-    #   ActiveJob queue to handle performance-heavy jobs.
+    #   ActiveJob queue to handle performance-heavy jobs, like work characterization and derivative generation.
     attr_writer :heavy_queue_name
     def heavy_queue_name
       @heavy_queue_name ||= :heavy
+    end
+
+    # @!attribute [w] mass_ingest_queue_name
+    #   ActiveJob queue to handle jobs related to mass ingest.
+    attr_writer :mass_ingest_queue_name
+    def mass_ingest_queue_name
+      @mass_ingest_queue_name ||= :mass_ingest
+    end
+
+    # @!attribute [w] update_fast_queue_name
+    #   ActiveJob queue to handle background work or collection update jobs that need to be run relatively soon. 
+    attr_writer :update_fast_queue_name
+    def update_fast_queue_name
+      @update_fast_queue_name ||= :update_fast
+    end
+
+    # @!attribute [w] update_slow_queue_name
+    #   ActiveJob queue to handle background work or collection update jobs that can be run relatively slowly. 
+    attr_writer :update_slow_queue_name
+    def update_slow_queue_name
+      @update_slow_queue_name ||= :update_slow
     end
 
     # @!attribute [w] import_export_jar_file_path

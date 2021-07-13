@@ -42,6 +42,10 @@ function childCheckedItemCount(parent){
   return parent.find(".batch_document_selector:checked").length
 }
 
+/* Conditons must be set before unchecking all checkboxes (i.e. call this only on certain pages)
+Otherwise this will uncheck checkboxes on some pages when it is not supposed to
+
 Blacklight.onLoad(function() {
   uncheck($('input[type=checkbox]'));
 })
+*/

@@ -1,6 +1,6 @@
 class UpdateMediaMetadataJob < ApplicationJob
 
-  queue_as Hyrax.config.reindex_queue_name
+  queue_as Hyrax.config.update_slow_queue_name
 
   def perform(media_attributes)
   	if Media.exists?(media_attributes[:id]&.first)

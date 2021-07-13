@@ -81,6 +81,10 @@ class CartItem < ApplicationRecord
     end
   end
 
+  def has_file_uploaded?
+    return work.file_sets.present?
+  end
+
   def user_is_reviewer_or_has_ownership?
     work.reviewer.include?(user_id) || user_id == work.user_with_ownership
   end

@@ -12,9 +12,12 @@ class BiologicalSpecimenIndexer < Morphosource::PhysicalObjectIndexer
   def generate_solr_document
     super.tap do |solr_doc|
      # taxonomy
-     solr_doc['taxonomy_tesim'] = object.taxonomies_titles
-     solr_doc['taxonomy_ssim'] = object.taxonomies_titles
-     solr_doc['external_taxonomy_tesim'] = object.gbif_taxonomy_terms
+     taxonomies_titles = object.taxonomies_titles
+     gbif_taxonomy_terms = object.gbif_taxonomy_terms
+     solr_doc['taxonomy_tesim'] = taxonomies_titles
+     solr_doc['taxonomy_ssim'] = taxonomies_titles
+     solr_doc['external_taxonomy_tesim'] = gbif_taxonomy_terms
+     solr_doc['external_taxonomy_ssim'] = gbif_taxonomy_terms
      solr_doc['record_source_ssim'] = object.record_source
     end
   end

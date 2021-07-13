@@ -57,9 +57,9 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
         sign_in user
         get :index
       end
-      it 'sets the facet limit to nil' do
+      it 'sets the facet limit to 999999' do
         facet_limits = subject.instance_variable_get(:@blacklight_config).facet_fields.each_with_object([]){|(k,v),limits| limits << v.limit}
-        expect(facet_limits.uniq).to match_array([nil])
+        expect(facet_limits.uniq).to match_array([999999])
       end
       it 'renders the specimens page with the correct variables' do
         expect(response).to render_template("morphosource/my/works/index")
@@ -108,6 +108,12 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
   describe 'search_action_url' do
     it 'is biological_specimens#index' do
       expect(controller.send(:search_action_url, [])).to eq("/dashboard/my/specimens?locale=en")
+    end
+  end
+
+  describe 'filtered_facets' do
+    it 'lists facets to be filtered by access' do
+      expect(controller.send(:filtered_facets)).to match_array(["media_member_of_project_ids_ssim", "media_member_of_team_ids_ssim"])
     end
   end
 end

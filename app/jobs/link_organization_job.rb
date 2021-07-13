@@ -1,7 +1,7 @@
 class LinkOrganizationJob < ApplicationJob
   include Morphosource::Dashboard::LinkedTeamsBehavior
 
-  queue_as Hyrax.config.reindex_queue_name
+  queue_as Hyrax.config.update_fast_queue_name
 
   def perform(team_id, organization_id)
     @team = Collection.find(team_id)

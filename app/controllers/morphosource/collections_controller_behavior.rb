@@ -73,6 +73,13 @@ module Morphosource
       curation_concern
     end
 
+    def presenter
+      byebug
+      @presenter ||= begin
+        presenter_class.new(curation_concern, current_ability)
+      end
+    end
+
     private
 
       def gather_instance_variables

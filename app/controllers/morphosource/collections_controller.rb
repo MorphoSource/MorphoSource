@@ -9,6 +9,7 @@ module Morphosource
 
     include Morphosource::CollectionsControllerBehavior
     helper Morphosource::CollectionHelper
+    include Hyrax::CollectionsControllerBehavior
 
     with_themed_layout 'morphosource_1_column'
 

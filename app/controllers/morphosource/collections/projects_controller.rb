@@ -2,6 +2,7 @@ module Morphosource
   module Collections
     class ProjectsController < Morphosource::CollectionsController
       include Morphosource::Collections::ProjectsControllerBehavior
+      include Hyrax::CollectionsControllerBehavior
       include Morphosource::Collections::ProjectHelper
       include Hyrax::BreadcrumbsForCollections
 
@@ -37,6 +38,22 @@ module Morphosource
         search_builder_class.new(scope: self, collection: @curation_concern)
       end
 
+      def presenter
+        byebug
+        @presenter ||= begin
+          curation_concern = SolrDocument.find(params[:id])
+          raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
+          presenter_class.new(curation_concern, current_ability)
+        end
+      end
+
+      # Instantiates the search builder that builds a query for a single item
+      # this is useful in the show view.
+      def single_item_search_builder
+        byebug
+        single_item_search_builder_class.new(self).with(params.except(:q, :page))
+      end
+
       private
 
         def filtered_facets
@@ -50,7 +67,6 @@ module Morphosource
 
         # link for facet filters
         def search_action_url(*args)
-          byebug
           main_app.project_media_path(*args)
         end
 

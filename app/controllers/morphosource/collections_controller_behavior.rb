@@ -31,7 +31,6 @@ module Morphosource
     end
 
     def show
-      byebug
       @curation_concern ||= ActiveFedora::Base.find(params[:id])
       if @_request.fullpath.include? '/collections/'
         redirect_to_collection_type
@@ -41,25 +40,6 @@ module Morphosource
       presenter
       (@response, @document_list) = query_solr
       gather_instance_variables
-      query_collection_members
-    end
-
-    def media
-      byebug
-      @curation_concern ||= ActiveFedora::Base.find(params[:id])
-      byebug
-      if @_request.fullpath.include? '/collections/'
-        redirect_to_collection_type
-        return
-      end
-      @collection = @curation_concern
-      byebug
-      presenter
-      byebug
-      (@response, @document_list) = query_solr
-      byebug
-      gather_instance_variables
-      byebug
       query_collection_members
     end
 
@@ -71,13 +51,6 @@ module Morphosource
       curation_concern = response.documents.first
       raise CanCan::AccessDenied unless curation_concern
       curation_concern
-    end
-
-    def presenter
-      byebug
-      @presenter ||= begin
-        presenter_class.new(curation_concern, current_ability)
-      end
     end
 
     private
@@ -107,18 +80,8 @@ module Morphosource
       end
 
       def query_solr
-        byebug
         search_results(params)
       end
-
-      # def presenter
-      #   byebug
-      #   @presenter ||= begin
-      #     presenter_class.new(@curation_concern, current_ability)
-      #   end
-      # end
-
-
 
   end
 end

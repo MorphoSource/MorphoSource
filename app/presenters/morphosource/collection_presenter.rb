@@ -25,7 +25,6 @@ module Morphosource
     attr_writer :collection_type
 
     def initialize(solr_document, current_ability, request = nil)
-      byebug
       super
       @search_form_url = ''
       @collection = Collection.find(id)

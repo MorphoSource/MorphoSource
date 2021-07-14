@@ -3,11 +3,6 @@ module Morphosource
     module ProjectHelper
       include Morphosource::CollectionHelper
 
-      # def showpage_url(id, tab)
-      #   byebug
-      #   Rails.application.routes.url_helpers.project_path(id) + "\##{tab}"
-      # end
-
       def media_tab_url
         "/projects/#{@collection.id}" + locale
       end

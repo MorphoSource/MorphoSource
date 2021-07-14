@@ -39,7 +39,6 @@ module Morphosource
       end
 
       def presenter
-        byebug
         @presenter ||= begin
           curation_concern = SolrDocument.find(params[:id])
           raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
@@ -47,12 +46,13 @@ module Morphosource
         end
       end
 
-      # Instantiates the search builder that builds a query for a single item
-      # this is useful in the show view.
-      def single_item_search_builder
-        byebug
-        single_item_search_builder_class.new(self).with(params.except(:q, :page))
+      # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
+      def url_for(options)
+        options[:controller] = 'projects'
+        options[:action] = 'show'
+        super
       end
+
 
       private
 
@@ -68,6 +68,10 @@ module Morphosource
         # link for facet filters
         def search_action_url(*args)
           main_app.project_media_path(*args)
+        end
+
+        def self.search_state_class
+          Morphosource::SearchState
         end
 
         # def tab_variables

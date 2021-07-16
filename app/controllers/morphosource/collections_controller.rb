@@ -16,6 +16,8 @@ module Morphosource
 
     load_and_authorize_resource except: [:index, :show, :specimens, :chos, :about, :create, :media], instance_name: :collection
 
+    before_action :build_breadcrumbs, only: [:show, :about]
+
 
     # helper_method :hidden_params_for_filters, :hidden_params_for_pagination, :publication_status_label,
     #   :media_type_label, :filter_params, :ms_collection_view_link, :source_label, :bso_tab_url_for_collections,

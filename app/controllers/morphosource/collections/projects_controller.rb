@@ -10,6 +10,10 @@ module Morphosource
 
       # include Blacklight::Configurable
 
+      load_and_authorize_resource except: [:index, :show, :specimens, :chos, :about, :create, :media], instance_name: :collection
+
+      skip_load_and_authorize_resource only: [:show, :about]
+
       def search_builder_class
         Morphosource::Collections::MediaSearchBuilder
       end
@@ -51,6 +55,10 @@ module Morphosource
 
       private
 
+        def query_collection_works
+          super
+        end
+
         def filtered_facets
           ["member_of_project_ids_ssim", "member_of_team_ids_ssim"]
         end
@@ -70,12 +78,14 @@ module Morphosource
         end
 
         def gather_instance_variables
+          @response, @document_list = query_solr unless @response.present? 
           @media_list = @document_list
           super
         end
 
         def member_count
-          @response.response["numFound"].to_s + ' Media'
+          @response, @document_list = query_solr unless @response.present?
+          media_count = @response.response["numFound"].to_s + ' Media'
         end
 
     end

@@ -1,0 +1,15 @@
+<div class="hyc-blacklight hyc-bl-pager">
+  <div class="row record-padding paginate-wrapper ms-works-pagination-wrapper">
+    <div class="col-md-12 col-lg-2">
+      <%= render 'shared/morphosource/lists/rows_per_page' %>
+    </div>
+    <div class="col-md-12 col-lg-2">
+      <div>Showing <%= page_entries_info @response %></div>
+    </div>
+    <div class="col-md-12 col-lg-8">
+      <% if @response.total_pages > 1 %>
+        <%= paginate @response, outer_window: 2, theme: 'blacklight', route_set: main_app %>
+      <% end %>
+    </div>
+  </div>
+</div>

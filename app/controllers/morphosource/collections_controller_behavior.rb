@@ -45,12 +45,26 @@ module Morphosource
       query_collection_members
     end
 
+    def about
+      @curation_concern ||= ActiveFedora::Base.find(params[:id])
+      if @_request.fullpath.include? '/collections/'
+        redirect_to_collection_type
+        return
+      end
+      @collection = @curation_concern
+      @tab = :about
+      presenter
+      gather_instance_variables
+      query_collection_members
+      render 'about'
+    end
+
     private
 
       def gather_instance_variables
-        @member_count = member_count
+        @member_count ||= member_count
         @po_type ||= media_object_type(@media_list)
-        @tab = tab
+        @tab ||= tab
       end
 
       def redirect_to_collection_type
@@ -90,6 +104,10 @@ module Morphosource
 
       def media_object_type(media_list)
         media_list.map{|m| m["media_physical_object_type_ssim"]&.first }.uniq
+      end
+
+      def member_count
+        'count goes here'
       end
 
   end

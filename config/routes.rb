@@ -79,7 +79,7 @@ Rails.application.routes.draw do
     scope module: :collections do
       get 'projects/:id/specimens', to: 'biological_specimens#show', as: 'project_specimens'
       get 'projects/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'project_chos'
-      get 'projects/:id/about', to: 'about#show', as: 'project_about'
+      get 'projects/:id/about', to: 'projects#about', as: 'project_about'
       get 'projects/:id', to: 'projects#show', as: 'project_media'
     end
   end

@@ -55,25 +55,6 @@ module Morphosource
 
       private
 
-        def query_collection_works
-          super
-          query_collection_objects
-        end
-
-        def query_collection_objects
-          query_collection_specimens
-          query_collection_chos
-        end
-
-        def query_collection_specimens
-          byebug
-          search_builder = Morphosource::Collections::BiologicalSpecimensController.new.search_builder
-        end
-
-        def query_collection_chos
-
-        end
-
         def filtered_facets
           ["member_of_project_ids_ssim", "member_of_team_ids_ssim"]
         end
@@ -98,10 +79,10 @@ module Morphosource
           super
         end
 
-        def member_count
-          @response, @document_list = query_solr unless @response.present?
-          media_count = @response.response["numFound"].to_s + ' Media'
-        end
+        # def member_count
+        #   @response, @document_list = query_solr unless @response.present?
+        #   media_count = @response.response["numFound"].to_s + ' Media'
+        # end
 
     end
   end

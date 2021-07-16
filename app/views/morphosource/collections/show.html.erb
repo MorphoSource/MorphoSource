@@ -40,12 +40,7 @@ provide :page_title, construct_page_title(@presenter.title)
                 <%= @presenter.collection_type_badge %>
                 <%= @presenter.permission_badge %>
               </div>
-              <div class="text-muted">
-                <%= @member_count %>
-                <span class="bso-count"></span>
-                <span class="cho-count"></span>
-                 · Managed by: <%= @presenter.collection_managers %>
-              </div>
+              <%= render 'collection_counts' %>
           </h1>
         </div>
       </div>

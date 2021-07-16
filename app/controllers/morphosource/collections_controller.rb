@@ -31,10 +31,6 @@ module Morphosource
 
     private
 
-    def query_collection_works
-      (@response, @document_list) = query_solr
-    end
-
     def decide_layout
       layout = case action_name
                when 'show'

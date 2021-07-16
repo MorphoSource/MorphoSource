@@ -31,7 +31,7 @@ module Morphosource
         end
 
         def media_object_ids
-          @media_list.map { |d| d["physical_object_id_ssim"].try(:first) }.compact
+          repository.search(Morphosource::Collections::MediaObjectsSearchBuilder.new(scope: @scope, collection: @collection).rows(999999)).response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
         end
 
     end

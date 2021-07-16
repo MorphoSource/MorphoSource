@@ -5,14 +5,14 @@
     <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
     </a>
   </li>
-  <% if @po_type.include? 'Biological Specimen' %>
+  <% if @specimen_count > 0 %>
     <li role="presentation" class=<%= active_tab?(:specimens) %>>
       <a href=<%= specimens_tab_url %> aria-controls="biological_specimens" role="tab">
         <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
       </a>
     </li>
   <% end %>
-  <% if @po_type.include? 'Cultural Heritage Object' %>
+  <% if @cho_count > 0 %>
     <li role="presentation" class=<%= active_tab?(:chos) %>>
       <a href=<%= chos_tab_url %> aria-controls="biological_specimens" role="tab">
         <i class="ms2-icon-bowl icon-bowl" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS

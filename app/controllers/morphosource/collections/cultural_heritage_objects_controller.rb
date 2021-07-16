@@ -50,11 +50,6 @@ module Morphosource
 
       private
 
-        def query_collection_works
-          @media_list = collection_media
-          super
-        end
-
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
           main_app.my_dashboard_media_facet_path(args[:id])

@@ -39,6 +39,7 @@ module Morphosource
       end
       @collection = @curation_concern
       presenter
+      (@response, @document_list) = query_solr
       query_collection_works
       filter_facets
       gather_instance_variables
@@ -54,6 +55,7 @@ module Morphosource
       @collection = @curation_concern
       @tab = :about
       presenter
+      query_collection_works
       gather_instance_variables
       query_collection_members
       render 'about'
@@ -62,8 +64,6 @@ module Morphosource
     private
 
       def gather_instance_variables
-        @member_count ||= member_count
-        @po_type ||= media_object_type(@media_list)
         @tab ||= tab
       end
 
@@ -96,18 +96,32 @@ module Morphosource
         parent_collections if collection.collection_type.nestable? && action_name == 'show'
       end
 
+      def query_collection_works
+        collection_media
+        collection_specimens
+        collection_chos
+      end
+
       def collection_media
         search_builder = Morphosource::Collections::MediaSearchBuilder.new(scope: self, collection: @collection)
         @media_list = repository.search(search_builder.rows(999999).query).response["docs"]
+        @media_count = @media_list.count.to_s + ' Media'
       end
 
+      def collection_specimens
+        search_builder = Morphosource::Collections::SpecimensSearchBuilder.new(self)
+        response = repository.search(search_builder.query)
+        @specimen_count = response.response["numFound"].to_i
+      end
+
+      def collection_chos
+        search_builder = Morphosource::Collections::ChosSearchBuilder.new(self)
+        response = repository.search(search_builder.query)
+        @cho_count = response.response["numFound"].to_i
+      end
 
       def media_object_type(media_list)
         media_list.map{|m| m["media_physical_object_type_ssim"]&.first }.uniq
-      end
-
-      def member_count
-        'count goes here'
       end
 
   end

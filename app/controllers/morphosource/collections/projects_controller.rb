@@ -2,17 +2,16 @@ module Morphosource
   module Collections
     class ProjectsController < Morphosource::CollectionsController
       include Morphosource::Collections::ProjectsControllerBehavior
-      include Hyrax::CollectionsControllerBehavior
-      include Morphosource::Collections::ProjectHelper
-      include Hyrax::BreadcrumbsForCollections
+      # include Hyrax::CollectionsControllerBehavior
+      # include Morphosource::Collections::ProjectHelper
+      # include Hyrax::BreadcrumbsForCollections
 
-
-      skip_load_and_authorize_resource only: [:show, :media]
+      # skip_load_and_authorize_resource only: [:show]
 
       # include Blacklight::Configurable
 
       def search_builder_class
-        Morphosource::Collections::Projects::MediaSearchBuilder
+        Morphosource::Collections::MediaSearchBuilder
       end
 
       def self.configure_facets
@@ -28,10 +27,6 @@ module Morphosource
           config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
         end
       end
-
-      # include Blacklight::Configurable
-      #
-      # copy_blacklight_config_from(CatalogController)
       configure_facets
 
       def search_builder
@@ -47,12 +42,12 @@ module Morphosource
       end
 
       # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
+      # provides link for removing individual constraints
       def url_for(options)
         options[:controller] = 'projects'
         options[:action] = 'show'
         super
       end
-
 
       private
 
@@ -70,18 +65,18 @@ module Morphosource
           main_app.project_media_path(*args)
         end
 
-        def self.search_state_class
-          Morphosource::SearchState
+        def tab
+          :media
         end
 
-        # def tab_variables
-        #   @tab = :media
-        #   @tab_title = 'Media // MorphoSource'
-        # end
+        def gather_instance_variables
+          @media_list = @document_list
+          super
+        end
 
-      def tab
-        :media
-      end
+        def member_count
+          @response.response["numFound"].to_s + ' Media'
+        end
 
     end
   end

@@ -25,7 +25,6 @@ module Hyrax
     attr_writer :collection_type
 
     def initialize(solr_document, current_ability, request = nil)
-      byebug
       super
       @search_form_url = ''
       @collection = Collection.find(id)
@@ -115,7 +114,7 @@ module Hyrax
     def project_team_title_link
       #if @collection.first_parent.present?
       if member_of_collection_ids.present?
-        collection = Collection.find(id)
+        collection = Collection.find(id)        
         renderer = Hyrax::Renderers::ShowcaseCollectionLinkRenderer.new(nil,nil)
         return renderer.collection_link(collection.first_parent)
       else

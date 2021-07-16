@@ -10,10 +10,11 @@ module Morphosource
     include Morphosource::CollectionsControllerBehavior
     helper Morphosource::CollectionHelper
     include Hyrax::CollectionsControllerBehavior
+    include Morphosource::Facets::AccessFilters
 
     with_themed_layout 'morphosource_1_column'
 
-    load_and_authorize_resource except: [:index, :show, :create, :media], instance_name: :collection
+    load_and_authorize_resource except: [:index, :show, :specimens, :chos, :about, :create, :media], instance_name: :collection
 
 
     # helper_method :hidden_params_for_filters, :hidden_params_for_pagination, :publication_status_label,
@@ -27,6 +28,10 @@ module Morphosource
     # load_and_authorize_resource except: [:index, :show, :create], instance_name: :collection
 
     private
+
+    def query_collection_works
+      (@response, @document_list) = query_solr
+    end
 
     def decide_layout
       layout = case action_name

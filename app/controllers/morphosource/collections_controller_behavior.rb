@@ -10,7 +10,7 @@ module Morphosource
 
     included do
       # include the display_trophy_link view helper method
-      helper Hyrax::TrophyHelper
+      # helper Hyrax::TrophyHelper
 
       # This is needed as of BL 3.7
       copy_blacklight_config_from(::CatalogController)
@@ -21,13 +21,14 @@ module Morphosource
                       :membership_service_class,
                       :information_service_class
 
-      self.presenter_class = Hyrax::TeamPresenter
+      # self.presenter_class = Hyrax::TeamPresenter
+      self.presenter_class = Morphosource::CollectionPresenter
 
       # The search builder to find the collection
       self.single_item_search_builder_class = Hyrax::SingleCollectionSearchBuilder
       # The search builder to find the collections' members
       self.membership_service_class = Morphosource::Collections::CollectionMemberService
-      self.information_service_class = Morphosource::Collections::CollectionInformationService
+      # self.information_service_class = Morphosource::Collections::CollectionInformationService
     end
 
     def show
@@ -38,26 +39,17 @@ module Morphosource
       end
       @collection = @curation_concern
       presenter
-      (@response, @document_list) = query_solr
+      query_collection_works
+      filter_facets
       gather_instance_variables
       query_collection_members
-    end
-
-    def curation_concern
-      byebug
-      # Query Solr for the collection.
-      # run the solr query to find the collection members
-      response, _docs = search_service.search_results
-      curation_concern = response.documents.first
-      raise CanCan::AccessDenied unless curation_concern
-      curation_concern
     end
 
     private
 
       def gather_instance_variables
-        @media_member_count = @response.response["numFound"]
-        @po_type = @document_list.map{|m| m["media_physical_object_type_ssim"]&.first }.uniq
+        @member_count = member_count
+        @po_type ||= media_object_type(@media_list)
         @tab = tab
       end
 
@@ -81,6 +73,23 @@ module Morphosource
 
       def query_solr
         search_results(params)
+      end
+
+      # override Hyrax::CollectionsControllerBehavior - member_works isn't necessary
+      def query_collection_members
+        # member_works
+        member_subcollections if collection.collection_type.nestable?
+        parent_collections if collection.collection_type.nestable? && action_name == 'show'
+      end
+
+      def collection_media
+        search_builder = Morphosource::Collections::MediaSearchBuilder.new(scope: self, collection: @collection)
+        @media_list = repository.search(search_builder.rows(999999).query).response["docs"]
+      end
+
+
+      def media_object_type(media_list)
+        media_list.map{|m| m["media_physical_object_type_ssim"]&.first }.uniq
       end
 
   end

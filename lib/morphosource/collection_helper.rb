@@ -11,7 +11,6 @@ module Morphosource
       @tab == tab ? 'active' : ''
     end
 
-
     def page_is_team?
       path_info.include?("teams")
     end
@@ -201,7 +200,6 @@ module Morphosource
     end
 
     def prepare_docs_and_filters_for_media(collection)
-      byebug
       @is_team = collection.respond_to?(:team?) ? collection.team? : false
       @visibility_options = []
       if @subcollection_docs.present?

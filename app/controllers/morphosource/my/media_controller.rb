@@ -33,12 +33,10 @@ module Morphosource
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
-          byebug
           main_app.my_dashboard_media_facet_path(args[:id])
         end
 
         def search_action_url(*args)
-          byebug
           main_app.my_media_index_path(*args)
         end
 

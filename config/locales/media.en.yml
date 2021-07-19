@@ -22,7 +22,7 @@ en:
           point_count: Points
           preview_mode: Media preview mode
           related_url: External media URL
-          rights_holder: IP holder(s) (Name, Type)
+          rights_holder: IP holder
           rights_statement: Copyright statement
           x_spacing: X pixel spacing
           y_spacing: Y pixel spacing
@@ -35,7 +35,7 @@ en:
         description:        "Media works"
         name:               "Media"
   simple_form:
-    labels:    
+    labels:
       media:
         agreement_uri: Additial usage agreement
         ark: MorphoSource ARK
@@ -56,9 +56,8 @@ en:
         point_count: Points
         preview_mode: Media preview mode
         related_url: External media URL
-        rights_holder: IP holder(s) (Name, Type)
+        rights_holder: IP holder
         rights_statement: Copyright statement
         x_spacing: X pixel spacing
         y_spacing: Y pixel spacing
         z_spacing: Z pixel spacing
-

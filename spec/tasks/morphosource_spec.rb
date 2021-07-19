@@ -9,7 +9,8 @@ describe 'morphosource rake tasks' do
   let(:create_contributor_role)   { Rake::Task['morphosource:create_contributor_role'] }
   let(:create_development_users)  { Rake::Task['morphosource:create_development_users'] }
   let(:create_production_users)   { Rake::Task['morphosource:create_production_users'] }
-  let(:tasks)                     { [setup, create_admin_set, create_collection_types, create_admin_role, create_contributor_role, create_development_users, create_production_users] }
+  let(:update_media_ip_holder)    { Rake::Task['morphosource:update_media_ip_holder'] }
+  let(:tasks)                     { [setup, create_admin_set, create_collection_types, create_admin_role, create_contributor_role, create_development_users, create_production_users, update_media_ip_holder] }
 
   before do
     Rails.application.load_tasks if Rake::Task.tasks.empty?
@@ -170,6 +171,69 @@ describe 'morphosource rake tasks' do
         expect(create_admin_role).to receive(:invoke)
         expect(create_contributor_role).to receive(:invoke)
         setup.invoke
+      end
+    end
+  end
+
+  describe 'update_media_ip_holder' do
+    let(:rh_1)    { ["Name: Rights Holder Name, Type: Copyright and License"] }
+    let(:rh_2)    { ["Name: Name, with, commas, Type: License"] }
+    let(:rh_3)    { ["Name: Name: with: colons:, Type: Copyright"] }
+    let(:rh_4)    { ["Name: , Type: "] }
+    let(:rh_5)    { ["Name: name without type information, Type: "] }
+    let(:rh_6)    { ["Name: , Type: Copyright and License"] }
+    let(:rh_7)    { ["Name: multiple rights holder 1, Type: Copyright", "Name: multiple rights holder 2, Type: License", "Name: multiple rights holder 3, Type: Copyright and License"] }
+    let(:rh_8)    { ["just a bunch of text without name and license"] }
+    let(:rh_9)    { ["a bunch of text with Name: in the middle"] }
+    let(:rh_10)   { ["a bunch of text with Type: in the middle"] }
+    let(:rh_11)   { ["Name:namewithoutspaces, Type:typewithoutspaces"] }
+
+    let(:formatted_rh1) { ["Rights Holder Name (Copyright and License)"] }
+    let(:formatted_rh2) { ["Name, with, commas (License)"] }
+    let(:formatted_rh3) { ["Name: with: colons: (Copyright)"] }
+    let(:formatted_rh4) { [] }
+    let(:formatted_rh5) { ["name without type information"] }
+    let(:formatted_rh6) { [] }
+    let(:formatted_rh7) { ["multiple rights holder 1 (Copyright)", "multiple rights holder 2 (License)", "multiple rights holder 3 (Copyright and License)"] }
+
+    # these should get updated
+    let(:media1)  { Media.create(title: ['media1'], rights_holder: rh_1)}
+    let(:media2)  { Media.create(title: ['media2'], rights_holder: rh_2)}
+    let(:media3)  { Media.create(title: ['media3'], rights_holder: rh_3)}
+    let(:media4)  { Media.create(title: ['media4'], rights_holder: rh_4)}
+    let(:media5)  { Media.create(title: ['media5'], rights_holder: rh_5)}
+    let(:media6)  { Media.create(title: ['media6'], rights_holder: rh_6)}
+    let(:media7)  { Media.create(title: ['media7'], rights_holder: rh_7)}
+
+    # these should not get updated
+    let(:media8)  { Media.create(title: ['media8'], rights_holder: rh_8)}
+    let(:media9)  { Media.create(title: ['media9'], rights_holder: rh_9)}
+    let(:media10) { Media.create(title: ['media10'], rights_holder: rh_10)}
+    let(:media11) { Media.create(title: ['media10'], rights_holder: rh_11)}
+
+    let!(:media) { [media1, media2, media3, media4, media5, media6, media7, media8, media9, media10, media11] }
+
+    context 'when development environment' do
+      before do
+        allow(Rails.env).to receive(:development?).and_return(true)
+      end
+
+      it 'transforms name, type formatted rights_holder' do
+        update_media_ip_holder.invoke
+        media.each(&:reload)
+
+        expect(media1.rights_holder).to match_array(formatted_rh1)
+        expect(media2.rights_holder).to match_array(formatted_rh2)
+        expect(media3.rights_holder).to match_array(formatted_rh3)
+        expect(media4.rights_holder).to match_array(formatted_rh4)
+        expect(media5.rights_holder).to match_array(formatted_rh5)
+        expect(media6.rights_holder).to match_array(formatted_rh6)
+        expect(media7.rights_holder).to match_array(formatted_rh7)
+
+        expect(media8.rights_holder).to match_array(rh_8)
+        expect(media9.rights_holder).to match_array(rh_9)
+        expect(media10.rights_holder).to match_array(rh_10)
+        expect(media11.rights_holder).to match_array(rh_11)
       end
     end
   end

@@ -359,7 +359,7 @@ $( document ).ready(function() {
               });
               console.log(modified_data);
 
-              return { 
+              return {
                 results: modified_data
               };
             },
@@ -688,7 +688,7 @@ $( document ).ready(function() {
             for (const prop in item) {
               if (item[prop]) {
                 $('#submission_organization_select_display #'+prop).text(item[prop]);
-              }     
+              }
             }
 
             // Other UI control
@@ -858,7 +858,7 @@ $( document ).ready(function() {
             },
             results: function (data, page) { // parse the results into the format expected by Select2.
               console.log(data);
-              return { 
+              return {
                 results: data
               };
             },
@@ -869,12 +869,12 @@ $( document ).ready(function() {
         });
 
         function formatTaxonomy(taxon) {
-          return "<div>" + 
-            buildName(taxon.name, taxon.rank) + 
-            "<br/><span style='font-size: small;'>" + 
-            taxon.higher_taxonomy + 
+          return "<div>" +
+            buildName(taxon.name, taxon.rank) +
+            "<br/><span style='font-size: small;'>" +
+            taxon.higher_taxonomy +
             "</span><br/>" +
-            taxon.source_info + 
+            taxon.source_info +
             "</div>";
         }
 
@@ -1132,7 +1132,7 @@ $( document ).ready(function() {
           if (nullOrg) {
             clearList();
             removePreviousSelection();
-            
+
             $("#submission_device_select_organization_search").select2('data', nullOrg);
 
             var devices = $.map(nullOrg.devices, function( val, i ) {
@@ -1316,10 +1316,10 @@ $( document ).ready(function() {
           event.preventDefault();
           console.log('View 11 create imaging event button');
 
-          /* For RAW, get creator and creation date from imaging event 
+          /* For RAW, get creator and creation date from imaging event
              For DERIVED, get them from processing event (and fall back on imaging event) */
           var IE_CreatorsCount = $('[name="imaging_event[creator][]"]').length;
-          $('[name="imaging_event[creator][]"]').each(function(index) { 
+          $('[name="imaging_event[creator][]"]').each(function(index) {
             if ($(this).val() != '') {
               console.log('setting default creator from IE: '+$(this).val());
               $('[name="media[creator][]"]').eq(index).val($(this).val());
@@ -1361,14 +1361,14 @@ $( document ).ready(function() {
           event.preventDefault();
           console.log('View 12 create processing event button');
 
-          /* For RAW, get creator and creation date from imaging event 
+          /* For RAW, get creator and creation date from imaging event
              For DERIVED, get them from processing event (and fall back on imaging event) */
           if (data.rawOrDerivedMedia == 'derived') {
             var PE_CreatorsCount = $('[name="processing_event[creator][]"]').length;
             if (PE_CreatorsCount > 0 && $('[name="processing_event[creator][]"]').eq(0).val() != '') {
               // remove all media creators before adding
               $(".media_creator").find("button.remove:not(:first)").trigger("click");
-              $('[name="processing_event[creator][]"]').each(function(index) { 
+              $('[name="processing_event[creator][]"]').each(function(index) {
                 if ($(this).val() != '') {
                   console.log('setting default creator from PE: '+$(this).val());
                   $('[name="media[creator][]"]').eq(index).val($(this).val());
@@ -1639,16 +1639,12 @@ $( document ).ready(function() {
           case 'download_permission':
             $('form#new_media input#media_visibility_open').trigger('click');
             break;
-          case 'rights_holder': // multi-value
-            $("form#new_media input[name='media[rights_holder_name][]']").first().val('');
-            $("form#new_media input[name='media[rights_holder_type][]']").first().val('');
-            $("form#new_media input[name='media[rights_holder_name][]']").slice(1).parent().remove();
-            break;
           case 'download_reviewer':
             $(selector).val('').trigger('change');
             // $('form#new_media div.media_download_reviewer span.select2-chosen').text('');
             break;
           case 'license': // multi-value fields
+          case 'rights_holder':
           case 'agreement_uri':
           case 'funding':
           case 'publisher':
@@ -1699,37 +1695,6 @@ $( document ).ready(function() {
               "<i class='fas fa-university'></i>"
             );
             break;
-          case 'rights_holder': // multi-value
-            if (Array.isArray(val) && val.length > 1) {
-              for (i = 0; i < val.length; i++) {
-                if (val[i]) {
-                  // console.log('element: ' + val[i]);
-                  let rightsHolderArray = this.extractRightsHolderArray(val[i]);
-                  // console.log(rightsHolderArray);
-                  $("form#new_media input[name='media[rights_holder_name][]']").eq(i).val(rightsHolderArray[0]);
-                  $("form#new_media select[name='media[rights_holder_type][]']").eq(i).val(rightsHolderArray[1]);
-                  $(multiSelector).eq(i).val(val[i]);
-                  if (i < (val.length - 1) && val[i+1]) {
-                    $("form#new_media input[name='media[rights_holder_name][]']").eq(i).parent().find('button.add').trigger('click');
-                  }  else {
-                    $('form#new_media div.media_rights_holder').addClass('permissions-field');
-                    $('form#new_media div.media_rights_holder').find('i.tooltip-icon').after(
-                      "<i class='fas fa-university'></i>"
-                    );
-                  }
-                }
-              }
-            } else {
-              let rightsHolderArray = this.extractRightsHolderArray(val[0]);
-              $("form#new_media input[name='media[rights_holder_name][]']").val(rightsHolderArray[0]);
-              $("form#new_media select[name='media[rights_holder_type][]']").val(rightsHolderArray[1]);
-              $('form#new_media div.media_rights_holder').addClass('permissions-field');
-              // console.log($('form#new_media div#media_rights_holder_visible').find('label'));
-              $('form#new_media div#media_rights_holder_visible').find('i.tooltip-icon').after(
-                "<i class='fas fa-university'></i>"
-              );
-            }
-            break;
           case 'download_reviewer':
             $(multiSelector).select2('destroy').empty().userSearchMultiple(val);
             $('form#new_media div.media_download_reviewer').addClass('permissions-field');
@@ -1742,6 +1707,7 @@ $( document ).ready(function() {
             });
             break;
           case 'license': // multi-value fields
+          case 'rights_holder':
           case 'agreement_uri':
           case 'funding':
           case 'publisher':
@@ -1783,12 +1749,6 @@ $( document ).ready(function() {
             );
 
         }
-      }
-
-      extractRightsHolderArray(s) {
-        let rightsHolder = s.substring(s.indexOf('Name: ') + 6, s.lastIndexOf(', Type: '));
-        let rightsHolderType = s.substring(s.lastIndexOf(', Type: ') + 8);
-        return [rightsHolder, rightsHolderType];
       }
 
       // TODO: Implement submission data checking? Probably best done at the end

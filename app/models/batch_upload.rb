@@ -1,2 +1,0 @@
-class BatchUpload < ApplicationRecord
-end

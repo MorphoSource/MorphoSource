@@ -9,8 +9,8 @@ module Morphosource
       user_groups.include? 'contributor'
     end
 
-    def batch_upload_contributor?
-      user_groups.include? 'batch_upload_contributor'
+    def batch_submission_contributor?
+      user_groups.include? 'batch_submission_contributor'
     end
 
     # Grant all users with edit or download access permission to download

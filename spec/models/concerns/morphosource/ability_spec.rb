@@ -308,18 +308,18 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     end
   end
 
-  describe '#batch_upload_contributor?' do
-    context 'user is not a batch_upload_contributor' do
+  describe '#batch_submission_contributor?' do
+    context 'user is not a batch_submission_contributor' do
       it 'returns false' do
-        expect(ability.batch_upload_contributor?).to be(false)
+        expect(ability.batch_submission_contributor?).to be(false)
       end
     end
-    context 'user is a batch_upload_contributor' do
+    context 'user is a batch_submission_contributor' do
       before do
-        allow(user).to receive(:groups).and_return(['batch_upload_contributor'])
+        allow(user).to receive(:groups).and_return(['batch_submission_contributor'])
       end
       it 'returns true' do
-        expect(ability.batch_upload_contributor?).to be(true)
+        expect(ability.batch_submission_contributor?).to be(true)
       end
     end
   end

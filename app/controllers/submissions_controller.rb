@@ -90,7 +90,7 @@ class SubmissionsController < ApplicationController
         text: [d['creator_tesim']&.first, d['title_tesim']&.first].compact.join(' '),
         title: d['title_tesim']&.first,
         creator: d['creator_tesim']&.first,
-        modality: d['modality_tesim']&.first,
+        modality: d['modality_tesim']&.join(','),
         description: d['description_tesim']&.first
       }]
     end.to_h

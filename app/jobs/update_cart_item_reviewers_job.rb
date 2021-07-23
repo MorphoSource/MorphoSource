@@ -1,6 +1,6 @@
 class UpdateCartItemReviewersJob < Hyrax::ApplicationJob
 
-  queue_as Hyrax.config.reindex_queue_name
+  queue_as Hyrax.config.update_fast_queue_name
 
   def perform(media=nil)
     # find all cart items with that media, then set the cart items' reviewers to the new reviewers

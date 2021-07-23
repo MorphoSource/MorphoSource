@@ -121,23 +121,8 @@ RSpec.describe Morphosource::Users::WorksTransferService do
     it 'assigns the new user to old user roles' do
       expect(deposited_work.owner).to eq(new_user.ms_id)
       expect(owned_work.owner).to eq(new_user.ms_id)
-      expect(reviewed_work.download_reviewer).to include(new_user.ms_id)
+      expect(reviewed_work.download_reviewer).to match_array(new_user.ms_id)
       expect(deposited_not_owned_work.owner).to eq(another_user.ms_id)
-    end
-  end
-
-  describe 'transfer_cart_items' do
-    let(:owned_cart_item)   { CartItem.create(user_id: old_user.ms_id, work_id: 'media_id') }
-    let(:reviewed_cart_item) { CartItem.create(user_id: another_user.ms_id, work_id: 'media_id', reviewers: [old_user.ms_id]) }
-
-    before do
-      allow_any_instance_of(described_class).to receive(:cart_items).and_return([owned_cart_item, reviewed_cart_item])
-      subject
-    end
-
-    it 'associates the cart item with the new user' do
-      expect(owned_cart_item.user_id).to eq(old_user.ms_id)
-      expect(reviewed_cart_item.reviewers).to match_array([new_user.ms_id])
     end
   end
 
@@ -158,17 +143,4 @@ RSpec.describe Morphosource::Users::WorksTransferService do
     end
   end
 
-  describe 'cart_items' do
-    let(:media)           { Media.create(title: ['media']) }    
-    let(:reviewed_item)   { CartItem.create(user_id: another_user.ms_id, work_id: media.id, reviewers: [old_user.ms_id]) }
-    let(:another_item)    { CartItem.create(user_id: another_user.ms_id, work_id: media.id) }
-
-    let(:old_user_items)  { [reviewed_item] }
-
-    subject { described_class.new(old_user.email, new_user.email) }
-
-    it 'returns all cart items associated with the user' do
-      expect(subject.cart_items).to match_array(old_user_items)
-    end
-  end
 end

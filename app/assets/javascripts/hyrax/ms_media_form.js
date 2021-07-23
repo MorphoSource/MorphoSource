@@ -586,8 +586,9 @@ $( document ).ready(function() {
 
       function isFormValid() {
         // check modality consistency
-        if ($('#device-modality-value').length)
-          var deviceModality = $('#device-modality-value').data('modality-id');
+        if ($('#device-modality-value').length) {
+          var deviceModality = $('#device-modality-value').html();
+        }
         if ($('#imaging_event_ie_modality').length)
           var imagingEventModality = $('#imaging_event_ie_modality').val();
         if (deviceModality && imagingEventModality) {

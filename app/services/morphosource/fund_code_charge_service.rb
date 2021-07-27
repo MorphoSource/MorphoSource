@@ -10,10 +10,6 @@ module Morphosource
       new(fund_code, billing_rate, billing_unit, custom_start_date, custom_end_date).call
     end
 
-    def self.audit_charge_units_consumed(fund_code, start_date, end_date)
-
-    end
-
     def initialize(fund_code, billing_rate, billing_unit, custom_start_date = nil, custom_end_date = nil)
       @fund_code = fund_code
       @billing_rate = billing_rate
@@ -88,7 +84,7 @@ module Morphosource
       filesets_without_size = filesets - filesets_with_size
 
       indexed_units_consumed = filesets.pluck('file_size_lts').sum
-      filesystem_units_consumed = filesets_binary_sizes(filesets_without_size).pluck('file_size_lts').sum
+      filesystem_units_consumed = filesets_binary_sizes(filesets_without_size.pluck('id'))
 
       return indexed_units_consumed + filesystem_units_consumed
     end
@@ -113,17 +109,22 @@ module Morphosource
     end
 
     # calculate space used by each fileset from binary file
-    def filesets_binary_sizes(filesets)
-      Morphosource::FilesetsBinarySizeService.call(filesets.pluck('id'))
+    def filesets_binary_sizes(fileset_ids)
+      return 0 if !fileset_ids.present?
+
+      fileset_ids.map do |fs_id|
+        fs = FileSet.find(fs_id)
+        fs.original_file.present? ? fs.original_file.size : nil
+      end.compact.sum
     end
 
     def generate_initial_charge
-      amount = units_consumed * billing_rate.to_d
+      amount = ( units_consumed * billing_rate.to_d ).truncate(2).to_s("F")
       generate_charge(amount, 'standard')
     end
 
     def generate_external_markup_charge
-      amount = units_consumed * billing_rate.to_d * ( fund_code.external_user_additional_rate_percent.to_d / 100.to_d )
+      amount = ( units_consumed * billing_rate.to_d * ( fund_code.external_user_additional_rate_percent.to_d / 100.to_d ) ).truncate(2).to_s("F")
       generate_charge(amount, 'external_markup')
     end
 
@@ -148,13 +149,13 @@ module Morphosource
       when 'b'
         1
       when 'kb'
-        2**10
+        1000
       when 'mb'
-        2**20
+        1e6
       when 'gb'
-        2**30
+        1e9
       when 'tb'
-        2**40
+        1e12
       else
         raise StandardError.new "Invalid billing unit provided"
       end

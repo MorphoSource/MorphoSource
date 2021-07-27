@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_11_190706) do
+ActiveRecord::Schema.define(version: 2021_07_27_193957) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -196,6 +196,8 @@ ActiveRecord::Schema.define(version: 2021_06_11_190706) do
     t.string "identifier"
     t.boolean "chargeable", default: false, null: false
     t.string "invoice_number"
+    t.decimal "total"
+    t.decimal "remaining"
     t.index ["user_id"], name: "index_fund_codes_on_user_id"
   end
 

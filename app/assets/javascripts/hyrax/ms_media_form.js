@@ -498,6 +498,7 @@ $( document ).ready(function() {
       $('#device-title-value').text($('#imaging_event_select_device_id').find(':selected').text());
       $('#device-creator-value').text($('#imaging_event_select_device_id').find(':selected').data('creator'));
       $('#device-modality-value').attr('data-modality-id', $('#imaging_event_select_device_id').find(':selected').data('modality'));
+      console.log('data-modality-id set to ' + $('#device-modality-value').attr('data-modality-id'));
       $('#device-modality-value').text(modalityTerm($('#imaging_event_select_device_id').find(':selected').data('modality')));
       $('#device-description-value').text($('#imaging_event_select_device_id').find(':selected').data('description'));
 
@@ -587,13 +588,15 @@ $( document ).ready(function() {
       function isFormValid() {
         // check modality consistency
         if ($('#device-modality-value').length)
-          var deviceModality = $('#device-modality-value').data('modality-id');
+          var deviceModality = $('#device-modality-value').attr('data-modality-id');
         if ($('#imaging_event_ie_modality').length)
           var imagingEventModality = $('#imaging_event_ie_modality').val();
         if (deviceModality && imagingEventModality) {
           if (deviceModality.includes(imagingEventModality)) {
             return true;
           } else {
+            console.log('deviceModality '+ deviceModality);
+            console.log('imagingEventModality '+ imagingEventModality);
             alert('Device modality does not match imaging event modality.');
           }
         } else {

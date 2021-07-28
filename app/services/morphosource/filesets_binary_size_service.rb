@@ -51,7 +51,7 @@ module Morphosource
       uri = URI(ActiveFedora::File.id_to_uri(fs['original_file_id_ssi']))
       response = nil
 
-      Net::HTTP.start(uri.host, uri.port) { |http|
+      Net::HTTP.start(uri.host, uri.port, use_ssl: (uri.scheme == "https")) { |http|
         response = http.head(uri)
       }
 

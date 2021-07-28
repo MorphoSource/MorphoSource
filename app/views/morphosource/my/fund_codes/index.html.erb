@@ -1,6 +1,6 @@
 <% provide :page_title, 'Fund Codes' %>
 
-<div>
+<div class="fund-codes">
   <% if @current_fund_code.present? %>
     <div class="row">
       <div class="col-md-12">
@@ -49,6 +49,8 @@
               <th><%= t('.header.standard_members') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.expires_at') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.storage_limit_tb') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.total') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.remaining') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.chargeable') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.media') %></th>
               <th><%= t('.header.actions') %></th>
@@ -91,6 +93,8 @@
                 <% end %>
                 <td data-sort="<%= fc.expires_at %>"><%= fc.expires_at.present? ? fc.expires_at.strftime("%m-%d-%Y") : "" %></td>
                 <td data-sort="<%= fc.storage_limit_tb %>"><%= fc.storage_limit_tb %></td>
+                <td data-sort="<%= number_with_precision(fc.total, precision: 2) %>"><%= number_with_precision(fc.total, precision: 2) %></td>
+                <td data-sort="<%= number_with_precision(fc.remaining, precision: 2) %>"><%= number_with_precision(fc.remaining, precision: 2) %></td>
                 <td data-sort="<%= fc.chargeable %>"><%= fc.chargeable ? "Yes" : "No" %></td>
                 <% media_ids_count = fc.media_ids.count %>
                 <td data-sort="<%= media_ids_count %>"><%= media_ids_count %></td>

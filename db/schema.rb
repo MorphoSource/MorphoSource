@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_27_193957) do
+ActiveRecord::Schema.define(version: 2021_07_27_194630) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -161,6 +161,7 @@ ActiveRecord::Schema.define(version: 2021_07_27_193957) do
     t.string "service_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "fund_code_remaining"
     t.index ["fund_code_id"], name: "index_fund_code_charges_on_fund_code_id"
   end
 

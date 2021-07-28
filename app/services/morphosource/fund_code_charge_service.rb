@@ -119,12 +119,12 @@ module Morphosource
     end
 
     def generate_initial_charge
-      amount = ( units_consumed * billing_rate.to_d ).truncate(2).to_s("F")
+      amount = ( units_consumed * billing_rate.to_d ).round(2)
       generate_charge(amount, 'standard')
     end
 
     def generate_external_markup_charge
-      amount = ( units_consumed * billing_rate.to_d * ( fund_code.external_user_additional_rate_percent.to_d / 100.to_d ) ).truncate(2).to_s("F")
+      amount = ( units_consumed * billing_rate.to_d * ( fund_code.external_user_additional_rate_percent.to_d / 100.to_d ) ).round(2)
       generate_charge(amount, 'external_markup')
     end
 

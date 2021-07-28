@@ -1,0 +1,2 @@
+class BatchSubmission < ApplicationRecord
+end

@@ -38,5 +38,10 @@
       <%= menu.nav_link(hyrax.admin_workflow_roles_path) do %>
         <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.workflow_roles') %></span>
       <% end %>
-    <% end # end of configuration block %>
+    <% end %>
+    <% if current_user.admin? %>
+      <%= menu.nav_link(main_app.batch_submissions_new_path) do %>
+        <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
+      <% end %>
+    <% end %>    
   <% end %>

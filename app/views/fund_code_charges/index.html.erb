@@ -53,28 +53,33 @@
         <table class="table table-striped datatable" style="font-size: smaller;">
           <thead>
             <th><%= t('.header.fund_code_identifier') %></th>
+            <th><%= t('.header.fund_code') %></th>
             <th><%= t('.header.description') %></th>
             <th><%= t('.header.amount') %></th>
             <th><%= t('.header.units_consumed') %></th>
             <th><%= t('.header.billing_rate') %></th>
             <th><%= t('.header.billing_unit') %></th>
+            <th><%= t('.header.fund_code_remaining') %></th>
             <th><%= t('.header.start_date') %></th>
             <th><%= t('.header.end_date') %></th>
             <th><%= t('.header.service_type') %></th>
           </thead>
           <tbody>
-          <% @charges.each do |charge| %>
-            <% c = charge.to_h(:csv) %>
+          <% @charges.each do |c| %>
             <tr>
-              <td data-sort="<%= c[:fund_code] %>"><%= c[:fund_code] %></td>
-              <td data-sort="<%= c[:description] %>"><%= c[:description] %></td> 
-              <td data-sort="<%= number_with_precision(c[:amount], precision: 2)  %>"><%= number_with_precision(c[:amount], precision: 2) %></td> 
-              <td data-sort="<%= number_with_precision(c[:units_consumed], precision: 2) %>"><%= number_with_precision(c[:units_consumed], precision: 2) %></td> 
-              <td data-sort="<%= c[:billing_rate] %>"><%= c[:billing_rate] %></td>
-              <td data-sort="<%= c[:billing_unit] %>"><%= c[:billing_unit] %></td>
-              <td data-sort="<%= c[:start_date] %>"><%= c[:start_date] %></td>
-              <td data-sort="<%= c[:end_date] %>"><%= c[:end_date] %></td>
-              <td data-sort="<%= c[:service_type] %>"><%= c[:service_type] %></td>
+              <td data-sort="<%= c.fund_code.identifier %>"><%= c.fund_code.identifier %></td>
+              <td data-sort="<%= c.fund_code.title %>">
+                <%= link_to c.fund_code.title, main_app.admin_fund_codes_path(:id => c.fund_code.id) %>  
+              </td>
+              <td data-sort="<%= c.description %>"><%= c.description %></td> 
+              <td data-sort="<%= number_with_precision(c.amount, precision: 2)  %>"><%= number_with_precision(c.amount, precision: 2) %></td> 
+              <td data-sort="<%= number_with_precision(c.units_consumed, precision: 2) %>"><%= number_with_precision(c.units_consumed, precision: 2) %></td> 
+              <td data-sort="<%= c.billing_rate %>"><%= c.billing_rate %></td>
+              <td data-sort="<%= c.billing_unit %>"><%= c.billing_unit %></td>
+              <td data-sort="<%= number_with_precision(c.fund_code_remaining, precision: 2)  %>"><%= number_with_precision(c.fund_code_remaining, precision: 2) %></td>
+              <td data-sort="<%= c.start_date %>"><%= c.start_date %></td>
+              <td data-sort="<%= c.end_date %>"><%= c.end_date %></td>
+              <td data-sort="<%= c.service_type %>"><%= c.service_type %></td>
             </tr>
           <% end %>
           </tbody>

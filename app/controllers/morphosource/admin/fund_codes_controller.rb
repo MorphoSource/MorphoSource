@@ -83,7 +83,8 @@ module Morphosource
           :managers, 
           :standard_members, 
           :expires_at, 
-          :storage_limit_tb, 
+          :storage_limit_tb,
+          :total,
           :external_user, 
           :external_user_additional_rate_percent, 
           :chargeable
@@ -91,17 +92,7 @@ module Morphosource
       end
 
       def params_attributes
-        fund_code_params.slice(
-          :title, 
-          :description, 
-          :identifier,
-          :invoice_number, 
-          :expires_at, 
-          :storage_limit_tb, 
-          :external_user,
-          :external_user_additional_rate_percent,
-          :chargeable
-        ).select { |k, v| v.present? }
+        fund_code_params.except(:managers, :standard_members).select { |k, v| v.present? }
       end
 
       def params_managers

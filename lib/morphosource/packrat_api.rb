@@ -51,15 +51,6 @@ module Morphosource
       end
     end
 
-    def say_hello
-      response = RestClient.get(
-        SERVICE_URL + ENDPOINT + '/volumes',
-        :Authorization => short_lived_token
-      )
-
-      puts(JSON.parse(response.body))
-    end
-
     def get_volume_details
       response = RestClient.get(
         "#{SERVICE_URL}#{ENDPOINT}/volumes/#{VOLUME_ID}",
@@ -69,20 +60,20 @@ module Morphosource
       if response.code == 200
         volume_data = JSON.parse(response.body)
         max_gb = volume_data['max_gb'].to_i
-        annual_pricing = volume_data['pricing'].to_d
-        if max_gb.present? && annual_pricing.present?
-          monthly_price_rate = annual_pricing / 12 / max_gb
+        annual_price_rate_per_gb = volume_data['annual_cost_per_gb'].to_d
+        if max_gb.present? && annual_price_rate_per_gb.present?
+          monthly_price_rate_per_gb = annual_price_rate_per_gb / 12
           return {
             status: 'success',
             data: {
-              billing_rate: monthly_price_rate,
+              billing_rate: monthly_price_rate_per_gb,
+              billing_unit: 'gb',
               period: 'month',
               total_storage: max_gb,
-              unit: 'Gb'
             }
           }
         else
-          raise "Request to Packrat API was successful, but pricing and max_gb attributes not present. Response body was #{JSON.parse(response.body)}"
+          raise "Request to Packrat API was successful, but annual_cost_per_gb and max_gb attributes not present. Response body was #{JSON.parse(response.body)}"
         end
       else
         raise "Request to Packrat API was not successful, response body was #{JSON.parse(response.body)}"

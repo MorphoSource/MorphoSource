@@ -48,7 +48,7 @@ class FundCodeChargesController < ApplicationController
   end
 
   def require_permissions
-    if request.format.json?
+    if request.format.json? && !current_user.admin?
       authorize_api_request
     else
       authorize! :read, :admin_dashboard

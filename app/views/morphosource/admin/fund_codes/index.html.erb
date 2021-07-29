@@ -27,6 +27,8 @@
             </div>
 
             <%= f.input :storage_limit_tb %>
+            <%= f.input :total, :input_html => {value: number_with_precision(f.object.total, precision: 2) } %>
+            <%= f.input :remaining, disabled: true, :input_html => {value: number_with_precision(f.object.remaining, precision: 2) }  %>
             <%= f.input :external_user, as: :select, include_blank: false %>
             <%= f.input :external_user_additional_rate_percent %>
             <%= f.input :chargeable, as: :select, include_blank: false %>
@@ -54,6 +56,8 @@
               <th><%= t('.header.standard_members') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.expires_at') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.storage_limit_tb') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.total') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.remaining') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.external_user') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.external_user_additional_rate_percent') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.chargeable') %></th>
@@ -95,6 +99,8 @@
                 <% end %>
                 <td data-sort="<%= fc.expires_at %>"><%= fc.expires_at.present? ? fc.expires_at.strftime("%m-%d-%Y") : "" %></td>
                 <td data-sort="<%= fc.storage_limit_tb %>"><%= fc.storage_limit_tb %></td> 
+                <td data-sort="<%= number_with_precision(fc.total, precision: 2) %>"><%= number_with_precision(fc.total, precision: 2) %></td> 
+                <td data-sort="<%= number_with_precision(fc.remaining, precision: 2) %>"><%= number_with_precision(fc.remaining, precision: 2) %></td> 
                 <td data-sort="<%= fc.external_user %>"><%= fc.external_user ? "Yes" : "No" %></td>
                 <td data-sort="<%= fc.external_user_additional_rate_percent %>"><%= fc.external_user_additional_rate_percent %></td> 
                 <td data-sort="<%= fc.chargeable %>"><%= fc.chargeable ? "Yes" : "No" %></td>

@@ -494,7 +494,11 @@ $( document ).ready(function() {
 
       // modify current device properties
       $('#device-id-value').val(newDeviceID);
-      $('#device-organization-title-value').text(orgData.text);
+      if (orgData)
+        deviceOrgTitle = orgData.text;
+      else
+        deviceOrgTitle = "No organization";      
+      $('#device-organization-title-value').text(deviceOrgTitle);
       $('#device-title-value').text($('#imaging_event_select_device_id').find(':selected').text());
       $('#device-creator-value').text($('#imaging_event_select_device_id').find(':selected').data('creator'));
       $('#device-modality-value').attr('data-modality-id', $('#imaging_event_select_device_id').find(':selected').data('modality'));

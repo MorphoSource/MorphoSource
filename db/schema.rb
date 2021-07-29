@@ -674,6 +674,7 @@ ActiveRecord::Schema.define(version: 2021_08_03_145709) do
     t.string "ms1_password_hash"
     t.boolean "ms1_user", default: false
     t.string "token"
+    t.string "sftp_share"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["ms_id"], name: "index_users_on_ms_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

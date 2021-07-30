@@ -324,6 +324,11 @@ module Hyrax
       @host_name ||= "morphosource.org"
     end
 
+    attr_writer :sftp_share_root
+    def sftp_share_root
+      @sftp_share_root ||= "/sftp_share_root_NOT_DEFINED/"
+    end
+
     attr_writer :front_page_media
     def front_page_media
       @front_page_media ||= nil

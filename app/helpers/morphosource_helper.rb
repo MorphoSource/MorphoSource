@@ -452,4 +452,13 @@ module MorphosourceHelper
     user.display_name.present? ? user.display_name : user.email
   end
 
+  def sftp_share_status(path)
+    icon = '<i class="glyphicon glyphicon-alert text-alert"></i>'
+    return icon.html_safe unless path.present?
+    if Dir.exist?(Hyrax.config.sftp_share_root + path) or Dir.exist?(path)
+      icon = '<i class="glyphicon glyphicon-ok-sign text-success"></i>'
+    end
+    return icon.html_safe
+  end
+
 end

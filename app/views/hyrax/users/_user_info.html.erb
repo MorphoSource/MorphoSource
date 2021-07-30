@@ -72,4 +72,12 @@
     <dt><i class="glyphicon glyphicon-globe"></i> Website(s)</dt>
     <dd><%= iconify_auto_link(user.website) %></dd>
   <% end %>
+
+  <% if current_user.admin? || @user == current_user %>
+    <% if user.sftp_share %>
+      <dt>SFTP Share</dt>
+      <dd><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></dd>
+    <% end %>
+  <% end %>
+
 </dl>

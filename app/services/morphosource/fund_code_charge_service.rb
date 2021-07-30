@@ -3,8 +3,8 @@ module Morphosource
     include SolrHelper
 
     attr_reader :fund_code, :billing_rate, :billing_unit, :media_ids, 
-      :fileset_ids, :units_consumed, :solr
-    attr_accessor :start_date, :end_date
+      :filesets_to_media, :fileset_ids, :units_consumed, :solr
+    attr_accessor :start_date, :end_date, :media_sizes
 
     def self.call(fund_code, billing_rate, billing_unit, custom_start_date = nil, custom_end_date = nil)
       new(fund_code, billing_rate, billing_unit, custom_start_date, custom_end_date).call
@@ -57,12 +57,14 @@ module Morphosource
 
     def query_charge_information
       @media_ids = fund_code.media_ids
-      @fileset_ids = query_media_child_fileset_ids
+      @filesets_to_media = query_media_fileset_ids
+      @fileset_ids = @filesets_to_media.keys
+      @media_sizes = query_media_sizes
       @units_consumed = query_bytes_consumed.to_d / unit_factor.to_d
     end
 
-    def query_media_child_fileset_ids
-      return [] if !media_ids.present?
+    def query_media_fileset_ids
+      return {} if !media_ids.present?
 
       solr_params = {
         fq: [
@@ -75,18 +77,18 @@ module Morphosource
         ]
       }
 
-      solr.get_docs(nil, solr_params).pluck(solrize('file_set_ids', :symbol)).compact
+      solr.get_docs(nil, solr_params)
+        .select { |d| d['file_set_ids_ssim'].present? }
+        .each_with_object({}) do |d, h|
+          d['file_set_ids_ssim'].each { |fs_id| h[fs_id] = d['id'] }
+        end
     end
 
-    def query_bytes_consumed
-      filesets = query_fileset_docs
-      filesets_with_size = filesets.select { |fs| fs['file_size_lts'].present? }
-      filesets_without_size = filesets - filesets_with_size
-
-      indexed_units_consumed = filesets.pluck('file_size_lts').sum
-      filesystem_units_consumed = filesets_binary_sizes(filesets_without_size.pluck('id'))
-
-      return indexed_units_consumed + filesystem_units_consumed
+    def query_media_sizes
+      fileset_docs = query_fileset_docs
+      media_to_fs_size = fileset_docs.map { |d| [ filesets_to_media[d['id']] , d['file_size_lts'] ] }.to_h
+      (media_ids - media_to_fs_size.keys).each { |m_id| media_to_fs_size[m_id] = nil }
+      return media_to_fs_size
     end
 
     def query_fileset_docs
@@ -108,14 +110,28 @@ module Morphosource
       solr.get_docs(nil, solr_params)
     end
 
-    # calculate space used by each fileset from binary file
-    def filesets_binary_sizes(fileset_ids)
-      return 0 if !fileset_ids.present?
+    def query_bytes_consumed
+      return 0 if !media_sizes.present?
 
-      fileset_ids.map do |fs_id|
-        fs = FileSet.find(fs_id)
-        fs.original_file.present? ? fs.original_file.size : nil
-      end.compact.sum
+      indexed_bytes_consumed = media_sizes.values.select { |v| v.present? }.sum
+      unindexed_size_media_ids = media_sizes.select { |k, v| !v.present? }.keys
+      unindexed_bytes_consumed = unindexed_size_media_ids.inject(0) do |sum, m_id|
+        sum + ( (m_size = query_media_filesize(m_id)).present? ? m_size : 0 )
+      end
+
+      return indexed_bytes_consumed + unindexed_bytes_consumed
+    end
+
+    def query_media_filesize(media_id)
+      if (
+        Media.exists?(media_id) &&
+        (m = Media.find(media_id)).present? &&
+        (fs = m.file_sets.first).present? &&
+        (of = fs.original_file).present?
+      )
+        media_sizes[media_id] = of.size
+        return of.size
+      end
     end
 
     def generate_initial_charge
@@ -138,7 +154,8 @@ module Morphosource
         billing_unit: billing_unit,
         units_consumed: units_consumed,
         amount: amount,
-        service_type: service_type
+        service_type: service_type,
+        media_size_hash: media_sizes
       )
       charge.save!
       return charge
@@ -149,13 +166,13 @@ module Morphosource
       when 'b'
         1
       when 'kb'
-        1000
+        1024
       when 'mb'
-        1e6
+        1024**2
       when 'gb'
-        1e9
+        1024**3
       when 'tb'
-        1e12
+        1024**4
       else
         raise StandardError.new "Invalid billing unit provided"
       end
@@ -194,9 +211,9 @@ module Morphosource
 
     def charge_description(service_type)
       if service_type == 'standard'
-        desc = "External user markup charge"
+        desc = "Standard storage usage charge" 
       elsif service_type == 'external_markup'
-        desc = "Standard storage usage charge"
+        desc = "External user markup charge"
       else
         desc = "Charge"
       end

@@ -223,7 +223,10 @@ Hyrax.config do |config|
   config.front_page_media = Rails.env.production? ? '000009951' : nil
 
   config.host_name = ENV['HOST_NAME'].present? ? ENV['HOST_NAME'] : 'morphosource.org'
-  
+
+  # directory path for finding MS1 dropbox user folders
+  config.sftp_share_root = ENV['SFTP_SHARE_ROOT']
+
   # Temporary paths to hold uploads before they are ingested into FCrepo
   # These must be lambdas that return a Pathname. Can be configured separately
   config.upload_path = ->() { ENV['HYRAX_UPLOAD_PATH'].present? ? ENV['HYRAX_UPLOAD_PATH'] : Rails.root + 'tmp' + 'uploads' }

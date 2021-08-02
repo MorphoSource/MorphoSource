@@ -1,8 +1,10 @@
 class FundCodeCharge < ApplicationRecord
   belongs_to :fund_code
+  serialize :media_size_hash
 
-  before_save :set_fund_code_remaining
   before_destroy :undo_fund_code_debit
+  before_save :set_fund_code_remaining
+  validate :validate_no_overlaps
 
   def self.to_csv
     CSV.generate(headers: true) do |csv|
@@ -43,6 +45,18 @@ class FundCodeCharge < ApplicationRecord
       else
         self.fund_code_remaining = fund_code.remaining
       end
+    end
+  end
+
+  def validate_no_overlaps
+    if FundCodeCharge.where(
+      "fund_code_id = ? AND service_type = ? AND start_date <= ? AND ? <= end_date", 
+      fund_code_id, 
+      service_type, 
+      end_date, 
+      start_date
+    ).exists?
+      errors.add :base, :invalid, message: "Charge dates overlap with another charge for this fund code and service type"
     end
   end
 

@@ -92,7 +92,7 @@ module Morphosource
       end
 
       def params_attributes
-        fund_code_params.except(:managers, :standard_members).select { |k, v| v.present? }
+        fund_code_params.except(:managers, :standard_members)
       end
 
       def params_managers

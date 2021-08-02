@@ -2,6 +2,7 @@ class FundCodeCharge < ApplicationRecord
   belongs_to :fund_code
 
   before_save :set_fund_code_remaining
+  before_destroy :undo_fund_code_debit
 
   def self.to_csv
     CSV.generate(headers: true) do |csv|
@@ -24,8 +25,18 @@ class FundCodeCharge < ApplicationRecord
     ]
   end
 
+  def undo_fund_code_debit
+    if (
+      fund_code.present? && 
+      fund_code.remaining.present? && 
+      amount.is_a?(BigDecimal)
+    )
+      fund_code.update_attribute :remaining, (fund_code.remaining + amount).round(2)
+    end
+  end
+
   def set_fund_code_remaining
-    if fund_code.present?
+    if fund_code.present? && fund_code.remaining.present?
       if amount.is_a?(BigDecimal)
         self.fund_code_remaining = (fund_code.remaining - amount).round(2)
         fund_code.update_attribute :remaining, fund_code_remaining

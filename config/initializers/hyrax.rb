@@ -339,13 +339,17 @@ Hyrax.config do |config|
   # Device work ID for unknown CT scanner
   config.unknown_ct_scanner = Rails.env.production? ? '00000D567' : nil
 
-  # Packrat API fields
+  # Packrat API fields (if not using Duke Packrat Storage, these fields are unnecessary)
   config.packrat_api_endpoint_client_id = ENV.fetch('ENDPOINT_CLIENT_ID', 'packrat-production')
   config.packrat_api_service_url = ENV.fetch('SERVICE_URL', 'https://packrat.oit.duke.edu')
   config.packrat_api_oidc_long_lived_token = ENV.fetch('OIDC_LONG_LIVED_TOKEN', nil)
   config.packrat_api_idms_token_exchange_url = ENV.fetch('IDMS_TOKEN_EXCHANGE_URL', 'https://idms-web-ws.oit.duke.edu/idm-ws/clientSecret/createClientToken')
   config.packrat_api_endpoint = ENV.fetch('PACKRAT_API_ENDPOINT', '/api/v2')
   config.packrat_api_volume_id = ENV.fetch('PACKRAT_API_VOLUME_ID', 1931)
+
+  # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
+  config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil) 
+  config.unused_storage_fund_code_id = ENV.fetch('UNUSED_STORAGE_FUND_CODE_ID', Rails.env.production? ? 18 : nil) 
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

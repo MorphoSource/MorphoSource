@@ -2,6 +2,7 @@ module Morphosource
   module Dashboard
     class ProfilesController < Hyrax::Dashboard::ProfilesController
 
+      with_themed_layout 'morphosource_dashboard'
       helper Morphosource::UserProfile::UserProfileHelper
 
       before_action :strip_empty_values, only: [:update]
@@ -9,6 +10,13 @@ module Morphosource
       before_action :find_user, except: [:edit_password, :update_password]
 
       skip_authorize_resource only: [:edit_password, :update_password]
+
+      def edit
+        unless current_user.admin? || @user == current_user
+          render 'hyrax/base/unauthorized', status: :unauthorized
+        end
+        super
+      end
 
       def edit_password
         authenticate_user!

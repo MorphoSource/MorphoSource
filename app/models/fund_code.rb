@@ -5,6 +5,8 @@ class FundCode < ApplicationRecord
   has_many :fund_code_media_associations
   has_many :charges, class_name: "FundCodeCharge"
 
+  mount_uploaders :attachments, FundCodeAttachmentUploader
+
   before_save :set_total_and_remaining, :set_storage_remaining
 
   def add_user(user, manager = false)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_02_221653) do
+ActiveRecord::Schema.define(version: 2021_08_03_145709) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -207,6 +207,7 @@ ActiveRecord::Schema.define(version: 2021_08_02_221653) do
     t.decimal "total"
     t.decimal "remaining"
     t.decimal "storage_remaining_gb"
+    t.json "attachments"
     t.index ["user_id"], name: "index_fund_codes_on_user_id"
   end
 

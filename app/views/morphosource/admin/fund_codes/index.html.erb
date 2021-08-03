@@ -13,6 +13,7 @@
             <%= f.input :description, required: true %>
             <%= f.input :identifier, required: true %>
             <%= f.input :invoice_number %>
+            
             <%= f.input :managers, input_html: { data: { managers: @managers_select2 } } %>
             <%= f.input :standard_members, input_html: { data: { standard_members: @standard_members_select2 } } %>
 
@@ -33,6 +34,23 @@
             <%= f.input :external_user, as: :select, include_blank: false %>
             <%= f.input :external_user_additional_rate_percent %>
             <%= f.input :chargeable, as: :select, include_blank: false %>
+
+            <div class="form-group">
+              <label>Fund Code File Attachments</label>
+              <div>
+                <p class="help-block">Files associated with this fund code.</p>
+                <ul>
+                <% f.object.attachments.each_with_index do |attachment, idx| %>
+                  <li><%= link_to File.basename(attachment.url), attachment.url %> (<%= link_to 'delete', admin_fund_codes_delete_attachment_path(id: f.object.id, index: idx), method: :delete %>)</li>
+                <% end %>
+                </ul>
+              </div>
+              <div>
+                <p class="help-block">Upload new attachments:</p>
+                <%= f.file_field :attachments, multiple: true %>
+              </div>
+            </div>
+
             <%= f.submit class: 'btn btn-sm btn-primary' %>
           <% end %>
         </div>

@@ -2,7 +2,7 @@ module Hyrax
   module Dashboard
     ## Shows and edit the profile of the current_user
     class ProfilesController < Hyrax::UsersController
-      with_themed_layout 'dashboard'
+      with_themed_layout 'morphosource_dashboard'
       before_action :find_user
       #authorize_resource class: '::User', instance_name: :user
 

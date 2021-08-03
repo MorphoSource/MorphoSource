@@ -453,10 +453,10 @@ module MorphosourceHelper
   end
 
   def sftp_share_status(path)
-    icon = '<i class="glyphicon glyphicon-alert text-alert"></i>'
+    icon = '<i class="glyphicon glyphicon-alert tooltip-icon text-alert"><p class="hint hide">Not connected</p></i>'
     return icon.html_safe unless path.present?
     if Dir.exist?(Hyrax.config.sftp_share_root + path) or Dir.exist?(path)
-      icon = '<i class="glyphicon glyphicon-ok-sign text-success"></i>'
+      icon = '<i class="glyphicon glyphicon-ok-sign tooltip-icon text-success" data-original-title="" title=""><p class="hint hide">Connected</p></i>'
     end
     return icon.html_safe
   end

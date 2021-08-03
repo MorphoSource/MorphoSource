@@ -83,7 +83,7 @@ module Morphosource
           :managers, 
           :standard_members, 
           :expires_at, 
-          :storage_limit_tb,
+          :storage_total_gb,
           :total,
           :external_user, 
           :external_user_additional_rate_percent, 

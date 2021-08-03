@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_27_194630) do
+ActiveRecord::Schema.define(version: 2021_08_03_145709) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -167,6 +167,8 @@ ActiveRecord::Schema.define(version: 2021_07_27_194630) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "fund_code_remaining"
+    t.text "media_size_hash"
+    t.decimal "fund_code_storage_remaining_gb"
     t.index ["fund_code_id"], name: "index_fund_code_charges_on_fund_code_id"
   end
 
@@ -196,7 +198,7 @@ ActiveRecord::Schema.define(version: 2021_07_27_194630) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.datetime "expires_at"
-    t.float "storage_limit_tb"
+    t.decimal "storage_total_gb"
     t.boolean "external_user", default: false, null: false
     t.float "external_user_additional_rate_percent"
     t.string "identifier"
@@ -204,6 +206,8 @@ ActiveRecord::Schema.define(version: 2021_07_27_194630) do
     t.string "invoice_number"
     t.decimal "total"
     t.decimal "remaining"
+    t.decimal "storage_remaining_gb"
+    t.json "attachments"
     t.index ["user_id"], name: "index_fund_codes_on_user_id"
   end
 

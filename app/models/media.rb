@@ -22,7 +22,7 @@ class Media < Morphosource::Works::Base
 
   attr_accessor :download_permission, :tags, :delete_thumbnail, :generated_thumbnail
   before_destroy :prevent_doi_deletion
-  after_destroy :delete_ark_if_reserved
+  after_destroy :delete_ark_if_reserved, :delete_fund_code_media_associations
 
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
@@ -468,5 +468,9 @@ class Media < Morphosource::Works::Base
           ark_identifier.delete
         end
       end
+    end
+
+    def delete_fund_code_media_associations
+      FundCodeMediaAssociation.where(media: self.id).each { |a| a.destroy! }
     end
 end

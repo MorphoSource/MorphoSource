@@ -338,6 +338,7 @@ Rails.application.routes.draw do
       post 'admin/fund_codes', action: :create, controller: :fund_codes, as: 'admin_fund_codes_create'
       patch 'admin/fund_codes/:id', action: :update, controller: :fund_codes, as: 'admin_fund_codes_update'
       delete 'admin/fund_codes/:id', action: :delete, controller: :fund_codes, as: 'admin_fund_codes_delete'
+      delete 'admin/fund_codes/:id/attachments/:index', action: :delete_attachment, controller: :fund_codes, as: 'admin_fund_codes_delete_attachment'
     end
   end
 

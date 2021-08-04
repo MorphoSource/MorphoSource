@@ -111,7 +111,7 @@ class ProxyDepositRequest < ActiveRecord::Base
 
     def send_request_transfer_message_as_part_of_update
       message = "Your request to transfer ownership of #{message_content} to #{user_email_link([receiving_user])} has been #{status}."
-      message += "<p>Please contact #{user_email_link([receiving_user])} if you have a question related to this request.</p>" 
+      message += "<p>Please contact #{user_email_link([receiving_user])} if you have a question related to this request.</p>"
       deliver_message(email_sender, sending_user, message.html_safe, "Media transfer request #{status}")
     end
 
@@ -137,7 +137,7 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   # @param [TrueClass,FalseClass] reset (false)  if true, reset the access controls. This revokes edit access from the depositor
   def transfer!(reset = false)
-    ContentDepositorChangeEventJob.perform_later(work, receiving_user, reset)
+    ContentDepositorChangeEventJob.perform_later(work, receiving_user, sending_user, reset)
     fulfill!(status: ACCEPTED)
   end
 

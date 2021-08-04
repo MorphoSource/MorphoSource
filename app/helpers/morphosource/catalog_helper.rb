@@ -40,6 +40,6 @@ module Morphosource::CatalogHelper
     user = ::User.find_by(ms_id: user_key.first)
     return user_key.first if user.nil?
 
-    link_to user.display_name, Hyrax::Engine.routes.url_helpers.user_path(user)
+    link_to user.name, Hyrax::Engine.routes.url_helpers.user_path(user)
   end
 end

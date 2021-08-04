@@ -10,7 +10,7 @@ module Morphosource
       before_action :find_user, except: [:edit_password, :update_password]
 
       skip_authorize_resource only: [:edit_password, :update_password]
-
+      
       def edit
         authenticate_user!
         unless current_user.admin? || @user == current_user

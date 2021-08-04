@@ -169,6 +169,7 @@ Rails.application.routes.draw do
   # override ProfilesController
   scope module: :morphosource do
     get 'dashboard/profiles/:id/edit', to: 'dashboard/profiles#edit'
+    get 'dashboard/profiles/:id', to: 'dashboard/profiles#show'
     put 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
     patch 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
   end

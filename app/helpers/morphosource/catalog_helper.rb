@@ -30,4 +30,16 @@ module Morphosource::CatalogHelper
       link_to title, cho_showcase_path(object)
     end
   end
+
+  # based on link_to_profile
+  # https://github.com/samvera/hyrax/blob/v2.9.0/app/helpers/hyrax/hyrax_helper_behavior.rb
+  def link_to_user_with_ownership(args)
+    user_key = args[:document].user_with_ownership
+    return if user_key.nil?
+
+    user = ::User.find_by(ms_id: user_key.first)
+    return user_key.first if user.nil?
+
+    link_to user.display_name, Hyrax::Engine.routes.url_helpers.user_path(user)
+  end
 end

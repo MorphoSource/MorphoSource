@@ -180,7 +180,7 @@ class SolrDocument
   def media_organization_id
     self[Solrizer.solr_name('media_organization_id', :stored_searchable)]
   end
-  
+
   # Physical Object Fields
   def organization_id
     self[Solrizer.solr_name('organization_id', :stored_searchable)]
@@ -572,7 +572,7 @@ class SolrDocument
   def device_id
     self[Solrizer.solr_name('device_id', :stored_searchable)]
   end
-  
+
   def ie_modality
       self[Solrizer.solr_name('ie_modality', :stored_searchable)]
   end
@@ -907,6 +907,14 @@ class SolrDocument
   # Request Management
   def reviewer
     self["download_reviewer_ssim"].presence || self["owner_ssim"].presence || self["depositor_ssim"]
+  end
+
+  def owner
+    self["owner_ssim"]
+  end
+
+  def user_with_ownership
+    self["owner_ssim"].presence || self["depositor_ssim"]
   end
 
   # Tags

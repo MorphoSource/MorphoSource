@@ -12,6 +12,7 @@ module Morphosource
       skip_authorize_resource only: [:edit_password, :update_password]
 
       def edit
+        authenticate_user!
         unless current_user.admin? || @user == current_user
           render 'hyrax/base/unauthorized', status: :unauthorized
         end

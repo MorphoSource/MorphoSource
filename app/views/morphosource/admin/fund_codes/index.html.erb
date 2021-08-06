@@ -13,6 +13,7 @@
             <%= f.input :description, required: true %>
             <%= f.input :identifier, required: true %>
             <%= f.input :invoice_number %>
+            
             <%= f.input :managers, input_html: { data: { managers: @managers_select2 } } %>
             <%= f.input :standard_members, input_html: { data: { standard_members: @standard_members_select2 } } %>
 
@@ -26,12 +27,30 @@
               <%= f.date_field :expires_at, class: 'datepicker form-control' %>
             </div>
 
-            <%= f.input :storage_limit_tb %>
+            <%= f.input :storage_total_gb %>
+            <%= f.input :storage_remaining_gb, disabled: true, :input_html => {value: number_with_precision(f.object.storage_remaining_gb, precision: 3) } %>
             <%= f.input :total, :input_html => {value: number_with_precision(f.object.total, precision: 2) } %>
             <%= f.input :remaining, disabled: true, :input_html => {value: number_with_precision(f.object.remaining, precision: 2) }  %>
             <%= f.input :external_user, as: :select, include_blank: false %>
             <%= f.input :external_user_additional_rate_percent %>
             <%= f.input :chargeable, as: :select, include_blank: false %>
+
+            <div class="form-group">
+              <label>Fund Code File Attachments</label>
+              <div>
+                <p class="help-block">Files associated with this fund code.</p>
+                <ul>
+                <% f.object.attachments.each_with_index do |attachment, idx| %>
+                  <li><%= link_to File.basename(attachment.url), attachment.url %> (<%= link_to 'delete', admin_fund_codes_delete_attachment_path(id: f.object.id, index: idx), method: :delete %>)</li>
+                <% end %>
+                </ul>
+              </div>
+              <div>
+                <p class="help-block">Upload new attachments:</p>
+                <%= f.file_field :attachments, multiple: true %>
+              </div>
+            </div>
+
             <%= f.submit class: 'btn btn-sm btn-primary' %>
           <% end %>
         </div>
@@ -55,7 +74,8 @@
               <th><%= t('.header.managers') %></th>
               <th><%= t('.header.standard_members') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.expires_at') %></th>
-              <th><%= t('simple_form.abbreviated_labels.fund_code.storage_limit_tb') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.storage_total_gb') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.storage_remaining_gb') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.total') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.remaining') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.external_user') %></th>
@@ -98,7 +118,8 @@
                   <td><%= t('.no_users') %></td>
                 <% end %>
                 <td data-sort="<%= fc.expires_at %>"><%= fc.expires_at.present? ? fc.expires_at.strftime("%m-%d-%Y") : "" %></td>
-                <td data-sort="<%= fc.storage_limit_tb %>"><%= fc.storage_limit_tb %></td> 
+                <td data-sort="<%= fc.storage_total_gb %>"><%= fc.storage_total_gb %></td>
+                <td data-sort="<%= number_with_precision(fc.storage_remaining_gb, precision: 3) %>"><%= number_with_precision(fc.storage_remaining_gb, precision: 3) %></td> 
                 <td data-sort="<%= number_with_precision(fc.total, precision: 2) %>"><%= number_with_precision(fc.total, precision: 2) %></td> 
                 <td data-sort="<%= number_with_precision(fc.remaining, precision: 2) %>"><%= number_with_precision(fc.remaining, precision: 2) %></td> 
                 <td data-sort="<%= fc.external_user %>"><%= fc.external_user ? "Yes" : "No" %></td>

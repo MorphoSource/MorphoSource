@@ -84,8 +84,7 @@ module Morphosource
 
       def format_update_params
         format_download_permission
-        format_rights_holder
-        multi_value_fields = [:download_permission, :download_reviewer, :cite_as, :permits_3d_use, :permits_commercial_use, :rights_statement, :agreement_uri, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode]
+        multi_value_fields = [:download_permission, :download_reviewer, :cite_as, :permits_3d_use, :permits_commercial_use, :rights_statement, :agreement_uri, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode, :rights_holder]
         multi_value_fields.each do |field|
           @params[field] = Array(@params[field])
         end
@@ -96,30 +95,6 @@ module Morphosource
           @params[:download_permission] = @params[:visibility]
           @params.delete(:visibility)
         end
-      end
-
-      def format_rights_holder
-        @names = format_names
-        @types = format_types
-        combine_names_and_types
-      end
-
-      def format_names
-        @params[:rights_holder_name].map{ |name| 'Name: ' + name + ', ' }
-      end
-
-      def format_types
-        @params[:rights_holder_type].map{ |type| 'Type: ' + type }
-      end
-
-      def combine_names_and_types
-        @params[:rights_holder] = @names.map {|name| name.concat(@types[@names.index(name)]) }
-        delete_names_and_types
-      end
-
-      def delete_names_and_types
-        @params.delete(:rights_holder_name)
-        @params.delete(:rights_holder_type)
       end
 
       def redirect_back_organization

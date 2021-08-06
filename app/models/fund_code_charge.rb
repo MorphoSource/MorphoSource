@@ -1,7 +1,10 @@
 class FundCodeCharge < ApplicationRecord
   belongs_to :fund_code
+  serialize :media_size_hash
 
-  before_save :set_fund_code_remaining
+  before_destroy :undo_fund_code_debit
+  before_save :set_fund_code_remaining, :set_fund_code_storage_gb_remaining
+  validate :validate_no_overlaps
 
   def self.to_csv
     CSV.generate(headers: true) do |csv|
@@ -24,14 +27,48 @@ class FundCodeCharge < ApplicationRecord
     ]
   end
 
+  def undo_fund_code_debit
+    if (
+      fund_code.present? && 
+      fund_code.remaining.present? && 
+      amount.is_a?(BigDecimal)
+    )
+      fund_code.update_attribute :remaining, (fund_code.remaining + amount).round(2)
+    end
+  end
+
   def set_fund_code_remaining
-    if fund_code.present?
+    if fund_code.present? && fund_code.remaining.present?
       if amount.is_a?(BigDecimal)
         self.fund_code_remaining = (fund_code.remaining - amount).round(2)
         fund_code.update_attribute :remaining, fund_code_remaining
       else
         self.fund_code_remaining = fund_code.remaining
       end
+    end
+  end
+
+  def set_fund_code_storage_gb_remaining
+    if (
+      fund_code.present? && 
+      fund_code.storage_total_gb.present? && 
+      units_consumed.present? && 
+      billing_unit == 'gb'
+    )
+      self.fund_code_storage_remaining_gb = fund_code.storage_total_gb - units_consumed
+      fund_code.update_attribute :storage_remaining_gb, fund_code_storage_remaining_gb
+    end
+  end
+
+  def validate_no_overlaps
+    if FundCodeCharge.where.not(id: id).where(
+      "fund_code_id = ? AND service_type = ? AND start_date <= ? AND ? <= end_date", 
+      fund_code_id, 
+      service_type, 
+      end_date, 
+      start_date
+    ).exists?
+      errors.add :base, :invalid, message: "Charge dates overlap with another charge for this fund code and service type"
     end
   end
 

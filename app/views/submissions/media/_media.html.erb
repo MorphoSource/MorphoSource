@@ -16,8 +16,8 @@
     } do |f| %>
       <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
         <div class="hide">
-          <%= f.input :on_behalf_of, 
-          collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
+          <%= f.input :on_behalf_of,
+          collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] },
           prompt: "Myself" %>
         </div>
       <% end %>
@@ -34,7 +34,7 @@
             </div>
 
             <%= render 'submissions/media/custom_thumbnail', f: f %>
-            
+
           </div>
         </div>
 
@@ -96,28 +96,7 @@
               </div>
 
               <%= render_edit_field_partial('download_reviewer', f: f) %>
-
-              <%= f.input :rights_holder, as: :multi_value %>
-              <div id='media_rights_holder_visible' class="row media_rights_holder">
-                <div class="col-xs-6 showcase-label">
-                  <label class="control-label optional" for="media_rights_holder">IP holder(s) (Name, Type)</label>
-                  <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
-                </div>
-                <div class="col-xs-6 showcase-value form-group multi_value optional managed wrapper_for_2" id="media_rights_holder_wrapper">
-                  <ul class="listing rights_holder_listing" aria-live="polite">
-                    <li class="field-wrapper input-group input-append">
-                      <input class="string multi_value optional form-control media_rights_holder_name form-control multi-text-field" name="media[rights_holder_name][]" value="" id="media_rights_holder_name" type="text">
-                      <select class="form-control select optional form-control" name="media[rights_holder_type][]" id="media_rights_holder_type">
-                        <option value=""></option>
-                        <option value="Copyright and License">Copyright and License</option>
-                        <option value="Copyright">Copyright</option>
-                        <option value="License">License</option>
-                      </select>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
+              <%= render_edit_field_partial('rights_holder', f: f) %>
               <%= render_edit_field_partial('rights_statement', f: f) %>
               <%= render_edit_field_partial('license', f: f) %>
               

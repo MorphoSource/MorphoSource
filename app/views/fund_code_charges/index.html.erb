@@ -60,6 +60,7 @@
             <th><%= t('.header.billing_rate') %></th>
             <th><%= t('.header.billing_unit') %></th>
             <th><%= t('.header.fund_code_remaining') %></th>
+            <th><%= t('.header.fund_code_storage_remaining') %></th>
             <th><%= t('.header.start_date') %></th>
             <th><%= t('.header.end_date') %></th>
             <th><%= t('.header.service_type') %></th>
@@ -74,9 +75,10 @@
               <td data-sort="<%= c.description %>"><%= c.description %></td> 
               <td data-sort="<%= number_with_precision(c.amount, precision: 2)  %>"><%= number_with_precision(c.amount, precision: 2) %></td> 
               <td data-sort="<%= number_with_precision(c.units_consumed, precision: 2) %>"><%= number_with_precision(c.units_consumed, precision: 2) %></td> 
-              <td data-sort="<%= c.billing_rate %>"><%= c.billing_rate %></td>
+              <td data-sort="<%= number_with_precision(c.billing_rate, precision: 5) %>"><%= number_with_precision(c.billing_rate, precision: 5)  %></td>
               <td data-sort="<%= c.billing_unit %>"><%= c.billing_unit %></td>
               <td data-sort="<%= number_with_precision(c.fund_code_remaining, precision: 2)  %>"><%= number_with_precision(c.fund_code_remaining, precision: 2) %></td>
+              <td data-sort="<%= number_with_precision(c.fund_code_storage_remaining_gb, precision: 3)  %>"><%= number_with_precision(c.fund_code_storage_remaining_gb, precision: 3) %></td>
               <td data-sort="<%= c.start_date %>"><%= c.start_date %></td>
               <td data-sort="<%= c.end_date %>"><%= c.end_date %></td>
               <td data-sort="<%= c.service_type %>"><%= c.service_type %></td>

@@ -163,8 +163,6 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
     let(:agreement_uri)           { ['agreement uri'] }
     let(:permits_commercial_use)  { ['true'] }
     let(:permits_3d_use)          { ['true'] }
-    let(:rights_holder_name)      { ['name1', 'name2', 'name3'] }
-    let(:rights_holder_type)      { ['type1', 'type2', 'type3'] }
     let(:rights_holder)           { ['Name: name1, Type: type1', 'Name: name2, Type: type2', 'Name: name3, Type: type3'] }
     let(:funding)                 { ['funding'] }
     let(:publisher)               { ['publisher'] }
@@ -177,8 +175,7 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
                                         agreement_uri: agreement_uri,
                                         permits_commercial_use: permits_commercial_use.first,
                                         permits_3d_use: permits_3d_use.first,
-                                        rights_holder_name: rights_holder_name,
-                                        rights_holder_type: rights_holder_type,
+                                        rights_holder: rights_holder,
                                         funding: funding,
                                         publisher: publisher,
                                         cite_as: cite_as.first },

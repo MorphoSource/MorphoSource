@@ -51,7 +51,15 @@ module Morphosource
           demoted_members.each { |m| fc.make_user_standard(m) } # demote standard members
           members_to_delete.each { |m| fc.delete_user(m) } # delete remaining old members
 
-          fc.update(params_attributes)
+          if params_attributes[:attachments].present? && fc.attachments.present?
+            add_more_attachments(fc, params_attributes[:attachments])
+            final_params = params_attributes.except(:attachments)
+          else
+            final_params = params_attributes
+          end
+          
+          fc.update(final_params)
+          fc.save!
         end
 
         redirect_to main_app.admin_fund_codes_path
@@ -64,7 +72,33 @@ module Morphosource
         redirect_to main_app.admin_fund_codes_path
       end
 
+      def delete_attachment
+        if current_user.admin? && FundCode.exists?(params[:id]) && params[:index].present?
+          @fund_code = FundCode.find(params[:id])
+          remove_attachment_at_index(params[:index].to_i)
+          flash[:error] = "Failed deleting attachment" unless @fund_code.save!
+        end
+        redirect_to main_app.admin_fund_codes_path(id: params[:id])
+      end
+
       private
+
+      def add_more_attachments(fund_code, new_attachments)
+        attachments = fund_code.attachments
+        attachments += new_attachments
+        fund_code.attachments = attachments
+      end
+
+      def remove_attachment_at_index(index)
+        remain_attachments = @fund_code.attachments
+        if index == 0 && @fund_code.attachments.size == 1
+          @fund_code.remove_attachments!
+        else
+          deleted_attachment = remain_attachments.delete_at(index) 
+          deleted_attachment.try(:remove!)
+          @fund_code.attachments = remain_attachments
+        end
+      end
 
       def require_permissions
         authorize! :read, :admin_dashboard
@@ -83,16 +117,17 @@ module Morphosource
           :managers, 
           :standard_members, 
           :expires_at, 
-          :storage_limit_tb,
+          :storage_total_gb,
           :total,
           :external_user, 
           :external_user_additional_rate_percent, 
-          :chargeable
+          :chargeable,
+          { attachments: [] }
         )
       end
 
       def params_attributes
-        fund_code_params.except(:managers, :standard_members).select { |k, v| v.present? }
+        fund_code_params.except(:managers, :standard_members)
       end
 
       def params_managers

@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
-  get 'batch_submissions/new'
+  resources :batch_submissions, only: [ :index, :new ]
+
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id', controller: :collection_members, action: :update_members, as: 'update_members'

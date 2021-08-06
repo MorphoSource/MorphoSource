@@ -1,2 +1,13 @@
-<h1>Batch Submission</h1>
+<% content_for :body_css_classes do %>showcase showcase-edit<% end %>
+<% provide :page_title, "New Batch Submission || MorphoSource" %>
 
+<h1>New Batch Submission</h1>
+
+<p>Introductory text explaining batch upload,  and   will provide introductory text (probably eventually with a link to documentation)
+</p>
+
+<% template_path = "ingest_manifest_template.xlsx"
+<%= link_to "blank ingest manifest XLSX spreadsheet", asset_path(template_path), target: "_blank" %>
+
+
+Required dropdown/search fields to select organization for physical objects and organization/device for imaging device

@@ -4,16 +4,16 @@
 #
 #file_system:
 #  home: /vagrant/downloads
-# dropbox:
-#   client_id: YOUR_DROPBOX_APP_KEY
-#   client_secret: YOUR_DROPBOX_APP_SECRET
-#   download_directory: tmp/
+dropbox:
+  client_id: g3pyoioq0vto51i
+  client_secret: nsuuinkzml41yht
+  download_directory: tmp/
 box:
   client_id: ub5nyevrsyfiygo2tb27qxfryqnp1dg3
   client_secret: d7FzXdT4LtgxVWJnCpvKD8OW84dIa5Vd
-# google_drive:
-#   client_id: YOUR_GOOGLE_API_CLIENT_ID
-#   client_secret: YOUR_GOOGLE_API_CLIENT_SECRET
+google_drive:
+  client_id: 726490403080-i92ktj2727aran5em31p6dcsg9fqf0cj.apps.googleusercontent.com
+  client_secret: 4nR9nhy1QLE19gnXy2jkoAb2
 # s3:
 #   bucket: YOUR_AWS_S3_BUCKET
 #   response_type: signed_url # set to :public_url for public urls or :s3_uri for an s3://BUCKET/KEY uri

@@ -1,13 +1,33 @@
-<% content_for :body_css_classes do %>showcase showcase-edit<% end %>
-<% provide :page_title, "New Batch Submission || MorphoSource" %>
+<% content_for :body_css_classes do %>showcase showcase-edit batch-submission<% end %>
+<% provide :page_title, "Batch Submission || MorphoSource" %>
 
-<h1>New Batch Submission</h1>
+<script type="text/javascript">
 
-<p>Introductory text explaining batch upload,  and   will provide introductory text (probably eventually with a link to documentation)
-</p>
+  var orgData = <%= @organizations_select2.to_json.html_safe %>;
+</script>
 
-<% template_path = "ingest_manifest_template.xlsx"
-<%= link_to "blank ingest manifest XLSX spreadsheet", asset_path(template_path), target: "_blank" %>
+<h1><span class="fa fa-upload" aria-hidden="true"></span> Batch Submission</h1>
 
+<div class="row">
+	<div class="col-xs-12">
+		<p>On this page you can create new batch submissions or monitor the status of your current batch submissions. Please read the <a href="#">documentation</a>.</p>
+		<b>Create New Batch Submission</b>
+		<p><%= link_to "Download blank submission manifest Excel file (XLSX)", asset_path("ingest_manifest_template.xlsx"), target: "_blank" %></p>
+		<p>Fill out the required and optional fields below as appropriate and then upload your completed blank submission manifest.</p>
 
-Required dropdown/search fields to select organization for physical objects and organization/device for imaging device
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-6">
+		<h2>Basic details</h2>
+		<label class="required-flag"><span class="label"></span> Select the organization that represents the physical objects in this batch submission.</label>
+	  <%= render(partial: 'batch_submissions/physical_object/organization') %>
+
+	</div>
+
+	<div class="col-sm-6">
+		<h2>Ownership and Permissions</h2>
+		<label class="optional-flag"><span class="label"></span> These ownership and permissions settings will be applied to all media in the batch submission.</label>
+	</div>
+</div>

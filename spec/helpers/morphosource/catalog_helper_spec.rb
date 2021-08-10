@@ -94,7 +94,7 @@ RSpec.describe Morphosource::CatalogHelper, type: :helper do
         let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
 
         it 'returns a link to the depositor' do
-          expect(helper.link_to_user_with_ownership(args)).to eq("<a href=\"/users/#{depositor.ms_id}\">#{depositor.ms_id}</a>")
+          expect(helper.link_to_user_with_ownership(args)).to eq("<a href=\"/users/#{depositor.ms_id}\">#{depositor.email}</a>")
         end
       end
     end

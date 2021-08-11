@@ -83,6 +83,16 @@ module Morphosource
         member_of_collections.select { |c| c.visibility == 'open' }.map(&:id)
       end
 
+      def apply_owner_metadata(owner)
+        owner_id = owner.respond_to?(:user_key) ? owner.user_key : owner
+
+        if respond_to? :owner
+          self.owner = owner_id
+        end
+        self.edit_users += [owner_id]
+        true
+      end
+
       private
 
       def get_all_children(objects)

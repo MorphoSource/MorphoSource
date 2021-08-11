@@ -388,7 +388,7 @@ module MorphosourceHelper
   end
 
   def grouped_access_list(f)
-    depositor = f.object.depositor
+    manager = f.object.user_with_ownership
     groups = []
     individual_list = []
     access_user_list = {}
@@ -396,7 +396,7 @@ module MorphosourceHelper
       role_name = permission_fields.object.agent_name
       user_list = user_list_by_role(role_name)
       # skip the public, registered, and depositor perms as they are displayed first at the top
-      next if ( ['admin', 'public', 'registered', depositor].include? role_name.downcase )
+      next if ( ['admin', 'public', 'registered', manager].include? role_name.downcase )
       if user_list.empty?
         unless role_name.include? '_'
           individual_list << permission_fields

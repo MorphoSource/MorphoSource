@@ -10,13 +10,15 @@ class ContentDepositorChangeEventJob < ContentEventJob
   # @param [ActiveFedora::Base] work the work to be transfered
   # @param [User] user the user the work is being transfered to.
   # @param [TrueClass,FalseClass] reset (false) if true, reset the access controls. This revokes edit access from the depositor
-  def perform(work, user, reset = false)
+  def perform(work, user, sending_user, reset = false)
     @reset = reset
+    @new_owner = user
+    @sending_user = sending_user
     super(work, user)
   end
 
   def action
-    "User #{link_to_profile work.proxy_depositor} has transferred #{link_to_work work.title.first} to user #{link_to_profile depositor}"
+    "User #{link_to_profile @sending_user} has transferred #{link_to_work work.title.first} to user #{link_to_profile @new_owner}"
   end
 
   def link_to_work(text)
@@ -30,17 +32,13 @@ class ContentDepositorChangeEventJob < ContentEventJob
   alias log_file_set_event log_work_event
 
   def work
-    @work ||= Morphosource::ChangeContentDepositorService.call(repo_object, depositor, reset)
+    @work ||= Morphosource::ChangeContentOwnerService.call(repo_object, @new_owner, reset)
   end
 
   # overriding default to log the event to the depositor instead of their profile
-  def log_user_event(depositor)
+  def log_user_event(owner)
     # log the event to the proxy depositor's profile
-    proxy_depositor.log_profile_event(event)
-    depositor.log_event(event)
-  end
-
-  def proxy_depositor
-    @proxy_depositor ||= ::User.find_by_user_key(work.proxy_depositor)
+    @sending_user.log_profile_event(event)
+    @new_owner.log_event(event)
   end
 end

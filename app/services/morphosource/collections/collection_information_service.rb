@@ -4,11 +4,11 @@ module Morphosource
       include CollectionInformationHelper
       include SolrHelper
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
-    
-      attr_reader :solr, :scope, :collection_id, :collection, :is_org_team, 
+
+      attr_reader :solr, :scope, :collection_id, :collection, :is_org_team,
         :collection_organization_id, :team_org_po_ids, :n_media_team_organization, :n_media_team,
         :facet_results, :media_count, :physical_object_ids, :bso_ids, :cho_ids,
-        :n_idigbio, :collection_project_map, :po_counts_by_org, 
+        :n_idigbio, :collection_project_map, :po_counts_by_org,
         :organizations, :info, :subcollection_ids
       delegate :repository, to: :scope
 
@@ -37,7 +37,7 @@ module Morphosource
           @collection_organization_id = Collection.find(collection_id).organization.id
           @team_org_po_ids = organization_po_ids
           if is_org_team
-            @n_media_team = team_origin_count 
+            @n_media_team = team_origin_count
             @n_media_team_organization = team_org_origin_count
           end
         end
@@ -45,20 +45,20 @@ module Morphosource
         @facet_results, @media_count = media_facet_query_with_builder
 
         @physical_object_ids = facet_results['physical_object_id_tesim'].keys.map(&:upcase)
-        @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)          
-        @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject) 
+        @bso_ids = po_ids_by_model(physical_object_ids, BiologicalSpecimen)
+        @cho_ids = po_ids_by_model(physical_object_ids, CulturalHeritageObject)
         @n_idigbio = bso_idigbio_count
 
         @po_counts_by_org = physical_object_counts_by_organization
         @organizations = organization_docs
 
         if collection.team?
-          @collection_project_map = collection_id_to_project_title_map 
+          @collection_project_map = collection_id_to_project_title_map
         end
       end
 
       def collection_information
-        @info = { 
+        @info = {
           'counts' => {
             'media' => media_count,
             'po' => physical_object_ids.length,
@@ -73,7 +73,7 @@ module Morphosource
         info['cho_groups'] = { 'organization' => {} } if cho_ids.present?
 
         info_po_media_counts_by_organization
-        
+
         if is_org_team && collection_organization_id.present?
           info['media_groups']['origin'] = {
             'team_organization' => n_media_team_organization,
@@ -101,7 +101,7 @@ module Morphosource
           end
         end
 
-        info     
+        info
       end
 
       def solrize_filter_params(params = {})
@@ -114,7 +114,7 @@ module Morphosource
 
       private
         ### Solr collection queries ###
-      
+
         # Other solr queries #
 
         def media_facet_query
@@ -133,8 +133,8 @@ module Morphosource
               solrize('physical_object_id', :stored_searchable),
               solrize('media_organization_id', :symbol)
             ]
-          end          
-          params = { 
+          end
+          params = {
             rows: 0,
             fq: [
               "#{solrize('has_model', :symbol)}:Media",
@@ -172,7 +172,7 @@ module Morphosource
             ]
           end
 
-          fq =  [ "#{solrize('has_model', :symbol)}:Media" ]         
+          fq =  [ "#{solrize('has_model', :symbol)}:Media" ]
 
           # Core query
           if is_org_team && collection_organization_id
@@ -207,7 +207,7 @@ module Morphosource
         end
 
         def works_search_builder
-          @works_search_builder ||= 
+          @works_search_builder ||=
             Morphosource::CollectionMemberSearchBuilderNoFacetLimits.new(
               scope: scope, collection: collection, search_includes_models: :works
             )
@@ -272,8 +272,8 @@ module Morphosource
         def team_or_team_project_ids(coll_id)
           # the team id + any team project id
           ids = [coll_id]
-          if Collection.find(collection_id).child_projects
-            ids << Collection.find(collection_id).child_projects.first.id    
+          if Collection.find(collection_id).child_projects.present?
+            ids << Collection.find(collection_id).child_projects.first.id
           end
           return ids
         end
@@ -284,7 +284,7 @@ module Morphosource
             "#{solrize('fileset_accessibility', :stored_searchable)}:#{value}"
           when 'm_organization'
             assemble_or_query(
-              solrize('physical_object_id', :stored_searchable), 
+              solrize('physical_object_id', :stored_searchable),
               po_ids_by_collection_organization(value)
             )
           when 'm_origin'
@@ -307,14 +307,14 @@ module Morphosource
             end
           when 'b_organization', 'c_organization'
             assemble_or_query(
-              'id', 
+              'id',
               po_ids_by_collection_organization(value)
             )
           when 'b_origin', 'c_origin'
             if Collection.find(collection_id).organization.present?
               organization_title = Collection.find(collection_id).organization.title&.first
               organization_po_query = assemble_or_query(
-                'id', 
+                'id',
                 po_ids_by_collection_organization(organization_title)
               )
 

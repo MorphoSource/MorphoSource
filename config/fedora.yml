@@ -14,4 +14,4 @@ production:
   url: <%= ENV['FCREPO_URL'] %>
   base_path: <%= ENV['FCREPO_BASE_PATH'] %>
   request:
-    timeout: '600'
+    timeout: 600

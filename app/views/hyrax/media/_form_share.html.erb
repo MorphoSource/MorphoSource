@@ -9,6 +9,7 @@ if Flipflop.assign_admin_set? %>
 <h2><%= t('.add_sharing') %></h2>
 
 <% depositor = f.object.depositor %>
+<% manager = f.object.user_with_ownership %>
 
 <div class="alert alert-info hidden" id="save_perm_note">Permissions have <strong>not</strong> been saved yet.  Please make sure to click the &quot;Save&quot; button to update the changes.</div>
 
@@ -23,7 +24,7 @@ if Flipflop.assign_admin_set? %>
 
 <fieldset class="form-group row permission-add-user">
   <legend class="col-sm-4 permissions-add-user-label">
-    Add Individual User: 
+    Add Individual User:
   </legend>
   <div class="col-sm-4 form-inline">
     <label for="new_user_name_skel" class="sr-only"><%= t('hyrax.account_label') %> (without the <%= t('hyrax.directory.suffix') %> part)</label>
@@ -51,7 +52,7 @@ if Flipflop.assign_admin_set? %>
   <table id="share-datatable" class="table">
     <tr>
       <td>Data manager</td>
-      <td><%= user_display(depositor) %></td>
+      <td><%= user_display(manager) %></td>
       <td></td>
       <td></td>
     </tr>
@@ -80,7 +81,7 @@ if Flipflop.assign_admin_set? %>
           <button class="btn btn-sm remove_perm" data-index="<%= permission_fields.index %>">Remove access</button>
         </td>
       </tr>
-      <%= permission_fields.hidden_field :id %>    
+      <%= permission_fields.hidden_field :id %>
       <%= permission_fields.hidden_field :type %>
       <%= permission_fields.hidden_field :agent_name %>
     <% end %>

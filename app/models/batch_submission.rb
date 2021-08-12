@@ -3,6 +3,7 @@ class BatchSubmission < ApplicationRecord
 
   attr_accessor :form_data,
                 :work_data,
-                :organization_search
+                :organization_search,
+                :device_id
 
 end

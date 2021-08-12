@@ -1,0 +1,104 @@
+<%= simple_form_for @submission, html: { id: :device_organization_search_form } do |f| %>
+  <div class="row">
+    <%= f.input :organization_search,
+      placeholder: "Enter complete words in institution or organization name or codes",
+      label: false,
+      input_html: {
+        class: 'form-control',
+        id: :submission_device_organization_search
+    } %>
+  </div>
+
+  <div id="device_organizations" class="hide">
+    <input class="device_organization_label" type="hidden" name="device_organization_title" value="" />
+    <input class="device_organization_title" type="hidden" name="device_organization_title" value="" />
+    <input class="device_organization_id" type="hidden" name="device_organization_id" value="" />
+  </div>
+<% end %>
+
+<script>
+$(function(){
+  $('#submission_device_organization_search').autocomplete({
+    select: function(event, ui) {
+        event.preventDefault();
+
+        // Add data to form fields
+        $("#submission_device_organization_search").val(ui.item.label);
+        $("#device_organization_search_form input.device_organization_id").val(ui.item.value);
+        console.log(ui.item.value);
+        $("#device_organization_search_form input.device_organization_title").val(ui.item.title);
+        console.log(ui.item.title);
+        $("#device_organization_search_form input.device_organization_label").val(ui.item.label);
+        console.log(ui.item.label);
+
+        // Display selected organization
+        $('#device_organization_select_display_container').addClass('show').removeClass('hide');
+        for (const prop in ui.item) {
+          $('#device_organization_select_display_container #'+prop).text(ui.item[prop]);
+        }
+
+        // Other UI visibility control
+        $('#submission_create_device_organization_button_section').addClass('hide').removeClass('show');
+        $('#submission_create_device_organization_form_section').addClass('hide').removeClass('show');
+        $('#submission_no_device_organization_section').addClass('hide').removeClass('show');
+        $('#submission_no_device_organization_display_section').addClass('hide').removeClass('show');
+
+    },
+    source: function (request, response) {
+      $.ajax({
+        url: "<%= find_organization_autocomplete_url %>" + request.term,
+        type: 'GET',
+        dataType: 'json',
+        complete: function (xhr, status) {
+          var results = $.parseJSON(xhr.responseText);
+          console.log(results);
+
+          // Knit together labels
+          for (const org of results) {
+            org.title = org.label;
+            var institutionCode = org.institution_code ? org.institution_code[0] : '';
+            var collectionCodes = org.collection_code ? org.collection_code.join('/') : '';
+            org.label = [org.title[0] + ' (' + institutionCode + ':' + collectionCodes + ')'];
+          }
+
+          // If view 4 produced a new organization, add it to this list
+          if ($('form#new_organization input[name="organization[title]"]').val()) {
+            results.unshift(organizationAutocompleteResult());
+          }
+
+
+          response(results);
+        }
+      });
+    },
+    autoFocus: true
+  });
+});
+
+var organizationAutocompleteResult = function () {
+  var organizationTitle = '';
+  var institutionCode = '';
+  var collectionCodes = [];
+
+  $('form#new_organization input').each(function () {
+    if ($(this).attr('name') == 'organization[title]') {
+      organizationTitle = $(this).val();
+    } else if ($(this).attr('name') == 'organization[institution_code]') {
+      institutionCode = $(this).val();
+    } else if ($(this).attr('name') == 'organization[collection_code][]') {
+      collectionCodes.push($(this).val());
+    }
+  });
+
+  return {
+    id: 'submission_organization',
+    value: 'submission_organization',
+    label: Array(
+      organizationTitle + ' (' + institutionCode + ':' + collectionCodes.join('/') + ') [New]'
+    ),
+    title: Array(organizationTitle),
+    institution_code: Array(institutionCode),
+    collection_code: collectionCodes
+  };
+};
+</script>

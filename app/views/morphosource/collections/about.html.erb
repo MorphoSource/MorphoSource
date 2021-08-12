@@ -1,10 +1,9 @@
-
 <% content_for :body_css_classes do %>showcase teams<% end %>
 
 <%
 provide :page_title, construct_page_title(@presenter.title)
 %>
-<div class="hyc-container" style="margin-top: 10px;" itemscope itemtype="http://schema.org/CollectionPage">
+<div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
   <div class="hyc-header">
     <% unless @presenter.banner_file.blank? %>
         <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
@@ -14,8 +13,10 @@ provide :page_title, construct_page_title(@presenter.title)
   </div>
 
   <div class="row team-header">
+
     <div class="col-xs-12 col-sm-9 col-md-10">
-      <% if @presenter.team? && @presenter.organization %>
+
+      <% if @presenter.collection_type.machine_id == 'team' && @presenter.collection.organization %>
         <div class="col-sm-12 col-md-6 flex">
       <% else %>
         <div class="col-sm-12 col-md-12 flex">
@@ -43,8 +44,9 @@ provide :page_title, construct_page_title(@presenter.title)
           </h1>
         </div>
       </div>
-      <% if @presenter.team? && @presenter.organization %>
-        <% organization_presenter = Hyrax::OrganizationPresenter.new(@presenter.organization, current_ability, nil) %>
+
+      <% if @presenter.collection_type.machine_id == 'team' && @presenter.collection.organization %>
+        <% organization_presenter = Hyrax::OrganizationPresenter.new(@presenter.collection.organization, current_ability, nil) %>
         <div class="col-sm-12 col-md-6 flex">
           <%= render 'counts_for_organization', presenter: organization_presenter %>
         </div>
@@ -77,10 +79,9 @@ provide :page_title, construct_page_title(@presenter.title)
     <!-- <div class="tab-content"> -->
 
       <div class="panel-body">
-        <%= render 'search_header' %>
-        <%= render_document_index %>
-        <%# <%= render 'document_list' %>
-        <%= render 'shared/lists/results_pagination' %>
+
+        <%= render 'morphosource/collections/about/tab_about' %>
+
       </div>
 
 

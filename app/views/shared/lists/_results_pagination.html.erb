@@ -4,7 +4,15 @@
       <%= render 'shared/lists/rows_per_page' %>
     </div>
     <div class="col-md-12 col-lg-2">
-      <div>Showing <%= page_entries_info @response %></div>
+      <% if @response.docs.count == 0 %>
+        <div class="row">
+          <div class="no-result">
+            No matching records found.
+          </div>
+        </div>
+      <% else %>
+        <div>Showing <%= page_entries_info @response %></div>
+      <% end %>
     </div>
     <div class="col-md-12 col-lg-8">
       <% if @response.total_pages > 1 %>

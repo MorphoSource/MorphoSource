@@ -1,10 +1,8 @@
-# Retrieves all objects associated with media for which a user has edit access or has been granted read access
 module Morphosource
   module Collections
     class ObjectsSearchBuilder < Hyrax::WorksSearchBuilder
 
       delegate :repository, to: :scope
-      # delegate :blacklight_config, to: Hyrax::CollectionsController
 
       self.default_processor_chain += [:apply_object_ids_filter]
 
@@ -22,7 +20,11 @@ module Morphosource
         end
 
         def object_ids_filter
-          "(id:(#{object_ids.join(' OR ')}))"
+          if @collection.organization.present?
+            "(id:(#{object_ids.join(' OR ')}) OR organization_id_ssim:#{@collection.organization&.id})"
+          else
+            "(id:(#{object_ids.join(' OR ')}))"
+          end
         end
 
         def object_ids
@@ -31,7 +33,12 @@ module Morphosource
         end
 
         def media_object_ids
-          repository.search(Morphosource::Collections::MediaObjectsSearchBuilder.new(scope: @scope, collection: @collection).rows(999999)).response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
+          repository.blacklight_config.max_per_page = 999999
+          if @media_list.present?
+            @media_list.map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
+          else
+            repository.search(Morphosource::Collections::MediaObjectsSearchBuilder.new(scope: @scope, collection: @collection).rows(999999)).response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
+          end
         end
 
     end

@@ -1,7 +1,6 @@
 module Morphosource
   module Collections
     class CulturalHeritageObjectsController < Morphosource::CollectionsController
-      # include Morphosource::Collections::ProjectsControllerBehavior
       # include Hyrax::CollectionsControllerBehavior
       # include Morphosource::Collections::ProjectHelper
       # include Hyrax::BreadcrumbsForCollections
@@ -50,6 +49,14 @@ module Morphosource
 
       private
 
+        def presenter_class
+          if @collection.project?
+            Morphosource::Collections::ProjectPresenter
+          elsif @collection.team?
+            Morphosource::Collections::TeamPresenter
+          end
+        end
+
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
           main_app.my_dashboard_media_facet_path(args[:id])
@@ -57,20 +64,20 @@ module Morphosource
 
         # link for facet filters
         def search_action_url(*args)
-          main_app.project_specimens_path(*args)
+          if @collection.project?
+            main_app.project_chos_path(*args)
+          elsif @collection.team?
+            main_app.team_chos_path(*args)
+          end
         end
 
         def tab
           :chos
         end
 
-        def gather_instance_variables
-          @media_list ||= collection_media
+        def query_collection_works
+          @cho_count = @response.response["numFound"].to_i if @response.present?
           super
-        end
-
-        def member_count
-          @response.response["numFound"].to_s + ' Objects'
         end
 
     end

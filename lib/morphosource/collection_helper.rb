@@ -64,13 +64,16 @@ module Morphosource
           link = dashboard_collection_path(id, view)
         end
       else
-        link = collection_path(id, view)
+        # byebug
+        # link = collection_path(id, view)
         if current_uri.include?("teams")
+          link = team_media_path(id, view)
           # todo: fix team_path route
           # link = team_path(id)
-          link["collections"] = "teams" # replace "collection' with "teams"
+          # link["collections"] = "teams" # replace "collection' with "teams"
         elsif current_uri.include?("projects")
-          link["collections"] = "projects"
+          # link["collections"] = "projects"
+          link = project_media_path(id, view)
         end
       end
       link.html_safe

@@ -171,3 +171,19 @@
     }
   }
 }
+
+.teams {
+  .ms-facets {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .ms-constraints-container {
+    .appliedFilter .glyphicon-remove {
+      right: 6px;
+      top: -4px;
+    }
+  }
+  #org_linked_team_origin_ssim + ul {
+    width: 500px;
+  }
+}

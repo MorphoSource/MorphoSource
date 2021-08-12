@@ -8,6 +8,11 @@ module Morphosource
         []
       end
 
+      # override in controller
+      def removed_facets
+        []
+      end
+
       # remove collections from team and project facets that the user is not able to view
       def filter_facets
         return if current_user&.admin?
@@ -18,6 +23,14 @@ module Morphosource
           unauthorized_items.each do |item|
             items.delete(item)
           end
+        end
+      end
+
+      def remove_facets
+        return if removed_facets.blank?
+
+        removed_facets.each do |facet|
+          @response.aggregations[facet].instance_variable_set(:@items,[])
         end
       end
 

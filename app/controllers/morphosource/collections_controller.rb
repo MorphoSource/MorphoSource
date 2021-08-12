@@ -1,33 +1,30 @@
 module Morphosource
   class CollectionsController < Hyrax::CollectionsController
-
-    # include TeamsControllerBehavior
-
-    include Hydra::Catalog
-    include Hyrax::Collections::AcceptsBatches
-    include Blacklight::Configurable
-
     include Morphosource::CollectionsControllerBehavior
     helper Morphosource::CollectionHelper
-    include Hyrax::CollectionsControllerBehavior
     include Morphosource::Facets::AccessFilters
+    # include Hyrax::CollectionsControllerBehavior
 
     with_themed_layout 'morphosource_1_column'
 
-    load_and_authorize_resource except: [:index, :show, :specimens, :chos, :about, :create, :media], instance_name: :collection
+    skip_load_and_authorize_resource only: [:show, :about], instance_name: :collection
 
-    before_action :build_breadcrumbs, only: [:show, :about]
+    # Don't add breadcrumbs
+    before_action :build_breadcrumbs, only: []
 
+    before_action :load_collection, :redirect_to_collection_type 
 
-    # helper_method :hidden_params_for_filters, :hidden_params_for_pagination, :publication_status_label,
-    #   :media_type_label, :filter_params, :ms_collection_view_link, :source_label, :bso_tab_url_for_collections,
-    #   :cho_tab_url_for_collections, :page_is_team?, :showpage_url, :ms_collection_view_link, :ms_collection_view_link_qs,
-    #   :origin_label
-    #
-    # load_and_authorize_resource except: [:index, :show, :specimens, :chos, :create], instance_name: :collection
+    def search_builder_class
+      Morphosource::Collections::MediaSearchBuilder
+    end
 
-    # Hyrax version
-    # load_and_authorize_resource except: [:index, :show, :create], instance_name: :collection
+    def self.remove_bookmarks
+      configure_blacklight do |config|
+        config.index.document_actions.delete(:bookmark)
+        config.show.document_actions.delete(:bookmark)
+      end
+    end
+    remove_bookmarks
 
     private
 

@@ -6,6 +6,8 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
 
   let!(:user) { User.create(email: "user@test.com", password: 'password', display_name: "Test User", affiliation: "Test Affiliation", department: "Test Department", address: "Test Address", country: "US", state: "NC", postal_code: "27278", telephone: "5555555555", demographics: ["demo1", "demo2"], intent: ["intent1", "intent2"], software: ["software1", "software2"], mesh_file_type: ["type1", "type2"], volume_file_type: ["type3", "type4"], printer_model: ["model1", "model2"], printer_file: ["type5", "type6"], orcid: "https://orcid.org/0000-0000-0000-0000", twitter_handle: "@TestTest", facebook_handle: "test.test", website: "morphosource.org", terms_read: true, ms_id: "msid678") }
 
+  let!(:user2) { User.create(email: "user2@test.com", password: 'password', display_name: "Test User 2", ms_id: "msid22") }
+
   let(:update_params) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", postal_code: "New Code", telephone: "New Phone", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], software: ["new software1", "new software2", ""], mesh_file_type: ["new type1", "new type2", ""], volume_file_type: ["new type3", "new type4", ""], printer_model: ["new model1", "new model2", ""], printer_file: ["new type5", "new type6", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true}, id: user.ms_id} }
 
   describe '#update' do
@@ -39,6 +41,41 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
       expect(user.facebook_handle).to eq("new facebook")
       expect(user.website).to eq("new website")
       expect(user.ms_id).to eq("msid678")
+    end
+  end
+
+  describe 'edit' do
+    context 'user is not signed in' do
+      it 'is redirects' do
+        get :edit, params: { id: user.ms_id }
+        expect(response.status).to eq(302)
+      end
+    end
+    context 'non-admin user is signed in' do
+      before do
+        sign_in user
+      end
+      it 'is redirects to unauthorized when editing another user' do
+        get :edit, params: { id: user2.ms_id }
+        expect(response.status).to eq(401)
+        expect(subject).to render_template("hyrax/base/unauthorized")
+      end
+      it 'is renders edit profile page when editing own profile' do
+        get :edit, params: { id: user.ms_id }
+        expect(response.status).to eq(200)
+        expect(subject).to render_template("hyrax/dashboard/profiles/edit")
+      end
+    end
+    context 'admin user is signed in' do
+      before do
+        sign_in user2
+        allow(subject.current_user).to receive(:admin?).and_return(true)
+      end
+      it 'is renders edit profile page when editing other user profile' do
+        get :edit, params: { id: user.ms_id }
+        expect(response.status).to eq(200)
+        expect(subject).to render_template("hyrax/dashboard/profiles/edit")
+      end
     end
   end
 

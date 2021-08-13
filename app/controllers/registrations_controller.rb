@@ -5,7 +5,7 @@ class RegistrationsController < Devise::RegistrationsController
   protected
 
   def sign_up_params
-    params.require(:user).permit(:address, :affiliation, :avatar, :country, :department, :display_name, :email, :facebook_handle, :linkedin_handle, :orcid, :password, :password_confirmation, :postal_code, :remove_avatar, :state, :telephone, :terms_read, :twitter_handle, :website, demographics: [], software: [], intent: [], mesh_file_type: [], volume_file_type: [], printer_file: [], printer_model: [] )
+    params.require(:user).permit(:address, :affiliation, :sftp_share, :avatar, :country, :department, :display_name, :email, :facebook_handle, :linkedin_handle, :orcid, :password, :password_confirmation, :postal_code, :remove_avatar, :state, :telephone, :terms_read, :twitter_handle, :website, demographics: [], software: [], intent: [], mesh_file_type: [], volume_file_type: [], printer_file: [], printer_model: [] )
   end
 
   # Don't retain empty strings from 'other' fields.

@@ -501,6 +501,43 @@ html {
 
 .showcase {
 
+  table.dataTable {
+    tr {
+      border-bottom: none;
+    }
+    tr.child {
+      background-color: #f9f9f9;
+      border-top: none;
+      border-bottom: 3px solid #ddd;
+    }
+    td {
+      border-top: 1px solid #eee;
+    }
+    td.child {
+      text-align: left;
+      padding-top: 0;
+      padding-bottom: 18px;
+      ul {
+        margin-left: 35px;        
+      }
+      li {
+        padding: 0.1em 0;
+        display: inline-block;
+        .dtr-title {
+          text-align: right;
+          min-width: auto;
+        }
+        .dtr-title::after {
+          content: ':';
+        }
+        .dtr-data {
+          text-align: left;
+          margin-right: 15px;
+        }
+      }
+    }
+  }
+
   table.dataTable thead > tr > th {
     padding-left: 30px;
     padding-right: 30px;

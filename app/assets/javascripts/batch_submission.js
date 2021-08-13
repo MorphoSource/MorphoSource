@@ -246,7 +246,7 @@ $( document ).ready(function() {
           data.setOrganizationDefaults();
           data.noOrganization = true;
           data.willCreateOrganization = false;
-          data.savedStep = 4;
+ //         data.savedStep = 4;
           self.toggleNoOrganizationVisibility();
           ['biological_specimen','cultural_heritage_object'].forEach((physical_object_type) => {
             ['collection_code','institution_code'].forEach((code_type) => {
@@ -255,7 +255,7 @@ $( document ).ready(function() {
               $('#' + dom_id).replaceWith($('<input>',{id: dom_id, name: form_input_name, class: 'form-control string optional'}));
             });
           });
-          self.next();
+//          self.next();
 
           console.log(data);
         });
@@ -367,8 +367,8 @@ $( document ).ready(function() {
         // Organization utility function
 
         function clearList() {
-          $('form#submission_device_select_form select#submission_device_id option').each(function () {
-            $("#submission_device_id").select2('val', null);
+          $('form#submission_device_select_form select#batch_submission_device_id option').each(function () {
+            $("#batch_submission_device_id").select2('val', null);
             if ($(this).attr('value')) {
               $(this).remove();
             }
@@ -376,19 +376,19 @@ $( document ).ready(function() {
         }
 
         function removePreviousSelection() {
-          $("#submission_device_id").select2('val', null);
+          $("#batch_submission_device_id").select2('val', null);
           $('#submission_device_select_display').addClass('hide').removeClass('show');
           $('#submission_select_device_continue').attr('disabled', 'disabled');
         }
 
         function enableDeviceList() {
-          $('form#submission_device_select_form select#submission_device_id').removeAttr('disabled');
-          $('form#submission_device_select_form div.submission_device_id label').removeClass('disabled');
+          $('form#submission_device_select_form select#batch_submission_device_id').removeAttr('disabled');
+          $('form#submission_device_select_form div.batch_submission_device_id label').removeClass('disabled');
         }
 
         function listDevices(devices) {
           for (const device of devices) {
-            $('form#submission_device_select_form select#submission_device_id')
+            $('form#submission_device_select_form select#batch_submission_device_id')
               .append($('<option></option>')
                 .attr('value', device.id)
                 .attr('data-modality', device.modality)
@@ -400,23 +400,30 @@ $( document ).ready(function() {
 
         // Device select
 
-        $("#submission_device_id").select2({
+        $("#batch_submission_device_id").select2({
           placeholder: 'Select device'
         });
 
-        $('#submission_device_id').on('select2-selecting', function (e) {
+        $('#batch_submission_device_id').on('select2-selecting', function (e) {
           console.log(JSON.stringify(e.choice));
           var item = e.choice;
 
+/*
+
+todo: might have to check modality later
 
           if (e.choice && e.choice.id) {
+*/
             var deviceObj = deviceData[e.choice.id]
+/*
             if (deviceObj && deviceObj.modality && data.submissionModality && deviceObj.modality.includes(data.submissionModality)) {
               console.log('Value provided and validated');
               console.log(deviceObj.modality);
               console.log(data.submissionModality);
+*/
               self.toggleSelectDeviceVisibility(deviceObj);
               $('#submission_select_device_continue').removeAttr('disabled');
+/*
             } else {
               console.log(deviceObj.modality);
               console.log(data.submissionModality);
@@ -425,15 +432,16 @@ $( document ).ready(function() {
               e.preventDefault();
             }
           } else {
-            $("#submission_device_id").select2('val', null);
+            $("#batch_submission_device_id").select2('val', null);
             $('#submission_select_device_continue').attr('disabled', 'disabled');
             e.preventDefault();
           }
+*/          
         });
 
         $('#submission_device_select_display_container').on(
           'click', '#device-select-close', function(event){
-            $("#submission_device_id").select2('val', null);
+            $("#batch_submission_device_id").select2('val', null);
             $('#submission_select_device_section').addClass('show').removeClass('hide');
             $('#submission_create_device_button_section').addClass('show').removeClass('hide');
             $('#submission_device_select_display').addClass('hide').removeClass('show');

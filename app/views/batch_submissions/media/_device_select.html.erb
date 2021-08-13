@@ -4,7 +4,7 @@
 
       <div class="submission-select2-container">
         <%= f.input :organization_search, 
-          label: 'First, find the organization that manages the device.',
+          label: false,
           input_html: {
             id: :submission_device_select_organization_search,
             class: 'mb-1',
@@ -41,7 +41,7 @@
   </div>
 <% end %>
 
-<div class="row">
+<div class="row text-center">
   <a href="#" id="submission_select_device_continue" class="btn btn-primary btn-continue" disabled="disabled">
     <%= t('morphosource.submission.continue') %>
   </a>

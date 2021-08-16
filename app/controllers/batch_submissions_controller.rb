@@ -1,6 +1,11 @@
 class BatchSubmissionsController < ApplicationController
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
+  before_action :instantiate_work_forms
+
+  def instantiate_work_forms
+    @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
+  end
   
   def index
   end

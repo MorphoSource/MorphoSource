@@ -21,6 +21,7 @@
 </div>
 
 <div class="row">
+
 	<div class="col-sm-6">
 		<h2>Basic details</h2>
 
@@ -34,63 +35,151 @@
 		  <%= render(partial: 'batch_submissions/media/device') %>
 		</div>
 
-	  <%= simple_form_for @batch_submission, html: {id: :batch_submission_form } do |f| %>
+<%= simple_form_for @batch_submission, html: {id: :batch_submission_form } do |f| %>
 
-	    <% if current_user.fund_codes.present? %>
-	      <div class="row mt-2">
-	      	<label>Select the appropriate fund code for the media in this batch submission. If you are not the final manager of these date, select the manager on whose behalf you are acting as a proxy.</label>
-          <%= f.input :fund_code, label: 'What fund code supports this deposit?', 
-            collection: current_user.fund_codes, prompt: "None (Data Supported By MorphoSource)" %>
-	      </div>	      
-	    <% end %>
+    <% if current_user.fund_codes.present? %>
+      <div class="row mt-2">
+      	<label class="required-flag"><span class="label"></span> Select the appropriate fund code for the media in this batch submission. If you are not the final manager of these date, select the manager on whose behalf you are acting as a proxy.</label>
+        <%= f.input :fund_code, label: 'What fund code supports this deposit?', 
+          collection: current_user.fund_codes, prompt: "None (Data Supported By MorphoSource)" %>
+      </div>	      
+    <% end %>
 
-      <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? 
-          my_name = current_user.display_name.present? ? "(#{current_user.display_name})" : ""
-        %>
-        <div class="row mt-2">
-          <%= f.input :on_behalf_of, label: 'Which user are you depositing this media for?', 
-            collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, prompt: "Myself #{my_name}" %>
+    <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? 
+        my_name = current_user.display_name.present? ? "(#{current_user.display_name})" : ""
+      %>
+      <div class="row mt-2">
+        <%= f.input :on_behalf_of, label: 'Which user are you depositing this media for?', 
+          collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, prompt: "Myself #{my_name}" %>
+      </div>
+    <% end %>
+
+	</div>
+
+
+	<!-- Ownership and Permissions -->
+
+
+</div>
+
+<div class="content-block" style="margin-top:30px;">
+  <div class="block showcase-edit showcase-section">
+    <div class="row showcase-section-header">
+      <span class="h2">UPLOAD MANIFEST</span>
+    </div>
+    <div style="margin-top:15px; margin-left:15px">
+			<label class="required-flag"><span class="label"></span> Upload the completed submission manifest.
+      <%= f.file_field_tag :manifest %>
+    </div>
+  </div>
+</div>
+
+<% end %>
+
+
+<%# todo: remove the media form later if not needed %>
+<%= simple_form_for @media_form,
+wrapper: :showcase_default,
+url: { controller: 'submissions', action: 'create' },
+html: {
+  data: { behavior: 'work-form', 'param-key' => 'media' },
+  multipart: true
+} do |f| %>
+
+  <div class="row mt-2">
+		<label>Select one or more projects media in the batch submission should be associated with.</label>
+
+      <% if @batch_submission.collection_id %>
+        <div class="row">
+          <div class="content-block">
+            <span>Media will be added to <%= @batch_submission.collection_name %>. Add to additional teams and projects below if desired.</span>
+            <input class="collection_id" type="hidden" name="collection_id" value="<%= @batch_submission.collection_id %>" />
+          </div>
+
         </div>
       <% end %>
 
-    <% end %>
-
-      <div class="row mt-2">
-				<label>Select one or more projects media in the batch submission should be associated with.</label>
-
-
-    <%# todo: remove the media form later if not needed %>
-    <%= simple_form_for @media_form,
-    wrapper: :showcase_default,
-    url: { controller: 'submissions', action: 'create' },
-    html: {
-      data: { behavior: 'work-form', 'param-key' => 'media' },
-      multipart: true
-    } do |f| %>
-
-          <% if @batch_submission.collection_id %>
-            <div class="row">
-              <div class="content-block">
-                <span>Media will be added to <%= @batch_submission.collection_name %>. Add to additional teams and projects below if desired.</span>
-                <input class="collection_id" type="hidden" name="collection_id" value="<%= @batch_submission.collection_id %>" />
-              </div>
-
-            </div>
-          <% end %>
-
-          <div class="content-block">
-            <%= render 'form_member_of_collections', f: f %>
-          </div>
-
-    <% end %>
-
-			</div>
-
+      <div class="content-block">
+        <%= render 'form_member_of_collections', f: f %>
+      </div>
 
 	</div>
 
-	<div class="col-sm-6">
-		<h2>Ownership and Permissions</h2>
+
+  <div class="block showcase-edit showcase-section">
+    <div class="row showcase-section-header">
+      <span class="h2">OWNERSHIP AND PERMISSIONS</span>
+    </div>
+
 		<label class="optional-flag"><span class="label"></span> These ownership and permissions settings will be applied to all media in the batch submission.</label>
-	</div>
-</div>
+
+    <div id="submission-media-ownership" class="content-block">
+      <div id="ownership-section-header-text" class="row hide">
+        <div class="col-sm-12" style="text-align: center;">
+          <span><span id='organization-name'></span> has suggested default permission settings, indicated by the <i class='fas fa-university'></i> icon. If you have agreed to abide by this organization's preferences for media ownership, take caution before changing these settings.</span>
+        </div>
+      </div>
+      <div class="row media_download_permission">
+        <div class="col-xs-6 showcase-label">
+          <label class="control-label select optional" for="media_download_permission">Download permission</label>
+          <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
+        </div>
+        <div class="col-xs-6 showcase-value">
+          <div class="m-0 p-0 text-nowrap">
+          <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
+          <% if f.object.embargo_release_date %>
+            <span class="label label-warning">Embargo</span>
+          <% elsif f.object.lease_expiration_date %>
+            <span class="label label-warning">Lease</span>
+          <% else %>
+            <span class="label" id="current_visibility_value"></span>
+          <% end %>
+            <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
+          <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
+            <%= render 'hyrax/media/ms_form_visibility_component', f: f %>
+          </div>
+        </div>
+      </div>
+
+      <%= render_edit_field_partial('download_reviewer', f: f) %>
+      <%= render_edit_field_partial('rights_holder', f: f) %>
+      <%= render_edit_field_partial('rights_statement', f: f) %>
+      <%= render_edit_field_partial('license', f: f) %>
+      
+      <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
+      <%= render_edit_field_partial('permits_commercial_use', f: f) %>
+      <%= render_edit_field_partial('permits_3d_use', f: f) %>
+      <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f) %>
+
+      <%= render_edit_field_partial('funding', f: f) %>
+      <%= render_edit_field_partial('publisher', f: f) %>
+      <%= render_edit_field_partial('cite_as', f: f) %>
+
+      <div>
+        <div id='organization-attachment-section' class='hide'>
+          <div id='organization-attachment-row' class="row">
+            <div class="col-xs-6 showcase-label">
+              <label class="control-label optional" for="organization_attachment"><span>Additional usage agreement </span></label>
+            </div>
+            <div class="col-xs-6 showcase-value" id="organization_attachment">
+              An <a href='#' id='organization-attachment-url'>agreement file</a> has been suggested by physical object organization. <a href='#' id='organization-attachment-remove'>Remove or replace.</a>
+            </div>
+          </div>
+        </div>
+        <div id='work-attachment-section'>
+          <%= render_edit_field_partial('agreement_uri', f: f) %>
+          <div id='organization-attachment-replace-row' class="row hide">
+            <div class="col-xs-6 showcase-label"></div>
+            <div class="col-xs-6 showcase-value">
+              <a href='#' id='organization-attachment-replace'>Use suggested organization usage agreement</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render_edit_field_partial('preview_mode', f: f) %>
+
+  </div>
+
+<% end %>

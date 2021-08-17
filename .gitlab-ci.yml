@@ -1,3 +1,6 @@
+variables:
+  SKIP_TESTS: "false"
+
 stages:
   - build
   - test
@@ -47,11 +50,17 @@ build_job:
 
 test_job:
   extends: .test
+  except: 
+    variables:
+      - $SKIP_TESTS == "true"
   script:
     - bin/rake ci:wrapped_spec[~accessibility]
 
 accessibility_job:
   extends: .test
+  except: 
+    variables:
+      - $SKIP_TESTS == "true"
   allow_failure: true
   script:
     - bin/rake ci:wrapped_spec[accessibility]

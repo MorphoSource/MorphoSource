@@ -388,7 +388,7 @@ module MorphosourceHelper
   end
 
   def grouped_access_list(f)
-    depositor = f.object.depositor
+    manager = f.object.user_with_ownership
     groups = []
     individual_list = []
     access_user_list = {}
@@ -396,7 +396,7 @@ module MorphosourceHelper
       role_name = permission_fields.object.agent_name
       user_list = user_list_by_role(role_name)
       # skip the public, registered, and depositor perms as they are displayed first at the top
-      next if ( ['admin', 'public', 'registered', depositor].include? role_name.downcase )
+      next if ( ['admin', 'public', 'registered', manager].include? role_name.downcase )
       if user_list.empty?
         unless role_name.include? '_'
           individual_list << permission_fields
@@ -450,6 +450,20 @@ module MorphosourceHelper
     user = ::User.find_by_user_key(user_key)
     return user_key if user.nil?
     user.display_name.present? ? user.display_name : user.email
+  end
+
+  def sftp_share_status(path)
+    return "" unless path.present?
+    icon = '<i class="glyphicon glyphicon-alert tooltip-icon text-alert"><p class="hint hide">Not connected</p></i>'
+    if sftp_share_connected? path
+      icon = '<i class="glyphicon glyphicon-ok-sign tooltip-icon text-success" data-original-title="" title=""><p class="hint hide">Connected</p></i>'
+    end
+    return icon.html_safe
+  end
+
+  def sftp_share_connected?(path)
+    return false unless path.present?
+    return (Dir.exist?(Hyrax.config.sftp_share_root + path) or Dir.exist?(path))
   end
 
 end

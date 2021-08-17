@@ -1,0 +1,7 @@
+<div class="form-group">
+  <%= f.label :sftp_share, t("morphosource.dashboard.profiles.edit_primary.sftp_share").html_safe, class: 'col-sm-4 control-label' %>
+  <div class="col-sm-8">
+    <%= f.text_field :sftp_share, class: "form-control w-auto d-inline", disabled: !current_user.admin? %>
+    <%= sftp_share_status f.object.sftp_share %>  
+  </div>
+</div><!-- .form-group -->

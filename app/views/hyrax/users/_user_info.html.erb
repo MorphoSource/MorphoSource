@@ -2,74 +2,110 @@
   <!--- If a user is viewing their own profile in the dashboard, show address, state, postal code, and telephone --->
   <% @dashboard = @_request.fullpath.include?("/dashboard/profiles/") %>
 
-  <dt><i class="fa fa-envelope"></i> Email</dt>
-  <dd><%= mail_to user.email, "Contact User" %></dd>
-
   <% if user.display_name %>
-    <dt>Display Name</dt>
-    <dd><%= user.display_name %></dd>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Display Name</div>
+    <div class="col-xs-6 showcase-value"><%= user.display_name %></div>
+  </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Email</div>
+    <div class="col-xs-6 showcase-value"><%= mail_to user.email, user.email %></div>
+  </div>
+
+  <% if user == current_user || current_user.admin? %>
+    <% if user.sftp_share %>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">SFTP Share</div>
+      <div class="col-xs-6 showcase-value"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
+    </div>
+    <% end %>
   <% end %>
 
   <% if user.affiliation %>
-    <dt>Organization</dt>
-    <dd><%= user.affiliation %></dd>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Organization</div>
+    <div class="col-xs-6 showcase-value"><%= user.affiliation %></div>
+  </div>
   <% end %>
 
   <% if user.department %>
-    <dt>Department</dt>
-    <dd><%= user.department %></dd>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Department</div>
+    <div class="col-xs-6 showcase-value"><%= user.department %></div>
+  </div>
   <% end %>
 
   <% if @dashboard %>
     <% if user.address %>
-      <dt><i class="glyphicon glyphicon-map-marker"></i> Address</dt>
-      <dd><%= user.address %></dd>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Address</div>
+      <div class="col-xs-6 showcase-value"><%= user.address %></div>
+    </div>
     <% end %>
 
     <% if user.state %>
-      <dt>State/Province</dt>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">State/Province</div>
         <% if Morphosource::UserProfile::LocationHelper::STATE[user.country]&.key(user.state) %>
-          <dd><%= Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) %></dd>
+          <div class="col-xs-6 showcase-value"><%= Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) %></div>
         <% else %>
-          <dd><%= user.state %>
+          <div class="col-xs-6 showcase-value"><%= user.state %></div>
         <% end %>
+    </div>
     <% end %>
   <% end %>
 
   <% if user.country %>
-    <dt>Country</dt>
-    <dd><%= Morphosource::UserProfile::LocationHelper::COUNTRY.key(user.country) %></dd>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Country</div>
+    <div class="col-xs-6 showcase-value"><%= Morphosource::UserProfile::LocationHelper::COUNTRY.key(user.country) %></div>
+  </div>
   <% end %>
 
   <% if @dashboard %>
     <% if user.postal_code %>
-      <dt>Postal Code</dt>
-      <dd><%= user.postal_code %></dd>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Postal Code</div>
+      <div class="col-xs-6 showcase-value"><%= user.postal_code %></div>
+    </div>
     <% end %>
 
     <% if user.telephone %>
-      <dt><i class="glyphicon glyphicon-earphone"></i> Telephone</dt>
-      <dd><%= link_to_telephone(user) %></dd>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Telephone</div>
+      <div class="col-xs-6 showcase-value"><%= link_to_telephone(user) %></div>
+    </div>
     <% end %>
   <% end %>
 
   <% if user.orcid.present? %>
-    <dt><%= orcid_label('profile') %></dt>
-    <dd><%= link_to user.orcid, user.orcid, { target: '_blank' } %></dd>
+  <div class="row">
+    <div class="col-xs-6 showcase-label"><%= orcid_label('profile') %></div>
+    <div class="col-xs-6 showcase-value"><%= link_to user.orcid, user.orcid, { target: '_blank' } %></div>
+  </div>
   <% end %>
 
   <% if user.twitter_handle.present? %>
-    <dt><i class="fab fa-twitter" aria-hidden="true"></i> Twitter Handle</dt>
-    <dd><%= link_to user.twitter_handle, "http://twitter.com/#{user.twitter_handle}", {target:'_blank'} %></dd>
+  <div class="row">
+    <div class="col-xs-6 showcase-label"><i class="fab fa-twitter" aria-hidden="true"></i> Twitter Handle</div>
+    <div class="col-xs-6 showcase-value"><%= link_to user.twitter_handle, "http://twitter.com/#{user.twitter_handle}", {target:'_blank'} %></div>
+  </div>
   <% end %>
 
   <% if user.facebook_handle.present? %>
-    <dt><i class="fab fa-facebook"></i> Facebook Handle</dt>
-    <dd><%= link_to user.facebook_handle, "http://facebook.com/#{user.facebook_handle}", {target:'_blank'} %></dd>
+  <div class="row">
+    <div class="col-xs-6 showcase-label"><i class="fab fa-facebook"></i> Facebook Handle</div>
+    <div class="col-xs-6 showcase-value"><%= link_to user.facebook_handle, "http://facebook.com/#{user.facebook_handle}", {target:'_blank'} %></div>
+  </div>
   <% end %>
 
   <% if user.website %>
-    <dt><i class="glyphicon glyphicon-globe"></i> Website(s)</dt>
-    <dd><%= iconify_auto_link(user.website) %></dd>
+  <div class="row">
+    <div class="col-xs-6 showcase-label"><i class="glyphicon glyphicon-globe"></i> Website(s)</div>
+    <div class="col-xs-6 showcase-value"><%= iconify_auto_link(user.website) %></div>
+  </div>
   <% end %>
+
 </dl>

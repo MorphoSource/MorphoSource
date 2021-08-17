@@ -74,11 +74,17 @@ $ms-dark-blue: #002c64;
 .w-25 {
   width: 25%;
 }
+.w-auto {
+  width: auto;
+}
 
 .hint-sm {
   font-style: italic;
   font-size: 12px;
   font-weight: normal;
+}
+.text-success {
+  color: green;
 }
 .text-alert {
   color: red;

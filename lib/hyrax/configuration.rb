@@ -324,6 +324,11 @@ module Hyrax
       @host_name ||= "morphosource.org"
     end
 
+    attr_writer :sftp_share_root
+    def sftp_share_root
+      @sftp_share_root ||= "/sftp_share_root_NOT_DEFINED/"
+    end
+
     attr_writer :front_page_media
     def front_page_media
       @front_page_media ||= nil
@@ -646,7 +651,7 @@ module Hyrax
                     end
     end
 
-    # Packrat API fields
+    # Packrat API fields (if not using Duke Packrat Storage, these fields are unnecessary)
     attr_writer :packrat_api_endpoint_client_id
     def packrat_api_endpoint_client_id
       @packrat_api_endpoint_client_id ||= nil
@@ -675,6 +680,17 @@ module Hyrax
     attr_writer :packrat_api_volume_id
     def packrat_api_volume_id
       @packrat_api_volume_id ||= nil
+    end
+
+    # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
+    attr_writer :subsidizing_fund_code_id
+    def subsidizing_fund_code_id
+      @subsidizing_fund_code_id ||= nil
+    end
+
+    attr_writer :unused_storage_fund_code_id
+    def unused_storage_fund_code_id
+      @unused_storage_fund_code_id ||= nil
     end
 
     attr_accessor :nested_relationship_reindexer

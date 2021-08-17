@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  get 'batch_submissions/new'
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id', controller: :collection_members, action: :update_members, as: 'update_members'
@@ -167,6 +168,8 @@ Rails.application.routes.draw do
 
   # override ProfilesController
   scope module: :morphosource do
+    get 'dashboard/profiles/:id/edit', to: 'dashboard/profiles#edit'
+    get 'dashboard/profiles/:id', to: 'dashboard/profiles#show'
     put 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
     patch 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
   end
@@ -337,6 +340,7 @@ Rails.application.routes.draw do
       post 'admin/fund_codes', action: :create, controller: :fund_codes, as: 'admin_fund_codes_create'
       patch 'admin/fund_codes/:id', action: :update, controller: :fund_codes, as: 'admin_fund_codes_update'
       delete 'admin/fund_codes/:id', action: :delete, controller: :fund_codes, as: 'admin_fund_codes_delete'
+      delete 'admin/fund_codes/:id/attachments/:index', action: :delete_attachment, controller: :fund_codes, as: 'admin_fund_codes_delete_attachment'
     end
   end
 
@@ -409,6 +413,8 @@ Rails.application.routes.draw do
   # Routes for editing/updating password from profile page
   get 'dashboard/profiles/:id/edit_password' => 'morphosource/dashboard/profiles#edit_password', as: 'profile_edit_password'
   patch 'dashboard/profiles/:id/update_password' => 'morphosource/dashboard/profiles#update_password', as: 'profile_update_password'
+
+  get 'dashboard/profiles/:id/edit' => 'morphosource/dashboard/profiles#edit', as: 'profile_edit'
 
   # Routes for fund code charge API
   get 'fund_code_charges', to: 'fund_code_charges#index', as: 'fund_code_charges'

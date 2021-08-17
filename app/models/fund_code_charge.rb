@@ -1,5 +1,10 @@
 class FundCodeCharge < ApplicationRecord
   belongs_to :fund_code
+  serialize :media_size_hash
+
+  before_destroy :undo_fund_code_debit
+  before_save :set_fund_code_remaining, :set_fund_code_storage_gb_remaining
+  validate :validate_no_overlaps
 
   def self.to_csv
     CSV.generate(headers: true) do |csv|
@@ -12,14 +17,59 @@ class FundCodeCharge < ApplicationRecord
   end
 
   def self.csv_headers
-    self.exchequer_headers + [:amount]
+    self.exchequer_headers + [:morphosource_fund_code_title, :morphosource_funds_remaining]
   end 
 
   def self.exchequer_headers
     [
-      :fund_code, :description, :units_consumed, :billing_rate, :billing_unit, 
+      :fund_code, :description, :amount, :units_consumed, :billing_rate, :billing_unit, 
       :start_date, :end_date, :service_type
     ]
+  end
+
+  def undo_fund_code_debit
+    if (
+      fund_code.present? && 
+      fund_code.remaining.present? && 
+      amount.is_a?(BigDecimal)
+    )
+      fund_code.update_attribute :remaining, (fund_code.remaining + amount).round(2)
+    end
+  end
+
+  def set_fund_code_remaining
+    if fund_code.present? && fund_code.remaining.present?
+      if amount.is_a?(BigDecimal)
+        self.fund_code_remaining = (fund_code.remaining - amount).round(2)
+        fund_code.update_attribute :remaining, fund_code_remaining
+      else
+        self.fund_code_remaining = fund_code.remaining
+      end
+    end
+  end
+
+  def set_fund_code_storage_gb_remaining
+    if (
+      fund_code.present? && 
+      fund_code.storage_total_gb.present? && 
+      units_consumed.present? && 
+      billing_unit == 'gb'
+    )
+      self.fund_code_storage_remaining_gb = fund_code.storage_total_gb - units_consumed
+      fund_code.update_attribute :storage_remaining_gb, fund_code_storage_remaining_gb
+    end
+  end
+
+  def validate_no_overlaps
+    if FundCodeCharge.where.not(id: id).where(
+      "fund_code_id = ? AND service_type = ? AND start_date <= ? AND ? <= end_date", 
+      fund_code_id, 
+      service_type, 
+      end_date, 
+      start_date
+    ).exists?
+      errors.add :base, :invalid, message: "Charge dates overlap with another charge for this fund code and service type"
+    end
   end
 
   def to_h(format=:exchequer)
@@ -32,6 +82,12 @@ class FundCodeCharge < ApplicationRecord
     headers.map do |field|
       if field == :fund_code
         [ field, send(field).identifier ]
+      elsif field == :morphosource_fund_code_title
+        [ field, send(:fund_code).title ]
+      elsif field == :morphosource_funds_remaining
+        [ field, send(:fund_code_remaining).present? ? ( '%.2f' % send(:fund_code_remaining) ) : nil ]
+      elsif field == :amount
+        [ field, send(:amount).present? ? ( '%.2f' % send(:amount) ) : nil ]
       else
         [ field, send(field) ]
       end

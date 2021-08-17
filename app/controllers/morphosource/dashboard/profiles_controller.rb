@@ -2,6 +2,7 @@ module Morphosource
   module Dashboard
     class ProfilesController < Hyrax::Dashboard::ProfilesController
 
+      with_themed_layout 'morphosource_dashboard'
       helper Morphosource::UserProfile::UserProfileHelper
 
       before_action :strip_empty_values, only: [:update]
@@ -9,6 +10,14 @@ module Morphosource
       before_action :find_user, except: [:edit_password, :update_password]
 
       skip_authorize_resource only: [:edit_password, :update_password]
+      
+      def edit
+        authenticate_user!
+        unless current_user.admin? || @user == current_user
+          render 'hyrax/base/unauthorized', status: :unauthorized
+        end
+        super
+      end
 
       def edit_password
         authenticate_user!
@@ -33,7 +42,7 @@ module Morphosource
       private
 
         def user_params
-          params.require(:user).permit(:address, :affiliation, :avatar, :country, :department, :display_name, :email, :facebook_handle, :linkedin_handle, :orcid, :postal_code, :remove_avatar, :state, :telephone, :terms_read, :twitter_handle, :website, demographics: [], software: [], intent: [], mesh_file_type: [], volume_file_type: [], printer_file: [], printer_model: [] )
+          params.require(:user).permit(:address, :affiliation, :sftp_share, :avatar, :country, :department, :display_name, :email, :facebook_handle, :linkedin_handle, :orcid, :postal_code, :remove_avatar, :state, :telephone, :terms_read, :twitter_handle, :website, demographics: [], software: [], intent: [], mesh_file_type: [], volume_file_type: [], printer_file: [], printer_model: [] )
         end
 
         def update_password_params

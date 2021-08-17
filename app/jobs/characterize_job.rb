@@ -19,23 +19,27 @@ class CharacterizeJob < ApplicationJob
     Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath)
     Rails.logger.debug "Ran FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
 
-    ext = File.extname(filepath)
-    if (ext =~ /\.(glb|gltf|obj|ply|stl|wrl|x3d)$/)
-      blender_options = {
-        "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
-        "tool_class" => :blender
-      }
-      Rails.logger.debug "Running Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
-      Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath, blender_options)
-      Rails.logger.debug "Ran Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
-    elsif (ext =~ /\.(zip)$/)
-      Rails.logger.debug "Running zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
-      Hydra::Works::ZipContentsCharacterizationService.run(file_set.characterization_proxy, filepath)
-      Rails.logger.debug "Ran zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+    begin
+      ext = File.extname(filepath)
+      if (ext =~ /\.(glb|gltf|obj|ply|stl|wrl|x3d)$/)
+        blender_options = {
+          "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
+          "tool_class" => :blender
+        }
+        Rails.logger.debug "Running Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+        Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath, blender_options)
+        Rails.logger.debug "Ran Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+      elsif (ext =~ /\.(zip)$/)
+        Rails.logger.debug "Running zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+        Hydra::Works::ZipContentsCharacterizationService.run(file_set.characterization_proxy, filepath)
+        Rails.logger.debug "Ran zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+      end
+    ensure
+      file_set.characterization_proxy.save!
+      file_set.update_index
+      file_set.parent&.in_collections&.each(&:update_index)
     end
-    file_set.characterization_proxy.save!
-    file_set.update_index
-    file_set.parent&.in_collections&.each(&:update_index)
+    
     Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end

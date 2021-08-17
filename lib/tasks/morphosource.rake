@@ -353,12 +353,12 @@ namespace :morphosource do
         end
       end
     else
-      Rails.logger.warn("No valid model specified.")      
+      Rails.logger.warn("No valid model specified.")
     end
   end
 
   desc 'Run InheritPermissionsJob on all media'
-  task :inherit_permissions_on_media => :environment do 
+  task :inherit_permissions_on_media => :environment do
     Media.find_each do |m|
       Rails.logger.warn ("Running InheritPermissionsJob on id:#{m.id}")
       InheritPermissionsJob.perform_later(m)
@@ -453,14 +453,14 @@ namespace :morphosource do
           ie = ImagingEvent.where('member_ids_ssim' => image_pe.id)&.first
         end
         if ie.present?
-          pe_list = ie.members.select{ |o| o.processing_event? } 
+          pe_list = ie.members.select{ |o| o.processing_event? }
           image_list = []
           mesh_list = []
           pe_list.each do |p|
             medias = p.members.select{ |o| o.media? }
-            medias.each do |m|                                
+            medias.each do |m|
               if m.media_type == ["Image"]
-                image_list << m.id 
+                image_list << m.id
               elsif m.media_type == ["Mesh"]
                 mesh_list << m.id
               end
@@ -475,7 +475,7 @@ namespace :morphosource do
               end
             else
               match_media[mesh_list.first] = image_media.id
-              puts 'MATCH: Image ' + image_media.id + ' will be set as preview for Mesh ' + mesh_list.first  
+              puts 'MATCH: Image ' + image_media.id + ' will be set as preview for Mesh ' + mesh_list.first
               mesh_media = Media.find(mesh_list.first)
 
               fs = image_media.file_sets&.first
@@ -501,18 +501,18 @@ namespace :morphosource do
                 end
 
               else
-                puts "File sets not present for Image : " + image_media.id 
+                puts "File sets not present for Image : " + image_media.id
               end
 
             end
 
           else
-            
-            puts 'REPORT: IE ' + ie.id + ' has ' + mesh_list.count.to_s + ' mesh type media ' 
+
+            puts 'REPORT: IE ' + ie.id + ' has ' + mesh_list.count.to_s + ' mesh type media '
             puts mesh_list.join(', ')
-            puts 'REPORT: IE ' + ie.id + ' has ' + image_list.count.to_s + ' image type media ' 
+            puts 'REPORT: IE ' + ie.id + ' has ' + image_list.count.to_s + ' image type media '
             puts image_list.join(', ')
-            report_list << ie.id                
+            report_list << ie.id
           end
         end
 
@@ -523,4 +523,29 @@ namespace :morphosource do
     end
   end # /find_and_set_preview_for_project_media
 
+  desc 'Update media ip holder field'
+  task :update_media_ip_holder => :environment do
+    # find media with rights holder metadata with 'Name:' format
+    ids = Morphosource::SolrService.new.get_docs("rights_holder_tesim:Name:").map{|d| d["id"]}
+    ids.each do |id|
+      m = Media.find(id)
+      # ex: ["Name: Name1, Type: Copyright and License", "Name: Name3, Type: License", "Name: Name2, Type: Copyright"]
+      rights_holder = m.rights_holder
+      # double-check it is name-type format
+      next unless (rights_holder.first.include?("Name: ") && rights_holder.first.include?("Type: "))
+      # assemble new rights_holder
+      new_rh = rights_holder.each_with_object([]) do |rh, new_rights_holder|
+        name = /(?<=^Name: ).*?(?=, Type: )/.match(rh)
+        type = /(?<=, Type: ).*?(\z)/.match(rh)
+        next if (name.nil? || name[0].empty?)  
+        if type.nil? || type[0].empty?
+          new_rights_holder << name[0].strip
+        else
+          new_rights_holder << name[0].strip.concat(" (#{type[0]})").strip
+        end
+      end
+      m.rights_holder = new_rh
+      m.save!
+    end
+  end
 end

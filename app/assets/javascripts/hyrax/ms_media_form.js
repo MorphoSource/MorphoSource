@@ -53,32 +53,14 @@ $( document ).ready(function() {
     scaleBarWrapperUl = scaleBarWrapper.querySelector('ul');
     scaleBarWrapperLi = scaleBarWrapper.querySelector('li');
 
-    // concatenate rights holder name, type to rights holder
-    // Check the rightsHolder Field (will be hidden)
-    targetGroup = document.querySelector('div.media_rights_holder');
-    targetGroupUl = targetGroup.querySelector("ul");
-    concatFields = targetGroup.querySelectorAll("input");
-    concatFieldCount = (targetGroup.querySelectorAll("input").length) - 1;
-
-    // TODO: Needs more investigation -
-    // Rights holder fields are being hidden on media edit pages for recently added media, but it is unclear why that is happening.
-    // Below ensures that field shows up:
-    $('#media_rights_holder_wrapper').removeClass('hide');
-
-    // Two part rightsHolder entry
-    targetWrapper = document.getElementById("media_rights_holder_wrapper");
-    targetWrapperUl = targetWrapper.querySelector('ul');
-    targetWrapperLi = targetWrapper.querySelector('li');
-
     hide_fields(['.media_number_of_images_in_set','.media_scale_bar']);
     adjust_form_media_type();
-    setupRightsHolder();
     setupScaleBar();
 
     $(document).on('change', '#media_media_type', function() {
       adjust_form_media_type();
     });
-    
+
 
     // debug: click save button in standalone form to submit related work form
     $(".btn-save.debug").click(function() {
@@ -90,7 +72,7 @@ $( document ).ready(function() {
       //      targetForm.submit();
       targetForm.submitRelatedWork();
     });
-    
+
     function setupScaleBar() {
 
       // When editing a record, this populates the three-part scale bar fields with previously saved metadata.
@@ -196,78 +178,6 @@ $( document ).ready(function() {
       }
     }
 
-    function setupRightsHolder() {
-
-      // When editing a record, this populates the rightsHolder fields with previously saved metadata.
-      for (i = 0; i < concatFieldCount; i++) {
-        var concatFieldValue = concatFields[i].value;
-        //console.log('concatFieldValue: '+concatFieldValue);
-        if (concatFieldValue.match(/Name: (.*?), Type: /)) {
-          var name = concatFieldValue.match(/Name: (.*?), Type: /)[1];
-          var type = concatFieldValue.match(/Type: (.*)/)[1];          
-        } else if (concatFieldValue.match(/Name: (.*?)/)) {
-          // foung "Name" but no "Type"
-          var name = concatFieldValue.match(/Name: (.*?)/)[1];
-          var type = "";
-        } else {
-          // just assume the value is the Name (no type) 
-          var name = concatFieldValue;
-          var type = "";        
-        }
-
-        // Fill in values for first line
-        if (i == 0) {
-          var typeSelectOject = $('select[name="media[rights_holder_type][]"]')[0];
-          for (var x = 0; x < typeSelectOject.length; x++){
-            if (typeSelectOject.options[x].value == type)
-              typeSelectOject.selectedIndex = x;
-          }
-          $('input[name="media[rights_holder_name][]"]')[0].value = name;
-        } else {
-          // Assemble new name, type
-          var li = document.createElement('li');
-          li.className = 'field-wrapper input-group input-append';
-          //li.setAttribute('style', "display:flex; flex-direction:row; justify-content:space-evenly;");
-
-          var nameInput = document.createElement('input');
-          nameInput.className = "string multi_value optional form-control media_rights_holder_name form-control multi-text-field";
-          nameInput.setAttribute("id", "media_rights_holder_name");
-          nameInput.setAttribute("name", "media[rights_holder_name][]");
-          //nameInput.setAttribute("style", "margin:5px; width:50%; border-radius:5px;");
-          nameInput.value = name;
-          li.appendChild(nameInput);
-
-          $('<select />', {
-            id : "media_rights_holder_type_" + i.toString(),
-            name : 'media[rights_holder_type][]',
-            class : "form-control select optional form-control",
-            //style : "margin:5px; width:50%; border-radius:5px;",
-            append : [
-              $('<option />', {value : "", text : ""}),
-              $('<option />', {value : "Copyright and License", text : "Copyright and License"}),
-              $('<option />', {value : "Copyright", text : "Copyright"}),
-              $('<option />', {value : "License", text : "License"})
-            ]
-          }).appendTo(li);
-          // select the existing option
-          $(li).find('select').val(type);
-
-          var span = document.createElement('span');
-          span.className = "input-group-btn field-controls";
-          span.innerHTML = '<button type="button" class="btn btn-link remove" data-index="' + i.toString() + '"><i class="fa fa-times-circle" aria-hidden="true"></i></button><button type="button" class="btn btn-link add"><i class="fa fa-plus-circle" aria-hidden="true"></i></button>'
-
-          li.appendChild(span);
-          targetWrapperUl.appendChild(li);
-
-        }
-      }
-
-      // Clear default rightsHolder fields when done.
-      targetGroupUl.innerHTML = '';
-      $(targetGroup).hide(); // hide the field label and add button
-
-    } // /setupRightsHolder
-
     var thumbField = document.getElementById("custom_thumbnail");
     thumbField.onchange = function() {
       if (this.files[0].size > 500000) {
@@ -275,7 +185,7 @@ $( document ).ready(function() {
         $('#custom_thumbnail_hint').addClass('text-alert');
         this.value = "";
       } else {
-        $('#custom_thumbnail_hint').removeClass('text-alert');        
+        $('#custom_thumbnail_hint').removeClass('text-alert');
       }
     };
 
@@ -408,10 +318,10 @@ $( document ).ready(function() {
         .attr('name', 'imaging_event[physical_object_id][]')
         .attr('value', po.id )
         .appendTo($('form.edit_imaging_event')
-      ); 
+      );
     });
 
-    // Select Device Functions 
+    // Select Device Functions
 
     // select2-associated select organization button
     $('#btn-select-device-organization').click(function() {
@@ -454,7 +364,7 @@ $( document ).ready(function() {
         dataType: 'json',
         complete: function (xhr, status) {
           var results = $.parseJSON(xhr.responseText);
-          console.log(results); 
+          console.log(results);
           $('#s2id_find_device_organization').val(null).trigger('change');
           $('#select_device .select2-chosen').text('');
 
@@ -482,7 +392,7 @@ $( document ).ready(function() {
               );
           }
 
-          $('#device-select-section').removeClass('hide').addClass('show');   
+          $('#device-select-section').removeClass('hide').addClass('show');
         }
       });
     });
@@ -494,10 +404,15 @@ $( document ).ready(function() {
 
       // modify current device properties
       $('#device-id-value').val(newDeviceID);
-      $('#device-organization-title-value').text(orgData.text);
+      if (orgData)
+        deviceOrgTitle = orgData.text;
+      else
+        deviceOrgTitle = "No organization";      
+      $('#device-organization-title-value').text(deviceOrgTitle);
       $('#device-title-value').text($('#imaging_event_select_device_id').find(':selected').text());
       $('#device-creator-value').text($('#imaging_event_select_device_id').find(':selected').data('creator'));
       $('#device-modality-value').attr('data-modality-id', $('#imaging_event_select_device_id').find(':selected').data('modality'));
+      console.log('data-modality-id set to ' + $('#device-modality-value').attr('data-modality-id'));
       $('#device-modality-value').text(modalityTerm($('#imaging_event_select_device_id').find(':selected').data('modality')));
       $('#device-description-value').text($('#imaging_event_select_device_id').find(':selected').data('description'));
 
@@ -506,7 +421,7 @@ $( document ).ready(function() {
       $('<input />').attr('type', 'hidden')
         .attr('name', 'imaging_event[device_id]')
         .attr('value', newDeviceID )
-        .appendTo($('form#related_form_imaging_event'));   
+        .appendTo($('form#related_form_imaging_event'));
     });
 
 
@@ -587,13 +502,15 @@ $( document ).ready(function() {
       function isFormValid() {
         // check modality consistency
         if ($('#device-modality-value').length)
-          var deviceModality = $('#device-modality-value').data('modality-id');
+          var deviceModality = $('#device-modality-value').attr('data-modality-id');
         if ($('#imaging_event_ie_modality').length)
           var imagingEventModality = $('#imaging_event_ie_modality').val();
         if (deviceModality && imagingEventModality) {
           if (deviceModality.includes(imagingEventModality)) {
             return true;
           } else {
+            console.log('deviceModality '+ deviceModality);
+            console.log('imagingEventModality '+ imagingEventModality);
             alert('Device modality does not match imaging event modality.');
           }
         } else {
@@ -632,19 +549,6 @@ $( document ).ready(function() {
 
 })
 
-// Puts concatenated values into rightsHolder on submit.
-function buildTargetRightHolderField(inputValue, targetGroupUl) {
-  var li = document.createElement('li');
-  var input = document.createElement('input');
-  input.className = 'string multi_value optional media_rights_holder form-control multi-text-field';
-  input.setAttribute("id", "media_rights_holder");
-  input.setAttribute("name", "media[rights_holder][]");
-  input.value = inputValue;
-
-  li.appendChild(input);
-  targetGroupUl.appendChild(li);
-}
-
 // Puts concatenated values into scale bar on submit.
 function buildScaleBar(scaleBar, scaleBarGroupUl) {
   var li = document.createElement('li');
@@ -660,23 +564,6 @@ function buildScaleBar(scaleBar, scaleBarGroupUl) {
 }
 
 function prepareFieldsBeforeSubmit() {
-  // Before submit, name and type fields are concatenated and inserted into hidden default rights holder field.
-  $(targetGroupUl).empty(); // remove all items and re-build
-  var rightsHolderCount = $('select[name="media[rights_holder_type][]"]').length;
-  for (i = 0; i < rightsHolderCount; i++) {
-
-    var rightsHolderName = $('input[name="media[rights_holder_name][]"]')[i].value || '';
-    var rightsHolderType = $('select[name="media[rights_holder_type][]"]')[i].value || '';
-
-    // As long as at least one input is filled out, proceed with creating a rightsHolder string. Otherwise, create an empty string.
-    if ((rightsHolderType != '') || (rightsHolderName != '')) {
-      var rightsHolder = "Name: " + rightsHolderName + ", Type: " + rightsHolderType;
-    } else {
-      var rightsHolder = '';
-    }
-    //console.log('rightsHolder: '+rightsHolder);
-    buildTargetRightHolderField(rightsHolder, targetGroupUl);
-  }
 
   // If media type = photogrammetry, submit scale bar fields. Otherwise, submit an empty scale bar.
   if($('#media_media_type').val() == 'PhotogrammetryImageSeries') {
@@ -737,13 +624,13 @@ var toggleForm = function(disabledState) {
     // see loader options: https://www.jqueryscript.net/loading/Simple-jQuery-Loading-Spinner-Overlay-Plugin-Loader.html
     $data = {
       size: 22,
-      bgOpacity: 0.85, 
+      bgOpacity: 0.85,
       imgUrl: '/loading[size].gif',
       title: msg,
       fontColor: true
     };
     $.loader.open($data);
-      
+
   } else {
     $.loader.close();
     isAutoSave = false;

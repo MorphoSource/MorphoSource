@@ -5,8 +5,27 @@ module Morphosource
       include Hyrax::Ability
     end
 
+    def proxy_deposit_abilities
+      if Flipflop.transfer_works?
+        can :transfer, String do |id|
+          user_is_data_manager?(id)
+        end
+      end
+
+      can :create, ProxyDepositRequest if (Flipflop.proxy_deposit? || Flipflop.transfer_works?) && registered_user?
+
+      can :accept, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
+      can :reject, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
+      # a user who sent a proxy deposit request can cancel it if it's pending.
+      can :destroy, ProxyDepositRequest, sending_user_id: current_user.id, status: 'pending'
+    end
+
     def contributor?
       user_groups.include? 'contributor'
+    end
+
+    def batch_submission_contributor?
+      user_groups.include? 'batch_submission_contributor'
     end
 
     # Grant all users with edit or download access permission to download
@@ -84,6 +103,12 @@ module Morphosource
 
       def get_doc(id)
        ActiveFedora::SolrService.get("id:#{id}", params: {qt: :permissions})["response"]["docs"].first
+      end
+
+      # Returns true if the current user is the manager of the specified work
+      # @param document_id [String] the id of the document.
+      def user_is_data_manager?(document_id)
+        SolrDocument.find(document_id).user_with_ownership.first == current_user.user_key
       end
 
   end

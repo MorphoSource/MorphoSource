@@ -29,7 +29,7 @@ class MediaCatalogController < CatalogController
     config.add_index_field solr_name("taxonomy", :stored_searchable), label: "Taxonomy"
     config.add_index_field solr_name("part", :stored_searchable), label: "Element or Part"
     config.add_index_field solr_name("media_modality", :stored_searchable), label: "Modality"
-    config.add_index_field solr_name("depositor"), label: "Owner", helper_method: :link_to_profile
+    config.add_index_field solr_name("depositor"), label: "Owner", helper_method: :link_to_user_with_ownership
     config.add_index_field solr_name("date_uploaded", :stored_sortable, type: :date), label: 'Date Uploaded', helper_method: :human_readable_date
     config.add_index_field solr_name("rights_statement", :stored_searchable), helper_method: :rights_statement_links
 
@@ -59,7 +59,7 @@ class MediaCatalogController < CatalogController
     config.add_show_field solr_name('x_spacing', :stored_searchable)
     config.add_show_field solr_name('y_spacing', :stored_searchable)
     config.add_show_field solr_name('z_spacing', :stored_searchable)
-    
+
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
     #

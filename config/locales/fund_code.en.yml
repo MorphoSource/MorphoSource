@@ -4,13 +4,17 @@ en:
       fund_code:
         title: Fund code
         expires_at: Expiration date
-        storage_limit_tb: Storage Amount (TB)
+        storage_total_gb: Storage Total Amount (GB)
+        storage_remaining_gb: Storage Remaining Amount (GB)
         external_user_additional_rate_percent: Additional Percentage Rate For External Users
     abbreviated_labels:
       fund_code:
         invoice_number: Inv. No.
         expires_at: Expiration
-        storage_limit_tb: Storage (TB)
+        storage_total_gb: Stor. Tot. (GB)
+        storage_remaining_gb: Stor. Rem. (GB)
+        total: Tot. ($)
+        remaining: Rem. ($)
         external_user: Ext.
         external_user_additional_rate_percent: Ext. %
         chargeable: Chrg.
@@ -23,7 +27,10 @@ en:
         managers: Users who can add or remove additional standard member users. Managers can also use the fund code for media submissions.
         standard_members: Users who can use the fund code for media submissions. 
         expires_at: End of the "initial service period" agreed upon by fund code purchaser. Any remaining funds from this code after this period must continue to be used to support the data associated with it until the funds are spent, regardless of the initial service period end date. The code cannot be used to add new data after the date, even if this code's maximum storage amount has not been reached. Certain other obligations may terminate at the end of the service period as well.
-        storage_limit_tb: Storage amount (in terabytes) that the fund code is committed to support. The code will be deactivated once this amount is reached so that it cannot be applied to new data. The code will also be deactivated once the initial service period ends even if this amount is not reached, as per the terms agreed to by the fund code purchaser. In most cases, the storage amount will be reached and the code will be deactivated for new submissions long before the initial service period ends and long before the code runs out of money.
+        storage_total_gb: Storage amount (in gigabytes) that the fund code is committed to support. The code will be deactivated once this amount is reached so that it cannot be applied to new data. The code will also be deactivated once the initial service period ends even if this amount is not reached, as per the terms agreed to by the fund code purchaser. In most cases, the storage amount will be reached and the code will be deactivated for new submissions long before the initial service period ends and long before the code runs out of money.
+        storage_remaining_gb: Storage amount (in gigabytes) remaining for use by the fund code. This value is updated with each billing cycle, and does not reflect day to day variation in storage amounts.
+        total: Total fund amount (in dollars and cents) that the fund code is committed to support.
+        remaining: Fund amount (in dollars and cents) remaining after all current and previous charges. This value will decrease every month as charges accrue.
         external_user: Were the funds for this code invoiced from a source external to Duke (e.g., an NSF grant awarded to a non-Duke PI at a non-Duke University)? 
         external_user_additional_rate_percent: This field should only be completed if the fund code was paid for by a funding source outside of Duke. When OIT bills for storage monthly, an additional amount equaling the amount billed for storage times the percentage given here will be withdrawn and moved to a MorphoSource operating costs account.
         chargeable: Should this fund code be charged each billing cycle?

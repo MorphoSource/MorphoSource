@@ -308,5 +308,59 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     end
   end
 
+  describe '#batch_submission_contributor?' do
+    context 'user is not a batch_submission_contributor' do
+      it 'returns false' do
+        expect(ability.batch_submission_contributor?).to be(false)
+      end
+    end
+    context 'user is a batch_submission_contributor' do
+      before do
+        allow(user).to receive(:groups).and_return(['batch_submission_contributor'])
+      end
+      it 'returns true' do
+        expect(ability.batch_submission_contributor?).to be(true)
+      end
+    end
+  end
+
+  describe 'proxy_deposit_abilities' do
+    let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
+    let(:owner)     { User.create(email: 'owner@email.com', password: 'password') }
+    describe 'can? :transfer, String' do
+      context 'media has only a depositor' do
+        let!(:media) { Media.create(title: ['media'], depositor: depositor.ms_id) }
+        let!(:ability) { Ability.new(depositor) }
+
+        it 'allows the depositor to transfer the work' do
+          expect(ability.can? :transfer, media.id).to be(true)
+        end
+      end
+      context 'media has an owner' do
+        let!(:media) { Media.create(title: ['media'], depositor: depositor.ms_id, owner: owner.ms_id) }
+        let!(:owner_ability) { Ability.new(owner) }
+        let!(:depositor_ability) { Ability.new(depositor) }
+        it 'allows the owner to transfer the work' do
+          expect(owner_ability.can? :transfer, media.id).to be(true)
+        end
+        it 'does not allow the depositor to transfer the work' do
+          expect(depositor_ability.can? :transfer, media.id).to be(false)
+        end
+      end
+      context 'user is an admin' do
+        let!(:media) { Media.create(title: ['media'], depositor: depositor.ms_id) }
+        let!(:admin)  { User.create(email: 'admin@email.com', password: 'password') }
+        let(:admin_ability) { Ability.new(admin) }
+        let(:admin_group) { Role.create(name: 'admin') }
+        before do
+          admin_group.users << admin
+          admin_group.save
+        end
+        it 'allows the admin to transfer the work' do
+          expect(admin_ability.can? :transfer, media.id).to be(true)
+        end
+      end
+    end
+  end
 
 end

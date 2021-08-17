@@ -338,4 +338,67 @@ RSpec.describe MorphosourceHelper, type: :helper do
       end
     end
   end
+
+  describe 'grouped_access_list' do
+    let(:owner)             { User.create(email: 'owner@email.com', password: 'password') }
+    let(:depositor)         { User.create(email: 'depositor@email.com', password: 'password') }
+    let(:editor)            { User.create(email: 'editor@email.com', password: 'password') }
+    let(:viewer)            { User.create(email: 'viewer@email.com', password: 'password') }
+    let(:group_viewer)      { User.create(email: 'group_viewer@email.com', password: 'password') }
+    let(:group_downloader)  { User.create(email: 'group_downloader@email.com', password: 'password') }
+    let(:group_editor)      { User.create(email: 'group_editor@email.com', password: 'password') }
+    let(:group_manager)     { User.create(email: 'group_manager@email.com', password: 'password') }
+
+    let(:viewer_group)      { Role.create(name: 'viewer_group') }
+    let(:downloader_group)  { Role.create(name: 'downloader_group') }
+    let(:editor_group)      { Role.create(name: 'editor_group') }
+    let(:manager_group)     { Role.create(name: 'manager_group') }
+
+    let(:groups)            { [viewer_group, downloader_group, editor_group, manager_group] }
+
+    before do
+      viewer_group.users << group_viewer
+      downloader_group.users << group_downloader
+      editor_group.users << group_editor
+      manager_group.users << group_manager
+      groups.each(&:save)
+      media.edit_users += [depositor, editor]
+      media.read_users += [viewer]
+      media.edit_groups += [editor_group, manager_group]
+      media.read_groups += [viewer_group, downloader_group]
+      media.save!
+    end
+
+    context 'media has an owner and a depositor' do
+      let!(:media) { Media.create(title: ['title'], depositor: depositor.ms_id, owner: owner.ms_id) }
+
+      before do
+        media.edit_users += [owner]
+        media.save!
+      end
+
+      it 'returns a list of users and access' do
+        helper.simple_form_for media, url: '' do |f|
+          individual_list, group_list = helper.grouped_access_list(f)
+          # owner is data manager, so is excluded
+          # depositor is included in individual list
+          expect(individual_list.map{|p| [p.object.agent_name, p.object.access]}).to match_array([[depositor.ms_id, "edit"],[editor.ms_id, "edit"], [viewer.ms_id, "read"]])
+          expect(group_list).to eq({"downloader"=>"#{group_downloader.email} (group)", "editor"=>"#{group_editor.email} (group)", "manager"=>"#{group_manager.email} (group)", "viewer"=>"#{group_viewer.email} (group)"})
+        end
+      end
+    end
+
+    context 'media has only a depositor' do
+      let(:media) { Media.create(title: ['title'], depositor: depositor.ms_id) }
+
+      it 'returns a list of users and access' do
+        helper.simple_form_for media, url: '' do |f|
+          individual_list, group_list = helper.grouped_access_list(f)
+          # depositor is data manager and is excluded
+          expect(individual_list.map{|p| [p.object.agent_name, p.object.access]}).to match_array([[editor.ms_id, "edit"], [viewer.ms_id, "read"]])
+          expect(group_list).to eq({"downloader"=>"#{group_downloader.email} (group)", "editor"=>"#{group_editor.email} (group)", "manager"=>"#{group_manager.email} (group)", "viewer"=>"#{group_viewer.email} (group)"})
+        end
+      end
+    end
+  end
 end

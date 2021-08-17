@@ -10,10 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_11_190706) do
+ActiveRecord::Schema.define(version: 2021_08_05_145709) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "batch_submissions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "bookmarks", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -161,6 +166,9 @@ ActiveRecord::Schema.define(version: 2021_06_11_190706) do
     t.string "service_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "fund_code_remaining"
+    t.text "media_size_hash"
+    t.decimal "fund_code_storage_remaining_gb"
     t.index ["fund_code_id"], name: "index_fund_code_charges_on_fund_code_id"
   end
 
@@ -190,12 +198,16 @@ ActiveRecord::Schema.define(version: 2021_06_11_190706) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.datetime "expires_at"
-    t.float "storage_limit_tb"
+    t.decimal "storage_total_gb"
     t.boolean "external_user", default: false, null: false
     t.float "external_user_additional_rate_percent"
     t.string "identifier"
     t.boolean "chargeable", default: false, null: false
     t.string "invoice_number"
+    t.decimal "total"
+    t.decimal "remaining"
+    t.decimal "storage_remaining_gb"
+    t.json "attachments"
     t.index ["user_id"], name: "index_fund_codes_on_user_id"
   end
 
@@ -662,6 +674,7 @@ ActiveRecord::Schema.define(version: 2021_06_11_190706) do
     t.string "ms1_password_hash"
     t.boolean "ms1_user", default: false
     t.string "token"
+    t.string "sftp_share"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["ms_id"], name: "index_users_on_ms_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

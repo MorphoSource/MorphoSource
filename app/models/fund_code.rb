@@ -5,6 +5,10 @@ class FundCode < ApplicationRecord
   has_many :fund_code_media_associations
   has_many :charges, class_name: "FundCodeCharge"
 
+  mount_uploaders :attachments, FundCodeAttachmentUploader
+
+  before_save :set_total_and_remaining, :set_storage_remaining
+
   def add_user(user, manager = false)
     return nil if fund_code_memberships.where(user_id: user.id).present?
     fund_code_memberships << FundCodeMembership.new(user: user, manager: manager)
@@ -40,5 +44,20 @@ class FundCode < ApplicationRecord
 
   def media
     media_ids.map { |m_id| Media.find(m_id) if Media.exists?(m_id) }.compact
+  end
+
+  def set_total_and_remaining
+    if total.present? 
+      self.total = total.to_d.round(2)
+      if !remaining.present?
+        self.remaining = total.to_d.round(2)
+      end
+    end
+  end
+
+  def set_storage_remaining
+    if storage_total_gb.present? && !storage_remaining_gb.present?
+      self.storage_remaining_gb = storage_total_gb.to_d
+    end
   end
 end

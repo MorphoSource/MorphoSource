@@ -5,7 +5,8 @@ $(document).ready(function() {
       var organizationsTable = $('#organizations-list-table').DataTable({
         responsive: {
           details: {
-            type: 'column' // hide the details and button in responsive
+            display: $.fn.dataTable.Responsive.display.childRowImmediate,
+            type: ''
           }
         },
         //order: [[ 2, "asc" ]],  // if sorting is needed, we might need to sort the same way in gallery view

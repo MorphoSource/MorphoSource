@@ -10,7 +10,7 @@ class ContentDepositorChangeEventJob < ContentEventJob
   # @param [ActiveFedora::Base] work the work to be transfered
   # @param [User] user the user the work is being transfered to.
   # @param [TrueClass,FalseClass] reset (false) if true, reset the access controls. This revokes edit access from the depositor
-  def perform(work, user, sending_user, reset = false)
+  def perform(work, user, reset = false, sending_user = nil)
     @reset = reset
     @new_owner = user
     @sending_user = sending_user

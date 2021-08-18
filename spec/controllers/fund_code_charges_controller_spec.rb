@@ -18,7 +18,7 @@ RSpec.describe Morphosource::Admin::FundCodeChargesController, :type => :control
       it 'fund code JSON route is forbidden' do
         get :index, :format => :json
         expect(response.content_type).to eq('application/json')
-        expect(JSON.parse(response.body)['code']).to eq(401)
+        expect(JSON.parse(response.body)['code']).to eq(403)
       end 
     end
 
@@ -27,10 +27,12 @@ RSpec.describe Morphosource::Admin::FundCodeChargesController, :type => :control
         Role.find_or_create_by(name: 'charge_api')
         user.make_charge_api_user
         user.save!
+
+        allow(controller).to receive(:current_user) { nil }
       end
 
-      it 'fund codes are accessible' do 
-        controller.request.headers['HTTP_X_API_KEY'] = user.token 
+      it 'fund codes are accessible' do
+        controller.request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('', user.token)
         get :index, :format => :json
         expect(response.content_type).to eq('application/json')
         expect(JSON.parse(response.body)).to be_an_instance_of(Array)

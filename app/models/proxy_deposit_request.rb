@@ -137,7 +137,7 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   # @param [TrueClass,FalseClass] reset (false)  if true, reset the access controls. This revokes edit access from the depositor
   def transfer!(reset = false)
-    ContentDepositorChangeEventJob.perform_later(work, receiving_user, sending_user, reset)
+    ContentDepositorChangeEventJob.perform_later(work, receiving_user, reset, sending_user)
     fulfill!(status: ACCEPTED)
   end
 

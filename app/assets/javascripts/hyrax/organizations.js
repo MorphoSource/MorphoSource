@@ -5,7 +5,8 @@ $(document).ready(function() {
       var mediaTable = $('#datatable-media-list').DataTable({
         responsive: {
           details: {
-            type: 'column' // hide the details and button in responsive
+            display: $.fn.dataTable.Responsive.display.childRowImmediate,
+            type: ''
           }
         },
         //order: [[ 2, "asc" ]],  // if sorting is needed, we might need to sort the same way in gallery view
@@ -69,7 +70,8 @@ $(document).ready(function() {
       var bsoTable = $('#datatable-bso-list').DataTable({
         responsive: {
           details: {
-            type: 'column'
+            display: $.fn.dataTable.Responsive.display.childRowImmediate,
+            type: ''
           }
         },
         //order: [[ 1, "asc" ]],
@@ -94,7 +96,8 @@ $(document).ready(function() {
       var choTable = $('#datatable-cho-list').DataTable({
         responsive: {
           details: {
-            type: 'column'
+            display: $.fn.dataTable.Responsive.display.childRowImmediate,
+            type: ''
           }
         },
         //order: [[ 1, "asc" ]],

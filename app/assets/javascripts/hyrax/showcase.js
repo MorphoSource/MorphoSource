@@ -1,6 +1,9 @@
 $(document).ready(function() {
 
   if ($('body[class*="showcase"]').length) { // check if the page is showcase page
+
+    setupTooltip();
+    
     // switching icons and button labels for expand / collapse
     $(".collapse-block").not(".glyphicon-only").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');

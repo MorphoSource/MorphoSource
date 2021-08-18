@@ -23,11 +23,7 @@ class FundCodeChargesController < ApplicationController
     else
       respond_to do |format|
         format.json { 
-          render json: {
-            code: 401,
-            message: 'Authorization Required',
-            description: 'You must provide API authorization key with HTTP request header field X-API-KEY to do that'
-          }
+          render_json_response(response_type: :forbidden)
         }
       end
     end
@@ -48,19 +44,20 @@ class FundCodeChargesController < ApplicationController
   end
 
   def require_permissions
-    if request.format.json? && !current_user.admin?
-      authorize_api_request
-    else
-      authorize! :read, :admin_dashboard
-    end
+    request.format.json? ? authorize_api_request : authorize!(:read, :admin_dashboard)
   end
 
   def authorize_api_request
-    request.headers["HTTP_X_API_KEY"].present? && auth_api_key
+    if current_user.present?
+      authorize! :read, :admin_dashboard
+    else
+      user, pass = ActionController::HttpAuthentication::Basic::user_name_and_password(request)
+      pass.present? && auth_api_key(pass)
+    end
   end
 
-  def auth_api_key
-    u = User.where(token: request.headers["HTTP_X_API_KEY"])&.first
+  def auth_api_key(pass)
+    u = User.where(token: pass)&.first
     u&.charge_api_user?
   end
 end

@@ -82,6 +82,7 @@
 wrapper: :showcase_default,
 url: { controller: 'submissions', action: 'create' },
 html: {
+  id: 'batch_submission_media', # setting specific form id to avoid being called in ms_media_form.js
   data: { behavior: 'work-form', 'param-key' => 'media' },
   multipart: true
 } do |f| %>

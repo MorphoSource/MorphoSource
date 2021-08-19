@@ -11,73 +11,6 @@ $( document ).ready(function() {
         }
       }
 
-      constructSubmissionParams(sessionState) {
-        var submissionParamsArray = ['saved_step', 'fund_code', 'submission_media_type',
-          'submission_modality', 'raw_or_derived_media', 'parent_media_list',
-          'parent_media_not_in_ms', 'biological_specimen_or_cultural_heritage_object',
-          'biological_specimen_id', 'idigbio_id', 'will_create_biological_specimen',
-          'cultural_heritage_object_id', 'will_create_cultural_heritage_object',
-          'organization_id', 'no_organization', 'will_create_organization',
-          'taxonomy_id_array', 'taxonomy_gbif_key_array', 'will_create_taxonomy',
-          'device_id', 'will_create_device', 'device_organization_id',
-          'device_no_organization', 'will_create_device_organization'];
-
-        for (let param of submissionParamsArray) {
-          if (sessionState.form_data && sessionState.form_data.hasOwnProperty(param)) {
-            this[this.underscoreToCamelCase(param)] = sessionState.form_data[param];
-          }
-        }
-      }
-
-      constructCreateParams(sessionState) {
-        var createParamsHash = {
-          'organization': 'organizationCreateParams',
-          'taxonomy': 'taxonomyCreateParams',
-          'biological_specimen': 'biologicalSpecimenCreateParams',
-          'cultural_heritage_object': 'culturalHeritageObjectCreateParams',
-          'device': 'deviceCreateParams',
-          'device_organization': 'deviceOrganizationCreateParams',
-          'imaging_event': 'imagingEventCreateParams',
-          'processing_event': 'processingEventCreateParams'
-        };
-
-        for (let workName in createParamsHash) {
-          if (sessionState.work_data && sessionState.work_data.hasOwnProperty(workName)) {
-            this[createParamsHash[workName]] =
-              this.objectToCreateParams(
-                sessionState.work_data[workName],
-                workName
-              );
-          }
-        }
-      }
-
-      objectToCreateParams(object, objectName) {
-        var paramArray = [];
-        for (let property in object) {
-          if (object[property]){
-            if (Array.isArray(object[property])){
-              for (let element of object[property]) {
-                paramArray.push({ 'name': objectName + '[' + property + '][]', 'value': element });
-              }
-            }else if (object[property] instanceof Object){
-              continue;
-            }else{
-              paramArray.push({ 'name': objectName + '[' + property + ']', 'value': object[property] });
-            }
-          }
-        }
-        return paramArray;
-      }
-
-      setPhysicalObjectDefaults() {
-        this.biologicalSpecimenId = null;
-        this.idigbioId = null;
-        this.willCreateBiologicalSpecimen = null;
-        this.culturalHeritageObjectId = null;
-        this.willCreateCulturalHeritageObject = null;
-      }
-
       setOrganizationDefaults() {
         this.organizationId = null;
         this.organizationCollectionCode = null;
@@ -106,15 +39,10 @@ $( document ).ready(function() {
     class BatchSubmissionForm {
       constructor(submissionData) {
         this.data = submissionData;
-
         this.views = [
           new OrganizationView(this),
           new DeviceView(this),
-//          new ImagingEventView(this),
-//          new ProcessingEventView(this),
-//          new MediaView(this)
         ];
-
       }
 
 
@@ -130,7 +58,6 @@ $( document ).ready(function() {
          },
          function(getData){
           console.log('Got organization default fields');
-alert('Got organization default fields');
           console.log(getData);
           if (getData.default_fields) {
             console.log($('form#new_media div#submission-media-ownership'));
@@ -305,14 +232,6 @@ alert('Got organization default fields');
       }
 
 
-// todo: remove this method if not needed 
-      setVisibleView(v) {        
-//        this.setVisibility([this.viewSectionIds[v]]);
-//        $('.sidebar a').removeClass('selected');
-//        $(this.viewSidebarClass[v]).addClass('selected');
-//        $(this.viewSidebarClass[v]).removeClass('inactive');
-      }
-
       setVisibility(idArray) {
         $('.submission_section').addClass('hide').removeClass('show');
         $(idArray.join(', ')).addClass('show').removeClass('hide');
@@ -434,16 +353,8 @@ alert('Got organization default fields');
           data.setOrganizationDefaults();
           data.noOrganization = true;
           data.willCreateOrganization = false;
- //         data.savedStep = 4;
+
           self.toggleNoOrganizationVisibility();
-          ['biological_specimen','cultural_heritage_object'].forEach((physical_object_type) => {
-            ['collection_code','institution_code'].forEach((code_type) => {
-              var dom_id = physical_object_type + '_' + code_type;
-              var form_input_name = physical_object_type + '[' + code_type + ']';
-              $('#' + dom_id).replaceWith($('<input>',{id: dom_id, name: form_input_name, class: 'form-control string optional'}));
-            });
-          });
-//          self.next();
 
           console.log(data);
         });
@@ -462,14 +373,6 @@ alert('Got organization default fields');
       } // eventFuncs
 
       next() {
-        if (data.idigbioId) {
-          this.form.setVisibleView(7); // view 7 media device
-        } else if (data.biologicalSpecimenOrCulturalHeritageObject == 'cho') {
-          this.form.setSidebarViewFade(5); // fade out view 5 taxonomy
-          this.form.setVisibleView(6); // view 6 details
-        } else {
-          this.form.setVisibleView(5); // view 5 taxonomy
-        }
       }
 
       toggleSelectedOrganizationVisibility() {
@@ -596,35 +499,10 @@ alert('Got organization default fields');
           console.log(JSON.stringify(e.choice));
           var item = e.choice;
 
-/*
+          var deviceObj = deviceData[e.choice.id]
+          self.toggleSelectDeviceVisibility(deviceObj);
+          $('#submission_select_device_continue').removeAttr('disabled');
 
-todo: might have to check modality later
-
-          if (e.choice && e.choice.id) {
-*/
-            var deviceObj = deviceData[e.choice.id]
-/*
-            if (deviceObj && deviceObj.modality && data.submissionModality && deviceObj.modality.includes(data.submissionModality)) {
-              console.log('Value provided and validated');
-              console.log(deviceObj.modality);
-              console.log(data.submissionModality);
-*/
-              self.toggleSelectDeviceVisibility(deviceObj);
-              $('#submission_select_device_continue').removeAttr('disabled');
-/*
-            } else {
-              console.log(deviceObj.modality);
-              console.log(data.submissionModality);
-              alert('Modality of selected device must match modality entered in Initial Information step.');
-              $('#submission_select_device_continue').attr('disabled', 'disabled');
-              e.preventDefault();
-            }
-          } else {
-            $("#batch_submission_device_id").select2('val', null);
-            $('#submission_select_device_continue').attr('disabled', 'disabled');
-            e.preventDefault();
-          }
-*/          
         });
 
         $('#submission_device_select_display_container').on(
@@ -706,8 +584,6 @@ todo: might have to check modality later
       }
 
       next() {
-//        this.form.setSidebarViewCheck(7);
-        this.form.setVisibleView(8); // view 8 create imaging event
       }
     }
 

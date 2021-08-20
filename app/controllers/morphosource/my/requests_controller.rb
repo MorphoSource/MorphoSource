@@ -31,62 +31,48 @@ module Morphosource
       end
 
       def send_request_messages(items)
-        if items.count == 1
-          send_request_message(items.first)
-        else
-          send_batch_request_messages(items)
-        end
-      end
-
-      def send_batch_request_messages(items)
         requestor = current_user
-        # send message for each reviewer
+        # get a list of reviewer id => item, e.g.
+        #   reviewer 1 => item 1, item 2
+        #   reviewer 12 => item 1
+        #   reviewer 23 => item 2
+        # then send message for each reviewer
         items_reviewers = []
         reviewer_items = {}
         items.each do |item|
-          work = Media.find(item.work_id)
-          if work.present?
-            reviewer_id = work.reviewer # this could be more than 1 reviewers
-            items_reviewers << reviewer_id
-            reviewer_items[reviewer_id] = item # store the item for sending details if single item
+          item.reviewers.each do |r_id|
+            (reviewer_items[r_id] ||= []) << item # store the item for sending details
           end
         end
-        reviewer_counts = items_reviewers.group_by{|e| e}.map{|k, v| [k, v.length]}.to_h
-        reviewer_counts.each do |reviewer_id, count|
-          reviewers = User.where(ms_id: reviewer_id)
-          if reviewers.present?
-            if count == 1
-              send_request_message(reviewer_items[reviewer_id])
-            else
-              message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + count.to_s + " media.  Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard."
-              if reviewers.count > 1
-                message_to_reviewer += "<p>This request has been sent to the media's reviewers #{user_email_link(reviewers)} who are all able to approve, deny, or clear this request.  Please coordinate your response if appropriate.</p>"
-              end              
-              deliver(email_sender, reviewers, message_to_reviewer, "You have download request to review")
-
-              message_to_requestor = "You have sent a download request to #{user_email_link(reviewers)} for downloading " + count.to_s + " media.  You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard."
-              deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
-            end
-          end
+        reviewer_items.each do |reviewer_id, items|
+          send_request_message(reviewer_id, items)
         end
       end
       
-      def send_request_message(item)
-        work = Media.find(item.work_id)
-        if work.present?
-          requestor = current_user
-          reviewers = User.where(ms_id: work.reviewer)
-          if reviewers.present?
-            message_to_reviewer = "<a href='mailto:#{requestor.email}'>#{requestor.name_or_email}</a> has requested to download " + cart_item_message_content(item, work) + "Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard."
-            if work.reviewer.count > 1
-              message_to_reviewer += "<p>This request has been sent to the media's reviewers #{user_email_link(reviewers)} who are all able to approve, deny, or clear this request.  Please coordinate your response if appropriate.</p>"
-            end
-            deliver(email_sender, reviewers, message_to_reviewer, "You have a download request to review")
+      def send_request_message(reviewer_id, items)
+        max_for_details = 100
+        requestor = current_user
+        reviewer = User.where(ms_id: reviewer_id).first
 
-            message_to_requestor = "You have sent a download request to #{user_email_link(reviewers)} for downloading " + cart_item_message_content(item, work) + "You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard."
-            deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
-          end
+        message_to_reviewer = "<p>#{user_email_link(requestor)} has requested to download"
+        if items.count < max_for_details
+          message_to_reviewer += " the following media:</p>" +
+            cart_item_message_content(items, "reviewer") 
+        else
+          message_to_reviewer += " #{items.count} media. Since more than #{max_for_details} media have been requested, the individual media are not detailed in this message. "
         end
+        message_to_reviewer += "<p>Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard.</p>"
+        deliver(email_sender, reviewer, message_to_reviewer, "You have a download request to review")
+
+        message_to_requestor = "<p>You have sent a request to download"
+        if items.count < max_for_details
+          message_to_requestor += " for the following media:" + 
+          cart_item_message_content(items, "requestor")
+        else
+          message_to_requestor += " #{items.count} media. Since more than #{max_for_details} media have been requested, the individual media are not detailed in this message. "
+        end  
+        message_to_requestor += "<p>You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard.</p>"
+        deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
       end
 
       def cancel_request
@@ -119,7 +105,7 @@ module Morphosource
           else
             item = create_new_requested_item(work_id)
           end
-          send_request_message(item)
+          send_request_messages([item])
         else
           flash[:alert] = 'You are not authorized to request this work.'
         end

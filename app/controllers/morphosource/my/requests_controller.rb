@@ -45,11 +45,27 @@ module Morphosource
           end
         end
         reviewer_items.each do |reviewer_id, items|
-          send_request_message(reviewer_id, items)
+          send_request_message_to_reviewer(reviewer_id, items)
         end
+        send_request_message_to_requestor(items)        
+      end
+
+      def send_request_message_to_requestor(items)
+        max_for_details = 100
+        requestor = current_user
+
+        message_to_requestor = "<p>You have sent a request to download"
+        if items.count < max_for_details
+          message_to_requestor += " for the following media:" + 
+          cart_item_message_content(items, "requestor")
+        else
+          message_to_requestor += " #{items.count} media. Since more than #{max_for_details} media have been requested, the individual media are not detailed in this message. "
+        end  
+        message_to_requestor += "<p>You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard.</p>"
+        deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
       end
       
-      def send_request_message(reviewer_id, items)
+      def send_request_message_to_reviewer(reviewer_id, items)
         max_for_details = 100
         requestor = current_user
         reviewer = User.where(ms_id: reviewer_id).first
@@ -63,16 +79,6 @@ module Morphosource
         end
         message_to_reviewer += "<p>Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard.</p>"
         deliver(email_sender, reviewer, message_to_reviewer, "You have a download request to review")
-
-        message_to_requestor = "<p>You have sent a request to download"
-        if items.count < max_for_details
-          message_to_requestor += " for the following media:" + 
-          cart_item_message_content(items, "requestor")
-        else
-          message_to_requestor += " #{items.count} media. Since more than #{max_for_details} media have been requested, the individual media are not detailed in this message. "
-        end  
-        message_to_requestor += "<p>You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard.</p>"
-        deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
       end
 
       def cancel_request

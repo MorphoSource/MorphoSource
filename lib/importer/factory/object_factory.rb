@@ -142,7 +142,7 @@ module Importer
 
       def permitted_attribute_names
         klass.properties.keys.map(&:to_sym) +
-            [ :id, :admin_set_id, :parent_ark, :edit_users, :edit_groups, :read_groups, :visibility ]
+            [ :id, :admin_set_id, :parent_ark, :edit_users, :edit_groups, :read_groups, :visibility, :remote_files ]
       end
 
       def collection_membership_attributes
@@ -154,7 +154,7 @@ module Importer
       end
 
       def id_attributes
-        { :id => attributes[:id]&.first } 
+        attributes[:id].present? ? { :id => attributes[:id]&.first } : {}
       end
 
       def location_attributes(based_near_values)
@@ -186,7 +186,7 @@ module Importer
       end
 
       def visibility_attributes
-        visibility.present? ? { visibility: visibility.first } : { visibility: 'open' }
+        visibility.present? ? { visibility: Array(visibility).first } : { visibility: 'open' }
       end
 
       def date_uploaded_attributes(date_uploaded_values)

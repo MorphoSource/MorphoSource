@@ -1,4 +1,4 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     module Models
       class ProcessingEventManifest
@@ -15,7 +15,7 @@ module MassIngest
         end
 
         def create_new_attributes
-          addl_attrs = { depositor: depositor.user_key }
+          addl_attrs = { depositor: depositor }
 
           Importer::Factory::ProcessingEventFactory.new(
             initial_attrs.except(:id).merge(addl_attrs)
@@ -23,7 +23,7 @@ module MassIngest
         end
 
         def to_h
-          instance_values.transform_keys(&:to_sym)
+          instance_values.symbolize_keys
         end
       end
     end

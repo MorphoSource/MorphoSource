@@ -1,4 +1,4 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     module Models
       # Takes initial biological specimen attrs and matches to existing, imports from iDigBio, or creates new attributes to work creation
@@ -34,7 +34,7 @@ module MassIngest
           elsif initial_attrs[:occurrence_id].present? && (imported_attrs = import_work).present?
             @attrs = imported_attrs.merge( 
               organization_id: [@organization_id],
-              depositor: @depositor.user_key
+              depositor: @depositor
             )
             @work_imported = true
             @occurrence_id = @attrs['occurrence_id']
@@ -45,7 +45,7 @@ module MassIngest
           elsif !attrs.present? && initial_attrs.present?
             @attrs = create_new_attributes.merge( 
               organization_id: [@organization_id],
-              depositor: @depositor.user_key
+              depositor: @depositor
             )
             @work_imported = false
             @occurrence_id = @attrs[:occurrence_id]&.first
@@ -87,15 +87,15 @@ module MassIngest
         end
 
         def import_work
-          Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(initial_attrs[:occurrence_id])
+          ::Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(initial_attrs[:occurrence_id])
         end
 
         def create_new_attributes
-          Importer::Factory::BiologicalSpecimenFactory.new(initial_attrs.except(:id)).create_attributes
+          ::Importer::Factory::BiologicalSpecimenFactory.new(initial_attrs.except(:id)).create_attributes
         end
 
         def to_h
-          instance_values.transform_keys(&:to_sym)
+          instance_values.symbolize_keys.except(:work)
         end
       end
     end

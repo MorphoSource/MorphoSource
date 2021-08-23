@@ -1,1 +1,0 @@
-require 'morphosource/specs/shared_specs/ms_derivative_service'

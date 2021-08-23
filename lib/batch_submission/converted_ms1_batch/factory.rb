@@ -1,4 +1,4 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     module Factory
       extend ActiveSupport::Autoload

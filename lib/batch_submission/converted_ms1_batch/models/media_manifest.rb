@@ -1,4 +1,4 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     module Models
       class MediaManifest
@@ -16,11 +16,13 @@ module MassIngest
         end
 
         def create_new_attributes
-          addl_attrs = { depositor: depositor.user_key }
-          addl_attrs[:file] = media_file_path if media_file_path.present?
+          addl_attrs = { depositor: depositor }
+          p = media_file_path
+          addl_attrs[:file] = [p] if p.present?
 
           Importer::Factory::MediaFactory.new(
-            initial_attrs.except(:id, :media_file).merge(addl_attrs)
+            initial_attrs.except(:id, :media_file).merge(addl_attrs),
+            ( File.dirname(p) if p.present? )
           ).create_attributes
         end
 
@@ -28,16 +30,16 @@ module MassIngest
           if Dir.exists?(media_path) && initial_attrs[:media_file]&.first.present?
             p = File.join(media_path, initial_attrs[:media_file]&.first) 
             if File.exists?(p)
-              return file
+              return p
             else
-              return file #remove after initial testing
+              return p #remove after initial testing
               # raise "File at path #{p} not found"
             end
           end
         end
 
         def to_h
-          instance_values.transform_keys(&:to_sym)
+          instance_values.symbolize_keys
         end
       end
     end

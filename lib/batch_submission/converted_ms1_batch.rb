@@ -1,4 +1,4 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     extend ActiveSupport::Autoload
 
@@ -6,7 +6,7 @@ module MassIngest
     autoload :Models
 
     autoload :Manifest
-    autoload :MassIngestHelper
+    autoload :BatchSubmissionHelper
     autoload :ValidateManifest
   end
 end

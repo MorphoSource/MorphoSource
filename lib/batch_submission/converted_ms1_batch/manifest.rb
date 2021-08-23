@@ -1,10 +1,10 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     class Manifest
-      include MassIngest::ConvertedMs1Batch::MassIngestHelper
+      include BatchSubmission::ConvertedMs1Batch::BatchSubmissionHelper
 
       attr_accessor :input_path, :media_path, :admin_user, :depositor
-      attr_accessor :organization_id, :organization, :device_id, :device, :device_modality
+      attr_accessor :organization_id, :organization, :device_id, :device, :device_modality, :collection_ids
       attr_accessor :rows, :media_group_to_rows, :rows_to_bso
       attr_accessor :biological_specimen_ingests, :rows_to_bso
       attr_accessor :taxonomy_ingests, :rows_to_taxonomy
@@ -15,16 +15,17 @@ module MassIngest
       #   new(input_path, media_path, admin_user, depositor, organization_id, device_id).call
       # end
 
-      def initialize(input_path, media_path, admin_user, depositor, organization_id, device_id)
+      def initialize(input_path, media_path, admin_user, depositor, organization_id, device_id, collection_ids)
         @input_path = input_path
         @media_path = media_path
-        @admin_user = admin_user
-        @depositor = depositor
+        @admin_user = admin_user.user_key
+        @depositor = depositor.user_key
         @organization_id = organization_id
         @organization = Organization.find(organization_id)
         @device_id = device_id
         @device = Device.find(device_id)
         @device_modality = device.modality&.first
+        @collection_ids = Array(collection_ids)
 
         @biological_specimen_ingests = []
         @rows_to_bso = {}
@@ -52,7 +53,7 @@ module MassIngest
       end
 
       def validate_manifest
-        MassIngest::ConvertedMs1Batch::ValidateManifest.call(input_path)
+        BatchSubmission::ConvertedMs1Batch::ValidateManifest.call(input_path)
       end
 
       def parse_manifest
@@ -106,7 +107,7 @@ module MassIngest
             rows_to_bso[index] = matching_bso_index
           else
             # proceed with constructing ingest
-            bso_ingest = MassIngest::ConvertedMs1Batch::Models::BiologicalSpecimenManifest.new(
+            bso_ingest = BatchSubmission::ConvertedMs1Batch::Models::BiologicalSpecimenManifest.new(
               initial_attrs: bso, 
               depositor: depositor, 
               organization_id: organization_id
@@ -151,7 +152,7 @@ module MassIngest
             # skip unless there are taxonomy attributes to use or we can get taxonomy from iDigBio
             next unless taxonomy_attrs.values.any? { |v| v.present? } || bso.work_imported
 
-            bso_taxonomies = MassIngest::ConvertedMs1Batch::Factory::TaxonomyManifests.call(
+            bso_taxonomies = BatchSubmission::ConvertedMs1Batch::Factory::TaxonomyManifests.call(
               taxonomy_attrs,
               admin_user,
               depositor,
@@ -201,11 +202,11 @@ module MassIngest
           if mg[:parents].present?
             parent_row_index = mg[:parents].first
             ie_row_index = parent_row_index
-            parent_pe = MassIngest::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
+            parent_pe = BatchSubmission::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[parent_row_index][:processing_event],
               depositor: depositor
             )
-            parent_media = MassIngest::ConvertedMs1Batch::Models::MediaManifest.new(
+            parent_media = BatchSubmission::ConvertedMs1Batch::Models::MediaManifest.new(
               initial_attrs: rows[parent_row_index][:media],
               depositor: depositor,
               media_path: media_path
@@ -213,14 +214,14 @@ module MassIngest
 
             parent = {
               parent_row_index => 
-                MassIngest::ConvertedMs1Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
+                BatchSubmission::ConvertedMs1Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
             }
           else
             ie_row_index = mg[:children].first
           end
 
           imaging_event = {
-            ie_row_index => MassIngest::ConvertedMs1Batch::Models::ImagingEventManifest.new(
+            ie_row_index => BatchSubmission::ConvertedMs1Batch::Models::ImagingEventManifest.new(
               initial_attrs: rows[ie_row_index][:imaging_event],
               device_id: device_id,
               device_modality: device_modality,
@@ -229,11 +230,11 @@ module MassIngest
           }
           
           children = mg[:children].map do |row_index|
-            child_pe = MassIngest::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
+            child_pe = BatchSubmission::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[row_index][:processing_event],
               depositor: depositor
             )
-            child_media = MassIngest::ConvertedMs1Batch::Models::MediaManifest.new(
+            child_media = BatchSubmission::ConvertedMs1Batch::Models::MediaManifest.new(
               initial_attrs: rows[row_index][:media],
               depositor: depositor,
               media_path: media_path
@@ -241,14 +242,14 @@ module MassIngest
 
             [
               row_index,
-              MassIngestConvertedMs1Batch::Models::MediaPeManifest.new(
+              BatchSubmission::ConvertedMs1Batch::Models::MediaPeManifest.new(
                 media: child_media,
                 pe: child_pe
               )
             ]
           end.to_h
 
-          media_ie_pe_ingests << MassIngest::ConvertedMs1Batch::Models::MediaIePeManifest.new(
+          media_ie_pe_ingests << BatchSubmission::ConvertedMs1Batch::Models::MediaIePeManifest.new(
             imaging_event: imaging_event, 
             parent: parent, 
             children: children
@@ -263,7 +264,8 @@ module MassIngest
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),
           rows_to_taxonomy: rows_to_taxonomy.transform_keys(&:to_s),
-          media_ie_pe_ingests: media_ie_pe_ingests.map(&:to_h)
+          media_ie_pe_ingests: media_ie_pe_ingests.map(&:to_h),
+          collection_ids: collection_ids
         }
       end
     end

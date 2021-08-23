@@ -1,4 +1,4 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     module Models
       # Takes initial taxonomy attrs and matches to existing or creates new attributes for work creation
@@ -23,7 +23,7 @@ module MassIngest
         end
 
         def create_new_attributes
-          addl_attrs = { depositor: depositor.user_key }
+          addl_attrs = { depositor: depositor }
 
           Importer::Factory::TaxonomyFactory.new(
             initial_attrs.except(:id).merge(addl_attrs)
@@ -31,7 +31,7 @@ module MassIngest
         end
 
         def to_h
-          instance_values.transform_keys(&:to_sym)
+          instance_values.symbolize_keys.except(:work)
         end
       end
     end

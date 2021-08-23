@@ -1,4 +1,4 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     module Models
       class MediaIePeManifest
@@ -12,9 +12,9 @@ module MassIngest
 
         def to_h
           {
-            imaging_event: imaging_event.transform_keys(&:to_s).transform_values(&:to_h),
-            parent: parent.transform_keys(&:to_s).transform_values(&:to_h),
-            children: children.transform_keys(&:to_s).transform_values(&:to_h),
+            imaging_event: imaging_event.symbolize_keys.transform_values(&:to_h),
+            parent: parent.symbolize_keys.transform_values(&:to_h),
+            children: children.symbolize_keys.transform_values(&:to_h),
           }
         end
       end

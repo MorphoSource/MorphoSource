@@ -1,9 +1,9 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
-    module MassIngestHelper
+    module BatchSubmissionHelper
       def parse_csv_split_sections(input_path)
         input_data = []
-        Ms1to2::CSVParser.new(input_path, false, false).each do |row|
+        ::Ms1to2::CSVParser.new(input_path, false, false).each do |row|
           input_data << split_sections(row)
         end
         return input_data

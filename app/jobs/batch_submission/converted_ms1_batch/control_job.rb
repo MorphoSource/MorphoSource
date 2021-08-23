@@ -1,4 +1,4 @@
-class MassIngest::ConvertedMs1Batch::MassIngestControlJob < ApplicationJob
+class BatchSubmission::ConvertedMs1Batch::ControlJob < ApplicationJob
   attr_accessor :manifest
 
   queue_as Hyrax.config.ingest_queue_name
@@ -7,7 +7,6 @@ class MassIngest::ConvertedMs1Batch::MassIngestControlJob < ApplicationJob
     begin
       # Step 0. Initial preparation
       status.update(manifest: manifest)
-      progress.total = 4
       @manifest = manifest
       
       sub_jobs.each do |job_class|
@@ -22,14 +21,16 @@ class MassIngest::ConvertedMs1Batch::MassIngestControlJob < ApplicationJob
 
   def sub_jobs
     [
-      MassIngest::ConvertedMs1Batch::TaxonomySubcontrolJob
+      BatchSubmission::ConvertedMs1Batch::TaxonomySubcontrolJob,
+      BatchSubmission::ConvertedMs1Batch::BiologicalSpecimenSubcontrolJob,
+      BatchSubmission::ConvertedMs1Batch::MediaSubcontrolJob
     ]
   end
 
   def monitor_status(job)
     status = ActiveJob::Status.get(job)
     if status[:status] == :failed
-      raise "Job #{job.class} failed. Exception: #{status[:exception]}"
+      raise "Job #{job.class} failed. Exception: #{status[:exception].to_s}"
     elsif status[:status] == :queued || status[:status] == :working
       return false
     elsif status[:status] == :completed
@@ -42,7 +43,7 @@ class MassIngest::ConvertedMs1Batch::MassIngestControlJob < ApplicationJob
         raise "Job #{job.class} returned a malformed manifest with value #{new_manifest}"
       end
     else
-      raise "Job #{job.class} produced unexpected status: #{job[:status]}"
+      raise "Job #{job.class} produced unexpected status: #{job[:status].to_s}"
     end
   end
 

@@ -1,4 +1,4 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     module Models
       # Takes initial imaging event attrs and creates new attributes for work creation
@@ -21,7 +21,7 @@ module MassIngest
           addl_attrs = { 
             device_id: device_id,
             ie_modality: device_modality,
-            depositor: depositor.user_key
+            depositor: depositor
           }
 
           Importer::Factory::ImagingEventFactory.new(
@@ -30,7 +30,7 @@ module MassIngest
         end
 
         def to_h
-          instance_values.transform_keys(&:to_sym)
+          instance_values.symbolize_keys
         end
       end
     end

@@ -1,4 +1,4 @@
-module MassIngest
+module BatchSubmission
   module ConvertedMs1Batch
     module Factory
       # Create 1+ taxonomy params model instances from input attributes and optional iDigBio UUID
@@ -37,9 +37,9 @@ module MassIngest
 
           if provider_attrs.present?
             existing_provider_work = Morphosource::TaxonomySearchService.call(provider_attrs)
-            if existing_provider_work.present?
+            if existing_provider_work&.first.present?
               # Taxonomy matching provider taxon exists, create ingest as matching and canonical
-              new_ingest( { id: [existing_provider_work.id] } , admin_user, true)
+              new_ingest( { id: [existing_provider_work&.first.id] } , admin_user, true)
             else
               # No taxonomy matching provider taxon exists, create ingest as new canonical work to be created
               new_ingest(provider_attrs, admin_user, true)
@@ -48,9 +48,9 @@ module MassIngest
 
           if gbif_attrs.present?
             existing_gbif_work = Morphosource::TaxonomySearchService.call(gbif_attrs)
-            if existing_gbif_work.present?
+            if existing_gbif_work&.first.present?
               # Taxonomy matching GBIF taxon exists, create ingest as matching
-              new_ingest( { id: [existing_gbif_work.id] } , admin_user)
+              new_ingest( { id: [existing_gbif_work&.first.id] } , admin_user)
             else
               # No taxonomy matching GBIF taxon exists, create ingest as new work to be created
               new_ingest(gbif_attrs, admin_user)
@@ -68,7 +68,7 @@ module MassIngest
         end
 
         def new_ingest(ingest_attrs, depositor, canonical = false)
-          ingests << MassIngest::ConvertedMs1Batch::Models::TaxonomyManifest.new(
+          ingests << BatchSubmission::ConvertedMs1Batch::Models::TaxonomyManifest.new(
             initial_attrs: ingest_attrs, 
             depositor: depositor, 
             canonical: canonical

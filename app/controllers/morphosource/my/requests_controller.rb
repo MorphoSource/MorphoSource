@@ -66,6 +66,7 @@ module Morphosource
       end
       
       def send_request_message_to_reviewer(reviewer_id, items)
+        # note: this method sends message to only 1 requestor and should be used in item.reviewers.each
         max_for_details = 100
         requestor = current_user
         reviewer = User.where(ms_id: reviewer_id).first
@@ -81,7 +82,24 @@ module Morphosource
         deliver(email_sender, reviewer, message_to_reviewer, "You have a download request to review")
       end
 
+      def send_requestor_action_message(item, action)
+        work = Media.find(item.work_id)
+        if work.present?          
+          requestor = current_user
+          reviewer_list = []
+          item.reviewers.each do |r_id|
+            reviewer_list << User.where(ms_id: r_id).first
+          end
+          message_to_reviewer = "<p>User #{user_email_link(requestor)} has #{action} the download request for: " + 
+            cart_item_message_content([item], "reviewer") + "</p>" +
+
+          "<p>Please contact #{user_email_link(requestor)} if you have a question related to this request.</p>" 
+          deliver(email_sender, reviewer_list, message_to_reviewer, "User has #{action} a download request")
+        end
+      end
+
       def cancel_request
+        send_requestor_action_message(@items.first, 'canceled')
         mark_as('canceled')
         flash[:notice] = "Request Canceled"
         redirect_back(fallback_location: my_requests_path)

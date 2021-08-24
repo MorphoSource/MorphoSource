@@ -88,8 +88,10 @@ module Morphosource
             reviewer_list << User.where(ms_id: r_id).first
           end
           message_to_reviewer = "<p>User #{user_email_link(requestor)} has #{action} the download request for: " + 
-            cart_item_message_content([item], "reviewer") + "</p>" +
-
+            cart_item_message_content([item], "reviewer") + "</p>"
+          if action == 'canceled'
+            message_to_reviewer += "<p>The request has been removed from your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard.  You can view canceled requests in your <a href='http://#{host_name}/dashboard/my/previous_requests'>Previous Requests</a> page.</p>"
+          end
           "<p>Please contact #{user_email_link(requestor)} if you have a question related to this request.</p>" 
           deliver(email_sender, reviewer_list, message_to_reviewer, "User has #{action} a download request")
         end

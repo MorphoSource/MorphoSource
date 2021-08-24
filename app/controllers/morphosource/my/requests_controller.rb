@@ -54,7 +54,7 @@ module Morphosource
         requestor = current_user
         message_to_requestor = "<p>You have sent a request to download"
         if items.count <= max_for_details
-          message_to_requestor += " for the following media:" + 
+          message_to_requestor += " the following media:" + 
           cart_item_message_content(items, "requestor")
         else
           message_to_requestor += " #{items.count} media. Since more than #{max_for_details} media have been requested, the individual media are not detailed in this message. "

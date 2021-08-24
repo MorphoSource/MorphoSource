@@ -28,49 +28,53 @@ class BatchSubmission::ConvertedMs1Batch::ControlJob < ApplicationJob
   end
 
   def monitor_status(job)
-    status = ActiveJob::Status.get(job)
-    if status[:status] == :failed
-      raise "Job #{job.class} failed. Exception: #{status[:exception].to_s}"
-    elsif status[:status] == :queued || status[:status] == :working
+    job_status = ActiveJob::Status.get(job)
+
+    # update manifest
+    new_manifest = job_status[:manifest]
+    if new_manifest.present? && new_manifest.is_a?(Hash)
+      status.update(manifest: new_manifest)
+      @manifest = new_manifest
+    end
+
+    # check job status
+    if job_status[:status] == :failed
+      delete_created_works
+      raise "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
+    elsif job_status[:status] == :queued || job_status[:status] == :working
       return false
-    elsif status[:status] == :completed
-      new_manifest = status[:manifest]
-      if new_manifest.present? && new_manifest.is_a?(Hash)
-        status.update(manifest: new_manifest)
-        @manifest = new_manifest
-        return true
-      else
-        raise "Job #{job.class} returned a malformed manifest with value #{new_manifest}"
-      end
+    elsif job_status[:status] == :completed
+      return true
     else
-      raise "Job #{job.class} produced unexpected status: #{job[:status].to_s}"
+      delete_created_works
+      raise "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
     end
   end
 
   # if ingest fails, need to delete mid-stream works
-  def delete_garbage_works
+  def delete_created_works
     status.update(work_deletion: :working)
 
     related_ids = []
-    @manifest[:media_ie_pe_ingests].each do |i|
-      i[:children].each do |k, combined_pe_media|
-        related_ids.concat delete_work_if_needed(combined_pe_media[:media])
-        related_ids.concat delete_work_if_needed(combined_pe_media[:pe])
+    @manifest['media_ie_pe_ingests'].each do |i|
+      i['children'].each do |k, combined_pe_media|
+        related_ids.concat delete_work_if_needed(combined_pe_media['media'])
+        related_ids.concat delete_work_if_needed(combined_pe_media['pe'])
       end
 
-      i[:parent].each do |k, combined_pe_media|
-        related_ids.concat delete_work_if_needed(combined_pe_media[:media])
-        related_ids.concat delete_work_if_needed(combined_pe_media[:pe])
+      i['parent'].each do |k, combined_pe_media|
+        related_ids.concat delete_work_if_needed(combined_pe_media['media'])
+        related_ids.concat delete_work_if_needed(combined_pe_media['pe'])
       end
 
-      related_ids.concat delete_work_if_needed(i[:imaging_event].values.first)
+      related_ids.concat delete_work_if_needed(i['imaging_event'].values.first)
     end
 
-    @manifest[:biological_specimen_ingests].each do |i|
+    @manifest['biological_specimen_ingests'].each do |i|
       related_ids.concat delete_work_if_needed(i)
     end
 
-    @manifest[:taxonomy_ingests].each do |i|
+    @manifest['taxonomy_ingests'].each do |i|
       related_ids.concat delete_work_if_needed(i)
     end
 
@@ -83,11 +87,11 @@ class BatchSubmission::ConvertedMs1Batch::ControlJob < ApplicationJob
     status.update(work_deletion: :completed)
   end
 
-  def delete_work_if_needed(ingest)
+  def delete_work_if_needed(i)
     related_work_ids = []
 
-    if i[:job].present? && i[:job_status] == :completed && i[:id].present? && ActiveFedora::Base.exists?(i[:id])
-      work = ActiveFedora::Base.find(i[:id])
+    if i['attrs'].present? && i['id'].present? && ActiveFedora::Base.exists?(i['id'])
+      work = ActiveFedora::Base.find(i['id'])
       case work.class
       when ImagingEvent
         related_work_ids.concat(work.objects) if work.objects.present?

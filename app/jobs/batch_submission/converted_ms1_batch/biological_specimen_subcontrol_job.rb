@@ -15,7 +15,7 @@ class BatchSubmission::ConvertedMs1Batch::BiologicalSpecimenSubcontrolJob < Appl
       row_index = @manifest['rows_to_bso']
         .find { |k, v| v == index }
         .first
-      taxonomy_ingests = @manifest['rows_to_taxonomy'][row_index]
+      taxonomy_ingests = (@manifest['rows_to_taxonomy'][row_index] || [])
         .map { |t_idx| @manifest['taxonomy_ingests'][t_idx] }
 
       if taxonomy_ingests.all? { |t| t['id'].present? }
@@ -53,21 +53,25 @@ class BatchSubmission::ConvertedMs1Batch::BiologicalSpecimenSubcontrolJob < Appl
     @manifest['biological_specimen_ingests'].each do |i|
       next unless (job = i['job']).present?
 
-      status = ActiveJob::Status.get(i['job'])
-      i['job_status'] = status[:status].to_s
-      if status[:status] == :queued || status[:status] == :working
+      # check job status
+      job_status = ActiveJob::Status.get(i['job'])
+      i['job_status'] = job_status[:status].to_s
+      if job_status[:status] == :queued || job_status[:status] == :working
         jobs_complete = false
-      elsif status[:status] == :failed
-        i['job_exception'] = "Job #{job.class} failed. Exception: #{status[:exception].to_s}"
-      elsif status[:status] == :completed
-        if status[:id].present?
-          i['id'] = status[:id]
+      elsif job_status[:status] == :failed
+        i['job_exception'] = "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
+      elsif job_status[:status] == :completed
+        if job_status[:id].present?
+          i['id'] = job_status[:id]
         else
           i['job_exception'] = "Job #{job.class} completed successfully, but produced no work ID."
         end
       else
-        i['job_exception'] = "Job #{job.class} produced unexpected status: #{status[:status].to_s}"
+        i['job_exception'] = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
       end
+
+      # update manifest
+      status.update(manifest: @manifest)
     end
 
     return jobs_complete

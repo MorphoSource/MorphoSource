@@ -16,7 +16,7 @@ module BatchSubmission
         end
 
         def create_new_attributes
-          addl_attrs = { depositor: depositor }
+          addl_attrs = { depositor: depositor, download_reviewer: [depositor] }
           p = media_file_path
           addl_attrs[:file] = [p] if p.present?
 

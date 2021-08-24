@@ -51,11 +51,9 @@ module Morphosource
       end
 
       def send_request_message_to_requestor(items)
-        max_for_details = 100
         requestor = current_user
-
         message_to_requestor = "<p>You have sent a request to download"
-        if items.count < max_for_details
+        if items.count <= max_for_details
           message_to_requestor += " for the following media:" + 
           cart_item_message_content(items, "requestor")
         else
@@ -67,12 +65,11 @@ module Morphosource
       
       def send_request_message_to_reviewer(reviewer_id, items)
         # note: this method sends message to only 1 requestor and should be used in item.reviewers.each
-        max_for_details = 100
         requestor = current_user
         reviewer = User.where(ms_id: reviewer_id).first
 
         message_to_reviewer = "<p>#{user_email_link(requestor)} has requested to download"
-        if items.count < max_for_details
+        if items.count <= max_for_details
           message_to_reviewer += " the following media:</p>" +
             cart_item_message_content(items, "reviewer") 
         else

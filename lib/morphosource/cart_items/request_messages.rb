@@ -23,6 +23,10 @@ module Morphosource
         return list.to_sentence.html_safe
       end
 
+      def max_for_details
+        @max_for_details ||= Hyrax.config.max_for_download_request_details
+      end
+
       def cart_item_message_content(items, message_for="requestor")
         content = ""
         items.each do |item|

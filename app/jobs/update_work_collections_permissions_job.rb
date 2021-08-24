@@ -1,4 +1,4 @@
-class UpdateWorkCollectionsPermissionsJob < Hyrax::ApplicationJob
+class UpdateWorkCollectionsPermissionsJob < ApplicationJob
 
   queue_as Hyrax.config.update_slow_queue_name
 

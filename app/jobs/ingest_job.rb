@@ -1,4 +1,4 @@
-class IngestJob < Hyrax::ApplicationJob
+class IngestJob < ApplicationJob
   queue_as Hyrax.config.ingest_queue_name
 
   after_perform do |job|

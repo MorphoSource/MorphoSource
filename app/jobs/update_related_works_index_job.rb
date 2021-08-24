@@ -2,7 +2,7 @@
 
 # Called from Morphosource::IndexRelatedWorks
 
-class UpdateRelatedWorksIndexJob < Hyrax::ApplicationJob
+class UpdateRelatedWorksIndexJob < ApplicationJob
   queue_as Hyrax.config.update_fast_queue_name
 
   def perform(works)

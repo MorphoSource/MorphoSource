@@ -72,6 +72,9 @@ GEM
     activejob (5.2.4.4)
       activesupport (= 5.2.4.4)
       globalid (>= 0.3.6)
+    activejob-status (0.1.6)
+      activejob (>= 4.2)
+      activesupport (>= 4.2)
     activemodel (5.2.4.4)
       activesupport (= 5.2.4.4)
     activemodel-serializers-xml (1.0.2)
@@ -963,6 +966,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activejob-status
   activerecord-session_store!
   axe-matchers (~> 2.3.0)
   bootstrap-sass (~> 3.4)

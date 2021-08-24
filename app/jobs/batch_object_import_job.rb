@@ -3,7 +3,8 @@ class BatchObjectImportJob < ApplicationJob
   queue_as Hyrax.config.mass_ingest_queue_name
 
   def perform(model, attributes, files_directory, update = false)
-    Importer::BatchObjectImporter.call(model, attributes, files_directory, update)
+    object = Importer::BatchObjectImporter.call(model, attributes, files_directory, update)
+    status.update(id: object.id)
   end
 
 end

@@ -1,4 +1,4 @@
-class UpdateCartItemReviewersJob < Hyrax::ApplicationJob
+class UpdateCartItemReviewersJob < ApplicationJob
 
   queue_as Hyrax.config.update_fast_queue_name
 

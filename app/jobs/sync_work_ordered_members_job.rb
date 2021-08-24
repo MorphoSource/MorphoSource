@@ -1,4 +1,4 @@
-class SyncWorkOrderedMembersJob < Hyrax::ApplicationJob
+class SyncWorkOrderedMembersJob < ApplicationJob
 
   queue_as Hyrax.config.update_slow_queue_name
 

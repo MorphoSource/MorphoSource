@@ -3,17 +3,24 @@ module BatchSubmissionTools
     module Factory
       # Create 1+ taxonomy params model instances from input attributes and optional iDigBio UUID
       class TaxonomyManifests
-        attr_accessor :attrs, :admin_user, :depositor, :idigbio_uuid
+        attr_accessor :attrs, :admin_user, :depositor, :on_behalf_of, :idigbio_uuid
         attr_accessor :ingests, :works_attrs
 
-        def self.call(attrs, admin_user, depositor, idigbio_uuid = nil)
-          new(attrs, admin_user, depositor, idigbio_uuid).call
+        def self.call(attrs:, admin_user:, depositor:, on_behalf_of: nil, idigbio_uuid: nil)
+          new(
+            attrs: attrs, 
+            admin_user: admin_user,
+            depositor: depositor,
+            on_behalf_of: on_behalf_of,
+            idigbio_uuid: idigbio_uuid
+          ).call
         end
 
-        def initialize(attrs, admin_user, depositor, idigbio_uuid = nil)
+        def initialize(attrs:, admin_user:, depositor:, on_behalf_of: nil, idigbio_uuid: nil)
           @attrs = attrs
           @admin_user = admin_user
           @depositor = depositor
+          @on_behalf_of = on_behalf_of
           @idigbio_uuid = idigbio_uuid
           @ingests = [] 
         end
@@ -39,10 +46,10 @@ module BatchSubmissionTools
             existing_provider_work = Morphosource::TaxonomySearchService.call(provider_attrs)
             if existing_provider_work&.first.present?
               # Taxonomy matching provider taxon exists, create ingest as matching and canonical
-              new_ingest( { id: [existing_provider_work&.first.id] } , admin_user, true)
+              new_ingest(ingest_attrs: { id: [existing_provider_work&.first.id] } , depositor: admin_user, canonical: true)
             else
               # No taxonomy matching provider taxon exists, create ingest as new canonical work to be created
-              new_ingest(provider_attrs, admin_user, true)
+              new_ingest(ingest_attrs: provider_attrs, depositor: admin_user, canonical: true)
             end
           end
 
@@ -50,10 +57,10 @@ module BatchSubmissionTools
             existing_gbif_work = Morphosource::TaxonomySearchService.call(gbif_attrs)
             if existing_gbif_work&.first.present?
               # Taxonomy matching GBIF taxon exists, create ingest as matching
-              new_ingest( { id: [existing_gbif_work&.first.id] } , admin_user)
+              new_ingest(ingest_attrs: { id: [existing_gbif_work&.first.id] } , depositor: admin_user)
             else
               # No taxonomy matching GBIF taxon exists, create ingest as new work to be created
-              new_ingest(gbif_attrs, admin_user)
+              new_ingest(ingest_attrs: gbif_attrs, depositor: admin_user)
             end
           end
         end
@@ -64,13 +71,14 @@ module BatchSubmissionTools
         end
 
         def new_work_attrs
-          new_ingest(attrs, depositor)
+          new_ingest(ingest_attrs: attrs, depositor: depositor, on_behalf_of: on_behalf_of)
         end
 
-        def new_ingest(ingest_attrs, depositor, canonical = false)
+        def new_ingest(ingest_attrs:, depositor:, on_behalf_of: nil, canonical: false)
           ingests << BatchSubmissionTools::ConvertedMs1Batch::Models::TaxonomyManifest.new(
             initial_attrs: ingest_attrs, 
-            depositor: depositor, 
+            depositor: depositor,
+            on_behalf_of: on_behalf_of,
             canonical: canonical
           )
         end

@@ -88,4 +88,25 @@ class BatchSubmissionsController < ApplicationController
 
   end # /new
 
+  def manifest
+    @manifest ||= params[:manifest]
+  end
+
+  def manifest_format_valid?
+    Morphosource.manifest_formats.include? File.extname(manifest.original_filename).downcase
+  end
+
+  def submit
+    if params[:manifest].present?
+      if manifest_format_valid?
+
+
+      else
+
+
+      end
+    end
+
+  end
+
 end

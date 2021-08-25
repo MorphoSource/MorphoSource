@@ -1,7 +1,7 @@
-module BatchSubmission
+module BatchSubmissionTools
   module ConvertedMs1Batch
     class ValidateManifest
-      include BatchSubmission::ConvertedMs1Batch::BatchSubmissionHelper
+      include BatchSubmissionTools::ConvertedMs1Batch::BatchSubmissionHelper
 
       attr_accessor :input_path, :ingest_data, :errors
 

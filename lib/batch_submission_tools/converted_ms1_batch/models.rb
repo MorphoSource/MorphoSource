@@ -1,4 +1,4 @@
-module BatchSubmission
+module BatchSubmissionTools
   module ConvertedMs1Batch
     module Models
       extend ActiveSupport::Autoload

@@ -1,4 +1,4 @@
-class BatchSubmission::ConvertedMs1Batch::TaxonomySubcontrolJob < ApplicationJob
+class BatchSubmissionJobs::ConvertedMs1Batch::TaxonomySubcontrolJob < ApplicationJob
   attr_accessor :manifest
 
   queue_as Hyrax.config.ingest_queue_name

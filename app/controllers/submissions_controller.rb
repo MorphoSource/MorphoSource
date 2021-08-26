@@ -448,7 +448,7 @@ class SubmissionsController < ApplicationController
       puts("Creating #{work}")
       new_work_id = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
-      create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
+      create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event'].include?(work)
       # Morphosource::CustomThumbnails
       create_thumbnail if work == 'media'
       set_new_fund_code if work == 'media' && @submission.fund_code.present?
@@ -604,20 +604,14 @@ class SubmissionsController < ApplicationController
   def create_attachment_if_needed(work, id)
     fields = attachment_fields[work]
     fields.each do |field|
-      if field == 'agreement' && params[:media][:agreement_uri].present?
-        # skip since agreement url exists
+      if field == 'ie_reference'
+        formats = Morphosource.reference_attachment_formats
       else
-        if field == 'ie_reference'
-          formats = Morphosource.reference_attachment_formats
-        else
-          formats = Morphosource.attachment_formats
-        end
-        if params[field].present? && formats.include?(File.extname(params[field].original_filename))
-          Morphosource::AttachmentService.create(id, field, params[field], formats)
-          params.delete(field)
-        elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
-          Morphosource::AttachmentService.create_copy(id, field, submission_params[:organization_for_attachment])
-        end
+        formats = Morphosource.attachment_formats
+      end
+      if params[field].present? && formats.include?(File.extname(params[field].original_filename))
+        Morphosource::AttachmentService.create(id, field, params[field], formats)
+        params.delete(field)
       end
     end
   end
@@ -625,8 +619,7 @@ class SubmissionsController < ApplicationController
   def attachment_fields
     {
       'imaging_event' => ['ie_description', 'ie_reference'],
-      'processing_event' => ['pe_description'],
-      'media' => ['agreement']
+      'processing_event' => ['pe_description']
     }
   end
 
@@ -843,7 +836,6 @@ class SubmissionsController < ApplicationController
                 :taxonomy_search,
                 :organization_search,
                 :taxonomy_params_array,
-                :organization_for_attachment,
                 :fund_code
         )
     )

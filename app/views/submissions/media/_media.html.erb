@@ -108,6 +108,7 @@
               <%= render_edit_field_partial('funding', f: f) %>
               <%= render_edit_field_partial('publisher', f: f) %>
               <%= render_edit_field_partial('cite_as', f: f) %>
+              <%= render_edit_field_partial('preview_mode', f: f) %>
 
               <div>
                 <div id='organization-attachment-section' class='hide'>
@@ -116,24 +117,24 @@
                       <label class="control-label optional" for="organization_attachment"><span>Additional usage agreement </span></label>
                     </div>
                     <div class="col-xs-6 showcase-value" id="organization_attachment">
-                      An <a href='#' id='organization-attachment-url'>agreement file</a> has been suggested by physical object organization. <a href='#' id='organization-attachment-remove'>Remove or replace.</a>
+                      An 
+                      <span id="attachment-url-link" class="hide"><a href='#' target="_blank" id='organization-attachment-url'>additional agreement file </a></span>
+                      <span id="agreement-uri-link" class="hide">additional agreement URI (<span id='organization-agreement-uri'>URI missing</span>)</span>
+                      has been required by physical object organization. If you need a customized additional usage agreement, please <a href="mailto:morphosource@duke.edu">contact us</a> after media submission.
                     </div>
                   </div>
                 </div>
-                <div id='work-attachment-section'>
-                  <%= render_edit_field_partial('agreement_uri', f: f) %>
-                  <div id='organization-attachment-replace-row' class="row hide">
-                    <div class="col-xs-6 showcase-label"></div>
-                    <div class="col-xs-6 showcase-value">
-                      <a href='#' id='organization-attachment-replace'>Use suggested organization usage agreement</a>
-                    </div>
+                <div id='work-attachment-section' class="row">
+                  <div class="col-xs-6 showcase-label">
+                    <label class="control-label string optional" for="media_agreement_uri">Additional usage agreement</label>
+                    <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
+                  </div>
+                  <div class="col-xs-6 showcase-value">
+                    An additional usage agreement has not been required by the physical object organization. If you need a customized additional usage agreement, please <a href="mailto:morphosource@duke.edu">contact us</a> after media submission.
                   </div>
                 </div>
               </div>
             </div>
-
-            <%= render_edit_field_partial('preview_mode', f: f) %>
-
           </div>
 
           <div class="block showcase-edit showcase-section">

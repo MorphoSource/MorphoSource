@@ -50,7 +50,6 @@ class Submission
                 :taxonomy_search,
                 :organization_search,
                 :taxonomy_params_array,
-                :organization_for_attachment,
                 :on_behalf_of,
                 :fund_code
 

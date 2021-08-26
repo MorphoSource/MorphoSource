@@ -1,3 +1,5 @@
+require 'creek'
+
 class BatchSubmissionsController < ApplicationController
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
@@ -98,15 +100,45 @@ class BatchSubmissionsController < ApplicationController
 
   def submit
     if params[:manifest].present?
-      if manifest_format_valid?
-
-
-      else
-
+      unless manifest_format_valid?
+        flash[:error] = 'The file uploaded is invalid.  Please upload a file in this format: ' + Morphosource.manifest_formats.join(',')
+        return redirect_to main_app.new_batch_submission_path
 
       end
+      parse_manifest(params[:manifest])
+
     end
 
   end
+
+
+  def parse_manifest(file)
+    creek = Creek::Book.new file.tempfile.path, with_headers: true
+    output = ""
+    error_row = {}
+    sheet = creek.sheets[0]
+    sheet.simple_rows.each_with_index do |row, index|
+
+        error_row[index] = row
+
+      #output += row.to_s
+    end
+byebug
+    flash[:notice] = output
+    redirect_to main_app.batch_submissions_result_path     
+
+  end
+
+
+
+
+
+
+
+
+
+
+
+
 
 end

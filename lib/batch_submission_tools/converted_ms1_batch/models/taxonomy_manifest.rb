@@ -1,4 +1,4 @@
-module BatchSubmission
+module BatchSubmissionTools
   module ConvertedMs1Batch
     module Models
       # Takes initial taxonomy attrs and matches to existing or creates new attributes for work creation

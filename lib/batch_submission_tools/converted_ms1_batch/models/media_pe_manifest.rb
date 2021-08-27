@@ -1,4 +1,4 @@
-module BatchSubmission
+module BatchSubmissionTools
   module ConvertedMs1Batch
     module Models
       # Takes initial processing event and media attrs and creates new attributes for work creation

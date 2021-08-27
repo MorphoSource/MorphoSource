@@ -1,7 +1,7 @@
-module BatchSubmission
+module BatchSubmissionTools
   module ConvertedMs1Batch
     class Manifest
-      include BatchSubmission::ConvertedMs1Batch::BatchSubmissionHelper
+      include BatchSubmissionTools::ConvertedMs1Batch::BatchSubmissionHelper
 
       attr_accessor :input_path, :media_path, :admin_user, :depositor
       attr_accessor :organization_id, :organization, :device_id, :device, :device_modality, :collection_ids
@@ -53,7 +53,7 @@ module BatchSubmission
       end
 
       def validate_manifest
-        BatchSubmission::ConvertedMs1Batch::ValidateManifest.call(input_path)
+        BatchSubmissionTools::ConvertedMs1Batch::ValidateManifest.call(input_path)
       end
 
       def parse_manifest
@@ -107,7 +107,7 @@ module BatchSubmission
             rows_to_bso[index] = matching_bso_index
           else
             # proceed with constructing ingest
-            bso_ingest = BatchSubmission::ConvertedMs1Batch::Models::BiologicalSpecimenManifest.new(
+            bso_ingest = BatchSubmissionTools::ConvertedMs1Batch::Models::BiologicalSpecimenManifest.new(
               initial_attrs: bso, 
               depositor: depositor, 
               organization_id: organization_id
@@ -152,7 +152,7 @@ module BatchSubmission
             # skip unless there are taxonomy attributes to use or we can get taxonomy from iDigBio
             next unless taxonomy_attrs.values.any? { |v| v.present? } || bso.work_imported
 
-            bso_taxonomies = BatchSubmission::ConvertedMs1Batch::Factory::TaxonomyManifests.call(
+            bso_taxonomies = BatchSubmissionTools::ConvertedMs1Batch::Factory::TaxonomyManifests.call(
               taxonomy_attrs,
               admin_user,
               depositor,
@@ -202,11 +202,11 @@ module BatchSubmission
           if mg[:parents].present?
             parent_row_index = mg[:parents].first
             ie_row_index = parent_row_index
-            parent_pe = BatchSubmission::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
+            parent_pe = BatchSubmissionTools::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[parent_row_index][:processing_event],
               depositor: depositor
             )
-            parent_media = BatchSubmission::ConvertedMs1Batch::Models::MediaManifest.new(
+            parent_media = BatchSubmissionTools::ConvertedMs1Batch::Models::MediaManifest.new(
               initial_attrs: rows[parent_row_index][:media],
               depositor: depositor,
               media_path: media_path
@@ -214,14 +214,14 @@ module BatchSubmission
 
             parent = {
               parent_row_index => 
-                BatchSubmission::ConvertedMs1Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
+                BatchSubmissionTools::ConvertedMs1Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
             }
           else
             ie_row_index = mg[:children].first
           end
 
           imaging_event = {
-            ie_row_index => BatchSubmission::ConvertedMs1Batch::Models::ImagingEventManifest.new(
+            ie_row_index => BatchSubmissionTools::ConvertedMs1Batch::Models::ImagingEventManifest.new(
               initial_attrs: rows[ie_row_index][:imaging_event],
               device_id: device_id,
               device_modality: device_modality,
@@ -230,11 +230,11 @@ module BatchSubmission
           }
           
           children = mg[:children].map do |row_index|
-            child_pe = BatchSubmission::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
+            child_pe = BatchSubmissionTools::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[row_index][:processing_event],
               depositor: depositor
             )
-            child_media = BatchSubmission::ConvertedMs1Batch::Models::MediaManifest.new(
+            child_media = BatchSubmissionTools::ConvertedMs1Batch::Models::MediaManifest.new(
               initial_attrs: rows[row_index][:media],
               depositor: depositor,
               media_path: media_path
@@ -242,14 +242,14 @@ module BatchSubmission
 
             [
               row_index,
-              BatchSubmission::ConvertedMs1Batch::Models::MediaPeManifest.new(
+              BatchSubmissionTools::ConvertedMs1Batch::Models::MediaPeManifest.new(
                 media: child_media,
                 pe: child_pe
               )
             ]
           end.to_h
 
-          media_ie_pe_ingests << BatchSubmission::ConvertedMs1Batch::Models::MediaIePeManifest.new(
+          media_ie_pe_ingests << BatchSubmissionTools::ConvertedMs1Batch::Models::MediaIePeManifest.new(
             imaging_event: imaging_event, 
             parent: parent, 
             children: children

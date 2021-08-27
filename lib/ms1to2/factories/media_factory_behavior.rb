@@ -34,10 +34,23 @@ module Ms1to2
           :fileset_visibility => derive_fileset_visibility(mf, mg),
           :fileset_accessibility => derive_fileset_accessibility(mf, mg),
           :morphosource_use_agreement_type => ['Standard'], 
-          :required_archival_of_published_derivatives => ['OnAnyRepository'],
+          :required_archival_of_published_derivatives => ['OnMorphoSource'],
           :permits_commercial_use => ['CommercialUseNotPermitted'], 
-          :permits_3d_use => ['3DPrintingLimited']
+          :permits_3d_use => ['3DPrintingLimited'],
+          :media_type => derive_media_type(mf)
         }
+      end
+
+      def derive_media_type(mf)
+        if mf[:media].present?
+          if File.extname(mf[:media]&.first).downcase == '.zip'
+            ['CTImageSeries']
+          else
+            ['Mesh']
+          end
+        else
+          []
+        end
       end
 
       def derive_depositor(user_id)

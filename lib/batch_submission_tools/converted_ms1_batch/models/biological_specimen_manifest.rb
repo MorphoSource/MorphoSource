@@ -1,4 +1,4 @@
-module BatchSubmission
+module BatchSubmissionTools
   module ConvertedMs1Batch
     module Models
       # Takes initial biological specimen attrs and matches to existing, imports from iDigBio, or creates new attributes to work creation

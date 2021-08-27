@@ -1,4 +1,4 @@
-class BatchSubmission::ConvertedMs1Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
+class BatchSubmissionJobs::ConvertedMs1Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest
 
   queue_as Hyrax.config.ingest_queue_name
@@ -29,7 +29,7 @@ class BatchSubmission::ConvertedMs1Batch::MediaSubcontrolJob < Morphosource::App
       end
 
       i['physical_object_id'] = bso['id']
-      i['job'] = BatchSubmission::ConvertedMs1Batch::MediaIePeIngestJob.perform_later(i, @manifest['collection_ids'] || [])
+      i['job'] = BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob.perform_later(i, @manifest['collection_ids'] || [])
     end
 
     # Monitor jobs

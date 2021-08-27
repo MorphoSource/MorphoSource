@@ -1,4 +1,4 @@
-class BatchSubmission::ConvertedMs1Batch::ControlJob < Morphosource::ApplicationJobWithStatus
+class BatchSubmissionJobs::ConvertedMs1Batch::ControlJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest
 
   queue_as Hyrax.config.ingest_queue_name
@@ -21,9 +21,9 @@ class BatchSubmission::ConvertedMs1Batch::ControlJob < Morphosource::Application
 
   def sub_jobs
     [
-      BatchSubmission::ConvertedMs1Batch::TaxonomySubcontrolJob,
-      BatchSubmission::ConvertedMs1Batch::BiologicalSpecimenSubcontrolJob,
-      BatchSubmission::ConvertedMs1Batch::MediaSubcontrolJob
+      BatchSubmissionJobs::ConvertedMs1Batch::TaxonomySubcontrolJob,
+      BatchSubmissionJobs::ConvertedMs1Batch::BiologicalSpecimenSubcontrolJob,
+      BatchSubmissionJobs::ConvertedMs1Batch::MediaSubcontrolJob
     ]
   end
 

@@ -1,4 +1,4 @@
-module BatchSubmission
+module BatchSubmissionTools
   module ConvertedMs1Batch
     module BatchSubmissionHelper
       def parse_csv_split_sections(input_path)

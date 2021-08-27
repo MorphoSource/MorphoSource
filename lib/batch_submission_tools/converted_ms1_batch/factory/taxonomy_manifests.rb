@@ -1,4 +1,4 @@
-module BatchSubmission
+module BatchSubmissionTools
   module ConvertedMs1Batch
     module Factory
       # Create 1+ taxonomy params model instances from input attributes and optional iDigBio UUID
@@ -68,7 +68,7 @@ module BatchSubmission
         end
 
         def new_ingest(ingest_attrs, depositor, canonical = false)
-          ingests << BatchSubmission::ConvertedMs1Batch::Models::TaxonomyManifest.new(
+          ingests << BatchSubmissionTools::ConvertedMs1Batch::Models::TaxonomyManifest.new(
             initial_attrs: ingest_attrs, 
             depositor: depositor, 
             canonical: canonical

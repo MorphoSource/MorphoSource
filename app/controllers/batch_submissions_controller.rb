@@ -114,18 +114,19 @@ class BatchSubmissionsController < ApplicationController
 
   def parse_manifest(file)
     creek = Creek::Book.new file.tempfile.path, with_headers: true
-    output = ""
-    error_row = {}
+    error_rows = {}
+    error_messages = {}
     sheet = creek.sheets[0]
-    sheet.simple_rows.each_with_index do |row, index|
-
-        error_row[index] = row
-
-      #output += row.to_s
+    data_rows = sheet.simple_rows.to_a.drop(1) # drop the column header row
+    data_rows.each_with_index do |row, index|
+      if row["file_name"].nil?
+        error_rows[index+1] = row
+        error_messages[index+1] = "file name is missing"
+      end
     end
-byebug
-    flash[:notice] = output
-    redirect_to main_app.batch_submissions_result_path     
+    byebug
+    render 'result', locals: { rows: error_rows, messages: error_messages }
+    #redirect_to main_app.batch_submissions_result_path     
 
   end
 

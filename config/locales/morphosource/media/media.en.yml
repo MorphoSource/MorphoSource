@@ -1,6 +1,9 @@
 en:
   morphosource:
     media:
+      organization_agreement:
+        no_agreement: An additional usage agreement has not been required by the physical object organization. If you need a customized additional usage agreement, please <a href="mailto:morphosource@duke.edu">contact us</a> after media submission.
+        help: Physical object organization (museum, collection, etc.) manages additional usage agreement status for this media. If you need a customized additional usage agreement or if the existing agreement should not apply to your media, please <a href="mailto:morphosource@duke.edu">contact us</a>.
       edit:
         select_physical_object_instructions: To find the correct physical object, enter the object's complete institution code, collection code, catalog number, occurrence ID, identifier, and/or short title separated by spaces (e.g., "USNM MAMMALS 16308"). You can enter some combination of these terms, but the individual terms must be complete. For example, "USNM" and "USNM 16308" would return the example object, but "US 163" would not. Alternately, enter the MorphoSource physical object ID or header title (minus taxonomy).
         select_physical_object: Currently, physical objects can only be created during media submission. In the future, you will be able to create a new physical object without submitting media. In the meantime, if you can't find the correct physical object record using the search tools above, contact the <a href="mailto:morphosource@duke.edu">MorphoSource administrators</a> to have a new physical object record created.

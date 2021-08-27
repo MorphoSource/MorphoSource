@@ -110,6 +110,11 @@ module Morphosource
       property :map_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mapType") do |index|
         index.as :stored_searchable, :facetable
       end
+
+      # Admin-only fields
+      property :ignore_organization_agreement, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/ignoreOrganizationAgreement") do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

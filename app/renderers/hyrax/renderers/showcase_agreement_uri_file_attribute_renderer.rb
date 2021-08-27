@@ -3,6 +3,7 @@ module Hyrax
     class ShowcaseAgreementUriFileAttributeRenderer < ShowcaseDefaultAttributeRenderer
       def render
         markup = ''
+        values = options[:values] if options[:values]&.first.present?
         return markup if values.blank? && !options[:attachment_path].present? && !options[:include_empty]
         css_classes = '' 
         if options[:css_classes]
@@ -32,7 +33,7 @@ module Hyrax
               value = value.to_f.round(3)
             end
             markup << '; ' unless index == 0
-            markup << attribute_value_to_html(value.to_s, link_label)
+            markup << attribute_value_to_html(parse_url(value.to_s), link_label)
           end
         end
         markup << %(</div>)
@@ -42,12 +43,21 @@ module Hyrax
 
       private
 
-        def attribute_value_to_html(value, link_label)
-          return '' if value.blank?
-          link_label = value unless link_label.present?
-          markup = "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link_to(link_label, value, target: :_blank)}</span>"
-          markup.html_safe
+      def attribute_value_to_html(value, link_label)
+        return '' if value.blank?
+        link_label = value unless link_label.present?
+        markup = "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link_to(link_label, value, target: :_blank)}</span>"
+        markup.html_safe
+      end
+
+      def parse_url(url)
+        u = URI.parse(url)
+        if !u.scheme
+          "http://#{url}"
+        else
+          url
         end
+      end
     end
   end
 end

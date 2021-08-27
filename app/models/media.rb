@@ -424,6 +424,10 @@ class Media < Morphosource::Works::Base
       .where(media: id)
   end
 
+  def active_fund_code_association
+    fund_code_associations.where(active: true)&.first
+  end
+
   def fund_codes
     FundCode
       .joins(:fund_code_media_associations)

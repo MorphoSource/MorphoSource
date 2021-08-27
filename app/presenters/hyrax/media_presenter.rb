@@ -17,6 +17,7 @@ module Hyrax
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_taxonomy_title, :physical_object_link, :physical_object_id,
+      :organization_agreement_uri, :organization_attachment_url,
       :device_and_facility, :device_link, :device, :device_id, :device_label, :device_manufacturer, :device_description,
       :device_organization_institution, :device_modality, :device_modality_term,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software,
@@ -31,7 +32,7 @@ module Hyrax
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
       :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list,
-      :fund_codes, :fund_code_associations,
+      :fund_codes, :fund_code_associations, :active_fund_code_association,
       # Permissions
       :permits_commercial_use, :permits_3d_use, :required_archival_of_published_derivatives,
       :morphosource_use_agreement_type, :download_reviewer,
@@ -455,6 +456,17 @@ module Hyrax
             @material = cultural_heritage_object.material
             @short_title = cultural_heritage_object.short_title
           end
+
+          if physical_object.organization_id.present? && Organization.exists?(physical_object.organization_id.first)
+            physical_object_organization = Organization.find(physical_object.organization_id.first)
+            @organization_agreement_uri = physical_object_organization.agreement_uri
+            if physical_object_organization.attachment('agreement').present?
+              @organization_attachment_url = Rails.application.routes.url_helpers.attachment_path(
+                id: physical_object_organization.id,
+                field: 'agreement'
+              )
+            end
+          end
         end
 
         # get device from imaging event
@@ -537,6 +549,7 @@ module Hyrax
       end # end if imaging_event present?
 
       @fund_code_associations = media.fund_code_associations
+      @active_fund_code_association = media.active_fund_code_association
       @fund_codes = media.fund_codes
 
     end

@@ -1,4 +1,4 @@
-class BatchObjectImportJob < ApplicationJob
+class BatchObjectImportJob < Morphosource::ApplicationJobWithStatus
 
   queue_as Hyrax.config.mass_ingest_queue_name
 

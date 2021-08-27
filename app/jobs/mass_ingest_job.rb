@@ -1,4 +1,4 @@
-class MassIngestJob < ApplicationJob
+class MassIngestJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.mass_ingest_queue_name
 

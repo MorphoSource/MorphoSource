@@ -1,4 +1,4 @@
-class BatchSubmission::ConvertedMs1Batch::BiologicalSpecimenSubcontrolJob < ApplicationJob
+class BatchSubmission::ConvertedMs1Batch::BiologicalSpecimenSubcontrolJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest
 
   queue_as Hyrax.config.ingest_queue_name

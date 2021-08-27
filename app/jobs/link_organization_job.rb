@@ -1,4 +1,4 @@
-class LinkOrganizationJob < ApplicationJob
+class LinkOrganizationJob < Hyrax::ApplicationJob
   include Morphosource::Dashboard::LinkedTeamsBehavior
 
   queue_as Hyrax.config.update_fast_queue_name

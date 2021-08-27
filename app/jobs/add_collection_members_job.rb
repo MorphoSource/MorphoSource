@@ -1,4 +1,4 @@
-class AddCollectionMembersJob < ApplicationJob
+class AddCollectionMembersJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.update_slow_queue_name
 
   # @param [String] collection_id ID string of collection

@@ -1,4 +1,4 @@
-class UpdateWorkMetadataJob < ApplicationJob
+class UpdateWorkMetadataJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_slow_queue_name
 

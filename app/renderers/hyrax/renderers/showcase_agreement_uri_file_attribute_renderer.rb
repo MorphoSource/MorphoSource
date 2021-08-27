@@ -4,7 +4,7 @@ module Hyrax
       def render
         markup = ''
         values = options[:values] if options[:values]&.first.present?
-        return markup if values.blank? && !options[:attachment_path].present? && !options[:include_empty]
+        return markup if values.blank? && !options[:attachment_file_url].present? && !options[:include_empty]
         css_classes = '' 
         if options[:css_classes]
           css_classes << options[:css_classes]
@@ -13,7 +13,7 @@ module Hyrax
         markup << %(<div class='col-xs-6 showcase-label'>#{label}</div>)
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
         markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)
-        if options[:attachment_path].present? && options[:attachment_file_url].present?
+        if options[:attachment_file_url].present?
           if options[:link_label].present?
             link_label = options[:link_label]
           else

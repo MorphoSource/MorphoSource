@@ -20,27 +20,13 @@
 
 <%= presenter.attribute_to_html(:preview_mode, render_as: :showcase_default, include_empty: true, html_dl: false) %>
 
-<% if curation_concern.ignore_organization_agreement&.first == "true" %>
-    <%= @presenter.attribute_to_html(
-      :agreement_uri, 
-      label: 'Additional usage agreement', 
-      render_as: :showcase_agreement_uri_file, 
-      include_empty: true, 
-      text_if_empty: 'None',
-      attachment_path: curation_concern.attachment('agreement') || '',
-      attachment_file_url: main_app.attachment_path(field: 'agreement'),
-      html_dl: false) 
-    %>
-  <% else %>
-    <%= @presenter.attribute_to_html(
-      :agreement_uri, 
-      label: 'Additional usage agreement', 
-      render_as: :showcase_agreement_uri_file, 
-      include_empty: true, 
-      text_if_empty: 'None',
-      attachment_path: @presenter.organization_attachment_url || '',
-      attachment_file_url: @presenter.organization_attachment_url,
-      values: @presenter.organization_agreement_uri,
-      html_dl: false) 
-    %>
-  <% end %>
+<%= @presenter.attribute_to_html(
+  :agreement_uri, 
+  label: 'Additional usage agreement', 
+  render_as: :showcase_agreement_uri_file, 
+  include_empty: true, 
+  text_if_empty: 'None',
+  attachment_file_url: @presenter.attachment_url,
+  values: @presenter.agreement_uri,
+  html_dl: false) 
+%>

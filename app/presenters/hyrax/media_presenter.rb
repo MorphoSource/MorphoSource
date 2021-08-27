@@ -17,7 +17,7 @@ module Hyrax
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_taxonomy_title, :physical_object_link, :physical_object_id,
-      :organization_agreement_uri, :organization_attachment_url,
+      :agreement_uri, :attachment_url,
       :device_and_facility, :device_link, :device, :device_id, :device_label, :device_manufacturer, :device_description,
       :device_organization_institution, :device_modality, :device_modality_term,
       :other_details, :imaging_event_creator, :imaging_event_date_created, :imaging_event_software,
@@ -456,17 +456,6 @@ module Hyrax
             @material = cultural_heritage_object.material
             @short_title = cultural_heritage_object.short_title
           end
-
-          if physical_object.organization_id.present? && Organization.exists?(physical_object.organization_id.first)
-            physical_object_organization = Organization.find(physical_object.organization_id.first)
-            @organization_agreement_uri = physical_object_organization.agreement_uri
-            if physical_object_organization.attachment('agreement').present?
-              @organization_attachment_url = Rails.application.routes.url_helpers.attachment_path(
-                id: physical_object_organization.id,
-                field: 'agreement'
-              )
-            end
-          end
         end
 
         # get device from imaging event
@@ -548,10 +537,33 @@ module Hyrax
         imaging_event_exist = false
       end # end if imaging_event present?
 
+      # fund codes
       @fund_code_associations = media.fund_code_associations.to_a
       @active_fund_code_association = media.active_fund_code_association
       @fund_codes = media.fund_codes.to_a
 
+      # agreement uri and attachment url
+      if media.ignore_organization_agreement&.first == "true"
+        @agreement_uri = media.agreement_uri
+        if media.attachment('agreement').present?
+          @attachment_url = Rails.application.routes.url_helpers.attachment_path(
+            field: 'agreement'
+          )
+        end
+      elsif (
+        physical_object.present? && 
+        physical_object.organization_id.present? && 
+        Organization.exists?(physical_object.organization_id.first)
+      )
+        physical_object_organization = Organization.find(physical_object.organization_id.first)
+        @agreement_uri = physical_object_organization.agreement_uri
+        if physical_object_organization.attachment('agreement').present?
+          @attachment_url = Rails.application.routes.url_helpers.attachment_path(
+            id: physical_object_organization.id,
+            field: 'agreement'
+          )
+        end
+      end
     end
 
     def related_media_ids

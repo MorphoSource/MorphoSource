@@ -17,30 +17,17 @@ Labels and hints are in config/locales/media_permissions -->
 <% if f.object.model_name.name == 'Organization' # Is this team org settings tab? %> 
   <%= render_edit_field_partial('agreement_uri', f: f) %>
 <% elsif f.object.model_name.name == 'Media' %>
-  <% if curation_concern.ignore_organization_agreement&.first == "true" %>
-    <%= @presenter.attribute_to_html(
-      :agreement_uri, 
-      label: 'Additional usage agreement', 
-      render_as: :showcase_agreement_uri_file, 
-      include_empty: true, 
-      text_if_empty: 'None',
-      attachment_path: curation_concern.attachment('agreement') || '',
-      attachment_file_url: main_app.attachment_path(field: 'agreement'),
-      html_dl: false) 
-    %>
-  <% else %>
-    <%= @presenter.attribute_to_html(
-      :agreement_uri, 
-      label: 'Additional usage agreement', 
-      render_as: :showcase_agreement_uri_file, 
-      include_empty: true, 
-      text_if_empty: 'None',
-      attachment_path: @presenter.organization_attachment_url || '',
-      attachment_file_url: @presenter.organization_attachment_url,
-      values: @presenter.organization_agreement_uri,
-      html_dl: false) 
-    %>
-
+  <%= @presenter.attribute_to_html(
+    :agreement_uri, 
+    label: 'Additional usage agreement', 
+    render_as: :showcase_agreement_uri_file, 
+    include_empty: true, 
+    text_if_empty: 'None',
+    attachment_file_url: @presenter.attachment_url,
+    values: @presenter.agreement_uri,
+    html_dl: false) 
+  %>
+  <% if curation_concern.ignore_organization_agreement&.first != "true" %>
     <div class="form-group row">
       <div class="col-xs-12 showcase-value">
         <%= t("morphosource.media.organization_agreement.help").html_safe %>

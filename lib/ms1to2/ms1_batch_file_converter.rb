@@ -3,14 +3,15 @@ module Ms1to2
     include Ms1to2::Factories::ImagingEventFactoryBehavior
     include Ms1to2::Factories::MediaFactoryBehavior
 
-    attr_accessor :input_path, :response, :input_data, :normalized_data, :finalized_data
+    attr_accessor :input_path, :output_path, :response, :input_data, :normalized_data, :finalized_data
 
-    def self.call(input_path)
-      new(input_path).call
+    def self.call(input_path, output_path)
+      new(input_path, output_path).call
     end
 
-    def initialize(input_path)
+    def initialize(input_path, output_path)
       @input_path = input_path
+      @output_path = output_path
       @response = {
         status: 'not yet started',
         steps: {},
@@ -21,9 +22,8 @@ module Ms1to2
     def call
       parse
       normalize # parse ms1 special fields into optimal format
-      to_csv(normalized_data, '/vagrant/downloads/out.csv')
       finalize # get ms2 attributes using Ms1to2::Models::BaseObject
-      to_csv(finalized_data, '/vagrant/downloads/final.csv')
+      to_csv(finalized_data, output_path)
 
       return response
     end
@@ -56,8 +56,11 @@ module Ms1to2
       .except(:id)
 
       # process ms_specimens table to get biological_specimen attributes
+      bso = row['ms_specimens'].transform_keys(&:to_sym)
+      bso.merge!(vouchered_attribute(bso))
+
       new_row[:biological_specimen] = Ms1to2::Models::BiologicalSpecimen.new(
-        nil, row['ms_specimens'].transform_keys(&:to_sym)
+        nil, bso
       )
       .ms2_attributes
       .except(:id)
@@ -95,6 +98,14 @@ module Ms1to2
 
 
       return new_row
+    end
+
+    def vouchered_attribute(bso)
+      if bso[:reference_source].present?
+        {}
+      else
+        { reference_source: ['0'] }
+      end
     end
 
     def derive_specimen_id(id)

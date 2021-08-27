@@ -1,4 +1,4 @@
-class CreateDerivativesJob < ApplicationJob
+class CreateDerivativesJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.heavy_queue_name
 
   # @param [FileSet] file_set

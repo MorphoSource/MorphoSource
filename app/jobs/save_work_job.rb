@@ -1,4 +1,4 @@
-class SaveWorkJob < ApplicationJob
+class SaveWorkJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_slow_queue_name
 

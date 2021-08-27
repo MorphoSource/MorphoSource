@@ -1,4 +1,4 @@
-class UpdateWorkReadGroupsJob < ApplicationJob
+class UpdateWorkReadGroupsJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.update_fast_queue_name
 
   def perform(work, read_groups)

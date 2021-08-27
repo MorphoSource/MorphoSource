@@ -548,9 +548,9 @@ module Hyrax
         imaging_event_exist = false
       end # end if imaging_event present?
 
-      @fund_code_associations = media.fund_code_associations
+      @fund_code_associations = media.fund_code_associations.to_a
       @active_fund_code_association = media.active_fund_code_association
-      @fund_codes = media.fund_codes
+      @fund_codes = media.fund_codes.to_a
 
     end
 

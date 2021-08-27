@@ -12,7 +12,7 @@
           <% end %>
         <% end %>
         <% if @presenter.active_fund_code_association.present? %>
-          <li><%= active_fund_code.title %> <span class="label label-info">Active</span></li>
+          <li><%= @presenter.active_fund_code_association.title %> <span class="label label-info">Active</span></li>
         <% end %>
       </ul>
     </div>

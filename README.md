@@ -2,7 +2,7 @@
 
 A generated Hyrax-based MorphoSource application
 
-*Note that this application is intended to run within the [morphosource-vagrant](https://github.com/MorphoSource/morphosource-vagrant) virtual machine*
+*Note that these instructions for running this application are intended to run within the [morphosource-vagrant](https://github.com/MorphoSource/morphosource-vagrant) virtual machine. There also exists an Ansible solution for running the application on production environments.*
 
 
 ## Prerequisites (vagrant / virtualbox)

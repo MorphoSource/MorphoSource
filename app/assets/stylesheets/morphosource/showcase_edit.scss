@@ -428,6 +428,7 @@ input[type=checkbox].disabled {
       .fileinput-button {
         margin-left: auto;
         margin-right: auto;
+        float: none !important;
       }
       .fileupload-progress {
         margin-top: 0;

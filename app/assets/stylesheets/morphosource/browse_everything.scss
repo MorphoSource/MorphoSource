@@ -1,0 +1,17 @@
+/* Browse Everything custom styles */
+
+@media (min-width: 992px) {
+  div#browse-everything div.modal-dialog.modal-lg {
+    width: 700px;
+  }
+}
+
+@media (min-width: 1200px) {
+  div#browse-everything div.modal-dialog.modal-lg {
+    width: 900px;
+  }
+}
+
+div#browse-everything.loading {
+  background: none !important;
+}

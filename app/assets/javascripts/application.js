@@ -13,6 +13,7 @@
 
 // Required by Blacklight
 //= require jquery
+//= require browse_everything
 //= require jquery_ujs
 // Important: the order of loadng dataTables js matters
 //= require dataTables/jquery.dataTables

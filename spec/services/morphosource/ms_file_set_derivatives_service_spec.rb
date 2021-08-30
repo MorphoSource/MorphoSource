@@ -1,5 +1,5 @@
 require 'rails_helper'
-require 'morphosource/specs/ms_shared_specs'
+require 'support/ms_derivative_service'
 
 RSpec.describe Morphosource::MsFileSetDerivativesService do
 	let(:valid_file_set) do

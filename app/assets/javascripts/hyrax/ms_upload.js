@@ -20,12 +20,15 @@ $( document ).ready(function() {
     $('#fileupload')
       .bind('fileuploadstart', function (e, data) {
         $('[id="add-files"]').hide();
+        $('[id="add-cloud-files"]').hide();
+        $('.dropzone').hide();
         $('[id="file-upload-cancel-btn"]').show();
         uploadStatusOK = false;
       })
       .bind('fileuploadcompleted', function (e, data) {
         console.log('fileuploadcompleted');
         $('[id="add-files"]').hide();
+        $('[id="add-cloud-files"]').hide();
         $('.dropzone').hide();
         uploadStatusOK = true;
         justUploaded = 1;
@@ -43,6 +46,8 @@ $( document ).ready(function() {
       .bind('fileuploadfail', function (e, data) {
         console.log('fileuploadfail');
         $('[id="add-files"]').show();
+        $('[id="add-cloud-files"]').show();
+        $('.dropzone').show();
         $('[id="file-upload-cancel-btn"]').hide();
         uploadStatusOK = true;
         justUploaded = 0;
@@ -50,6 +55,7 @@ $( document ).ready(function() {
       .bind('fileuploaddestroyed', function (e, data) {
         console.log('fileuploaddestroyed');
         $('[id="add-files"]').show();
+        $('[id="add-cloud-files"]').show();
         $('.dropzone').show();
         uploadStatusOK = true;
         justUploaded = 0;

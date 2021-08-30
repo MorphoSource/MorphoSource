@@ -1,4 +1,4 @@
-class BatchUserImportJob < ApplicationJob
+class BatchUserImportJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.mass_ingest_queue_name
 

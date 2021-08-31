@@ -25,6 +25,7 @@ build_job:
       - bin/
       - config/database.yml
       - config/analytics.yml
+      - config/browse_everything_providers.yml
       - public/assets/
       - vendor/bundle/
   tags:

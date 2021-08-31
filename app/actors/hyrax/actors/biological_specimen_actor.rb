@@ -57,7 +57,11 @@ module Hyrax
       end
 
       def fallback_generated_title(vouchered, user)
-        voucher_term = vouchered.first == 'Yes' ? 'Vouchered' : 'Unvouchered'
+        if vouchered.present? && vouchered.first == 'Yes'
+          voucher_term = 'Vouchered' 
+        else
+          voucher_term = 'Unvouchered'
+        end
         user_term = user.display_name.present? ? user.display_name : user.email
         I18n.t('morphosource.fallback_object_title', voucher: voucher_term, user: user_term)
       end

@@ -75,9 +75,7 @@
               <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
                 </div>
             </div>
-            <%= f.input :creator, label: 'Object collector', as: :multi_value %>
-            <%= f.input :contributor, as: :multi_value %>
-            <%= f.input :publisher %>
+            <%= f.input :creator, label: 'Object collector', as: :multi_value, required: false %>
           </div>
         </div>
 

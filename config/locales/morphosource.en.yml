@@ -15,7 +15,7 @@ en:
         fund_code_charges: 'Fund Code Charges'
         media_cart: 'Media Cart'
         previous_downloads: 'Previous Downloads'
-        requests: 'Requests'
+        requests: 'My Requests'
         manage_requests: 'Manage Requests'
       fund_codes:
         header: 'Fund Code Control Panel'

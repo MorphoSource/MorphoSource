@@ -146,6 +146,7 @@ module Morphosource
         charges = []
         charges << generate_initial_charge
         charges << generate_external_markup_charge if fund_code.external_user
+        return charges
       end
 
       def generate_initial_charge

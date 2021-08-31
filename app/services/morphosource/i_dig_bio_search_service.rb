@@ -60,9 +60,26 @@ module Morphosource
       # set idigbio_uuid to uuid
       # set original_location to whichever of dwc:locality, dwc:verbatimLocality, dwc:country occurs first
       idb = Morphosource::IDigBio.view(idigbio_uuid)
+      return self.biological_specimen_params_from_idigbio_result(idb)
+    end
+
+    def self.biological_specimen_params_from_occurrence_id(occurrence_id)
+      occurrence_id = Array(occurrence_id)&.first&.strip
+      return {} unless occurrence_id.present?
+      
+      results = self.call({ 'occurrence_id' => occurrence_id })
+      if results.present? && (results&.first&.dig('data', 'dwc:occurrenceID').downcase == occurrence_id.downcase)
+        idb = results.first
+        return self.biological_specimen_params_from_idigbio_result(idb)
+      else
+        return {}
+      end
+    end
+
+    def self.biological_specimen_params_from_idigbio_result(idb)
       bso_params = {
-        'idigbio_uuid' => idigbio_uuid,
-        'description' => "Imported from iDigBio. UUID: #{idigbio_uuid} Occurrence ID: #{idb['data']['dwc:occurrenceID']}",
+        'idigbio_uuid' => idb['uuid'],
+        'description' => "Imported from iDigBio. UUID: #{idb['uuid']} Occurrence ID: #{idb['data']['dwc:occurrenceID']}",
         'idigbio_recordset_id' => idb['indexTerms']['recordset'],
         'vouchered' => "Yes"
       }

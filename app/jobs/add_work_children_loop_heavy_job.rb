@@ -1,4 +1,4 @@
-class AddWorkChildrenLoopHeavyJob < ApplicationJob
+class AddWorkChildrenLoopHeavyJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.heavy_queue_name
 
   # @param [String] parent_id ID string of parent work

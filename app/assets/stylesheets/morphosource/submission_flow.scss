@@ -27,6 +27,10 @@
     margin-right: 0;
   }
 
+  input#media_agreement_uri.disabled {
+    margin: 0;
+  }
+
   #fileupload {
     p {
       padding: 0 10px;

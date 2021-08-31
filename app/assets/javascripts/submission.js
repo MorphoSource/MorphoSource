@@ -1411,20 +1411,6 @@ $( document ).ready(function() {
           }
         });
 
-        $('a#organization-attachment-remove').click(function(event){
-          event.preventDefault();
-          $('div#organization-attachment-section').addClass('hide').removeClass('show');
-          $('div#work-attachment-section').addClass('show').removeClass('hide');
-          data.organizationForAttachment = null;
-        });
-
-        $('a#organization-attachment-replace').click(function(event){
-          event.preventDefault();
-          $('div#organization-attachment-section').addClass('show').removeClass('hide');
-          $('div#work-attachment-section').addClass('hide').removeClass('show');
-          data.organizationForAttachment = data.organizationId;
-        });
-
         $('#new_media').submit(function(){
           if (!uploadStatusOK) {
             // file upload is in progress. Prompt for auto save
@@ -1552,7 +1538,7 @@ $( document ).ready(function() {
         this.setMediaPermissionFieldEvent();
 
         // Comment out for debug ability to access any step any time
-        this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        // this.setSidebarViewFade([2, 3, 4, 5, 6, 7, 8, 9, 10]);
       }
 
       setMediaPermissionFieldEvent() {
@@ -1598,18 +1584,46 @@ $( document ).ready(function() {
             self.fillMediaFields(getData.default_fields);
 
             // Organization agreement attachment
-            if (getData.default_fields.attachment_url && getData.organization_id) {
-              self.data.organizationForAttachment = getData.organization_id;
-              $('#organization-attachment-url').attr('href', getData.default_fields.attachment_url);
-              $('#organization-attachment-section').addClass('show').removeClass('hide');
-              $('div#organization-attachment-replace-row').addClass('show').removeClass('hide');
-              $('#work-attachment-section').addClass('hide').removeClass('show');
+            if ( getData.organization_id && ( getData.default_fields.attachment_url || getData.default_fields.agreement_uri ) ) {
+              if (getData.default_fields.attachment_url) {
+                self.data.organizationForAttachment = getData.organization_id;
+
+                $('#organization-attachment-url').attr('href', getData.default_fields.attachment_url);
+                $('#organization-attachment-url').addClass('show').removeClass('hide');
+
+                $('#no-attachment').addClass('hide').removeClass('show');
+
+                $('#organization-agreement-uri').text('');
+                $('#organization-agreement-uri').addClass('hide').removeClass('show'); 
+
+                $('#organization-agreement-help').addClass('show').removeClass('hide');
+                $('#no-agreement-help').addClass('hide').removeClass('show');
+              } else if (getData.default_fields.agreement_uri) {
+                self.data.organizationForAttachment = null;
+
+                $('#organization-agreement-uri').text(getData.default_fields.agreement_uri);
+                $('#organization-agreement-uri').addClass('show').removeClass('hide'); 
+
+                $('#no-attachment').addClass('hide').removeClass('show');
+
+                $('#organization-attachment-url').attr('href', '#');
+                $('#organization-attachment-url').addClass('hide').removeClass('show');
+
+                $('#organization-agreement-help').addClass('show').removeClass('hide');
+                $('#no-agreement-help').addClass('hide').removeClass('show'); 
+              }    
             } else {
               self.data.organizationForAttachment = null;
+              $('#no-attachment').addClass('show').removeClass('hide');
+
+              $('#organization-agreement-uri').text('');
+              $('#organization-agreement-uri').addClass('hide').removeClass('show');
+
               $('#organization-attachment-url').attr('href', '#');
-              $('#organization-attachment-section').addClass('hide').removeClass('show');
-              $('div#organization-attachment-replace-row').addClass('hide').removeClass('show');
-              $('#work-attachment-section').addClass('show').removeClass('hide');
+              $('#organization-attachment-url').addClass('hide').removeClass('show');
+
+              $('#no-agreement-help').addClass('show').removeClass('hide');
+              $('#organization-agreement-help').addClass('hide').removeClass('show');
             }
 
             // Remove loading
@@ -1645,7 +1659,6 @@ $( document ).ready(function() {
             break;
           case 'license': // multi-value fields
           case 'rights_holder':
-          case 'agreement_uri':
           case 'funding':
           case 'publisher':
             $(multiSelector).first().val('');
@@ -1708,7 +1721,6 @@ $( document ).ready(function() {
             break;
           case 'license': // multi-value fields
           case 'rights_holder':
-          case 'agreement_uri':
           case 'funding':
           case 'publisher':
             if (Array.isArray(val) && val.length > 1) {
@@ -1736,8 +1748,8 @@ $( document ).ready(function() {
             }
             break;
           case 'attachment_url':
-            $('div#organization-attachment-row').addClass('permissions-field');
-            $('div#organization-attachment-row label span').after(
+            $('div.media_agreement_uri').addClass('permissions-field');
+            $('div.media_agreement_uri').find('i.tooltip-icon').after(
               "<i class='fas fa-university'></i>"
             );
             break;

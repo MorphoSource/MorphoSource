@@ -6,16 +6,13 @@
     </p>
     <div class="row">
       <ul>
-        <% active_fund_code = nil %>
         <% @presenter.fund_code_associations.each do |fc| %>
-          <% if fc.active %>
-            <% active_fund_code = fc %> 
-          <% else %>
+          <% if fc != @presenter.active_fund_code_association  %>
             <li><%= fc.title %></li>
           <% end %>
         <% end %>
-        <% if active_fund_code.present? %>
-          <li><%= active_fund_code.title %> <span class="label label-info">Active</span></li>
+        <% if @presenter.active_fund_code_association.present? %>
+          <li><%= @presenter.active_fund_code_association.title %> <span class="label label-info">Active</span></li>
         <% end %>
       </ul>
     </div>
@@ -23,11 +20,5 @@
     <p>
       No fund codes have been associated with this media. The hosting and archiving of this media is currently being supported by MorphoSource.
     </p>
-  <% end %>
-  <% if current_user.admin? %>
-    <div class="block" style="background-color: #efefef; margin-top: 1em;">
-      <%= f.input :select_fund_code, collection: @presenter.fund_code_associations - [active_fund_code], label: "Admin: Activate Fund Code" %>
-      <%= f.input :select_new_fund_code, collection: FundCode.all - @presenter.fund_codes, label: "Admin: New Fund Code" %>
-    </div>
   <% end %>
 </div>

@@ -36,8 +36,6 @@ module Hyrax
 
     self.terms -= [ :keyword, :license, :rights_statement, :subject, :title, :language, :source, :resource_type ]
 
-    self.required_fields = [ :vouchered ]
-
     self.single_valued_fields = [
         :catalog_number,
         :collection_code,

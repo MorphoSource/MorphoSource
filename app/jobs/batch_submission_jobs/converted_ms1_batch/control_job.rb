@@ -80,7 +80,7 @@ class BatchSubmissionJobs::ConvertedMs1Batch::ControlJob < Morphosource::Applica
 
     final_related_ids = related_ids
       .uniq
-      .select { |id| ActiveFedora::Base.find(id) if ActiveFedora::Base.exists?(id) }
+      .select { |id| id if ActiveFedora::Base.exists?(id) }
       .compact
     UpdateRelatedWorksIndexJob.perform_later(final_related_ids)
 

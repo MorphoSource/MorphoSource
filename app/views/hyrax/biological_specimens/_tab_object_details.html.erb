@@ -42,7 +42,7 @@
       <% else %>
         <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
       <% end %>
-      <%= f.input :creator, label: @presenter.creator_label, as: :multi_value %>
+      <%= f.input :creator, label: @presenter.creator_label, as: :multi_value, required: false %>
     </div>
 
     <div class="content-block">

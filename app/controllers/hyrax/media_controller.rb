@@ -170,7 +170,7 @@ module Hyrax
     end
 
     def after_destroy(works_to_index, works_to_delete)
-      UpdateRelatedWorksIndexJob.perform_later(works_to_index)
+      UpdateRelatedWorksIndexJob.perform_later(works_to_index.compact.map { |w| w.id })
       works_to_delete&.each do |w|
         w.delete if w.present?
       end

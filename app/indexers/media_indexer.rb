@@ -18,6 +18,7 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['download_access_group_ssim'] = object.download_groups
       solr_doc['download_access_person_ssim'] = object.download_users
       solr_doc['owner_ssim'] = object.owner
+      solr_doc['user_with_ownership_ssi'] = object.user_with_ownership
       solr_doc['download_reviewer_ssim'] = object.download_reviewer
       # add media type facet
       mt = object.human_readable_media_type
@@ -53,15 +54,11 @@ class MediaIndexer < Morphosource::WorkIndexer
           end
         end
 
-        organizations = []
-        physical_objects.each_with_object(organizations) do |obj, orgs|
-          obj.organizations.each { |org| orgs << org }
-        end
-        organizations = organizations.uniq
+        @organizations ||= organizations
 
-        if organizations.present?
-          organization_titles = organizations.map{ |o| o.title.first }
-          organization_id = organizations.map{ |o| o.id }
+        if @organizations.present?
+          organization_titles = @organizations.map{ |o| o.title.first }
+          organization_id = @organizations.map{ |o| o.id }
         else
           organization_titles = nil
           organization_id = nil
@@ -102,7 +99,8 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['member_of_public_collection_ids_ssim'] = object.member_of_public_collection_ids
 
       # team
-      solr_doc['member_of_team_ids_ssim'] = object.member_of_team_ids
+      @team_ids = object.member_of_team_ids
+      solr_doc['member_of_team_ids_ssim'] = @team_ids
       # project
       solr_doc['member_of_project_ids_ssim'] = object.member_of_project_ids
 
@@ -118,6 +116,10 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['media_device_facility_organization_ssim'] = facility_org_title
       solr_doc['media_device_facility_organization_id_tesim'] = facility_org&.id
       solr_doc['media_device_facility_organization_id_ssim'] = facility_org&.id
+
+      # origin of media for org-linked teams
+      # populates facet used only on the linked team
+      solr_doc['org_linked_team_origin_ssim'] = linked_team_origin
    end
   end
 
@@ -129,6 +131,37 @@ class MediaIndexer < Morphosource::WorkIndexer
       "Private"
     elsif fa == ["restricted_download"]
       "Restricted Download"
+    end
+  end
+
+  def organizations
+    organizations = object.physical_objects.each_with_object([]) do |obj, orgs|
+      obj.organizations.each { |org| orgs << org }
+    end
+    organizations.uniq
+  end
+
+  # This populates the 'origin/intersections' facet on linked teams
+  # Facet may not be accurate in edge cases (for example, a media is added as a member of its organization's linked team, and also added as a member of a second linked team)
+  def linked_team_origin
+    @team_ids ||= object.member_of_team_ids
+    @organizations ||= organizations
+    return if @team_ids.blank? && @organizations.blank?
+
+    # assumes that the media belongs to one organization
+    linked_team_id = @organizations&.first&.team_id&.first
+
+    values = []
+
+    if @team_ids.present?
+      if @team_ids.include? linked_team_id
+        values << 'Team and Organization' << 'Team' << 'Organization'
+      else
+        values << 'Team Only' << 'Team'
+      end
+    else
+      return if linked_team_id.blank?
+      values << 'Organization Only' << 'Organization'
     end
   end
 end

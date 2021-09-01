@@ -467,3 +467,9 @@ module MorphosourceHelper
   end
 
 end
+
+class Array 
+  def to_wrapped_html(tag)
+    self.map { |c| "<#{tag}>#{c}</#{tag}>" }.join.html_safe
+  end
+end

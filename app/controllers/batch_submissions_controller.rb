@@ -121,10 +121,10 @@ class BatchSubmissionsController < ApplicationController
     data_rows.each_with_index do |row, index|
       if row["file_name"].nil?
         error_rows[index+1] = row
-        error_messages[index+1] = "file name is missing"
+        error_messages[index+1] = "File name is missing."
       end
     end
-    byebug
+#byebug
     render 'result', locals: { rows: error_rows, messages: error_messages }
     #redirect_to main_app.batch_submissions_result_path     
 

@@ -3,7 +3,26 @@
 
 <h1>Result</h1>
 
-<%= rows.to_s %>
-<br/><br/>
+<% rows.map do |line, row| %>
+	<div class="text-alert">Line <%= line %>: <%= messages[line] %></div>
+	<table class="table">
+	<tr>
+		<%= row.keys.to_wrapped_html('th')%>
+	</tr>
+	<tr>
+		<%= row.values.to_wrapped_html('td')%>
+	</tr>
+	</table>
+<% end %>
 
-<%= messages.to_s %>
+
+
+
+
+
+
+
+
+
+
+

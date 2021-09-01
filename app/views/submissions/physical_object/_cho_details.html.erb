@@ -72,12 +72,12 @@
             <%= f.input :material, as: :multi_value %>
             <%# todo: render date_field in simple_form_bootstrap %>
             <div class="row">
-              <div class="col-xs-6 showcase-label">Date created</div>
+              <div class="col-xs-6 showcase-label">Object collection/creation date</div>
               <div class="col-xs-6 showcase-value">
               <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
                 </div>
             </div>
-            <%= f.input :creator, as: :multi_value %>
+            <%= f.input :creator, label: 'Object collector/creator', as: :multi_value %>
             <%= f.input :contributor, as: :multi_value %>
             <%= f.input :publisher %>
           </div>

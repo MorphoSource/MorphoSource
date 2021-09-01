@@ -75,7 +75,7 @@ module Hyrax
     end
 
     def showcase_time_and_place_details_partial
-      '/hyrax/physical_objects/showcase_time_and_place_details'
+      'showcase_time_and_place_details'
     end
 
     def showcase_bibliographic_citations_partial

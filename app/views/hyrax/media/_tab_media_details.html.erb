@@ -67,6 +67,10 @@
 
     <%= render 'edit_media_fund_codes', f: f %>
 
+    <% if current_user.admin? %>
+      <%= render 'edit_media_admin_settings', f: f %>
+    <% end %>
+
   </div>
   <!-- / right column -->
 

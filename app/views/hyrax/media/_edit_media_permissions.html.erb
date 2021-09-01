@@ -12,5 +12,31 @@ Labels and hints are in config/locales/media_permissions -->
 <%= render_edit_field_partial('funding', f: f) %>
 <%= render_edit_field_partial('publisher', f: f) %>
 <%= render_edit_field_partial('cite_as', f: f) %>
-<%= render_edit_field_partial('agreement_uri', f: f) %>
 <%= render_edit_field_partial('preview_mode', f: f) %>
+
+<% if f.object.model_name.name == 'Organization' # Is this team org settings tab? %> 
+  <%= render_edit_field_partial('agreement_uri', f: f) %>
+<% elsif f.object.model_name.name == 'Media' %>
+  <%= @presenter.attribute_to_html(
+    :agreement_uri, 
+    label: 'Additional usage agreement', 
+    render_as: :showcase_agreement_uri_file, 
+    include_empty: true, 
+    text_if_empty: 'None',
+    attachment_file_url: @presenter.attachment_url,
+    html_dl: false) 
+  %>
+  <% if @presenter.agreement_uri || @presenter.attachment_url %>
+    <div class="form-group row">
+      <div class="col-xs-12 showcase-value">
+        <%= t("morphosource.media.edit.agreement_present").html_safe %>
+      </div>
+    </div>
+  <% else %>
+    <div class="form-group row">
+      <div class="col-xs-12 showcase-value">
+        <%= t("morphosource.media.edit.agreement_absent").html_safe %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

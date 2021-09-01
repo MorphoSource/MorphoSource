@@ -109,31 +109,32 @@
               <%= render_edit_field_partial('publisher', f: f) %>
               <%= render_edit_field_partial('cite_as', f: f) %>
 
+              <%= render_edit_field_partial('preview_mode', f: f) %>
+
               <div>
-                <div id='organization-attachment-section' class='hide'>
-                  <div id='organization-attachment-row' class="row">
-                    <div class="col-xs-6 showcase-label">
-                      <label class="control-label optional" for="organization_attachment"><span>Additional usage agreement </span></label>
-                    </div>
-                    <div class="col-xs-6 showcase-value" id="organization_attachment">
-                      An <a href='#' id='organization-attachment-url'>agreement file</a> has been suggested by physical object organization. <a href='#' id='organization-attachment-remove'>Remove or replace.</a>
-                    </div>
+                <div class="form-group row string optional media_agreement_uri attachment-container">
+                  <div class="col-xs-6 showcase-label">
+                    <label class="control-label string optional" for="media_agreement_uri">Additional usage agreement</label>
+                    <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
                   </div>
+
+                  <div class="col-xs-6 showcase-value">
+                    <span id='no-attachment' class='show'>None</span>
+                    <span id='organization-agreement-uri' class='hide'>URI missing</span>
+                    <a href='#' target=”_blank” id='organization-attachment-url' class='hide'>Agreement file</a>
+                  </div>
+
+                  <%= f.input :agreement_uri, :as => :hidden %>
                 </div>
-                <div id='work-attachment-section'>
-                  <%= render_edit_field_partial('agreement_uri', f: f) %>
-                  <div id='organization-attachment-replace-row' class="row hide">
-                    <div class="col-xs-6 showcase-label"></div>
-                    <div class="col-xs-6 showcase-value">
-                      <a href='#' id='organization-attachment-replace'>Use suggested organization usage agreement</a>
-                    </div>
+
+                <div class="form-group row">
+                  <div class="col-xs-12 showcase-value">
+                    <span id='no-agreement-help' class='show'><%= t("morphosource.media.new.agreement_initial").html_safe %></span>
+                    <span id='organization-agreement-help' class='hide'><%= t("morphosource.media.new.agreement_organization").html_safe %></span>
                   </div>
                 </div>
               </div>
             </div>
-
-            <%= render_edit_field_partial('preview_mode', f: f) %>
-
           </div>
 
           <div class="block showcase-edit showcase-section">

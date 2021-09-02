@@ -113,18 +113,20 @@ class BatchSubmissionsController < ApplicationController
 
 
   def parse_manifest(file)
+    # column 1 can be ignored
+    # field names is on row 6
+    # field values start from row 7, column 2
     creek = Creek::Book.new file.tempfile.path, with_headers: true
     error_rows = {}
     error_messages = {}
     sheet = creek.sheets[0]
-    data_rows = sheet.simple_rows.to_a.drop(1) # drop the column header row
+    data_rows = sheet.simple_rows.to_a.shift(6) # remove non-data rows
     data_rows.each_with_index do |row, index|
-      if row["file_name"].nil?
+      if row["media.media_file"].nil?
         error_rows[index+1] = row
-        error_messages[index+1] = "File name is missing."
+        error_messages[index+1] = "media.media_file is missing."
       end
     end
-#byebug
     render 'result', locals: { rows: error_rows, messages: error_messages }
     #redirect_to main_app.batch_submissions_result_path     
 

@@ -346,14 +346,14 @@ module Hyrax
 
       def after_update_response
         if browse_everything_file_present
-          flash[:alert] = "New media file is being downloaded from the cloud, this file will not be available until download and processing is complete."
+          flash[:alert] = I18n.t("morphosource.media.alert.browse_everything")
         end
         if (fileset_visibility_changed? || curation_concern.visibility_changed?)
           if curation_concern.attributes["fileset_visibility"] == [""]
             if permissions_changed?
-              return redirect_to hyrax.copy_access_permission_path(curation_concern)
+              return redirect_to hyrax.copy_access_permission_path(curation_concern), alert: flash[:alert]
             else
-              return redirect_to main_app.copy_hyrax_permission_path(curation_concern)
+              return redirect_to main_app.copy_hyrax_permission_path(curation_concern), alert: flash[:alert]
             end
           end
           if curation_concern.attributes["fileset_visibility"] == ["restricted"]

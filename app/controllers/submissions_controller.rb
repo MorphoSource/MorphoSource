@@ -263,15 +263,15 @@ class SubmissionsController < ApplicationController
     end
     reindex_catalog_works
 
-    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en'), notice: flash_message if @submission.media_id
+    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en'), notice: flash_message, alert: alert_message if @submission.media_id
   end
 
   def flash_message
-    if params[:selected_files].present?
-      "New media file is being downloaded from the cloud, this file will not be available until download and processing is complete. "
-    else
-      "New media has been added. "
-    end
+    "New media has been added. "
+  end
+
+  def alert_message
+    I18n.t("morphosource.media.alert.browse_everything") if params[:selected_files].present?
   end
 
   # AJAX Physical object and media edit page submission methods

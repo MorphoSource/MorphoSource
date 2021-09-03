@@ -136,7 +136,7 @@ module Hyrax
         Morphosource::AttachmentService.delete(curation_concern.id, 'agreement')
         params.delete(:media_attachment_delete)
       end
-
+        
       if file_formats_valid? && actor.update(actor_environment)
         after_update_response
       else
@@ -162,6 +162,7 @@ module Hyrax
             @countries_service = Morphosource::CountriesService.new
             @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
             @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
+
             render '/hyrax/media/edit', presenter: @presenter, status: :unprocessable_entity
           end
           wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
@@ -344,6 +345,9 @@ module Hyrax
       end
 
       def after_update_response
+        if browse_everything_file_present
+          flash[:alert] = "New media file is being downloaded from the cloud, this file will not be available until download and processing is complete."
+        end
         if (fileset_visibility_changed? || curation_concern.visibility_changed?)
           if curation_concern.attributes["fileset_visibility"] == [""]
             if permissions_changed?
@@ -363,6 +367,10 @@ module Hyrax
           wants.html { redirect_to [main_app, curation_concern], notice: "Work \"#{curation_concern}\" successfully updated." }
           wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
         end
+      end
+
+      def browse_everything_file_present
+        params[:selected_files].present?
       end
 
       # get the old file set visibility so we can tell if it is being changed

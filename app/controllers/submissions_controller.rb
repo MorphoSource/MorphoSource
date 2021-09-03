@@ -262,13 +262,19 @@ class SubmissionsController < ApplicationController
       end
     end
     reindex_catalog_works
-    # render 'show' # re-enable for debug mode
-    flash_message = "New media has been added. "
+
     redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en'), notice: flash_message if @submission.media_id
   end
 
-  # AJAX Physical object and media edit page submission methods
+  def flash_message
+    if params[:selected_files].present?
+      "New media file is being downloaded from the cloud, this file will not be available until download and processing is complete. "
+    else
+      "New media has been added. "
+    end
+  end
 
+  # AJAX Physical object and media edit page submission methods
   def new_organization_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin

@@ -27,9 +27,15 @@
           </div>
         </div>
         <div class="checkbox-form-group row">
+
+          <% ids = media.present? ? media.id : "" %>
           <%= form_for current_user,
-                       url: '',
-                       html: { multipart: true } do |f| %>
+                       url: main_app.zip_path,
+                       method: :post,
+                       html: { id: 'download-form', multipart: true } do |f| %>
+            <%= hidden_field_tag 'ids[]', ids %>
+            <%= hidden_field_tag 'usage', "usagetest" %>
+            <%= hidden_field_tag 'usage_list', "usagelisttest" %>
 
               <div class="profile-checkbox-list">
                 <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
@@ -44,7 +50,7 @@
                 </div>
               </div>
 
-          <% end %>
+
         </div>
 
 
@@ -63,7 +69,11 @@
       </div>
       <div class="modal-footer">
         <input data-download-item-id="" type="button" name="download" value="Download Media" class="btn btn-info" id="modal-download" disabled="disabled" />
+      <%= submit_tag("DOWNLOAD") %>
       </div>
+
+<% end # /form %>
+
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

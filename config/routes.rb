@@ -232,7 +232,7 @@ Rails.application.routes.draw do
   root 'hyrax/homepage#index'
 
   scope module: :morphosource do
-    get :zip, action: :zip, controller: :zip_media
+    post :zip, action: :zip, controller: :zip_media
   end
 
   # Permissions routes

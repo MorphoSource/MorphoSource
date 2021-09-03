@@ -50,5 +50,5 @@
 <%# hidden div and modal for download agreement %>
 <% if current_user.present? %>
   <%= render 'download_agreements_container', presenter: @presenter %>
-  <%= render 'morphosource/my/modals/download_agreements' %>
+  <%= render 'morphosource/my/modals/download_agreements', locals: {media_id: @presenter.id} %>
 <% end %>

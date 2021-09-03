@@ -121,12 +121,14 @@ $( document ).ready(function() {
           $('#batch_usage_list').val(usageList());
           downloadForm.submit();
         } else if (itemId == 'CURRENT') { 
+alert('current item download in media page');
           console.log('current item download in media page');
           var link = $('#hidden-file-download').attr('href') + 
             "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usageList());
           $('#hidden-file-download').attr('href', link); 
-          jQuery('#hidden-file-download')[0].click();
+//          jQuery('#hidden-file-download')[0].click();
         } else if (itemId != '') { 
+alert("(single) download item button in cart or my request");
           console.log("(single) download item button in cart or my request");
           var link = $('#link-to-download-item-'+itemId).attr('href') + 
             "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usageList());
@@ -140,6 +142,13 @@ $( document ).ready(function() {
         alert('Please make sure you have selected one or more categories and filled out your intended usage');
       }
     });
+
+    $('form#download-form').on('submit', function (e) {
+      e.preventDefault();
+      this.submit();
+      //ajax_post(this);
+    });
+
 
     $(document).on('click', '#get-profile-intent', function(){
       isProfileUsed = $(this).prop('checked');

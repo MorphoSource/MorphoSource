@@ -18,6 +18,12 @@ module Morphosource
       zipline(@file_mappings, "#{output_prefix}.zip")
     end
 
+    def cart_to_zip
+      # for get requests validate the referer 
+      return head(:unauthorized) unless (request.referer.present? && request.referer.include?('dashboard/my/'))
+      zip
+    end
+
     private
 
       def zip_params_valid?

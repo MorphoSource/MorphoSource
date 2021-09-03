@@ -233,6 +233,7 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     post :zip, action: :zip, controller: :zip_media
+    get :zip, action: :cart_to_zip, controller: :zip_media
   end
 
   # Permissions routes

@@ -10,6 +10,7 @@ module Morphosource
     # GET /zip?ids[]=filesetid1&ids[]=filesetid2
     def zip
       return head(:bad_request) unless zip_params_valid?
+      @media_ids = authorized_to_download_list
       return head(:unauthorized) unless authorized_to_download?
       prepare_file_paths_and_names
       return head(:bad_request) if @files.length == 0
@@ -19,31 +20,38 @@ module Morphosource
     end
 
     def cart_to_zip
-      # for get requests validate the referer 
-      return head(:unauthorized) unless (request.referer.present? && request.referer.include?('dashboard/my/'))
+      # for get requests validate the referer first
+      return head(:unauthorized) unless referer_is_valid?
       zip
     end
 
     private
 
+      def referer_is_valid?
+        return (request.referer.present? && request.referer.include?('dashboard/my/'))
+      end
+
       def zip_params_valid?
         params[:ids] && params[:ids].is_a?(Array) && params[:ids].any?
       end
 
-      def authorized_to_download?
+      def authorized_to_download_list
+        auth_list = []
         @media_ids = params[:ids].uniq
         @media_ids.each do |id|
-          # next if user has download access to media
-          next if current_user.can?(:download, id)
-          # next if user has an approved request to download
-          next if current_user.approved_to_download?(id)
-          return false
+          if current_user.can?(:download, id) || current_user.approved_to_download?(id)
+            auth_list << id 
+          end
         end
-        true
+        return auth_list
+      end
+
+      def authorized_to_download?
+        return @media_ids.present?
       end
 
       def prepare_file_paths_and_names
-        media = ::Media.where(id: params[:ids])
+        media = ::Media.where(id: @media_ids)
         file_sets = media.map{|m| m.file_sets}.flatten
         @files = file_sets.map do |file|
           m = file.parent

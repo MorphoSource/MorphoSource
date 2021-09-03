@@ -35,7 +35,8 @@ $( document ).ready(function() {
       // download item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
-      set_agreements(itemId);
+      var mediaId = $(this).attr('data-media-id');
+      set_agreements(itemId, mediaId);
       showAgreementModal();
     });
   }
@@ -83,7 +84,7 @@ $( document ).ready(function() {
       $('.btn-download-item').bind('click', function(e) { 
         // media page download button clicked
         e.preventDefault();
-        set_agreements('CURRENT');
+        set_agreements('CURRENT', $(this).attr('data-media-id'));
         showAgreementModal();
       });  
     }
@@ -112,19 +113,20 @@ $( document ).ready(function() {
       var usage = $('#custom-usage').val();
       if ( $('#modal-agree').prop('checked') &&
         usage.length >= 50 && usageList() != "" )  {
-
-        if ( isCartPage || isRequestPage ) {
+        
+        singleDownloadId = $('input[name="ids[]"]').val();
+        if (singleDownloadId == 'SELECTED') {
           console.log('item(s) selected in cart');
           $('#batch_usage').val(usage);
           $('#batch_usage_list').val(usageList());
           downloadForm.submit();
-
-        } else {
+        } else if (singleDownloadId != '') {
+          console.log('downloading single ids[] = ' + singleDownloadId);
           $('input[name=usage]').val(usage);
           $('input[name=usage_list]').val(usageList());
-
           this.submit();
-
+        } else {
+          alert('There is an error preparing for download');
         }
 
       } else {
@@ -153,11 +155,12 @@ function showAgreementModal() {
   $('#modal-download').attr('disabled', 'disabled');
 }
 
-function set_agreements(itemId) {
+function set_agreements(itemId, singleMediaId) {
   // set the agreement content in the modal  
 
   if (itemId) {
     // set the item id in the button for download one item
+    $('input[name="ids[]"]').val(singleMediaId);
     $('input#modal-download').attr('data-download-item-id', itemId);
     var agreementWrapper = '[data-item-id="' + itemId + '"] ';
     var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
@@ -169,6 +172,7 @@ function set_agreements(itemId) {
 
     var agreements = new Array();
     var customLinks = new Array();
+    $('input[name="ids[]"]').val('SELECTED');
     $('input#modal-download').attr('data-download-item-id', 'SELECTED');
     var selectedCount = $("input[type='checkbox'].downloadable_items:checked").length;
     $("input[type='checkbox'].downloadable_items:checked").each(function() {

@@ -28,8 +28,8 @@
         </div>
         <div class="checkbox-form-group row">
 
-          <% ids = media.present? ? media.id : "" %>
-          <%= form_for current_user,
+<% ids = media.present? ? media.id : "" %>
+<%= form_for current_user,
                        url: main_app.zip_path,
                        method: :post,
                        html: { id: 'download-form', multipart: true } do |f| %>
@@ -70,6 +70,8 @@
       <div class="modal-footer">
         <input data-download-item-id="" type="submit" name="download" value="Download Media" class="btn btn-info" id="modal-download" disabled="disabled" />
       </div>
+
+<%= recaptcha_v3(action: 'download') %>
 
 <% end # /form %>
 

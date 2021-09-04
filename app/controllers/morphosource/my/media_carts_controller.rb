@@ -13,6 +13,14 @@ module Morphosource
       end
 
       def download
+        recaptcha_valid = verify_recaptcha(action: 'download')
+  byebug
+        if recaptcha_valid
+
+        else
+        
+        end
+
         get_downloadable_items
         get_work_ids_by_items
         usage = request.params['usage'].present? ? request.params['usage'] : ''

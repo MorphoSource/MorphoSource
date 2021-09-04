@@ -60,6 +60,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
 
 gem 'render_async'
+gem 'recaptcha'
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.

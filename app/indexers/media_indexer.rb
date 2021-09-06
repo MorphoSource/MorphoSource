@@ -171,26 +171,10 @@ class MediaIndexer < Morphosource::WorkIndexer
     elsif @project_ids.present?
       values << 'Team Only' << 'Team'
     end
-<<<<<<< HEAD
     values
   end
 
   def project_parent_ids
     Morphosource::SolrService.new.get_docs('',{fq: "(id:(#{@project_ids.join(' OR ')}))", fl:"nesting_collection__parent_ids_ssim"}).map{|d| d["nesting_collection__parent_ids_ssim"]}.flatten.compact.uniq
-  end
-
-  def linked_team_member_of_team_ids
-    @team_ids ||= object.member_of_team_ids
-
-    linked_team_id = @organizations&.first&.team_id&.first
-
-    if linked_team_id.blank? || @team_ids.include?(linked_team_id)
-      @team_ids
-    else
-      @team_ids + ['orglinked']
-    end
-
-=======
->>>>>>> b19d8ce0... wip
   end
 end

@@ -23,6 +23,7 @@ module Morphosource
           config.add_facet_field "media_member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
         end
       end
+      # copy_blacklight_config_from(::CatalogController)
       configure_facets
 
       # def presenter
@@ -56,6 +57,10 @@ module Morphosource
       end
 
       private
+
+        def search_builder
+          search_builder_class.new(self)
+        end
 
         # def query_solr
         #   search_results(params)

@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     get 'collections/:id', to: 'collections#show'
+    get 'collections/:id/about', to: 'collections#about'
   end
 
   # Physical Object show case pages

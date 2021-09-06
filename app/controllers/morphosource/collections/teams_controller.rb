@@ -31,6 +31,16 @@ module Morphosource
       end
       remove_bookmarks
 
+      def show
+        @organization = @collection.organization
+        super
+      end
+
+      def about
+        @organization = @collection.organization
+        super
+      end
+
       # def search_builder
       #   search_builder_class.new(scope: self, collection: @curation_concern)
       # end
@@ -77,14 +87,14 @@ module Morphosource
           main_app.team_media_path(*args)
         end
 
-        # def tab
-        #   :media
-        # end
-
-        def gather_instance_variables
-          @organization = @collection.organization
-          super
+        def tab
+          :media
         end
+
+        # def gather_instance_variables
+        #   @organization = @collection.organization
+        #   super
+        # end
 
     end
   end

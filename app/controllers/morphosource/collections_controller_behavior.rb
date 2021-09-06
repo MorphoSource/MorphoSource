@@ -24,12 +24,13 @@ module Morphosource
     end
 
     def show
+      @tab = tab
       presenter
       (@response, @document_list) = query_solr
       query_collection_works
       remove_facets
       filter_facets
-      gather_instance_variables
+      # gather_instance_variables
       query_collection_members
     end
 
@@ -37,23 +38,25 @@ module Morphosource
       @tab = :about
       presenter
       query_collection_works
-      gather_instance_variables
+      # gather_instance_variables
       query_collection_members
       render 'about'
     end
 
     private
 
-      def gather_instance_variables
-        @tab ||= tab
+        def presenter
+        @presenter ||= begin
+          curation_concern = SolrDocument.find(params[:id])
+          raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
+          presenter_class.new(curation_concern, current_ability)
+        end
       end
 
       def load_collection
         @curation_concern ||= ::Collection.find(params[:id])
         @collection ||= @curation_concern
-
-        # authorize! :read, @collection
-        raise CanCan::AccessDenied unless (@curation_concern && current_ability.can?(:read, @curation_concern))
+        authorize! :read, @collection
         rescue CanCan::AccessDenied
           redirect_to root_url, alert: 'You are not authorized to access this collection.'
       end
@@ -61,9 +64,9 @@ module Morphosource
       def redirect_to_collection_type
         if @_request.fullpath.include? '/collections/'
           locale = params[:locale] ||= 'en'
-          if @curation_concern.team?
+          if @collection.team?
             redirect_to collection_type_url("teams")
-          elsif @curation_concern.project?
+          elsif @collection.project?
             redirect_to collection_type_url("projects")
           else
             return
@@ -87,14 +90,18 @@ module Morphosource
         parent_collections if collection.collection_type.nestable? && action_name == 'show'
       end
 
+      # all media (in collection, subcollections, and linked through organization)
+      # counts for media, specimens, and chos
       def query_collection_works
-        if !@media_list.present? && !@media_count.present?
+        if !@media_list.present? || !@media_count.present?
           @media_list, @media_count = collection_media
         end
         @specimen_count ||= collection_specimens
         @cho_count ||= collection_chos
       end
 
+      # all media in collection, subcollections, linked through organization
+      # count of all media
       def collection_media
         repository.blacklight_config.max_per_page = 999999
         search_builder = Morphosource::Collections::MediaSearchBuilder.new(scope: self, collection: @collection)
@@ -103,12 +110,14 @@ module Morphosource
         [media_list, media_count]
       end
 
+      # count of specimens whose media is returned by collection_media
       def collection_specimens
         search_builder = Morphosource::Collections::SpecimensSearchBuilder.new(self)
         response = repository.search(search_builder.query)
         @specimen_count = response.response["numFound"].to_i
       end
 
+      # count of chos whose media is returned by collection_media
       def collection_chos
         search_builder = Morphosource::Collections::ChosSearchBuilder.new(self)
         response = repository.search(search_builder.query)
@@ -120,7 +129,6 @@ module Morphosource
       end
 
       def search_builder
-        # byebug
         search_builder_class.new(scope: self, collection: @curation_concern)
       end
 

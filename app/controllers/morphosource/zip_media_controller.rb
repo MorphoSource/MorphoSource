@@ -5,7 +5,6 @@ module Morphosource
 
     include ActionController::Streaming
     include Zipline
-    require 'open-uri'
 
     # GET /zip?ids[]=filesetid1&ids[]=filesetid2
     def zip

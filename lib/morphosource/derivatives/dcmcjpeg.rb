@@ -28,7 +28,7 @@ module Morphosource::Derivatives
       end
 
       def command
-        "dcmcjpeg --encode-lossless-sv1 #{file_path} #{file_out_path}"
+        "dcmcjpeg --encode-lossless-sv1 '#{file_path}' '#{file_out_path}'"
       end
   end
 end

@@ -370,7 +370,7 @@ module Hyrax
       end
 
       def browse_everything_file_present
-        params[:selected_files].present?
+        params[:selected_files].present? && params[:uploaded_files].present?
       end
 
       # get the old file set visibility so we can tell if it is being changed

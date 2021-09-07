@@ -11,4 +11,4 @@ en:
         agreement_initial: If you need a customized additional usage agreement, please <a href="mailto:morphosource@duke.edu">contact us</a> after media submission.
         agreement_organization: The organization (museum, collection, etc.) of the physical object represented by this media has required an additional usage agreement. If you need a customized additional usage agreement or if the existing agreement should not apply to your media, please <a href="mailto:morphosource@duke.edu">contact us</a> after media submission.
       alert:
-        browse_everything: New media file is being downloaded from the cloud, this file will not be available until download and processing is complete.
+        browse_everything: New media file is being downloaded from the cloud, this file will not be available until download and processing are complete.

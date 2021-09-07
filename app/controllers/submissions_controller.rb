@@ -271,7 +271,7 @@ class SubmissionsController < ApplicationController
   end
 
   def alert_message
-    I18n.t("morphosource.media.alert.browse_everything") if params[:selected_files].present?
+    I18n.t("morphosource.media.alert.browse_everything") if ( params[:selected_files].present? && params[:uploaded_files].present? )
   end
 
   # AJAX Physical object and media edit page submission methods

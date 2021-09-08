@@ -4,6 +4,8 @@ module Morphosource
 
       skip_load_and_authorize_resource only: [:show, :about], instance_name: :collection
 
+      before_action :load_organization, only: [:show, :about]
+
       self.presenter_class = Morphosource::Collections::TeamPresenter
 
       def self.configure_facets
@@ -23,36 +25,6 @@ module Morphosource
       end
       configure_facets
 
-      def self.remove_bookmarks
-        configure_blacklight do |config|
-          config.index.document_actions.delete(:bookmark)
-          config.show.document_actions.delete(:bookmark)
-        end
-      end
-      remove_bookmarks
-
-      def show
-        @organization = @collection.organization
-        super
-      end
-
-      def about
-        @organization = @collection.organization
-        super
-      end
-
-      # def search_builder
-      #   search_builder_class.new(scope: self, collection: @curation_concern)
-      # end
-
-      # def presenter
-      #   @presenter ||= begin
-      #     curation_concern = SolrDocument.find(params[:id])
-      #     raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
-      #     presenter_class.new(curation_concern, current_ability)
-      #   end
-      # end
-
       # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
       # provides link for removing individual constraints
       def url_for(options)
@@ -64,14 +36,10 @@ module Morphosource
       def removed_facets
         if !@collection.organization.present?
           ["org_linked_team_origin_ssim"]
+        else
+          super
         end
       end
-
-      # def search_facet_path(args = {})
-      #     main_app.my_dashboard_media_facet_path(args[:id])
-      #   end
-
-
 
       private
 
@@ -84,24 +52,14 @@ module Morphosource
           main_app.team_media_path(*args)
         end
 
-        # The url of the "more" link for additional facet values
-        # def search_facet_path(args = {})
-        #   main_app.my_dashboard_media_facet_path(args[:id])
-        # end
-
-        # link for facet filters
-        # def search_action_url(*args)
-        #   main_app.team_media_path(*args)
-        # end
+        def load_organization
+          @collection ||= ::Collection.find(params[:id])
+          @organization ||= @collection.organization
+        end
 
         def tab
           :media
         end
-
-        # def gather_instance_variables
-        #   @organization = @collection.organization
-        #   super
-        # end
 
     end
   end

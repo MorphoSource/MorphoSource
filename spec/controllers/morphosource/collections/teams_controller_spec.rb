@@ -1,26 +1,26 @@
 require 'rails_helper'
 require 'spec_helper'
-include ActionDispatch::TestProcess
-include Warden::Test::Helpers
+# include ActionDispatch::TestProcess
+# include Warden::Test::Helpers
 
 RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
 
-  include Rails.application.routes.url_helpers
+  # include Rails.application.routes.url_helpers
 
-  let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
-  let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
+  # let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
+  # let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
   let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-  let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
-  let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
+  let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
+  # let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
+  # let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
 
   before do
-    team.create_collection_groups
-    project.create_collection_groups
+    # team.create_collection_groups
+    # project.create_collection_groups
   end
 
   describe "search_builder_class" do
-    it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::MediaSearchBuilder) }
+    it { expect(subject.search_builder_class).to eq(        Morphosource::Collections::MediaSearchBuilder) }
   end
 
   describe ".configure_facets" do
@@ -75,6 +75,18 @@ RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
   describe 'filtered_facets' do
     it 'lists facets to be filtered by access' do
       expect(subject.send(:filtered_facets)).to match_array(["member_of_project_ids_ssim", "member_of_team_ids_ssim"])
+    end
+  end
+
+  describe 'removed_facets' do
+    before { subject.instance_variable_set(:@collection, team) }
+    context 'team does not have a linked org' do
+      it { expect(subject.send(:removed_facets)).to match_array(["org_linked_team_origin_ssim"]) }
+    end
+    context 'team does have a linked org' do
+      let!(:org)                      { Organization.create(title: ['Organization1'], team_id: [team.id]) }
+      # before { team.reload }
+      it { expect(subject.send(:removed_facets)).to match_array([]) }
     end
   end
 

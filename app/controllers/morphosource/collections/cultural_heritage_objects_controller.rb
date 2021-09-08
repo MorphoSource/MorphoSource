@@ -1,13 +1,6 @@
 module Morphosource
   module Collections
-    class CulturalHeritageObjectsController < Morphosource::CollectionsController
-      # include Hyrax::CollectionsControllerBehavior
-      # include Morphosource::Collections::ProjectHelper
-      # include Hyrax::BreadcrumbsForCollections
-
-      # skip_load_and_authorize_resource only: [:show]
-
-      # include Blacklight::Configurable
+    class CulturalHeritageObjectsController < Morphosource::Collections::PhysicalObjectsController
 
       def search_builder_class
         Morphosource::Collections::ChosSearchBuilder
@@ -24,44 +17,32 @@ module Morphosource
           config.add_facet_field "media_member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
         end
       end
-      # copy_blacklight_config_from(::CatalogController)
       configure_facets
 
-      def presenter
-        @presenter ||= begin
-          curation_concern = SolrDocument.find(params[:id])
-          raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
-          presenter_class.new(curation_concern, current_ability)
-        end
-      end
-
+      # TODO: Figure out a better way to do this
       # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
-      # provides link for removing individual constraints
+      # provides link for removing individual search constraints
       def url_for(options)
         options[:controller] = 'cultural_heritage_objects'
         options[:action] = 'show'
         super
-      end
-
-      def filtered_facets
-        ["media_member_of_project_ids_ssim", "media_member_of_team_ids_ssim"]
-      end
-
-      def presenter_class
-        if @collection.project?
-          Morphosource::Collections::ProjectPresenter
-        elsif @collection.team?
-          Morphosource::Collections::TeamPresenter
+        url = super
+        if @collection.team?
+          url.gsub("/projects/","/teams/")
+          url.gsub("/collections/","/teams/")
+        elsif @collection.project?
+          url.gsub("/teams/","/projects/")
+          url.gsub("/collections/","/projects/")
+        else
+          url
         end
       end
 
       private
 
-
-
-        # The url of the "more" link for additional facet values
-        def search_facet_path(args = {})
-          main_app.my_dashboard_media_facet_path(args[:id])
+        def query_collection_works
+          @cho_count = @response.response["numFound"].to_i if @response.present?
+          super
         end
 
         # link for facet filters
@@ -75,11 +56,6 @@ module Morphosource
 
         def tab
           :chos
-        end
-
-        def query_collection_works
-          @cho_count = @response.response["numFound"].to_i if @response.present?
-          super
         end
 
     end

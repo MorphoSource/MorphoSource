@@ -3,7 +3,6 @@ module Morphosource
     include Morphosource::CollectionsControllerBehavior
     helper Morphosource::CollectionHelper
     include Morphosource::Facets::AccessFilters
-    # include Hyrax::CollectionsControllerBehavior
 
     with_themed_layout 'morphosource_1_column'
 
@@ -12,7 +11,10 @@ module Morphosource
     # Don't add breadcrumbs
     before_action :build_breadcrumbs, only: []
 
-    before_action :load_collection, :redirect_to_collection_type 
+    before_action :load_collection, :redirect_to_collection_type
+
+    self.presenter_class = presenter_class
+
 
     def search_builder_class
       Morphosource::Collections::MediaSearchBuilder

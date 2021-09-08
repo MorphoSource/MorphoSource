@@ -21,18 +21,6 @@ module Morphosource
       end
       configure_facets
 
-      # def search_builder
-      #   search_builder_class.new(scope: self, collection: @curation_concern)
-      # end
-
-      # def presenter
-      #   @presenter ||= begin
-      #     curation_concern = SolrDocument.find(params[:id])
-      #     raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
-      #     presenter_class.new(curation_concern, current_ability)
-      #   end
-      # end
-
       # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
       # provides link for removing individual constraints
       def url_for(options)
@@ -56,10 +44,6 @@ module Morphosource
         def search_action_url(*args)
           main_app.project_media_path(*args)
         end
-
-        # def tab
-        #   :media
-        # end
 
     end
   end

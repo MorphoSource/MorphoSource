@@ -30,7 +30,6 @@ module Morphosource
       query_collection_works
       remove_facets
       filter_facets
-      # gather_instance_variables
       query_collection_members
     end
 
@@ -38,14 +37,13 @@ module Morphosource
       @tab = :about
       presenter
       query_collection_works
-      # gather_instance_variables
       query_collection_members
       render 'about'
     end
 
     private
 
-        def presenter
+      def presenter
         @presenter ||= begin
           curation_concern = SolrDocument.find(params[:id])
           raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
@@ -123,11 +121,6 @@ module Morphosource
         response = repository.search(search_builder.query)
         @cho_count = response.response["numFound"].to_i
       end
-
-      # def media_object_type(media_list)
-      #   byebug
-      #   media_list.map{ |m| m["media_physical_object_type_ssim"]&.first }.uniq
-      # end
 
       def search_builder
         search_builder_class.new(scope: self, collection: @curation_concern)

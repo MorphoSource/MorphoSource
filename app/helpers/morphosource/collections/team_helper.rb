@@ -4,11 +4,6 @@ module Morphosource
       include Morphosource::CollectionHelper
       include Blacklight::RenderConstraintsHelperBehavior
 
-      # def showpage_url(id, tab)
-      #   byebug
-      #   Rails.application.routes.url_helpers.project_path(id) + "\##{tab}"
-      # end
-
       def remove_constraint_url(localized_params)
         scope = localized_params.delete(:route_set) || self
 
@@ -21,18 +16,7 @@ module Morphosource
         scope.url_for(options)
       end
 
-      # def linked_team_collection_title_by_id(id)
-      #   if id == 'orglinked'
-      #     "Linked through organization"
-      #   else
-      #     solr_docs = controller.repository.find(id).docs
-      #     return nil if solr_docs.empty?
-      #     solr_field = solr_docs.first["title_tesim"]
-      #     return nil if solr_field.nil?
-      #     solr_field.first
-      #   end
-      # end
-
+      # provides longer versions of intersections facet values
       def intersections_values(value)
         if value == 'Team and Organization'
           "Media owned by team AND of organization physical objects"

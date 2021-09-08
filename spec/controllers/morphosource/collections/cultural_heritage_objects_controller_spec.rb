@@ -1,23 +1,23 @@
 require 'rails_helper'
 require 'spec_helper'
-include ActionDispatch::TestProcess
-include Warden::Test::Helpers
+# include ActionDispatch::TestProcess
+# include Warden::Test::Helpers
 
 RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, type: :controller do
 
-  include Rails.application.routes.url_helpers
+  # include Rails.application.routes.url_helpers
 
-  let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
-  let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-  let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
-  let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
-
-  before do
-    team.create_collection_groups
-    project.create_collection_groups
-  end
+  # let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
+  # let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
+  # let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
+  # let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
+  # let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
+  # let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
+  #
+  # before do
+  #   team.create_collection_groups
+  #   project.create_collection_groups
+  # end
 
   describe "search_builder_class" do
     it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::ChosSearchBuilder) }
@@ -65,11 +65,17 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
   end
 
   describe 'presenter_class' do
+
+
     context 'collection is a project' do
+      let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
+      let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
       before { subject.instance_variable_set(:@collection, project) }
       it {expect(subject.presenter_class).to eq(Morphosource::Collections::ProjectPresenter) }
     end
     context 'collection is a team' do
+      let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
+      let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
       before { subject.instance_variable_set(:@collection, team) }
       it {expect(subject.presenter_class).to eq(Morphosource::Collections::TeamPresenter) }
     end

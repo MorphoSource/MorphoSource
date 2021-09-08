@@ -16,6 +16,10 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
     project.create_collection_groups
   end
 
+  describe "search_builder_class" do
+    it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::MediaSearchBuilder) }
+  end
+
   describe 'redirect_to_collection_type' do
     before do
       team.visibility = 'open'

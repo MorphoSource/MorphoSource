@@ -17,6 +17,7 @@ module Morphosource
       def filter_facets
         return if current_user&.admin?
         get_viewable_collections_ids
+        byebug
         filtered_facets.each do |facet|
           items = @response.aggregations[facet].items
           unauthorized_items = unauthorized_items(items)

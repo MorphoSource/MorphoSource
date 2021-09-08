@@ -5,22 +5,25 @@
 class UpdateRelatedWorksIndexJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.update_fast_queue_name
 
-  def perform(works)
-    return if works.blank?
+  def perform(work_ids)
+    return unless work_ids.present?
     
-    if works.first.collection?
-      reindex_collections(works)
+    if Collection.exists?(work_ids.first)
+      reindex_collections(work_ids)
     else
-      works.each do |work|
-        work.update_index if ::ActiveFedora::Base.exists?(work.id)
+      work_ids.each do |work_id|
+        UpdateWorkIndexJob.perform_later(work_id) if ::ActiveFedora::Base.exists?(work_id)
       end
     end
   end
 
-  def reindex_collections(collections)
-    collections.each do |c|
-      c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-      c.update_index
+  def reindex_collections(collection_ids)
+    collection_ids.each do |c_id|
+      if Collection.exists?(c_id)
+        c = Collection.find(c_id)
+        c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+        c.update_index
+      end
     end
   end
 end

@@ -11,8 +11,7 @@
       render_as: :showcase_agreement_uri_file, 
       include_empty: true, 
       text_if_empty: 'None',
-      attachment_path: presenter.agreement_attachment,
-      attachment_file_url: main_app.attachment_path(id: presenter.media.id, field: 'agreement'),
+      attachment_file_url: presenter.attachment_url,
       html_dl: false) 
     %>
     </div>

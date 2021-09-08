@@ -9,7 +9,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
   self.valid_child_concerns = []
 
   validates :title, presence: { message: I18n.t('morphosource.validation.missing.title') }
-  validates :vouchered, presence: { message: I18n.t('morphosource.validation.missing.vouchered')}
 
   include Morphosource::PhysicalObjectMetadata
   include Morphosource::BiologicalSpecimenMetadata

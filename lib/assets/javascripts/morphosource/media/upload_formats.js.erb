@@ -169,17 +169,29 @@ function checkFormatsRequirement() {
   let mediaType = $('#media_media_type').val();
 
   if (mediaType == '') {
+    disableMediaSubmit();
     unfulfillRequirement();
   }
   else if (!files.unallowedAll.length == 0) {
+    disableMediaSubmit();
     unfulfillRequirement();
   }
   else if (files.all.length == 0) {
+    enableMediaSubmit()
     unfulfillRequirement();
   }
   else {
+    enableMediaSubmit()
     fulfillRequirement();
   }
+}
+
+function disableMediaSubmit() {
+  $('input#with_files_submit, input#media_submit').attr('disabled', 'disabled');
+}
+
+function enableMediaSubmit() {
+  $('input#with_files_submit, input#media_submit').removeAttr('disabled');
 }
 
 // Updates message in the upload form to display accepted file formats.

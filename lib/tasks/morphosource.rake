@@ -343,12 +343,12 @@ namespace :morphosource do
     if model.present?
       if per_doc == false
         Rails.logger.warn ("Re-indexing all #{args[:model]}... ")
-        UpdateWorkIndexJob.perform_later(args[:model])
+        UpdateAllModelWorksIndexesJob.perform_later(args[:model])
         Rails.logger.warn ("Re-indexing #{args[:model]} completed ")
       else
         model.find_each do |o|
           Rails.logger.warn ("Re-indexing begin: #{args[:model]} id:#{o.id}")
-          UpdateWorkIndexJob.perform_later(args[:model], object = o)
+          UpdateWorkIndexJob.perform_later(o.id)
           Rails.logger.warn ("Re-indexing done: #{args[:model]} id:#{o.id}")
         end
       end

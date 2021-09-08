@@ -30,11 +30,11 @@ module Hyrax
       :raw_or_derived, :is_absentee_parent,
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
-      :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list,
-      :fund_codes, :fund_code_associations,
+      :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list, :file_set_original_file_present,
+      :fund_codes, :fund_code_associations, :active_fund_code_association,
       # Permissions
       :permits_commercial_use, :permits_3d_use, :required_archival_of_published_derivatives,
-      :morphosource_use_agreement_type, :download_reviewer,
+      :morphosource_use_agreement_type, :download_reviewer, :attachment_url,
       # BSO fields
       :collection_code, :institution_code, :catalog_number, :occurrence_id, :idigbio_uuid,
       :user_taxonomies, :canonical_taxonomy_object, :trusted_taxonomies,
@@ -208,6 +208,12 @@ module Hyrax
       @required_archival_of_published_derivatives = Morphosource::RequiredArchivalOfPublishedDerivativesTypesService.new.label(media.required_archival_of_published_derivatives.first) if media.required_archival_of_published_derivatives.present?
       @morphosource_use_agreement_type = Morphosource::MorphosourceUseAgreementTypesService.new.label(media.morphosource_use_agreement_type.first) if media.morphosource_use_agreement_type.present?
       @download_reviewer = media.download_reviewer.to_a
+      if media.attachment('agreement').present?
+        @attachment_url = Rails.application.routes.url_helpers.attachment_path(
+          id: media.id,
+          field: 'agreement'
+        )
+      end
 
       @ark = media.ark
       @doi = media.doi
@@ -233,9 +239,11 @@ module Hyrax
       @file_status = ""
       temp = ""
       contents_mime_type = ""
+      @file_set_original_file_present = true
       @file_set_list = media.file_set_ids
       @file_set_list.each do |id|
         file_set = ::FileSet.find(id)
+        @file_set_original_file_present = false if !file_set.original_file.present?
         # since mime type can me a zip, first try to get the actual content mime type if exists
         # if content mime type does not exist, use the mime type
         if file_set.contents_mime_type.first.present?
@@ -536,8 +544,9 @@ module Hyrax
         imaging_event_exist = false
       end # end if imaging_event present?
 
-      @fund_code_associations = media.fund_code_associations
-      @fund_codes = media.fund_codes
+      @fund_code_associations = media.fund_code_associations.to_a
+      @active_fund_code_association = media.active_fund_code_association
+      @fund_codes = media.fund_codes.to_a
 
     end
 

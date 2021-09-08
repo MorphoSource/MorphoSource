@@ -184,13 +184,15 @@ RSpec.describe MediaIndexer do
   end
 
   describe 'linked_team_origin' do
-    let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team') }
-    let(:team)                  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
-    let(:org)                   { Organization.create(title: ['Organization1']) }
-    let(:specimen)              { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [org.id]) }
-    let(:device)                { Device.create(title: ['Device'], modality: ['Photogrammetry']) }
-    let(:imaging_event)         { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
-    let(:media)                 { Media.create(title: ['Media']) }
+    let(:team_collection_type)     { Hyrax::CollectionType.create(title: 'Team') }
+    let(:team)                     { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
+    let(:project_collection_type)  { Hyrax::CollectionType.create(title: 'Project') }
+    let(:project)                  { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
+    let(:org)                      { Organization.create(title: ['Organization1']) }
+    let(:specimen)                 { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [org.id]) }
+    let(:device)                   { Device.create(title: ['Device'], modality: ['Photogrammetry']) }
+    let(:imaging_event)            { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+    let(:media)                    { Media.create(title: ['Media']) }
 
     subject { MediaIndexer.new(media).linked_team_origin }
 
@@ -218,6 +220,22 @@ RSpec.describe MediaIndexer do
         org.team_id = [team.id]
         org.save
         media.member_of_collections << team
+      end
+      it { expect(subject).to match_array(['Team and Organization', 'Team', 'Organization']) }
+    end
+    context 'media belongs to a subcollection, not the linked organization' do
+      before do
+        project.member_of_collections << team
+        media.member_of_collections << project
+      end
+      it { expect(subject).to match_array(['Team Only', 'Team']) }
+    end
+    context 'media belongs to a subcollection and the linked organization' do
+      before do
+        org.team_id = [team.id]
+        org.save
+        project.member_of_collections << team
+        media.member_of_collections << project
       end
       it { expect(subject).to match_array(['Team and Organization', 'Team', 'Organization']) }
     end

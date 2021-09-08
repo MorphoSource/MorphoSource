@@ -82,6 +82,7 @@ module Morphosource
 
         # link for facet filters
         def search_action_url(*args)
+          # byebug
           if @collection.project?
             main_app.project_specimens_path(*args)
           elsif @collection.team?

@@ -202,4 +202,8 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
       end
     end
   end
+
+  describe 'tab' do
+    it {expect(subject.send(:tab)).to eq(:media) }
+  end
 end

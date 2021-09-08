@@ -3,7 +3,7 @@ require 'spec_helper'
 include ActionDispatch::TestProcess
 include Warden::Test::Helpers
 
-RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :controller do
+RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
 
   include Rails.application.routes.url_helpers
 
@@ -20,7 +20,7 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
   end
 
   describe "search_builder_class" do
-    it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::SpecimensSearchBuilder) }
+    it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::MediaSearchBuilder) }
   end
 
   describe ".configure_facets" do
@@ -29,21 +29,29 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       allow_any_instance_of(described_class).to receive(:search_builder_class).and_return("search_builder_class")
       described_class.configure_facets
     end
-    describe 'source' do
-      subject { facet_fields['record_source_ssim']}
-      it 'has a record source facet' do
-        expect(subject.label).to eq("Source")
+    describe 'publication status' do
+      subject { facet_fields['publication_status_ssi']}
+      it 'has a publication status facet' do
+        expect(subject.label).to eq("Publication Status")
+        expect(subject.limit).to eq(nil)
+      end
+    end
+    describe 'media type' do
+      subject { facet_fields['human_readable_media_type_ssim']}
+      it 'has a media type facet' do
+        expect(subject.label).to eq("Media Type")
+        expect(subject.limit).to eq(nil)
       end
     end
     describe 'organization' do
-      subject { facet_fields['organization_ssim']}
+      subject { facet_fields['media_organization_ssim']}
       it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
         expect(subject.limit).to eq(nil)
       end
     end
     describe 'project' do
-      subject { facet_fields['media_member_of_project_ids_ssim'] }
+      subject { facet_fields['member_of_project_ids_ssim'] }
       it 'has a project facet' do
         expect(subject.label).to eq("Project")
         expect(subject.limit).to eq(nil)
@@ -51,7 +59,7 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       end
     end
     describe 'team' do
-      subject { facet_fields['media_member_of_team_ids_ssim'] }
+      subject { facet_fields['member_of_team_ids_ssim'] }
       it 'has a team facet' do
         expect(subject.label).to eq("Team")
         expect(subject.limit).to eq(nil)
@@ -61,25 +69,26 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
   end
 
   describe 'tab' do
-    it {expect(subject.send(:tab)).to eq(:specimens) }
+    it {expect(subject.send(:tab)).to eq(:media) }
   end
 
   describe 'filtered_facets' do
     it 'lists facets to be filtered by access' do
-      expect(subject.send(:filtered_facets)).to match_array(["media_member_of_project_ids_ssim", "media_member_of_team_ids_ssim"])
+      expect(subject.send(:filtered_facets)).to match_array(["member_of_project_ids_ssim", "member_of_team_ids_ssim"])
     end
   end
 
   describe 'presenter_class' do
-    context 'collection is a project' do
-      before { subject.instance_variable_set(:@collection, project) }
-      it {expect(subject.send(:presenter_class)).to eq(Morphosource::Collections::ProjectPresenter) }
-    end
-    context 'collection is a team' do
-      before { subject.instance_variable_set(:@collection, team) }
-      it {expect(subject.send(:presenter_class)).to eq(Morphosource::Collections::TeamPresenter) }
-    end
+    it {expect(subject.presenter_class).to eq(Morphosource::Collections::TeamPresenter) }
   end
+
+  # describe 'search_action_url' do
+  #   before do
+  #     allow(subject).to receive(:params).and_return({id: project.id})
+  #   end
+  #   # let(:request) { double('request', path: 'collections/aaaaa/biological_specimens', host: 'www.example.com') }
+  #   it { expect(controller.send(:search_action_url, [])).to eq(project_media_path(project)) }
+  # end
 
   # describe 'search_action_url' do
   #   let(:request) { double('request', path: 'collections/aaaaa/biological_specimens', host: 'www.example.com') }

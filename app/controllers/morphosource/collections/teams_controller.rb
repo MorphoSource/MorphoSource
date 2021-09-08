@@ -71,10 +71,17 @@ module Morphosource
       #     main_app.my_dashboard_media_facet_path(args[:id])
       #   end
 
+
+
       private
 
         def filtered_facets
           ["member_of_project_ids_ssim", "member_of_team_ids_ssim"]
+        end
+
+        # link for facet filters
+        def search_action_url(*args)
+          main_app.team_media_path(*args)
         end
 
         # The url of the "more" link for additional facet values
@@ -83,9 +90,9 @@ module Morphosource
         # end
 
         # link for facet filters
-        def search_action_url(*args)
-          main_app.team_media_path(*args)
-        end
+        # def search_action_url(*args)
+        #   main_app.team_media_path(*args)
+        # end
 
         def tab
           :media

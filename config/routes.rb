@@ -7,11 +7,6 @@ Rails.application.routes.draw do
     end
   end
 
-  scope module: :morphosource do
-    get 'collections/:id', to: 'collections#show'
-    get 'collections/:id/about', to: 'collections#about'
-  end
-
   # Physical Object show case pages
   # todo: clean up and rewrite the rules
   scope module: :hyrax do
@@ -77,7 +72,16 @@ Rails.application.routes.draw do
   end
 
   scope module: :morphosource do
+    # these get redirected to projects/teams
+    get 'collections/:id', to: 'collections#show'
+    get 'collections/:id/about', to: 'collections#about'
+    get 'collections/:id/specimens', to: 'collections/biological_specimens#show'
+    get 'collections/:id/cultural_heritage_objects', to: 'collections/cultural_heritage_objects#show'
+
     scope module: :collections do
+      # these get redirected to projects/teams
+      get 'collections/:id/specimens', to: 'biological_specimens#show'
+      get 'collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show'
 
       # projects
       get 'projects/:id', to: 'projects#show', as: 'project_media'

@@ -47,15 +47,17 @@ module Morphosource
         ["media_member_of_project_ids_ssim", "media_member_of_team_ids_ssim"]
       end
 
+      def presenter_class
+        if @collection.project?
+          Morphosource::Collections::ProjectPresenter
+        elsif @collection.team?
+          Morphosource::Collections::TeamPresenter
+        end
+      end
+
       private
 
-        def presenter_class
-          if @collection.project?
-            Morphosource::Collections::ProjectPresenter
-          elsif @collection.team?
-            Morphosource::Collections::TeamPresenter
-          end
-        end
+
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})

@@ -124,9 +124,10 @@ module Morphosource
         @cho_count = response.response["numFound"].to_i
       end
 
-      def media_object_type(media_list)
-        media_list.map{ |m| m["media_physical_object_type_ssim"]&.first }.uniq
-      end
+      # def media_object_type(media_list)
+      #   byebug
+      #   media_list.map{ |m| m["media_physical_object_type_ssim"]&.first }.uniq
+      # end
 
       def search_builder
         search_builder_class.new(scope: self, collection: @curation_concern)

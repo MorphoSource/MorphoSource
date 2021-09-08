@@ -3,7 +3,7 @@ require 'spec_helper'
 include ActionDispatch::TestProcess
 include Warden::Test::Helpers
 
-RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :controller do
+RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, type: :controller do
 
   include Rails.application.routes.url_helpers
 
@@ -20,7 +20,7 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
   end
 
   describe "search_builder_class" do
-    it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::SpecimensSearchBuilder) }
+    it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::ChosSearchBuilder) }
   end
 
   describe ".configure_facets" do
@@ -28,12 +28,6 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
     before do
       allow_any_instance_of(described_class).to receive(:search_builder_class).and_return("search_builder_class")
       described_class.configure_facets
-    end
-    describe 'source' do
-      subject { facet_fields['record_source_ssim']}
-      it 'has a record source facet' do
-        expect(subject.label).to eq("Source")
-      end
     end
     describe 'organization' do
       subject { facet_fields['organization_ssim']}
@@ -61,7 +55,7 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
   end
 
   describe 'tab' do
-    it {expect(subject.send(:tab)).to eq(:specimens) }
+    it {expect(subject.send(:tab)).to eq(:chos) }
   end
 
   describe 'filtered_facets' do
@@ -73,11 +67,11 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
   describe 'presenter_class' do
     context 'collection is a project' do
       before { subject.instance_variable_set(:@collection, project) }
-      it {expect(subject.send(:presenter_class)).to eq(Morphosource::Collections::ProjectPresenter) }
+      it {expect(subject.presenter_class).to eq(Morphosource::Collections::ProjectPresenter) }
     end
     context 'collection is a team' do
       before { subject.instance_variable_set(:@collection, team) }
-      it {expect(subject.send(:presenter_class)).to eq(Morphosource::Collections::TeamPresenter) }
+      it {expect(subject.presenter_class).to eq(Morphosource::Collections::TeamPresenter) }
     end
   end
 

@@ -7,22 +7,10 @@ module Morphosource
     include Zipline
     require 'open-uri'
 
-    # GET /zip?ids[]=filesetid1&ids[]=filesetid2
     def zip
-
-      recaptcha_valid = verify_recaptcha
-byebug # in zip controller
-      if recaptcha_valid
-
-      else
-
-#        return head(:unauthorized)
-
-      end
-      
+      return head(:unauthorized) unless recaptcha_verfied_in_zip?
       return head(:bad_request) unless zip_params_valid?
       @media_ids = authorized_to_download_list
-byebug
       return head(:unauthorized) unless authorized_to_download?
       prepare_file_paths_and_names
       return head(:bad_request) if @files.length == 0
@@ -38,6 +26,17 @@ byebug
     end
 
     private
+
+      def recaptcha_verfied_in_zip?
+        # recaptcha must be verified in either from media cart or media page
+        if session[:recaptcha_verfied_in_cart].present?
+          verified = session[:recaptcha_verfied_in_cart]
+          session.delete(:recaptcha_verfied_in_cart)
+        else
+          verified = verify_recaptcha
+        end
+        return verified
+      end
 
       def referer_is_valid?
         return (request.referer.present? && request.referer.include?('dashboard/my/'))

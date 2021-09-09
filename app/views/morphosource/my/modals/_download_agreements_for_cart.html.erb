@@ -7,7 +7,7 @@
                  url: main_app.download_items_path,
                  method: :post,
                  html: { id: 'download-form', class: 'download-selected', multipart: true } do |f| %>
-      <div class="download-items-wrapper">
+      <div class="download-items-wrapper hide">
         <%# this div is a container for storing the user selected download items 
             (see sendSelectedItemsToModal js method) %>
       </div>

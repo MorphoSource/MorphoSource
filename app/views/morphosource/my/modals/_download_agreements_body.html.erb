@@ -57,7 +57,7 @@
       </div>
       <div class="modal-footer">
         <div class="col-sm-6">
-          <%= recaptcha_tags %>
+          <%= recaptcha_tags(callback: 'downloadRC2Callback', expired_callback: 'downloadRC2ExpiredCallback') %>
         </div>
         <div class="col-sm-6">
           <input data-download-item-id="" type="submit" name="download" value="Download Media" class="btn btn-info" id="modal-download" disabled="disabled" />

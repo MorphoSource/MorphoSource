@@ -1,9 +1,56 @@
-$( document ).ready(function() {
+// these callback must be defined outside of document ready
+function downloadRC2Callback() {
+//    console.log(grecaptcha.getResponse() );
+//    if (grecaptcha.getResponse() != null)
+//      rc2Checked = true;
+//    else
+//      rc2Checked = false;
+    checkAndShowDownload();
 
+}
+function downloadRC2ExpiredCallback() {
+    console.log('rc2 expired')
+    checkAndShowDownload();
+
+}
+
+function checkAndShowDownload() {
+  //console.log('cr2 response ' + grecaptcha.getResponse().length );
+  if ( grecaptcha.getResponse().length > 0 &&
+    $('#modal-agree').prop('checked') &&
+        $('#custom-usage').val().length >= 50 &&
+          usageList() != "" )  {
+    $('#modal-download').removeAttr('disabled');
+  } else {
+    $('#modal-download').attr('disabled', 'disabled');
+  }  
+  if ($('#custom-usage').val().length >= 50) 
+    $('#char-alert, #describe-usage').removeClass('text-alert');
+  else
+    $('#char-alert, #describe-usage').addClass('text-alert');
+  if (usageList() != "") 
+    $('#select-categories').removeClass('text-alert');
+  else
+    $('#select-categories').addClass('text-alert');
+
+}
+
+function usageList() {
+  var usage_list_array = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
+    return $(el).val();
+  })
+  var other = $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val();
+  if (other != '') {
+    usage_list_array.push(other);
+  }   
+  return usage_list_array.get().join(';');
+} 
+
+$( document ).ready(function() {
   var downloadForm = $('form#form-download-selected');
-  var isMediaPage = ($('#media-page-download-agreements').length);
-  var isCartPage = (downloadForm.length);
-  var isRequestPage = ($('.my-requests').length);
+  isMediaPage = ($('#media-page-download-agreements').length);
+  isCartPage = (downloadForm.length);
+  isRequestPage = ($('.my-requests').length);
 
   function sendSelectedItemsToModal() {
     var selectedItems = $('.batch_document_selector.downloadable_items:checked').clone();    
@@ -51,39 +98,9 @@ $( document ).ready(function() {
 
     clearProfileForm(); // initially clear any fields that have been pre-filled with profile settings
 
-    function usageList() {
-      var usage_list_array = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
-        return $(el).val();
-      })
-      var other = $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val();
-      if (other != '') {
-        usage_list_array.push(other);
-      }   
-      return usage_list_array.get().join(';');
-    } 
-
     function clearProfileForm() {
       $('.profile-checkbox-list input[type=checkbox]').prop("checked", false);
       $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val('');
-    }
-
-    function checkAndShowDownload() {
-      if ( $('#modal-agree').prop('checked') &&
-            $('#custom-usage').val().length >= 50 &&
-              usageList() != "" )  {
-        $('#modal-download').removeAttr('disabled');
-      } else {
-        $('#modal-download').attr('disabled', 'disabled');
-      }  
-      if ($('#custom-usage').val().length >= 50) 
-        $('#char-alert, #describe-usage').removeClass('text-alert');
-      else
-        $('#char-alert, #describe-usage').addClass('text-alert');
-      if (usageList() != "") 
-        $('#select-categories').removeClass('text-alert');
-      else
-        $('#select-categories').addClass('text-alert');
-
     }
        
     if ( isMediaPage ) {
@@ -123,12 +140,12 @@ $( document ).ready(function() {
         
         formType =$(this).attr('class');        
         if (formType == 'download-selected') {
-          alert('downloading selected in cart');
+          console.log('downloading selected in cart');
           $('#batch_usage').val(usage);
           $('#batch_usage_list').val(usageList());
           this.submit();
         } else if (formType == 'download-single') {
-          alert('downloading single ');
+          console.log('downloading single ');
           $('input[name=usage]').val(usage);
           $('input[name=usage_list]').val(usageList());
           this.submit();

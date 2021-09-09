@@ -13,15 +13,8 @@ module Morphosource
       end
 
       def download
-        recaptcha_valid = verify_recaptcha
-  byebug # media cart controller
-
-        if recaptcha_valid
-
-        else
-        
-        end
-
+        return head(:unauthorized) unless verify_recaptcha
+        session[:recaptcha_verfied_in_cart] = true
         get_downloadable_items
         get_work_ids_by_items
         usage = request.params['usage'].present? ? request.params['usage'] : ''

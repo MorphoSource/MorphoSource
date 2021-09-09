@@ -25,14 +25,7 @@ module Morphosource
       end
       configure_facets
 
-      # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
-      # provides link for removing individual constraints
-      def url_for(options)
-        options[:controller] = 'teams'
-        options[:action] = 'show'
-        super
-      end
-
+      # If team doesn't have a linked organization, don't display the intersections facet
       def removed_facets
         if !@collection.organization.present?
           ["org_linked_team_origin_ssim"]
@@ -55,10 +48,6 @@ module Morphosource
         def load_organization
           @collection ||= ::Collection.find(params[:id])
           @organization ||= @collection.organization
-        end
-
-        def tab
-          :media
         end
 
     end

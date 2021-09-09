@@ -21,23 +21,10 @@ module Morphosource
       end
       configure_facets
 
-      # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
-      # provides link for removing individual constraints
-      def url_for(options)
-        options[:controller] = 'projects'
-        options[:action] = 'show'
-        super
-      end
-
       private
 
         def filtered_facets
           ["member_of_project_ids_ssim", "member_of_team_ids_ssim"]
-        end
-
-        # The url of the "more" link for additional facet values
-        def search_facet_path(args = {})
-          main_app.my_dashboard_media_facet_path(args[:id])
         end
 
         # link for facet filters

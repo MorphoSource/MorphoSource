@@ -1,4 +1,3 @@
-# Retrieves all media a user can edit or has been granted read access to through a role (collection members group)
 module Morphosource
   module Collections
     class MediaObjectsSearchBuilder < Morphosource::Collections::MediaSearchBuilder

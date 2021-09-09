@@ -55,7 +55,6 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
     context 'user is signed in' do
       before do
         sign_in user
-        byebug
         get :index
       end
       it 'sets the facet limit to 999999' do

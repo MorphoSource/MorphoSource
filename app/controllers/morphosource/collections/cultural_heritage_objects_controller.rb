@@ -19,25 +19,6 @@ module Morphosource
       end
       configure_facets
 
-      # TODO: Figure out a better way to do this
-      # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
-      # provides link for removing individual search constraints
-      def url_for(options)
-        options[:controller] = 'cultural_heritage_objects'
-        options[:action] = 'show'
-        super
-        url = super
-        if @collection.team?
-          url.gsub("/projects/","/teams/")
-          url.gsub("/collections/","/teams/")
-        elsif @collection.project?
-          url.gsub("/teams/","/projects/")
-          url.gsub("/collections/","/projects/")
-        else
-          url
-        end
-      end
-
       private
 
         def query_collection_works

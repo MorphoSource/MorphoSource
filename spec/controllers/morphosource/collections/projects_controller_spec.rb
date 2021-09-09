@@ -1,21 +1,14 @@
 require 'rails_helper'
 require 'spec_helper'
-# include ActionDispatch::TestProcess
-# include Warden::Test::Helpers
 
 RSpec.describe Morphosource::Collections::ProjectsController, type: :controller do
 
-  # include Rails.application.routes.url_helpers
-
   let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
   let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
-  # let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-  # let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
   let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
 
   before do
-    # team.create_collection_groups
     project.create_collection_groups
   end
 
@@ -81,12 +74,4 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
   describe 'presenter_class' do
     it {expect(subject.presenter_class).to eq(Morphosource::Collections::ProjectPresenter) }
   end
-
-  # describe 'search_action_url' do
-  #   before do
-  #     allow(subject).to receive(:params).and_return({id: project.id})
-  #   end
-  #   # let(:request) { double('request', path: 'collections/aaaaa/biological_specimens', host: 'www.example.com') }
-  #   it { expect(controller.send(:search_action_url, [])).to eq(project_media_path(project)) }
-  # end
 end

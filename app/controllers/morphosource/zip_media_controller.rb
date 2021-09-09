@@ -15,7 +15,6 @@ module Morphosource
       create_downloaded_cart_items
       prepare_files_to_zip
       zipline(@file_mappings, "#{output_prefix}.zip")
-      byebug
     end
 
     private

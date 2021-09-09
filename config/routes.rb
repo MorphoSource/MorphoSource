@@ -75,8 +75,6 @@ Rails.application.routes.draw do
     # these get redirected to projects/teams
     get 'collections/:id', to: 'collections#show'
     get 'collections/:id/about', to: 'collections#about'
-    get 'collections/:id/specimens', to: 'collections/biological_specimens#show'
-    get 'collections/:id/cultural_heritage_objects', to: 'collections/cultural_heritage_objects#show'
 
     scope module: :collections do
       # these get redirected to projects/teams

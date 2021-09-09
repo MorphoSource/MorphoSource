@@ -2,22 +2,10 @@ module Morphosource
   module Facets
     module AccessFilters
 
-      # override in controller
-      # ex: ["member_of_project_ids_ssim", "member_of_team_ids_ssim"]
-      def filtered_facets
-        []
-      end
-
-      # override in controller
-      def removed_facets
-        []
-      end
-
       # remove collections from team and project facets that the user is not able to view
       def filter_facets
         return if current_user&.admin?
         get_viewable_collections_ids
-        byebug
         filtered_facets.each do |facet|
           items = @response.aggregations[facet].items
           unauthorized_items = unauthorized_items(items)
@@ -27,6 +15,8 @@ module Morphosource
         end
       end
 
+      # removes facets from display
+      # ex: removes intersections facet from non-linked teams
       def remove_facets
         return if removed_facets.blank?
 
@@ -59,6 +49,17 @@ module Morphosource
         items.each_with_object([]) do |item, unauthorized|
           unauthorized << item if item_unauthorized?(item)
         end
+      end
+
+      # override in controller
+      # ex: ["member_of_project_ids_ssim", "member_of_team_ids_ssim"]
+      def filtered_facets
+        []
+      end
+
+      # override in controller
+      def removed_facets
+        []
       end
     end
   end

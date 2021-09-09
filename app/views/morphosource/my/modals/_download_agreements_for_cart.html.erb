@@ -1,0 +1,23 @@
+<div class="modal fade" id="downloadAgreementsModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
+
+  <div class="modal-dialog modal-wide">
+    <div class="modal-content">
+
+      <%= form_for current_user,
+                 url: main_app.download_items_path,
+                 method: :post,
+                 html: { id: 'download-form', class: 'download-selected', multipart: true } do |f| %>
+      <div class="download-items-wrapper">
+        <%# this div is a container for storing the user selected download items 
+            (see sendSelectedItemsToModal js method) %>
+      </div>
+      <%= hidden_field_tag 'usage', "", :id => "batch_usage" %>
+      <%= hidden_field_tag 'usage_list', "", :id => "batch_usage_list" %>
+
+      <%= render 'morphosource/my/modals/download_agreements_body', f: f %>
+
+      <% end # /form %>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

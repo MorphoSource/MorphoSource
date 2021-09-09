@@ -13,8 +13,9 @@ module Morphosource
       end
 
       def download
-        recaptcha_valid = verify_recaptcha(action: 'download')
-  byebug
+        recaptcha_valid = verify_recaptcha
+  byebug # media cart controller
+
         if recaptcha_valid
 
         else

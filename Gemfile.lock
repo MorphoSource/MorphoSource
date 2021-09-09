@@ -739,7 +739,7 @@ GEM
       rdf (~> 3.1)
     rdf-xsd (3.1.0)
       rdf (~> 3.1)
-    recaptcha (5.8.1)
+    recaptcha (5.6.0)
       json
     redic (1.5.3)
       hiredis

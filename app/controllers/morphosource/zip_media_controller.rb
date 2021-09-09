@@ -10,16 +10,19 @@ module Morphosource
     # GET /zip?ids[]=filesetid1&ids[]=filesetid2
     def zip
 
-      recaptcha_valid = verify_recaptcha(action: 'download')
-byebug
+      recaptcha_valid = verify_recaptcha
+byebug # in zip controller
       if recaptcha_valid
 
       else
-      
+
+#        return head(:unauthorized)
+
       end
       
       return head(:bad_request) unless zip_params_valid?
       @media_ids = authorized_to_download_list
+byebug
       return head(:unauthorized) unless authorized_to_download?
       prepare_file_paths_and_names
       return head(:bad_request) if @files.length == 0

@@ -5,11 +5,17 @@ $( document ).ready(function() {
   var isCartPage = (downloadForm.length);
   var isRequestPage = ($('.my-requests').length);
 
+  function sendSelectedItemsToModal() {
+    var selectedItems = $('.batch_document_selector.downloadable_items:checked').clone();    
+    $('form#download-form .download-items-wrapper').html(selectedItems);
+  }
+
   if ( isCartPage ) {
     
     $(downloadForm).find('input[type="submit"]').bind('click', function(e) { 
       // download selected button clicked
       e.preventDefault();
+      sendSelectedItemsToModal();
       showAgreementModal();
     });
 
@@ -21,6 +27,7 @@ $( document ).ready(function() {
       });
       $("#check_all_unrestricted").prop('checked', false);
       $("#check_all_unrestricted").trigger('click');
+      sendSelectedItemsToModal();
       showAgreementModal();
     });
 
@@ -35,8 +42,11 @@ $( document ).ready(function() {
       // download item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
-      var mediaId = $(this).attr('data-media-id');
-      set_agreements(itemId, mediaId);
+      $("input[type='checkbox'].downloadable_items").each(function(index, value) {
+         value['checked'] = false;
+      });
+      $("input[id='batch_download_" + itemId + "']").prop('checked', true);
+      sendSelectedItemsToModal();
       showAgreementModal();
     });
   }
@@ -110,18 +120,19 @@ $( document ).ready(function() {
     $('form#download-form').on('submit', function (e) {
       e.preventDefault();
       $('#downloadAgreementsModal').modal('hide');
+
       var usage = $('#custom-usage').val();
       if ( $('#modal-agree').prop('checked') &&
         usage.length >= 50 && usageList() != "" )  {
         
-        singleDownloadId = $('input[name="ids[]"]').val();
-        if (singleDownloadId == 'SELECTED') {
-          console.log('item(s) selected in cart');
+        formType =$(this).attr('class');        
+        if (formType == 'download-selected') {
+          alert('downloading selected in cart');
           $('#batch_usage').val(usage);
           $('#batch_usage_list').val(usageList());
-          downloadForm.submit();
-        } else if (singleDownloadId != '') {
-          console.log('downloading single ids[] = ' + singleDownloadId);
+          this.submit();
+        } else if (formType == 'download-single') {
+          alert('downloading single ');
           $('input[name=usage]').val(usage);
           $('input[name=usage_list]').val(usageList());
           this.submit();
@@ -153,6 +164,19 @@ function showAgreementModal() {
   $('#downloadAgreementsModal').modal('show');
   $('#modal-agree').prop('checked', false);
   $('#modal-download').attr('disabled', 'disabled');
+
+  // events on modal close
+  $("#downloadAgreementsModal").on("hidden.bs.modal", function () {
+    // remove selected items from modal
+    $('form#download-form .download-items-wrapper').html('');  
+    // clear all checkboxes
+    $("input[type='checkbox'].downloadable_items").each(function(index, value) {
+       value['checked'] = false;
+    });
+    $("#check_all_unrestricted").prop('checked', false);
+    $("input#download-selected").prop('disabled', true);
+  });
+  
 }
 
 function set_agreements(itemId, singleMediaId) {

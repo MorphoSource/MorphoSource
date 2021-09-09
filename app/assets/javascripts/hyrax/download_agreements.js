@@ -22,9 +22,7 @@ $( document ).ready(function() {
     $('#download-all').bind('click', function(e) { 
       // download all clicked
       e.preventDefault();
-      $("input[type='checkbox'].downloadable_items").each(function(index, value) {
-         value['checked'] = false;
-      });
+      uncheckAllDownloadable();
       $("#check_all_unrestricted").prop('checked', false);
       $("#check_all_unrestricted").trigger('click');
       sendSelectedItemsToModal();
@@ -42,10 +40,8 @@ $( document ).ready(function() {
       // download item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
-      $("input[type='checkbox'].downloadable_items").each(function(index, value) {
-         value['checked'] = false;
-      });
-      $("input[id='batch_download_" + itemId + "']").prop('checked', true);
+      uncheckAllDownloadable();
+      $("input[id='batch_download_" + itemId + "']").trigger('click');
       sendSelectedItemsToModal();
       showAgreementModal();
     });
@@ -119,7 +115,7 @@ $( document ).ready(function() {
 
     $('form#download-form').on('submit', function (e) {
       e.preventDefault();
-      $('#downloadAgreementsModal').modal('hide');
+      hideAgreementModal();
 
       var usage = $('#custom-usage').val();
       if ( $('#modal-agree').prop('checked') &&
@@ -160,23 +156,29 @@ $( document ).ready(function() {
   }
 });
 
+function uncheckAllDownloadable() {
+  $("input[type='checkbox'].downloadable_items").each(function(index, value) {
+     value['checked'] = false;
+  });
+}
+
+function hideAgreementModal() {
+  $('#downloadAgreementsModal').modal('hide');
+}
+
 function showAgreementModal() {
   $('#downloadAgreementsModal').modal('show');
   $('#modal-agree').prop('checked', false);
-  $('#modal-download').attr('disabled', 'disabled');
+  $('#modal-download').attr('disabled', 'disabled');  
 
-  // events on modal close
+  // reset things on modal close
   $("#downloadAgreementsModal").on("hidden.bs.modal", function () {
     // remove selected items from modal
     $('form#download-form .download-items-wrapper').html('');  
-    // clear all checkboxes
-    $("input[type='checkbox'].downloadable_items").each(function(index, value) {
-       value['checked'] = false;
-    });
+    uncheckAllDownloadable();
     $("#check_all_unrestricted").prop('checked', false);
     $("input#download-selected").prop('disabled', true);
   });
-  
 }
 
 function set_agreements(itemId, singleMediaId) {

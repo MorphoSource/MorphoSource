@@ -15,8 +15,12 @@ module Morphosource::Derivatives::Processors
 
 		class_attribute :timeout
 
+    def dicom_image_formats
+      ['.dcm', '.dicom', '.ima', '']
+    end
+
     def acceptable_image_formats
-      ['.dcm', '.dicom', '.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg']
+      dicom_image_formats + ['.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg']
     end
 
 		def process
@@ -73,7 +77,7 @@ module Morphosource::Derivatives::Processors
           
           # extract and process images
           extract_images
-          uncompress_dcm if ext == '.dcm'
+          uncompress_dcm if dicom_image_formats.include?(ext)
           extract_image_metadata
           scale_images
           tif_to_raw_dcm
@@ -121,7 +125,7 @@ module Morphosource::Derivatives::Processors
       coll_by_ext = {}
       img_locs.each do |k, v|
         max = v.max_by { |sub_k, sub_v| sub_v.length }
-        coll_by_ext[k] = max[1] if (max[1].length > 9 || k.downcase == '.dcm' || k.downcase == '.dicom')
+        coll_by_ext[k] = max[1] if (max[1].length > 19 || k.downcase == '.dcm' || k.downcase == '.dicom')
       end
 
       # return largest group of most preferred file type

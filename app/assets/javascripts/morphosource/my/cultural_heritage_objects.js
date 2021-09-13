@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  if ($('body[class*="media-works"]').length) { // check if the page is dashboard media works
+    if ($('body[class*="media-works"]').length || $('body[class*="teams"]').length) { // check if the page is dashboard media works
 
     var choTable = $('#datatable-cho-list').DataTable({
       responsive: {

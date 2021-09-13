@@ -2,6 +2,15 @@
 module Morphosource
   module CollectionHelper
 
+    def locale
+      locale = params[:locale] ||= 'en'
+      '?locale=' + locale
+    end
+
+    def active_tab?(tab)
+      @tab == tab ? 'active' : ''
+    end
+
     def page_is_team?
       path_info.include?("teams")
     end
@@ -28,11 +37,11 @@ module Morphosource
 
     def showpage_url(id, tab)
       if page_is_team?
-        Rails.application.routes.url_helpers.team_path(id) + "\##{tab}"
+        Rails.application.routes.url_helpers.team_media_path(id) + "\##{tab}"
       elsif page_is_organization?
         Rails.application.routes.url_helpers.show_organization_path(id) + "\##{tab}"
       elsif page_is_project?
-        Rails.application.routes.url_helpers.project_path(id) + "\##{tab}"
+        Rails.application.routes.url_helpers.project_media_path(id) + "\##{tab}"
       end
     end
 
@@ -43,7 +52,7 @@ module Morphosource
         "/dashboard/my/projects"
       else
         ""
-      end          
+      end
     end
 
     def ms_collection_view_link(id, view)
@@ -55,13 +64,10 @@ module Morphosource
           link = dashboard_collection_path(id, view)
         end
       else
-        link = collection_path(id, view)
         if current_uri.include?("teams")
-          # todo: fix team_path route
-          # link = team_path(id)
-          link["collections"] = "teams" # replace "collection' with "teams"
+          link = team_media_path(id, view)
         elsif current_uri.include?("projects")
-          link["collections"] = "projects"
+          link = project_media_path(id, view)
         end
       end
       link.html_safe
@@ -76,7 +82,7 @@ module Morphosource
       link = link + "#" + tab if tab.present?
       link.html_safe
     end
-    
+
     def query_collection_information
       @collection_information = collection_information_service.collection_information
       @collection_counts = @collection_information['counts'] ||= {}
@@ -154,7 +160,7 @@ module Morphosource
       request.params
     end
 
-    def path_info 
+    def path_info
       request.env['PATH_INFO']
     end
 
@@ -195,12 +201,12 @@ module Morphosource
       @visibility_options = []
       if @subcollection_docs.present?
         team_projects = @subcollection_docs.map{|tp| [tp.id, tp.title.first]}
-      end        
+      end
       #@team_project_options = @subcollection_docs.map(&:title).flatten unless @subcollection_docs.nil? # [] for projects
       @bso_source_options = []
       @cho_visibility_options = []
 
-      @media_member_docs = @member_docs      
+      @media_member_docs = @member_docs
       @media_member_count = @members_count
       @paged_media_member_docs = paginated_media_item_list
       @media_extras = get_media_extras(@paged_media_member_docs, team_projects, collection.organization&.id)
@@ -209,10 +215,10 @@ module Morphosource
 
     def get_media_extras(docs, team_projects, team_org_id)
       docs.map do |doc|
-        this_media_extras = { 
+        this_media_extras = {
           'id' => doc.id
         }
-        if @is_team 
+        if @is_team
           media_collection_ids = doc.member_of_collection_ids
           if media_collection_ids.present?
             if media_collection_ids.include? collection.id
@@ -228,7 +234,7 @@ module Morphosource
           end
           # check if media is from a linked organization:
           if doc.media_organization_id&.include? team_org_id
-            if this_media_extras['origin'].present?          
+            if this_media_extras['origin'].present?
               this_media_extras['origin'] += ', Organization'
             else
               this_media_extras['origin'] = 'Organization'

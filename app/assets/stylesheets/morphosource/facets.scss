@@ -1,0 +1,189 @@
+.showcase {
+
+  .list-filters {
+    background-color: #f5f5f5;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+  }
+
+  .list-filters-label {
+    font-weight: bold;
+    margin-right: 2em;
+  }
+
+  .ms-list-filters {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    fieldset {
+      margin-right: 10px;
+      margin-bottom: 10px;
+      min-width: 150px;
+    }
+
+    button {
+      border: 1px solid #d4d4d4 !important;
+      max-width: 150px !important;
+      min-width: 150px !important;
+      background-color: #fff !important;
+      color: black !important;
+      padding: 2px 3px 2px 8px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .caret {
+      margin-right: 8px;
+      margin-top: 6px;
+    }
+
+    ul {
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      line-height: 1.428571429;
+      color: #333333;
+      box-sizing: inherit !important;
+      position: absolute;
+      z-index: 1000;
+      float: left;
+      padding: 5px 0;
+      margin: 2px 0 0;
+      font-size: 14px;
+      text-align: left;
+      list-style: none;
+      background-clip: padding-box;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+      table-layout: fixed;
+      background-color: #fff;
+      min-width: 82px;
+      right: 0;
+      left: unset;
+      top: 80%;
+      width: 20em;
+      display: table;
+    }
+
+    li {
+      padding: 1px 2px 1px 2px;
+      font-size: 12px;
+    }
+
+    .btn-group > .facet-values {
+      display: none;
+    }
+    .btn-group.open > .facet-values {
+      display: table;
+    }
+
+    .facet-values {
+      width: 20em; // TODO: make this responsive.
+    }
+
+    .facet-label {
+      padding: 3px 20px;
+      font-weight: 400;
+      line-height: 1.42857143;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .facet-count {
+      padding: 3px 20px;
+      font-weight: 400;
+      line-height: 1.42857143;
+      color: #333;
+      white-space: nowrap;
+    }
+  }
+
+  .ms-constraints-container {
+    .constraint-value {
+      background-color: #fff !important;
+      color: black !important;
+      border: 1px solid #d4d4d4 !important;
+      color: black !important;
+      font-size: 12px;
+      padding: 2px 8px 2px 8px !important;
+    }
+    // caret in filtering by
+    .filterName:after {
+      font-size: 9px !important;
+      color: black;
+    }
+
+    .dropdown-toggle {
+      background-color: #286090 !important;
+      color: #fff !important;
+      border-color: #265b89 !important;
+      border-radius: 90px !important;
+      min-width: 18px !important;
+      max-width: 18px !important;
+      width: 18px !important;
+      min-height: 18px !important;
+      max-height: 18px !important;
+      height: 18px !important;
+      margin-left: 3px !important;
+      margin-top: 3px !important;
+    }
+
+    .appliedFilter .glyphicon-remove {
+      right: 9px;
+      top: -4px;
+    }
+
+    #startOverLink {
+      padding: 0px 6px 0px 6px !important;
+    }
+
+    .start-over {
+      background-color: #286090 !important;
+      border-color: #286090 !important;
+      padding: 2px 6px 2px 0px !important;
+    }
+  }
+
+  .ms-works-pagination-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  @media only screen and (max-width: 760px) {
+    .list-filters {
+      flex-wrap: wrap;
+    }
+
+    .list-filters fieldset {
+      width: 100%;
+    }
+
+    .list-filters button {
+      max-width: 100% !important;
+      min-width: 100% !important;
+    }
+  }
+}
+
+.teams {
+  .ms-facets {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .ms-constraints-container {
+    .appliedFilter .glyphicon-remove {
+      right: 6px;
+      top: -4px;
+    }
+  }
+  #org_linked_team_origin_ssim + ul {
+    width: 500px;
+  }
+}

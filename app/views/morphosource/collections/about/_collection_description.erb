@@ -1,0 +1,4 @@
+<h2>DESCRIPTION</h2>
+<% @presenter.description.each do |description| %>
+  <%= simple_format(auto_link(description)) %>
+<% end %>

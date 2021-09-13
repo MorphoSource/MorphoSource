@@ -81,11 +81,11 @@ module Hyrax
           edit_path += '#' + tab if tab.present?
           redirect_to edit_path
         elsif current_user and can? :read, @collection
-          # if the user only has read access, redirect to the pubiic view page
+          # if the user only has read access, redirect to the public view page
           if collection.project?
-            redirect_to main_app.project_path
+            redirect_to main_app.project_media_path
           elsif collection.team?
-            redirect_to main_app.team_path
+            redirect_to main_app.team_media_path
           else
             redirect_to root_url
           end
@@ -669,7 +669,7 @@ module Hyrax
 
         def update_physical_object_index
           return if params["batch_document_ids"].blank?
-          
+
           member_ids = params["batch_document_ids"]
           member_ids.each do |id|
             member = Media.find(id)

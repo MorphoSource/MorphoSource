@@ -1,0 +1,15 @@
+<tr id="document_<%= document.id %>">
+  <td class="break-all">
+    <%= link_to [main_app, document], target: :_blank do %>
+      <%= document['title_tesim']&.first %>
+    <% end %>
+  </td>
+  <td><%= document["material_tesim"]&.first %></td>
+  <td><%= document["cho_type_tesim"]&.first %></td>
+  <td><%= document["vouchered_tesim"]&.first %></td>
+  <td><%= total_viewable_media(document.id) %></td>
+  <td><%= document.date_uploaded %> </td>
+  <%# todo: might need to format the date later, e.g. using MS helper display_date
+      Make sure it can be sorted in datatables
+       display_date(document.date_uploaded&.to_s) %>
+</tr>

@@ -1,0 +1,28 @@
+<!-- keep -->
+<% collection_type = @collection.collection_type.title.pluralize.downcase %>
+<ul class="nav nav-tabs" role="tablist">
+  <li role="presentation" class=<%= active_tab?(:media) %> >
+    <a href=<%= media_tab_url(collection_type) %> aria-controls="media" role="tab">
+    <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
+    </a>
+  </li>
+  <% if @specimen_count > 0 %>
+    <li role="presentation" class=<%= active_tab?(:specimens) %>>
+      <a href=<%= specimens_tab_url(collection_type) %> aria-controls="biological_specimens" role="tab">
+        <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+      </a>
+    </li>
+  <% end %>
+  <% if @cho_count > 0 %>
+    <li role="presentation" class=<%= active_tab?(:chos) %>>
+      <a href=<%= chos_tab_url(collection_type) %> aria-controls="biological_specimens" role="tab">
+        <i class="ms2-icon-bowl icon-bowl" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
+      </a>
+    </li>
+  <% end %>
+  <li role="presentation" class=<%= active_tab?(:about) %>>
+    <a href=<%= about_tab_url(collection_type) %> aria-controls="biological_specimens" role="tab">
+      <i class="fa fa-newspaper" aria-hidden="true"></i> ABOUT
+    </a>
+  </li>
+</ul>

@@ -183,7 +183,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         end
 
         it 'displays the download button' do
-          expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" href=\"javascript:void(0)\">Download</a>")
+          expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" data-media-id=\"000200000\" href=\"javascript:void(0)\">Download</a>")
         end
       end
 
@@ -201,7 +201,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
             allow(current_user).to receive(:my_approved_requests_work_ids).and_return([restricted_media.id])
           end
           it 'returns the download button' do
-            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" href=\"javascript:void(0)\">Download</a>")
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" data-media-id=\"000200000\" href=\"javascript:void(0)\">Download</a>")
           end
         end
 
@@ -225,7 +225,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           end
 
           it 'returns the download button' do
-            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" href=\"javascript:void(0)\">Download</a>")
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" data-media-id=\"000200000\" href=\"javascript:void(0)\">Download</a>")
           end
         end
       end

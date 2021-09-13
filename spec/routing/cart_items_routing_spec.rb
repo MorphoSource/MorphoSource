@@ -21,9 +21,14 @@ RSpec.describe 'cart items routing', type: :routing do
     expect(:delete => 'remove_from_cart').to route_to(route)
   end
 
-  it 'has a route to download cart items' do
+  it 'has a post route to download cart items' do
     route = { controller: 'morphosource/my/media_carts', action: 'download' }
-    expect(:get => 'download_items').to route_to(route)
+    expect(:post => 'download_items').to route_to(route)
+  end
+
+  it 'get route to download cart items not routable' do
+    route = { controller: 'morphosource/my/media_carts', action: 'download' }
+    expect(:get => 'download_items').not_to be_routable
   end
 
   # downloads

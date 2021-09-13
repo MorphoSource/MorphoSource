@@ -369,7 +369,6 @@ module Morphosource
       end
       options = localized_params.merge(q: nil, action: 'index')
       options.permit!
-      byebug
       if morphosource_collection_controller?
         options[:action] = 'show'
       end

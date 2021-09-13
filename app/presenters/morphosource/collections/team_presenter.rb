@@ -5,6 +5,7 @@ module Morphosource
       def organization
         @organization ||= @collection.organization
       end
+      
     end
   end
 end

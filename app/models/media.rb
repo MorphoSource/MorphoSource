@@ -482,6 +482,8 @@ class Media < Morphosource::Works::Base
 
     # removes destroyed media id from related_media_ids_ssim
     def reindex_physical_objects
-      @objects.each(&:update_index)
+      @objects.each do |obj|
+        UpdateWorkIndexJob.perform_later(obj.id)
+      end
     end
 end

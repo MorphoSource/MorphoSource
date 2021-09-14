@@ -5,6 +5,8 @@ class Media < Morphosource::Works::Base
   before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids
   before_validation :normalize_download_reviewer
   after_update :update_ark_status, :update_cartitem_reviewer
+  before_destroy :record_original_objects
+  after_destroy :reindex_physical_objects
 
   after_initialize do
     if self.new_record?
@@ -298,7 +300,7 @@ class Media < Morphosource::Works::Base
   end
 
   def member_of_projects
-    member_of_collections.select { |c| c.project? } 
+    member_of_collections.select { |c| c.project? }
   end
 
   def member_of_project_ids
@@ -442,7 +444,7 @@ class Media < Morphosource::Works::Base
 
   def update_cartitem_reviewer
     if self.download_reviewer_changed?
-      UpdateCartItemReviewersJob.perform_later(self) 
+      UpdateCartItemReviewersJob.perform_later(self)
     end
   end
 
@@ -472,5 +474,14 @@ class Media < Morphosource::Works::Base
 
     def delete_fund_code_media_associations
       FundCodeMediaAssociation.where(media: self.id).each { |a| a.destroy! }
+    end
+
+    def record_original_objects
+      @objects = physical_objects
+    end
+
+    # removes destroyed media id from related_media_ids_ssim
+    def reindex_physical_objects
+      @objects.each(&:update_index)
     end
 end

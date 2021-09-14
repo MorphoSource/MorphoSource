@@ -24,7 +24,10 @@
       </div>
     </div>
     <div class="modal-footer">
-      <span class="pull-left ev-status">0 files selected</span>
+      <div class="pull-left">
+        <div style="text-align: left;"><span class="ev-status">0 files selected</span></div>
+        <div style="text-align: left;"><span><i>Directories with 500+ files may not display all files</i></span></div>
+      </div>
       <%= form_tag '#', :class => "ev-submit-form form-horizontal", :data => { :resolver => browse_everything_engine.resolver_path } do %>
         <input type="hidden" name="context" value=""/>
         <button class="ev-cancel btn btn-danger"><%= t('browse_everything.modal_form.cancel')%></button>

@@ -508,6 +508,7 @@ RSpec.describe Media do
         processing_event.ordered_members << media
         works.each(&:save!)
         allow(media).to receive(:physical_objects).and_return([specimen])
+        ActiveJob::Base.queue_adapter = :test
       end
 
       it 'calls record_original_objects and reindex_physical_objects when a media is destroyed' do
@@ -516,10 +517,9 @@ RSpec.describe Media do
         media.destroy
       end
 
-      it 'updates the physical object index record' do
-        expect(SolrDocument.find(specimen.id)["related_media_ids_ssim"]).to match_array([media.id])
+      it 'calls UpdateWorkIndexJob with the object id' do
         media.destroy
-        expect(SolrDocument.find(specimen.id)["related_media_ids_ssim"]).to be(nil)
+        expect(UpdateWorkIndexJob).to have_been_enqueued.with(specimen.id)
       end
 
     end

@@ -5,6 +5,7 @@ module Morphosource
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
       with_themed_layout 'morphosource_dashboard'
+      before_action :check_recaptcha, only: [:download]
       
       def index
         get_items('cart')
@@ -13,7 +14,6 @@ module Morphosource
       end
 
       def download
-        return head(:unauthorized) unless verify_recaptcha
         session[:recaptcha_verfied_in_cart] = true
         get_downloadable_items
         get_work_ids_by_items
@@ -35,6 +35,17 @@ module Morphosource
 
 
       private
+
+      def check_recaptcha
+        unless verify_recaptcha
+          if request.referer.present?
+            flash[:error] = "reCAPTCHA verification has expired.  Please try again."
+            redirect_to request.referer
+          else
+            head(:unauthorized)
+          end
+        end
+      end
 
       # if a user selects items, get only those - otherwise get all downloadable items
       # an item is downloadable if it is in the cart and downloadable

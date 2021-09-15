@@ -6,32 +6,51 @@ module Morphosource
     include ActionController::Streaming
     include Zipline
     require 'open-uri'
+    before_action :check_referer, only: [:cart_to_zip]
+    before_action :validate_before_zip, only: [:zip, :cart_to_zip]
+    after_action :reset_recaptcha, only: [:zip, :cart_to_zip]
 
     def zip
-      return head(:unauthorized) unless recaptcha_verfied_in_zip?
-      return head(:bad_request) unless zip_params_valid?
-      @media_ids = authorized_to_download_list
-      return head(:unauthorized) unless authorized_to_download?
-      prepare_file_paths_and_names
-      return head(:bad_request) if @files.length == 0
+      create_and_zip
+    end
+
+    def cart_to_zip
+      create_and_zip
+    end
+
+    def create_and_zip
       create_downloaded_cart_items
       prepare_files_to_zip
       zipline(@file_mappings, "#{output_prefix}.zip")
     end
 
-    def cart_to_zip
-      # for get requests validate the referer first
-      return head(:unauthorized) unless referer_is_valid?
-      zip
+    def validate_before_zip
+      unless recaptcha_verfied_in_zip?
+        if request.referer.present?
+          flash[:error] = "reCAPTCHA verification has expired.  Please try again."
+          redirect_to request.referer
+        else
+          head(:unauthorized)
+        end
+      end
+      return head(:bad_request) unless zip_params_valid?
+      @media_ids = authorized_to_download_list
+      return head(:unauthorized) unless authorized_to_download?
+      prepare_file_paths_and_names
+      return head(:bad_request) if @files.length == 0
     end
 
     private
 
+      def check_referer
+        # for get requests validate the referer first
+        return head(:unauthorized) unless referer_is_valid?
+      end
+      
       def recaptcha_verfied_in_zip?
         # recaptcha must be verified in either from media cart or media page
         if session[:recaptcha_verfied_in_cart].present?
           verified = session[:recaptcha_verfied_in_cart]
-          session.delete(:recaptcha_verfied_in_cart)
         else
           verified = verify_recaptcha
         end
@@ -40,6 +59,10 @@ module Morphosource
 
       def referer_is_valid?
         return (request.referer.present? && request.referer.include?('dashboard/my/'))
+      end
+
+      def reset_recaptcha
+        session.delete(:recaptcha_verfied_in_cart)
       end
 
       def zip_params_valid?

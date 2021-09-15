@@ -384,6 +384,10 @@ module Morphosource
       collection_controllers.include? controller.class
     end
 
+    def first_media_is_specimen?(doc)
+      doc["media_physical_object_type_ssim"] == ["Biological Specimen"]
+    end
+
 
   end
 end

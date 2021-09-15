@@ -497,7 +497,7 @@ RSpec.describe Media do
 
     describe 'record_original_objects, reindex_physical_objects' do
       let(:specimen)                { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
-      let(:media)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
+      let(:media)                   { Media.create(title: ['title'], media_type: ['Image'], visibility: 'open') }
       let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
       let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
       let!(:processing_event)       { ProcessingEvent.create(title: ['processing_event']) }
@@ -519,6 +519,7 @@ RSpec.describe Media do
       it 'updates the physical object index record' do
         expect(SolrDocument.find(specimen.id)["related_media_ids_ssim"]).to match_array([media.id])
         media.destroy
+        sleep(10) # gitlab test failing when queued job hasn't completed yet?
         expect(SolrDocument.find(specimen.id)["related_media_ids_ssim"]).to be(nil)
       end
 

@@ -72,6 +72,7 @@ module Morphosource
       end
 
       def collection_type_url(plural_type)
+        byebug
         locale = params[:locale] ||= 'en'
         view = params[:view].present? ? '&view=' + params[:view] : ''
         "/#{plural_type}/" + params[:id] + '?locale=' + locale + view

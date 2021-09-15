@@ -1,6 +1,7 @@
 module Morphosource
   module Collections
     class TeamsController < Morphosource::CollectionsController
+      include Morphosource::Collections::LinkedTeamsControllerBehavior
 
       skip_load_and_authorize_resource only: [:show, :about], instance_name: :collection
 
@@ -43,34 +44,6 @@ module Morphosource
         # link for facet filters
         def search_action_url(*args)
           main_app.team_media_path(*args)
-        end
-
-        def load_organization
-          @collection ||= ::Collection.find(params[:id])
-          @organization ||= @collection.organization
-          if !@org_media_object_ids.present?
-            @org_media_object_ids, @org_media_count = organization_media
-          end
-          @org_po_count ||= organization_po_count
-        end
-
-        # Returns count of objects representing organization_media
-        def organization_po_count
-          repository.blacklight_config.max_per_page = 999999
-          search_builder = Morphosource::Collections::Teams::OrganizationObjectsSearchBuilder.new(self)
-          response = repository.search(search_builder.rows(999999).query)
-          count = response.response["numFound"].to_i
-        end
-
-        # Returns count of media belonging to linked organization
-        # Filtered by user access
-        def organization_media
-          repository.blacklight_config.max_per_page = 999999
-          search_builder = Morphosource::Collections::Teams::OrganizationMediaSearchBuilder.new(self)
-          response = repository.search(search_builder.rows(999999).query)
-          org_media_object_ids = response.response["docs"]
-          org_media_count = response.response["numFound"].to_i
-          [org_media_object_ids, org_media_count]
         end
 
     end

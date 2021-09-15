@@ -388,6 +388,13 @@ module Morphosource
       doc["media_physical_object_type_ssim"] == ["Biological Specimen"]
     end
 
+    def morphosource_physical_objects_controller? 
+      collection_controllers = [ Morphosource::Collections::BiologicalSpecimensController,
+                                 Morphosource::Collections::CulturalHeritageObjectsController]
+
+      collection_controllers.include? controller.class
+    end
+
 
   end
 end

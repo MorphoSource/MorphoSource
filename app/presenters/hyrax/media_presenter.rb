@@ -30,7 +30,7 @@ module Hyrax
       :raw_or_derived, :is_absentee_parent,
       :imaging_event, :imaging_event_exist, :imaging_event_editable, :direct_parent_first_member,
       :direct_parent_members_raw_or_derived,
-      :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list,
+      :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list, :file_set_original_file_present,
       :fund_codes, :fund_code_associations, :active_fund_code_association,
       # Permissions
       :permits_commercial_use, :permits_3d_use, :required_archival_of_published_derivatives,
@@ -239,9 +239,11 @@ module Hyrax
       @file_status = ""
       temp = ""
       contents_mime_type = ""
+      @file_set_original_file_present = true
       @file_set_list = media.file_set_ids
       @file_set_list.each do |id|
         file_set = ::FileSet.find(id)
+        @file_set_original_file_present = false if !file_set.original_file.present?
         # since mime type can me a zip, first try to get the actual content mime type if exists
         # if content mime type does not exist, use the mime type
         if file_set.contents_mime_type.first.present?

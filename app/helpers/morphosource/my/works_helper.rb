@@ -7,6 +7,7 @@ module Morphosource
         @tab == tab ? 'active' : ''
       end
 
+      # TODO - refactor? using for collections show pages
       # search box action
       def search_action_for_dashboard
         case params[:controller]
@@ -28,6 +29,22 @@ module Morphosource
           main_app.my_specimens_path
         when "morphosource/my/cultural_heritage_objects"
           main_app.my_cultural_heritage_objects_path
+        when "morphosource/collections/projects"
+          main_app.project_media_path
+        when "morphosource/collections/teams"
+          main_app.team_media_path
+        when "morphosource/collections/biological_specimens"
+          if @collection.project?
+            main_app.project_specimens_path
+          elsif @collection.team?
+            main_app.team_specimens_path
+          end
+        when "morphosource/collections/cultural_heritage_objects"
+          if @collection.project?
+            main_app.project_chos_path
+          elsif @collection.team?
+            main_app.team_chos_path
+          end
         else
           # hyrax/my/works controller and default cases.
           hyrax.my_works_path
@@ -37,6 +54,7 @@ module Morphosource
       def total_viewable_media(id)
         Morphosource::PhysicalObjectMediaSearchService.new(self, id).search_results.count
       end
+
 
     end
   end

@@ -21,6 +21,11 @@
     <div class="content-block">
       <h2>FILE IN THIS MEDIA</h2>
       <%= render 'items_edit', presenter: @presenter %>
+      <% if @presenter.file_set_list.present? && !@presenter.file_set_original_file_present %>
+        <div>
+          <span style='color:  red;'>Uploaded file has not yet successfully finished processing.</span> If the file was uploaded recently, it may still be processing in the background, especially if the file is very large (3+ GB) and was uploaded from the cloud. If this message persists, either delete and reupload the file or <a href='mailto:morphosource@duke.edu'>contact us</a>.
+        </div>
+      <% end %>
     </div>
   </div>
 

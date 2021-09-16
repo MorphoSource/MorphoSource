@@ -71,10 +71,39 @@ Rails.application.routes.draw do
     end
   end
 
-  scope module: :hyrax do
-    resources :teams, controller: 'teams', only: [:show]
-    resources :projects, controller: 'teams', only: [:show]
+  scope module: :morphosource do
+    # these get redirected to projects/teams
+    get 'collections/:id', to: 'collections#show'
+    get 'collections/:id/about', to: 'collections#about'
 
+    scope module: :collections do
+      # these get redirected to projects/teams
+      get 'collections/:id/specimens', to: 'biological_specimens#show'
+      get 'collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show'
+
+      # projects
+      get 'projects/:id', to: 'projects#show', as: 'project_media'
+      get 'projects/:id/specimens', to: 'biological_specimens#show', as: 'project_specimens'
+      get 'projects/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'project_chos'
+      get 'projects/:id/about', to: 'projects#about', as: 'project_about'
+
+      # projects redirects
+      get 'projects/specimens/:id', to: redirect('projects/%{id}/specimens')
+      get 'projects/chos/:id', to: redirect('projects/%{id}/cultural_heritage_objects')
+
+      # teams
+      get 'teams/:id', to: 'teams#show', as: 'team_media'
+      get 'teams/:id/specimens', to: 'biological_specimens#show', as: 'team_specimens'
+      get 'teams/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'team_chos'
+      get 'teams/:id/about', to: 'teams#about', as: 'team_about'
+
+      # teams redirects
+      get 'teams/specimens/:id', to: redirect('teams/%{id}/specimens')
+      get 'teams/chos/:id', to: redirect('teams/%{id}/cultural_heritage_objects')
+    end
+  end
+
+  scope module: :hyrax do
     get 'concern/organizations/specimens/:id', to: 'organizations#specimens'
     get 'concern/organizations/chos/:id', to: 'organizations#chos'
     get 'concern/organizations/new', to: 'organizations#new'
@@ -89,9 +118,6 @@ Rails.application.routes.draw do
     # cho pagination
     get 'organization_paging/concern/organizations/chos/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
 
-    #get 'teams/:id', to: 'teams#show'
-    get 'teams/specimens/:id', to: 'teams#specimens'
-    get 'teams/chos/:id', to: 'teams#chos'
     # media pagination
     get 'team_paging/teams/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/projects/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
@@ -102,9 +128,6 @@ Rails.application.routes.draw do
     get 'team_paging/teams/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
     get 'team_paging/projects/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
 
-    #get 'projects/:id', to: 'teams#show'
-    get 'projects/specimens/:id', to: 'teams#specimens'
-    get 'projects/chos/:id', to: 'teams#chos'
     # media pagination
     get 'project_paging/projects/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
     get 'project_paging/teams/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }

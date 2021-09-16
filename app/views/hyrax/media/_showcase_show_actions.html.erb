@@ -1,5 +1,5 @@
 <div class="show-actions">
-  <% if presenter.file_set_list.present? %>
+  <% if presenter.file_set_list.present? && presenter.file_set_original_file_present %>
     <div class="btn-group" style="display: flex; justify-content: center; flex-wrap: wrap;">
       <%= choose_download_button %>
       <%= choose_cart_button %>

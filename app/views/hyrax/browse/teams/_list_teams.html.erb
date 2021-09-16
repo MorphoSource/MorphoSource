@@ -1,7 +1,7 @@
 <% id = collection_presenter.id %>
 <tr>
   <td>
-    <%= link_to Rails.application.routes.url_helpers.team_path(id) do %>
+    <%= link_to Rails.application.routes.url_helpers.team_media_path(id) do %>
       <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>
       <%= collection_presenter.title_or_label %>
     <% end %>

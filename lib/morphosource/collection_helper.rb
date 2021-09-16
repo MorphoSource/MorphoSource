@@ -11,6 +11,38 @@ module Morphosource
       @tab == tab ? 'active' : ''
     end
 
+    def media_tab_url(collection)
+      if collection.project?
+        project_media_path(collection)
+      elsif collection.team?
+        team_media_path(collection)
+      end
+    end
+
+    def specimens_tab_url(collection)
+      if collection.project?
+        project_specimens_path(collection)
+      elsif collection.team?
+        team_specimens_path(collection)
+      end
+    end
+
+    def chos_tab_url(collection)
+      if collection.project?
+        project_chos_path(collection)
+      elsif collection.team?
+        team_chos_path(collection)
+      end
+    end
+
+    def about_tab_url(collection)
+      if collection.project?
+        project_about_path(collection)
+      elsif collection.team?
+        team_about_path(collection)
+      end
+    end
+
     def page_is_team?
       path_info.include?("teams")
     end
@@ -388,7 +420,7 @@ module Morphosource
       doc["media_physical_object_type_ssim"] == ["Biological Specimen"]
     end
 
-    def morphosource_physical_objects_controller? 
+    def morphosource_physical_objects_controller?
       collection_controllers = [ Morphosource::Collections::BiologicalSpecimensController,
                                  Morphosource::Collections::CulturalHeritageObjectsController]
 

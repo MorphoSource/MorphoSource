@@ -68,7 +68,7 @@ module Hyrax
       :preview_mode
     ]
 
-    self.required_fields = [:media_type]
+    self.required_fields = [:media_type, :x_spacing, :y_spacing, :z_spacing,]
 
     self.single_valued_fields = [:short_description, :description, :media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :series_type, :unit, :identifier, :related_url, :agreement_uri, :permits_3d_use, :permits_commercial_use, :required_archival_of_published_derivatives, :morphosource_use_agreement_type, :preview_mode, :date_created]
 

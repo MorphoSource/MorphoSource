@@ -156,6 +156,7 @@ $( document ).ready(function() {
         // show/hide in hyrax add media form
         show_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit']);
         hide_fields(['.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
+        make_required(['#media_x_spacing', '#media_y_spacing', '#media_z_spacing']);
       } else if ($('#media_media_type').val() == 'PhotogrammetryImageSeries') {
         $('.PhotogrammetryImageSeries').show();
         $('#file-object-details').show();
@@ -163,6 +164,7 @@ $( document ).ready(function() {
         // show/hide in hyrax add media form
         show_fields(['#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
         hide_fields(['.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type']);
+        remove_required(['#media_x_spacing', '#media_y_spacing', '#media_z_spacing']);
       } else if ($('#media_media_type').val() == 'Mesh') {
         $('.Mesh').show();
         $('#file-object-details').show();
@@ -170,11 +172,13 @@ $( document ).ready(function() {
         // show/hide in hyrax add media form
         show_fields(['.media_unit', '.media_map_type']);
         hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
+        remove_required(['#media_x_spacing', '#media_y_spacing', '#media_z_spacing']);
       } else {
         $('.media_type_block').hide();
 
         // show/hide in hyrax add media form
         hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
+        remove_required(['#media_x_spacing', '#media_y_spacing', '#media_z_spacing']);
       }
     }
 
@@ -407,7 +411,7 @@ $( document ).ready(function() {
       if (orgData)
         deviceOrgTitle = orgData.text;
       else
-        deviceOrgTitle = "No organization";      
+        deviceOrgTitle = "No organization";
       $('#device-organization-title-value').text(deviceOrgTitle);
       $('#device-title-value').text($('#imaging_event_select_device_id').find(':selected').text());
       $('#device-creator-value').text($('#imaging_event_select_device_id').find(':selected').data('creator'));

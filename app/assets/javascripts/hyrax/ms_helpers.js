@@ -8,8 +8,8 @@ Array.prototype.uniq = function(){
 }
 
 function pluralize(noun, count) {
-  if (count != 1) 
-    suffix = 's' 
+  if (count != 1)
+    suffix = 's'
   else
     suffix = ''
   return count + ' ' + noun + suffix;
@@ -63,6 +63,30 @@ function hide_fields(field_array, clear = true) {
   if (clear) {
     $(field_array.join(',')).children('input, select').val('');
   }
+}
+
+function make_required(field_array) {
+  // $.each($(field_array.join(',')), function(field) {
+  //   field.setAttribute("required", "required");
+  // });
+
+  field_array.forEach( function(field){
+    $(field)[0].setAttribute("required", "required");
+    $(field)[0].addClass("required")
+  });
+
+  // jQuery.each(field_array, function(field) {
+  //   $(f)[0].setAttribute("required", "required");
+  // });
+  // $(field_array.join(',')).setAttribute("required", "required");
+  // $(field_array.join(',')).addClass("required");
+}
+
+function remove_required(field_array) {
+  field_array.forEach( function(field){
+    $(field)[0].removeAttribute("required", "required");
+    $(field)[0].removeClass("required")
+  });
 }
 
 function depositorLink(email) {
@@ -329,7 +353,7 @@ function modalityAbbrev(m) {
       return 'Video'
       break;
     default:
-      return 'Etc'; 
+      return 'Etc';
   }
 }
 

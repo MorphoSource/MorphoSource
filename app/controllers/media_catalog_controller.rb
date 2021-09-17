@@ -48,6 +48,7 @@ class MediaCatalogController < CatalogController
     config.add_show_field solr_name('part', :stored_searchable)
     config.add_show_field solr_name('physical_object_id', :stored_searchable)
     config.add_show_field solr_name('physical_object_title', :stored_searchable)
+    config.add_show_field solr_name('physical_object_title', :symbol)
     config.add_show_field solr_name('rights_holder', :stored_searchable)
     config.add_show_field solr_name('scale_bar', :stored_searchable)
     config.add_show_field solr_name('series_type', :stored_searchable)

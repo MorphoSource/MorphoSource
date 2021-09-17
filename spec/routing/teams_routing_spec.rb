@@ -20,7 +20,7 @@ RSpec.describe 'teams/projects routing', type: :routing do
 
   it 'has a teams specimens route' do
     route = { controller: 'morphosource/collections/biological_specimens', action: 'show', id: id }
-    expect(:get => "/teams/#{id}/specimens").to route_to(route)
+    expect(:get => "/teams/#{id}/biological_specimens").to route_to(route)
   end
 
   it 'has a teams chos route' do
@@ -42,7 +42,7 @@ RSpec.describe 'teams/projects routing', type: :routing do
 
   it 'has a projects specimens route' do
     route = { controller: 'morphosource/collections/biological_specimens', action: 'show', id: id }
-    expect(:get => "/projects/#{id}/specimens").to route_to(route)
+    expect(:get => "/projects/#{id}/biological_specimens").to route_to(route)
   end
 
   it 'has a projects chos route' do

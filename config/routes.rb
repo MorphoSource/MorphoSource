@@ -78,27 +78,27 @@ Rails.application.routes.draw do
 
     scope module: :collections do
       # these get redirected to projects/teams
-      get 'collections/:id/specimens', to: 'biological_specimens#show'
+      get 'collections/:id/biological_specimens', to: 'biological_specimens#show'
       get 'collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show'
 
       # projects
       get 'projects/:id', to: 'projects#show', as: 'project_media'
-      get 'projects/:id/specimens', to: 'biological_specimens#show', as: 'project_specimens'
+      get 'projects/:id/biological_specimens', to: 'biological_specimens#show', as: 'project_specimens'
       get 'projects/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'project_chos'
       get 'projects/:id/about', to: 'projects#about', as: 'project_about'
 
       # projects redirects
-      get 'projects/specimens/:id', to: redirect('projects/%{id}/specimens')
+      get 'projects/specimens/:id', to: redirect('projects/%{id}/biological_specimens')
       get 'projects/chos/:id', to: redirect('projects/%{id}/cultural_heritage_objects')
 
       # teams
       get 'teams/:id', to: 'teams#show', as: 'team_media'
-      get 'teams/:id/specimens', to: 'biological_specimens#show', as: 'team_specimens'
+      get 'teams/:id/biological_specimens', to: 'biological_specimens#show', as: 'team_specimens'
       get 'teams/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'team_chos'
       get 'teams/:id/about', to: 'teams#about', as: 'team_about'
 
       # teams redirects
-      get 'teams/specimens/:id', to: redirect('teams/%{id}/specimens')
+      get 'teams/specimens/:id', to: redirect('teams/%{id}/biological_specimens')
       get 'teams/chos/:id', to: redirect('teams/%{id}/cultural_heritage_objects')
     end
   end

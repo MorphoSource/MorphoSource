@@ -7,7 +7,7 @@
     <li><input type="checkbox" class="toggle-vis" data-column="3" checked="checked" /> Part</li>
     <li><input type="checkbox" class="toggle-vis" data-column="4" checked="checked" /> Object</li>
     <li><input type="checkbox" class="toggle-vis" data-column="5" checked="checked" />
-      <% if @po_type == 'bso' %>
+      <% if first_media_is_specimen?(@document_list.first) %>
         Taxonomy</li>
       <% else %>
         Description</li>

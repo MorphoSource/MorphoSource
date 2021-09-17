@@ -11,6 +11,38 @@ module Morphosource
       @tab == tab ? 'active' : ''
     end
 
+    def media_tab_url(collection)
+      if collection.project?
+        project_media_path(collection)
+      elsif collection.team?
+        team_media_path(collection)
+      end
+    end
+
+    def specimens_tab_url(collection)
+      if collection.project?
+        project_specimens_path(collection)
+      elsif collection.team?
+        team_specimens_path(collection)
+      end
+    end
+
+    def chos_tab_url(collection)
+      if collection.project?
+        project_chos_path(collection)
+      elsif collection.team?
+        team_chos_path(collection)
+      end
+    end
+
+    def about_tab_url(collection)
+      if collection.project?
+        project_about_path(collection)
+      elsif collection.team?
+        team_about_path(collection)
+      end
+    end
+
     def page_is_team?
       path_info.include?("teams")
     end
@@ -357,6 +389,44 @@ module Morphosource
         ''
       end
     end
+
+    # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
+    # provides url for removing individual constraints
+    # TODO: probably a better way to do this
+    def remove_constraint_url(localized_params)
+      scope = localized_params.delete(:route_set) || self
+
+      unless localized_params.is_a? ActionController::Parameters
+        localized_params = ActionController::Parameters.new(localized_params)
+      end
+      options = localized_params.merge(q: nil, action: 'index')
+      options.permit!
+      if morphosource_collection_controller?
+        options[:action] = 'show'
+      end
+      scope.url_for(options)
+    end
+
+    def morphosource_collection_controller?
+      collection_controllers = [ Morphosource::Collections::TeamsController,
+                                 Morphosource::Collections::ProjectsController,
+                                 Morphosource::Collections::BiologicalSpecimensController,
+                                 Morphosource::Collections::CulturalHeritageObjectsController]
+
+      collection_controllers.include? controller.class
+    end
+
+    def first_media_is_specimen?(doc)
+      doc["media_physical_object_type_ssim"] == ["Biological Specimen"]
+    end
+
+    def morphosource_physical_objects_controller?
+      collection_controllers = [ Morphosource::Collections::BiologicalSpecimensController,
+                                 Morphosource::Collections::CulturalHeritageObjectsController]
+
+      collection_controllers.include? controller.class
+    end
+
 
   end
 end

@@ -61,7 +61,6 @@ module Morphosource
 
       def redirect_to_collection_type
         if @_request.fullpath.include? '/collections/'
-          locale = params[:locale] ||= 'en'
           if @collection.team?
             redirect_to collection_type_url("teams")
           elsif @collection.project?
@@ -74,7 +73,7 @@ module Morphosource
 
       def collection_type_url(plural_type)
         locale = params[:locale] ||= 'en'
-        view = params[:view] ||= ''
+        view = params[:view].present? ? '&view=' + params[:view] : ''
         "/#{plural_type}/" + params[:id] + '?locale=' + locale + view
       end
 

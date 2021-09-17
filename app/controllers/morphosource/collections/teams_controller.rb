@@ -1,6 +1,7 @@
 module Morphosource
   module Collections
     class TeamsController < Morphosource::CollectionsController
+      include Morphosource::Collections::LinkedTeamsControllerBehavior
 
       skip_load_and_authorize_resource only: [:show, :about], instance_name: :collection
 
@@ -43,11 +44,6 @@ module Morphosource
         # link for facet filters
         def search_action_url(*args)
           main_app.team_media_path(*args)
-        end
-
-        def load_organization
-          @collection ||= ::Collection.find(params[:id])
-          @organization ||= @collection.organization
         end
 
     end

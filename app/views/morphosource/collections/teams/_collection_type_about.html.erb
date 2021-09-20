@@ -1,0 +1,55 @@
+<% if @organization.present? %>
+  <h2>ORGANIZATION</h2>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Organization Type</div>
+    <div class="col-xs-6 showcase-value"><%= @organization.organization_type.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Institution</div>
+    <div class="col-xs-6 showcase-value"><%= @organization.institution_name.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Organization Name</div>
+    <div class="col-xs-6 showcase-value"><%= @organization.title.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Institution Code</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.institution_code.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Collection Code</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.collection_code.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Description</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.description.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Related URL</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.related_url.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Address</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.address.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">City</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.city.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">State/Province</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.state_province.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Postal Code</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.postal_code.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Country</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.country.first %></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 showcase-label">Contact Person</div>
+    <div class="col-xs-6 showcase-value "><%= @organization.contact_person.first %></div>
+  </div>
+<% end %>

@@ -494,5 +494,34 @@ RSpec.describe Media do
         expect(media.member_of_project_ids).to match_array([project.id])
       end
     end
+
+    describe 'record_original_objects, reindex_physical_objects' do
+      let(:specimen)                { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
+      let(:media)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
+      let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+      let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
+      let!(:processing_event)       { ProcessingEvent.create(title: ['processing_event']) }
+      let!(:works)                  { [ device, imaging_event, processing_event, media, specimen ] }
+
+      before do
+        imaging_event.ordered_members << processing_event
+        processing_event.ordered_members << media
+        works.each(&:save!)
+        allow(media).to receive(:physical_objects).and_return([specimen])
+        ActiveJob::Base.queue_adapter = :test
+      end
+
+      it 'calls record_original_objects and reindex_physical_objects when a media is destroyed' do
+        expect(media).to receive(:record_original_objects)
+        expect(media).to receive(:reindex_physical_objects)
+        media.destroy
+      end
+
+      it 'calls UpdateWorkIndexJob with the object id' do
+        media.destroy
+        expect(UpdateWorkIndexJob).to have_been_enqueued.with(specimen.id)
+      end
+
+    end
   end
 end

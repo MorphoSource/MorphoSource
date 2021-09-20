@@ -1,5 +1,5 @@
 <div class="text-muted">
-  <%= @media_count %>
+  <%= @specimen_count.to_s + ' Media' %>
   <span class="bso-count">
     <% if @specimen_count > 0 %>
       <%= ' · ' + @specimen_count.to_s + ' Specimens' %>

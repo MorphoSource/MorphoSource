@@ -1,0 +1,14 @@
+<div class="text-muted">
+  <%= @media_count %>
+  <span class="bso-count">
+    <% if @specimen_count > 0 %>
+      <%= ' · ' + @specimen_count.to_s + ' Specimens' %>
+    <% end %>
+  </span>
+  <span class="cho-count">
+    <% if @cho_count > 0 %>
+      <%= ' · ' + @cho_count.to_s + ' Objects' %>
+    <% end %>
+  </span>
+   · Managed by: <%= @presenter.collection_managers %>
+</div>

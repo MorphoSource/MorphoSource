@@ -1,0 +1,7 @@
+<!-- metadata for individual cultural heritage object card in gallery view -->
+
+<dl class="document-metadata dl-horizontal dl-invert">
+  <dd class="text-truncate"><%= document["material_tesim"].first %></dd>
+  <dd>Total media: <%= total_viewable_media(document.id) %></dd>
+  <dd class="text-truncate"><%= document["cho_type_tesim"].first %></dd>
+</dl>

@@ -1,0 +1,14 @@
+<dl class="document-metadata dl-horizontal dl-invert">
+  <dd><%= document.id %></dd>
+  <% if document["physical_object_title_tesim"].present? %>
+    <dd class="text-truncate"><%= document["physical_object_title_tesim"].first %>&nbsp;</dd>
+  <% else %>
+    <dd>&nbsp;</dd>
+  <% end %>
+  <% if document["taxonomy_tesim"].present? %>
+    <dd class="text-truncate"><i><%= document["taxonomy_tesim"].first %></i>&nbsp;</dd>
+  <% else %>
+    <dd>&nbsp;</dd>
+  <% end %>
+  <dd class='long-badge'><%= render_publication_status_badge(document) %></dd>
+</dl>

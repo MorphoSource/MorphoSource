@@ -98,7 +98,7 @@ class CartItem < ApplicationRecord
   end
 
   def reviewer_affiliations
-    reviewer.map { |u| u.affiliation }.reject { |a| a.empty? }.join(', ')
+    reviewer.map { |u| u.affiliation }.compact.reject { |a| a.empty? }.join(', ')
   end
 
 end

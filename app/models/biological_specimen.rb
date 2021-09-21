@@ -3,6 +3,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
+  before_update :record_title
+  after_update :reindex_media
 
   self.indexer = BiologicalSpecimenIndexer
   # Change this to restrict which works can be added as a child.
@@ -82,6 +84,10 @@ class BiologicalSpecimen < Morphosource::Works::Base
     end
   end
 
+  def record_title
+    @original_title = BiologicalSpecimen.find(self.id).title
+  end
+
   private
     def add_id_to_title # this is non-functional!!
       unless self.title && self.id && self.title.first.to_s.start_with?("S#{self.id.to_s}: ")
@@ -116,4 +122,14 @@ class BiologicalSpecimen < Morphosource::Works::Base
         end
       end
     end
+
+    def reindex_media
+      # reindex media is needed when the PO title has been changed
+      if self.title != @original_title
+        self.media.each do |media|
+          UpdateWorkIndexJob.perform_later(media.id)
+        end
+      end
+    end
+
 end

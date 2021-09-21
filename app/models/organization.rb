@@ -81,6 +81,37 @@ class Organization < Morphosource::Works::Base
     Collection.find(team_id.first)
   end
 
+  def permissions_fields
+    {
+      download_permission: download_permission,
+      download_reviewer: download_reviewer,
+      agreement_uri: agreement_uri,
+      license: license,
+      rights_statement: rights_statement,
+      morphosource_use_agreement_type: morphosource_use_agreement_type,
+      required_archival_of_published_derivatives: required_archival_of_published_derivatives,
+      permits_commercial_use: permits_commercial_use,
+      permits_3d_use: permits_3d_use,
+      rights_holder: rights_holder,
+      funding: funding,
+      publisher: publisher,
+      cite_as: cite_as,
+      preview_mode: preview_mode,
+      organization_for_attachment: attachment('agreement') ? id : nil
+    }
+  end
+
+  def agreement_attachment_url
+    if attachment('agreement')
+      Rails.application.routes.url_helpers.attachment_path(
+        id: id,
+        field: 'agreement'
+      )
+    else
+      nil
+    end
+  end
+
   # TODO: investigate why this doesn't work w/ index_related_works
   def record_original_team
     return nil if !team_id_changed?

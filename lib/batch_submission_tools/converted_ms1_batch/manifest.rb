@@ -4,7 +4,7 @@ module BatchSubmissionTools
       include BatchSubmissionTools::ConvertedMs1Batch::BatchSubmissionHelper
 
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :on_behalf_of,
-        :organization_id, :organization, :device_id, :device, :device_modality, :collection_ids,
+        :organization_id, :device_id, :device_modality, :collection_ids,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests
 
@@ -20,10 +20,8 @@ module BatchSubmissionTools
         @depositor = depositor.user_key
         @on_behalf_of = on_behalf_of.present? ? on_behalf_of.user_key : nil
         @organization_id = organization_id
-        @organization = Organization.find(organization_id)
         @device_id = device_id
-        @device = Device.find(device_id)
-        @device_modality = device.modality&.first
+        @device_modality = Device.find(device_id).modality&.first
         @collection_ids = Array(collection_ids)
 
         @biological_specimen_ingests = []
@@ -212,6 +210,7 @@ module BatchSubmissionTools
               initial_attrs: rows[parent_row_index][:media],
               depositor: depositor,
               on_behalf_of: on_behalf_of,
+              organization_id: organization_id,
               media_path: media_path
             )
 
@@ -243,6 +242,7 @@ module BatchSubmissionTools
               initial_attrs: rows[row_index][:media],
               depositor: depositor,
               on_behalf_of: on_behalf_of,
+              organization_id: organization_id,
               media_path: media_path
             )
 

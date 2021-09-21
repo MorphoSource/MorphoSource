@@ -28,10 +28,6 @@ module Morphosource::CartItemHelper
     false
   end
 
-  def hidden_download_link(id)
-    link_to t('hyrax.file_sets.actions.download'), main_app.zip_path(ids: [id]), class: 'hide', download: true, target: "_blank", role: 'button', id: 'hidden-file-download', data: { label: id }
-  end
-
   def requested_by_user?
     current_user.my_active_requests_work_ids.include?(media.id)
   end
@@ -71,7 +67,8 @@ module Morphosource::CartItemHelper
   end
 
   def download_button
-    link_to t('hyrax.file_sets.actions.download'), 'javascript:void(0)', class: 'btn btn-default btn-download-item', id: 'btn-download-item'
+    mediaId = media&.id || ''
+    link_to t('hyrax.file_sets.actions.download'), 'javascript:void(0)', class: 'btn btn-default btn-download-item', id: 'btn-download-item', data: { media_id: mediaId }
   end
 
   def download_requested_button

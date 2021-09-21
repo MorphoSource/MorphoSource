@@ -1,26 +1,78 @@
-$( document ).ready(function() {
+// these callback must be defined outside of document ready
+function downloadRC2Callback() {
+//    console.log(grecaptcha.getResponse() );
+//    if (grecaptcha.getResponse() != null)
+//      rc2Checked = true;
+//    else
+//      rc2Checked = false;
+    checkAndShowDownload();
 
+}
+function downloadRC2ExpiredCallback() {
+    console.log('rc2 expired')
+    checkAndShowDownload();
+
+}
+
+function checkAndShowDownload() {
+  //console.log('cr2 response ' + grecaptcha.getResponse().length );
+  if ( grecaptcha.getResponse().length > 0 &&
+    $('#modal-agree').prop('checked') &&
+        $('#custom-usage').val().length >= 50 &&
+          usageList() != "" )  {
+    $('#modal-download').removeAttr('disabled');
+  } else {
+    $('#modal-download').attr('disabled', 'disabled');
+  }  
+  if ($('#custom-usage').val().length >= 50) 
+    $('#char-alert, #describe-usage').removeClass('text-alert');
+  else
+    $('#char-alert, #describe-usage').addClass('text-alert');
+  if (usageList() != "") 
+    $('#select-categories').removeClass('text-alert');
+  else
+    $('#select-categories').addClass('text-alert');
+
+}
+
+function usageList() {
+  var usage_list_array = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
+    return $(el).val();
+  })
+  var other = $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val();
+  if (other != '') {
+    usage_list_array.push(other);
+  }   
+  return usage_list_array.get().join(';');
+} 
+
+$( document ).ready(function() {
   var downloadForm = $('form#form-download-selected');
-  var isMediaPage = ($('#media-page-download-agreements').length);
-  var isCartPage = (downloadForm.length);
-  var isRequestPage = ($('.my-requests').length);
+  isMediaPage = ($('#media-page-download-agreements').length);
+  isCartPage = (downloadForm.length);
+  isRequestPage = ($('.my-requests').length);
+
+  function sendSelectedItemsToModal() {
+    var selectedItems = $('.batch_document_selector.downloadable_items:checked').clone();    
+    $('form#download-form .download-items-wrapper').html(selectedItems);
+  }
 
   if ( isCartPage ) {
     
     $(downloadForm).find('input[type="submit"]').bind('click', function(e) { 
       // download selected button clicked
       e.preventDefault();
+      sendSelectedItemsToModal();
       showAgreementModal();
     });
 
     $('#download-all').bind('click', function(e) { 
       // download all clicked
       e.preventDefault();
-      $("input[type='checkbox'].downloadable_items").each(function(index, value) {
-         value['checked'] = false;
-      });
+      uncheckAllDownloadable();
       $("#check_all_unrestricted").prop('checked', false);
       $("#check_all_unrestricted").trigger('click');
+      sendSelectedItemsToModal();
       showAgreementModal();
     });
 
@@ -35,7 +87,9 @@ $( document ).ready(function() {
       // download item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
-      set_agreements(itemId);
+      uncheckAllDownloadable();
+      $("input[id='batch_download_" + itemId + "']").trigger('click');
+      sendSelectedItemsToModal();
       showAgreementModal();
     });
   }
@@ -44,46 +98,16 @@ $( document ).ready(function() {
 
     clearProfileForm(); // initially clear any fields that have been pre-filled with profile settings
 
-    function usageList() {
-      var usage_list_array = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
-        return $(el).val();
-      })
-      var other = $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val();
-      if (other != '') {
-        usage_list_array.push(other);
-      }   
-      return usage_list_array.get().join(';');
-    } 
-
     function clearProfileForm() {
       $('.profile-checkbox-list input[type=checkbox]').prop("checked", false);
       $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val('');
-    }
-
-    function checkAndShowDownload() {
-      if ( $('#modal-agree').prop('checked') &&
-            $('#custom-usage').val().length >= 50 &&
-              usageList() != "" )  {
-        $('#modal-download').removeAttr('disabled');
-      } else {
-        $('#modal-download').attr('disabled', 'disabled');
-      }  
-      if ($('#custom-usage').val().length >= 50) 
-        $('#char-alert, #describe-usage').removeClass('text-alert');
-      else
-        $('#char-alert, #describe-usage').addClass('text-alert');
-      if (usageList() != "") 
-        $('#select-categories').removeClass('text-alert');
-      else
-        $('#select-categories').addClass('text-alert');
-
     }
        
     if ( isMediaPage ) {
       $('.btn-download-item').bind('click', function(e) { 
         // media page download button clicked
         e.preventDefault();
-        set_agreements('CURRENT');
+        set_agreements('CURRENT', $(this).attr('data-media-id'));
         showAgreementModal();
       });  
     }
@@ -106,36 +130,29 @@ $( document ).ready(function() {
       checkAndShowDownload();
     });
 
-    $(document).on('click', '#modal-download', function(){
-      if ( $('#modal-agree').prop('checked') &&
-            $('#custom-usage').val().length >= 50 &&
-              usageList() != "" )  {
+    $('form#download-form').on('submit', function (e) {
+      e.preventDefault();
+      hideAgreementModal();
 
-        var itemId = $(this).attr('data-download-item-id');
-        //console.log(' downloading item '+ itemId);
-        $('#downloadAgreementsModal').modal('hide');
-        var usage = $('#custom-usage').val();
-        if (itemId == 'SELECTED') {
-          console.log('item(s) selected in cart');
+      var usage = $('#custom-usage').val();
+      if ( $('#modal-agree').prop('checked') &&
+        usage.length >= 50 && usageList() != "" )  {
+        
+        formType =$(this).attr('class');        
+        if (formType == 'download-selected') {
+          console.log('downloading selected in cart');
           $('#batch_usage').val(usage);
           $('#batch_usage_list').val(usageList());
-          downloadForm.submit();
-        } else if (itemId == 'CURRENT') { 
-          console.log('current item download in media page');
-          var link = $('#hidden-file-download').attr('href') + 
-            "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usageList());
-          $('#hidden-file-download').attr('href', link); 
-          jQuery('#hidden-file-download')[0].click();
-        } else if (itemId != '') { 
-          console.log("(single) download item button in cart or my request");
-          var link = $('#link-to-download-item-'+itemId).attr('href') + 
-            "&usage=" + encodeURIComponent(usage) + "&usage_list=" + encodeURIComponent(usageList());
-          $('#link-to-download-item-'+itemId).attr('href', link); 
-          //alert(link);
-          $('#link-to-download-item-'+itemId).trigger('click');    
+          this.submit();
+        } else if (formType == 'download-single') {
+          console.log('downloading single ');
+          $('input[name=usage]').val(usage);
+          $('input[name=usage_list]').val(usageList());
+          this.submit();
         } else {
-          console.log('error: itemId missing');
-        }        
+          alert('There is an error preparing for download');
+        }
+
       } else {
         alert('Please make sure you have selected one or more categories and filled out your intended usage');
       }
@@ -156,17 +173,37 @@ $( document ).ready(function() {
   }
 });
 
+function uncheckAllDownloadable() {
+  $("input[type='checkbox'].downloadable_items").each(function(index, value) {
+     value['checked'] = false;
+  });
+}
+
+function hideAgreementModal() {
+  $('#downloadAgreementsModal').modal('hide');
+}
+
 function showAgreementModal() {
   $('#downloadAgreementsModal').modal('show');
   $('#modal-agree').prop('checked', false);
-  $('#modal-download').attr('disabled', 'disabled');
+  $('#modal-download').attr('disabled', 'disabled');  
+
+  // reset things on modal close
+  $("#downloadAgreementsModal").on("hidden.bs.modal", function () {
+    // remove selected items from modal
+    $('form#download-form .download-items-wrapper').html('');  
+    uncheckAllDownloadable();
+    $("#check_all_unrestricted").prop('checked', false);
+    $("input#download-selected").prop('disabled', true);
+  });
 }
 
-function set_agreements(itemId) {
+function set_agreements(itemId, singleMediaId) {
   // set the agreement content in the modal  
 
   if (itemId) {
     // set the item id in the button for download one item
+    $('input[name="ids[]"]').val(singleMediaId);
     $('input#modal-download').attr('data-download-item-id', itemId);
     var agreementWrapper = '[data-item-id="' + itemId + '"] ';
     var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
@@ -178,6 +215,7 @@ function set_agreements(itemId) {
 
     var agreements = new Array();
     var customLinks = new Array();
+    $('input[name="ids[]"]').val('SELECTED');
     $('input#modal-download').attr('data-download-item-id', 'SELECTED');
     var selectedCount = $("input[type='checkbox'].downloadable_items:checked").length;
     $("input[type='checkbox'].downloadable_items:checked").each(function() {

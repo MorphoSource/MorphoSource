@@ -255,7 +255,8 @@ Rails.application.routes.draw do
   root 'hyrax/homepage#index'
 
   scope module: :morphosource do
-    get :zip, action: :zip, controller: :zip_media
+    post :zip, action: :zip, controller: :zip_media
+    get :zip, action: :cart_to_zip, controller: :zip_media
   end
 
   # Permissions routes
@@ -330,7 +331,8 @@ Rails.application.routes.draw do
 
       # media cart
       get 'dashboard/my/cart', action: :index, controller: :media_carts, as: 'my_cart'
-      get 'download_items', action: :download, controller: :media_carts, as: 'download_items'
+      post 'download_items', action: :download, controller: :media_carts, as: 'download_items'
+
       delete 'remove_from_cart', action: :destroy, controller: :media_carts, as: 'remove_items'
 
       # downloads

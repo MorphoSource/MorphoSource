@@ -78,6 +78,11 @@ $ms-dark-blue: #002c64;
   width: auto;
 }
 
+.btn-lg {
+  padding: 4px 26px;
+  font-size: 14px;
+}
+
 .hint-sm {
   font-style: italic;
   font-size: 12px;
@@ -191,6 +196,14 @@ $ms-dark-blue: #002c64;
       font-size: 12px;
     }      
   }
+  .rc-wrapper { /* reCAPTCHA wrapper */
+    margin-bottom: 4px;
+    .g-recaptcha {
+      width: fit-content;
+      margin: auto;
+    }
+  }
+
 }
 
 .material-icons.tooltip-icon:before {
@@ -207,7 +220,7 @@ $ms-dark-blue: #002c64;
   pointer-events: none; /* fix the boostrap tooltip flickering issue */
 }
 
-div.wrapper_for_2 span.input-group-btn.field-controls {
+div.wrapper_for_2 span.input-group-bt.field-controls {
   width: auto;
 }
 

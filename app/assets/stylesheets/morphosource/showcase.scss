@@ -60,7 +60,7 @@ html {
   .modal-dialog.modal-wide {
     width: 90%;
     @media (min-width: 769px) {
-      max-width: 950px;
+      max-width: 800px;
     }
   }
 
@@ -570,6 +570,11 @@ html {
     }
     .modal-footer {
       border-top: none;
+      text-align: left;
+    }
+    .dl-button-wrapper {
+      min-height: 75px;
+      padding-top: 22px;
     }
   }
 

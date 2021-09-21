@@ -23,7 +23,7 @@ RSpec.describe MediaIndexer do
       member_of_public_collection_ids: ['id1','id2','id3'],
       member_of_team_ids: ['id1','id2','id3'],
       member_of_project_ids: ['id1','id2','id3'],
-      taxonomies_titles: ['taxonomy1', 'taxonomy2']
+      taxonomies_titles: ['taxonomy1', 'taxonomy2'],
     } }
 
     before do
@@ -35,14 +35,14 @@ RSpec.describe MediaIndexer do
     it 'indexes file_set_visibilities' do
       expect(subject['file_set_visibilities_ssim']).to eq field_values[:file_set_visibilities]
     end
+    it 'indexes fileset_accessibility' do
+      expect(subject['fileset_accessibility_ssim']).to eq field_values[:fileset_accessibility]
+    end
     it 'indexes download_access_group' do
       expect(subject['download_access_group_ssim']).to match_array field_values[:download_groups]
     end
     it 'indexes download_access_person' do
       expect(subject['download_access_person_ssim']).to match_array field_values[:download_users]
-    end
-    it 'indexes fileset_accessibility' do
-      expect(subject['fileset_accessibility_ssim']).to eq field_values[:fileset_accessibility]
     end
     it 'indexes human_readable_media_type' do
       expect(subject['human_readable_media_type_tesim']).to eq field_values[:human_readable_media_type]
@@ -63,6 +63,9 @@ RSpec.describe MediaIndexer do
     end
     it 'indexes publication status' do
       expect(subject['publication_status_ssi']).to eq('Restricted Download')
+    end
+    it 'indexes linked team origin' do
+      expect(subject['org_linked_team_origin_ssim']).to match_array(["Team Only", "Team"])
     end
   end
 
@@ -157,4 +160,105 @@ RSpec.describe MediaIndexer do
       end
     end
   end
-end
+
+  describe 'organizations' do
+    let(:org1)            { Organization.create(title: ['Organization1']) }
+    let(:org2)            { Organization.create(title: ['Organization2']) }
+    let(:specimen)        { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [org1.id]) }
+    let(:cho)             { CulturalHeritageObject.create(title: ['CulturalHeritageObject'], vouchered: ['Yes'], organization_id: [org2.id]) }
+    let(:device)          { Device.create(title: ['Device'], modality: ['Photogrammetry']) }
+    let(:imaging_event1)  { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+    let(:imaging_event2)  { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [cho.id]) }
+    let(:media)           { Media.create(title: ['Media']) }
+
+    before do
+      imaging_event1.ordered_members << media
+      imaging_event2.ordered_members << media
+      [imaging_event1, imaging_event2].each(&:save)
+      media.reload
+    end
+
+    it 'returns all media organizations' do
+      expect(MediaIndexer.new(media).organizations).to match_array([org1, org2])
+    end
+  end
+
+  describe 'linked_team_origin' do
+    let(:team_collection_type)     { Hyrax::CollectionType.create(title: 'Team') }
+    let(:team)                     { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
+    let(:project_collection_type)  { Hyrax::CollectionType.create(title: 'Project') }
+    let(:project)                  { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
+    let(:org)                      { Organization.create(title: ['Organization1']) }
+    let(:specimen)                 { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [org.id]) }
+    let(:device)                   { Device.create(title: ['Device'], modality: ['Photogrammetry']) }
+    let(:imaging_event)            { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+    let(:media)                    { Media.create(title: ['Media']) }
+
+    subject { MediaIndexer.new(media).linked_team_origin }
+
+    before do
+      imaging_event.ordered_members << media
+      imaging_event.save
+      media.reload
+    end
+
+    context 'media belongs to the team, not the linked organization' do
+      before do
+        media.member_of_collections << team
+      end
+      it { expect(subject).to match_array(['Team Only', 'Team']) }
+    end
+    context 'media belongs to the linked organization, not the team' do
+      before do
+        org.team_id = [team.id]
+        org.save
+      end
+      it { expect(subject).to match_array(['Organization Only', 'Organization']) }
+    end
+    context 'media belongs to both the team and the linked organization' do
+      before do
+        org.team_id = [team.id]
+        org.save
+        media.member_of_collections << team
+      end
+      it { expect(subject).to match_array(['Team and Organization', 'Team', 'Organization']) }
+    end
+    context 'media belongs to a subcollection, not the linked organization' do
+      before do
+        project.member_of_collections << team
+        media.member_of_collections << project
+      end
+      it { expect(subject).to match_array(['Team Only', 'Team']) }
+    end
+    context 'media belongs to a subcollection and the linked organization' do
+      before do
+        org.team_id = [team.id]
+        org.save
+        project.member_of_collections << team
+        media.member_of_collections << project
+      end
+      it { expect(subject).to match_array(['Team and Organization', 'Team', 'Organization']) }
+    end
+  end
+
+  describe 'user_with_ownership' do
+    let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
+    let(:owner)     { User.create(email: 'owner@email.com', password: 'password') }
+
+    context 'media has an owner' do
+      before do
+        media.depositor = depositor.ms_id
+        media.owner = owner.ms_id
+        media.save
+      end
+      it { expect(subject['user_with_ownership_ssi']).to eq(owner.ms_id) }
+    end
+    context 'media does not have an owner' do
+      before do
+        media.depositor = depositor.ms_id
+        media.save
+      end
+      it { expect(subject['user_with_ownership_ssi']).to eq(depositor.ms_id) }
+    end
+  end
+ end

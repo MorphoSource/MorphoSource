@@ -92,4 +92,13 @@ class CartItem < ApplicationRecord
   def reviewer
     User.where(ms_id: work.reviewer)
   end
+
+  def reviewer_names
+    reviewer.map { |u| u.name_or_email }.join(', ')
+  end
+
+  def reviewer_affiliations
+    reviewer.map { |u| u.affiliation }.reject { |a| a.empty? }.join(', ')
+  end
+
 end

@@ -61,6 +61,7 @@ module BatchSubmissionTools
             else
               # No taxonomy matching GBIF taxon exists, create ingest as new work to be created
               new_ingest(ingest_attrs: gbif_attrs, depositor: admin_user)
+
             end
           end
         end

@@ -1,4 +1,4 @@
-class UpdateMediaMetadataJob < ApplicationJob
+class UpdateMediaMetadataJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_slow_queue_name
 

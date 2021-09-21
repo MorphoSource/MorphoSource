@@ -1,7 +1,7 @@
 <h2>GENERAL DETAILS</h2>
 
 <%= presenter.attribute_to_html(:work_id, label: "Specimen ID", render_as: :showcase_default, include_empty: true, html_dl: false) %>
-<%= presenter.attribute_to_html(:description, label: 'Description', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%= presenter.attribute_to_html(:description, label: 'Description', render_as: :showcase_default, include_empty: true, html_dl: false, css_classes: 'break-all') %>
 <%= presenter.attribute_to_html(:sex, label: 'Sex', render_as: :showcase_default, include_empty: true, html_dl: false) %>
 <%= presenter.attribute_to_html(:is_type_specimen, render_as: :showcase_default, include_empty: true, html_dl: false) %>
 <%= presenter.attribute_to_html(:source_of_record, label: 'External repository source', link: "https://www.idigbio.org/portal/records/#{presenter.idigbio_uuid&.first}", render_as: :showcase_idigbio_link, include_empty: true, html_dl: false) %>
@@ -18,6 +18,4 @@
 <% else %>
   <%= presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
 <% end %>
-<%= presenter.attribute_to_html(:publisher, render_as: :showcase_default, include_empty: true, html_dl: false) %>
 <%= presenter.attribute_to_html(:creator, label: presenter.creator_label, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-<%= presenter.attribute_to_html(:contributor, label: 'Object contributor', render_as: :showcase_default, include_empty: true, html_dl: false) %> 

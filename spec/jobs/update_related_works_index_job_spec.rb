@@ -11,15 +11,17 @@ RSpec.describe UpdateRelatedWorksIndexJob do
       let!(:old_solr) { solr(work) }
 
       it 'serializes and deserializes resource transparently' do
-        expect { described_class.perform_later([work]) }
+        expect { described_class.perform_later([work.id]) }
           .to have_enqueued_job
-          .with([work])
+          .with([work.id])
       end
 
-      it 'reindexes the work' do
-        described_class.perform_now([work])
-        new_solr = solr(work)
-        expect(old_solr['_version_']).not_to eq(new_solr['_version_'])
+      it 'enqueues a further UpdateWorkIndexJob for the work' do
+        described_class.perform_now([work.id])
+        
+        expect(UpdateWorkIndexJob)
+          .to have_been_enqueued
+          .with(work.id)
       end
     end
 
@@ -32,15 +34,27 @@ RSpec.describe UpdateRelatedWorksIndexJob do
       let!(:media3_old_solr)  { solr(media3) }
 
       it 'reindexes all the works' do
-        described_class.perform_now([media1, media2, media3])
+        described_class.perform_now([media1.id, media2.id, media3.id])
 
-        media1_new_solr = solr(media1)
-        media2_new_solr = solr(media2)
-        media3_new_solr = solr(media3)
+        expect(UpdateWorkIndexJob)
+          .to have_been_enqueued
+          .with(media1.id)
 
-        expect(media1_old_solr['_version_']).not_to eq(media1_new_solr['_version_'])
-        expect(media2_old_solr['_version_']).not_to eq(media2_new_solr['_version_'])
-        expect(media3_old_solr['_version_']).not_to eq(media3_new_solr['_version_'])
+        expect(UpdateWorkIndexJob)
+          .to have_been_enqueued
+          .with(media2.id)
+
+        expect(UpdateWorkIndexJob)
+          .to have_been_enqueued
+          .with(media3.id)
+
+        # media1_new_solr = solr(media1)
+        # media2_new_solr = solr(media2)
+        # media3_new_solr = solr(media3)
+
+        # expect(media1_old_solr['_version_']).not_to eq(media1_new_solr['_version_'])
+        # expect(media2_old_solr['_version_']).not_to eq(media2_new_solr['_version_'])
+        # expect(media3_old_solr['_version_']).not_to eq(media3_new_solr['_version_'])
       end
     end
 
@@ -50,7 +64,7 @@ RSpec.describe UpdateRelatedWorksIndexJob do
       let!(:old_solr)       { solr(collection) }
 
       it 'reindexes the collection' do
-        described_class.new.reindex_collections([collection])
+        described_class.new.reindex_collections([collection.id])
         new_solr = solr(collection)
         expect(old_solr['_version_']).not_to eq(new_solr['_version_'])
       end

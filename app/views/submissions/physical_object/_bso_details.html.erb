@@ -17,13 +17,6 @@
           </div>
 
           <div class="content-block">
-            <%= f.input :vouchered, as: :select,
-                collection: ['Yes','No'],
-                include_blank: true,
-                # item_helper: method(:include_current_value),
-                input_html: { class: 'form-control' },
-                label_wrapper_html: { class: 'required-flag' }
-            %>
             <%= f.input :institution_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :collection_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
@@ -39,6 +32,11 @@
           </div>
 
           <div class="content-block">
+            <%= f.input :vouchered, as: :select,
+                collection: ['Yes','No'],
+                include_blank: true,
+                input_html: { class: 'form-control' }
+            %>
             <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
             <%= f.input :numeric_time, label: 'Absolute Age' %>
             <%= f.input :original_location, label: 'Locality' %>
@@ -72,14 +70,12 @@
             <%= render_edit_field_partial('is_type_specimen', f: f) %>
             <%# todo: render date_field in simple_form_bootstrap %>
             <div class="row">
-              <div class="col-xs-6 showcase-label">Date created</div>
+              <div class="col-xs-6 showcase-label">Object collection date</div>
               <div class="col-xs-6 showcase-value">
               <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
                 </div>
             </div>
-            <%= f.input :creator, as: :multi_value %>
-            <%= f.input :contributor, as: :multi_value %>
-            <%= f.input :publisher %>
+            <%= f.input :creator, label: 'Object collector', as: :multi_value, required: false %>
           </div>
         </div>
 

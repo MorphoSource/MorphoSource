@@ -54,17 +54,6 @@ module Morphosource
         end
       end
       deprecation_deprecate facet_limit_for: 'moving to private logic in Blacklight::FacetFieldPresenter'
-
-      # An item is unauthorized if its value (collection id) is not included in the array of ids a user is able to read.
-      def item_unauthorized?(item)
-        !@viewable_collections_ids.include? item.value
-      end
-
-      def unauthorized_items(items)
-        items.each_with_object([]) do |item, unauthorized|
-          unauthorized << item if item_unauthorized?(item)
-        end
-      end
     end
   end
 end

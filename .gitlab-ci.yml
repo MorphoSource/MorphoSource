@@ -15,6 +15,7 @@ build_job:
   script:
     - cp $RAILS_DEPLOY_PATH/etc/database.yml config/
     - cp $RAILS_DEPLOY_PATH/etc/analytics.yml config/
+    - cp $RAILS_DEPLOY_PATH/etc/browse_everything_providers.yml config/
     - bundle install --path=vendor/bundle --without=development --binstubs=bin --no-cache
     - bundle binstubs bundler --force
     - bundle exec rake assets:precompile
@@ -24,6 +25,7 @@ build_job:
       - bin/
       - config/database.yml
       - config/analytics.yml
+      - config/browse_everything_providers.yml
       - public/assets/
       - vendor/bundle/
   tags:

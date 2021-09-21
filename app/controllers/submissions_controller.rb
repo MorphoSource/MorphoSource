@@ -262,13 +262,19 @@ class SubmissionsController < ApplicationController
       end
     end
     reindex_catalog_works
-    # render 'show' # re-enable for debug mode
-    flash_message = "New media has been added. "
-    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en'), notice: flash_message if @submission.media_id
+
+    redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en'), notice: flash_message, alert: alert_message if @submission.media_id
+  end
+
+  def flash_message
+    "New media has been added. "
+  end
+
+  def alert_message
+    I18n.t("morphosource.media.alert.browse_everything") if ( params[:selected_files].present? && params[:uploaded_files].present? )
   end
 
   # AJAX Physical object and media edit page submission methods
-
   def new_organization_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
@@ -465,7 +471,8 @@ class SubmissionsController < ApplicationController
     model_params = to_form(work).model_attributes(params[work])
     if work == 'media'
       addl_params = { uploaded_files: params[:uploaded_files] }
-      addl_params[:collection_id] = params[:collection_id] if params[:collection_id]
+      addl_params[:selected_files] = params[:selected_files] if params[:selected_files].present?
+      addl_params[:collection_id] = params[:collection_id] if params[:collection_id].present?
       finalize_model_params(work, model_params, addl_params)
     elsif work == 'imaging_event'
       addl_params = { device_id: [@submission.device_id] }
@@ -549,6 +556,9 @@ class SubmissionsController < ApplicationController
       model_params = assign_model_params_parents(model_params, parent)
       if addl_params[:uploaded_files].present?
         model_params.merge!({ uploaded_files: addl_params[:uploaded_files] })
+      end
+      if addl_params[:selected_files].present?
+        model_params.merge!({ selected_files: addl_params[:selected_files] })
       end
       @media_create_params = model_params
 
@@ -662,7 +672,8 @@ class SubmissionsController < ApplicationController
   def create_attributes_for_actor(model, form_params)
     attributes_for_actor = form_params
     if model == Media
-      set_visibilities(attributes_for_actor)
+      attributes_for_actor = set_visibilities(attributes_for_actor)
+      attributes_for_actor = set_files(attributes_for_actor)
     else
       attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
     end
@@ -709,6 +720,30 @@ class SubmissionsController < ApplicationController
     attributes_for_actor["visibility"] = visibilities[selected]["work_visibility"]
     attributes_for_actor["fileset_visibility"] = [visibilities[selected]["file_visibility"]]
     attributes_for_actor["fileset_accessibility"] = [visibilities[selected]["file_accessibility"]]
+
+    return attributes_for_actor
+  end
+
+  def set_files(attributes_for_actor)
+    # https://github.com/samvera/hyrax/blob/v2.9.0/app/controllers/concerns/hyrax/works_controller_behavior.rb
+
+    # If they selected a BrowseEverything file, but then clicked the
+    # remove button, it will still show up in `selected_files`, but
+    # it will no longer be in uploaded_files. By checking the
+    # intersection, we get the files they added via BrowseEverything
+    # that they have not removed from the upload widget.
+    uploaded_files = attributes_for_actor.delete(:uploaded_files) || []
+    selected_files = attributes_for_actor.delete(:selected_files)&.values || []
+    browse_everything_urls = uploaded_files & selected_files.map { |f| f[:url] }
+
+    # we need the hash of files with url and file_name
+    browse_everything_files = selected_files.select { |v| uploaded_files.include?(v[:url]) }
+    attributes_for_actor[:remote_files] = browse_everything_files
+    
+    # Strip out any BrowseEverthing files from the regular uploads.
+    attributes_for_actor[:uploaded_files] = uploaded_files - browse_everything_urls
+    
+    return attributes_for_actor
   end
 
   def create_work(model, attributes_for_actor)

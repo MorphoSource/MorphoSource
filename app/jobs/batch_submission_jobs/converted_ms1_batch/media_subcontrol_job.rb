@@ -1,4 +1,4 @@
-class BatchSubmissionJobs::ConvertedMs1Batch::MediaSubcontrolJob < ApplicationJob
+class BatchSubmissionJobs::ConvertedMs1Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest
 
   queue_as Hyrax.config.ingest_queue_name

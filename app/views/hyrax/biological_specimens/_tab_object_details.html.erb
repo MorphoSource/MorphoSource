@@ -6,13 +6,6 @@
     <div class="content-block">
       <h2>SPECIMEN IDENTIFIERS AND EXTERNAL LINKS</h2>
       <%= @presenter.attribute_to_html(:work_id, label: "Specimen ID", render_as: :showcase_default, include_empty: true, html_dl: false) %>
-      <%= f.input :vouchered, as: :select,
-          collection: ['Yes','No'],
-          include_blank: true,
-          # item_helper: method(:include_current_value),
-          input_html: { class: 'form-control' },
-          label_wrapper_html: { class: 'required-flag' }
-      %>
       <%= f.input :institution_code, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :collection_code, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
@@ -49,13 +42,16 @@
       <% else %>
         <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
       <% end %>
-      <%= f.input :creator, label: @presenter.creator_label, as: :multi_value %>
-      <%= f.input :contributor, label: 'Object contributor', as: :multi_value %>
-      <%= f.input :publisher %>
+      <%= f.input :creator, label: @presenter.creator_label, as: :multi_value, required: false %>
     </div>
 
     <div class="content-block">
       <h2>TIME AND PLACE DETAILS</h2>
+      <%= f.input :vouchered, as: :select,
+          collection: ['Yes','No'],
+          include_blank: true,
+          input_html: { class: 'form-control' }
+      %>
       <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
       <%= f.input :original_location, label: 'Locality' %>
       <!--  todo: the html below can be removed if simpleform config wrapper can be used.  In that case, we need to figure out pass the content for the tooltip

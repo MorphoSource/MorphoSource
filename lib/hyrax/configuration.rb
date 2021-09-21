@@ -319,6 +319,11 @@ module Hyrax
       @banner_image ||= 'https://user-images.githubusercontent.com/101482/29949206-ffa60d2c-8e67-11e7-988d-4910b8787d56.jpg'
     end
 
+    attr_writer :max_for_download_request_details
+    def max_for_download_request_details
+      @max_for_download_request_details ||= 100
+    end
+
     attr_writer :host_name
     def host_name
       @host_name ||= "morphosource.org"
@@ -478,12 +483,12 @@ module Hyrax
 
     attr_writer :batch_user_key
     def batch_user_key
-      @batch_user_key ||= 'morphosource@duke.edu'
+      @batch_user_key ||= '614de0' # User key for user morphosource@duke.edu
     end
 
     attr_writer :audit_user_key
     def audit_user_key
-      @audit_user_key ||= 'morphosource@duke.edu'
+      @audit_user_key ||= '614de0' # User key for user morphosource@duke.edu
     end
 
     # NOTE: This used to be called `working_path` in CurationConcerns

@@ -1,0 +1,25 @@
+<div class="btn-group choose-columns-media">
+  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class="fa fa-columns"></i> <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><input type="checkbox" class="toggle-vis" data-column="2" checked="checked" /> ID</li>
+    <li><input type="checkbox" class="toggle-vis" data-column="3" checked="checked" /> Part</li>
+    <li><input type="checkbox" class="toggle-vis" data-column="4" checked="checked" /> Object</li>
+    <li><input type="checkbox" class="toggle-vis" data-column="5" checked="checked" />
+      <% if first_media_is_specimen?(@document_list.first) %>
+        Taxonomy</li>
+      <% else %>
+        Description</li>
+      <% end %>
+    <li><input type="checkbox" class="toggle-vis" data-column="6" checked="checked" /> Type</li>
+    <% nextIndex = 7 %>
+    <% if @is_team %>
+      <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Project</li>
+      <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Origin</li>
+      <% nextIndex = nextIndex + 2 %>
+    <% end %>
+    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Date Added</li>
+    <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Publication Status</li>
+  </ul>
+</div>

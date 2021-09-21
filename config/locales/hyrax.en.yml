@@ -155,7 +155,8 @@ en:
     product_twitter_handle: "@MorphoSource"
     base:
       form_files:
-        local_upload_html: "<p>You can add one file to associate with this media.</p>"
+        local_upload_html: "<p>Upload <b>one</b> file from your computer. For textured OBJ, CT/MRI, or photogrammetry images, upload a ZIP with all files included.</p>"
+        local_upload_browse_everything_html: "<p>Upload <b>one</b> file from your computer or from the cloud (Box, Dropbox, or Google Drive). For textured OBJ, CT/MRI, or photogrammetry images, upload a ZIP with all files included. If your file is large (3+ GB) and you experience errors uploading directly from your computer, try uploading from the cloud. If you experience repeated errors, please <a href='mailto:morphosource@duke.edu'>contact us</a>.</p>"
       parents:
         actions: Actions
         date_uploaded: Date Uploaded

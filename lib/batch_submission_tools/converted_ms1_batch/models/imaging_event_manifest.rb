@@ -11,6 +11,7 @@ module BatchSubmissionTools
           @device_modality = device_modality
           @depositor = depositor
           @on_behalf_of = on_behalf_of
+          
           if !attrs.present? && initial_attrs.present?
             @attrs = create_new_attributes
           else

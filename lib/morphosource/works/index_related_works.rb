@@ -70,7 +70,7 @@ module Morphosource
           # collection causes argument error in test environment
           return if (works.first.collection? && Rails.env.test?)
 
-          UpdateRelatedWorksIndexJob.perform_later(works)
+          UpdateRelatedWorksIndexJob.perform_later(works.compact.map { |w| w.id })
         end
 
         def index_related_collections(collections)

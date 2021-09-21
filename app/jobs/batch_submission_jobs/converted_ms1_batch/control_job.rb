@@ -1,4 +1,4 @@
-class BatchSubmissionJobs::ConvertedMs1Batch::ControlJob < ApplicationJob
+class BatchSubmissionJobs::ConvertedMs1Batch::ControlJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest
 
   queue_as Hyrax.config.ingest_queue_name
@@ -80,7 +80,7 @@ class BatchSubmissionJobs::ConvertedMs1Batch::ControlJob < ApplicationJob
 
     final_related_ids = related_ids
       .uniq
-      .select { |id| ActiveFedora::Base.find(id) if ActiveFedora::Base.exists?(id) }
+      .select { |id| id if ActiveFedora::Base.exists?(id) }
       .compact
     UpdateRelatedWorksIndexJob.perform_later(final_related_ids)
 

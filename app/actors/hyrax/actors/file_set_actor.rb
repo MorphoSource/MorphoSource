@@ -34,6 +34,9 @@ module Hyrax
           InheritPermissionsJob.perform_later(file_set.parent)
         else
           IngestJob.perform_later(wrapper!(file: file, relation: relation))
+          # DropBox BrowseEverything does not use from_url, but needs these set
+          VisibilityCopyJob.perform_later(file_set.parent) if file_set.parent.present?
+          InheritPermissionsJob.perform_later(file_set.parent) if file_set.parent.present?
         end
       end
 

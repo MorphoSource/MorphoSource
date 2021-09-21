@@ -2,11 +2,11 @@ module BatchSubmissionTools
   module ConvertedMs1Batch
     class Manifest
       include BatchSubmissionTools::ConvertedMs1Batch::BatchSubmissionHelper
-
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :on_behalf_of,
         :organization_id, :device_id, :device_modality, :collection_ids,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests
+
 
       # Rewrite call as something that calls the relevant job?
       # def self.call(input_path, media_path, admin_user, depositor, organization_id, device_id)
@@ -22,6 +22,7 @@ module BatchSubmissionTools
         @organization_id = organization_id
         @device_id = device_id
         @device_modality = Device.find(device_id).modality&.first
+
         @collection_ids = Array(collection_ids)
 
         @biological_specimen_ingests = []

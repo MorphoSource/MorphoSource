@@ -3,7 +3,7 @@ en:
     search:
       fields:
         show:
-          agreement_uri: Additial usage agreement
+          agreement_uri: Additional usage agreement
           ark: MorphoSource ARK
           centroid_location: Centroid coordinates
           cite_as: Cite as
@@ -37,7 +37,7 @@ en:
   simple_form:
     labels:
       media:
-        agreement_uri: Additial usage agreement
+        agreement_uri: Additional usage agreement
         ark: MorphoSource ARK
         centroid_location: Centroid coordinates
         cite_as: Cite as

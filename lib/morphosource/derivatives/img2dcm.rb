@@ -40,7 +40,7 @@ module Morphosource::Derivatives
           ( x && y ? "-k 'PixelSpacing=" + x.to_s + "\\" + y.to_s + "' " : "" ) +
           ( z ? "-k 'SpacingBetweenSlices=" + z.to_s + "' " : "") + 
           ( thickness ? "-k 'SliceThickness=" + thickness.to_s + "' " : "") + 
-          "-sef #{File.join(Rails.root, 'lib/assets/template.dcm')} #{file_path} #{file_out_path}"
+          "-sef #{File.join(Rails.root, 'lib/assets/template.dcm')} '#{file_path}' '#{file_out_path}'"
       end
   end
 end

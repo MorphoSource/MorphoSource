@@ -28,7 +28,7 @@ module Morphosource::Derivatives
       end
 
       def command
-        "dcmdjpeg #{file_path} #{file_out_path}"
+        "dcmdjpeg '#{file_path}' '#{file_out_path}'"
       end
   end
 end

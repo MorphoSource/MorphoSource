@@ -31,8 +31,8 @@ po_type, po_title, taxonomy = object_details(document)
   <td class="break-all"><%= po_title %></td>
   <td><%= taxonomy %></td>
   <td><%= item_status_label(item) %></td>
-  <td><%= item.reviewer&.first&.name %></td>
-  <td><%= item.reviewer&.first&.affiliation %></td>
+  <td><%= item.reviewer_names %></td>
+  <td><%= item.reviewer_affiliations %></td>
   <td><%= date(item,'requested') %></td>
   <td><%= date(item,'approved') %></td>
   <td><%= date(item,'denied') %></td>

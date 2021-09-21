@@ -1,10 +1,10 @@
-class SaveWorkJob < ApplicationJob
+class SaveWorkJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_slow_queue_name
 
-  def perform(object=nil)
-  	if object.present?
-  		object.save!
-  	end
+  def perform(work_id)
+    if ::ActiveFedora::Base.exists?(work_id)
+      ::ActiveFedora::Base.find(work_id).save!
+    end
   end
 end

@@ -31,6 +31,15 @@ input[type=checkbox].disabled {
 
 .showcase-edit {
 
+  tr.file_set {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+
+    td.thumbnail {
+      margin-top: 5px;
+    }
+  }
+
   .permissions-add-user-label, .permissions-add-group-label {
     padding: 7px 4px;
   }
@@ -296,6 +305,13 @@ input[type=checkbox].disabled {
     padding: 0 0 0 .2em;
   }
 
+  .admin-block {
+    background-color: #efefef; 
+    margin-top: 2em;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
   .content-block {
     padding-left: 10px;
     padding-right: 10px;
@@ -428,6 +444,7 @@ input[type=checkbox].disabled {
       .fileinput-button {
         margin-left: auto;
         margin-right: auto;
+        float: none !important;
       }
       .fileupload-progress {
         margin-top: 0;

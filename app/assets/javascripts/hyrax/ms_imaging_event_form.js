@@ -65,8 +65,15 @@ $( document ).ready(function() {
       var concatFilterValue = concatFilters[i].value;
       //console.log('concatFilterValue: '+concatFilterValue);
 
-      var material = concatFilterValue.match(/Filter material: (.*?), Filter thickness: /)[1];
-      var thickness = concatFilterValue.match(/Filter thickness: (.*)/)[1];
+      // Does filter value match format? If not, just pass to thickness
+      var filterMatch = concatFilterValue.match(/Filter material: (.*?), Filter thickness: /);
+      if(Array.isArray(filterMatch)) {
+        var material = filterMatch[1];
+        var thickness = concatFilterValue.match(/Filter thickness: (.*)/)[1];
+      } else {
+        var material = null;
+        var thickness = concatFilterValue;
+      }
 
       // Fill in values for first line
       if (i == 0) {

@@ -5,13 +5,11 @@ module Morphosource
       # remove collections from team and project facets that the user is not able to view
       def filter_facets
         return if current_user&.admin?
+
         get_viewable_collections_ids
         filtered_facets.each do |facet|
           items = @response.aggregations[facet].items
-          unauthorized_items = unauthorized_items(items)
-          unauthorized_items.each do |item|
-            items.delete(item)
-          end
+          @response.aggregations[facet].instance_variable_set(:@items,authorized_items(items))
         end
       end
 
@@ -48,6 +46,17 @@ module Morphosource
       def unauthorized_items(items)
         items.each_with_object([]) do |item, unauthorized|
           unauthorized << item if item_unauthorized?(item)
+        end
+      end
+
+      # An item is authorized if its value (collection id) is  included in the array of ids a user is able to read.
+      def item_authorized?(item)
+        @viewable_collections_ids.include? item.value
+      end
+
+      def authorized_items(items)
+        items.each_with_object([]) do |item, authorized|
+          authorized << item if item_authorized?(item)
         end
       end
 

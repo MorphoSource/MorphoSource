@@ -10,7 +10,6 @@ module Morphosource
         filtered_facets.each do |facet|
           items = @response.aggregations[facet].items
           @response.aggregations[facet].instance_variable_set(:@items,authorized_items(items))
-          byebug
         end
       end
 
@@ -37,7 +36,6 @@ module Morphosource
         else
           @viewable_collections_ids ||= Morphosource::SolrService.new.get_docs('has_model_ssim:Collection AND visibility_ssi:open', fl: 'id').map{|c| c["id"]}
         end
-        byebug
       end
 
       def user_viewable_collection_ids

@@ -78,6 +78,9 @@ class MediaIndexer < Morphosource::WorkIndexer
         organization_titles = nil
         organization_id = nil
         institution_code = nil
+        collection_code = nil
+        catalog_number = nil
+        occurrence_id = nil
       end
 
       # add physical object facet

@@ -3,7 +3,7 @@ module BatchSubmissionTools
     class Manifest
       include BatchSubmissionTools::ConvertedMs1Batch::BatchSubmissionHelper
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :on_behalf_of,
-        :organization_id, :device_id, :device_modality, :collection_ids,
+        :organization_id, :device_id, :device_modality, :collection_ids, :fund_code_id,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests
 
@@ -13,7 +13,7 @@ module BatchSubmissionTools
       #   new(input_path, media_path, admin_user, depositor, organization_id, device_id).call
       # end
 
-      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [])
+      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil)
         @input_path = input_path
         @media_path = media_path
         @admin_user = admin_user.user_key
@@ -24,6 +24,7 @@ module BatchSubmissionTools
         @device_modality = Device.find(device_id).modality&.first
 
         @collection_ids = Array(collection_ids)
+        @fund_code_id = fund_code_id
 
         @biological_specimen_ingests = []
         @rows_to_bso = {}
@@ -272,7 +273,8 @@ module BatchSubmissionTools
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),
           rows_to_taxonomy: rows_to_taxonomy.transform_keys(&:to_s),
           media_ie_pe_ingests: media_ie_pe_ingests.map(&:to_h),
-          collection_ids: collection_ids
+          collection_ids: collection_ids,
+          fund_code_id: fund_code_id
         }
       end
     end

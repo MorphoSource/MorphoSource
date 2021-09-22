@@ -29,7 +29,11 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaSubcontrolJob < Morphosource:
       end
 
       i['physical_object_id'] = bso['id']
-      i['job'] = BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob.perform_later(i, @manifest['collection_ids'] || [])
+      i['job'] = BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob.perform_later(
+        i, 
+        @manifest['collection_ids'] || [],
+        @manifest['fund_code_id'] || nil,
+      )
     end
 
     # Monitor jobs

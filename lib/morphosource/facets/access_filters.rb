@@ -10,6 +10,7 @@ module Morphosource
         filtered_facets.each do |facet|
           items = @response.aggregations[facet].items
           @response.aggregations[facet].instance_variable_set(:@items,authorized_items(items))
+          byebug
         end
       end
 
@@ -32,10 +33,15 @@ module Morphosource
 
       def get_viewable_collections_ids
         if current_user
-          @viewable_collections_ids ||= Hyrax::Collections::PermissionsService.collection_ids_for_view(ability: current_ability)
+          @viewable_collections_ids ||= user_viewable_collection_ids
         else
           @viewable_collections_ids ||= Morphosource::SolrService.new.get_docs('has_model_ssim:Collection AND visibility_ssi:open', fl: 'id').map{|c| c["id"]}
         end
+        byebug
+      end
+
+      def user_viewable_collection_ids
+        Hyrax::Collections::PermissionsService.collection_ids_for_view(ability: current_ability) | Morphosource::SolrService.new.get_docs('has_model_ssim:Collection AND visibility_ssi:open', fl: 'id').map{|c| c["id"]}
       end
 
       # An item is unauthorized if its value (collection id) is not included in the array of ids a user is able to read.

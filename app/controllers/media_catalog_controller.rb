@@ -59,6 +59,8 @@ class MediaCatalogController < CatalogController
     config.add_show_field solr_name('x_spacing', :stored_searchable)
     config.add_show_field solr_name('y_spacing', :stored_searchable)
     config.add_show_field solr_name('z_spacing', :stored_searchable)
+    config.add_show_field solr_name('doi', :stored_searchable)
+    config.add_show_field solr_name('ark', :stored_searchable)
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields

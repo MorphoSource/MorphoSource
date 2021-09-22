@@ -117,9 +117,6 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['media_device_facility_organization_ssim'] = facility_org_title
       solr_doc['media_device_facility_organization_id_tesim'] = facility_org&.id
       solr_doc['media_device_facility_organization_id_ssim'] = facility_org&.id
-      # origin of media for org-linked teams
-      # populates facet used only on the linked team
-      solr_doc['org_linked_team_origin_ssim'] = linked_team_origin
    end
   end
 

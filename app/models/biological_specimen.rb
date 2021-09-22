@@ -84,12 +84,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
     end
   end
 
-  def record_field_values
-    # if either institution_code, collection_code, or catalog_number changes, the title changes
-    bso = BiologicalSpecimen.find(self.id)
-    @original_title = bso.title
-    @occurrence_id = bso.occurrence_id
-  end
 
   private
     def add_id_to_title # this is non-functional!!
@@ -124,6 +118,14 @@ class BiologicalSpecimen < Morphosource::Works::Base
           self.send("#{key}=", value.is_a?(Array) ? value : [value] )
         end
       end
+    end
+
+    def record_field_values
+      # if either institution_code, collection_code, or catalog_number changes, the title changes
+      # if any of these changes, re-index the media
+      bso = BiologicalSpecimen.find(self.id)
+      @original_title = bso.title
+      @occurrence_id = bso.occurrence_id
     end
 
     def reindex_media

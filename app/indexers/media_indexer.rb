@@ -20,6 +20,9 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['owner_ssim'] = object.owner
       solr_doc['user_with_ownership_ssi'] = object.user_with_ownership
       solr_doc['download_reviewer_ssim'] = object.download_reviewer
+      solr_doc['ark_ssim'] = object.ark
+      solr_doc['doi_ssim'] = object.doi
+
       # add media type facet
       mt = object.human_readable_media_type
       solr_doc['human_readable_media_type_tesim'] = mt
@@ -39,12 +42,17 @@ class MediaIndexer < Morphosource::WorkIndexer
       if physical_objects.present?
         physical_object_id = physical_objects.map(&:id)
         physical_object_title = physical_objects.map { |po| po.title&.first }.compact
+        institution_code = physical_objects.map { |po| po.institution_code&.first }.compact
+        collection_code = physical_objects.map { |po| po.collection_code&.first }.compact
+        catalog_number = physical_objects.map { |po| po.catalog_number&.first }.compact
+
         physical_object_type = physical_objects.first.specimen? ? "Biological Specimen" : "Cultural Heritage Object"
         types = physical_objects.map(&:class).uniq
         if types == [CulturalHeritageObject]
           taxonomy_titles = nil
         elsif types == [BiologicalSpecimen]
           taxonomy_titles = physical_objects.map(&:taxonomies_titles).flatten
+          occurrence_id = physical_objects.map { |po| po.occurrence_id&.first }.compact 
         else
           taxonomy_titles = []
           physical_objects.each do |object|
@@ -55,7 +63,6 @@ class MediaIndexer < Morphosource::WorkIndexer
         end
 
         @organizations ||= organizations
-
         if @organizations.present?
           organization_titles = @organizations.map{ |o| o.title.first }
           organization_id = @organizations.map{ |o| o.id }
@@ -70,6 +77,10 @@ class MediaIndexer < Morphosource::WorkIndexer
         taxonomy_titles = nil
         organization_titles = nil
         organization_id = nil
+        institution_code = nil
+        collection_code = nil
+        catalog_number = nil
+        occurrence_id = nil
       end
 
       # add physical object facet
@@ -77,11 +88,19 @@ class MediaIndexer < Morphosource::WorkIndexer
       # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
       solr_doc['media_physical_object_type_sim'] = physical_object_type
       solr_doc['media_physical_object_type_ssim'] = physical_object_type
-      # physical_object_ids and titles
+      # physical_object fields
       solr_doc['physical_object_id_ssim'] = physical_object_id
       solr_doc['physical_object_id_tesim'] = physical_object_id
       solr_doc['physical_object_title_ssim'] = physical_object_title
       solr_doc['physical_object_title_tesim'] = physical_object_title
+      solr_doc['institution_code_ssim'] = institution_code
+      solr_doc['institution_code_tesim'] = institution_code
+      solr_doc['collection_code_tesim'] = collection_code
+      solr_doc['collection_code_ssim'] = collection_code
+      solr_doc['catalog_number_tesim'] = catalog_number
+      solr_doc['catalog_number_ssim'] = catalog_number
+      solr_doc['occurrence_id_tesim'] = occurrence_id
+      solr_doc['occurrence_id_ssim'] = occurrence_id
 
       # add taxonomies
       solr_doc['taxonomy_tesim'] = taxonomy_titles

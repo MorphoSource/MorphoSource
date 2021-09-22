@@ -254,6 +254,34 @@ module Hyrax
       end
     end
 
+    # characterize media fileset
+    def characterize
+      if current_user.admin?
+        media_work = Media.find(params[:id])
+        if media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
+          PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id)
+          flash[:notice] = "Media characterization job has been started"
+        else
+          flash[:error] = "Media has no FileSet or FileSet has no original file, characterization job not created"
+        end
+      end
+      redirect_to(main_app.media_showcase_edit_path(id: params[:id])) and return
+    end
+
+    # derive media fileset
+    def create_derivatives
+      if current_user.admin?
+        media_work = Media.find(params[:id])
+        if media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
+          PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id)
+          flash[:notice] = "Media create derivatives job has been started"
+        else
+          flash[:error] = "Media has no FileSet or FileSet has no original file, create derivatives job not started"
+        end
+      end
+      redirect_to(main_app.media_showcase_edit_path(id: params[:id])) and return
+    end
+
     private
 
       # Checks that uploaded files are the correct format for selected media type.

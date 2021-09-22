@@ -102,7 +102,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
       it do
         expect(subject).to receive(:presenter)
         expect(subject).to receive(:query_solr)
-        expect(subject).to receive(:query_collection_works)
+        expect(subject).to receive(:query_collection_counts)
         expect(subject).to receive(:remove_facets)
         expect(subject).to receive(:filter_facets)
         expect(subject).to receive(:query_collection_members)
@@ -164,7 +164,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
       end
       it do
         expect(subject).to receive(:presenter)
-        expect(subject).to receive(:query_collection_works)
+        expect(subject).to receive(:query_collection_counts)
         expect(subject).to receive(:query_collection_members)
         get :show, params: { id: team.id }
       end

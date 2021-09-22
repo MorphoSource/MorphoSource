@@ -20,20 +20,9 @@ module Morphosource
           config.add_facet_field "media_organization_ssim", label: "Organization"
           config.add_facet_field "member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id
           config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
-          # only display for org-linked teams; removed_facet
-          config.add_facet_field "org_linked_team_origin_ssim", label: "Intersections", helper_method: :intersections_values
         end
       end
       configure_facets
-
-      # If team doesn't have a linked organization, don't display the intersections facet
-      def removed_facets
-        if !@collection.organization.present?
-          ["org_linked_team_origin_ssim"]
-        else
-          super
-        end
-      end
 
       private
 

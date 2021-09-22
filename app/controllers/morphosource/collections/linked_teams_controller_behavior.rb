@@ -17,19 +17,17 @@ module Morphosource
       def organization_po_count
         repository.blacklight_config.max_per_page = 999999
         search_builder = Morphosource::Collections::Teams::OrganizationObjectsSearchBuilder.new(self)
-        response = repository.search(search_builder.rows(999999).query)
-        count = response.response["numFound"].to_i
+        repository.search(search_builder.query).response["numFound"].to_i
       end
 
       # Returns count of media belonging to linked organization
       # Filtered by user access
-      # TODO: refactor to get this info from collection_media ?
       def organization_media
         repository.blacklight_config.max_per_page = 999999
         search_builder = Morphosource::Collections::Teams::OrganizationMediaSearchBuilder.new(self)
-        response = repository.search(search_builder.rows(999999).query)
-        org_media_object_ids = response.response["docs"]
-        org_media_count = response.response["numFound"].to_i
+        response = repository.search(search_builder.rows(999999).query).response
+        org_media_object_ids = response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
+        org_media_count = response["numFound"].to_i
         [org_media_object_ids, org_media_count]
       end
 

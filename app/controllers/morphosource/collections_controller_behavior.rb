@@ -29,7 +29,6 @@ module Morphosource
       (@media_count, @object_ids) = collection_media
       (@response, @document_list) = query_solr
       query_collection_counts
-      remove_facets
       filter_facets
       query_collection_members
     end

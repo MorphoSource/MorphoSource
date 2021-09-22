@@ -140,41 +140,4 @@ class MediaIndexer < Morphosource::WorkIndexer
     end
     organizations.uniq
   end
-
-  # This populates the 'origin/intersections' facet on linked teams
-  # Facet may not be accurate in edge cases (for example, a media is added as a member of its organization's linked team, and also added as a member of a second linked team)
-
-  # TODO: It might be better to move this logic to the NestingIndexAdapter: https://github.com/samvera/hyrax/blob/b034218b89dde7df534e32d1e5ade9161e129a1d/app/services/hyrax/adapters/nesting_index_adapter.rb to streamline checking of whether the project is nested within a team.
-  def linked_team_origin
-    @team_ids ||= object.member_of_team_ids
-    @project_ids ||= object.member_of_project_ids
-    @organizations ||= organizations
-    return if @team_ids.blank? && @project_ids.blank? && @organizations.blank?
-
-    # assumes that the media belongs to one organization
-    linked_team_id = @organizations&.first&.team_id&.first
-
-    values = []
-
-    if @team_ids.present?
-      if @team_ids.include? linked_team_id
-        values << 'Team and Organization' << 'Team' << 'Organization'
-      else
-        values << 'Team Only' << 'Team'
-      end
-    elsif linked_team_id.present?
-      if @project_ids.present? && project_parent_ids.include?(linked_team_id)
-        values << 'Team and Organization' << 'Team' << 'Organization'
-      else
-        values << 'Organization Only' << 'Organization'
-      end
-    elsif @project_ids.present?
-      values << 'Team Only' << 'Team'
-    end
-    values
-  end
-
-  def project_parent_ids
-    Morphosource::SolrService.new.get_docs('',{fq: "(id:(#{@project_ids.join(' OR ')}))", fl:"nesting_collection__parent_ids_ssim"}).map{|d| d["nesting_collection__parent_ids_ssim"]}.flatten.compact.uniq
-  end
 end

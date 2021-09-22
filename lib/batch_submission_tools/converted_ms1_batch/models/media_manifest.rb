@@ -27,8 +27,13 @@ module BatchSubmissionTools
             download_reviewer: download_reviewer,
             description: description
           }
-          addl_attrs.merge!(organization_permissions_fields) if organization_id.present?
-          addl_attrs.merge!(visibility_from_organization) if organization_id.present?
+          if organization_id.present?
+            addl_attrs.merge!(
+              organization_permissions_fields
+                .select { |k, v| Array(v)&.first.present? }
+            ) 
+            addl_attrs.merge!(visibility_from_organization)
+          end
           p = media_file_path
           addl_attrs[:file] = [p] if p.present?
           

@@ -3,7 +3,7 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
 
   queue_as Hyrax.config.mass_ingest_queue_name
 
-  def perform(ingest, collection_ids)
+  def perform(ingest, collection_ids, fund_code_id)
     if !ingest['physical_object_id'].present?
       raise "Physical object ID not present for ingest. Ingest: #{ingest}"
     end
@@ -110,6 +110,7 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
     end  
 
     add_media_to_collections(all_media, collection_ids)
+    add_media_to_fund_code(all_media, fund_code_id)
   end
 
   def add_media_to_collections(media, collection_ids)
@@ -118,6 +119,13 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
       c = Collection.find(collection_id)
       c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
       c.add_member_objects Array(media).map { |m| m.id }
+    end
+  end
+
+  def add_media_to_fund_code(media, fund_code_id)
+    return unless media.present? && fund_code_id.present? && (fc = FundCode.find(fund_code_id))
+    media.each do |m|
+      m.new_fund_code_association(fc)
     end
   end
 end

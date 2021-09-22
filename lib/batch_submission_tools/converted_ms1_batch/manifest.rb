@@ -2,29 +2,27 @@ module BatchSubmissionTools
   module ConvertedMs1Batch
     class Manifest
       include BatchSubmissionTools::ConvertedMs1Batch::BatchSubmissionHelper
+      attr_accessor :input_path, :media_path, :admin_user, :depositor, :on_behalf_of,
+        :organization_id, :device_id, :device_modality, :collection_ids,
+        :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
+        :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests
 
-      attr_accessor :input_path, :media_path, :admin_user, :depositor
-      attr_accessor :organization_id, :organization, :device_id, :device, :device_modality, :collection_ids
-      attr_accessor :rows, :media_group_to_rows, :rows_to_bso
-      attr_accessor :biological_specimen_ingests, :rows_to_bso
-      attr_accessor :taxonomy_ingests, :rows_to_taxonomy
-      attr_accessor :media_ie_pe_ingests
 
       # Rewrite call as something that calls the relevant job?
       # def self.call(input_path, media_path, admin_user, depositor, organization_id, device_id)
       #   new(input_path, media_path, admin_user, depositor, organization_id, device_id).call
       # end
 
-      def initialize(input_path, media_path, admin_user, depositor, organization_id, device_id, collection_ids)
+      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [])
         @input_path = input_path
         @media_path = media_path
         @admin_user = admin_user.user_key
         @depositor = depositor.user_key
+        @on_behalf_of = on_behalf_of.present? ? on_behalf_of.user_key : nil
         @organization_id = organization_id
-        @organization = Organization.find(organization_id)
         @device_id = device_id
-        @device = Device.find(device_id)
-        @device_modality = device.modality&.first
+        @device_modality = Device.find(device_id).modality&.first
+
         @collection_ids = Array(collection_ids)
 
         @biological_specimen_ingests = []
@@ -110,6 +108,7 @@ module BatchSubmissionTools
             bso_ingest = BatchSubmissionTools::ConvertedMs1Batch::Models::BiologicalSpecimenManifest.new(
               initial_attrs: bso, 
               depositor: depositor, 
+              on_behalf_of: on_behalf_of,
               organization_id: organization_id
             )
             biological_specimen_ingests << bso_ingest
@@ -153,10 +152,11 @@ module BatchSubmissionTools
             next unless taxonomy_attrs.values.any? { |v| v.present? } || bso.work_imported
 
             bso_taxonomies = BatchSubmissionTools::ConvertedMs1Batch::Factory::TaxonomyManifests.call(
-              taxonomy_attrs,
-              admin_user,
-              depositor,
-              bso.work_imported ? bso.idigbio_uuid : nil
+              attrs: taxonomy_attrs,
+              admin_user: admin_user,
+              depositor: depositor,
+              on_behalf_of: on_behalf_of,
+              idigbio_uuid: bso.work_imported ? bso.idigbio_uuid : nil
             )
 
             bso_taxonomies.each do |taxonomy|
@@ -204,11 +204,14 @@ module BatchSubmissionTools
             ie_row_index = parent_row_index
             parent_pe = BatchSubmissionTools::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[parent_row_index][:processing_event],
-              depositor: depositor
+              depositor: depositor,
+              on_behalf_of: on_behalf_of
             )
             parent_media = BatchSubmissionTools::ConvertedMs1Batch::Models::MediaManifest.new(
               initial_attrs: rows[parent_row_index][:media],
               depositor: depositor,
+              on_behalf_of: on_behalf_of,
+              organization_id: organization_id,
               media_path: media_path
             )
 
@@ -225,18 +228,22 @@ module BatchSubmissionTools
               initial_attrs: rows[ie_row_index][:imaging_event],
               device_id: device_id,
               device_modality: device_modality,
-              depositor: depositor
+              depositor: depositor,
+              on_behalf_of: on_behalf_of
             )
           }
           
           children = mg[:children].map do |row_index|
             child_pe = BatchSubmissionTools::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[row_index][:processing_event],
-              depositor: depositor
+              depositor: depositor,
+              on_behalf_of: on_behalf_of
             )
             child_media = BatchSubmissionTools::ConvertedMs1Batch::Models::MediaManifest.new(
               initial_attrs: rows[row_index][:media],
               depositor: depositor,
+              on_behalf_of: on_behalf_of,
+              organization_id: organization_id,
               media_path: media_path
             )
 

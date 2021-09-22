@@ -3,11 +3,12 @@ module BatchSubmissionTools
     module Models
       # Takes initial taxonomy attrs and matches to existing or creates new attributes for work creation
       class TaxonomyManifest
-        attr_accessor :initial_attrs, :depositor, :canonical, :id, :work, :attrs
+        attr_accessor :initial_attrs, :depositor, :on_behalf_of, :canonical, :id, :work, :attrs
 
-        def initialize(initial_attrs: {}, depositor: nil, canonical: false, id: nil, attrs: {}, **kwargs)
+        def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, canonical: false, id: nil, attrs: {}, **kwargs)
           @initial_attrs = initial_attrs
           @depositor = depositor
+          @on_behalf_of = on_behalf_of
           @canonical = canonical
           @id = initial_attrs[:id]&.first || id
           @work = work
@@ -23,7 +24,7 @@ module BatchSubmissionTools
         end
 
         def create_new_attributes
-          addl_attrs = { depositor: depositor }
+          addl_attrs = { depositor: depositor, on_behalf_of: on_behalf_of }
 
           Importer::Factory::TaxonomyFactory.new(
             initial_attrs.except(:id).merge(addl_attrs)

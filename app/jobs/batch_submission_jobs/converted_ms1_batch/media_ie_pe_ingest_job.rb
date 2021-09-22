@@ -9,6 +9,7 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
     end
 
     all_media = []
+    organization_permissions_fields = {}
 
     imaging_event = nil
     # ingest imaging event
@@ -42,6 +43,10 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
       end
 
       if parent['media'].present?
+        if parent['media']['organization_permissions_fields'].present?
+          organization_permissions_fields = parent['media']['organization_permissions_fields']
+        end 
+
         parent_media = Importer::BatchObjectImporter.call(
           'Media', 
           parent['media']['attrs'].merge(
@@ -75,6 +80,10 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
         end
 
         if child['media'].present?
+          if child['media']['organization_permissions_fields'].present?
+            organization_permissions_fields = child['media']['organization_permissions_fields']
+          end 
+
           child_media = Importer::BatchObjectImporter.call(
             'Media', 
             child['media']['attrs'].merge(
@@ -92,6 +101,13 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
     else
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
+
+    # Add org agreement attachment fields
+    if all_media.present? && organization_permissions_fields.present? && organization_permissions_fields['organization_for_attachment'].present?
+      all_media.each do |media_work|
+        Morphosource::AttachmentService.create_copy(media_work.id, 'agreement', organization_permissions_fields['organization_for_attachment'])
+      end
+    end  
 
     add_media_to_collections(all_media, collection_ids)
   end

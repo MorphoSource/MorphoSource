@@ -3,13 +3,14 @@ module BatchSubmissionTools
     module Models
       # Takes initial biological specimen attrs and matches to existing, imports from iDigBio, or creates new attributes to work creation
       class BiologicalSpecimenManifest
-        attr_accessor :initial_attrs, :depositor, :organization_id
+        attr_accessor :initial_attrs, :depositor, :on_behalf_of, :organization_id
         attr_accessor :id, :work, :work_imported, :attrs
         attr_accessor :occurrence_id, :idigbio_uuid, :institution_code, :collection_code, :catalog_number
 
-        def initialize(initial_attrs: {}, depositor: nil, organization_id: nil, id: nil, attrs: {}, work_imported: false, **kwargs)
+        def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, organization_id: nil, id: nil, attrs: {}, work_imported: false, **kwargs)
           @initial_attrs = initial_attrs
           @depositor = depositor
+          @on_behalf_of = on_behalf_of
           @organization_id = organization_id
           @id = initial_attrs[:id]&.first || id
           @work = work
@@ -34,7 +35,9 @@ module BatchSubmissionTools
           elsif initial_attrs[:occurrence_id].present? && (imported_attrs = import_work).present?
             @attrs = imported_attrs.merge( 
               organization_id: [@organization_id],
-              depositor: @depositor
+              depositor: @depositor,
+              on_behalf_of: @on_behalf_of,
+              description: description(imported_attrs)
             )
             @work_imported = true
             @occurrence_id = @attrs['occurrence_id']
@@ -45,7 +48,9 @@ module BatchSubmissionTools
           elsif !attrs.present? && initial_attrs.present?
             @attrs = create_new_attributes.merge( 
               organization_id: [@organization_id],
-              depositor: @depositor
+              depositor: @depositor,
+              on_behalf_of: @on_behalf_of,
+              description: description(initial_attrs)
             )
             @work_imported = false
             @occurrence_id = @attrs[:occurrence_id]&.first
@@ -54,6 +59,18 @@ module BatchSubmissionTools
             @collection_code = @attrs[:collection_code]&.first
             @catalog_number = @attrs[:catalog_number]&.first
           end
+        end
+
+        def description(attributes)
+          if attributes[:description].present?
+            attributes[:description].first.to_s + "\r\n\r\n" + description_text
+          else
+            description_text
+          end
+        end
+
+        def description_text
+          'Record created by batch submission.'
         end
 
         def work
@@ -91,7 +108,9 @@ module BatchSubmissionTools
         end
 
         def create_new_attributes
-          ::Importer::Factory::BiologicalSpecimenFactory.new(initial_attrs.except(:id)).create_attributes
+          ::Importer::Factory::BiologicalSpecimenFactory.new(
+            initial_attrs.except(:id)
+          ).create_attributes
         end
 
         def to_h

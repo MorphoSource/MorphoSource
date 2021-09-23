@@ -548,4 +548,11 @@ namespace :morphosource do
       m.save!
     end
   end
+
+  desc 'Create new fund code billing cycle (dates in m/d/Y format)'
+  task :create_new_fund_code_billing_cycle, [:start_date, :end_date] => :environment do |task, args|
+    start_date = args[:start_date].present? ? Date.strptime(args[:start_date], '%m/%d/%Y') : nil
+    end_date   = args[:end_date].present?   ? Date.strptime(args[:end_date], '%m/%d/%Y')   : nil
+    Morphosource::FundCodes::BillingCycleService.call(custom_start_date: start_date, custom_end_date: end_date)
+  end
 end

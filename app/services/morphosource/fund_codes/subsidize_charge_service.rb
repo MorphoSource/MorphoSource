@@ -30,7 +30,7 @@ module Morphosource
       end
 
       def query_subsidized_media_ids
-        all_fund_code_media_ids = FundCode.all.each_with_object([]) do |fc, array|
+        chargeable_fund_code_media_ids = chargeable_fund_codes.each_with_object([]) do |fc, array|
           array.concat(fc.media_ids)
         end
 
@@ -39,7 +39,11 @@ module Morphosource
           {fq: ['has_model_ssim:Media'], fl: ['id'] }
         ).pluck('id')
 
-        return all_media_ids - all_fund_code_media_ids
+        return all_media_ids - chargeable_fund_code_media_ids
+      end
+
+      def chargeable_fund_codes
+        FundCode.where(chargeable: true)
       end
 
       def generate_charges

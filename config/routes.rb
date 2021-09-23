@@ -30,6 +30,8 @@ Rails.application.routes.draw do
     get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
     put 'concern/media/:id/mint_doi', to: 'media#mint_doi', as: :media_mint_doi
     get 'concern/media/:id/thumbnail', to: 'media#thumbnail'
+    get 'concern/media/:id/characterize', to: 'media#characterize', as: :media_characterize
+    get 'concern/media/:id/derive', to: 'media#create_derivatives', as: :media_create_derivatives
     get 'concern/parent/:parent_id/media/:id', to: 'media#showcase'
     # setup temp routes for the default views (for debugging)
     # remove them later if no longer needed

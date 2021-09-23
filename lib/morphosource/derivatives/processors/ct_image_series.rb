@@ -50,10 +50,10 @@ module Morphosource::Derivatives::Processors
         @output_file_path = File.join(output_path, 'derivative.dcm')
 
         
-        @x_spacing = directives.fetch(:x_spacing, 1).presence || 1
-        @y_spacing = directives.fetch(:y_spacing, 1).presence || 1
-        @z_spacing = directives.fetch(:z_spacing, 0).presence || 0
-        @slice_thickness = directives.fetch(:slice_thickness, 0).presence || 0
+        @x_spacing = (directives.fetch(:x_spacing, 1).presence || 1).to_f
+        @y_spacing = (directives.fetch(:y_spacing, 1).presence || 1).to_f
+        @z_spacing = (directives.fetch(:z_spacing, 0).presence || 0).to_f
+        @slice_thickness = (directives.fetch(:slice_thickness, 0).presence || 0).to_f
         if z_spacing == 0 && slice_thickness == 0
           puts('first if hit')
           if x_spacing && y_spacing
@@ -97,7 +97,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def correct_spacing_scale
-      unit_factors = { 'Cm': 10.0, 'M': 1000.0, 'Km': 1e6, 'In': 25.4, 'Ft': 304.8, 'Mi': 1.609e+6 }
+      unit_factors = { 'Cm' => 10.0, 'M' => 1000.0, 'Km' => 1e6, 'In' => 25.4, 'Ft' => 304.8, 'Mi' => 1.609e+6 }
       uf = unit_factors[unit]
       [x_spacing, y_spacing, z_spacing, slice_thickness].each { |var| var = var * uf }
     end

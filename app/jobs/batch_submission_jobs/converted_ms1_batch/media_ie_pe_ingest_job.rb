@@ -3,12 +3,13 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
 
   queue_as Hyrax.config.mass_ingest_queue_name
 
-  def perform(ingest, collection_ids)
+  def perform(ingest, collection_ids, fund_code_id)
     if !ingest['physical_object_id'].present?
       raise "Physical object ID not present for ingest. Ingest: #{ingest}"
     end
 
     all_media = []
+    organization_permissions_fields = {}
 
     imaging_event = nil
     # ingest imaging event
@@ -42,6 +43,10 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
       end
 
       if parent['media'].present?
+        if parent['media']['organization_permissions_fields'].present?
+          organization_permissions_fields = parent['media']['organization_permissions_fields']
+        end 
+
         parent_media = Importer::BatchObjectImporter.call(
           'Media', 
           parent['media']['attrs'].merge(
@@ -75,6 +80,10 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
         end
 
         if child['media'].present?
+          if child['media']['organization_permissions_fields'].present?
+            organization_permissions_fields = child['media']['organization_permissions_fields']
+          end 
+
           child_media = Importer::BatchObjectImporter.call(
             'Media', 
             child['media']['attrs'].merge(
@@ -93,7 +102,15 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
 
+    # Add org agreement attachment fields
+    if all_media.present? && organization_permissions_fields.present? && organization_permissions_fields['organization_for_attachment'].present?
+      all_media.each do |media_work|
+        Morphosource::AttachmentService.create_copy(media_work.id, 'agreement', organization_permissions_fields['organization_for_attachment'])
+      end
+    end  
+
     add_media_to_collections(all_media, collection_ids)
+    add_media_to_fund_code(all_media, fund_code_id)
   end
 
   def add_media_to_collections(media, collection_ids)
@@ -102,6 +119,13 @@ class BatchSubmissionJobs::ConvertedMs1Batch::MediaIePeIngestJob < Morphosource:
       c = Collection.find(collection_id)
       c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
       c.add_member_objects Array(media).map { |m| m.id }
+    end
+  end
+
+  def add_media_to_fund_code(media, fund_code_id)
+    return unless media.present? && fund_code_id.present? && (fc = FundCode.find(fund_code_id))
+    media.each do |m|
+      m.new_fund_code_association(fc)
     end
   end
 end

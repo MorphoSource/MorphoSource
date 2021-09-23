@@ -61,7 +61,8 @@ module Morphosource
       end
 
       def redirect_to_collection_type
-        request.parameters.delete("controller").delete("action")
+        request.parameters.delete("controller")
+        request.parameters.delete("action")
         if @_request.fullpath.include? '/collections/'
           if @collection.team?
             if @_request.fullpath.include? '/biological_specimens'
@@ -73,7 +74,6 @@ module Morphosource
             end
           elsif @collection.project?
             if @_request.fullpath.include? '/biological_specimens'
-              byebug
               redirect_to project_specimens_path(request.parameters)
             elsif @_request.fullpath.include? '/cultural_heritage_objects'
               redirect_to project_chos_path(request.parameters)
@@ -89,7 +89,6 @@ module Morphosource
       def collection_type_url(plural_type)
         locale = params[:locale] ||= 'en'
         view = params[:view].present? ? '&view=' + params[:view] : ''
-        byebug
         "/#{plural_type}/" + params[:id] + '?locale=' + locale + view
       end
 

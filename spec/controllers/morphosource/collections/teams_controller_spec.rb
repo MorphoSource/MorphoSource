@@ -67,13 +67,7 @@ RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
 
   describe 'removed_facets' do
     before { subject.instance_variable_set(:@collection, team) }
-    context 'team does not have a linked org' do
-      it { expect(subject.send(:removed_facets)).to match_array(["org_linked_team_origin_ssim"]) }
-    end
-    context 'team does have a linked org' do
-      let!(:org)                      { Organization.create(title: ['Organization1'], team_id: [team.id]) }
-      it { expect(subject.send(:removed_facets)).to match_array([]) }
-    end
+    it { expect(subject.send(:removed_facets)).to match_array([]) }
   end
 
   describe 'presenter_class' do

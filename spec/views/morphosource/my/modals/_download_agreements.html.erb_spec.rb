@@ -43,10 +43,10 @@ RSpec.describe 'morphosource/my/modals/download_agreements.html.erb', type: :vie
       render 'morphosource/my/modals/download_agreements'
   	end
 
-    it 'contains the agreement modal id, with checkbox, and disabled button' do
+    it 'contains the agreement modal id, with checkbox, and submit button' do
       expect(page).to have_selector('[id="downloadAgreementsModal"]')
       expect(page).to have_selector('input[type="checkbox"][id="modal-agree"]')
-      expect(page).to have_selector('input[type="button"][id="modal-download"][disabled="disabled"]')
+      expect(page).to have_selector('input[type="submit"][id="modal-download"][disabled="disabled"]')
     end
   end
 end

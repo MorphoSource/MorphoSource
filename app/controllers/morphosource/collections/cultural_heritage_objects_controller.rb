@@ -19,11 +19,16 @@ module Morphosource
       end
       configure_facets
 
+      def show
+        @media_count, @object_ids = collection_media
+        super
+      end
+
       private
 
-        def query_collection_works
-          @cho_count = @response.response["numFound"].to_i if @response.present?
-          super
+        def query_collection_counts
+          @cho_count ||= @response.response["numFound"].to_i
+          @specimen_count ||= collection_specimen_count
         end
 
         # link for facet filters

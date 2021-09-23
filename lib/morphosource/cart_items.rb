@@ -13,7 +13,7 @@ module Morphosource
 
     # gets id(s) for either single button or batch
     def id_params
-      params[:item_id] || params[:batch_document_ids]
+      params[:item_id] || params[:batch_document_ids] || params[:batch_download_ids]
     end
 
     # methods for works

@@ -8,7 +8,6 @@ module Morphosource
         self.default_processor_chain += [:apply_object_ids_filter]
 
         def initialize(*options)
-          @collection = options.first.instance_variable_get(:@collection)
           @org_media_object_ids = options.first.instance_variable_get(:@org_media_object_ids)
           super
         end
@@ -25,17 +24,7 @@ module Morphosource
           end
 
           def object_ids
-            ids = media_object_ids
-            ids.blank? ? ['none'] : ids
-          end
-
-          def media_object_ids
-            repository.blacklight_config.max_per_page = 999999
-            if @org_media_object_ids.present?
-              @org_media_object_ids.map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
-            else
-              repository.search(Morphosource::Collections::Teams::OrganizationMediaSearchBuilder.new(@scope).rows(999999)).response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
-            end
+            @org_media_object_ids.blank? ? ['none'] : @org_media_object_ids
           end
         end
     end

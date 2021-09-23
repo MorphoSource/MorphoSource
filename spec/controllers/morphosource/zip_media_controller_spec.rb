@@ -49,6 +49,7 @@ RSpec.describe Morphosource::ZipMediaController, type: :controller do
     end
 
     describe 'response' do
+
       context 'media is open' do
         before do
           works.each do |work|
@@ -98,7 +99,7 @@ RSpec.describe Morphosource::ZipMediaController, type: :controller do
             work.save
           end
         end
-        context 'user does not have download access to one of the items' do
+        context 'user has download access to one of the items' do
           before do
             allow(subject).to receive(:current_user).and_return(user)
             allow(user).to receive(:can?).with(:download, work1.id).and_return(true)
@@ -107,10 +108,10 @@ RSpec.describe Morphosource::ZipMediaController, type: :controller do
           end
           it 'returns unauthorized' do
             get :zip, params: { ids: [work1.id, work2.id] }
-            expect(response.status).to eq(401)
+            expect(response.status).to eq(200)
           end
         end
-        context 'user does not have an approved download for one of the items' do
+        context 'user has an approved download for one of the items' do
           before do
             allow(user).to receive(:can?).with(:download, work1.id).and_return(false)
             allow(user).to receive(:can?).with(:download, work2.id).and_return(false)
@@ -118,7 +119,7 @@ RSpec.describe Morphosource::ZipMediaController, type: :controller do
           end
           it 'returns unauthorized' do
             get :zip, params: { ids: [work1.id, work2.id] }
-            expect(response.status).to eq(401)
+            expect(response.status).to eq(200)
           end
         end
       end

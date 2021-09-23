@@ -64,9 +64,6 @@ RSpec.describe MediaIndexer do
     it 'indexes publication status' do
       expect(subject['publication_status_ssi']).to eq('Restricted Download')
     end
-    it 'indexes linked team origin' do
-      expect(subject['org_linked_team_origin_ssim']).to match_array(["Team Only", "Team"])
-    end
   end
 
   describe 'imaging_event_id' do
@@ -103,7 +100,15 @@ RSpec.describe MediaIndexer do
   describe 'physical object fields' do
     let(:organization)  { Organization.create(title: ['Organization']) }
     let(:taxonomy)      { Taxonomy.create(title: ['taxonomy title']) }
-    let(:specimen)      { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
+    let(:specimen)      { 
+      BiologicalSpecimen.create(
+        title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id],
+        institution_code: ["123"],
+        collection_code:  ["456"],
+        catalog_number:   ["789"],
+        occurrence_id:    ["xyz"]
+        )
+    }
     let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry']) }
     let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
     let(:works)         { [specimen, media, imaging_event] }
@@ -112,6 +117,26 @@ RSpec.describe MediaIndexer do
       imaging_event.ordered_members << media
       works.each(&:save)
       works.each(&:reload)
+    end
+
+    it 'indexes institution_code' do
+      expect(subject['institution_code_ssim']).to  eq(["123"])
+      expect(subject['institution_code_tesim']).to eq(["123"])
+    end
+
+    it 'indexes collection_code' do
+      expect(subject['collection_code_ssim']).to  eq(["456"])
+      expect(subject['collection_code_tesim']).to eq(["456"])
+    end
+
+    it 'indexes catalog_number' do
+      expect(subject['catalog_number_ssim']).to  eq(["789"])
+      expect(subject['catalog_number_tesim']).to eq(["789"])
+    end
+
+    it 'indexes occurrence_id' do
+      expect(subject['occurrence_id_ssim']).to  eq(["xyz"])
+      expect(subject['occurrence_id_tesim']).to eq(["xyz"])
     end
 
     it 'indexes physical object id' do
@@ -180,64 +205,6 @@ RSpec.describe MediaIndexer do
 
     it 'returns all media organizations' do
       expect(MediaIndexer.new(media).organizations).to match_array([org1, org2])
-    end
-  end
-
-  describe 'linked_team_origin' do
-    let(:team_collection_type)     { Hyrax::CollectionType.create(title: 'Team') }
-    let(:team)                     { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
-    let(:project_collection_type)  { Hyrax::CollectionType.create(title: 'Project') }
-    let(:project)                  { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
-    let(:org)                      { Organization.create(title: ['Organization1']) }
-    let(:specimen)                 { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [org.id]) }
-    let(:device)                   { Device.create(title: ['Device'], modality: ['Photogrammetry']) }
-    let(:imaging_event)            { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
-    let(:media)                    { Media.create(title: ['Media']) }
-
-    subject { MediaIndexer.new(media).linked_team_origin }
-
-    before do
-      imaging_event.ordered_members << media
-      imaging_event.save
-      media.reload
-    end
-
-    context 'media belongs to the team, not the linked organization' do
-      before do
-        media.member_of_collections << team
-      end
-      it { expect(subject).to match_array(['Team Only', 'Team']) }
-    end
-    context 'media belongs to the linked organization, not the team' do
-      before do
-        org.team_id = [team.id]
-        org.save
-      end
-      it { expect(subject).to match_array(['Organization Only', 'Organization']) }
-    end
-    context 'media belongs to both the team and the linked organization' do
-      before do
-        org.team_id = [team.id]
-        org.save
-        media.member_of_collections << team
-      end
-      it { expect(subject).to match_array(['Team and Organization', 'Team', 'Organization']) }
-    end
-    context 'media belongs to a subcollection, not the linked organization' do
-      before do
-        project.member_of_collections << team
-        media.member_of_collections << project
-      end
-      it { expect(subject).to match_array(['Team Only', 'Team']) }
-    end
-    context 'media belongs to a subcollection and the linked organization' do
-      before do
-        org.team_id = [team.id]
-        org.save
-        project.member_of_collections << team
-        media.member_of_collections << project
-      end
-      it { expect(subject).to match_array(['Team and Organization', 'Team', 'Organization']) }
     end
   end
 

@@ -46,9 +46,8 @@ provide :page_title, construct_page_title(@presenter.title)
       </div>
 
       <% if @presenter.collection_type.machine_id == 'team' && @presenter.collection.organization %>
-        <% organization_presenter = Hyrax::OrganizationPresenter.new(@presenter.collection.organization, current_ability, nil) %>
         <div class="col-sm-12 col-md-6 flex">
-          <%= render 'counts_for_organization', presenter: organization_presenter %>
+          <%= render 'counts_for_organization' %>
         </div>
       <% end %>
 

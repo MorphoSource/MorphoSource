@@ -8,7 +8,7 @@ module Morphosource
 
       def initialize(*options)
         @collection = options.first.instance_variable_get(:@collection)
-        @media_list = options.first.instance_variable_get(:@media_list)
+        @object_ids = options.first.instance_variable_get(:@object_ids)
         super
       end
 
@@ -20,25 +20,11 @@ module Morphosource
         end
 
         def object_ids_filter
-          if @collection.organization.present?
-            "(id:(#{object_ids.join(' OR ')}) OR organization_id_ssim:#{@collection.organization&.id})"
-          else
-            "(id:(#{object_ids.join(' OR ')}))"
-          end
+          "(id:(#{object_ids.join(' OR ')}))"
         end
 
         def object_ids
-          ids = media_object_ids
-          ids.blank? ? ['none'] : ids
-        end
-
-        def media_object_ids
-          repository.blacklight_config.max_per_page = 999999
-          if @media_list.present?
-            @media_list.map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
-          else
-            repository.search(Morphosource::Collections::MediaObjectsSearchBuilder.new(scope: @scope, collection: @collection).rows(999999)).response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
-          end
+          @object_ids.blank? ? ['none'] : @object_ids
         end
 
     end

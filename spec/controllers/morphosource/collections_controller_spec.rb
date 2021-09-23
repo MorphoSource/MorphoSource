@@ -33,7 +33,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
         end
         it 'redirects to the teams controller' do
           get :show, params: { id: team.id }
-          expect(response).to redirect_to(subject.send(:collection_type_url, "teams"))
+          expect(response).to redirect_to(team_media_path(request.parameters))
         end
       end
       context 'collection is a project' do
@@ -42,7 +42,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
         end
         it 'redirects to the projects controller' do
           get :show, params: { id: project.id }
-          expect(response).to redirect_to(subject.send(:collection_type_url, "projects"))
+          expect(response).to redirect_to(project_media_path(request.parameters))
         end
       end
     end
@@ -102,8 +102,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
       it do
         expect(subject).to receive(:presenter)
         expect(subject).to receive(:query_solr)
-        expect(subject).to receive(:query_collection_works)
-        expect(subject).to receive(:remove_facets)
+        expect(subject).to receive(:query_collection_counts)
         expect(subject).to receive(:filter_facets)
         expect(subject).to receive(:query_collection_members)
         get :show, params: { id: team.id }
@@ -164,7 +163,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
       end
       it do
         expect(subject).to receive(:presenter)
-        expect(subject).to receive(:query_collection_works)
+        expect(subject).to receive(:query_collection_counts)
         expect(subject).to receive(:query_collection_members)
         get :show, params: { id: team.id }
       end
@@ -192,7 +191,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
       end
       it 'redirects to the team url' do
         get :show, params: { id: team.id }
-        expect(response).to redirect_to(team_media_path(team))
+        expect(response).to redirect_to(team_media_path(request.parameters))
       end
     end
     context 'collection is a project' do
@@ -202,7 +201,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
       end
       it 'redirects to the project url' do
         get :show, params: { id: project.id }
-        expect(response).to redirect_to(project_media_path(project))
+        expect(response).to redirect_to(project_media_path(request.parameters))
       end
     end
   end

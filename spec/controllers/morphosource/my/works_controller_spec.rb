@@ -61,7 +61,7 @@ RSpec.describe Morphosource::My::WorksController, type: :controller do
 
     it 'removes unauthorized values from the facet' do
       subject.filter_facets
-      expect(items.map(&:value)).to match_array([collection1, collection2, collection3])
+      expect(subject.instance_variable_get(:@response).aggregations['filtered_facet'].instance_variable_get(:@items)).to match_array(authorized_items)
     end
   end
 end

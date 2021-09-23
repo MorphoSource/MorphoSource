@@ -1,5 +1,6 @@
+<%# todo: this form can probably be removed later (use form in modal instead ) %>
 <%= form_tag(main_app.download_items_path, id: 'form-download-selected', method: :get, class: "button_to-inline", "data-behavior" => 'batch-select-all') do -%>
-  <input type="hidden" id="batch_usage" name="usage" value="" />
-  <input type="hidden" id="batch_usage_list" name="usage_list" value="" />
+  <%# input type="hidden" id="batch_usage" name="usage" value="" />
+  <input type="hidden" id="batch_usage_list" name="usage_list" value="" /> %>
   <%= submit_tag("Download Selected", class: 'batch-all-button btn btn-info submits-batches', id: 'download-selected') %>
 <% end %>

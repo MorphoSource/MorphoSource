@@ -1,6 +1,6 @@
 <!-- displays individual specimen metadata in gallery view -->
 <dl class="document-metadata dl-horizontal dl-invert">
-  <dd class="text-truncate"><i><%= document["taxonomy_ssim"].first %></i></dd>
+  <dd class="text-truncate"><i><%= document["taxonomy_ssim"]&.first %></i></dd>
   <dd>Total media: <%= total_viewable_media(document.id) %></dd>
   <dd><%= render_source_of_record(document) %></dd>
 </dl>

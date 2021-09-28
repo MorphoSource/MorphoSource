@@ -10,17 +10,17 @@ class OrganizationsCatalogController < CatalogController
 
     # facets
     # type of organization
-    config.add_facet_field solr_name("organization_type", :facetable), label: "Type", limit: 5
+    config.add_facet_field "organization_type_ssim", label: "Type", limit: 5
     # institution
-    config.add_facet_field solr_name("institution_name", :facetable), label: "Institution", limit: 5
+    config.add_facet_field "institution_name_ssim", label: "Institution", limit: 5
     # institution code
-    config.add_facet_field "institution_code_tesim", label: "Institution Code", limit: 5
+    config.add_facet_field "institution_code_ssim", label: "Institution Code", limit: 5
     # country
-    config.add_facet_field "country_tesim", label: "Country", limit: 5
+    config.add_facet_field "country_ssim", label: "Country", limit: 5
     # state_province
-    config.add_facet_field "state_province_tesim", label: "State / Province", limit: 5
+    config.add_facet_field "state_province_ssim", label: "State / Province", limit: 5
     # city
-    config.add_facet_field "city_tesim", label: "City", limit: 5
+    config.add_facet_field "city_ssim", label: "City", limit: 5
 
     # search results display fields
     config.add_index_field solr_name("organization_type", :stored_searchable), label: "Type"

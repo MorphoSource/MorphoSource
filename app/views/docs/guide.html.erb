@@ -3,9 +3,6 @@
 <h1 class="docs-title"><%= t("morphosource.docs.guide.title") %></h1>
 
 <div class="docs-content">
-	<p><i><%= t("morphosource.docs.guide.last_updated") %></i></p>
-
-	<p><%= t("morphosource.docs.guide.text").html_safe %></p>
-
-	<p><%= t("morphosource.docs.guide.text2").html_safe %></p>
+  <%= render 'docs/guide/introduction' %>
+  <%= render 'docs/guide/table_of_contents' %>
 </div>

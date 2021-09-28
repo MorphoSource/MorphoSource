@@ -5,12 +5,12 @@
 
 <% rows.map do |line, row| %>
 	<div class="text-alert">Line <%= line %>: <%= messages[line] %></div>
-	<table class="table">
+	<table class="table" border="1">
 	<tr>
-		<%= row.keys.to_wrapped_html('th')%>
+		<%= field_names.to_wrapped_html('th')%>
 	</tr>
 	<tr>
-		<%= row.values.to_wrapped_html('td')%>
+		<%= row.to_wrapped_html('td')%>
 	</tr>
 	</table>
 <% end %>

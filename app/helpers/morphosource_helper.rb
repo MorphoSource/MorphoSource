@@ -469,7 +469,11 @@ module MorphosourceHelper
 end
 
 class Array 
-  def to_wrapped_html(tag)
-    self.map { |c| "<#{tag}>#{c}</#{tag}>" }.join.html_safe
+  def to_wrapped_html(tag, classes="")
+    if classes.present?
+      self.map { |c| "<#{tag} class='#{classes}'>#{c}</#{tag}>" }.join.html_safe
+    else
+      self.map { |c| "<#{tag}>#{c}</#{tag}>" }.join.html_safe
+    end
   end
 end

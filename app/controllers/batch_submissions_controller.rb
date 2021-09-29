@@ -111,27 +111,40 @@ class BatchSubmissionsController < ApplicationController
 
   end
 
-
   def parse_manifest(file)
-    # column 1 can be ignored
-    # field names is on row 7
-    # field values start from row 8, column 3    
+    # field names is on row 7 
+    # field values start from row 8, column 3 (column 1 and 2 can be skipped)   
+    general_error_msg = ""
     error_rows = {}
     error_messages = {}
+    error_cell_numbers = {}
     xlsx = Roo::Excelx.new(file.tempfile.path)    
     row_index = 8
     xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
       data_row = row.drop(2) 
+      row_cell_errors = []
+      row_cell_numbers = []
       data_row.each_with_index do |cell, cell_index|
-        error_msg = error_found(field_names[cell_index], cell.value)
-        if error_msg.present?
-          error_messages[row_index] = error_msg
-          error_rows[row_index] = data_row.map { |c| c.value }
+        begin
+          general_error_msg = "There are validation errors.  Please check the details below."
+          error_msg = error_found(field_names[cell_index], cell.value)
+          if error_msg.present?
+            row_cell_errors << error_msg
+            error_rows[row_index] = data_row.map { |c| c.value }
+            row_cell_numbers << cell_index
+          end
+        rescue => e
+          general_error_msg = "There are problems parsing some rows in the file.  Please check the details below."
+          row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
+          error_rows[row_index] = data_row.map { |c| c&.value }
+          break # skip the rest of the cells
         end
-      end
+      end # /looping cells
+      error_messages[row_index] = row_cell_errors 
+      error_cell_numbers[row_index] = row_cell_numbers
       row_index = row_index + 1
-    end # /xlsx.each_row_streaming
-    render 'result', locals: { rows: error_rows, messages: error_messages, field_names: field_names }
+    end # /lopping rows /xlsx.each_row_streaming
+    render 'result', locals: { general_error_msg: general_error_msg, error_rows: error_rows, error_messages: error_messages, error_cell_numbers: error_cell_numbers, field_names: field_names, row_count: row_index - 8 }
   end
 
   def error_found(name, val)
@@ -140,6 +153,10 @@ class BatchSubmissionsController < ApplicationController
     when "media.media_file"
       if val.nil?
         error_msg = "media.media_file is missing."
+      end
+    when "media.publication_status"
+      if val.nil?
+        error_msg = "media.publication_status is missing."
       end
 
     end

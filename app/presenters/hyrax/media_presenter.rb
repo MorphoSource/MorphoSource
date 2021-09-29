@@ -199,7 +199,7 @@ module Hyrax
     def get_showcase_data
       # todo: need to get the user name (and a link to user) from the email address
       @data_managed_by = solr_document.user_with_ownership
-      @data_uploaded_by = solr_document.proxy_depositor
+      @data_uploaded_by = solr_document.depositor
 
       @download_permission = get_download_permission(media)
 

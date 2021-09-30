@@ -107,6 +107,7 @@ module Morphosource::Derivatives::Processors
       img_locs = {}
       Zip::File.open(source_path) do |zip_file|
         zip_file.each do |f|
+          next if File.basename(f.name).start_with?('.')
           ext = File.extname(f.name).downcase
           if acceptable_image_formats.include? ext
             loc = File.dirname(f.name)

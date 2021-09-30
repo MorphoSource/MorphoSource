@@ -480,7 +480,6 @@ $( document ).ready(function() {
     $(".related_form." + activeTab).show();
 
     form.addEventListener("submit", function(mediaSubmitEvent) {
-
       mediaSubmitEvent.preventDefault();
       if (uploadStatusOK) {
         if (noFileCheck()) {
@@ -516,35 +515,6 @@ $( document ).ready(function() {
         } else {
           return true;
         }
-      }
-
-      function hasRequiredFields() {
-        let mediaType = $('#media_media_type').val()
-        let missing_fields = []
-
-        // CTImageSeries
-        if (mediaType == 'CTImageSeries') {
-          x = $('#media_x_spacing').val()
-          y = $('#media_y_spacing').val()
-          z = $('#media_z_spacing').val()
-          if (x && y && z) {
-            return true;
-          } else {
-            if (!x) {
-              missing_fields.push('X Pixel Spacing');
-            }
-            if (!y) {
-              missing_fields.push('Y Pixel Spacing');
-            }
-            if (!z) {
-              missing_fields.push('Z Pixel Spacing');
-            }
-            let field = (missing_fields.length > 1) ? "fields" : "field";
-            alert(`Please add required ${field}: ${missing_fields.join(', ')}.`);
-            return false;
-          }
-        }
-        return true;
       }
 
 
@@ -632,6 +602,40 @@ var noFileCheck = function() {
   } else {
     return confirm('The media currently has no file associated.  Please click OK if you want to proceed.')
   }
+}
+
+var hasRequiredFields = function() {
+  // only require fields for media with files attached
+  if ($('.attribute-filename').length == 0 && justUploaded == 0) {
+    return true;
+  }
+
+  let mediaType = $('#media_media_type').val()
+  let missing_fields = []
+
+  // CTImageSeries
+  if (mediaType == 'CTImageSeries') {
+    x = $('#media_x_spacing').val()
+    y = $('#media_y_spacing').val()
+    z = $('#media_z_spacing').val()
+    if (x && y && z) {
+      return true;
+    } else {
+      if (!x) {
+        missing_fields.push('X Pixel Spacing');
+      }
+      if (!y) {
+        missing_fields.push('Y Pixel Spacing');
+      }
+      if (!z) {
+        missing_fields.push('Z Pixel Spacing');
+      }
+      let field = (missing_fields.length > 1) ? "fields" : "field";
+      alert(`Please add required ${field}: ${missing_fields.join(', ')}.`);
+      return false;
+    }
+  }
+  return true;
 }
 
 var promptAutoSave = function(mediaSaveBtn) {

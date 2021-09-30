@@ -290,8 +290,10 @@ module Ms1to2
         'file_type' => {
           '1' => '1',
           'raw file of group' => '1',
+          'raw' => '1',
           '2' => '2',
-          'derivative file' => '2'
+          'derivative file' => '2',
+          'derivative' => '2'
         },
         'published' => published_filter
       }

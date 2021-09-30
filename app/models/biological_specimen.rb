@@ -3,7 +3,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
-  before_update :record_field_values
   after_update :reindex_media
 
   self.indexer = BiologicalSpecimenIndexer
@@ -120,17 +119,9 @@ class BiologicalSpecimen < Morphosource::Works::Base
       end
     end
 
-    def record_field_values
-      # if either institution_code, collection_code, or catalog_number changes, the title changes
-      # if any of these changes, re-index the media
-      bso = BiologicalSpecimen.find(self.id)
-      @original_title = bso.title
-      @occurrence_id = bso.occurrence_id
-    end
-
     def reindex_media
       # reindex media is needed when certain PO fields have been changed
-      if self.title != @original_title || self.occurrence_id != @occurrence_id
+      if self.title_changed? || self.occurrence_id_changed?
         self.media.each do |media|
           UpdateWorkIndexJob.perform_later(media.id)
         end

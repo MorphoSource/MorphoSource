@@ -2,7 +2,6 @@ class CulturalHeritageObject < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include ::Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
-  before_update :record_field_values
   after_update :reindex_media
 
   self.indexer = CulturalHeritageObjectIndexer
@@ -30,16 +29,9 @@ class CulturalHeritageObject < Morphosource::Works::Base
 
   private
 
-    def record_field_values
-      # if either institution_code, collection_code, catalog_number, or description changes, the title changes
-      # if any of these changes, re-index the media
-      cho = CulturalHeritageObject.find(self.id)
-      @original_title = cho.title
-    end
-
     def reindex_media
       # reindex media is needed when certain PO fields have been changed
-      if self.title != @original_title 
+      if self.title_changed?
         self.media.each do |media|
           UpdateWorkIndexJob.perform_later(media.id)
         end

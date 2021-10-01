@@ -29,6 +29,5 @@ module Hyrax
       team = ::SolrDocument.find(team_id.first)
       link_to team.title.first, Rails.application.routes.url_helpers.team_media_path(team.id)
     end
-
   end
 end

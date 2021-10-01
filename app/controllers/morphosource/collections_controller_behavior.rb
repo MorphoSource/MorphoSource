@@ -28,6 +28,7 @@ module Morphosource
       presenter
       (@media_count, @object_ids) = collection_media
       (@response, @document_list) = query_solr
+      publication_settings_nag
       query_collection_counts
       filter_facets
       query_collection_members
@@ -50,6 +51,19 @@ module Morphosource
           raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
           presenter_class.new(curation_concern, current_ability)
         end
+      end
+
+      def publication_settings_nag
+        flash[:alert] = "Your project or team is not published, but you have one or more media that are published. Publishing this project will increase the visibility of your published media, and will not affect the visibility of any private media you may have in the project or team. Select Edit to control publication settings." if private_project_published_media?
+      end
+
+      def private_project_published_media?
+        current_ability.can?(:edit, presenter.collection) &&
+        (presenter.visibility == 'restricted') &&
+        ( (@response.aggregations["publication_status_ssi"]&.items || []).
+          select{ |i| 
+            (i.value=="Open Download" || i.value=="Restricted Download")
+          }.count >  0)
       end
 
       def load_collection
@@ -134,6 +148,5 @@ module Morphosource
       def tab
         :media
       end
-
   end
 end

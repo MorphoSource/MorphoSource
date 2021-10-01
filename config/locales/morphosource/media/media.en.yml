@@ -1,6 +1,8 @@
 en:
   morphosource:
     media:
+      help:
+        pixel_spacing: "Guidance for adding pixel spacing and slice thickness values can be found in the MorphoSource User Guide: <a href='/docs/guide/pixel_spacing' target='_blank'>Pixel Spacing for CT/MRI Image Stacks</a>"
       edit:
         select_physical_object_instructions: To find the correct physical object, enter the object's complete institution code, collection code, catalog number, occurrence ID, identifier, and/or short title separated by spaces (e.g., "USNM MAMMALS 16308"). You can enter some combination of these terms, but the individual terms must be complete. For example, "USNM" and "USNM 16308" would return the example object, but "US 163" would not. Alternately, enter the MorphoSource physical object ID or header title (minus taxonomy).
         select_physical_object: Currently, physical objects can only be created during media submission. In the future, you will be able to create a new physical object without submitting media. In the meantime, if you can't find the correct physical object record using the search tools above, contact the <a href="mailto:morphosource@duke.edu">MorphoSource administrators</a> to have a new physical object record created.

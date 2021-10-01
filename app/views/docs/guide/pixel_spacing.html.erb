@@ -1,0 +1,102 @@
+<% provide :page_title, t("morphosource.docs.guide.pixel_spacing.title") %>
+
+<h1 class="docs-guide-title"><%= t("morphosource.docs.guide.pixel_spacing.title") %></h1>
+
+<div class="guide-content">
+  <p><%= t("morphosource.docs.guide.pixel_spacing.introduction").html_safe %></p>
+<!-- Table of Contents -->
+  <ul class="table_of_contents">
+    <li><a href=<%= "#" + t("morphosource.docs.guide.pixel_spacing.subheadings.1.anchor").html_safe %>><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.title").html_safe %></a></li>
+    <ul class="subheadings">
+      <li><a href=<%= "#" + t("morphosource.docs.guide.pixel_spacing.subheadings.1.A.anchor").html_safe %>><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.A.title").html_safe %></a></li>
+      <li><a href=<%= "#" + t("morphosource.docs.guide.pixel_spacing.subheadings.1.B.anchor").html_safe %>><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.B.title").html_safe %></a></li>
+      <li><a href=<%= "#" + t("morphosource.docs.guide.pixel_spacing.subheadings.1.C.anchor").html_safe %>><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.C.title").html_safe %></a></li>
+      <li><a href=<%= "#" + t("morphosource.docs.guide.pixel_spacing.subheadings.1.D.anchor").html_safe %>><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.D.title").html_safe %></a></li>
+      <li><a href=<%= "#" + t("morphosource.docs.guide.pixel_spacing.subheadings.1.E.anchor").html_safe %>><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.E.title").html_safe %></a></li>
+      <li><a href=<%= "#" + t("morphosource.docs.guide.pixel_spacing.subheadings.1.F.anchor").html_safe %>><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.F.title").html_safe %></a></li>
+    </ul>
+    <li><a href=<%= "#" + t("morphosource.docs.guide.pixel_spacing.subheadings.2.anchor").html_safe %>><%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.title").html_safe %></a></li>
+  </ul>
+
+  <!-- Frequently Asked Questions About Pixel Spacing -->
+  <h2 id= <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.anchor").html_safe %> >
+    <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.title").html_safe %>
+  </h2>
+  <!-- What is volumetric pixel spacing -->
+  <h3 id= <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.A.anchor").html_safe %> >
+    <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.A.title").html_safe %>
+  </h3>
+  <p><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.A.text").html_safe %></p>
+  <figure class="guide-image">
+    <img src="http://dicom.nema.org/dicom/2013/output/chtml/part03/figures/PS3.3_10.7.1.3-1.svg" />
+    <figcaption>
+      <a href="http://dicom.nema.org/dicom/2013/output/chtml/part03/sect_10.7.html"><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.A.fig1.caption").html_safe %></a>
+    </figcaption>
+  </figure>
+  <p><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.A.text2").html_safe %></p>
+  <!-- How is pixel spacing recorded in DICOM-format images? -->
+  <h3 id= <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.B.anchor").html_safe %> >
+    <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.B.title").html_safe %>
+  </h3>
+  <p><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.B.text").html_safe %></p>
+  <p><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.B.text2").html_safe %></p>
+  <!-- How are DICOMs different from other image formats (TIFFs, JPEG, etc.) when it comes to pixel spacing values? -->
+  <h3 id= <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.C.anchor").html_safe %> >
+    <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.C.title").html_safe %>
+  </h3>
+  <p><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.C.text").html_safe %></p>
+  <!-- What is slice thickness? How is it related to Z pixel spacing? -->
+  <h3 id= <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.D.anchor").html_safe %> >
+    <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.D.title").html_safe %>
+  </h3>
+  <p><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.D.text").html_safe %></p>
+  <!-- Why is loading a single image unreliable for determining Z pixel spacing? -->
+  <h3 id= <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.E.anchor").html_safe %> >
+    <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.E.title").html_safe %>
+  </h3>
+  <p><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.E.text").html_safe %></p>
+  <p><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.E.text2").html_safe %></p>
+  <!-- Can I provide a log file in the deposit instead of entering pixel information separately, if the log file contains pixel spacing information? -->
+  <h3 id= <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.F.anchor").html_safe %> >
+    <%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.F.title").html_safe %>
+  </h3>
+  <p><%= t("morphosource.docs.guide.pixel_spacing.subheadings.1.F.text").html_safe %></p>
+
+  <!-- How to Find Pixel Spacing Information for DICOM Image Stacks Using ImageJ -->
+  <h2 id= <%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.anchor").html_safe %> >
+    <%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.title").html_safe %>
+  </h2>
+  <ol class="step-by-step">
+    <li><%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.A.title").html_safe %>
+    </li>
+    <li><%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.B.title").html_safe %>
+    </li>
+    <li><%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.C.title").html_safe %>
+    </li>
+    <li><%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.D.title").html_safe %>
+    </li>
+    <figure class="guide-image">
+      <%= image_tag("/docs/guide/pixel_spacing/screenshot_image_sequence.png", alt: "Screenshot selecting image sequence") %>
+    </figure>
+    <li><%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.E.title").html_safe %>
+    </li>
+    <figure class="guide-image">
+      <%= image_tag("/docs/guide/pixel_spacing/screenshot_open_directory.png", alt: "Screenshot opening the directory") %>
+    </figure>
+    <li><%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.F.title").html_safe %>
+    </li>
+    <figure class="guide-image">
+      <%= image_tag("/docs/guide/pixel_spacing/screenshot_sequence_options.png", alt: "Screenshot sequence options menu") %>
+    </figure>
+    <li><%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.G.title").html_safe %>
+    </li>
+    <figure class="guide-image">
+      <%= image_tag("/docs/guide/pixel_spacing/screenshot_properties.png", alt: "Screenshot selecting properties") %>
+    </figure>
+    <li><%= t("morphosource.docs.guide.pixel_spacing.subheadings.2.H.title").html_safe %>
+    </li>
+    <figure class="guide-image">
+      <%= image_tag("/docs/guide/pixel_spacing/screenshot_voxel_depth.png", alt: "Screenshot image properties menu") %>
+    </figure>
+  </ol>
+</div>

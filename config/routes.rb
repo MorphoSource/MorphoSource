@@ -323,6 +323,14 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :docs do
+    resources :guide, except: [:index, :show, :new, :create, :edit, :update, :destroy] do
+      collection do
+        get 'pixel_spacing'
+      end
+    end
+  end
+
   scope module: :morphosource do
     scope module: :my do
 

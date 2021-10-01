@@ -67,6 +67,10 @@ module Hyrax
       collection_type_title == 'Project'
     end
 
+    def id_badge
+      content_tag(:span, "ID: #{id}", class: "label label-info")
+    end
+
     def organization
       @collection.organization
     end
@@ -128,8 +132,5 @@ module Hyrax
              :title_or_label, :collection_type_gid, :create_date, :modified_date, :visibility, :edit_groups, :edit_people,
              :part, :media_type, :member_of_collection_ids,
              to: :solr_document
-
-
-
   end
 end

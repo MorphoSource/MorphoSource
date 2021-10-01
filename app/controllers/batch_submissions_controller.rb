@@ -4,6 +4,7 @@ class BatchSubmissionsController < ApplicationController
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms
+  before_action :check_sftp_share_connection, only: [:new]
 
   def instantiate_work_forms
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
@@ -147,16 +148,39 @@ class BatchSubmissionsController < ApplicationController
     render 'result', locals: { general_error_msg: general_error_msg, error_rows: error_rows, error_messages: error_messages, error_cell_numbers: error_cell_numbers, field_names: field_names, row_count: row_index - 8 }
   end
 
+  def user_share_full_path
+    @user_share_full_path ||= begin
+      user_set_path = current_user.sftp_share
+      if !user_set_path.present?
+        "NOT_FOUND"
+      elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
+        Hyrax.config.sftp_share_root + user_set_path + '/' unless user_set_path.end_with?('/')
+      elsif Dir.exist?(user_set_path)
+        user_set_path + '/' unless user_set_path.end_with?('/')
+      else
+        "NOT_FOUND"
+      end
+    end
+  end
+
+  def check_sftp_share_connection
+    if user_share_full_path == "NOT_FOUND"
+      render 'not_connected'      
+    end
+  end
+
   def error_found(name, val)
     error_msg = ""
     case name
     when "media.media_file"
       if val.nil?
-        error_msg = "media.media_file is missing."
+        error_msg = "media.media_file: Field is blank."
+      elsif !File.exist?(user_share_full_path + val)
+        error_msg = "media.media_file: File #{val} cannot be found."        
       end
     when "media.publication_status"
       if val.nil?
-        error_msg = "media.publication_status is missing."
+        error_msg = "media.publication_status: Field is blank."
       end
 
     end

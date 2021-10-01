@@ -174,18 +174,33 @@ class BatchSubmissionsController < ApplicationController
     case name
     when "media.media_file"
       if val.nil?
-        error_msg = "media.media_file: Field is blank."
+        error_msg = "media.media_file: Please enter a value."
       elsif !File.exist?(user_share_full_path + val)
-        error_msg = "media.media_file: File #{val} cannot be found."        
+        error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
+      end
+    when "media.preview_file"
+      if val.present? && !File.exist?(user_share_full_path + val)
+        error_msg = "media.preview_file: File #{val} cannot be found. Please check your shared folder."
       end
     when "media.publication_status"
-      if val.nil?
-        error_msg = "media.publication_status: Field is blank."
+      unless valid_publication_status.include? val
+        error_msg = "media.publication_status: Please enter a valid value."
       end
-
+    when "media.media_type"
+      unless valid_media_types.include? val
+        error_msg = "media.media_type: Please enter a valid value."   
+      end
     end
     return error_msg
   end
+
+  def valid_publication_status
+    @valid_publication_status ||= Morphosource::PermissionsHelper::PUBLICATION_OPTIONS.map { |o| o[1] }
+  end
+
+  def valid_media_types
+    @valid_media_types ||= Morphosource::MediaTypesService.new.select_all_options.map { |o| o[1] }
+  end  
   
   def field_names
     @field_names ||= 

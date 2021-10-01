@@ -58,8 +58,10 @@ module Morphosource
       end
 
       def private_project_published_media?
-        current_ability.can?(:edit, presenter.collection) &&
-        (presenter.visibility == 'restricted') &&
+        @presenter.present? &&
+        @response.present? &&
+        current_ability.can?(:edit, @presenter.collection) &&
+        (@presenter.visibility == 'restricted') &&
         ( (@response.aggregations["publication_status_ssi"]&.items || []).
           select{ |i| 
             (i.value=="Open Download" || i.value=="Restricted Download")

@@ -20,11 +20,6 @@ module Morphosource
       end
       configure_facets
 
-      def show
-        @media_count, @object_ids = collection_media
-        super
-      end
-
       private
 
         def query_collection_counts

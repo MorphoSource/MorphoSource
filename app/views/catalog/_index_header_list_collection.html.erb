@@ -1,0 +1,10 @@
+<div class="search-results-title-row">
+  <% if document.team? %>
+    <h4 class="search-result-title"><%= link_to document.title_or_label, team_media_path(document) %></h4>
+  <% elsif document.project? %>
+    <h4 class="search-result-title"><%= link_to document.title_or_label, project_media_path(document) %></h4>
+  <% else %>
+    <h4 class="search-result-title"><%= link_to document.title_or_label, [hyrax, document] %></h4>
+  <% end %>
+  <%= Hyrax::CollectionPresenter.new(document, current_ability).collection_type_badge %>
+</div>

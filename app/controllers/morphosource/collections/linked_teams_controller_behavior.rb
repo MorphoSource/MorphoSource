@@ -13,6 +13,30 @@ module Morphosource
         @org_po_count ||= organization_po_count
       end
 
+      # Need to create this here to have access to @collection & @organization
+      def create_intersections_facet
+        return if @organization.blank?
+
+        config = repository.blacklight_config
+        config.add_facet_field 'Intersections', query: {
+          organization: {
+            label: 'All media of organization physical objects',
+            fq: "media_organization_id_ssim:#{@organization.id}" },
+          team: {
+            label: 'All media owned by team',
+            fq: "member_of_team_ids_ssim:#{@collection.id}" },
+          team_and_organization: {
+            label: 'Media owned by team AND of organization physical objects',
+            fq: "media_organization_id_ssim:#{@organization.id} AND member_of_team_ids_ssim:#{@collection.id}" },
+          organization_not_team: {
+            label: 'Media of organization physical objects NOT owned by team',
+            fq: "media_organization_id_ssim:#{@organization.id} NOT member_of_team_ids_ssim:#{@collection.id}" },
+          team_not_organization: {
+            label: 'Media owned by team NOT of organization physical objects',
+            fq: "member_of_team_ids_ssim:#{@collection.id} NOT media_organization_id_ssim:#{@organization.id}" }
+        }
+      end
+
       # Returns count of objects representing organization_media
       def organization_po_count
         repository.blacklight_config.max_per_page = 999999

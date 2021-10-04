@@ -63,7 +63,7 @@ module Morphosource
         current_ability.can?(:edit, @presenter.collection) &&
         (@presenter.visibility == 'restricted') &&
         ( (@response.aggregations["publication_status_ssi"]&.items || []).
-          select{ |i| 
+          select{ |i|
             (i.value=="Open Download" || i.value=="Restricted Download")
           }.count >  0)
       end
@@ -77,8 +77,7 @@ module Morphosource
       end
 
       def redirect_to_collection_type
-        request.parameters.delete("controller")
-        request.parameters.delete("action")
+        remove_extra_params
         if @_request.fullpath.include? '/collections/'
           if @collection.team?
             if @_request.fullpath.include? '/biological_specimens'
@@ -102,10 +101,12 @@ module Morphosource
         end
       end
 
-      def collection_type_url(plural_type)
-        locale = params[:locale] ||= 'en'
-        view = params[:view].present? ? '&view=' + params[:view] : ''
-        "/#{plural_type}/" + params[:id] + '?locale=' + locale + view
+      # cleans up url on redirects from the catalog or paging
+      def remove_extra_params
+        params = ["controller","action","id","locale"]
+        params.each do |param|
+          request.parameters.delete(param)
+        end
       end
 
       def query_solr

@@ -20,8 +20,8 @@ class MediaCatalogController < CatalogController
     # tags
     config.add_facet_field solr_name("keyword", :facetable), label: "Tag", limit: 5
     # project/team
-    # config.add_facet_field solr_name('member_of_collection_ids', :symbol), limit: 5, label: 'Team / Project', helper_method: :collection_title_by_id
-    config.add_facet_field solr_name('member_of_public_collection_ids', :symbol), limit: 5, label: 'Team / Project', helper_method: :collection_title_by_id
+    config.add_facet_field "member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id
+    config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
 
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
@@ -98,6 +98,11 @@ class MediaCatalogController < CatalogController
         pf: title_name.to_s
       }
     end
+  end
+
+  def index
+    byebug
+    super
   end
 
   def document_type

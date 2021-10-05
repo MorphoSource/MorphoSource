@@ -18,7 +18,7 @@ module Morphosource
         return if @organization.blank?
 
         config = repository.blacklight_config
-        config.add_facet_field 'Intersections', query: {
+        config.add_facet_field 'intersections', label: 'Intersections', query: {
           organization: {
             label: 'All media of organization physical objects',
             fq: "media_organization_id_ssim:#{@organization.id}" },

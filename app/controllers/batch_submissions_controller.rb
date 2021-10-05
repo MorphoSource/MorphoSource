@@ -106,35 +106,36 @@ class BatchSubmissionsController < ApplicationController
         return redirect_to main_app.new_batch_submission_path
 
       end
-      parse_manifest(params[:manifest])
+      @xlsx = Roo::Excelx.new(params[:manifest].tempfile.path)
+      parse_manifest
 
     end
 
   end
 
-  def parse_manifest(file)
+  def parse_manifest
     # field names is on row 7 
     # field values start from row 8, column 3 (column 1 and 2 can be skipped)   
     general_error_msg = ""
     error_rows = {}
     error_messages = {}
     error_cell_numbers = {}
-    xlsx = Roo::Excelx.new(file.tempfile.path)    
     row_index = 8
-    xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
+    @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
       data_row = row.drop(2) 
       row_cell_errors = []
       row_cell_numbers = []
       data_row.each_with_index do |cell, cell_index|
         begin
           general_error_msg = "There are validation errors.  Please check the details below."
-          error_msg = error_found(field_names[cell_index], cell.value)
+          error_msg = error_found(field_names[cell_index], cell)
           if error_msg.present?
             row_cell_errors << error_msg
-            error_rows[row_index] = data_row.map { |c| c.value }
+            error_rows[row_index] = data_row.map { |c| c&.value }
             row_cell_numbers << cell_index
           end
         rescue => e
+          Rails.logger.debug "Exception in BatchSubmissionsController: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
           general_error_msg = "There are problems parsing some rows in the file.  Please check the details below."
           row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
           error_rows[row_index] = data_row.map { |c| c&.value }
@@ -148,30 +149,10 @@ class BatchSubmissionsController < ApplicationController
     render 'result', locals: { general_error_msg: general_error_msg, error_rows: error_rows, error_messages: error_messages, error_cell_numbers: error_cell_numbers, field_names: field_names, row_count: row_index - 8 }
   end
 
-  def user_share_full_path
-    @user_share_full_path ||= begin
-      user_set_path = current_user.sftp_share
-      if !user_set_path.present?
-        "NOT_FOUND"
-      elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
-        Hyrax.config.sftp_share_root + user_set_path + '/' unless user_set_path.end_with?('/')
-      elsif Dir.exist?(user_set_path)
-        user_set_path + '/' unless user_set_path.end_with?('/')
-      else
-        "NOT_FOUND"
-      end
-    end
-  end
-
-  def check_sftp_share_connection
-    if user_share_full_path == "NOT_FOUND"
-      render 'not_connected'      
-    end
-  end
-
-  def error_found(name, val)
+  def error_found(field_name, cell)
+    val = cell&.value
     error_msg = ""
-    case name
+    case field_name
     when "media.media_file"
       if val.nil?
         error_msg = "media.media_file: Please enter a value."
@@ -184,12 +165,38 @@ class BatchSubmissionsController < ApplicationController
       end
     when "media.publication_status"
       unless valid_publication_status.include? val
-        error_msg = "media.publication_status: Please enter a valid value."
+        error_msg = "media.publication_status: Please enter a valid value " + valid_publication_status.to_s
       end
     when "media.media_type"
       unless valid_media_types.include? val
-        error_msg = "media.media_type: Please enter a valid value."   
+        error_msg = "media.media_type: Please enter a valid value " + valid_media_types.to_s
       end
+    when "media.parent_file"
+      # IF value is present, another row must contain this value in media.media_file
+      if val.present? 
+        # look for the val in the media_file column
+        parent_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
+        if parent_media_found_row.present?
+          parent_media_row = parent_media_found_row + 1
+          if parent_media_row == cell.coordinate.row
+            error_msg = "media.parent_file #{val} cannot be media.media_file in the same row."
+          end
+        else
+          error_msg = "media.parent_file #{val} not found in another row."
+        end
+
+        if @xlsx.cell(cell.coordinate.row, field_column("media.parent_ms_id")).present?
+          error_msg = "A value can be present in media.parent_file_name or media.parent_ms_id, but not in both."
+        end
+      end
+    when "media.parent_ms_id"
+      if val.present?
+        val = pad(val.to_s)
+        unless Media.where(id:val).present?
+          error_msg = "media.parent_ms_id: Existing media #{val} not found."
+        end
+      end
+
     end
     return error_msg
   end
@@ -202,6 +209,11 @@ class BatchSubmissionsController < ApplicationController
     @valid_media_types ||= Morphosource::MediaTypesService.new.select_all_options.map { |o| o[1] }
   end  
   
+  def field_column(field) 
+    # this returns the actual column number of a field (by adding first 2 columns and "0")
+    field_names.index(field) + 3 
+  end
+
   def field_names
     @field_names ||= 
     ["media.media_file",
@@ -289,6 +301,35 @@ class BatchSubmissionsController < ApplicationController
     "processing_event.date_created",
     "processing_event.software",
     "processing_event.description"]
+  end
+
+  def user_share_full_path
+    @user_share_full_path ||= begin
+      user_set_path = current_user.sftp_share
+      if !user_set_path.present?
+        "NOT_FOUND"
+      elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
+        Hyrax.config.sftp_share_root + user_set_path + '/' unless user_set_path.end_with?('/')
+      elsif Dir.exist?(user_set_path)
+        user_set_path + '/' unless user_set_path.end_with?('/')
+      else
+        "NOT_FOUND"
+      end
+    end
+  end
+
+  def check_sftp_share_connection
+    if user_share_full_path == "NOT_FOUND"
+      render 'not_connected'      
+    end
+  end
+
+  def pad(id)
+    if id.length < 9
+      ("0" * (9 - id.length)) + id
+    else
+      id
+    end
   end
 
 end

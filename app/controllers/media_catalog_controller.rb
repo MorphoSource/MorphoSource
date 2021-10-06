@@ -2,6 +2,7 @@
 # default catalog view
 # catalog/all redirects here for non-admins
 class MediaCatalogController < CatalogController
+  include Morphosource::Facets::AccessFilters
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder
@@ -20,8 +21,10 @@ class MediaCatalogController < CatalogController
     # tags
     config.add_facet_field solr_name("keyword", :facetable), label: "Tag", limit: 5
     # project/team
-    config.add_facet_field "member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id
-    config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
+    config.add_facet_field "member_of_collection_ids_ssim", label: "Collection", limit: 5
+    config.add_facet_field 'visibility_ssi', label: "Publication Status"
+    config.add_facet_field "member_of_project_ids_ssim", label: "Project", limit: 5
+    config.add_facet_field "member_of_team_ids_ssim", label: "Team", limit: 5
 
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
@@ -100,9 +103,31 @@ class MediaCatalogController < CatalogController
     end
   end
 
+  def filtered_facets
+    ['member_of_collection_ids_ssim', 'member_of_project_ids_ssim', 'member_of_team_ids_ssim']
+  end
+
+  # get search results from the solr index
   def index
-    byebug
-    super
+    (@response, @document_list) = search_results(params)
+    filter_facets
+    @document_type = document_type
+    respond_to do |format|
+      format.html { store_preferred_view }
+      format.rss  { render :layout => false }
+      format.atom { render :layout => false }
+      format.csv  do
+        @new_document_list = @document_list.map { |d| d.to_semantic_values }
+      end
+      format.json do
+        @presenter = Blacklight::JsonPresenter.new(@response,
+                                                   @document_list.map { |d| d.to_semantic_values },
+                                                   facets_from_request,
+                                                   blacklight_config)
+      end
+      additional_response_formats(format)
+      document_export_formats(format)
+    end
   end
 
   def document_type

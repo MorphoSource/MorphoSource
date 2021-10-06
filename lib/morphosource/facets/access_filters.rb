@@ -3,15 +3,24 @@ module Morphosource
     module AccessFilters
 
       # remove collections from team and project facets that the user is not able to view
+      # display collection title - updating the items themselves rather than using a helper allows for the items to be sorted alphabetically
       def filter_facets
-        return if current_user&.admin?
-
-        get_viewable_collections_ids
-        filtered_facets.each do |facet|
-          items = @response.aggregations[facet].items
-          @response.aggregations[facet].instance_variable_set(:@items,authorized_items(items))
+        if current_user&.admin?
+          filtered_facets.each do |facet|
+            items = @response.aggregations[facet].items
+            @response.aggregations[facet].items.each{ |i| i.value = collection_title_by_id(i.value) }
+          end
+        else
+          get_viewable_collections_ids
+          filtered_facets.each do |facet|
+            items = @response.aggregations[facet].items
+            @response.aggregations[facet].instance_variable_set(:@items,authorized_items(items))
+            @response.aggregations[facet].items.each{ |i| i.value = collection_title_by_id(i.value) }
+          end
         end
       end
+
+      def
 
       # removes facets from display
       # ex: removes intersections facet from non-linked teams
@@ -73,6 +82,15 @@ module Morphosource
       # override in controller
       def removed_facets
         []
+      end
+
+      # modified from https://github.com/samvera/hyrax/blob/7588d785f71522e23ad73daf908151aea1d53165/app/helpers/hyrax/hyrax_helper_behavior.rb#L262
+      def collection_title_by_id(id)
+        solr_docs = repository.find(id).docs
+        return nil if solr_docs.empty?
+        solr_field = solr_docs.first["title_tesim"]
+        return nil if solr_field.nil?
+        solr_field.first
       end
     end
   end

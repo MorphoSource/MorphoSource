@@ -107,6 +107,7 @@ class BatchSubmissionsController < ApplicationController
 
       end
       @xlsx = Roo::Excelx.new(params[:manifest].tempfile.path)
+      @params = params
       parse_manifest
 
     end
@@ -212,27 +213,33 @@ class BatchSubmissionsController < ApplicationController
           error_msg = "One of the following must have a value: biological_specimen.ms_id, biological_specimen.idigbio_uuid, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number."
         end
       end
+    when "biological_specimen.idigbio_uuid"
+      #IF value is present, a specimen matching the UUID must be found via the iDigBio API
 
+      #IF value is present AND the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a #recordset_id matching the recordset_id of the pre-selected organization#
+
+      #IF value is present AND the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API #must have iDigBio-supplied institution code matching pre-selected organization (case-insensitive)
+      if val.present?
+        search_params = { "idigbio_uuid" => val }
+        additional_fields = []
+
+#          search_params["idigbio_recordset_id"] = ""
+        
+        organization_institution_code = @params["organization_institution_code"]
+        if organization_institution_code.present?
+          search_params["institution_code"] = organization_institution_code 
+          additional_fields << "institution code: #{organization_institution_code} (from selected organization)"
+        end
+        idb_result = Morphosource::IDigBioSearchService.call(search_params)
+#byebug        
+        unless idb_result.present?
+          error_msg = "biological_specimen.idigbio_uuid: Cannot found specimen in iDigBio that matches the following:<br/> UUID: #{val}"
+          error_msg = error_msg + ", " + additional_fields.join(", ") if additional_fields.present?
+        end
+
+      end
     end
     return error_msg
-  end
-
-  def valid_publication_status
-    @valid_publication_status ||= Morphosource::PermissionsHelper::PUBLICATION_OPTIONS.map { |o| o[1] }
-  end
-
-  def valid_media_types
-    @valid_media_types ||= Morphosource::MediaTypesService.new.select_all_options.map { |o| o[1] }
-  end  
-  
-  #def field_value(row, field)
-  #  # this returns the value of a specified field on specified row
-  #  @xlsx.cell(row, field_column(field))
-  #end
-
-  def field_column(field) 
-    # this returns the actual column number of a field (by adding first 2 columns and "0")
-    field_names.index(field) + 3 
   end
 
   def field_names
@@ -324,6 +331,24 @@ class BatchSubmissionsController < ApplicationController
     "processing_event.description"]
   end
 
+  #def field_value(row, field)
+  #  # this returns the value of a specified field on specified row
+  #  @xlsx.cell(row, field_column(field))
+  #end
+
+  def field_column(field) 
+    # this returns the actual column number of a field (by adding first 2 columns and "0")
+    field_names.index(field) + 3 
+  end
+
+  def valid_publication_status
+    @valid_publication_status ||= Morphosource::PermissionsHelper::PUBLICATION_OPTIONS.map { |o| o[1] }
+  end
+
+  def valid_media_types
+    @valid_media_types ||= Morphosource::MediaTypesService.new.select_all_options.map { |o| o[1] }
+  end  
+  
   def user_share_full_path
     @user_share_full_path ||= begin
       user_set_path = current_user.sftp_share

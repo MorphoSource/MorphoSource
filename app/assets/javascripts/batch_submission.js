@@ -284,12 +284,12 @@ $( document ).ready(function() {
           var item = e.choice;
 
           if (e.choice && e.choice.id) {
-            $("#organization_search_form input.organization_id").val(item.id);
-            $("#organization_search_form input.organization_title").val(item.title);
-            $("#organization_search_form input.organization_label").val(item.text);
+            $("input.organization_id").val(item.id);
+            $("input.organization_title").val(item.title);
+            $("input.organization_label").val(item.text);
 
-            $("#organization_search_form input.organization_collection_code").val(item.collection_code);
-            $("#organization_search_form input.organization_institution_code").val(item.institution_code);
+            $("input.organization_collection_code").val(item.collection_code);
+            $("input.organization_institution_code").val(item.institution_code);
 
             // Display selected organization
             $('#submission_organization_select_display').addClass('show').removeClass('hide');

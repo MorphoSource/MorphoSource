@@ -189,6 +189,9 @@ terms:
   - id: France
     term: France
     active: true
+  - id: French West Indies
+    term: French West Indies
+    active: true
   - id: Gabon
     term: Gabon
     active: true

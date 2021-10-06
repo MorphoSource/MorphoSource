@@ -6,6 +6,8 @@ module Morphosource
 
       self.presenter_class = Morphosource::Collections::ProjectPresenter
 
+      copy_blacklight_config_from(::MediaCatalogController)
+
       def self.configure_facets
         configure_blacklight do |config|
           config.http_method = :post

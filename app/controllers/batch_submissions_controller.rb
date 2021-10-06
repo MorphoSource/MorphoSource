@@ -128,17 +128,17 @@ class BatchSubmissionsController < ApplicationController
       data_row.each_with_index do |cell, cell_index|
         begin
           general_error_msg = "There are validation errors.  Please check the details below."
-          error_msg = error_found(field_names[cell_index], cell)
+          error_msg = error_found(field_names[cell_index], cell, row_index)
           if error_msg.present?
             row_cell_errors << error_msg
-            error_rows[row_index] = data_row.map { |c| c&.value }
+            error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
             row_cell_numbers << cell_index
           end
         rescue => e
           Rails.logger.debug "Exception in BatchSubmissionsController: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
-          general_error_msg = "There are problems parsing some rows in the file.  Please check the details below."
+          general_error_msg = "ERROR: There are problems parsing some rows in the file.  Please check the details below."
           row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
-          error_rows[row_index] = data_row.map { |c| c&.value }
+          error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
           break # skip the rest of the cells
         end
       end # /looping cells
@@ -149,12 +149,12 @@ class BatchSubmissionsController < ApplicationController
     render 'result', locals: { general_error_msg: general_error_msg, error_rows: error_rows, error_messages: error_messages, error_cell_numbers: error_cell_numbers, field_names: field_names, row_count: row_index - 8 }
   end
 
-  def error_found(field_name, cell)
-    val = cell&.value
+  def error_found(field_name, cell, current_row)
+    val = cell.present? ? cell.value : ""
     error_msg = ""
     case field_name
     when "media.media_file"
-      if val.nil?
+      if !val.present?
         error_msg = "media.media_file: Please enter a value."
       elsif !File.exist?(user_share_full_path + val)
         error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
@@ -178,14 +178,14 @@ class BatchSubmissionsController < ApplicationController
         parent_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
         if parent_media_found_row.present?
           parent_media_row = parent_media_found_row + 1
-          if parent_media_row == cell.coordinate.row
+          if parent_media_row == current_row
             error_msg = "media.parent_file #{val} cannot be media.media_file in the same row."
           end
         else
           error_msg = "media.parent_file #{val} not found in another row."
         end
 
-        if @xlsx.cell(cell.coordinate.row, field_column("media.parent_ms_id")).present?
+        if @xlsx.cell(current_row, field_column("media.parent_ms_id")).present?
           error_msg = "A value can be present in media.parent_file_name or media.parent_ms_id, but not in both."
         end
       end
@@ -194,6 +194,22 @@ class BatchSubmissionsController < ApplicationController
         val = pad(val.to_s)
         unless Media.where(id:val).present?
           error_msg = "media.parent_ms_id: Existing media #{val} not found."
+        end
+      end
+    when "biological_specimen.ms_id"
+      if val.present?
+        val = pad(val.to_s)
+        unless BiologicalSpecimen.where(id:val).present?
+          error_msg = "biological_specimen.ms_id: Existing biological specimen #{val} not found."
+        end
+      else
+        if !@xlsx.cell(current_row, field_column("biological_specimen.idigbio_uuid")).present? &&
+           !@xlsx.cell(current_row, field_column("biological_specimen.occurrence_id")).present? &&
+           !@xlsx.cell(current_row, field_column("biological_specimen.institution_code")).present? &&
+           !@xlsx.cell(current_row, field_column("biological_specimen.collection_code")).present? &&
+           !@xlsx.cell(current_row, field_column("biological_specimen.catalog_number")).present?
+        
+          error_msg = "One of the following must have a value: biological_specimen.ms_id, biological_specimen.idigbio_uuid, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number."
         end
       end
 
@@ -209,6 +225,11 @@ class BatchSubmissionsController < ApplicationController
     @valid_media_types ||= Morphosource::MediaTypesService.new.select_all_options.map { |o| o[1] }
   end  
   
+  #def field_value(row, field)
+  #  # this returns the value of a specified field on specified row
+  #  @xlsx.cell(row, field_column(field))
+  #end
+
   def field_column(field) 
     # this returns the actual column number of a field (by adding first 2 columns and "0")
     field_names.index(field) + 3 

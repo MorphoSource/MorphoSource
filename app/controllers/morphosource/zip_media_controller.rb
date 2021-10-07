@@ -1,3 +1,7 @@
+require 'zip_tricks'
+require "zipline/zip_generator"
+require "interval_response"
+
 module Morphosource
   class ZipMediaController < ApplicationController
     include Hyrax::WorksControllerBehavior
@@ -11,6 +15,7 @@ module Morphosource
     after_action :reset_recaptcha, only: [:zip, :cart_to_zip]
 
     def zip
+      byebug
       create_and_zip
     end
 
@@ -18,9 +23,95 @@ module Morphosource
       create_and_zip
     end
 
+    def zip_test
+      #file_mappings = [[open("/vagrant/MorphoSource_SF/app/assets/documents/ms_usage_std_comm_no_rearc_ms_3d_limited.pdf"), "morphosource-2021-10-04-164316/ms_usage_std_comm_no_rearc_ms_3d_limited.pdf", {:modification_time=>Time.now}], [open("http://127.0.0.1:8984/rest/dev/00/02/00/01/000200019/files/1332add7-b46b-4d24-b62e-18828229bf64"), "morphosource-2021-10-04-164316/Element Unspecified Mesh Etc-000200009/bunny-000200019.ply", {:modification_time=>Time.now}]]
+      zipname = 'test.zip'
+      #zip_generator = ZipGenerator.new(file_mappings)
+
+      ## Just Zip Tricks
+      # self.response_body = zip_body
+      # self.response.headers['Last-Modified'] = Time.now.httpdate
+
+      ## Just Interval Response
+      file = open('http://127.0.0.1:8984/rest/dev/00/02/00/01/000200016/files/60f258a2-1deb-4bf5-af61-675f2298bda6')
+
+      # the_remote_uri = URI("http://127.0.0.1:8984/rest/dev/00/02/00/01/000200016/files/60f258a2-1deb-4bf5-af61-675f2298bda6")
+      # file_segments = []
+      # Net::HTTP.get_response(the_remote_uri) do |response|
+      #   response.read_body do |chunk|
+      #     file_segments << chunk
+      #   end
+      # end
+      #file_crc32 = ZipTricks::StreamCRC32.from_io(file)
+      file_crc32 = 1333578197
+      file_size = 2571251335
+        
+      generate_zip_parts('test.zip', file_size, file_crc32)
+      strings = [
+        @pre_string,
+        IntervalResponse::LazyFile.new(file),
+        @post_string,
+      ]
+      interval_sequence = IntervalResponse::Sequence.new(*strings)
+      interval_response = IntervalResponse.new(interval_sequence, request.env)
+      rack_response = interval_response.to_rack_response_triplet
+      self.response_body = rack_response[2]
+      self.status = rack_response[0]
+      self.response.headers.merge!(rack_response[1])
+      headers['Content-Disposition'] = "attachment; filename=\"#{zipname.gsub '"', '\"'}\""
+      headers['Content-Type'] = Mime::Type.lookup_by_extension('zip').to_s
+      response.sending_file = true
+      response.cache_control[:public] ||= false
+    end
+
+    def generate_zip_parts(filename, file_size, file_crc32)
+      io = StringIO.new("")
+      #file_crc32 = ZipTricks::StreamCRC32.from_io(file)
+
+      ZipTricks::Streamer.open(io) do |zip|
+        puts("initial_file_position: #{io.tell}")
+        # raw_file is written "as is" (STORED mode).
+        # Write the local file header first..
+        zip.add_stored_entry(filename: filename, size: file_size, crc32: file_crc32)
+        @post_local_header_position = io.tell
+        
+        # Adjust the ZIP offsets within the Streamer
+        zip.simulate_write(file_size)
+      end
+
+      io.rewind
+      @pre_string = io.read(@post_local_header_position)
+      @post_string = io.read
+    end
+
+    def zip_body
+      file = {
+        url: 'http://127.0.0.1:8984/rest/dev/00/02/00/01/000200019/files/1332add7-b46b-4d24-b62e-18828229bf64'
+      }
+      file2 = {
+        file: File.open('/vagrant/MorphoSource_SF/app/assets/documents/ms_usage_std_comm_no_rearc_ms_3d_limited.pdf')
+      }
+      ZipTricks::Streamer.output_enum do |zip|
+        zip.write_stored_file('mesh.ply') do |writer_for_file|
+          # Local file version
+          #IO.copy_stream(file2[:file], writer_for_file)
+          #file2[:file].close
+
+          the_remote_uri = URI(file[:url])
+
+          Net::HTTP.get_response(the_remote_uri) do |response|
+            response.read_body do |chunk|
+              writer_for_file << chunk
+            end
+          end
+        end
+      end
+    end
+
     def create_and_zip
       create_downloaded_cart_items
       prepare_files_to_zip
+      byebug
       zipline(@file_mappings, "#{output_prefix}.zip")
     end
 

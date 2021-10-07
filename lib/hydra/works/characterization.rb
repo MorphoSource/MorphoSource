@@ -24,6 +24,7 @@ module Hydra::Works
       autoload :AudioSchema
       autoload :BaseSchema
       autoload :DocumentSchema
+      autoload :ExtendedSchema
       autoload :ImageSchema
       autoload :VideoSchema
       autoload :DicomSchema

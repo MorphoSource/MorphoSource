@@ -247,6 +247,7 @@ Rails.application.routes.draw do
     resources :downloads, only: :show
     resources :tags, param: :tag, only: [:index, :show]
     get '/attachments/:id', to: 'attachments#show', as: 'attachment'
+    get '/download/', to: 'media_downloads#show', as: 'media_download'
     get '/manifests/:id', to: 'manifests#show', as: 'manifest'
   end
 
@@ -259,6 +260,7 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     post :zip, action: :zip, controller: :zip_media
     get :zip, action: :cart_to_zip, controller: :zip_media
+    get :zip_test, action: :zip_test, controller: :zip_media
   end
 
   # Permissions routes

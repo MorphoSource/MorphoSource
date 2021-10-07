@@ -10,6 +10,12 @@ class FileSet < ActiveFedora::Base
   #self.indexer = ::FileSetIndexer
   self.indexer = ::MsFileSetIndexer
 
+  # for all file types
+  delegate(
+    :crc32,
+    to: :characterization_proxy
+  )
+
   # for images
   delegate(
     :bits_per_sample,

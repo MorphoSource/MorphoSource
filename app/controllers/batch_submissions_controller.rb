@@ -33,6 +33,7 @@ class BatchSubmissionsController < ApplicationController
         title: o['title_tesim']&.first,
         institution_code: o['institution_code_tesim']&.join(', '),
         collection_code: o['collection_code_tesim']&.join(', '),
+        recordset_id: o['recordset_id_tesim']&.join(', '),
         related_url: o['related_url_tesim']&.first,
         address: o['address_tesim']&.first,
         city: o['city_tesim']&.first,
@@ -214,16 +215,19 @@ class BatchSubmissionsController < ApplicationController
         end
       end
     when "biological_specimen.idigbio_uuid"
-      #IF value is present, a specimen matching the UUID must be found via the iDigBio API
-
-      #IF value is present AND the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a #recordset_id matching the recordset_id of the pre-selected organization#
-
-      #IF value is present AND the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API #must have iDigBio-supplied institution code matching pre-selected organization (case-insensitive)
+      # If the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a 
+      # recordset_id matching the recordset_id of the pre-selected organization
+      # If the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API 
+      # must have iDigBio-supplied institution code matching pre-selected organization (case-insensitive)
       if val.present?
         search_params = { "idigbio_uuid" => val }
         additional_fields = []
 
-#          search_params["idigbio_recordset_id"] = ""
+        organization_recordset_id = @params["organization_recordset_id"]
+        if organization_recordset_id.present?
+          search_params["recordset_id"] = organization_recordset_id
+          additional_fields << "recordset id: #{organization_recordset_id} (from selected organization)"
+        end
         
         organization_institution_code = @params["organization_institution_code"]
         if organization_institution_code.present?
@@ -231,11 +235,12 @@ class BatchSubmissionsController < ApplicationController
           additional_fields << "institution code: #{organization_institution_code} (from selected organization)"
         end
         idb_result = Morphosource::IDigBioSearchService.call(search_params)
-#byebug        
+byebug        
         unless idb_result.present?
           error_msg = "biological_specimen.idigbio_uuid: Cannot found specimen in iDigBio that matches the following:<br/> UUID: #{val}"
           error_msg = error_msg + ", " + additional_fields.join(", ") if additional_fields.present?
         end
+
 
       end
     end

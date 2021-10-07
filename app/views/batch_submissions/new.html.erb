@@ -146,6 +146,7 @@
 
 <%= simple_form_for @batch_submission, html: { id: :batch_submission_form, multipart: true } do |f| %>
 <input class="organization_institution_code" type="hidden" name="organization_institution_code" value="" />
+<input class="organization_recordset_id" type="hidden" name="organization_recordset_id" value="" />
 
     <% if current_user.fund_codes.present? %>
       <div class="row mt-2">

@@ -287,9 +287,9 @@ $( document ).ready(function() {
             $("input.organization_id").val(item.id);
             $("input.organization_title").val(item.title);
             $("input.organization_label").val(item.text);
-
             $("input.organization_collection_code").val(item.collection_code);
             $("input.organization_institution_code").val(item.institution_code);
+            $("input.organization_recordset_id").val(item.recordset_id);
 
             // Display selected organization
             $('#submission_organization_select_display').addClass('show').removeClass('hide');

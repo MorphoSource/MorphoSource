@@ -14,7 +14,7 @@ module Morphosource
       'catalog_number' => 'catalognumber',
       'occurrence_id' => 'occurrenceid',
       'idigbio_uuid' => 'uuid',
-      'idigbio_recordset_id' => 'recordset'
+      'recordset_id' => 'recordset'
     }
 
     # see: https://docs.google.com/spreadsheets/d/1LJRtcC9cjRNehThsOpnZGLvTny3Zt05aKPIxSlkBzSg/

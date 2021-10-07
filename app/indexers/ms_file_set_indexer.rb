@@ -4,6 +4,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
     super.tap do |solr_doc|
       solr_doc['download_access_group_ssim'] = object.download_groups
       solr_doc['download_access_person_ssim'] = object.download_users
+      solr_doc['crc32'] = object.crc32
       # images
       solr_doc['bits_per_sample_tesim'] = object.bits_per_sample
       solr_doc['focal_length_tesim'] = object.focal_length

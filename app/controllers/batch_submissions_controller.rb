@@ -133,7 +133,7 @@ class BatchSubmissionsController < ApplicationController
           error_msg = error_found(field_names[cell_index], cell, row_index)
           if error_msg.present?
             row_cell_errors << error_msg
-            error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
+            error_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
             row_cell_numbers << cell_index
           end
         rescue => e
@@ -152,7 +152,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def error_found(field_name, cell, current_row)
-    val = cell.present? ? cell.value : ""
+    val = cell.present? ? cell.value.to_s : ""
     error_msg = ""
     case field_name
     when "media.media_file"
@@ -222,27 +222,34 @@ class BatchSubmissionsController < ApplicationController
       if val.present?
         search_params = { "idigbio_uuid" => val }
         additional_fields = []
-
         organization_recordset_id = @params["organization_recordset_id"]
         if organization_recordset_id.present?
-          search_params["recordset_id"] = organization_recordset_id
-          additional_fields << "recordset id: #{organization_recordset_id} (from selected organization)"
-        end
-        
+          search_params["recordset_id"] = organization_recordset_id.split(', ')
+          additional_fields << "recordset id: #{organization_recordset_id} (from pre-selected organization)"
+        end        
         organization_institution_code = @params["organization_institution_code"]
         if organization_institution_code.present?
-          search_params["institution_code"] = organization_institution_code 
-          additional_fields << "institution code: #{organization_institution_code} (from selected organization)"
+          search_params["institution_code"] = organization_institution_code.split(', ')
+          additional_fields << "institution code: #{organization_institution_code} (from pre-selected organization)"
         end
         idb_result = Morphosource::IDigBioSearchService.call(search_params)
-byebug        
         unless idb_result.present?
           error_msg = "biological_specimen.idigbio_uuid: Cannot found specimen in iDigBio that matches the following:<br/> UUID: #{val}"
           error_msg = error_msg + ", " + additional_fields.join(", ") if additional_fields.present?
         end
-
-
       end
+    when "biological_specimen.institution_code"
+      # If pre-selected organization has existing institution codes, value must match one of the institution codes from the pre-selected organization
+      if val.present?
+        organization_institution_code = @params["organization_institution_code"]
+        if organization_institution_code.present?
+          if !organization_institution_code.upcase.split(', ').include? val.upcase
+            error_msg = "biological_specimen.institution_code: #{val} does not match the institution codes from the pre-selected organization: #{organization_institution_code}"
+          end
+        end
+      end
+
+
     end
     return error_msg
   end

@@ -1,3 +1,4 @@
+require 'hydra/works/services/crc32_characterization_service.rb'
 require 'hydra/works/services/zip_contents_characterization_service.rb'
 
 class CharacterizeJob < Hyrax::ApplicationJob
@@ -18,6 +19,11 @@ class CharacterizeJob < Hyrax::ApplicationJob
     Rails.logger.debug "Running FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
     Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath)
     Rails.logger.debug "Ran FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+
+    # Calculate CRC32 for file
+    Rails.logger.debug "Running CRC32 characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+    Hydra::Works::Crc32CharacterizationService.run(file_set.characterization_proxy, filepath)
+    Rails.logger.debug "Ran CRC32 characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
 
     begin
       ext = File.extname(filepath)

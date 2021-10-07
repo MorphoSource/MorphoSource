@@ -23,8 +23,8 @@ class MediaCatalogController < CatalogController
     # project/team
     config.add_facet_field "member_of_collection_ids_ssim", label: "Collection", limit: 5
     config.add_facet_field 'visibility_ssi', label: "Publication Status"
-    config.add_facet_field "member_of_project_ids_ssim", label: "Project", limit: 5
-    config.add_facet_field "member_of_team_ids_ssim", label: "Team", limit: 5
+    config.add_facet_field "member_of_project_ids_ssim", label: "Project"
+    config.add_facet_field "member_of_team_ids_ssim", label: "Team"
 
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
@@ -107,10 +107,16 @@ class MediaCatalogController < CatalogController
     ['member_of_collection_ids_ssim', 'member_of_project_ids_ssim', 'member_of_team_ids_ssim']
   end
 
+  def filtered_facet_limit
+    5
+  end
+
   # get search results from the solr index
   def index
     (@response, @document_list) = search_results(params)
-    filter_facets
+    byebug
+    # filter_facets
+    byebug
     @document_type = document_type
     respond_to do |format|
       format.html { store_preferred_view }

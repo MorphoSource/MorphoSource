@@ -8,14 +8,23 @@ module Morphosource
         if current_user&.admin?
           filtered_facets.each do |facet|
             items = @response.aggregations[facet].items
-            @response.aggregations[facet].items.each{ |i| i.value = collection_title_by_id(i.value) }
+            @response.aggregations[facet].instance_variable_set(:@items,items[0,filtered_facet_limit + 1])
+            byebug
+            @response.aggregations[facet].items[0,filtered_facet_limit].each{ |i| i.value = collection_title_by_id(i.value) }
+            byebug
+            @response.aggregations[facet].instance_variable_get(:@options)[:limit] = filtered_facet_limit + 1
+            blacklight_config.facet_fields[facet].limit = filtered_facet_limit
           end
         else
           get_viewable_collections_ids
           filtered_facets.each do |facet|
             items = @response.aggregations[facet].items
             @response.aggregations[facet].instance_variable_set(:@items,authorized_items(items))
-            @response.aggregations[facet].items.each{ |i| i.value = collection_title_by_id(i.value) }
+            @response.aggregations[facet].items[0,filtered_facet_limit].each{ |i| i.value = collection_title_by_id(i.value) }
+            options = @response.aggregations[facet].instance_variable_get(:@options)
+            options[:limit] = filtered_facet_limit + 1
+            @response.aggregations[facet].instance_variable_set(:@options, options)
+            blacklight_config.facet_fields[facet].limit = filtered_facet_limit
           end
         end
       end
@@ -34,10 +43,27 @@ module Morphosource
 
       # displays values and pagination links for a single facet field
       # overrides Blacklight 6.23.0 app/controllers/concerns/blacklight/catalog
-      def facet
-        get_viewable_collections_ids
-        super
-      end
+      # displays values and pagination links for a single facet field
+      # def facet
+      #   get_viewable_collections_ids
+      #   blacklight_config.search_builder_class = Morphosource::Catalog::MediaFilteredFacetsSearchBuilder
+      #
+      #   @facet = blacklight_config.facet_fields[params[:id]]
+      #   raise ActionController::RoutingError, 'Not Found' unless @facet
+      #   @response = get_facet_field_response(@facet.key, params)
+      #   byebug
+      #   @display_facet = @response.aggregations[@facet.field]
+      #   @pagination = facet_paginator(@facet, @display_facet)
+      #   byebug
+      #   respond_to do |format|
+      #     format.html do
+      #       # Draw the partial for the "more" facet modal window:
+      #       return render layout: false if request.xhr?
+      #       # Otherwise draw the facet selector for users who have javascript disabled.
+      #     end
+      #     format.json
+      #   end
+      # end
 
       def get_viewable_collections_ids
         if current_user
@@ -68,9 +94,25 @@ module Morphosource
       end
 
       def authorized_items(items)
-        items.each_with_object([]) do |item, authorized|
-          authorized << item if item_authorized?(item)
+        authorized = []
+        items.each do |item|
+          return authorized if authorized.count == filtered_facet_limit + 1
+          if authorized.count <= filtered_facet_limit
+            authorized << item if item_authorized?(item)
+          end
         end
+        authorized
+      end
+
+      def authorized_items(items)
+        authorized = []
+        items.each do |item|
+          return authorized if authorized.count == filtered_facet_limit + 1
+          if authorized.count <= filtered_facet_limit
+            authorized << item if item_authorized?(item)
+          end
+        end
+        authorized
       end
 
       # override in controller
@@ -82,6 +124,11 @@ module Morphosource
       # override in controller
       def removed_facets
         []
+      end
+
+      # override in controller
+      def filtered_facet_limit
+        5
       end
 
       # modified from https://github.com/samvera/hyrax/blob/7588d785f71522e23ad73daf908151aea1d53165/app/helpers/hyrax/hyrax_helper_behavior.rb#L262

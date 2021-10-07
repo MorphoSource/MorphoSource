@@ -717,6 +717,11 @@ class SolrDocument
       self[Solrizer.solr_name('shutter_speed', :stored_searchable)]
   end
 
+  # fileset
+  def crc32
+    self[Solrizer.solr_name('crc32', :stored_searchable)]
+  end
+
   # mesh
   def point_count
     self[Solrizer.solr_name('point_count', :stored_searchable)]

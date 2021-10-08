@@ -10,18 +10,19 @@ class MediaCatalogController < CatalogController
 
     # facet fields
     # type
-    config.add_facet_field solr_name("human_readable_media_type", :facetable), label: "Type", limit: 5
+    config.add_facet_field solr_name("human_readable_media_type", :facetable), label: "Type", limit: 10
     # modality - inherited from imaging event modality
-    config.add_facet_field solr_name("media_modality", :facetable), label: "Modality", limit: 6
+    config.add_facet_field solr_name("media_modality", :facetable), label: "Modality", limit: 10
     # object type - specimen or cho
-    config.add_facet_field solr_name("media_physical_object_type", :facetable), label: "Object Type", limit: 5
+    config.add_facet_field solr_name("media_physical_object_type", :facetable), label: "Object Type", limit: 10
     # organization that owns the object
-    config.add_facet_field solr_name("media_organization", :facetable), label: "Organization", limit: 5
+    config.add_facet_field solr_name("media_organization", :facetable), label: "Organization", limit: 10
     # tags
-    config.add_facet_field solr_name("keyword", :facetable), label: "Tag", limit: 5
-    # project/team
-    # config.add_facet_field solr_name('member_of_collection_ids', :symbol), limit: 5, label: 'Team / Project', helper_method: :collection_title_by_id
-    config.add_facet_field solr_name('member_of_public_collection_ids', :symbol), limit: 5, label: 'Team / Project', helper_method: :collection_title_by_id
+    config.add_facet_field solr_name("keyword", :facetable), label: "Tag", limit: 10
+    # collections
+    config.add_facet_field solr_name('member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('member_of_project_ids', :symbol), label: 'Project', limit: 10, helper_method: :collection_title_by_id
+
 
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false

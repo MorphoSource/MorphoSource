@@ -17,14 +17,14 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
       subject { facet_fields['organization_ssim']}
       it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
-        expect(subject.limit).to eq(nil)
+        expect(subject.limit).to eq(10)
       end
     end
     describe 'project' do
       subject { facet_fields['media_member_of_project_ids_ssim'] }
       it 'has a project facet' do
         expect(subject.label).to eq("Project")
-        expect(subject.limit).to eq(nil)
+        expect(subject.limit).to eq(10)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end
@@ -32,7 +32,7 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
       subject { facet_fields['media_member_of_team_ids_ssim'] }
       it 'has a team facet' do
         expect(subject.label).to eq("Team")
-        expect(subject.limit).to eq(nil)
+        expect(subject.limit).to eq(10)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end
@@ -42,15 +42,7 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
     it {expect(subject.send(:tab)).to eq(:chos) }
   end
 
-  describe 'filtered_facets' do
-    it 'lists facets to be filtered by access' do
-      expect(subject.send(:filtered_facets)).to match_array(["media_member_of_project_ids_ssim", "media_member_of_team_ids_ssim"])
-    end
-  end
-
   describe 'presenter_class' do
-
-
     context 'collection is a project' do
       let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
       let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }

@@ -1,8 +1,10 @@
 module Morphosource
   module Collections
     class MediaSearchBuilder < Hyrax::CollectionMemberSearchBuilder
+      # override filter_collection_facet_for_access
+      include Morphosource::Facets::CollectionsSearchBuilderBehavior
 
-      self.default_processor_chain += [:return_selected_fields]
+      self.default_processor_chain += [:return_selected_fields, :filter_collection_facet_for_access]
 
       def member_of_collection(solr_parameters)
         solr_parameters[:fq] ||= []

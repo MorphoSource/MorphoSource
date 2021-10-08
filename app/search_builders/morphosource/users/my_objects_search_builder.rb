@@ -2,10 +2,12 @@
 module Morphosource
   module Users
     class MyObjectsSearchBuilder < Hyrax::WorksSearchBuilder
+      # override filter_collection_facet_for_access
+      include Morphosource::Facets::CollectionsSearchBuilderBehavior
 
       delegate :repository, to: :scope
 
-      self.default_processor_chain += [:apply_object_ids_filter]
+      self.default_processor_chain += [:apply_object_ids_filter, :filter_collection_facet_for_access]
 
       private
 

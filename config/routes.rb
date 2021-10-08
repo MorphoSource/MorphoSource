@@ -77,6 +77,7 @@ Rails.application.routes.draw do
     # these get redirected to projects/teams
     get 'collections/:id', to: 'collections#show'
     get 'collections/:id/about', to: 'collections#about'
+    get 'collections/:id/facet/:id', to: 'collections#facet'
 
     scope module: :collections do
       # these get redirected to projects/teams
@@ -88,6 +89,9 @@ Rails.application.routes.draw do
       get 'projects/:id/biological_specimens', to: 'biological_specimens#show', as: 'project_specimens'
       get 'projects/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'project_chos'
       get 'projects/:id/about', to: 'projects#about', as: 'project_about'
+      get 'projects/:collection_id/facet/:id', to: 'projects#facet', as: 'project_media_facet'
+      get 'projects/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'project_specimens_facet'
+      get 'projects/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'project_chos_facet'
 
       # projects redirects
       get 'projects/specimens/:id', to: redirect('projects/%{id}/biological_specimens')
@@ -98,6 +102,9 @@ Rails.application.routes.draw do
       get 'teams/:id/biological_specimens', to: 'biological_specimens#show', as: 'team_specimens'
       get 'teams/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'team_chos'
       get 'teams/:id/about', to: 'teams#about', as: 'team_about'
+      get 'teams/:collection_id/facet/:id', to: 'teams#facet', as: 'team_media_facet'
+      get 'teams/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'team_specimens_facet'
+      get 'teams/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'team_chos_facet'
 
       # teams redirects
       get 'teams/specimens/:id', to: redirect('teams/%{id}/biological_specimens')

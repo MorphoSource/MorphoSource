@@ -167,11 +167,11 @@ class BatchSubmissionsController < ApplicationController
       end
     when "media.publication_status"
       unless valid_publication_status.include? val
-        error_msg = "media.publication_status: Please enter a valid value " + valid_publication_status.to_s
+        error_msg = "media.publication_status: Please enter a valid value: " + valid_publication_status.join(', ')
       end
     when "media.media_type"
       unless valid_media_types.include? val
-        error_msg = "media.media_type: Please enter a valid value " + valid_media_types.to_s
+        error_msg = "media.media_type: Please enter a valid value: " + valid_media_types.join(', ')
       end
     when "media.parent_file"
       # IF value is present, another row must contain this value in media.media_file
@@ -251,10 +251,63 @@ class BatchSubmissionsController < ApplicationController
           end
         end
       end
-
+    when /^imaging_event\.(ct|photogrammetry|photography)\.(.*)$/
+      modality_selected = modality_short(@params["batch_submission"]["modality"])
+      field_modality = $1
+      field_name = $2
+      if field_modality.casecmp(modality_selected) != 0
+        if val.present?
+          error_msg = "imaging_event.#{$1}.#{$2}: value should not be present since modality #{modality_selected} is pre-selected."
+        end
+      end
 
     end
     return error_msg
+  end
+
+  def modality_short(m)
+    case m
+    when 'MicroNanoXRayComputedTomography'
+      'CT'
+    when 'MagneticResonanceImaging'
+      'MRI'
+    when 'PositronEmissionTomography'
+      'PET'
+    when 'SinglePhotonEmissionComputedTomography'
+      'SPECT'
+    when 'NeutronComputedTomography'
+      'NCT'
+    when 'SynchrotronImaging'
+      'Synchro'
+    when 'NeutrinoImaging'
+      'Neutrino'
+    when 'Photogrammetry'
+      'Photogram'
+    when 'StructuredLight'
+      'StrLight'
+    when 'LaserScan'
+      'Laser'
+    when 'ConfocalImageStacking'
+      'Confocal'
+    when 'Infrared'
+      'Infrared'
+    when 'ReflectanceTransformationImaging'
+      'RTI'
+    when 'Photography'
+      'Photo'
+    when 'ScanningElectronMicroscopy'
+      'SEM'
+    when 'BornDigital'
+      'BD'
+    when 'XRay'
+      'XRay'
+    when 'LaserAidedProfiling'
+      'LAP'
+    when 'Video'
+      'Video'
+    else
+      'Etc'
+    end
   end
 
   def field_names

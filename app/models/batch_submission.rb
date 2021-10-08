@@ -8,6 +8,7 @@ class BatchSubmission < ApplicationRecord
                 :collection_id,
                 :collection_name,
                 :on_behalf_of,
-                :fund_code
+                :fund_code,
+                :modality
 
 end

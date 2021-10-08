@@ -1,6 +1,6 @@
 $( document ).ready(function() {
 
-  if ($('[class*="batch-submission"]').length) { // check if the page is submission flow page
+  if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
 
 
     class BatchSubmissionData {
@@ -280,9 +280,8 @@ $( document ).ready(function() {
         });
 
         $('#batch_submission_organization_search').on('select2-selecting', function (e) {
-          console.log(JSON.stringify(e.choice));
+          console.log("org selected ", JSON.stringify(e.choice));
           var item = e.choice;
-
           if (e.choice && e.choice.id) {
             $("input.organization_id").val(item.id);
             $("input.organization_title").val(item.title);
@@ -305,6 +304,7 @@ $( document ).ready(function() {
             $('#submission_no_organization_section').addClass('hide').removeClass('show');
             $('#submission_select_organization').removeAttr('disabled');
           }
+          setOrgData();
         });
 
         $('#submission_organization_select_display_container').on(
@@ -324,9 +324,10 @@ $( document ).ready(function() {
             $('#submission_select_organization').attr('disabled', 'disabled');
         });
 
-        $('#submission_select_organization').click(function(event){
-          event.preventDefault();
-          console.log('select organization button');
+        //$('#submission_select_organization').click(function(event){
+        var setOrgData = function() {
+          //event.preventDefault();
+          console.log('set organization data');
           var selectedOrganizationID = $('#organization_search_form input.organization_id').val();
           if (selectedOrganizationID) {
             data.setOrganizationDefaults();
@@ -342,7 +343,7 @@ $( document ).ready(function() {
             console.log(data);
             self.form.setDefaultMediaPermissionFields();
           }
-        });
+        }
 
         // No Organization Event
 

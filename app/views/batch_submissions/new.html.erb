@@ -1,4 +1,4 @@
-<% content_for :body_css_classes do %>showcase showcase-edit batch-submission<% end %>
+<% content_for :body_css_classes do %>showcase showcase-edit batch-submission batch-submission-form<% end %>
 <% provide :page_title, "Batch Submission || MorphoSource" %>
 
 <script type="text/javascript">
@@ -143,10 +143,14 @@
 		  <%= render(partial: 'batch_submissions/media/device') %>
 		</div>
 
-
 <%= simple_form_for @batch_submission, html: { id: :batch_submission_form, multipart: true } do |f| %>
 <input class="organization_institution_code" type="hidden" name="organization_institution_code" value="" />
 <input class="organization_recordset_id" type="hidden" name="organization_recordset_id" value="" />
+
+    <div class="row mt-2">
+      <label class="required-flag"><span class="label"></span> Select the modality used to image media.</label>
+      <%= render 'batch_submissions/media/modality', f: f %>
+    </div>
 
     <% if current_user.fund_codes.present? %>
       <div class="row mt-2">

@@ -1,7 +1,9 @@
 run("Image Sequence...", "open=<%= @input_path %> sort");
 
-if (bitDepth()==24 || bitDepth()==32) {
+if (bitDepth()==32) {
 	run("16-bit");
+} else if (bitDepth()==24) {
+	run("8-bit");
 }
 
 run("Scale...", "x=<%= @linear_scale_factor %> y=<%= @linear_scale_factor %> z=<%= @linear_scale_factor %> interpolation=Bilinear average process");

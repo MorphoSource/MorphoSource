@@ -198,6 +198,12 @@ class BatchSubmissionsController < ApplicationController
           error_msg = "media.parent_ms_id: Existing media #{val} not found."
         end
       end
+    when "media.side"
+      if val.present?
+        unless valid_media_side.include? val
+          error_msg = "media.side: Please enter a valid value: " + valid_media_side.join(', ')
+        end
+      end
     when /^media\.(.*)$/
       # note that specific media.* fields (e.g. media.media_type) should be handled above already
       sub_field_name = $1
@@ -207,7 +213,14 @@ class BatchSubmissionsController < ApplicationController
           if field_to_reject_for_media_type?(media_type, sub_field_name)
             error_msg = "#{field_name}: Value should not be present for media type #{media_type}."
           else
-            # non-rejected fields can be validated here
+            # value that is not rejected (accepted for the media type) can be validated here
+            case field_name
+            when "media.series_type"
+              unless  valid_media_series_type.include? val
+                error_msg = "media.series_type: Please enter a valid value: " + valid_media_series_type.join(', ')
+              end
+
+            end
           end
         else
           # if no val, check if val is required for the media type
@@ -284,19 +297,6 @@ class BatchSubmissionsController < ApplicationController
 
     end
     return error_msg
-  end
-
-  def field_to_reject_for_media_type?(media_type, field)
-    case media_type
-    when 'CTImageSeries'  
-      ['map_type'].include? field
-    when 'PhotogrammetryImageSeries'
-      ['x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
-    when 'Mesh'
-      ['series_type', 'x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness'].include? field
-    else
-      ['series_type', 'x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
-    end
   end
 
   def field_names
@@ -405,6 +405,27 @@ class BatchSubmissionsController < ApplicationController
   def valid_media_types
     @valid_media_types ||= Morphosource::MediaTypesService.new.select_all_options.map { |o| o[1] }
   end  
+
+  def valid_media_side
+    @valid_media_side ||= ["Left", "Midline", "NotApplicable", "Right", "Unknown"]
+  end
+
+  def valid_media_series_type
+    @valid_media_series_type ||= ['Projections', 'Reconstructed image stack', 'Sinograms']
+  end
+
+  def field_to_reject_for_media_type?(media_type, field)
+    case media_type
+    when 'CTImageSeries'  
+      ['map_type'].include? field
+    when 'PhotogrammetryImageSeries'
+      ['x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
+    when 'Mesh'
+      ['series_type', 'x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness'].include? field
+    else
+      ['series_type', 'x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
+    end
+  end
   
   def user_share_full_path
     @user_share_full_path ||= begin

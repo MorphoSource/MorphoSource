@@ -7,7 +7,11 @@ module Morphosource
 
       before_action :load_organization, only: [:show, :about]
 
+      before_action :create_intersections_facet, only: [:show]
+
       self.presenter_class = Morphosource::Collections::TeamPresenter
+
+      copy_blacklight_config_from(::MediaCatalogController)
 
       def self.configure_facets
         configure_blacklight do |config|
@@ -20,6 +24,7 @@ module Morphosource
           config.add_facet_field "media_organization_ssim", label: "Organization"
           config.add_facet_field "member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id
           config.add_facet_field "member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
+          # intersections facet added by create_intersections_facet
         end
       end
       configure_facets

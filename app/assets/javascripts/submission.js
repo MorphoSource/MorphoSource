@@ -1417,7 +1417,12 @@ $( document ).ready(function() {
             promptAutoSave(".btn-save-media");
             return false;
           }
+
           if (!noFileCheck()) {
+            return false;
+          }
+
+          if (!hasRequiredFields()) {
             return false;
           }
 
@@ -1594,7 +1599,7 @@ $( document ).ready(function() {
                 $('#no-attachment').addClass('hide').removeClass('show');
 
                 $('#organization-agreement-uri').text('');
-                $('#organization-agreement-uri').addClass('hide').removeClass('show'); 
+                $('#organization-agreement-uri').addClass('hide').removeClass('show');
 
                 $('#organization-agreement-help').addClass('show').removeClass('hide');
                 $('#no-agreement-help').addClass('hide').removeClass('show');
@@ -1602,7 +1607,7 @@ $( document ).ready(function() {
                 self.data.organizationForAttachment = null;
 
                 $('#organization-agreement-uri').text(getData.default_fields.agreement_uri);
-                $('#organization-agreement-uri').addClass('show').removeClass('hide'); 
+                $('#organization-agreement-uri').addClass('show').removeClass('hide');
 
                 $('#no-attachment').addClass('hide').removeClass('show');
 
@@ -1610,8 +1615,8 @@ $( document ).ready(function() {
                 $('#organization-attachment-url').addClass('hide').removeClass('show');
 
                 $('#organization-agreement-help').addClass('show').removeClass('hide');
-                $('#no-agreement-help').addClass('hide').removeClass('show'); 
-              }    
+                $('#no-agreement-help').addClass('hide').removeClass('show');
+              }
             } else {
               self.data.organizationForAttachment = null;
               $('#no-attachment').addClass('show').removeClass('hide');

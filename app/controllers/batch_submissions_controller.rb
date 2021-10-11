@@ -198,6 +198,17 @@ class BatchSubmissionsController < ApplicationController
           error_msg = "media.parent_ms_id: Existing media #{val} not found."
         end
       end
+    when /^media\.(.*)$/
+      # note that specific media.* fields (e.g. media.media_type) should be handled above already
+      sub_field_name = $1
+      media_type = @xlsx.cell(current_row, field_column("media.media_type"))
+      if valid_media_types.include? media_type # no need to check unless media type is valid
+        if val.present?
+          if field_to_reject_for_media_type?(media_type, sub_field_name)
+            error_msg = "#{field_name}: value should not be present for media type #{media_type}."
+          end
+        end
+      end
     when "biological_specimen.ms_id"
       if val.present?
         val = pad(val.to_s)
@@ -253,60 +264,29 @@ class BatchSubmissionsController < ApplicationController
       end
     when /^imaging_event\.(.*)\.(.*)$/
       field_modality = $1
-      field_name = $2
+      sub_field_name = $2
       modality_selected = @params["batch_submission"]["modality"]
-      unless field_modality.downcase == modality_mapped(modality_selected).downcase
-        if val.present?
+      if val.present?
+        unless field_modality.downcase == modality_mapped(modality_selected).downcase
           error_msg = "imaging_event.#{$1}.#{$2}: value should not be present when modality #{modality_selected} is pre-selected."
         end
       end
+
 
     end
     return error_msg
   end
 
-  def modality_mapped(m)
-    case m
-    when 'MicroNanoXRayComputedTomography'
-      'ct'
-    when 'MagneticResonanceImaging'
-      'MRI'
-    when 'PositronEmissionTomography'
-      'PET'
-    when 'SinglePhotonEmissionComputedTomography'
-      'SPECT'
-    when 'NeutronComputedTomography'
-      'NCT'
-    when 'SynchrotronImaging'
-      'Synchro'
-    when 'NeutrinoImaging'
-      'Neutrino'
-    when 'Photogrammetry'
-      'photogrammetry'
-    when 'StructuredLight'
-      'StrLight'
-    when 'LaserScan'
-      'Laser'
-    when 'ConfocalImageStacking'
-      'Confocal'
-    when 'Infrared'
-      'Infrared'
-    when 'ReflectanceTransformationImaging'
-      'RTI'
-    when 'Photography'
-      'photography'
-    when 'ScanningElectronMicroscopy'
-      'SEM'
-    when 'BornDigital'
-      'BD'
-    when 'XRay'
-      'XRay'
-    when 'LaserAidedProfiling'
-      'LAP'
-    when 'Video'
-      'Video'
+  def field_to_reject_for_media_type?(media_type, field)
+    case media_type
+    when 'CTImageSeries'  
+      ['map_type'].include? field
+    when 'PhotogrammetryImageSeries'
+      ['x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
+    when 'Mesh'
+      ['series_type', 'x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness'].include? field
     else
-      'Etc'
+      ['series_type', 'x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
     end
   end
 
@@ -443,6 +423,51 @@ class BatchSubmissionsController < ApplicationController
       ("0" * (9 - id.length)) + id
     else
       id
+    end
+  end
+
+  def modality_mapped(m)
+    case m
+    when 'MicroNanoXRayComputedTomography'
+      'ct'
+    when 'MagneticResonanceImaging'
+      'MRI'
+    when 'PositronEmissionTomography'
+      'PET'
+    when 'SinglePhotonEmissionComputedTomography'
+      'SPECT'
+    when 'NeutronComputedTomography'
+      'NCT'
+    when 'SynchrotronImaging'
+      'Synchro'
+    when 'NeutrinoImaging'
+      'Neutrino'
+    when 'Photogrammetry'
+      'photogrammetry'
+    when 'StructuredLight'
+      'StrLight'
+    when 'LaserScan'
+      'Laser'
+    when 'ConfocalImageStacking'
+      'Confocal'
+    when 'Infrared'
+      'Infrared'
+    when 'ReflectanceTransformationImaging'
+      'RTI'
+    when 'Photography'
+      'photography'
+    when 'ScanningElectronMicroscopy'
+      'SEM'
+    when 'BornDigital'
+      'BD'
+    when 'XRay'
+      'XRay'
+    when 'LaserAidedProfiling'
+      'LAP'
+    when 'Video'
+      'Video'
+    else
+      'Etc'
     end
   end
 

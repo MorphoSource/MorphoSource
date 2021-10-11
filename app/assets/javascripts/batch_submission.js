@@ -497,45 +497,33 @@ $( document ).ready(function() {
         });
 
         $('#batch_submission_device_id').on('select2-selecting', function (e) {
-          console.log(JSON.stringify(e.choice));
+          console.log('device selected ' + JSON.stringify(e.choice));
           var item = e.choice;
 
           var deviceObj = deviceData[e.choice.id]
+          var selectedDeviceModality = deviceObj["modality"]
+          console.log('selected device modality : ' + selectedDeviceModality);
           self.toggleSelectDeviceVisibility(deviceObj);
-          $('#submission_select_device_continue').removeAttr('disabled');
+
+          if (selectedDeviceModality.split(',').length > 1) {
+            // more than one modality supported by the device
+            $('select#batch_submission_modality').val('').change();
+          } else {
+            $('select#batch_submission_modality').val(selectedDeviceModality).change();
+          }
 
         });
 
         $('#submission_device_select_display_container').on(
           'click', '#device-select-close', function(event){
             $("#batch_submission_device_id").select2('val', null);
+            $('select#batch_submission_modality').val('').change();
             $('#submission_select_device_section').addClass('show').removeClass('hide');
             $('#submission_create_device_button_section').addClass('show').removeClass('hide');
             $('#submission_device_select_display').addClass('hide').removeClass('show');
             $('#submission_select_device_continue').attr('disabled', 'disabled');
         });
 
-        // Continue
-
-        $('#submission_select_device_continue').click(function(event) {
-          event.preventDefault();
-          console.log('View 10 select device button');
-
-          if ($(this).attr('disabled')) {
-            return;
-          }
-
-          data.setDeviceDefaults();
-          data.setDeviceOrganizationDefaults();
-          data.deviceId = $('select[name="submission[device_id]"]').val();
-          data.willCreateDevice = false;
-          data.willCreateDeviceOrganization = false;
-          data.savedStep = 7;
-
-          self.next();
-
-          console.log(data);
-        });
       }
 
       showDeviceSelectDisplay(deviceObj) {

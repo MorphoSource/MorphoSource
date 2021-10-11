@@ -205,7 +205,16 @@ class BatchSubmissionsController < ApplicationController
       if valid_media_types.include? media_type # no need to check unless media type is valid
         if val.present?
           if field_to_reject_for_media_type?(media_type, sub_field_name)
-            error_msg = "#{field_name}: value should not be present for media type #{media_type}."
+            error_msg = "#{field_name}: Value should not be present for media type #{media_type}."
+          else
+            # non-rejected fields can be validated here
+          end
+        else
+          # if no val, check if val is required for the media type
+          if media_type == 'CTImageSeries'
+            if ['x_spacing', 'y_spacing', 'z_spacing'].include? sub_field_name
+              error_msg = "#{field_name}: Value should present for media type #{media_type}."
+            end
           end
         end
       end
@@ -390,7 +399,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def valid_publication_status
-    @valid_publication_status ||= Morphosource::PermissionsHelper::PUBLICATION_OPTIONS.map { |o| o[1] }
+    @valid_publication_status ||= ['Open', 'RestrictedDownload', 'Private']
   end
 
   def valid_media_types

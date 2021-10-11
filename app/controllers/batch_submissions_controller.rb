@@ -251,13 +251,13 @@ class BatchSubmissionsController < ApplicationController
           end
         end
       end
-    when /^imaging_event\.(ct|photogrammetry|photography)\.(.*)$/
-      modality_selected = modality_short(@params["batch_submission"]["modality"])
+    when /^imaging_event\.(.*)\.(.*)$/
       field_modality = $1
       field_name = $2
-      if field_modality.casecmp(modality_selected) != 0
+      modality_selected = @params["batch_submission"]["modality"]
+      unless field_modality.downcase == modality_mapped(modality_selected).downcase
         if val.present?
-          error_msg = "imaging_event.#{$1}.#{$2}: value should not be present since modality #{modality_selected} is pre-selected."
+          error_msg = "imaging_event.#{$1}.#{$2}: value should not be present when modality #{modality_selected} is pre-selected."
         end
       end
 
@@ -265,10 +265,10 @@ class BatchSubmissionsController < ApplicationController
     return error_msg
   end
 
-  def modality_short(m)
+  def modality_mapped(m)
     case m
     when 'MicroNanoXRayComputedTomography'
-      'CT'
+      'ct'
     when 'MagneticResonanceImaging'
       'MRI'
     when 'PositronEmissionTomography'
@@ -282,7 +282,7 @@ class BatchSubmissionsController < ApplicationController
     when 'NeutrinoImaging'
       'Neutrino'
     when 'Photogrammetry'
-      'Photogram'
+      'photogrammetry'
     when 'StructuredLight'
       'StrLight'
     when 'LaserScan'
@@ -294,7 +294,7 @@ class BatchSubmissionsController < ApplicationController
     when 'ReflectanceTransformationImaging'
       'RTI'
     when 'Photography'
-      'Photo'
+      'photography'
     when 'ScanningElectronMicroscopy'
       'SEM'
     when 'BornDigital'

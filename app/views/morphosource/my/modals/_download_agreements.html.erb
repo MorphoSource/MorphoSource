@@ -4,13 +4,14 @@
     <div class="modal-content">
 
       <% 
-      ids = media.present? ? media.id : "" 
+      key = media.present? ? media.access_control_id : "" 
       %>
       <%= form_for current_user,
-                 url: main_app.zip_path,
-                 method: :post,
+                 url: main_app.media_download_path,
+                 method: :get,
                  html: { id: 'download-form', class: 'download-single', multipart: true } do |f| %>
-      <%= hidden_field_tag 'ids[]', ids %>
+      <%= hidden_field_tag 'key[]', key %>
+      <%= hidden_field_tag 'token[]', current_user.token %>
       <%= hidden_field_tag 'usage', "" %>
       <%= hidden_field_tag 'usage_list', "" %>
 

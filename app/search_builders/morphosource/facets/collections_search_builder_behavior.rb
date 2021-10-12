@@ -16,8 +16,8 @@ module Morphosource
           solr_parameters['f.member_of_team_ids_ssim.facet.excludeTerms'] = filtered_ids
           solr_parameters['f.member_of_project_ids_ssim.facet.excludeTerms'] = filtered_ids
         elsif models.include?(BiologicalSpecimen) || models.include?(CulturalHeritageObject)
-          solr_parameters['f.media_member_of_project_ids_ssim.excludeTerms'] = filtered_ids
-          solr_parameters['f.media_member_of_team_ids_ssim.excludeTerms'] = filtered_ids
+          solr_parameters['f.media_member_of_team_ids_ssim.facet.excludeTerms'] = filtered_ids
+          solr_parameters['f.media_member_of_project_ids_ssim.facet.excludeTerms'] = filtered_ids
         end
       end
 

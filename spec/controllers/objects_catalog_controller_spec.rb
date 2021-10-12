@@ -17,8 +17,8 @@ RSpec.describe ObjectsCatalogController, type: :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 8 facet fields' do
-        expect(facet_fields.count).to eq(8)
+      it 'has 9 facet fields' do
+        expect(facet_fields.count).to eq(9)
       end
 
       describe 'human readable type' do

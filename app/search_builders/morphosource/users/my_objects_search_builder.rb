@@ -30,6 +30,10 @@ module Morphosource
           repository.search(Morphosource::Users::MyMediaObjectsSearchBuilder.new(@scope).rows(999999).query).response['docs'].map { |d| d["physical_object_id_ssim"].try(:first) }.compact
         end
 
+        def models
+          [BiologicalSpecimen, CulturalHeritageObject]
+        end
+
     end
   end
 end

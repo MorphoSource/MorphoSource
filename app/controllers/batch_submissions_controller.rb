@@ -214,12 +214,11 @@ class BatchSubmissionsController < ApplicationController
             error_msg = "#{field_name}: Value should not be present for media type #{media_type}."
           else
             # value that is not rejected (accepted for the media type) can be validated here
-            case field_name
-            when "media.series_type"
-              unless  valid_media_series_type.include? val
-                error_msg = "media.series_type: Please enter a valid value: " + valid_media_series_type.join(', ')
+            case sub_field_name
+            when /(series_type|unit|map_type)/
+              unless valid_values_for('media', $1).include? val
+                error_msg = "media.#{$1}: Please enter a valid value: " + valid_values_for('media', $1).join(', ')
               end
-
             end
           end
         else
@@ -398,6 +397,10 @@ class BatchSubmissionsController < ApplicationController
     field_names.index(field) + 3 
   end
 
+  def valid_values_for(model, field)
+    return send("valid_#{model}_#{field}")
+  end
+
   def valid_publication_status
     @valid_publication_status ||= ['Open', 'RestrictedDownload', 'Private']
   end
@@ -412,6 +415,14 @@ class BatchSubmissionsController < ApplicationController
 
   def valid_media_series_type
     @valid_media_series_type ||= ['Projections', 'Reconstructed image stack', 'Sinograms']
+  end
+
+  def valid_media_unit
+    @valid_media_unit ||= ['Cm', 'Ft', 'In', 'Km', 'M', 'Mi', 'Mm']
+  end
+
+  def valid_media_map_type
+    @valid_media_map_type ||= ['Color', 'Normal']
   end
 
   def field_to_reject_for_media_type?(media_type, field)

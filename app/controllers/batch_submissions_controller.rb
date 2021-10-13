@@ -283,6 +283,17 @@ class BatchSubmissionsController < ApplicationController
           end
         end
       end
+    when /^biological_specimen\.(.*)$/
+      # note that specific biological_specimen.* fields should be handled above already
+      sub_field_name = $1
+      if val.present?
+        case sub_field_name
+        when /(sex|vouchered)/
+          unless valid_values_for('biological_specimen', $1).include? val
+            error_msg = "biological_specimen.#{$1}: Please enter a valid value: " + valid_values_for('biological_specimen', $1).join(', ')
+          end
+        end
+      end
     when /^imaging_event\.(.*)\.(.*)$/
       field_modality = $1
       sub_field_name = $2
@@ -423,6 +434,14 @@ class BatchSubmissionsController < ApplicationController
 
   def valid_media_map_type
     @valid_media_map_type ||= ['Color', 'Normal']
+  end
+
+  def valid_biological_specimen_sex
+    @valid_biological_specimen_sex ||= ['Female', 'Male', 'Unknowable', 'Undetermined', 'Hermaphrodite', 'Gynandromorph']
+  end
+
+  def valid_biological_specimen_vouchered
+    @valid_biological_specimen_vouchered ||= ['Yes', 'No']
   end
 
   def field_to_reject_for_media_type?(media_type, field)

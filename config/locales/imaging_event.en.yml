@@ -33,6 +33,7 @@ en:
         detector_pixels_y: The number of pixels in the Y direction of the detector (number of rows).
         detector_pixel_size_y: Length in mmm of each pixel in the Y direction.
         detector_configuration: The physical configuration of the detector.
+        slide_type: 'Histological: animal or plant tissues, Geological: rock, mineral, or fossil.'
         source_object_distance: Distance between x-ray source and target object.
         source_detector_distance: Distance between x-ray source and x-ray detector.
         target_material: Tungsten, molybdenum, copper, etc.

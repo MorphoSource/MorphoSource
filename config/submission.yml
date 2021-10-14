@@ -12,6 +12,7 @@ status:
     Video: derived
     Photography: any
     XRay: any
+    SlideScan: any
   Video:
     MicroNanoXRayComputedTomography: derived
     MagneticResonanceImaging: derived
@@ -23,6 +24,7 @@ status:
     XRay: derived
     Photography: derived
     Video: any
+    SlideScan: derived
   CTImageSeries:
     MicroNanoXRayComputedTomography: any
     MagneticResonanceImaging: any
@@ -32,6 +34,7 @@ status:
     LaserScan: none
     Photography: none
     Video: none
+    SlideScan: none
   PhotogrammetryImageSeries:
     MicroNanoXRayComputedTomography: none
     MagneticResonanceImaging: none
@@ -41,6 +44,7 @@ status:
     LaserScan: none
     Photography: none
     Video: none
+    SlideScan: none
   Mesh:
     MicroNanoXRayComputedTomography: derived
     MagneticResonanceImaging: derived
@@ -51,13 +55,29 @@ status:
     LaserScan: any
     BornDigital: any
     Photography: none
+    SlideScan: derived
+  SlideImageSeries:
+    MicroNanoXRayComputedTomography: none
+    MagneticResonanceImaging: none
+    SynchrotronImaging: none
+    Photogrammetry: none
+    StructuredLight: none
+    LaserScan: none
+    Photography: none
+    Video: none
+    SlideScan: any
 examples:
   Image:
     Photography:
-      raw: 
+      raw:
         - Image produced by camera with no filters or processing applied
       derived:
         - Image with filter or processing applied (dimension reduction, contrast enhancement, etc.)
+    SlideScan:
+      raw:
+        - Slide image with no filters or processing applied
+      derived:
+        - Slide image with filter or processing applied (dimension reduction, contrast enhancement, etc.)
   Video:
     Video:
       raw:
@@ -100,3 +120,9 @@ examples:
         - Data produced by scanner software with no additional processing applied
       derived:
         - Mesh or point cloud with subsequent processing (merging, denoising, simplification, etc.)
+  SlideImageSeries:
+    SlideScan:
+      raw:
+        - Images with no filters or processing applied
+      derived:
+        - Images with any type of processing (masking, etc.)

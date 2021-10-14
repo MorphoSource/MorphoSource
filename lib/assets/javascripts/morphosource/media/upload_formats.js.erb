@@ -36,6 +36,7 @@ const mediaFormatLabels = {
   'CTImageSeries': 'CT/MRI Image Series',
   'PhotogrammetryImageSeries': 'Photogrammetry Image Series',
   'Mesh': 'Mesh or Point Cloud',
+  'SlideImageSeries': 'Slide Image Series',
   'Other': 'Other'
 }
 
@@ -62,7 +63,10 @@ function mediaTypeFormats() {
       var list = (<%= Morphosource.photogrammetry_formats %>).join(', ');
       break;
     case 'Mesh':
-      var list = (<%= Morphosource.mesh_formats %>).join(', ')
+      var list = (<%= Morphosource.mesh_formats %>).join(', ');
+      break;
+    case 'SlideImageSeries':
+      var list = (<%= Morphosource.slide_formats %>).join(', ');
       break;
     case 'Other':
       var list = (<%= Morphosource.other_formats %>).join(', ');

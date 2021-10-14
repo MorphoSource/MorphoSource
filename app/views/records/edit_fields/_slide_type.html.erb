@@ -1,0 +1,6 @@
+<% # app/views/records/edit_fields/_slide_type.html.erb %>
+<%= f.input :slide_type, as: :select,
+    collection: ['Histological', 'Geological'],
+    include_blank: true,
+    input_html: { class: 'form-control select optional form-control' },
+    wrapper_html: { class: 'ie_slide_scan' } %>

@@ -214,12 +214,14 @@ class BatchSubmissionsController < ApplicationController
             error_msg = "#{field_name}: Value should not be present for media type #{media_type}."
           else
             # value that is not rejected (accepted for the media type) can be validated here
-            case sub_field_name
-            when /(series_type|unit|map_type)/
-              unless valid_values_for('media', $1).include? val
-                error_msg = "media.#{$1}: Please enter a valid value: " + valid_values_for('media', $1).join(', ')
-              end
-            end
+            error_msg = error_by_type(field_name, val)
+
+#            case sub_field_name
+#            when /(series_type|unit|map_type)/
+#              unless valid_values_for(field_name).include? val
+#                error_msg = "media.#{$1}: Please enter a valid value: " + valid_values_for(field_name).join(', ')
+#              end
+#            end
           end
         else
           # if no val, check if val is required for the media type
@@ -283,119 +285,157 @@ class BatchSubmissionsController < ApplicationController
           end
         end
       end
-    when /^biological_specimen\.(.*)$/
-      # note that specific biological_specimen.* fields should be handled above already
-      sub_field_name = $1
-      if val.present?
-        case sub_field_name
-        when /(sex|vouchered)/
-          unless valid_values_for('biological_specimen', $1).include? val
-            error_msg = "biological_specimen.#{$1}: Please enter a valid value: " + valid_values_for('biological_specimen', $1).join(', ')
-          end
-        end
-      end
     when /^imaging_event\.(.*)\.(.*)$/
       field_modality = $1
       sub_field_name = $2
       modality_selected = @params["batch_submission"]["modality"]
       if val.present?
-        unless field_modality.downcase == modality_mapped(modality_selected).downcase
+        if field_modality.downcase == modality_mapped(modality_selected).downcase
+          error_msg = error_by_type(field_name, val)
+        else
           error_msg = "imaging_event.#{$1}.#{$2}: value should not be present when modality #{modality_selected} is pre-selected."
         end
+      end  
+    when /^(biological_specimen|taxonomy|processing_event)\.(.*)$/
+      # note that specific *.* fields should be handled above already
+      if val.present?        
+        error_msg = error_by_type(field_name, val)
       end
-
-
     end
     return error_msg
   end
 
+  def error_by_type(field_name, val)
+    error_msg = ""
+    model, sub_field_name = field_name.split('.')
+    case field_types[field_name]
+    when "controlled"
+      unless valid_values_for(field_name).include? val
+        error_msg = "#{field_name}: Please enter a valid value: " + valid_values_for(field_name).join(', ')
+      end
+    when "boolean"
+      unless valid_boolean.include? val
+        error_msg = "#{field_name}: Please enter a valid value: " + valid_boolean.join(', ')
+      end
+    when "number"
+      unless is_number? val
+        error_msg = "#{field_name}: Please enter a valid number."
+      end
+    when "date"
+      unless is_date? val
+        error_msg = "#{field_name}: Please enter a valid date in YYYY-MM-DD or MM-DD-YYYY format."
+      end
+    end
+    return error_msg
+  end
+
+  def is_number?(str)
+    Float(str) != nil rescue false
+  end
+
+  def is_date?(str)
+    case str
+    when /^(\d{4})\-(\d{2})\-(\d{2})$/
+      Date.valid_date? $1.to_i, $2.to_i, $3.to_i
+    when /^(\d{2})\-(\d{2})\-(\d{4})$/
+      Date.valid_date? $3.to_i, $2.to_i, $1.to_i
+    else
+      false
+    end
+  end
+
   def field_names
-    @field_names ||= 
-    ["media.media_file",
-    "media.preview_file",
-    "media.publication_status",
-    "media.media_type",
-    "media.parent_file",
-    "media.parent_ms_id",
-    "biological_specimen.ms_id",
-    "biological_specimen.idigbio_uuid",
-    "biological_specimen.occurrence_id",
-    "biological_specimen.institution_code",
-    "biological_specimen.collection_code",
-    "biological_specimen.catalog_number",
-    "media.part",
-    "media.short_description",
-    "media.side",
-    "media.description",
-    "media.creator",
-    "media.orientation",
-    "media.identifier",
-    "media.keyword",
-    "media.date_created",
-    "media.related_url",
-    "media.x_spacing",
-    "media.y_spacing",
-    "media.z_spacing",
-    "media.slice_thickness",
-    "media.series_type",
-    "media.unit",
-    "media.map_type",
-    "biological_specimen.identifier",
-    "biological_specimen.related_url",
-    "biological_specimen.date_created",
-    "biological_specimen.creator",
-    "biological_specimen.description",
-    "biological_specimen.latitude",
-    "biological_specimen.longitude",
-    "biological_specimen.numeric_time",
-    "biological_specimen.original_location",
-    "biological_specimen.periodic_time",
-    "biological_specimen.is_type_specimen",
-    "biological_specimen.sex",
-    "biological_specimen.vouchered",
-    "taxonomy.taxonomy_genus",
-    "taxonomy.taxonomy_species",
-    "taxonomy.taxonomy_subspecies",
-    "imaging_event.description",
-    "imaging_event.creator",
-    "imaging_event.software",
-    "imaging_event.date_created",
-    "imaging_event.ct.exposure_time",
-    "imaging_event.ct.flux_normalization",
-    "imaging_event.ct.geometric_calibration",
-    "imaging_event.ct.shading_correction",
-    "imaging_event.ct.filter_material",
-    "imaging_event.ct.filter_thickness",
-    "imaging_event.ct.frame_averaging",
-    "imaging_event.ct.projections",
-    "imaging_event.ct.voltage",
-    "imaging_event.ct.power",
-    "imaging_event.ct.amperage",
-    "imaging_event.ct.surrounding_material",
-    "imaging_event.ct.xray_tube_type",
-    "imaging_event.ct.target_type",
-    "imaging_event.ct.detector_type",
-    "imaging_event.ct.detector_pixels_x",
-    "imaging_event.ct.detector_pixel_size_x",
-    "imaging_event.ct.detector_pixels_y",
-    "imaging_event.ct.detector_pixel_size_y",
-    "imaging_event.ct.detector_configuration",
-    "imaging_event.ct.source_object_distance",
-    "imaging_event.ct.source_detector_distance",
-    "imaging_event.ct.target_material",
-    "imaging_event.ct.rotation_number",
-    "imaging_event.ct.phase_contrast",
-    "imaging_event.ct.optical_magnification",
-    "imaging_event.ct.acquisition_type",
-    "imaging_event.photogrammetry.focal_length_type",
-    "imaging_event.photogrammetry.background_removal",
-    "imaging_event.photography.lens_make",
-    "imaging_event.photography.lens_model",
-    "imaging_event.photography.light_source",
-    "processing_event.creator",
-    "processing_event.date_created",
-    "processing_event.software",
-    "processing_event.description"]
+    @field_names ||= field_types.keys
+  end
+
+  def field_types
+    @field_types ||= {
+      "media.media_file" => "text",
+      "media.preview_file" => "text",
+      "media.publication_status" => "controlled",
+      "media.media_type" => "text",
+      "media.parent_file" => "text",
+      "media.parent_ms_id" => "text",
+      "biological_specimen.ms_id" => "text",
+      "biological_specimen.idigbio_uuid" => "text",
+      "biological_specimen.occurrence_id" => "text",
+      "biological_specimen.institution_code" => "text",
+      "biological_specimen.collection_code" => "text",
+      "biological_specimen.catalog_number" => "text",
+      "media.part" => "text",
+      "media.short_description" => "text",
+      "media.side" => "text",
+      "media.description" => "text",
+      "media.creator" => "text",
+      "media.orientation" => "text",
+      "media.identifier" => "text",
+      "media.keyword" => "text",
+      "media.date_created" => "text",
+      "media.related_url" => "text",
+      "media.x_spacing" => "text",
+      "media.y_spacing" => "text",
+      "media.z_spacing" => "text",
+      "media.slice_thickness" => "text",
+      "media.series_type" => "controlled",
+      "media.unit" => "controlled",
+      "media.map_type" => "controlled",
+      "biological_specimen.identifier" => "text",
+      "biological_specimen.related_url" => "text",
+      "biological_specimen.date_created" => "date",
+      "biological_specimen.creator" => "text",
+      "biological_specimen.description" => "text",
+      "biological_specimen.latitude" => "number",
+      "biological_specimen.longitude" => "number",
+      "biological_specimen.numeric_time" => "text",
+      "biological_specimen.original_location" => "text",
+      "biological_specimen.periodic_time" => "text",
+      "biological_specimen.is_type_specimen" => "text",
+      "biological_specimen.sex" => "controlled",
+      "biological_specimen.vouchered" => "boolean",
+      "taxonomy.taxonomy_genus" => "text",
+      "taxonomy.taxonomy_species" => "text",
+      "taxonomy.taxonomy_subspecies" => "text",
+      "imaging_event.description" => "text",
+      "imaging_event.creator" => "text",
+      "imaging_event.software" => "text",
+      "imaging_event.date_created" => "text",
+      "imaging_event.ct.exposure_time" => "number",
+      "imaging_event.ct.flux_normalization" => "text",
+      "imaging_event.ct.geometric_calibration" => "text",
+      "imaging_event.ct.shading_correction" => "text",
+      "imaging_event.ct.filter_material" => "text",
+      "imaging_event.ct.filter_thickness" => "text",
+      "imaging_event.ct.frame_averaging" => "text",
+      "imaging_event.ct.projections" => "text",
+      "imaging_event.ct.voltage" => "text",
+      "imaging_event.ct.power" => "text",
+      "imaging_event.ct.amperage" => "text",
+      "imaging_event.ct.surrounding_material" => "text",
+      "imaging_event.ct.xray_tube_type" => "text",
+      "imaging_event.ct.target_type" => "text",
+      "imaging_event.ct.detector_type" => "text",
+      "imaging_event.ct.detector_pixels_x" => "text",
+      "imaging_event.ct.detector_pixel_size_x" => "text",
+      "imaging_event.ct.detector_pixels_y" => "text",
+      "imaging_event.ct.detector_pixel_size_y" => "text",
+      "imaging_event.ct.detector_configuration" => "text",
+      "imaging_event.ct.source_object_distance" => "text",
+      "imaging_event.ct.source_detector_distance" => "text",
+      "imaging_event.ct.target_material" => "text",
+      "imaging_event.ct.rotation_number" => "text",
+      "imaging_event.ct.phase_contrast" => "text",
+      "imaging_event.ct.optical_magnification" => "text",
+      "imaging_event.ct.acquisition_type" => "text",
+      "imaging_event.photogrammetry.focal_length_type" => "text",
+      "imaging_event.photogrammetry.background_removal" => "text",
+      "imaging_event.photography.lens_make" => "text",
+      "imaging_event.photography.lens_model" => "text",
+      "imaging_event.photography.light_source" => "text",
+      "processing_event.creator" => "text",
+      "processing_event.date_created" => "date",
+      "processing_event.software" => "text",
+      "processing_event.description" => "text"
+    }
   end
 
   #def field_value(row, field)
@@ -408,8 +448,9 @@ class BatchSubmissionsController < ApplicationController
     field_names.index(field) + 3 
   end
 
-  def valid_values_for(model, field)
-    return send("valid_#{model}_#{field}")
+  def valid_values_for(field)
+    method_name = "valid_" + field.sub('.', '_')
+    return send(method_name)
   end
 
   def valid_publication_status
@@ -440,8 +481,8 @@ class BatchSubmissionsController < ApplicationController
     @valid_biological_specimen_sex ||= ['Female', 'Male', 'Unknowable', 'Undetermined', 'Hermaphrodite', 'Gynandromorph']
   end
 
-  def valid_biological_specimen_vouchered
-    @valid_biological_specimen_vouchered ||= ['Yes', 'No']
+  def valid_boolean
+    @valid_boolean ||= ['Yes', 'No', 'Y', 'N', 'true', 'false', '0', '1']
   end
 
   def field_to_reject_for_media_type?(media_type, field)

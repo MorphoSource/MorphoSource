@@ -165,10 +165,6 @@ class BatchSubmissionsController < ApplicationController
       if val.present? && !File.exist?(user_share_full_path + val)
         error_msg = "media.preview_file: File #{val} cannot be found. Please check your shared folder."
       end
-    when "media.publication_status"
-      unless valid_publication_status.include? val
-        error_msg = "media.publication_status: Please enter a valid value: " + valid_publication_status.join(', ')
-      end
     when "media.media_type"
       unless valid_media_types.include? val
         error_msg = "media.media_type: Please enter a valid value: " + valid_media_types.join(', ')
@@ -198,12 +194,6 @@ class BatchSubmissionsController < ApplicationController
           error_msg = "media.parent_ms_id: Existing media #{val} not found."
         end
       end
-    when "media.side"
-      if val.present?
-        unless valid_media_side.include? val
-          error_msg = "media.side: Please enter a valid value: " + valid_media_side.join(', ')
-        end
-      end
     when /^media\.(.*)$/
       # note that specific media.* fields (e.g. media.media_type) should be handled above already
       sub_field_name = $1
@@ -215,13 +205,6 @@ class BatchSubmissionsController < ApplicationController
           else
             # value that is not rejected (accepted for the media type) can be validated here
             error_msg = error_by_type(field_name, val)
-
-#            case sub_field_name
-#            when /(series_type|unit|map_type)/
-#              unless valid_values_for(field_name).include? val
-#                error_msg = "media.#{$1}: Please enter a valid value: " + valid_values_for(field_name).join(', ')
-#              end
-#            end
           end
         else
           # if no val, check if val is required for the media type
@@ -285,17 +268,24 @@ class BatchSubmissionsController < ApplicationController
           end
         end
       end
-    when /^imaging_event\.(.*)\.(.*)$/
-      field_modality = $1
-      sub_field_name = $2
-      modality_selected = @params["batch_submission"]["modality"]
-      if val.present?
-        if field_modality.downcase == modality_mapped(modality_selected).downcase
-          error_msg = error_by_type(field_name, val)
-        else
-          error_msg = "imaging_event.#{$1}.#{$2}: value should not be present when modality #{modality_selected} is pre-selected."
-        end
-      end  
+    when /^imaging_event\.(.*)$/
+      case $1
+      when /^(ct|photogrammetry|photography)\.(.*)$/
+        # handle modality specific fields 
+        field_modality = $1
+        modality_selected = @params["batch_submission"]["modality"]
+        if val.present?
+          if field_modality.downcase == modality_mapped(modality_selected).downcase
+            error_msg = error_by_type(field_name, val)
+          else
+            # no need to check the values if they should not be present 
+            error_msg = "#{field_name}: Value should not be present when modality #{modality_selected} is pre-selected."
+          end
+        end  
+      else
+        # handle non-modality specific fields 
+        error_msg = error_by_type(field_name, val)
+      end
     when /^(biological_specimen|taxonomy|processing_event)\.(.*)$/
       # note that specific *.* fields should be handled above already
       if val.present?        
@@ -307,7 +297,6 @@ class BatchSubmissionsController < ApplicationController
 
   def error_by_type(field_name, val)
     error_msg = ""
-    model, sub_field_name = field_name.split('.')
     case field_types[field_name]
     when "controlled"
       unless valid_values_for(field_name).include? val
@@ -321,12 +310,20 @@ class BatchSubmissionsController < ApplicationController
       unless is_number? val
         error_msg = "#{field_name}: Please enter a valid number."
       end
+    when "integer"
+      unless is_integer? val
+        error_msg = "#{field_name}: Please enter a valid integer."
+      end
     when "date"
       unless is_date? val
         error_msg = "#{field_name}: Please enter a valid date in YYYY-MM-DD or MM-DD-YYYY format."
       end
     end
     return error_msg
+  end
+
+  def is_integer?(str)
+    Integer(str) != nil rescue false
   end
 
   def is_number?(str)
@@ -353,7 +350,7 @@ class BatchSubmissionsController < ApplicationController
       "media.media_file" => "text",
       "media.preview_file" => "text",
       "media.publication_status" => "controlled",
-      "media.media_type" => "text",
+      "media.media_type" => "controlled",
       "media.parent_file" => "text",
       "media.parent_ms_id" => "text",
       "biological_specimen.ms_id" => "text",
@@ -364,18 +361,18 @@ class BatchSubmissionsController < ApplicationController
       "biological_specimen.catalog_number" => "text",
       "media.part" => "text",
       "media.short_description" => "text",
-      "media.side" => "text",
+      "media.side" => "controlled",
       "media.description" => "text",
       "media.creator" => "text",
       "media.orientation" => "text",
       "media.identifier" => "text",
       "media.keyword" => "text",
-      "media.date_created" => "text",
+      "media.date_created" => "date",
       "media.related_url" => "text",
-      "media.x_spacing" => "text",
-      "media.y_spacing" => "text",
-      "media.z_spacing" => "text",
-      "media.slice_thickness" => "text",
+      "media.x_spacing" => "number",
+      "media.y_spacing" => "number",
+      "media.z_spacing" => "number",
+      "media.slice_thickness" => "number",
       "media.series_type" => "controlled",
       "media.unit" => "controlled",
       "media.map_type" => "controlled",
@@ -389,7 +386,7 @@ class BatchSubmissionsController < ApplicationController
       "biological_specimen.numeric_time" => "text",
       "biological_specimen.original_location" => "text",
       "biological_specimen.periodic_time" => "text",
-      "biological_specimen.is_type_specimen" => "text",
+      "biological_specimen.is_type_specimen" => "boolean",
       "biological_specimen.sex" => "controlled",
       "biological_specimen.vouchered" => "boolean",
       "taxonomy.taxonomy_genus" => "text",
@@ -400,10 +397,10 @@ class BatchSubmissionsController < ApplicationController
       "imaging_event.software" => "text",
       "imaging_event.date_created" => "text",
       "imaging_event.ct.exposure_time" => "number",
-      "imaging_event.ct.flux_normalization" => "text",
-      "imaging_event.ct.geometric_calibration" => "text",
-      "imaging_event.ct.shading_correction" => "text",
-      "imaging_event.ct.filter_material" => "text",
+      "imaging_event.ct.flux_normalization" => "boolean",
+      "imaging_event.ct.geometric_calibration" => "boolean",
+      "imaging_event.ct.shading_correction" => "boolean",
+      "imaging_event.ct.filter_material" => "controlled",
       "imaging_event.ct.filter_thickness" => "text",
       "imaging_event.ct.frame_averaging" => "text",
       "imaging_event.ct.projections" => "text",
@@ -412,25 +409,25 @@ class BatchSubmissionsController < ApplicationController
       "imaging_event.ct.amperage" => "text",
       "imaging_event.ct.surrounding_material" => "text",
       "imaging_event.ct.xray_tube_type" => "text",
-      "imaging_event.ct.target_type" => "text",
-      "imaging_event.ct.detector_type" => "text",
-      "imaging_event.ct.detector_pixels_x" => "text",
-      "imaging_event.ct.detector_pixel_size_x" => "text",
-      "imaging_event.ct.detector_pixels_y" => "text",
-      "imaging_event.ct.detector_pixel_size_y" => "text",
-      "imaging_event.ct.detector_configuration" => "text",
+      "imaging_event.ct.target_type" => "controlled",
+      "imaging_event.ct.detector_type" => "controlled",
+      "imaging_event.ct.detector_pixels_x" => "integer",
+      "imaging_event.ct.detector_pixel_size_x" => "number",
+      "imaging_event.ct.detector_pixels_y" => "integer",
+      "imaging_event.ct.detector_pixel_size_y" => "number",
+      "imaging_event.ct.detector_configuration" => "controlled",
       "imaging_event.ct.source_object_distance" => "text",
       "imaging_event.ct.source_detector_distance" => "text",
       "imaging_event.ct.target_material" => "text",
-      "imaging_event.ct.rotation_number" => "text",
-      "imaging_event.ct.phase_contrast" => "text",
-      "imaging_event.ct.optical_magnification" => "text",
-      "imaging_event.ct.acquisition_type" => "text",
-      "imaging_event.photogrammetry.focal_length_type" => "text",
+      "imaging_event.ct.rotation_number" => "number",
+      "imaging_event.ct.phase_contrast" => "boolean",
+      "imaging_event.ct.optical_magnification" => "boolean",
+      "imaging_event.ct.acquisition_type" => "controlled",
+      "imaging_event.photogrammetry.focal_length_type" => "controlled",
       "imaging_event.photogrammetry.background_removal" => "text",
       "imaging_event.photography.lens_make" => "text",
       "imaging_event.photography.lens_model" => "text",
-      "imaging_event.photography.light_source" => "text",
+      "imaging_event.photography.light_source" => "controlled",
       "processing_event.creator" => "text",
       "processing_event.date_created" => "date",
       "processing_event.software" => "text",
@@ -438,23 +435,18 @@ class BatchSubmissionsController < ApplicationController
     }
   end
 
-  #def field_value(row, field)
-  #  # this returns the value of a specified field on specified row
-  #  @xlsx.cell(row, field_column(field))
-  #end
-
   def field_column(field) 
     # this returns the actual column number of a field (by adding first 2 columns and "0")
     field_names.index(field) + 3 
   end
 
   def valid_values_for(field)
-    method_name = "valid_" + field.sub('.', '_')
+    method_name = "valid_" + field.gsub('.', '_')
     return send(method_name)
   end
 
-  def valid_publication_status
-    @valid_publication_status ||= ['Open', 'RestrictedDownload', 'Private']
+  def valid_media_publication_status
+    @valid_media_publication_status ||= ['Open', 'RestrictedDownload', 'Private']
   end
 
   def valid_media_types
@@ -479,6 +471,34 @@ class BatchSubmissionsController < ApplicationController
 
   def valid_biological_specimen_sex
     @valid_biological_specimen_sex ||= ['Female', 'Male', 'Unknowable', 'Undetermined', 'Hermaphrodite', 'Gynandromorph']
+  end
+
+  def valid_imaging_event_ct_filter_material
+    @valid_imaging_event_ct_filter_material ||= ['Molybdenum', 'Aluminum', 'Copper', 'Rhodium', 'Niobium', 'Europium', 'Lead']
+  end
+
+  def valid_imaging_event_ct_target_type
+    @valid_imaging_event_ct_target_type ||= ['Reflection', 'Transmission']
+  end
+
+  def valid_imaging_event_ct_detector_type
+    @valid_imaging_event_ct_detector_type ||= ['Direct (X-Ray photoconductor)', 'Scintillator (Phosphor used)', 'Storage (Storage Phosphor)', 'Film (Scanned film/screen)']
+  end
+
+  def valid_imaging_event_ct_detector_configuration
+    @valid_imaging_event_ct_detector_configuration ||= ['Area (single or tiled detector)', 'Slot (scanned slot, slit, or spot)']
+  end
+
+  def valid_imaging_event_ct_acquisition_type
+    @valid_imaging_event_ct_acquisition_type ||= ['ConstantAngle', 'Free', 'Sequenced', 'Spiral', 'Stationary']
+  end
+
+  def valid_imaging_event_photogrammetry_focal_length_type
+    @valid_imaging_event_photogrammetry_focal_length_type ||= ['Variable', 'Fixed']
+  end
+
+  def valid_imaging_event_photography_light_source
+    @valid_imaging_event_photography_light_source ||= ['Strobe', 'Static', 'Patterned', 'Cross polarized']
   end
 
   def valid_boolean

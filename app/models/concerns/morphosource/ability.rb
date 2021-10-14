@@ -57,6 +57,7 @@ module Morphosource
     # edit implies read, so read_users is the union of edit and read users
     def read_users(id)
       @doc = get_doc(id)
+      return [] if @doc.nil?
       rp = Array(@doc["read_access_person_ssim"]) + Array(@doc["read_access_person_ssim"])
       rp |= edit_users(id)
       rp |= download_users(id)
@@ -68,6 +69,7 @@ module Morphosource
     # edit and download imply read, so read_groups is the union of edit, download, and read groups
     def read_groups(id)
       @doc = get_doc(id)
+      return [] if @doc.nil?
       rg = Array(@doc["read_access_group_ssim"])
       rg |= edit_groups(id)
       rg |= download_groups(id)

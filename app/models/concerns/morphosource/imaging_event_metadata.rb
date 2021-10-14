@@ -71,7 +71,6 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
-
       property :target_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/targetType") do |index|
           index.as :stored_searchable, :facetable
       end
@@ -150,7 +149,6 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
-
       property :focal_length, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/focalLength") do |index|
           index.as :stored_searchable, :facetable
       end
@@ -167,6 +165,10 @@ module Morphosource
           index.as :stored_searchable, :facetable
       end
 
+      # slide scan properties
+      property :slide_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/slideType") do |index|
+          index.as :stored_searchable, :facetable
+      end
     end
   end
 end

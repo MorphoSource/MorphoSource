@@ -1,0 +1,354 @@
+# DrainableIO and RemoteInclusion help smooth out IntervalResponse and ZipTricks functionality
+
+class DrainableIO < StringIO
+  def to_segment_and_clear
+    string.dup.tap do
+      truncate(0)
+      rewind
+    end
+  end
+end
+
+RemoteInclusion = Struct.new(:url, :bytesize)
+
+module Morphosource
+  class MediaDownloadsController < ApplicationController
+    include Morphosource::CartItems
+
+    before_action :validate_params, only: [:show]
+    before_action :validate_user, only: [:show]
+    after_action :reset_recaptcha, only: [:show]
+
+    def show
+      create_downloaded_cart_items
+      prepare_all_files
+      create_interval_sequence
+      send_interval_response
+    end
+
+    def create_downloaded_cart_items
+      media.each do |m|
+        if downloadable_item_for_work?(m.id)
+          item = find_downloadable_item(m.id)
+          if item.date_downloaded
+            create_downloaded_item(m.id)
+          else
+            mark_as('downloaded',item)
+          end
+        else
+          create_downloaded_item(m.id)
+        end
+      end
+    end
+
+    def prepare_all_files
+      @all_files ||= files + standard_agreement_files + media_agreement_files
+    end
+
+    def create_interval_sequence
+      io = DrainableIO.new
+      zip = ZipTricks::Streamer.new(io)
+      @all_files.each do |file|
+        next unless file[:file].present?
+        
+        # raw_file is written "as is" (STORED mode).
+        # Write the local file header first..
+        zip.add_stored_entry(filename: file[:name], size: file[:size], crc32: file[:crc32])
+        
+        # local zip file header
+        interval_sequence << io.to_segment_and_clear
+        
+        # file data
+        if file[:file].is_a?(File) || file[:file].is_a?(Tempfile)
+          interval_sequence << IntervalResponse::LazyFile.new(file[:file])
+        else # must be streamable
+          interval_sequence << file[:file]
+        end
+
+        # Adjust the ZIP offsets within the Streamer
+        zip.simulate_write(file[:size])
+      end
+      zip.close
+      # zip central directory header
+      interval_sequence << io.to_segment_and_clear
+    end
+
+    def send_interval_response 
+      zipname = "#{output_prefix}.zip"
+      interval_response = IntervalResponse.new(interval_sequence, request.env)
+      rack_response = interval_response.to_rack_response_triplet
+      self.status = rack_response[0]
+      self.response.headers.merge!(rack_response[1])
+      self.response_body = IntervalResponse::RemoteRackBodyWrapper.new(
+        interval_response,
+        chunk_size: IntervalResponse::RackBodyWrapper::CHUNK_SIZE
+      )
+      headers['Content-Disposition'] = "attachment; filename=\"#{zipname.gsub '"', '\"'}\""
+      headers['Content-Type'] = Mime::Type.lookup_by_extension('zip').to_s
+      response.sending_file = true
+      response.cache_control[:public] ||= false
+    end
+
+    def validate_params
+      return head(:bad_request) unless params_valid?
+    end
+
+    def validate_user
+      return head(:unauthorized) unless user_is_valid?
+    end
+
+    def reset_recaptcha
+      # this controller doesn't interact with recaptcha (yet!) but this is left in, just in case
+      session.delete(:recaptcha_verfied_in_cart)
+    end
+
+    private
+      # Validation methods
+
+      def params_valid?
+        user_from_token.present? && media.present?
+      end
+
+      def user_is_valid?
+        user_from_token.present? && current_user == user_from_token && authorized_to_download?
+      end
+
+      def authorized_to_download?
+        media.all? { |m| user_can_download? user_from_token, m }
+      end
+
+      def user_can_download?(user, media)
+        user.can?(:download, media.id) || user.approved_to_download?(media.id)
+      end
+
+      # Controller HTTP response methods
+
+      def interval_sequence
+        @interval_sequence ||= IntervalResponse::Sequence.new
+      end
+
+      # Methods for accessing works
+
+      # Media access_control keys
+      def keys 
+        @keys ||= Array(params[:key])
+      end
+
+      # Get Media from keys
+      def media
+        @media ||= Media.where(accessControl_ssim: keys)
+      end
+
+      # Get FileSets from Media
+      def file_sets
+        @file_sets ||= media.map(&:file_sets).flatten.compact
+      end
+
+      # Get user record from token param
+      def user_from_token
+        @user ||= User.where(token: params[:token])&.first if params[:token].present?
+      end
+
+      # Methods for preparing media binary files
+
+      def files
+        @files ||= prepare_files
+      end
+
+      def prepare_files
+        media.map do |m|
+          file_set, original_file = get_and_validate_fileset(m)
+          
+          attrs = {
+            name: File.join(
+              output_prefix, 
+              output_dirname(m), 
+              output_filename(original_file.original_name, m.id)
+            ),
+            size: file_set.file_size&.first.to_i,
+            crc32: file_set.crc32&.first.to_i,
+            file: RemoteInclusion.new(original_file.uri, file_set.file_size&.first.to_i)
+          }
+
+          if attrs.values.all? { |v| v.present? }
+            attrs
+          else
+            nil
+          end
+        end.compact
+      end
+
+      def get_and_validate_fileset(m)
+        if (
+          (file_set = m.file_sets&.first).present? &&
+          (original_file = file_set.original_file).present? &&
+          file_set.file_size&.first.present? &&
+          file_set.crc32&.first.present? &&
+          original_file.original_name.present? &&
+          original_file.uri.present?
+        ) 
+          return file_set, original_file
+        else
+          flash[:error] = "There is an issue with one of the media you have attempted to download, and it is not available right now. Please try again later. If the issue persists, contact us (morphosource@duke.edu)."
+          redirect_to request.referer.present? ? request.referer : '/'
+          return
+        end
+      end
+
+      # Media-specific custom agreement file methods
+
+      def media_agreement_files
+        crcs = []
+        media_agreement_file_paths.map do |file_path, file_name|
+          file = File.open(file_path)
+          crc32 = crc32_from_io(file)
+
+          if crcs.include?(crc32)
+            nil
+          else
+            {
+              size: file.size,
+              crc32: crc32,
+              file: file,
+              path: file_path
+            }
+          end
+        end.
+        compact.
+        uniq.
+        map.with_index do |file_hash, index|
+          file_hash.merge(
+            name: File.join(
+              output_prefix, 
+              media_agreement_file_name(file_hash[:path], index + 1)
+            )
+          )
+        end
+      end
+
+      def media_agreement_file_paths
+        media.
+          map { |m| Morphosource::AttachmentService.get(m.id, 'agreement') }.
+          compact.
+          uniq
+      end
+
+      def media_agreement_file_name(file_path, index)
+        "Media_Contributor_Usage_Agreement_#{index}#{File.extname(file_path).downcase}"
+      end
+
+      # MorphoSource standard agreement file methods
+
+      def standard_agreement_files
+        standard_agreement_file_names.map do |file_name|
+          file = File.open(standard_agreement_file_path(file_name))
+
+          {
+            name: File.join(output_prefix, file_name),
+            size: file.size,
+            crc32: crc32_from_io(file),
+            file: file
+          }
+        end
+      end
+
+      def standard_agreement_file_names
+        standard_agreement_settings.map do |s|
+          if s[:type] == 'permissive'
+            label = s[:type]
+          else
+            label = [
+              s[:type], 
+              s[:permits_commercial_use], 
+              s[:required_archival_of_published_derivatives], 
+              s[:permits_3d_use]
+            ].join('_')
+          end
+
+          standard_agreement_file_name(label)
+        end
+      end
+
+      def standard_agreement_settings
+        media.map do |m|
+          if m.morphosource_use_agreement_type&.first == 'Permissive'
+            { type: 'permissive' }
+          else
+            {
+              type: 'std',
+              permits_commercial_use: 
+                permits_commercial_use(
+                  m.permits_commercial_use&.first
+                ),
+              required_archival_of_published_derivatives: 
+                required_archival_of_published_derivatives(
+                  m.required_archival_of_published_derivatives&.first
+                ),
+              permits_3d_use: permits_3d_use(
+                  m.permits_3d_use&.first
+                )
+            }
+          end
+        end.uniq
+      end
+
+      def permits_commercial_use(val)
+        case val
+        when 'CommercialUsePermitted'
+          'comm_yes'
+        else
+          'comm_no'
+        end
+      end
+
+      def required_archival_of_published_derivatives(val)
+        case val
+        when 'OnAnyRepository'
+          'rearc_any'
+        when 'OnMorphoSource'
+          'rearc_ms'
+        else
+          'rearc_no'
+        end
+      end
+
+      def permits_3d_use(val)
+        case val
+        when '3DPrintingPermitted'
+          '3d_yes'
+        when '3DPrintingLimited'
+          '3d_limited'
+        else
+          '3d_no'
+        end
+      end
+
+      def standard_agreement_file_name(permissions_label)
+        "ms_usage_#{permissions_label}.pdf"
+      end
+
+      def standard_agreement_file_path(file_name)
+        File.join(Rails.root, %w{app assets documents}, file_name)
+      end
+
+      def crc32_from_io(file)
+        crc = ZipTricks::StreamCRC32.from_io(file)
+        file.rewind
+        return crc
+      end
+
+      # other zip methods
+
+      def output_prefix
+        @output_prefix ||= "morphosource_media-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}"
+      end
+
+      def output_dirname(media)
+        "Media #{media.id} - #{media.title.join('-').tr('[]:','').tr('/\\','-')}"
+      end
+
+      def output_filename(file_name, media_id)
+        File.basename(file_name, File.extname(file_name)) + "-#{media_id}" + File.extname(file_name)
+      end
+  end
+end

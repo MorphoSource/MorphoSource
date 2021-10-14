@@ -247,6 +247,7 @@ Rails.application.routes.draw do
     resources :downloads, only: :show
     resources :tags, param: :tag, only: [:index, :show]
     get '/attachments/:id', to: 'attachments#show', as: 'attachment'
+    get '/download', to: 'media_downloads#show', as: 'media_download'
     get '/manifests/:id', to: 'manifests#show', as: 'manifest'
   end
 

@@ -1,3 +1,4 @@
+# This controller is defunct and not currently used, but left in for now
 module Morphosource
   class ZipMediaController < ApplicationController
     include Hyrax::WorksControllerBehavior

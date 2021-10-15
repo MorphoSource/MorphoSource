@@ -2,10 +2,12 @@
 module Morphosource
   module Users
     class MyObjectsSearchBuilder < Hyrax::WorksSearchBuilder
+      # override filter_collection_facet_for_access
+      include Morphosource::Facets::CollectionsSearchBuilderBehavior
 
       delegate :repository, to: :scope
 
-      self.default_processor_chain += [:apply_object_ids_filter]
+      self.default_processor_chain += [:apply_object_ids_filter, :filter_collection_facet_for_access]
 
       private
 
@@ -26,6 +28,10 @@ module Morphosource
         def my_media_object_ids
           repository.blacklight_config.max_per_page = 999999
           repository.search(Morphosource::Users::MyMediaObjectsSearchBuilder.new(@scope).rows(999999).query).response['docs'].map { |d| d["physical_object_id_ssim"].try(:first) }.compact
+        end
+
+        def models
+          [BiologicalSpecimen, CulturalHeritageObject]
         end
 
     end

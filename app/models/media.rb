@@ -385,7 +385,7 @@ class Media < Morphosource::Works::Base
 
   def mint_doi(target_url)
     if self.doi.empty?
-      depositor_user = User.find_by(ms_id: self.depositor)
+      depositor_user = User.find_by(ms_id: self.user_with_ownership)
       depositor_user_name_components = depositor_user.display_name.split(' ')
       minted_doi = Morphosource::CrossrefDoiMinter.mint_doi( self.id,
                                                             {'title' => self.title.first,

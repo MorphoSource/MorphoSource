@@ -2,7 +2,7 @@ module Morphosource
   module My
     class WorksController < Hyrax::My::WorksController
       include Morphosource::My::WorksControllerBehavior
-      include Morphosource::Facets::AccessFilters
+      include Morphosource::Facets::Collections
       include Morphosource::My::WorksHelper
 
       class_attribute :create_work_presenter_class, :filtered_facets
@@ -12,8 +12,6 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'
 
       before_action :tab_variables, only: [:index]
-
-      before_action :set_facet_limit, only: [:index]
 
       def index
         # The user's collections for the "add to collection" form
@@ -25,7 +23,6 @@ module Morphosource
         @create_work_presenter = create_work_presenter_class.new(current_user)
         @user = current_user
         (@response, @document_list) = query_solr
-        filter_facets
         prepare_instance_variables_for_batch_control_display
         respond_to do |format|
           format.html {
@@ -34,11 +31,6 @@ module Morphosource
           format.rss  { render layout: false }
           format.atom { render layout: false }
         end
-      end
-
-      # sets the facet limit for dashboard media & objects pages
-      def ms_default_facet_limit
-        current_user.admin? ? 15 : 999999
       end
 
     end

@@ -4,10 +4,7 @@ module Morphosource
       include Morphosource::Collections::LinkedTeamsControllerBehavior
 
       before_action :load_organization, only: [:show]
-
-      def filtered_facets
-        ["media_member_of_project_ids_ssim", "media_member_of_team_ids_ssim"]
-      end
+      before_action :get_object_ids, only: [:facet]
 
       def search_builder
         search_builder_class.new(self)
@@ -20,6 +17,10 @@ module Morphosource
         elsif @collection.team?
           Morphosource::Collections::TeamPresenter
         end
+      end
+
+      def get_object_ids
+        (@media_count, @object_ids) = collection_media
       end
     end
   end

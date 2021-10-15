@@ -1,6 +1,8 @@
 module Morphosource
   module CollectionsControllerBehavior
     extend ActiveSupport::Concern
+    # needed for some faceting behavior
+    include Hydra::Catalog
     include Blacklight::AccessControls::Catalog
     include Blacklight::Base
     include Hyrax::CollectionsControllerBehavior
@@ -30,7 +32,6 @@ module Morphosource
       (@response, @document_list) = query_solr
       publication_settings_nag
       query_collection_counts
-      filter_facets
       query_collection_members
     end
 
@@ -69,7 +70,7 @@ module Morphosource
       end
 
       def load_collection
-        @curation_concern ||= ::Collection.find(params[:id])
+        @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
         @collection ||= @curation_concern
         authorize! :read, @collection
         rescue CanCan::AccessDenied
@@ -151,5 +152,6 @@ module Morphosource
       def tab
         :media
       end
+
   end
 end

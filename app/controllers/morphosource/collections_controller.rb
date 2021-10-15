@@ -2,11 +2,11 @@ module Morphosource
   class CollectionsController < Hyrax::CollectionsController
     include Morphosource::CollectionsControllerBehavior
     helper Morphosource::CollectionHelper
-    include Morphosource::Facets::AccessFilters
+    include Morphosource::Facets::Collections
 
     with_themed_layout 'morphosource_1_column'
 
-    skip_load_and_authorize_resource only: [:show, :about], instance_name: :collection
+    skip_load_and_authorize_resource only: [:show, :about, :facet], instance_name: :collection
 
     # Don't add breadcrumbs
     before_action :build_breadcrumbs, only: []

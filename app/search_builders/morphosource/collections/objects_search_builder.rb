@@ -1,10 +1,12 @@
 module Morphosource
   module Collections
     class ObjectsSearchBuilder < Hyrax::WorksSearchBuilder
+      # override filter_collection_facet_for_access
+      include Morphosource::Facets::CollectionsSearchBuilderBehavior
 
       delegate :repository, to: :scope
 
-      self.default_processor_chain += [:apply_object_ids_filter]
+      self.default_processor_chain += [:apply_object_ids_filter, :filter_collection_facet_for_access]
 
       def initialize(*options)
         @collection = options.first.instance_variable_get(:@collection)
@@ -23,6 +25,7 @@ module Morphosource
           "(id:(#{object_ids.join(' OR ')}))"
         end
 
+        # @object_ids supplied by collection_media method in collections_controller_behavior
         def object_ids
           @object_ids.blank? ? ['none'] : @object_ids
         end

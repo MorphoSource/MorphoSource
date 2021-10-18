@@ -176,7 +176,7 @@ class BatchSubmissionsController < ApplicationController
           end
         end
       else
-        error_msg = "media.media_type: Please enter a valid value: " + valid_media_types.join(', ')
+        error_msg = "media.media_type: Please enter a valid value: " + valid_media_types.to_s.gsub(/\[|\]/, '')
       end
     when "media.parent_file"
       # IF value is present, another row must contain this value in media.media_file
@@ -308,11 +308,11 @@ class BatchSubmissionsController < ApplicationController
     case field_types[field_name]
     when "controlled"
       unless valid_values_for(field_name).include? val
-        error_msg = "#{field_name}: Please enter a valid value: " + valid_values_for(field_name).join(', ')
+        error_msg = "#{field_name}: Please enter a valid value: " + valid_values_for(field_name).to_s.gsub(/\[|\]/, '')
       end
     when "boolean"
       unless valid_boolean.include? val
-        error_msg = "#{field_name}: Please enter a valid value: " + valid_boolean.join(', ')
+        error_msg = "#{field_name}: Please enter a valid value: " + valid_boolean.to_s.gsub(/\[|\]/, '')
       end
     when "number"
       unless is_number? val

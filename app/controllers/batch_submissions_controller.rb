@@ -107,8 +107,10 @@ class BatchSubmissionsController < ApplicationController
         return redirect_to main_app.new_batch_submission_path
 
       end
+      @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
       @xlsx = Roo::Excelx.new(params[:manifest].tempfile.path)
       @params = params
+      @modality_selected = @params["batch_submission"]["modality"]
       parse_manifest
 
     end
@@ -166,7 +168,14 @@ class BatchSubmissionsController < ApplicationController
         error_msg = "media.preview_file: File #{val} cannot be found. Please check your shared folder."
       end
     when "media.media_type"
-      unless valid_media_types.include? val
+      if valid_media_types.include? val
+        if val.downcase != "other" 
+          # check if media_type value +  pre-selected modality is a permitted combination
+          if @submission_yaml['status'][val][@modality_selected] == 'none'
+          error_msg = "media.media_type: The combination of media type #{val} and pre-selected modality #{@modality_selected} is not permitted.  Please provide a different media type or select a different modality. "
+          end
+        end
+      else
         error_msg = "media.media_type: Please enter a valid value: " + valid_media_types.join(', ')
       end
     when "media.parent_file"
@@ -273,13 +282,12 @@ class BatchSubmissionsController < ApplicationController
       when /^(ct|photogrammetry|photography)\.(.*)$/
         # handle modality specific fields 
         field_modality = $1
-        modality_selected = @params["batch_submission"]["modality"]
         if val.present?
-          if field_modality.downcase == modality_mapped(modality_selected).downcase
+          if field_modality.downcase == modality_mapped(@modality_selected).downcase
             error_msg = error_by_type(field_name, val)
           else
             # no need to check the values if they should not be present 
-            error_msg = "#{field_name}: Value should not be present when modality #{modality_selected} is pre-selected."
+            error_msg = "#{field_name}: Value should not be present when modality #{@modality_selected} is pre-selected."
           end
         end  
       else

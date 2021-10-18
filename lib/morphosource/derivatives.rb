@@ -17,6 +17,7 @@ module Morphosource
     autoload :Fiji
     autoload :GltfPipeline
     autoload :Img2dcm
+    autoload :SimplifyMesh
 
     def self.blender_path
       Hyrax.config.blender_path

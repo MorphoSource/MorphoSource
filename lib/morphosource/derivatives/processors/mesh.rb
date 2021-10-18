@@ -11,6 +11,7 @@ module Morphosource::Derivatives::Processors
     attr_accessor :draco_glb_name
     attr_accessor :unit
     attr_accessor :tmp_dir_path
+    attr_accessor :simplified_mesh_dir_path
     attr_accessor :glb_path
     attr_accessor :draco_glb_path
     attr_accessor :derivatives_tmp_path
@@ -37,13 +38,19 @@ module Morphosource::Derivatives::Processors
       @glb_name = File.basename(source_path, '.*') + '.glb'
       @draco_glb_name = File.basename(source_path, '.*') + '-draco.glb'
       @unit = directives.fetch(:unit, 'mm').to_s.downcase.presence || 'mm'
+
+      # dir paths
       @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
+      @simplified_mesh_dir_path = File.join(tmp_dir_path, 'simplified_mesh/')
+      Dir.mkdir simplified_mesh_dir_path unless File.exist? simplified_mesh_dir_path
       @glb_path = File.join(tmp_dir_path, glb_name)
       @draco_glb_path = File.join(tmp_dir_path, draco_glb_name)
 
       begin
         extract_mesh_archive if File.extname(source_path).downcase == '.zip'
+        meshlab_simplify_mesh if meshlab_simplify_file_types.include?(File.extname(source_path).downcase)
+        simplify_textures
         create_tmp_nondraco_glb
         create_tmp_draco_glb
         write_draco_glb
@@ -67,6 +74,36 @@ module Morphosource::Derivatives::Processors
           @source_path = fpath if acceptable_archive_mesh_formats.include? File.extname(f.name).downcase 
         end
       end
+    end
+
+    def meshlab_simplify_file_types
+      ['.obj', '.ply', '.stl']
+    end
+
+    def meshlab_simplify_mesh
+      simplified_mesh_path = File.join(simplified_mesh_dir_path, File.basename(source_path))
+      simplify_mesh = Morphosource::Derivatives::SimplifyMesh.new(source_path, simplified_mesh_path, 1000000)
+      simplify_mesh.call # tool checks for output file presence and raises error if not found
+      @source_path = simplified_mesh_path
+    end
+
+    def simplify_textures
+      source_dir = File.dirname(source_path)
+      Dir.foreach(source_dir) do |f|
+        next if f == '.' or f == '..'
+        if texture_file_types.include? File.extname(f).downcase
+          simplify_texture_image(File.join(source_dir, f))
+        end
+      end
+    end
+
+    def texture_file_types
+      ['.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg']
+    end
+
+    def simplify_texture_image(f)
+      img = MiniMagick::Image.new(f)
+      img.resize('1024x1024>^')
     end
 
     def create_tmp_nondraco_glb

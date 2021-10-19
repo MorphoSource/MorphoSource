@@ -25,12 +25,13 @@
         </div>
       <% end %>
 
-      <div class="submission-select2-container mt-3">
+      <label class="select-device">Then select from devices associated with the organization.</label>
+
+      <div class="submission-select2-container">
         <%= f.input :device_id,
           collection: [],
-          label: 'Then select from devices associated with the organization.',
+          label: false,
           required: true,
-          wrapper_html: { class: 'required-flag-hidden' },
           input_html: {
             style: 'padding: 0; border: none;'
           },

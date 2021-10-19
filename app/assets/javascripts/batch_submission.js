@@ -1,7 +1,7 @@
 $( document ).ready(function() {
 
   if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
-
+    var showAlert = false;
 
     class BatchSubmissionData {
       constructor(sessionState=null) {
@@ -588,7 +588,9 @@ $( document ).ready(function() {
     data = new BatchSubmissionData();
     batchSubmissionForm = new BatchSubmissionForm(data);
 
-    $('#manifest_file, #batch_submission_modality').on('change', function(){
+    $('#manifest_file, #batch_submission_modality').on('change', function(){ setSubmitStatus() });
+    $(".btn-submit-wrapper").on('mouseover', function(){ 
+      showAlert = true;
       setSubmitStatus();
     });
 
@@ -597,25 +599,25 @@ $( document ).ready(function() {
       var selectedOrganizationID = $('#organization_search_form input.organization_id').val();
       if (selectedOrganizationID == "") {
         okToSubmit = false;
-        $(".select-organization").addClass('text-alert');
+         if (showAlert) $(".select-organization").addClass('text-alert');
       } else {
         $(".select-organization").removeClass('text-alert');        
       }
       if ($('#submission_device_select_display').hasClass('hide')) {
         okToSubmit = false;
-        $(".select-device").addClass('text-alert');
+        if (showAlert) $(".select-device").addClass('text-alert');
       } else {
         $(".select-device").removeClass('text-alert');        
       }
       if ($('select[name="batch_submission[modality]"]').val() == "") {
         okToSubmit = false;
-        $(".select-modality").addClass('text-alert');
+        if (showAlert) $(".select-modality").addClass('text-alert');
       } else {
         $(".select-modality").removeClass('text-alert');        
       }
       if ($("#manifest_file").val() == "") {
         okToSubmit = false;
-        $(".select-manifest b").addClass('text-alert');
+         if (showAlert) $(".select-manifest b").addClass('text-alert');
       } else {
         $(".select-manifest b").removeClass('text-alert');        
       }

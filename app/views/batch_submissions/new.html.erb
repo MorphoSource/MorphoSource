@@ -53,13 +53,9 @@
           <div class="col-xs-6 showcase-value">
             <div class="m-0 p-0 text-nowrap">
             <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
-            <% if f.object.embargo_release_date %>
-              <span class="label label-warning">Embargo</span>
-            <% elsif f.object.lease_expiration_date %>
-              <span class="label label-warning">Lease</span>
-            <% else %>
+
               <span class="label" id="current_visibility_value"></span>
-            <% end %>
+
               <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
             <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
               <%= render 'hyrax/media/ms_form_visibility_component', f: f %>
@@ -182,7 +178,7 @@
       <div class="mt-2">
         <%= f.file_field_tag :manifest, id: 'manifest_file', :accept => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
       </div>
-      <div class="mt-2 text-center">
+      <div class="mt-2 text-center btn-submit-wrapper">
         <%= f.submit 'Submit', id: 'btn-submit', class: 'btn btn-primary btn-lg', disabled: 'disabled' %>
       </div>
 

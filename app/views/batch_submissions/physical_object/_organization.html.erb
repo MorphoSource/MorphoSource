@@ -3,13 +3,6 @@
 
     <div id="submission_select_organization_section">
       <%= render(partial: 'batch_submissions/physical_object/organization_select') %>
-
-      <%# div class="row text-center">
-        <a href="#" id="submission_select_organization" class="btn btn-primary btn-continue" disabled="disabled">
-          <%= t('morphosource.submission.continue') % >
-        </a>
-      </div %>
-
       <div id ="submission_organization_select_display_container">
         <div class="row text-center">
           <%= render(partial: 'batch_submissions/physical_object/organization_select_display') %>
@@ -17,34 +10,5 @@
       </div>
     </div>
 
-    <!-- only admins can select 'no organization' -->
-    <% if current_user.admin? %>
-      <div id="submission_no_organization_section" class="text-center">
-        <div class="mb-1">
-          <b><%= t('morphosource.submission.or') %></b>
-        </div>
-
-        <div>
-          <a href="#" id="submission_no_organization" class="btn btn-primary btn-continue text-center">
-            <%= t('morphosource.submission.no_organization') %>
-          </a>
-        </div>
-      </div>
-    <% end %>
-
-    <div id="submission_no_organization_display_section" class="hide">
-      <div class="row">
-        <div class="col-sm-6 col-sm-offset-3 block">
-          <span class="label-padding"><b>Object not managed by organization</b></span>
-          <i id="no-organization-close" class="fas fa-times clickable icon-vertical-align"></i>
-        </div>
-      </div>
-    </div>
-
-    <%# !--div class="row mt-2">
-      <div class="col-xs-12 col-sm-6 col-sm-offset-3 block">
-        <% = t('morphosource.submission.cant_find_organization').html_safe % >
-      </div>
-    </div --%>
   </div>
 </div>

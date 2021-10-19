@@ -322,6 +322,12 @@ $( document ).ready(function() {
             $('#submission_no_organization_section').addClass('show').removeClass('hide');
             $('#submission_organization_select_display').addClass('hide').removeClass('show');
             $('#submission_select_organization').attr('disabled', 'disabled');
+
+            $("#batch_submission_organization_search").select2('val', null);
+            data.setOrganizationDefaults();
+            data.noOrganization = true;
+
+            setSubmitStatus();
         });
 
         //$('#submission_select_organization').click(function(event){
@@ -337,12 +343,11 @@ $( document ).ready(function() {
             data.noOrganization = false;
             data.willCreateOrganization = false;
             data.savedStep = 4;
-//            self.populatePhysicalObjectInstitutionCollectionCodes();
-//            self.next();
 
             console.log(data);
             self.form.setDefaultMediaPermissionFields();
           }
+          setSubmitStatus();
         }
 
         // No Organization Event
@@ -512,6 +517,9 @@ $( document ).ready(function() {
             $('select#batch_submission_modality').val(selectedDeviceModality).change();
           }
 
+          data.setDeviceDefaults();
+          data.deviceId = $('select[name="submission[device_id]"]').val();
+          setSubmitStatus();
         });
 
         $('#submission_device_select_display_container').on(
@@ -522,6 +530,7 @@ $( document ).ready(function() {
             $('#submission_create_device_button_section').addClass('show').removeClass('hide');
             $('#submission_device_select_display').addClass('hide').removeClass('show');
             $('#submission_select_device_continue').attr('disabled', 'disabled');
+            setSubmitStatus();
         });
 
       }
@@ -576,8 +585,46 @@ $( document ).ready(function() {
       }
     }
 
-    var data = new BatchSubmissionData();
-    var batchSubmissionForm = new BatchSubmissionForm(data);
+    data = new BatchSubmissionData();
+    batchSubmissionForm = new BatchSubmissionForm(data);
+
+    $('#manifest_file, #batch_submission_modality').on('change', function(){
+      setSubmitStatus();
+    });
+
+    var setSubmitStatus = function(){
+      var okToSubmit = true;
+      var selectedOrganizationID = $('#organization_search_form input.organization_id').val();
+      if (selectedOrganizationID == "") {
+        okToSubmit = false;
+        $(".select-organization").addClass('text-alert');
+      } else {
+        $(".select-organization").removeClass('text-alert');        
+      }
+      if ($('#submission_device_select_display').hasClass('hide')) {
+        okToSubmit = false;
+        $(".select-device").addClass('text-alert');
+      } else {
+        $(".select-device").removeClass('text-alert');        
+      }
+      if ($('select[name="batch_submission[modality]"]').val() == "") {
+        okToSubmit = false;
+        $(".select-modality").addClass('text-alert');
+      } else {
+        $(".select-modality").removeClass('text-alert');        
+      }
+      if ($("#manifest_file").val() == "") {
+        okToSubmit = false;
+        $(".select-manifest b").addClass('text-alert');
+      } else {
+        $(".select-manifest b").removeClass('text-alert');        
+      }
+      if (okToSubmit) {
+        $("#btn-submit").prop('disabled', false);
+      } else {
+        $("#btn-submit").prop('disabled', true);
+      }
+    };
 
   } // end if the page is submission flow page
 });

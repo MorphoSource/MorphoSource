@@ -134,12 +134,12 @@
 		<h2>Basic details</h2>
 
 		<div class="row">
-			<label class="required-flag"><span class="label"></span> Select the organization that represents the physical objects in this batch submission.</label>
+			<label class="required-flag select-organization"><span class="label"></span> Select the organization that represents the physical objects in this batch submission.</label>
 		  <%= render(partial: 'batch_submissions/physical_object/organization') %>
 		</div>
 
 		<div class="row mt-2">
-			<label class="required-flag"><span class="label"></span> Select the device used to image media in this batch submission. To do so, first find the organization that manages the device.</label>
+			<label class="required-flag select-device"><span class="label"></span> Select the device used to image media in this batch submission. To do so, first find the organization that manages the device.</label>
 		  <%= render(partial: 'batch_submissions/media/device') %>
 		</div>
 
@@ -148,7 +148,7 @@
 <input class="organization_recordset_id" type="hidden" name="organization_recordset_id" value="" />
 
     <div class="row mt-2">
-      <label class="required-flag"><span class="label"></span> Select the modality used to image media.</label>
+      <label class="required-flag select-modality"><span class="label"></span> Select the modality used to image media.</label>
       <%= render 'batch_submissions/media/modality', f: f %>
     </div>
 
@@ -178,12 +178,12 @@
   <h2>UPLOAD MANIFEST</h2>
   <div class="col-sm-6 col-sm-offset-3">
     <div class="mt-3 mb-3">
-      <label class="required-flag"><span class="label"></span> Upload the completed submission manifest.
+      <label class="required-flag select-manifest"><span class="label"></span> <b>Upload the completed submission manifest.</b>
       <div class="mt-2">
-        <%= f.file_field_tag :manifest, :accept => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
+        <%= f.file_field_tag :manifest, id: 'manifest_file', :accept => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
       </div>
       <div class="mt-2 text-center">
-        <%= f.submit 'Submit', class: 'btn btn-primary btn-lg' %>
+        <%= f.submit 'Submit', id: 'btn-submit', class: 'btn btn-primary btn-lg', disabled: 'disabled' %>
       </div>
 
     </div>
@@ -191,5 +191,3 @@
 </div>
 
 <% end # /simple_form_for @batch_submission %>
-
-

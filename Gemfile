@@ -51,6 +51,9 @@ gem 'puma', '~> 3.12'
 
 gem 'rubyzip'
 gem 'zipline', '~> 1.0'
+gem 'zip_tricks'
+gem 'interval_response'
+gem 'http'
 
 gem 'rest-client', '~> 2.0'
 

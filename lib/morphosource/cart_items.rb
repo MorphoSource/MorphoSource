@@ -133,6 +133,17 @@ module Morphosource
       @work_ids = items.map{|item| item.work_id}
     end
 
+    def access_control_ids_from_work_ids
+      return [] unless @work_ids.present?
+      solr_docs = ActiveFedora::SolrService.query(
+        "*:*", 
+        rows: 999999, 
+        fq: ['has_model_ssim:Media', "id:(#{@work_ids.join(' OR ')})"], 
+        fl: ['id', 'accessControl_ssim']
+      )
+      return solr_docs.map { |d| d['accessControl_ssim']&.first }.compact
+    end
+
     def create_new_items(old_items,requested='requested')
       works = get_media_by_items(old_items)
       create_instance_variables_for_flash

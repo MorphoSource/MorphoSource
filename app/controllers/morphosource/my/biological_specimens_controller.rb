@@ -8,10 +8,10 @@ module Morphosource
           config.search_builder_class = self.new.search_builder_class
           # clear catalog facet fields
           config.facet_fields = {}
-          config.add_facet_field "record_source_ssim", label: "Source"
-          config.add_facet_field "organization_ssim", label: "Organization"
-          config.add_facet_field "media_member_of_project_ids_ssim", label: "Project", helper_method: :collection_title_by_id
-          config.add_facet_field "media_member_of_team_ids_ssim", label: "Team", helper_method: :collection_title_by_id
+          config.add_facet_field "record_source_ssim", label: "Source", limit: 10
+          config.add_facet_field "organization_ssim", label: "Organization", limit: 10
+          config.add_facet_field "media_member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
+          config.add_facet_field "media_member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
         end
       end
       configure_facets
@@ -25,10 +25,6 @@ module Morphosource
       end
 
       private
-
-        def filtered_facets
-          ["media_member_of_project_ids_ssim", "media_member_of_team_ids_ssim"] 
-        end
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})

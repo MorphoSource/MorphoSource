@@ -17,22 +17,15 @@ RSpec.describe ObjectsCatalogController, type: :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 8 facet fields' do
-        expect(facet_fields.count).to eq(8)
-      end
-
-      describe 'generic type' do
-        subject { facet_fields['generic_type_sim'] }
-        it 'has the correct attributes' do
-          expect(subject.label).to eq('Generic Type Sim')
-        end
+      it 'has 9 facet fields' do
+        expect(facet_fields.count).to eq(9)
       end
 
       describe 'human readable type' do
         subject { facet_fields['human_readable_type_sim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Type')
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
@@ -40,7 +33,7 @@ RSpec.describe ObjectsCatalogController, type: :controller do
         subject { facet_fields['creator_sim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Creator')
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
@@ -48,7 +41,7 @@ RSpec.describe ObjectsCatalogController, type: :controller do
         subject { facet_fields['organization_sim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Organization')
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
@@ -56,15 +49,23 @@ RSpec.describe ObjectsCatalogController, type: :controller do
         subject { facet_fields['public_media_type_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Media Type')
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
-      describe 'media collections' do
-        subject { facet_fields['media_member_of_public_collection_ids_ssim'] }
+      describe 'media teams' do
+        subject { facet_fields['media_member_of_team_ids_ssim'] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq('Media Team / Project')
-          expect(subject.limit).to eq(5)
+          expect(subject.label).to eq('Team')
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'media projects' do
+        subject { facet_fields['media_member_of_project_ids_ssim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Project')
+          expect(subject.limit).to eq(10)
         end
       end
 
@@ -72,7 +73,7 @@ RSpec.describe ObjectsCatalogController, type: :controller do
         subject { facet_fields['public_media_keyword_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Media Tag')
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
     end

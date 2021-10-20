@@ -52,10 +52,10 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         end
 
         it "redirects to zip with the work id as params" do
-          work_id = cartItem2.work_id
+          work_id = Media.find(cartItem2.work_id).access_control_id
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
-          expect(redirect_params["ids[]"]).to eq(work_id)
+          expect(response).to redirect_to %r(\Ahttp://test.host/download?)
+          expect(redirect_params["key[]"]).to eq(work_id)
         end
       end
 
@@ -66,8 +66,8 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
         it "redirects to zip with nil as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
-          expect(redirect_params["ids[]"]).to be(nil)
+          expect(response).to redirect_to %r(\Ahttp://test.host/download?)
+          expect(redirect_params["key[]"]).to be(nil)
         end
       end
     end
@@ -81,10 +81,10 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         end
 
         it "redirects to zip with the work ids as params" do
-          work_id = cartItem2.work_id
+          work_id = Media.find(cartItem2.work_id).access_control_id
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
-          expect(redirect_params["ids[]"]).to eq(work_id)
+          expect(response).to redirect_to %r(\Ahttp://test.host/download?)
+          expect(redirect_params["key[]"]).to eq(work_id)
         end
       end
 
@@ -95,8 +95,8 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
         it "redirects to zip without the work ids as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
-          expect(redirect_params["ids[]"]).to be(nil)
+          expect(response).to redirect_to %r(\Ahttp://test.host/download?)
+          expect(redirect_params["key[]"]).to be(nil)
         end
       end
 
@@ -108,17 +108,21 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         end
 
         it "redirects to zip with only the unrestricted work ids as params" do
-          work_id = cartItem2.work_id
+          work_id = Media.find(cartItem2.work_id).access_control_id
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
-          expect(redirect_params["ids[]"]).to eq(work_id)
+          expect(response).to redirect_to %r(\Ahttp://test.host/download?)
+          expect(redirect_params["key[]"]).to eq(work_id)
         end
       end
     end
 
     context 'the user uses the download all button' do
       context 'the cart has only unrestricted items' do
-        let(:unrestricted_work_ids)  { [cartItem1.work_id, cartItem2.work_id, cartItem3.work_id] }
+        let(:unrestricted_work_ids)  { [
+          Media.find(cartItem1.work_id).access_control_id, 
+          Media.find(cartItem2.work_id).access_control_id, 
+          Media.find(cartItem3.work_id).access_control_id
+        ] }
         before do
           cartItem3.date_approved = Date.yesterday
           cartItem3.save
@@ -126,8 +130,8 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         end
         it "redirects to zip with all the work ids as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
-          expect(redirect_params["ids[]"]).to match_array(unrestricted_work_ids)
+          expect(response).to redirect_to %r(\Ahttp://test.host/download?)
+          expect(redirect_params["key[]"]).to match_array(unrestricted_work_ids)
         end
       end
 
@@ -142,8 +146,8 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
         it "redirects to zip with none of the work ids as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
-          expect(redirect_params["ids[]"]).to eq(nil)
+          expect(response).to redirect_to %r(\Ahttp://test.host/download?)
+          expect(redirect_params["key[]"]).to eq(nil)
         end
       end
 
@@ -155,10 +159,13 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         end
 
         it "redirects to media/#zip with only the unrestricted work ids as params" do
-          work_ids = [cartItem1.work_id,cartItem2.work_id]
+          work_ids = [
+            Media.find(cartItem1.work_id).access_control_id, 
+            Media.find(cartItem2.work_id).access_control_id
+          ]
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
-          expect(response).to redirect_to %r(\Ahttp://test.host/zip?)
-          expect(redirect_params["ids[]"]).to match_array(work_ids)
+          expect(response).to redirect_to %r(\Ahttp://test.host/download?)
+          expect(redirect_params["key[]"]).to match_array(work_ids)
         end
       end
     end

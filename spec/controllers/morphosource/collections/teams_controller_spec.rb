@@ -20,28 +20,28 @@ RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
       subject { facet_fields['publication_status_ssi']}
       it 'has a publication status facet' do
         expect(subject.label).to eq("Publication Status")
-        expect(subject.limit).to eq(nil)
+        expect(subject.limit).to eq(10)
       end
     end
     describe 'media type' do
       subject { facet_fields['human_readable_media_type_ssim']}
       it 'has a media type facet' do
         expect(subject.label).to eq("Media Type")
-        expect(subject.limit).to eq(nil)
+        expect(subject.limit).to eq(10)
       end
     end
     describe 'organization' do
       subject { facet_fields['media_organization_ssim']}
       it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
-        expect(subject.limit).to eq(nil)
+        expect(subject.limit).to eq(10)
       end
     end
     describe 'project' do
       subject { facet_fields['member_of_project_ids_ssim'] }
       it 'has a project facet' do
         expect(subject.label).to eq("Project")
-        expect(subject.limit).to eq(nil)
+        expect(subject.limit).to eq(10)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end
@@ -49,7 +49,7 @@ RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
       subject { facet_fields['member_of_team_ids_ssim'] }
       it 'has a team facet' do
         expect(subject.label).to eq("Team")
-        expect(subject.limit).to eq(nil)
+        expect(subject.limit).to eq(10)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end
@@ -57,17 +57,6 @@ RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
 
   describe 'tab' do
     it {expect(subject.send(:tab)).to eq(:media) }
-  end
-
-  describe 'filtered_facets' do
-    it 'lists facets to be filtered by access' do
-      expect(subject.send(:filtered_facets)).to match_array(["member_of_project_ids_ssim", "member_of_team_ids_ssim"])
-    end
-  end
-
-  describe 'removed_facets' do
-    before { subject.instance_variable_set(:@collection, team) }
-    it { expect(subject.send(:removed_facets)).to match_array([]) }
   end
 
   describe 'presenter_class' do

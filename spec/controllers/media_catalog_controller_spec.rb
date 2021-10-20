@@ -17,7 +17,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       let(:facet_fields) { config.facet_fields }
 
       it 'has 7 facet fields' do
-        expect(facet_fields.count).to eq(7)
+        expect(facet_fields.count).to eq(8)
       end
 
       describe 'generic type' do
@@ -31,7 +31,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
         subject { facet_fields['human_readable_media_type_sim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Type")
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
@@ -39,7 +39,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
         subject { facet_fields['media_modality_sim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Modality")
-          expect(subject.limit).to eq(6)
+          expect(subject.limit).to eq(10)
         end
       end
 
@@ -47,7 +47,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
         subject { facet_fields['media_physical_object_type_sim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Object Type")
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
@@ -55,7 +55,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
         subject { facet_fields['media_organization_sim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Organization")
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
@@ -63,15 +63,25 @@ RSpec.describe MediaCatalogController, :type => :controller do
         subject { facet_fields['keyword_sim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Tag")
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
-      describe 'member of collections' do
-        subject { facet_fields['member_of_public_collection_ids_ssim'] }
+      describe 'member of teams' do
+        subject { facet_fields['member_of_team_ids_ssim'] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Team / Project")
-          expect(subject.limit).to eq(5)
+          expect(subject.label).to eq("Team")
+          expect(subject.limit).to eq(10)
+          expect(subject.helper_method).to eq(:collection_title_by_id)
+        end
+      end
+
+      describe 'member of projects' do
+        subject { facet_fields['member_of_project_ids_ssim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Project")
+          expect(subject.limit).to eq(10)
+          expect(subject.helper_method).to eq(:collection_title_by_id)
         end
       end
     end

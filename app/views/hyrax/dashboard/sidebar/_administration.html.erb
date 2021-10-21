@@ -1,6 +1,6 @@
 <% if menu.show_configuration? %>
     <li class="h5"><%= t('hyrax.admin.sidebar.administration') %></li>
-    
+
     <%= menu.nav_link(Rails.application.routes.url_helpers.admin_downloads_path) do %>
       <span class="fa fa-download" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_downloads') %></span>
     <% end %>
@@ -53,4 +53,8 @@
         <% end %>
       <% end %>
     </li>
+    <%= menu.nav_link(main_app.admin_import_slides_path) do %>
+      <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.import_slides') %></span>
+    <% end %>
+  <% end %>
 <% end %>

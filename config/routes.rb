@@ -482,6 +482,8 @@ Rails.application.routes.draw do
       # data curation
       get 'admin/data_curation', action: :index, controller: :data_curation, as: 'admin_data_curation'
       post 'admin/data_curation/apply_permission_template', action: :apply_permission_template, controller: :data_curation, as: 'admin_apply_permission_template'
+      get 'admin/import_slides', action: :index, controller: :import_slides, as: 'admin_import_slides'
+      post 'admin/import_slides', action: :import_slides, controller: :import_slides, as: 'import_slides'
     end
 
     # ARK and DOI resolving routes

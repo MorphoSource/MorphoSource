@@ -513,9 +513,9 @@ $( document ).ready(function() {
 
           if (selectedDeviceModality.split(',').length > 1) {
             // more than one modality supported by the device
-            $('select#batch_submission_modality').val('').change().removeAttr('disabled');
+            $('select#batch_submission_modality').val('').change();
           } else {
-            $('select#batch_submission_modality').val(selectedDeviceModality).change().attr('disabled', 'disabled');
+            $('select#batch_submission_modality').val(selectedDeviceModality).change();
           }
 
           data.setDeviceDefaults();
@@ -526,7 +526,7 @@ $( document ).ready(function() {
         $('#submission_device_select_display_container').on(
           'click', '#device-select-close', function(event){
             $("#batch_submission_device_id").select2('val', null);
-            $('select#batch_submission_modality').val('').change().removeAttr('disabled');
+            $('select#batch_submission_modality').val('').change();
             $('#submission_select_device_section').addClass('show').removeClass('hide');
             $('#submission_create_device_button_section').addClass('show').removeClass('hide');
             $('#submission_device_select_display').addClass('hide').removeClass('show');

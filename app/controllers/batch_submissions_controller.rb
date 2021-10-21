@@ -101,18 +101,21 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def submit
-    if params[:manifest].present?
+    @params = params
+    if @params[:manifest].present?
       unless manifest_format_valid?
         flash[:error] = 'The file uploaded is invalid.  Please upload a file in this format: ' + Morphosource.manifest_formats.join(',')
         return redirect_to main_app.new_batch_submission_path
 
       end
       @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
-      @xlsx = Roo::Excelx.new(params[:manifest].tempfile.path)
-      @params = params
+      @xlsx = Roo::Excelx.new(@params[:manifest].tempfile.path)
       @modality_selected = @params["batch_submission"]["modality"]
       parse_manifest
 
+    else 
+      flash[:error] = 'The manifest file is missing. '
+      return redirect_to main_app.new_batch_submission_path
     end
 
   end

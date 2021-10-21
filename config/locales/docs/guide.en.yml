@@ -3,9 +3,10 @@ en:
     docs:
       guide:
         title: User Guide
-        last_updated: Last updated 10/1/2021
+        last_updated: Last updated 10/21/2021
         text: "MorphoSource is a complex repository platform, and our team is working hard to generate user-friendly documentation to help users find their way around the site. As part of this process, we have created <a href='https://drive.google.com/drive/folders/1f6g8TxkbOxT504VZOKa-IOVFdBBB7XP-?usp=sharing' target='_blank'>draft documentation</a> and made it available via a publicly accessible Google Drive folder. We will continue to update this documentation and add new documents, tutorials, and slide decks to the folder. We are in the process of migrating the information available in these draft documents to the MorphoSource site, and you can find the migrated resources in the contents list below."
-        text2: "The <a href='https://www.youtube.com/channel/UCusG--ELmxbSHNuTIcVL5mQ' target='_blank'>MorphoSource YouTube channel</a> has a number of different video tutorials describing and guiding users through various aspects of the site for users who prefer video documentation."
+        text2: "The <a href='https://www.youtube.com/channel/UCusG--ELmxbSHNuTIcVL5mQ' target='_blank'>MorphoSource YouTube channel</a> has a number of different video tutorials describing and guiding users through various aspects of the site for users who prefer video documentation. In particular, we have a <a href='http://bit.ly/ms2_launch_video' target='_blank'>launch welcome video</a> to briefly cover major aspects of the new site, and a <a href='https://youtu.be/SDGcNLqDTDA' target='_blank'>3D viewer video</a> to overview features and functions of the 3D viewer. There are also tutorials covering data submission."
+        text3: "If you experience issues using the site or require further guidance, please <a href='mailto:morphosource@duke.edu'>contact us</a>."
         table_of_contents:
           title: Contents
           pixel_spacing: "<a href ='/docs/guide/pixel_spacing'>Pixel Spacing for CT/MRI Image Stacks</a>"

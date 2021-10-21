@@ -14,6 +14,14 @@
   ul#user_utility_links li ul.dropdown-menu a {
     color: #333333;
   }
+
+  .col-left {
+    padding-right:  30px;
+  }
+
+  .col-right {
+    padding-left:  30px;
+  }
 }
 
 /* Header styles */
@@ -203,4 +211,38 @@ div#front-banner iframe {
 
 .inline-button:hover, .inline-button:focus {
   color: #f3f3f3;
+}
+
+.stats {
+  margin-bottom: 40px;
+}
+
+/* Blog post styles */
+
+.post {
+  margin-left:  0 !important;
+  margin-right:  0 !important;
+  padding-left:  0 !important;
+  padding-right:  0 !important;
+  border-bottom:  1px solid lightgray;
+  margin-bottom:  40px;
+}
+
+.post-title-container {
+  border-bottom:  1px solid lightgray;
+}
+
+.post-title {
+  font-weight: 500;
+}
+
+.post-excerpt {
+  margin-top:  14px;
+}
+
+.view-all-link {
+  text-align: center; 
+  margin-top: -30px; 
+  margin-bottom:  40px;
+  font-weight: 500;
 }

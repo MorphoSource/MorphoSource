@@ -698,6 +698,12 @@ module Hyrax
       @unused_storage_fund_code_id ||= nil
     end
 
+    # Wordpress blog for news updates (optional)
+    attr_writer :wordpress_blog_url
+    def wordpress_blog_url
+      @wordpress_blog_url ||= nil
+    end
+
     attr_accessor :nested_relationship_reindexer
 
     def default_nested_relationship_reindexer

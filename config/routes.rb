@@ -387,6 +387,9 @@ Rails.application.routes.draw do
       patch 'admin/fund_codes/:id', action: :update, controller: :fund_codes, as: 'admin_fund_codes_update'
       delete 'admin/fund_codes/:id', action: :delete, controller: :fund_codes, as: 'admin_fund_codes_delete'
       delete 'admin/fund_codes/:id/attachments/:index', action: :delete_attachment, controller: :fund_codes, as: 'admin_fund_codes_delete_attachment'
+
+      get 'admin/import_slides', action: :index, controller: :import_slides, as: 'admin_import_slides'
+      post 'admin/import_slides', action: :import_slides, controller: :import_slides, as: 'import_slides'
     end
   end
 

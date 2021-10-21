@@ -2,6 +2,9 @@ module Morphosource
   module CustomThumbnails
 
     # called from submissions #create and media #update
+
+    #params[:custom_thumbnail] <ActionDispatch::Http::UploadedFile:0x0000561a65c49f70 @tempfile=#<Tempfile:/tmp/RackMultipart20211026-11764-1yizj6y.png>, @original_filename="Screenshot 2018-10-04 15.07.07.png", @content_type="image/png", @headers="Content-Disposition: form-data; name=\"custom_thumbnail\"; filename=\"Screenshot 2018-10-04 15.07.07.png\"\r\nContent-Type: image/png\r\n">
+
     def create_thumbnail
       return if params[:custom_thumbnail].blank?
 
@@ -64,6 +67,7 @@ module Morphosource
           }]
         )
       ensure
+        # byebug
         custom_thumbnail.tempfile.close
         custom_thumbnail.tempfile.unlink
       end

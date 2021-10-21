@@ -1,7 +1,7 @@
 module Hyrax
   module Renderers
     class ShowcaseLicenseLinkAttributeRenderer < ShowcaseDefaultAttributeRenderer
- 
+
       private
 
         def attribute_value_to_html(value)

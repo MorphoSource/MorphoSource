@@ -2,7 +2,7 @@ module Morphosource
   module Collections
     class ProjectsController < Morphosource::CollectionsController
 
-      skip_load_and_authorize_resource only: [:show, :about], instance_name: :collection
+      skip_load_and_authorize_resource only: [:show, :about, :facet], instance_name: :collection
 
       self.presenter_class = Morphosource::Collections::ProjectPresenter
 

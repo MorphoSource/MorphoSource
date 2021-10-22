@@ -5,6 +5,7 @@ class BatchSubmissionsController < ApplicationController
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms
   before_action :check_sftp_share_connection, only: [:new]
+  before_action :check_params, only: [:submit]
 
   def instantiate_work_forms
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
@@ -101,23 +102,10 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def submit
-    @params = params
-    if @params[:manifest].present?
-      unless manifest_format_valid?
-        flash[:error] = 'The file uploaded is invalid.  Please upload a file in this format: ' + Morphosource.manifest_formats.join(',')
-        return redirect_to main_app.new_batch_submission_path
-
-      end
-      @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
-      @xlsx = Roo::Excelx.new(@params[:manifest].tempfile.path)
-      @modality_selected = @params["batch_submission"]["modality"]
-      parse_manifest
-
-    else 
-      flash[:error] = 'The manifest file is missing. '
-      return redirect_to main_app.new_batch_submission_path
-    end
-
+    @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
+    @xlsx = Roo::Excelx.new(manifest.tempfile.path)
+    @modality_selected = @params["batch_submission"]["modality"]
+    parse_manifest
   end
 
   def parse_manifest
@@ -529,27 +517,6 @@ class BatchSubmissionsController < ApplicationController
     end
   end
   
-  def user_share_full_path
-    @user_share_full_path ||= begin
-      user_set_path = current_user.sftp_share
-      if !user_set_path.present?
-        "NOT_FOUND"
-      elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
-        Hyrax.config.sftp_share_root + user_set_path + '/' unless user_set_path.end_with?('/')
-      elsif Dir.exist?(user_set_path)
-        user_set_path + '/' unless user_set_path.end_with?('/')
-      else
-        "NOT_FOUND"
-      end
-    end
-  end
-
-  def check_sftp_share_connection
-    if user_share_full_path == "NOT_FOUND"
-      render 'not_connected'      
-    end
-  end
-
   def pad(id)
     if id.length < 9
       ("0" * (9 - id.length)) + id
@@ -602,5 +569,45 @@ class BatchSubmissionsController < ApplicationController
       'Etc'
     end
   end
+
+  private
+
+    def check_params
+      @params = params
+      if @params[:manifest].present?
+        unless manifest_format_valid?
+          flash[:error] = 'The file uploaded is invalid.  Please upload a file in this format: ' + Morphosource.manifest_formats.join(',')
+          return redirect_to main_app.new_batch_submission_path
+        end
+      else 
+        flash[:error] = 'The manifest file is missing. '
+        return redirect_to main_app.new_batch_submission_path
+      end
+      unless @params["batch_submission"]["modality"].present?
+        flash[:error] = 'The modality is missing. '
+        return redirect_to main_app.new_batch_submission_path
+      end
+    end
+
+    def user_share_full_path
+      @user_share_full_path ||= begin
+        user_set_path = current_user.sftp_share
+        if !user_set_path.present?
+          "NOT_FOUND"
+        elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
+          Hyrax.config.sftp_share_root + user_set_path + '/' unless user_set_path.end_with?('/')
+        elsif Dir.exist?(user_set_path)
+          user_set_path + '/' unless user_set_path.end_with?('/')
+        else
+          "NOT_FOUND"
+        end
+      end
+    end
+
+    def check_sftp_share_connection
+      if user_share_full_path == "NOT_FOUND"
+        render 'not_connected'      
+      end
+    end
 
 end

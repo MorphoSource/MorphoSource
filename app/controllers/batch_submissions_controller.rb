@@ -172,26 +172,30 @@ class BatchSubmissionsController < ApplicationController
     when "media.parent_file"
       # IF value is present, another row must contain this value in media.media_file
       if val.present? 
-        # look for the val in the media_file column
-        parent_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
-        if parent_media_found_row.present?
-          parent_media_row = parent_media_found_row + 1
-          if parent_media_row == current_row
-            error_msg = "media.parent_file #{val} cannot be media.media_file in the same row."
-          end
-        else
-          error_msg = "media.parent_file #{val} not found in another row."
-        end
-
         if @xlsx.cell(current_row, field_column("media.parent_ms_id")).present?
-          error_msg = "A value can be present in media.parent_file_name or media.parent_ms_id, but not in both."
+          error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
+        else
+          # look for the val in the media_file column
+          parent_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
+          if parent_media_found_row.present?
+            parent_media_row = parent_media_found_row + 1
+            if parent_media_row == current_row
+              error_msg = "media.parent_file #{val} cannot be media.media_file in the same row."
+            end
+          else
+            error_msg = "media.parent_file #{val} not found in another row."
+          end
         end
       end
     when "media.parent_ms_id"
-      if val.present?
-        val = pad(val.to_s)
-        unless Media.where(id:val).present?
-          error_msg = "media.parent_ms_id: Existing media #{val} not found."
+      if @xlsx.cell(current_row, field_column("media.parent_file")).present?
+        # the error_msg should be set in the media.parent_file block already
+        #error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
+      else
+        if val.present?
+          unless Media.where(id:pad(val.to_s)).present?
+            error_msg = "media.parent_ms_id: Existing media #{val} not found."
+          end
         end
       end
     when /^media\.(.*)$/
@@ -199,20 +203,11 @@ class BatchSubmissionsController < ApplicationController
       sub_field_name = $1
       media_type = @xlsx.cell(current_row, field_column("media.media_type"))
       if valid_media_types.include? media_type # no need to check unless media type is valid
-        if val.present?
-          if field_to_reject_for_media_type?(media_type, sub_field_name)
-            error_msg = "#{field_name}: Value should not be present for media type #{media_type}."
-          else
-            # value that is not rejected (accepted for the media type) can be validated here
-            error_msg = error_by_type(field_name, val)
-          end
+        if val.present? && field_to_reject_for_media_type?(media_type, sub_field_name)
+          error_msg = "#{field_name}: Value should not be present for media type #{media_type}."
         else
-          # if no val, check if val is required for the media type
-          if media_type == 'CTImageSeries'
-            if ['x_spacing', 'y_spacing', 'z_spacing'].include? sub_field_name
-              error_msg = "#{field_name}: Value should present for media type #{media_type}."
-            end
-          end
+          # value that is not rejected (accepted for the media type) can be validated here
+          error_msg = error_by_type(field_name, val)
         end
       end
     when "biological_specimen.ms_id"
@@ -297,17 +292,26 @@ class BatchSubmissionsController < ApplicationController
   def error_by_type(field_name, val)
     error_msg = ""
     case field_types[field_name]
-    when "controlled"
-      unless valid_values_for(field_name).include? val
-        error_msg = "#{field_name}: Please enter a valid value: " + valid_values_for(field_name).to_s.gsub(/\[|\]/, '')
+    when /^controlled(_required)?$/
+      if ($1.present?) && (!val.present?)
+        error_msg = "#{field_name}: Please enter a valid value."
+      else
+        unless valid_values_for(field_name).include? val
+          error_msg = "#{field_name}: Please enter a valid value: " + valid_values_for(field_name).to_s.gsub(/\[|\]/, '')
+        end
       end
     when "boolean"
       unless valid_boolean.include? val
         error_msg = "#{field_name}: Please enter a valid value: " + valid_boolean.to_s.gsub(/\[|\]/, '')
       end
-    when "number"
-      unless is_number? val
-        error_msg = "#{field_name}: Please enter a valid number."
+    when /^number(_RequiredByMediaType_.*)?$/
+      if ($1.present?) && (!val.present?)
+        media_type = $1.split('_').last
+        error_msg = "#{field_name}: Value should present for media type #{media_type}."
+      else
+        unless is_number? val
+          error_msg = "#{field_name}: Please enter a valid number."
+        end
       end
     when "integer"
       unless is_integer? val
@@ -348,8 +352,8 @@ class BatchSubmissionsController < ApplicationController
     @field_types ||= {
       "media.media_file" => "text",
       "media.preview_file" => "text",
-      "media.publication_status" => "controlled",
-      "media.media_type" => "controlled",
+      "media.publication_status" => "controlled_required",
+      "media.media_type" => "controlled_required",
       "media.parent_file" => "text",
       "media.parent_ms_id" => "text",
       "biological_specimen.ms_id" => "text",
@@ -368,9 +372,9 @@ class BatchSubmissionsController < ApplicationController
       "media.keyword" => "text",
       "media.date_created" => "date",
       "media.related_url" => "text",
-      "media.x_spacing" => "number",
-      "media.y_spacing" => "number",
-      "media.z_spacing" => "number",
+      "media.x_spacing" => "number_RequiredByMediaType_CTImageSeries",
+      "media.y_spacing" => "number_RequiredByMediaType_CTImageSeries",
+      "media.z_spacing" => "number_RequiredByMediaType_CTImageSeries",
       "media.slice_thickness" => "number",
       "media.series_type" => "controlled",
       "media.unit" => "controlled",

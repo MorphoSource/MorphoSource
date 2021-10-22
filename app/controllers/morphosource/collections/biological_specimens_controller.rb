@@ -2,6 +2,8 @@ module Morphosource
   module Collections
     class BiologicalSpecimensController < Morphosource::Collections::PhysicalObjectsController
 
+      skip_load_and_authorize_resource only: [:show, :about, :facet], instance_name: :collection
+
       def search_builder_class
         Morphosource::Collections::SpecimensSearchBuilder
       end
@@ -29,10 +31,11 @@ module Morphosource
 
         # link for facet filters
         def search_action_url(*args)
+          args&.first&.delete("collection_id")
           if @collection.project?
-            main_app.project_specimens_path(*args)
+            main_app.project_specimens_path(@curation_concern, *args)
           elsif @collection.team?
-            main_app.team_specimens_path(*args)
+            main_app.team_specimens_path(@curation_concern, *args)
           end
         end
 

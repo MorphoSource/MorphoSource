@@ -75,6 +75,10 @@ module Morphosource
         end
 
         def create_derivative
+          @uri = URI(@thumbnail_path)
+          name = @media.identifier.first
+          copy_remote_file(name)
+          # thumb = custom_thumbnail
           # begin
             byebug
             ::Morphosource::Derivatives::CroppedImageDerivatives.create(
@@ -92,8 +96,53 @@ module Morphosource
         end
 
         def custom_thumbnail
-          OpenStruct.new(:path => @thumbnail_path)
+          byebug
+          @tempfile = @pathpath
+          @original_filename = "Help"
+          @content_type = "image/png"
+          @headers = {}
+          byebug
+          OpenStruct.new(:path => @pathpath, :@tempfile => @pathpath, :@original_filename => "Help", :@content_type => "image/png", :@headers=> {})
         end
+
+
+
+        # def custom_thumbnail
+        #   @uri = URI(@thumbnail_path)
+        #   name = @media.identifier.first
+        #   copy_remote_file(name)
+        #   # OpenStruct.new(:path => @thumbnail_path)
+        # end
+
+        def copy_remote_file(name)
+          filename = File.basename(name)
+          dir = Dir.mktmpdir
+          Rails.logger.debug("ImportUrlJob: Copying <#{@uri}> to #{dir}")
+
+          File.open(File.join(dir, filename), 'wb') do |f|
+            # begin
+              write_file(f)
+              # yield f
+            # rescue StandardError => e
+              # send_error(e.message)
+            # end
+          end
+          @pathpath = File.join(dir, filename)
+          byebug
+          # byebug
+          # return file
+          # Rails.logger.debug("ImportUrlJob: Closing #{File.join(dir, filename)}")
+        end
+
+        def write_file(f)
+          retriever = BrowseEverything::Retriever.new
+          uri_spec = ActiveSupport::HashWithIndifferentAccess.new(url: @uri, headers: {})
+          retriever.retrieve(uri_spec) do |chunk|
+            f.write(chunk)
+          end
+          f.rewind
+        end
+
     end
   end
 end

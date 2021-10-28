@@ -34,7 +34,6 @@ module Morphosource
           media = json["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"]
           @collection = slide_series_collection(json["scientificName"])
           media.each do |m|
-            byebug
             next if m["http://rs.tdwg.org/ac/terms/variantLiteral"] == "Best Quality"
 
             title = [m["http://purl.org/dc/terms/description"]]
@@ -47,7 +46,6 @@ module Morphosource
             import_url = m["http://rs.tdwg.org/ac/terms/accessURI"].split.present? ?  m["http://rs.tdwg.org/ac/terms/accessURI"].split("/tiles/", 2).first : nil
             @thumbnail_path = m["http://rs.tdwg.org/ac/terms/accessURI"].split("?").first
             # thumbnail_id = import_url.concat("/tiles/thumbnail")
-            byebug
             @media = Media.create(title: title, description: description, license: license, rights_holder: rights_holder, depositor: @manager.ms_id, publisher: publisher, media_type: ['SlideImageSeries'], import_url: import_url, identifier: identifier, related_url: related_url, visibility: 'open', fileset_accessibility: ['open'])
 
 
@@ -70,49 +68,41 @@ module Morphosource
 
         def create_thumbnail
           make_derivative_directory
+
+          @uri = URI(@thumbnail_path)
+          name = @media.identifier.first
+          copy_remote_file(name)
+
+
           create_derivative
           update_thumbnail_id
         end
 
-        def create_derivative
-          @uri = URI(@thumbnail_path)
-          name = @media.identifier.first
-          copy_remote_file(name)
-          # thumb = custom_thumbnail
-          # begin
-            byebug
-            ::Morphosource::Derivatives::CroppedImageDerivatives.create(
-              custom_thumbnail.path,
-              outputs: [{
-                label: :thumbnail,
-                url: thumbnail_url,
-              }]
-            )
-          # ensure
-            # byebug
-            # custom_thumbnail.tempfile.close
-            # custom_thumbnail.tempfile.unlink
-          # end
-        end
+        # def create_derivative
+        #   # @uri = URI(@thumbnail_path)
+        #   # name = @media.identifier.first
+        #   # copy_remote_file(name)
+        #   begin
+        #     ::Morphosource::Derivatives::CroppedImageDerivatives.create(
+        #       custom_thumbnail.path,
+        #       outputs: [{
+        #         label: :thumbnail,
+        #         url: thumbnail_url,
+        #       }]
+        #     )
+        #   ensure
+        #     custom_thumbnail.tempfile.close
+        #     custom_thumbnail.tempfile.unlink
+        #   end
+        # end
 
         def custom_thumbnail
-          byebug
           @tempfile = @pathpath
           @original_filename = "Help"
           @content_type = "image/png"
           @headers = {}
-          byebug
           OpenStruct.new(:path => @pathpath, :@tempfile => @pathpath, :@original_filename => "Help", :@content_type => "image/png", :@headers=> {})
         end
-
-
-
-        # def custom_thumbnail
-        #   @uri = URI(@thumbnail_path)
-        #   name = @media.identifier.first
-        #   copy_remote_file(name)
-        #   # OpenStruct.new(:path => @thumbnail_path)
-        # end
 
         def copy_remote_file(name)
           filename = File.basename(name)

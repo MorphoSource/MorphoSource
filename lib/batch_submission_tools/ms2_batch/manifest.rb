@@ -41,11 +41,14 @@ module BatchSubmissionTools
         # validate_media_path # re-add this after initial testing
         #validate_manifest
         parse_manifest
-byebug
+byebug # check @rows
+
         infer_media_relationships
-byebug
+byebug # check @media_group_to_rows
+
         construct_biological_specimen_ingests
-byebug
+byebug # check biological_specimen_ingests
+
         construct_taxonomy_ingests
 byebug
         construct_media_ie_pe_ingests

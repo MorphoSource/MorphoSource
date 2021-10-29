@@ -97,28 +97,47 @@ module Morphosource
         # end
 
         def custom_thumbnail
-          @tempfile = @pathpath
-          @original_filename = "Help"
-          @content_type = "image/png"
-          @headers = {}
-          OpenStruct.new(:path => @pathpath, :@tempfile => @pathpath, :@original_filename => "Help", :@content_type => "image/png", :@headers=> {})
+          # @original_filename = "Help"
+          # @content_type = "image/png"
+          # @headers = {}
+          # byebug
+          # OpenStruct.new(:path => @pathpath, :tempfile => @tempfile, :original_filename => "Help", :content_type => "image/png", :headers=> {})
+          OpenStruct.new(:path => @tempfile.path, :tempfile => @tempfile)
         end
 
         def copy_remote_file(name)
-          filename = File.basename(name)
-          dir = Dir.mktmpdir
-          Rails.logger.debug("ImportUrlJob: Copying <#{@uri}> to #{dir}")
+          # filename = File.basename(name)
+          # byebug
+          # dir = Dir.mktmpdir
+          Rails.logger.debug("ImportUrlJob: Copying <#{@uri}>")
 
-          File.open(File.join(dir, filename), 'wb') do |f|
+
+          # url =  http://s3.amazonaws.com/estock/fspid10/27/40/27/6/buddhism-hindu-religion-2740276-o.png
+          # tmp_file = Tempfile.new([name, '.jpg'])
+          # tmp_file.binmode
+          #
+          # open(url) do |url_file|
+          #   tmp_file.write(url_file.read)
+          # end
+          #
+          # tmp_file.rewind
+          #
+          # tmp_file.read
+
+
+          @tempfile = Tempfile.new(name, encoding: 'ascii-8bit')
+            # byebug
             # begin
-              write_file(f)
+              # write_file(f)
+              write_file(@tempfile)
+              # @tempfile = f
               # yield f
             # rescue StandardError => e
               # send_error(e.message)
             # end
-          end
-          @pathpath = File.join(dir, filename)
-          byebug
+          # end
+          # byebug
+          # @pathpath = File.join(dir, filename)
           # byebug
           # return file
           # Rails.logger.debug("ImportUrlJob: Closing #{File.join(dir, filename)}")

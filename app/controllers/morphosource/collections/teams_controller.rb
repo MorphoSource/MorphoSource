@@ -39,7 +39,10 @@ module Morphosource
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
-          main_app.team_media_facet_path(@collection.id, args[:id])
+          # args id is the solr facet
+          # params id is the collection id
+          args.merge!(request.params)
+          main_app.team_media_facet_path(@collection.id, args)
         end
 
     end

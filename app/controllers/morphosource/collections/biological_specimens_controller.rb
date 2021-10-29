@@ -41,10 +41,13 @@ module Morphosource
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
+          # args id is the solr facet
+          # params id is the collection id
+          args.merge!(request.params)
           if @collection.project?
-            main_app.project_specimens_facet_path(@collection.id, args[:id])
+            main_app.project_specimens_facet_path(@collection.id, args)
           elsif @collection.team?
-            main_app.team_specimens_facet_path(@collection.id, args[:id])
+            main_app.team_specimens_facet_path(@collection.id, args)
           end
         end
 

@@ -7,12 +7,6 @@ module BatchSubmissionTools
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests
 
-
-      # Rewrite call as something that calls the relevant job?
-      # def self.call(input_path, media_path, admin_user, depositor, organization_id, device_id)
-      #   new(input_path, media_path, admin_user, depositor, organization_id, device_id).call
-      # end
-
       def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil)
         @input_path = input_path
         @media_path = media_path
@@ -41,18 +35,21 @@ module BatchSubmissionTools
         # validate_media_path # re-add this after initial testing
         #validate_manifest
         parse_manifest
-byebug # check @rows
+#byebug # check @rows
 
         infer_media_relationships
-byebug # check @media_group_to_rows
+#byebug # check @media_group_to_rows
 
         construct_biological_specimen_ingests
-byebug # check biological_specimen_ingests
+#byebug # check biological_specimen_ingests, @rows_to_bso
+
 
         construct_taxonomy_ingests
-byebug
+byebug # check @taxonomy_ingests, @rows_to_taxonomy
+
         construct_media_ie_pe_ingests
-byebug
+byebug # media_ie_pe_ingests
+
       end
 
 #      def validate_media_path
@@ -60,23 +57,11 @@ byebug
 #      end
 
 #      def validate_manifest
-#        BatchSubmissionTools::ConvertedMs1Batch::ValidateManifest.call(input_path)
+#        BatchSubmissionTools::Ms2Batch::ValidateManifest.call(input_path)
 #      end
 
       def parse_manifest
         @rows = parse_xlsx_split_sections(input_path)
-
-# (byebug) @rows.class
-# Array
-# (byebug) @rows.count
-# 6
-# (byebug) @rows.first.class
-# Hash
-# (byebug) @rows.first.count
-# 5
-# (byebug) @rows.first
-# {:media=>{:media_file=>["ANSP_Fish_53046_Head.zip"], :preview_file=>["not_exist.jpg"], :publication_status=>["Open"], :media_type=>["CTImageSeries"], :parent_file=>["not_both"], :parent_ms_id=>["not_both"], :part=>["head"], :short_description=>["microCT volume and derivatives"], :side=>["not valid"], :description=>["Migrated MorphoSource 1 Media File Title: zipped tiff stack Migrated MorphoSource 1 Media Group Title: microCT volume and derivatives"], :creator=>[], :orientation=>[], :identifier=>[], :keyword=>[], :date_created=>["not valid"], :related_url=>[], :x_spacing=>[0.02169024], :y_spacing=>[], :z_spacing=>["not valid"], :slice_thickness=>[], :series_type=>["not valid"], :unit=>["not valid"], :map_type=>["not valid"]}, :biological_specimen=>{:ms_id=>["not_found"], :idigbio_uuid=>["not_found"], :occurrence_id=>["not_found"], :institution_code=>["not_found"], :collection_code=>["not_found"], :catalog_number=>["not_found"], :identifier=>[], :related_url=>[], :date_created=>["not valid"], :creator=>[], :description=>[], :latitude=>[], :longitude=>[], :numeric_time=>[], :original_location=>[], :periodic_time=>[], :is_type_specimen=>["not valid"], :sex=>["not valid"], :vouchered=>["Yes"]}, :taxonomy=>{:taxonomy_genus=>[], :taxonomy_species=>[], :taxonomy_subspecies=>[]}, :imaging_event=>{:description=>[], :creator=>["Zach Randall"], :software=>[], :date_created=>[], :"ct.exposure_time"=>["not valid"], :"ct.flux_normalization"=>["No"], :"ct.geometric_calibration"=>["No"], :"ct.shading_correction"=>["Yes"], :"ct.filter_material"=>["not valid"], :"ct.filter_thickness"=>[], :"ct.frame_averaging"=>[3], :"ct.projections"=>["not valid"], :"ct.voltage"=>[70], :"ct.power"=>[0.014], :"ct.amperage"=>[200], :"ct.surrounding_material"=>[], :"ct.xray_tube_type"=>[], :"ct.target_type"=>["not valid"], :"ct.detector_type"=>["not valid"], :"ct.detector_pixels_x"=>["not valid"], :"ct.detector_pixel_size_x"=>[], :"ct.detector_pixels_y"=>["not valid"], :"ct.detector_pixel_size_y"=>[], :"ct.detector_configuration"=>["not valid"], :"ct.source_object_distance"=>[], :"ct.source_detector_distance"=>[], :"ct.target_material"=>[], :"ct.rotation_number"=>[], :"ct.phase_contrast"=>[], :"ct.optical_magnification"=>[], :"ct.acquisition_type"=>["not valid"], :"photogrammetry.focal_length_type"=>["not valid"], :"photogrammetry.background_removal"=>[], :"photography.lens_make"=>[], :"photography.lens_model"=>[], :"photography.light_source"=>["not valid"]}, :processing_event=>{:creator=>["Zach Randall"], :date_created=>[], :software=>[], :description=>[]}}
-
       end
 
       def infer_media_relationships
@@ -126,7 +111,7 @@ byebug
             rows_to_bso[index] = matching_bso_index
           else
             # proceed with constructing ingest
-            bso_ingest = BatchSubmissionTools::ConvertedMs1Batch::Models::BiologicalSpecimenManifest.new(
+            bso_ingest = BatchSubmissionTools::Ms2Batch::Models::BiologicalSpecimenManifest.new(
               initial_attrs: bso, 
               depositor: depositor, 
               on_behalf_of: on_behalf_of,
@@ -148,13 +133,13 @@ byebug
             ) ||
             ( 
               bso_hash[:occurrence_id].present? &&
-              bso_hash[:occurrence_id]&.first&.downcase == s.occurrence_id&.downcase
+              bso_hash[:occurrence_id]&.first&.to_s&.downcase == s.occurrence_id&.to_s&.downcase
             ) ||
             (
               bso_hash[:catalog_number].present? &&
-              bso_hash[:catalog_number]&.first&.downcase == s.catalog_number&.downcase &&
-              bso_hash[:collection_code]&.first&.downcase == s.collection_code&.downcase &&
-              bso_hash[:institution_code]&.first&.downcase == s.institution_code&.downcase
+              bso_hash[:catalog_number]&.first&.to_s&.downcase == s.catalog_number&.to_s&.downcase &&
+              bso_hash[:collection_code]&.first&.to_s&.downcase == s.collection_code&.to_s&.downcase &&
+              bso_hash[:institution_code]&.first&.to_s&.downcase == s.institution_code&.to_s&.downcase
             )
             return index
           end
@@ -172,7 +157,7 @@ byebug
             # skip unless there are taxonomy attributes to use or we can get taxonomy from iDigBio
             next unless taxonomy_attrs.values.any? { |v| v.present? } || bso.work_imported
 
-            bso_taxonomies = BatchSubmissionTools::ConvertedMs1Batch::Factory::TaxonomyManifests.call(
+            bso_taxonomies = BatchSubmissionTools::Ms2Batch::Factory::TaxonomyManifests.call(
               attrs: taxonomy_attrs,
               admin_user: admin_user,
               depositor: depositor,
@@ -223,12 +208,12 @@ byebug
           if mg[:parents].present?
             parent_row_index = mg[:parents].first
             ie_row_index = parent_row_index
-            parent_pe = BatchSubmissionTools::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
+            parent_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[parent_row_index][:processing_event],
               depositor: depositor,
               on_behalf_of: on_behalf_of
             )
-            parent_media = BatchSubmissionTools::ConvertedMs1Batch::Models::MediaManifest.new(
+            parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
               initial_attrs: rows[parent_row_index][:media],
               depositor: depositor,
               on_behalf_of: on_behalf_of,
@@ -238,14 +223,14 @@ byebug
 
             parent = {
               parent_row_index => 
-                BatchSubmissionTools::ConvertedMs1Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
+                BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
             }
           else
             ie_row_index = mg[:children].first
           end
 
           imaging_event = {
-            ie_row_index => BatchSubmissionTools::ConvertedMs1Batch::Models::ImagingEventManifest.new(
+            ie_row_index => BatchSubmissionTools::Ms2Batch::Models::ImagingEventManifest.new(
               initial_attrs: rows[ie_row_index][:imaging_event],
               device_id: device_id,
               device_modality: device_modality,
@@ -255,12 +240,12 @@ byebug
           }
           
           children = mg[:children].map do |row_index|
-            child_pe = BatchSubmissionTools::ConvertedMs1Batch::Models::ProcessingEventManifest.new(
+            child_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[row_index][:processing_event],
               depositor: depositor,
               on_behalf_of: on_behalf_of
             )
-            child_media = BatchSubmissionTools::ConvertedMs1Batch::Models::MediaManifest.new(
+            child_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
               initial_attrs: rows[row_index][:media],
               depositor: depositor,
               on_behalf_of: on_behalf_of,
@@ -270,14 +255,14 @@ byebug
 
             [
               row_index,
-              BatchSubmissionTools::ConvertedMs1Batch::Models::MediaPeManifest.new(
+              BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(
                 media: child_media,
                 pe: child_pe
               )
             ]
           end.to_h
 
-          media_ie_pe_ingests << BatchSubmissionTools::ConvertedMs1Batch::Models::MediaIePeManifest.new(
+          media_ie_pe_ingests << BatchSubmissionTools::Ms2Batch::Models::MediaIePeManifest.new(
             imaging_event: imaging_event, 
             parent: parent, 
             children: children

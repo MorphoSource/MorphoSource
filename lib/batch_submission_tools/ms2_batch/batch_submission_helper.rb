@@ -7,16 +7,6 @@ module BatchSubmissionTools
           input_data << split_sections(row)
         end
 
-
-#  (byebug) row.class
-#  Hash
-#  (byebug) row.count
-#  85
-#  (byebug) row.first.class
-#  Array
-#  (byebug) row.first
-#  [:"media.media_file", ["ANSP_Fish_53046_Head.zip"]]
-#byebug
         return input_data
       end
 

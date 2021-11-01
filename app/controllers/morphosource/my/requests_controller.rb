@@ -76,6 +76,7 @@ module Morphosource
           message_to_reviewer += " #{items.count} media. Since more than #{max_for_details} media have been requested, the individual media are not detailed in this message. "
         end
         message_to_reviewer += "<p>Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard.</p>"
+        message_to_reviewer += "<p>Do Not Reply to this email. If you have questions for the user, please contact them at the email provided.</p>"
         deliver(email_sender, reviewer, message_to_reviewer, "You have a download request to review")
       end
 

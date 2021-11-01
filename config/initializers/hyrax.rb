@@ -39,7 +39,7 @@ Hyrax.config do |config|
   # config.rendering_predicate = ::RDF::DC.hasFormat
 
   # Email recipient of messages sent via the contact form
-  config.contact_email = "morphosource@duke.edu"
+  config.contact_email = "do.not.reply@morphosource.org"
 
   # Text prefacing the subject entered in the contact form
   # config.subject_prefix = "Contact form:"

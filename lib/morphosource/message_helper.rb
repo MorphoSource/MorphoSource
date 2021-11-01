@@ -6,8 +6,7 @@ module Morphosource
     end
 
     def email_sender
-      # todo: look up sender from config instead
-      @email_sender ||= User.where(email: 'morphosource@duke.edu')&.first
+      @email_sender ||= User.where(email: Hyrax.config.contact_email)&.first
     end
 
     def user_email_link(users)
@@ -23,7 +22,7 @@ module Morphosource
 	      Hyrax::MessengerService.deliver(sender, recipients, message, subject)
 	      # arguments passed to messenger_service: (sender, recipients, body, subject, *args)
 	    rescue => e
-	      Rails.logger.debug "Error sending message. Exception: #{ e.message }"
+        Rails.logger.debug "Error sending message. Exception: #{ e.message }.  Make sure sender account in MS and HOST_NAME in environment is setup correctly."
 	    end
 	  end
 

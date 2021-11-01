@@ -40,7 +40,7 @@
       <% end %>
     <% end %>
     <% if current_user.admin? %>
-      <%= menu.nav_link(main_app.batch_submissions_new_path) do %>
+      <%= menu.nav_link(main_app.batch_submissions_path) do %>
         <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
       <% end %>
     <% end %>    

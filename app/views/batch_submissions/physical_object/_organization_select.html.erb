@@ -1,0 +1,15 @@
+<%= simple_form_for @submission, html: { id: :organization_search_form } do |f| %>
+    <div class="row form-group"> 
+      <div class="no-padding submission-select2-container">
+        <%= f.input_field :organization_search %>
+      </div>
+    </div>
+
+    <div id="organizations" class="hide">
+      <input class="organization_label" type="hidden" name="organization_label" value="" />
+      <input class="organization_title" type="hidden" name="organization_title" value="" />
+      <input class="organization_id" type="hidden" name="organization_id" value="" />
+      <input class="organization_collection_code" type="hidden" name="organization_collection_code" value="" />
+      <input class="organization_institution_code" type="hidden" name="organization_institution_code" value="" />
+    </div>
+<% end %>

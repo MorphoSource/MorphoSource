@@ -1,6 +1,6 @@
 <% if defined?(curation_concern) && (curation_concern!= '') %>
   <% object = curation_concern %>
-<% elsif @collection.organization %>
+<% elsif @collection&.organization %>
   <% object = @collection.organization %>
 <% end %>
 <div class="form-group row string optional media_agreement_uri attachment-container">

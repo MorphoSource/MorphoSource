@@ -83,6 +83,11 @@ $ms-dark-blue: #002c64;
   font-size: 14px;
 }
 
+.scrolling-wrapper{
+  overflow-x: auto;
+  padding-left: 12px;
+  padding-right: 12px;
+}
 .hint-sm {
   font-style: italic;
   font-size: 12px;

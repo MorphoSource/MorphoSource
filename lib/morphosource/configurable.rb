@@ -65,6 +65,10 @@ module Morphosource
         self.all_formats
       end
 
+      mattr_accessor :manifest_formats do
+        [".xlsx"]
+      end
+
       MEDIA_FORMATS = {
         'Image' => {extensions: image_formats, label: I18n.t('morphosource.media.format_labels.image')},
         'Video' => {extensions: video_formats, label: I18n.t('morphosource.media.format_labels.video')},

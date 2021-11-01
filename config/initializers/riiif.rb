@@ -13,9 +13,13 @@ Riiif::Image.info_service = lambda do |id, _file|
 end
 
 Riiif::Image.file_resolver.id_to_uri = lambda do |id|
-  ActiveFedora::Base.id_to_uri(CGI.unescape(id)).tap do |url|
-    Rails.logger.info "Riiif resolved #{id} to #{url}"
-  end
+  # ActiveFedora::Base.id_to_uri(CGI.unescape(id)).tap do |url|
+  #   Rails.logger.info "Riiif resolved #{id} to #{url}"
+  # end
+  byebug
+  item_id = FileSet.find(id.sub(/\A([^\/]*)\/.*/, '\1')).in_works.first.identifier.first
+
+  "https://images.slide-atlas.org/api/v1/item/#{item_id}/tiles/region?units=base_pixels&width=3000&exact=false&encoding=JPEG&jpegQuality=100&jpegSubsampling=0"
 end
 
 Riiif::Image.authorization_service = Hyrax::IIIFAuthorizationService

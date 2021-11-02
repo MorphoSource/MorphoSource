@@ -47,7 +47,7 @@ gem 'resque-web', require: 'resque_web'
 # for storing and reading ActiveJob status
 gem 'activejob-status'
 
-gem 'puma', '~> 3.12'
+gem 'puma', '~> 5.5.0'
 
 gem 'rubyzip'
 gem 'zipline', '~> 1.0'

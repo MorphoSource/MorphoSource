@@ -46,6 +46,9 @@ module Morphosource
 
             @media = Media.create(title: title, description: description, license: license, rights_holder: rights_holder, depositor: @manager.ms_id, publisher: publisher, media_type: ['Image'], import_url: import_url, identifier: identifier, related_url: related_url, visibility: 'open', fileset_accessibility: ['open'])
 
+            file_set = FileSet.create
+            @media.ordered_members << file_set
+
             admin_user = User.find_by(email: 'admin@email.com')
             Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(Media.new, ::Ability.new(admin_user), @media.attributes))
 

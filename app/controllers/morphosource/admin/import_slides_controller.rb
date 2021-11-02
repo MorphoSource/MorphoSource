@@ -14,7 +14,7 @@ module Morphosource
         user_email = params["user_email"]
         @collection = Morphosource::Import::SlideSeriesService.new(service,resource_id,user_email).call
 
-        # redirect_to project_media_path(@collection)
+        redirect_to project_media_path(@collection)
       end
 
     private

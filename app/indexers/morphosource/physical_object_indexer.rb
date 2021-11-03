@@ -52,11 +52,12 @@ module Morphosource
     end
 
     def media_collection_ids
-      @media_collection_ids ||= media.map(&:member_of_collection_ids).compact.uniq
+      @media_collection_ids ||= media.map(&:member_of_collection_ids).reject(&:blank?).flatten.uniq
     end
 
     def media_collection_ids_of_type(type)
       return [] if media_collection_ids.empty?
+
       qry = "(id:(#{media_collection_ids.join(' OR ')}) AND human_readable_type_tesim:#{type})"
       collections = ActiveFedora::SolrService.query(qry, rows: 999999)
       collections.map(&:id)

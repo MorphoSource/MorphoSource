@@ -52,7 +52,7 @@ module Morphosource
     end
 
     def media_collection_ids
-      @media_collection_ids ||= media.map(&:member_of_collection_ids).compact.uniq
+      @media_collection_ids ||= media.map(&:member_of_collection_ids).reject(&:blank?)
     end
 
     def media_collection_ids_of_type(type)

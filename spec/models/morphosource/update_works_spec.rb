@@ -27,14 +27,14 @@ RSpec.describe Morphosource::Works::Base do
   describe 'adding a specimen to an organization that already has a specimen' do
     let!(:taxonomy2)        { Taxonomy.create(title: ['taxonomy 2']) }
     let!(:specimen2)        { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], taxonomy_id: [taxonomy2.id]) }
-
+    
     let(:old_taxonomy2_doc) { SolrDocument.find(taxonomy2.id) }
     let(:old_specimen2_doc) { SolrDocument.find(specimen2.id) }
     let(:new_taxonomy2_doc) { SolrDocument.find(taxonomy2.id) }
     let(:new_specimen2_doc) { SolrDocument.find(specimen2.id) }
 
     it 'updates the organization and added specimen objects' do
-      expect {
+      expect { 
         specimen2.organization_id = [organization.id]
         specimen2.save
       }.to change      { specimen2.modified_date }
@@ -107,8 +107,8 @@ RSpec.describe Morphosource::Works::Base do
     let(:old_imaging_event2_doc)  { SolrDocument.find(imaging_event2.id) }
     let(:new_imaging_event2_doc)  { SolrDocument.find(imaging_event2.id) }
 
-    it 'updates only the added imaging event' do
-      expect {
+    it 'updates only the specimen object and added imaging event' do
+      expect { 
         imaging_event2.physical_object_id = [specimen.id]
         imaging_event2.save!
       }.to change      { imaging_event2.modified_date }
@@ -121,18 +121,18 @@ RSpec.describe Morphosource::Works::Base do
        .and not_change { media2.modified_date }
     end
 
-    it 'updates only the imaging event and specimen solr doc' do
+    it 'updates only the specimen solr doc' do
       old_imaging_event2_doc
       old_docs
 
       imaging_event2.physical_object_id = [specimen.id]
       imaging_event2.save!
 
-      # imaging event and specimen are reindexed
+      # imaging event is reindexed
       expect(old_imaging_event2_doc['_version_']).not_to eq(new_imaging_event2_doc['_version_'])
-      expect(old_specimen_doc['_version_']).not_to eq(new_specimen_doc['_version_'])
 
       # associated works are not reindexed
+      expect(old_specimen_doc['_version_']).to eq(new_specimen_doc['_version_'])
       expect(old_taxonomy_doc['_version_']).to eq(new_taxonomy_doc['_version_'])
       expect(old_organization_doc['_version_']).to eq(new_organization_doc['_version_'])
       expect(old_imaging_event_doc['_version_']).to eq(new_imaging_event_doc['_version_'])

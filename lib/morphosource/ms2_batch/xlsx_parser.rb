@@ -16,9 +16,6 @@ module Morphosource
         def headers
           # todo: might consider extracting from the xlsx
           @headers ||= [
-            "metadata.original_index", 
-            "metadata.raw_or_derived",
-
             "media.media_file",
             "media.preview_file",
             "media.publication_status",
@@ -111,7 +108,7 @@ module Morphosource
         def each(&_block)
 
           xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
-            data_row = row #.drop(2) 
+            data_row = row.drop(2) 
     #      as_csv_table.each do |row|
 
             yield attributes(headers, data_row)

@@ -35,18 +35,9 @@ module BatchSubmissionTools
         # validate_media_path # re-add this after initial testing
         #validate_manifest
         parse_manifest
-#byebug # check @rows
-
         infer_media_relationships
-#byebug # check @media_group_to_rows
-
         construct_biological_specimen_ingests
-#byebug # check biological_specimen_ingests, @rows_to_bso
-
-
         construct_taxonomy_ingests
-byebug # check @taxonomy_ingests, @rows_to_taxonomy
-
         construct_media_ie_pe_ingests
 byebug # media_ie_pe_ingests
 
@@ -66,26 +57,28 @@ byebug # media_ie_pe_ingests
 
       def infer_media_relationships
         @media_group_to_rows = rows.each_with_object({}).with_index do |(row, hash), index|
-          ms1_sheet_index = row[:metadata][:original_index]
-          hash[ms1_sheet_index] = { raw_list: [], parents: [], children: [] } if !hash.key?(ms1_sheet_index)
-          hash[ms1_sheet_index][:raw_list] << index
+          sheet_index = [index]
+          hash[sheet_index] = { raw_list: [], parents: [], children: [] } if !hash.key?(sheet_index)
+          hash[sheet_index][:raw_list] << index
         end
 
-        media_group_to_rows.each do |ms1_sheet_index, mg|
+        media_group_to_rows.each do |sheet_index, mg|
           parents = []
           children = []
 
           mg[:raw_list].each do |row_index|
             row = rows[row_index]
-
             # is parent?
-            if (
-              row[:metadata][:raw_or_derived]&.first&.to_i == 1 || 
-              File.extname(row[:media][:media_file]&.first.to_s).downcase == ".zip"
-            )
-              parents << row_index
-            else
+            if row[:media][:parent_file].present? 
               children << row_index
+              # look for the parent row index
+              parent_index = rows.index { |r| r[:media][:media_file]&.first == row[:media][:parent_file].first }
+              parents << parent_index
+              media_group_to_rows[[parent_index]][:children] << row_index
+            elsif row[:media][:parent_ms_id].present?
+              children << row_index
+            else
+              parents << row_index
             end
 
             if parents.count > 1
@@ -93,11 +86,11 @@ byebug # media_ie_pe_ingests
               parents = parents.first
             end
 
-            media_group_to_rows[ms1_sheet_index][:parents] = parents
-            media_group_to_rows[ms1_sheet_index][:children] = children
+            media_group_to_rows[sheet_index][:parents] = parents
+            media_group_to_rows[sheet_index][:children] = children
           end
         end
-        # TODO: arrange media within media groups based on hierarchy algorithm
+
       end
 
       def construct_biological_specimen_ingests
@@ -199,7 +192,7 @@ byebug # media_ie_pe_ingests
 
       def construct_media_ie_pe_ingests
         # iterating through each media group
-        media_group_to_rows.each do |ms1_sheet_index, mg|
+        media_group_to_rows.each do |sheet_index, mg|
           if mg[:parents].count > 1
             raise "Multiple parent error"
           end

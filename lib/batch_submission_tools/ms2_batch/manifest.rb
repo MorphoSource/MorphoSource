@@ -126,13 +126,13 @@ byebug # media_ie_pe_ingests
             ) ||
             ( 
               bso_hash[:occurrence_id].present? &&
-              bso_hash[:occurrence_id]&.first&.to_s&.downcase == s.occurrence_id&.to_s&.downcase
+              bso_hash[:occurrence_id]&.first&.downcase == s.occurrence_id&.downcase
             ) ||
             (
               bso_hash[:catalog_number].present? &&
-              bso_hash[:catalog_number]&.first&.to_s&.downcase == s.catalog_number&.to_s&.downcase &&
-              bso_hash[:collection_code]&.first&.to_s&.downcase == s.collection_code&.to_s&.downcase &&
-              bso_hash[:institution_code]&.first&.to_s&.downcase == s.institution_code&.to_s&.downcase
+              bso_hash[:catalog_number]&.first&.downcase == s.catalog_number&.downcase &&
+              bso_hash[:collection_code]&.first&.downcase == s.collection_code&.downcase &&
+              bso_hash[:institution_code]&.first&.downcase == s.institution_code&.downcase
             )
             return index
           end

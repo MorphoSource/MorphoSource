@@ -32,24 +32,17 @@ module BatchSubmissionTools
       end
 
       def call
-        # validate_media_path # re-add this after initial testing
-        #validate_manifest
+        validate_media_path
         parse_manifest
         infer_media_relationships
         construct_biological_specimen_ingests
         construct_taxonomy_ingests
         construct_media_ie_pe_ingests
-byebug # media_ie_pe_ingests
-
       end
 
-#      def validate_media_path
-#        Dir.exists?(media_path) ? true : raise("Media path directory (#{media_path}) not found")
-#      end
-
-#      def validate_manifest
-#        BatchSubmissionTools::Ms2Batch::ValidateManifest.call(input_path)
-#      end
+      def validate_media_path
+        Dir.exists?(media_path) ? true : raise("Media path directory (#{media_path}) not found")
+      end
 
       def parse_manifest
         @rows = parse_xlsx_split_sections(input_path)

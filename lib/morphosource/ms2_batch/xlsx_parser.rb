@@ -34,10 +34,6 @@ module Morphosource
           end
         end
 
-        #def parent_arks
-        #  as_csv_table['parent_ark'].compact.uniq
-        #end
-
         private
 
         def attributes(headers, row)

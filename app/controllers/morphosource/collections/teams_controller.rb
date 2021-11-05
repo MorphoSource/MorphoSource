@@ -5,9 +5,9 @@ module Morphosource
 
       skip_load_and_authorize_resource only: [:show, :about, :facet], instance_name: :collection
 
-      before_action :load_organization, only: [:show, :about]
+      before_action :load_organization, only: [:show, :facet, :about]
 
-      before_action :create_intersections_facet, only: [:show]
+      before_action :create_intersections_facet, only: [:show, :facet]
 
       self.presenter_class = Morphosource::Collections::TeamPresenter
 

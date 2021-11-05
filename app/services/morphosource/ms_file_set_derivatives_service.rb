@@ -36,7 +36,7 @@ module Morphosource
         Morphosource::Derivatives::MeshDerivatives.create(filename,
                                                           outputs: [{ label: :glb,
                                                                       format: 'glb',
-                                                                      unit: file_set.member_of.first.unit.first,
+                                                                      unit: file_set.member_of&.first&.unit&.first,
                                                                       url: derivative_url('glb')}])
       end
 

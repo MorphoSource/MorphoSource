@@ -224,7 +224,7 @@ module BatchSubmissionTools
               on_behalf_of: on_behalf_of
             )
           }
-          
+
           children = mg[:children].map do |row_index|
             child_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[row_index][:processing_event],

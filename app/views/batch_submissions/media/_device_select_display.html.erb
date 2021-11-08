@@ -1,0 +1,26 @@
+<div id="submission_device_select_display" class="<%= device_attrs.empty? ? 'hide' : '' %>">
+<div class="block showcase showcase-edit showcase-section form-group mt-2">
+  
+  <div class="row showcase-section-header text-center">
+    <span class=""><b>SELECTED DEVICE</b></span>
+    <i id="device-select-close" class="fas fa-times clickable" style='float: right;'></i>
+  </div>
+
+  <div class="row text-left">
+    <div class="col-xs-6 showcase-label">Model</div>
+    <div class="col-xs-6 showcase-value" id='device-display-title'><%= device_attrs['title'] %></div>
+  </div>
+  <div class="row text-left">
+    <div class="col-xs-6 showcase-label">Manufacturer</div>
+    <div class="col-xs-6 showcase-value" id='device-display-creator'><%= device_attrs['creator'] %></div>
+  </div>
+  <div class="row text-left">
+    <div class="col-xs-6 showcase-label">Modality</div>
+    <div class="col-xs-6 showcase-value break-all" id='device-display-modality'><%= device_attrs['modality'] %></div>
+  </div>
+  <div class="row text-left">
+    <div class="col-xs-6 showcase-label">Description</div>
+    <div class="col-xs-6 showcase-value" id='device-display-description'><%= device_attrs['description'] %></div>
+  </div>
+</div>
+</div>

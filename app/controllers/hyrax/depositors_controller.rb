@@ -27,8 +27,8 @@ module Hyrax
         grantor.can_receive_deposits_from << grantee
         begin
           send_proxy_depositor_added_messages(grantor, grantee)
-        rescue
-          # most likely a problem sending email (host_name not in environment, or email address possibly forged)
+        rescue => e
+          Rails.logger.debug "Error sending message. Exception: #{ e.message }.  Make sure sender account in MS and HOST_NAME in environment is setup correctly."
         ensure
           render json: { name: grantee.name, delete_path: hyrax.user_depositor_path(grantor.user_key, grantee.user_key) }
         end
@@ -53,12 +53,16 @@ module Hyrax
         grantor
       end
 
+      def email_sender
+        @email_sender ||= ::User.where(email: Hyrax.config.contact_email)&.first
+      end
+
       def send_proxy_depositor_added_messages(grantor, grantee)
-        message_to_grantee = "#{grantor.name} has assigned you as a proxy depositor"
-        message_to_grantor = "You have assigned #{grantee.name} as a proxy depositor"
+        message_to_grantee = "This message is to notify you that #{grantor.name} has assigned you as a proxy depositor."
+        message_to_grantor = "This message is to notify you that you have assigned #{grantee.name} as a proxy depositor."
         # arguments passed to messenger_service: (sender, recipients, body, subject, *args)
-        Hyrax::MessengerService.deliver(::User.batch_user, grantor, message_to_grantor, "You have added a proxy depositor")
-        Hyrax::MessengerService.deliver(::User.batch_user, grantee, message_to_grantee, "You have been added as a MorphoSource proxy depositor")
+        Hyrax::MessengerService.deliver(email_sender, grantor, message_to_grantor, "You have added a proxy depositor")
+        Hyrax::MessengerService.deliver(email_sender, grantee, message_to_grantee, "You have been added as a proxy depositor")
       end
 
       def decide_layout

@@ -12,7 +12,9 @@ module Morphosource
       'institution_code' => 'institutioncode',
       'collection_code' => 'collectioncode',
       'catalog_number' => 'catalognumber',
-      'occurrence_id' => 'occurrenceid'
+      'occurrence_id' => 'occurrenceid',
+      'idigbio_uuid' => 'uuid',
+      'recordset_id' => 'recordset'
     }
 
     # see: https://docs.google.com/spreadsheets/d/1LJRtcC9cjRNehThsOpnZGLvTny3Zt05aKPIxSlkBzSg/

@@ -47,7 +47,7 @@ gem 'resque-web', require: 'resque_web'
 # for storing and reading ActiveJob status
 gem 'activejob-status'
 
-gem 'puma', '~> 3.12'
+gem 'puma', '~> 5.5.0'
 
 gem 'rubyzip'
 gem 'zipline', '~> 1.0'
@@ -64,6 +64,7 @@ gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
 
 gem 'render_async'
 gem 'recaptcha'
+gem 'roo'
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.

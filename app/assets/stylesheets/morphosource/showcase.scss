@@ -30,6 +30,26 @@ html {
   }
 
 }
+.showcase.batch-submission {
+  background-color: #fff;
+  .error-list {
+    li {
+      color: red;
+    }    
+  }
+  .error-rows {
+    th, td {
+      border: 1px solid #999;
+      font-size: 11px;
+    }
+    td {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 200px;
+    }
+  }
+}
 /*
 .showcase.teams, 
 .showcase.media-works, 
@@ -40,6 +60,19 @@ html {
 .showcase.transfer
 */
 .showcase { 
+
+  ul.error-list {
+    margin-left: 0;
+    margin-block-start: 0;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 0px;
+
+    li {
+      margin-left: 20px;
+    }
+  }
 
   input.batch_document_selector,
   input.disabled {

@@ -26,6 +26,9 @@ input[type=checkbox].disabled {
   width:100% !important;
 }
 
+.red-border {
+  border: 1px solid red;
+}
 /*  ************************** */
 
 
@@ -126,11 +129,12 @@ input[type=checkbox].disabled {
     display: none; /* hide the hyrax required tag (use required-flag instead) */
   }
 
-  .required-flag, .recommended-flag {
+  .required-flag, .recommended-flag, .optional-flag {
     .label:empty {
       display:inline-block !important;
     }
     .label {
+      background-color: #528253;
       font-size: 60%;
       font-weight: normal;
       margin-left: 3px;
@@ -143,13 +147,19 @@ input[type=checkbox].disabled {
       background-color: #528253;
     }
     .label:before {
-      content: 'required';
+      content: 'Required';
     }
   }
 
   .recommended-flag {
     .label:before {
-      content: 'recommended';
+      content: 'Recommended';
+    }
+  }
+
+  .optional-flag {
+    .label:before {
+      content: 'Optional';
     }
   }
 

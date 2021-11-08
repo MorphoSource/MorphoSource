@@ -59,10 +59,10 @@ function select_visibility(visibility) {
 
 $( document ).ready(function() {
   if ( $('form[id*="edit_media"]').length ||
-       $('form[id*="new_media"]').length ) { // if media form page (add/edit)
+       $('form[id*="new_media"]').length || 
+       $('form[id="batch_submission_form"]').length ) { 
+
     set_initial_value();
-
-
     $('input[name="media[visibility]"]').change(function(event){
       console.log('Radio visibility changed');
 

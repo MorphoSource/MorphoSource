@@ -3,7 +3,7 @@ require 'roo'
 class BatchSubmissionsController < ApplicationController
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
-  before_action :instantiate_work_forms
+  before_action :instantiate_work_forms, only: [:new]
   before_action :check_sftp_share_connection, only: [:new]
   before_action :check_params, only: [:submit]
 
@@ -108,6 +108,11 @@ class BatchSubmissionsController < ApplicationController
     parse_manifest
   end
 
+  def ingest
+byebug
+
+  end
+
   def parse_manifest
     # field names is on row 7 
     # field values start from row 8, column 3 (column 1 and 2 can be skipped)   
@@ -122,7 +127,6 @@ class BatchSubmissionsController < ApplicationController
       row_cell_numbers = []
       data_row.each_with_index do |cell, cell_index|
         begin
-          general_error_msg = "There are validation errors.  Please check the details below."
           error_msg = error_found(field_names[cell_index], cell, row_index)
           if error_msg.present?
             row_cell_errors << error_msg
@@ -141,7 +145,13 @@ class BatchSubmissionsController < ApplicationController
       error_cell_numbers[row_index] = row_cell_numbers
       row_index = row_index + 1
     end # /lopping rows /xlsx.each_row_streaming
-    render 'result', locals: { general_error_msg: general_error_msg, error_rows: error_rows, error_messages: error_messages, error_cell_numbers: error_cell_numbers, field_names: field_names, row_count: row_index - 8 }
+    row_count = row_index - 8
+    if error_rows.count > 0
+      general_error_msg = "There are validation errors.  Please check the details below."
+      render 'validation_fail', locals: { general_error_msg: general_error_msg, error_rows: error_rows, error_messages: error_messages, error_cell_numbers: error_cell_numbers, field_names: field_names, row_count: row_count }
+    else
+      render 'validation_pass', locals: { row_count: row_count }
+    end    
   end
 
   def error_found(field_name, cell, current_row)

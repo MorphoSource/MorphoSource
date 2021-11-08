@@ -317,9 +317,10 @@ Rails.application.routes.draw do
 
   get '/submissions', to: 'submissions#new'
 
-  resources :batch_submissions, only: [ :index, :new, :submit, :result ]
+  resources :batch_submissions, only: [ :index, :new, :submit, :result, :ingest ]
   post '/batch_submissions', to: 'batch_submissions#submit'
   get '/batch_submissions/result', to: 'batch_submissions#result', as: 'batch_submissions_result'
+  post '/batch_submissions/ingest', to: 'batch_submissions#ingest'
 
   resources :docs do
     collection do

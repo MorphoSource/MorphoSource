@@ -1,15 +1,7 @@
 GIT
-  remote: https://github.com/MorphoSource/iiif_manifest.git
-  revision: 65c76544c439d87f5613b90c1f679adfc864ce74
-  branch: morphosource
-  specs:
-    iiif_manifest (0.5.0)
-      activesupport (>= 4)
-
-GIT
   remote: https://github.com/MorphoSource/pul_uv_rails.git
-  revision: 2c9b255e331fffd4f6ee379c046bdd033c37cd13
-  branch: webpack-al
+  revision: 573a0cfff3c9e9a12d29f718206e963027fd1dd2
+  branch: webpack-al-test
   specs:
     pul_uv_rails (2.9)
 
@@ -23,6 +15,12 @@ GIT
       multi_json (~> 1.11, >= 1.11.2)
       rack (>= 1.5.2, < 3)
       railties (>= 4.0)
+
+PATH
+  remote: ../iiif_manifest
+  specs:
+    iiif_manifest (0.5.0)
+      activesupport (>= 4)
 
 GEM
   remote: https://rubygems.org/

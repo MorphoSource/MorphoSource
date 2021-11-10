@@ -29,6 +29,7 @@ module Hyrax
       ##
       # @param [Hyrax::Resource, SolrDocument]
       def for(model)
+        byebug
         klass = model.file_set? ? DisplayImagePresenter : IiifManifestPresenter
 
         klass.new(model)
@@ -56,6 +57,7 @@ module Hyrax
     ##
     # @return [Array<DisplayImagePresenter>]
     def file_set_presenters
+      byebug
       member_presenters.select(&:file_set?)
     end
 
@@ -99,6 +101,7 @@ module Hyrax
     #
     # @return [Array<IiifManifestPresenter>]
     def member_presenters
+      byebug
       @member_presenters_cache ||= Factory.build_for(ids: member_ids, presenter_class: self.class).map do |presenter|
         next unless ability.can?(:read, presenter.model)
 
@@ -157,6 +160,7 @@ module Hyrax
       ##
       # @return [Array]
       def build
+        byebug
         ids.map do |id|
           solr_doc = load_docs.find { |doc| doc.id == id }
           presenter_class.for(solr_doc) if solr_doc
@@ -190,11 +194,16 @@ module Hyrax
       #   @return [String]
       attr_writer :ability, :hostname
 
+      def display_slide
+        byebug
+      end
+
       ##
       # Creates a display image only where #model is an image.
       #
       # @return [IIIFManifest::DisplayImage] the display image required by the manifest builder.
       def display_image
+        byebug
         return nil unless model.image?
         return nil unless latest_file_id
 
@@ -222,8 +231,8 @@ module Hyrax
         type = 'Model'
 
         # @see https://github.com/samvera-labs/iiif_manifest TODO: Change this to eventual mesh3D fork?
-        IIIFManifest::DisplayMesh.new(url, 
-                                      format: format, 
+        IIIFManifest::DisplayMesh.new(url,
+                                      format: format,
                                       type: type)
       end
 

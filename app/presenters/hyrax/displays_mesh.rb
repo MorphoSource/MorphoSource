@@ -10,6 +10,7 @@ module Hyrax
     #
     # @return [IIIFManifest::DisplayMesh3D] display mesh3d usable by the manifest builder.
     def display_mesh
+      byebug
       return nil unless ::FileSet.exists?(id) && solr_document.mesh? && current_ability.can?(:read, id)
       # @todo this is slow, find a better way (perhaps index iiif url):
       # original_file = ::FileSet.find(id).original_file
@@ -27,8 +28,8 @@ module Hyrax
       type = 'PhysicalObject'
 
       # @see https://github.com/samvera-labs/iiif_manifest TODO: Change this to eventual mesh3D fork?
-      IIIFManifest::DisplayMesh.new(url, 
-                                    format: format, 
+      IIIFManifest::DisplayMesh.new(url,
+                                    format: format,
                                     type: type)
     end
 

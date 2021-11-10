@@ -22,6 +22,7 @@ module Hyrax
     #
     # @see Hyrax::WorksControllerBehavior
     def self.manifest_for(presenter:, iiif_manifest_factory: ::IIIFManifest::ManifestFactory)
+      byebug
       new(iiif_manifest_factory: iiif_manifest_factory)
         .manifest_for(presenter: presenter)
     end
@@ -47,6 +48,7 @@ module Hyrax
     #
     # @return [Hash] a Ruby hash representation of a IIIF manifest document
     def manifest_for(presenter:)
+      byebug
       sanitized_manifest(presenter: presenter)
     end
 
@@ -56,6 +58,7 @@ module Hyrax
     # @api private
     # @param presenter [Hyrax::WorkShowPresenter]
     def sanitized_manifest(presenter:)
+      byebug
       # ::IIIFManifest::ManifestBuilder#to_h returns a
       # IIIFManifest::ManifestBuilder::IIIFManifest, not a Hash.
       # to get a Hash, we have to call its #to_json, then parse.
@@ -63,15 +66,17 @@ module Hyrax
       # wild times. maybe there's a better way to do this with the
       # ManifestFactory interface?
       manifest = manifest_factory.new(presenter).to_h
+      byebug
       hash = JSON.parse(manifest.to_json)
-
+      byebug
       # Sanitize for IIIF API V3 label language maps
       if hash.key?('label')
         hash['label'].transform_values { |x| x.map { |v| sanitize_value(v) } }
       end
+      byebug
 
       hash['description'] = Array(hash['description'])&.collect { |elem| sanitize_value(elem) } if hash.key?('description')
-
+      byebug
       hash['sequences']&.each do |sequence|
         sequence['canvases']&.each do |canvas|
           canvas['label'] = sanitize_value(canvas['label'])

@@ -15,11 +15,11 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def new
-    session[:submission] ||= {}
-    form_data = session[:submission]['form_data'] ||= {}
-    work_data = session[:submission]['work_data'] ||= {}
+    session[:batch_submission] ||= {}
+    form_data = session[:batch_submission]['form_data'] ||= {}
+    work_data = session[:batch_submission]['work_data'] ||= {}
 
-    @submission = BatchSubmission.new({
+    @batch_submission = BatchSubmission.new({
       form_data: form_data,
       work_data: work_data
     })
@@ -87,8 +87,8 @@ class BatchSubmissionsController < ApplicationController
     end
 
     if params[:collection] && Collection.exists?(params[:collection])
-      @submission.collection_id = params[:collection]
-      @submission.collection_name = Collection.find(@submission.collection_id).title.first
+      @batch_submission.collection_id = params[:collection]
+      @batch_submission.collection_name = Collection.find(@batch_submission.collection_id).title.first
     end
 
   end # /new
@@ -108,9 +108,27 @@ class BatchSubmissionsController < ApplicationController
     parse_manifest
   end
 
-  def ingest
-byebug
+  def create_manifest_object(row_count)
+    input_path = manifest.tempfile.path
+    media_path = user_share_full_path
 
+# todo set the proper users
+    admin_user = User.where(email:'simon.choy@duke.edu').first
+    depositor = current_user
+    
+    organization_id = '000200000'
+    device_id = '000200002'
+
+    session[:manifest_object] = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, organization_id:organization_id, device_id:device_id).to_h
+
+
+byebug
+      render 'validation_pass', locals: { row_count: row_count }
+
+  end
+
+  def ingest
+    byebug
   end
 
   def parse_manifest
@@ -150,8 +168,42 @@ byebug
       general_error_msg = "There are validation errors.  Please check the details below."
       render 'validation_fail', locals: { general_error_msg: general_error_msg, error_rows: error_rows, error_messages: error_messages, error_cell_numbers: error_cell_numbers, field_names: field_names, row_count: row_count }
     else
-      render 'validation_pass', locals: { row_count: row_count }
+#      save_params_to_session
+#      instantiate_work_forms      
+#      render :action => 'new'
+#      render 'validation_pass', locals: { row_count: row_count }
+      create_manifest_object(row_count)
     end    
+  end
+
+  def save_params_to_session
+    session[:batch_submission].deep_merge!(permitted_params) #.deep_merge!(batch_submission_params) 
+byebug
+  end
+
+  def manifest_params
+    params
+      .fetch(:manifest, {})
+      .permit(
+              { :form_data => {} },
+              { :work_data => {} }
+      )
+  end
+
+  def permitted_params
+    params.permit(
+      :organization_institution_code,
+      :organization_recordset_id
+    )
+  end
+
+  def batch_submission_params
+    params
+      .fetch(:batch_submission, {})
+      .permit(
+              { :form_data => {} },
+              { :work_data => {} }
+      )
   end
 
   def error_found(field_name, cell, current_row)

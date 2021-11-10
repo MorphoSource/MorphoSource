@@ -1,21 +1,16 @@
 <% content_for :body_css_classes do %>showcase showcase-edit batch-submission<% end %>
 <% provide :page_title, "Batch Submission || MorphoSource" %>
 
-<h1>Manifest Validated</h1>
+<h1><span class="fa fa-upload" aria-hidden="true"></span> Batch Submission</h1>
 
 <p><%= row_count %> rows parsed and validated.</p>
 
 <%= form_tag main_app.batch_submissions_ingest_path do %>
-<input class="organization_institution_code" type="hidden" name="organization_institution_code" value="" />
 
 <div class="row">
-  <div class="col-sm-6 col-sm-offset-3">
-    <div class="mt-3 mb-3">
-
-      <div class="mt-2 text-center btn-submit-wrapper">
-        <%= submit_tag 'Initiate Batch Submission', class: 'btn btn-primary btn-lg' %>
-      </div>
-
+  <div class="col-sm-12">
+    <div class="mt-2 text-center btn-submit-wrapper">
+      <%= submit_tag 'Initiate Batch Submission', class: 'btn btn-primary btn-lg' %>
     </div>
   </div>
 </div>

@@ -29,7 +29,8 @@ gem 'riiif', '~> 1.1'
 gem 'pul_uv_rails', :git => 'https://github.com/MorphoSource/pul_uv_rails.git', :branch => 'webpack-al-test'
 
 # pull iiif_manifest fork that can handle 3D manifests
-gem 'iiif_manifest', :path => '../iiif_manifest'
+# gem 'iiif_manifest', :path => '../iiif_manifest'
+gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :branch => 'morphosource'
 
 # used for XML validation in Crossref DOI deposit
 gem 'nokogiri'

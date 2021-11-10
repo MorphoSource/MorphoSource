@@ -7,9 +7,9 @@ module Morphosource
       iiif_manifest_factory: ::IIIFManifest::V3::ManifestFactory
     )
 
-    def show
-      # byebug
-      headers['Access-Control-Allow-Origin'] = '*'
+    # def show
+    #   # byebug
+    #   headers['Access-Control-Allow-Origin'] = '*'
 
         # json = {"@context"=>[
         #   "http://www.w3.org/ns/anno.jsonld",
@@ -39,18 +39,18 @@ module Morphosource
         #                     "profile"=>"https://images.slide-atlas.org/api/v1",
         #                     "type"=>"GirderService"}]}, "target"=>"http://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0"}]}]}]}
 
-        uri = "http://slideatlas-test-manifests.netlify.app/collection/girder/index.json"
-        # byebug
-        # uri = "https://wellcomelibrary.org/iiif/b18035723/manifest"
-        # uri = "https://slideatlas-test-manifests.netlify.app/collection/girder/multi-image.json"
-        response = RestClient.get uri
-        json = JSON.parse(response.body)
-        # byebug
-        respond_to do |wants|
-          wants.json { render json: json }
-          wants.html { render json: json }
-        end
-      end
+      #   uri = "http://slideatlas-test-manifests.netlify.app/collection/girder/index.json"
+      #   # byebug
+      #   # uri = "https://wellcomelibrary.org/iiif/b18035723/manifest"
+      #   # uri = "https://slideatlas-test-manifests.netlify.app/collection/girder/multi-image.json"
+      #   response = RestClient.get uri
+      #   json = JSON.parse(response.body)
+      #   # byebug
+      #   respond_to do |wants|
+      #     wants.json { render json: json }
+      #     wants.html { render json: json }
+      #   end
+      # end
     #    else
     #      redirect_to '/'
     #    end
@@ -59,34 +59,34 @@ module Morphosource
     #   redirect_to '/'
     # end
 
-    # def show
-    #   # byebug
-    #   headers['Access-Control-Allow-Origin'] = '*'
-    #
-    #    if params.include?(:id) && (m = media_from_access_control(params[:id]))
-    #     authorize! :read, m.id
-    #
-    #     #manifest_builder = <Hyrax::ManifestBuilderService:0x00005649cad00768 @manifest_factory=IIIFManifest::V3::ManifestFactory>
-    #
-    #     # iiif_manifest_presenter.class = Hyrax::IiifManifestPresenter
-    #
-    #      json = iiif_manifest_builder.manifest_for(
-    #        presenter: iiif_manifest_presenter(m)
-    #      )
-    #
-    #      # byebug
-    #
-    #     respond_to do |wants|
-    #       wants.json { render json: json }
-    #       wants.html { render json: json }
-    #     end
-    #    else
-    #      redirect_to '/'
-    #    end
-    # rescue CanCan::AccessDenied
-    #   flash[:alert] = 'You are not authorized to access this resource.'
-    #   redirect_to '/'
-    # end
+    def show
+      # byebug
+      headers['Access-Control-Allow-Origin'] = '*'
+
+       if params.include?(:id) && (m = media_from_access_control(params[:id]))
+        authorize! :read, m.id
+
+        #manifest_builder = <Hyrax::ManifestBuilderService:0x00005649cad00768 @manifest_factory=IIIFManifest::V3::ManifestFactory>
+
+        # iiif_manifest_presenter.class = Hyrax::IiifManifestPresenter
+
+         json = iiif_manifest_builder.manifest_for(
+           presenter: iiif_manifest_presenter(m)
+         )
+
+         # byebug
+
+        respond_to do |wants|
+          wants.json { render json: json }
+          wants.html { render json: json }
+        end
+       else
+         redirect_to '/'
+       end
+    rescue CanCan::AccessDenied
+      flash[:alert] = 'You are not authorized to access this resource.'
+      redirect_to '/'
+    end
 
     private
       def media_from_access_control(access_control_id)

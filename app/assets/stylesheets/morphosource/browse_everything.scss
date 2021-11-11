@@ -12,10 +12,29 @@
   }
 }
 
+div#browse-everything[style*="display: none"] {
+  display: none !important;
+}
+
+div#browse-everything[style*="display:none"] {
+  display: none !important;
+}
+
 div#browse-everything.loading {
   background: none !important;
 }
 
 div#browse-everything button.show {
   display: inline !important;
+}
+
+/* Fix modal styles set in showcase.scss */
+
+div#browse-everything.modal .modal-footer {
+  text-align: right;
+  border-top: 1px solid #e5e5e5
+}
+
+div#browse-everything.modal .modal-header {
+  border-bottom: 1px solid #e5e5e5
 }

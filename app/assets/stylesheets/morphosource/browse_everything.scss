@@ -12,6 +12,14 @@
   }
 }
 
+div#browse-everything[style*="display: none"] {
+  display: none !important;
+}
+
+div#browse-everything[style*="display:none"] {
+  display: none !important;
+}
+
 div#browse-everything.loading {
   background: none !important;
 }

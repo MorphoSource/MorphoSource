@@ -1,42 +1,49 @@
 require 'iiif_manifest'
 
 module Morphosource
-	class ManifestsController < ApplicationController
-		class_attribute :iiif_manifest_builder
-		self.iiif_manifest_builder = Hyrax::ManifestBuilderService.new(
-			iiif_manifest_factory: ::IIIFManifest::V3::ManifestFactory
-		)
+  class ManifestsController < ApplicationController
+    class_attribute :iiif_manifest_builder
+    class_attribute :remote_manifest_builder
 
-		def show
-			headers['Access-Control-Allow-Origin'] = '*'
+    self.iiif_manifest_builder = Hyrax::ManifestBuilderService.new(
+      iiif_manifest_factory: ::IIIFManifest::V3::ManifestFactory
+    )
+    self.remote_manifest_builder = Morphosource::RemoteManifestBuilderService
 
-		 	if params.include?(:id) && (m = media_from_access_control(params[:id]))
+    def show
+      headers['Access-Control-Allow-Origin'] = '*'
+
+       if params.include?(:id) && (m = media_from_access_control(params[:id]))
         authorize! :read, m.id
 
-		 		json = iiif_manifest_builder.manifest_for(
-		 			presenter: iiif_manifest_presenter(m)
-		 		)
+        if m.import_url.present? && m.file_sets.blank?
+          json = remote_manifest_builder.manifest_for(m)
+        else
+          json = iiif_manifest_builder.manifest_for(
+           presenter: iiif_manifest_presenter(m)
+          )
+        end
 
-	      respond_to do |wants|
-	        wants.json { render json: json }
-	        wants.html { render json: json }
-	      end
-		 	else
-		 		redirect_to '/'
-		 	end
+        respond_to do |wants|
+          wants.json { render json: json }
+          wants.html { render json: json }
+        end
+       else
+         redirect_to '/'
+       end
     rescue CanCan::AccessDenied
       flash[:alert] = 'You are not authorized to access this resource.'
       redirect_to '/'
-		end
+    end
 
-		private 
-			def media_from_access_control(access_control_id)
-				Media.where(accessControl_ssim: access_control_id)&.first
-			end
+    private
+      def media_from_access_control(access_control_id)
+        Media.where(accessControl_ssim: access_control_id)&.first
+      end
 
-			def iiif_manifest_builder
+      def iiif_manifest_builder
         self.class.iiif_manifest_builder
-			end
+      end
 
       def iiif_manifest_presenter(work)
         Hyrax::IiifManifestPresenter.new(work).tap do |p|
@@ -44,5 +51,5 @@ module Morphosource
           p.ability = current_ability
         end
       end
-	end
+  end
 end

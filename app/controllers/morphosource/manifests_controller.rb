@@ -8,44 +8,20 @@ module Morphosource
     )
 
     # def show
-    #   # byebug
-    #   headers['Access-Control-Allow-Origin'] = '*'
+      # byebug
+      # headers['Access-Control-Allow-Origin'] = '*'
 
-        # json = {"@context"=>[
-        #   "http://www.w3.org/ns/anno.jsonld",
-        #   "http://iiif.io/api/presentation/3/context.json"
-        #   ],
-        #   "type"=>"Manifest",
-        #   "id"=>"http://slideatlas-test-manifests.netlify.app/collection/girder/index.json",
-        #   "label"=>{"@none"=>["Element Unspecified [Image] [Photogram]"]}, "metadata"=>nil,
-        #   "rendering"=>[],
-        #   "items"=>[
-        #     {
-        #       "type"=>"Canvas",
-        #       "id"=>"http://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0",
-        #       "label"=>{"@none"=>["Screenshot_2018-10-04_15.07.16.png"]}, "items"=>[
-        #         {"type"=>"AnnotationPage",
-        #           "id"=>"http://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0/annotationpage/0",
-        #           "items"=>[
-        #             {"type"=>"Annotation",
-        #               "motivation"=>"painting",
-        #               "body"=>{
-        #                 "id"=>"http://slideatlas-test-manifests.netlify.app/collection/girder/index.json/annotations/girder",
-        #                 "type"=>"Image",
-        #                 "format"=>"image/vnd.kitware.girder",
-        #                 "service"=>[
-        #                   {
-        #                     "id"=>"http://images.slide-atlas.org/api/v1/item/5bb27c0070aaa9066ecd0a0f/",
-        #                     "profile"=>"https://images.slide-atlas.org/api/v1",
-        #                     "type"=>"GirderService"}]}, "target"=>"http://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0"}]}]}]}
+        # json = {"@context"=>["http://www.w3.org/ns/anno.jsonld", "http://iiif.io/api/presentation/3/context.json"], "id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json", "type"=>"Manifest", "items"=>[{"id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0", "type"=>"Canvas", "items"=>[{"id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0/annotationpage/0", "type"=>"AnnotationPage", "items"=>[{"id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0/annotation/0", "type"=>"Annotation", "motivation"=>"painting", "body"=>{"id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/annotations/girder", "type"=>"Image", "format"=>"image/vnd.kitware.girder", "label"=>{"@none"=>["_girder"]}, "service"=>[{"id"=>"https://images.slide-atlas.org/api/v1/item/5bb27c0070aaa9066ecd0a0f/", "type"=>"GirderService", "profile"=>"https://images.slide-atlas.org/api/v1"}]}, "target"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0"}]}], "label"=>{"@none"=>["_girder"]}}]}
 
-      #   uri = "http://slideatlas-test-manifests.netlify.app/collection/girder/index.json"
-      #   # byebug
-      #   # uri = "https://wellcomelibrary.org/iiif/b18035723/manifest"
-      #   # uri = "https://slideatlas-test-manifests.netlify.app/collection/girder/multi-image.json"
-      #   response = RestClient.get uri
-      #   json = JSON.parse(response.body)
-      #   # byebug
+        # json = {"@context"=>["http://www.w3.org/ns/anno.jsonld", "http://iiif.io/api/presentation/3/context.json"], "id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json", "type"=>"Manifest", "items"=>[{"id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0", "type"=>"Canvas", "items"=>[{"id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0/annotationpage/0", "type"=>"AnnotationPage", "items"=>[{"id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0/annotation/0", "type"=>"Annotation", "motivation"=>"painting", "body"=>{"id"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/annotations/girder", "type"=>"Image", "format"=>"image/vnd.kitware.girder", "label"=>{"@none"=>["_girder"]}, "service"=>[{"id"=>"https://images.slide-atlas.org/api/v1/item/5915e596dd98b578723a0a18/", "type"=>"GirderService", "profile"=>"https://images.slide-atlas.org/api/v1"}]}, "target"=>"https://slideatlas-test-manifests.netlify.app/collection/girder/index.json/canvas/0"}]}], "label"=>{"@none"=>["_girder"]}}]}
+
+        # uri = "http://slideatlas-test-manifests.netlify.app/collection/girder/index.json"
+        # byebug
+        # uri = "https://wellcomelibrary.org/iiif/b18035723/manifest"
+        # uri = "https://slideatlas-test-manifests.netlify.app/collection/girder/multi-image.json"
+        # response = RestClient.get uri
+        # json = JSON.parse(response.body)
+        # byebug
       #   respond_to do |wants|
       #     wants.json { render json: json }
       #     wants.html { render json: json }
@@ -74,7 +50,7 @@ module Morphosource
            presenter: iiif_manifest_presenter(m)
          )
 
-         # byebug
+         byebug
 
         respond_to do |wants|
           wants.json { render json: json }

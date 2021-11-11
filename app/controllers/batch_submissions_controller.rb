@@ -119,16 +119,18 @@ class BatchSubmissionsController < ApplicationController
     organization_id = '000200000'
     device_id = '000200002'
 
-    session[:manifest_object] = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, organization_id:organization_id, device_id:device_id).to_h
-
+    manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, organization_id:organization_id, device_id:device_id).to_h
 
 byebug
+::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(manifest_object)
+
       render 'validation_pass', locals: { row_count: row_count }
 
   end
 
   def ingest
-    byebug
+byebug
+#    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(session[:manifest_object])
   end
 
   def parse_manifest
@@ -197,13 +199,19 @@ byebug
     )
   end
 
+  def coerce_strings_to_booleans(params)
+    params.transform_values {|p| (p == 'true' || p == 'false') ? ActiveModel::Type::Boolean.new.cast(p) : p  }
+  end
+
   def batch_submission_params
-    params
-      .fetch(:batch_submission, {})
-      .permit(
-              { :form_data => {} },
-              { :work_data => {} }
-      )
+    coerce_strings_to_booleans(
+      params
+        .fetch(:batch_submission, {})
+        .permit(
+                { :form_data => {} },
+                { :work_data => {} }
+        )
+    )
   end
 
   def error_found(field_name, cell, current_row)

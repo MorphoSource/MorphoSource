@@ -263,10 +263,10 @@ module BatchSubmissionTools
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),
           rows_to_taxonomy: rows_to_taxonomy.transform_keys(&:to_s),
-          media_ie_pe_ingests: media_ie_pe_ingests.map(&:to_h),
-          collection_ids: collection_ids,
+          media_ie_pe_ingests: {},# media_ie_pe_ingests.map(&:to_h),
+          collection_ids: {},# collection_ids,
           fund_code_id: fund_code_id
-        }
+        }.with_indifferent_access # return a Hash instance where keys can be specified as symbols or strings 
       end
     end
   end

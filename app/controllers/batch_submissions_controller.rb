@@ -114,7 +114,8 @@ class BatchSubmissionsController < ApplicationController
     if @manifest_is_valid
       input_path = manifest.tempfile.path
       media_path = user_share_full_path
-      admin_user = User.find_by_user_key(Hyrax.config.batch_user_key)
+      admin_user = User.where(email:Hyrax.config.system_admin_email).first
+byebug
       depositor = current_user
       organization_id = request.params["organization_id"]
       device_id = request.params["device_id"]

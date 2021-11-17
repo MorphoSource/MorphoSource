@@ -142,6 +142,8 @@
 <%= simple_form_for @batch_submission, html: { id: :batch_submission_form, multipart: true } do |f| %>
 <input class="organization_institution_code" type="hidden" name="organization_institution_code" value="" />
 <input class="organization_recordset_id" type="hidden" name="organization_recordset_id" value="" />
+<input class="organization_id" type="hidden" name="organization_id" value="" />
+<input class="device_id" type="hidden" name="device_id" value="" />
 
     <div class="row mt-2">
       <label class="required-flag select-modality"><span class="label"></span> Select the modality used to image media (must match the device modality):</label>

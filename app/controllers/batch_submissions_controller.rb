@@ -6,6 +6,7 @@ class BatchSubmissionsController < ApplicationController
   before_action :instantiate_work_forms, only: [:new]
   before_action :check_sftp_share_connection, only: [:new]
   before_action :check_params, only: [:submit]
+  after_action :create_manifest_object, only: [:submit]
 
   def instantiate_work_forms
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
@@ -105,32 +106,33 @@ class BatchSubmissionsController < ApplicationController
     @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
     @xlsx = Roo::Excelx.new(manifest.tempfile.path)
     @modality_selected = @params["batch_submission"]["modality"]
+    @manifest_is_valid = false
     parse_manifest
   end
 
-  def create_manifest_object(row_count)
-    input_path = manifest.tempfile.path
-    media_path = user_share_full_path
+  def create_manifest_object
+    if @manifest_is_valid
+      input_path = manifest.tempfile.path
+      media_path = user_share_full_path
+      admin_user = User.find_by_user_key(Hyrax.config.batch_user_key)
+      depositor = current_user
+      organization_id = request.params["organization_id"]
+      device_id = request.params["device_id"]
+      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, organization_id:organization_id, device_id:device_id).to_h
 
-# todo set the proper users
-    admin_user = User.where(email:'simon.choy@duke.edu').first
-    depositor = current_user
-    
-    organization_id = '000200000'
-    device_id = '000200002'
+      ingest
+    else
 
-    manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, organization_id:organization_id, device_id:device_id).to_h
-
-byebug
-::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(manifest_object)
-
-      render 'validation_pass', locals: { row_count: row_count }
+    end
 
   end
 
   def ingest
 byebug
 #    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(session[:manifest_object])
+
+    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(@manifest_object)
+
   end
 
   def parse_manifest
@@ -169,12 +171,14 @@ byebug
     if error_rows.count > 0
       general_error_msg = "There are validation errors.  Please check the details below."
       render 'validation_fail', locals: { general_error_msg: general_error_msg, error_rows: error_rows, error_messages: error_messages, error_cell_numbers: error_cell_numbers, field_names: field_names, row_count: row_count }
+      @manifest_is_valid = false
     else
 #      save_params_to_session
 #      instantiate_work_forms      
 #      render :action => 'new'
 #      render 'validation_pass', locals: { row_count: row_count }
-      create_manifest_object(row_count)
+      render 'validation_pass', locals: { row_count: row_count }
+      @manifest_is_valid = true
     end    
   end
 

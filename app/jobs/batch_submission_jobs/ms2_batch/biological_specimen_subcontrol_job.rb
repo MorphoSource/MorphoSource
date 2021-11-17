@@ -7,7 +7,7 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest
-byebug
+#byebug
     # Submit jobs for new works to be created
     @manifest['biological_specimen_ingests'].each_with_index do |b, index|
       next unless !b['id'].present? # new work to be created
@@ -15,17 +15,26 @@ byebug
       row_index = @manifest['rows_to_bso']
         .find { |k, v| v == index }
         .first
-      taxonomy_ingests = (@manifest['rows_to_taxonomy'][row_index] || [])
+#byebug
+      tmp = @manifest['rows_to_taxonomy'][row_index] || []
+#byebug
+
+      taxonomy_ingests = tmp
         .map { |t_idx| @manifest['taxonomy_ingests'][t_idx] }
 
+#      taxonomy_ingests = (@manifest['rows_to_taxonomy'][row_index] || [])
+#        .map { |t_idx| @manifest['taxonomy_ingests'][t_idx] }
+
+#byebug        
       if taxonomy_ingests.all? { |t| t['id'].present? }
         b['attrs'].merge!('taxonomy_id' => taxonomy_ingests.map { |t| t['id'] } )
       else
         raise "Some taxonomies to be ingested do not have IDs. Taxonomies: #{taxonomy_ingests.join('; ')}"
       end
 
+#byebug        
       #b['job'] = ::BatchObjectImportJob.perform_later('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
-      b['job'] = ::BatchObjectImportJob.perform_now('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
+      b['job'] = ::BatchObjectImportJob.perform_later('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
     end
 
     # Monitor jobs

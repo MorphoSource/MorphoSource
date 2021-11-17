@@ -316,6 +316,9 @@ $( document ).ready(function() {
             $("#organization_search_form input.organization_title").val('');
             $("#organization_search_form input.organization_label").val('');
             $("#submission_organization_select_display .showcase-value").text('');
+            $("input.organization_institution_code").val('');
+            $("input.organization_recordset_id").val('');
+            $("input.organization_id").val('');
 
             // UI controls
             $('#submission_select_organization_section').addClass('show').removeClass('hide');
@@ -504,8 +507,7 @@ $( document ).ready(function() {
 
         $('#batch_submission_device_id').on('select2-selecting', function (e) {
           console.log('device selected ' + JSON.stringify(e.choice));
-          var item = e.choice;
-
+          $("input.device_id").val(e.choice.id);
           var deviceObj = deviceData[e.choice.id]
           selectedDeviceModality = deviceObj["modality"]
           console.log('selected device modality : ' + selectedDeviceModality);
@@ -530,6 +532,7 @@ $( document ).ready(function() {
             $('#submission_select_device_section').addClass('show').removeClass('hide');
             $('#submission_create_device_button_section').addClass('show').removeClass('hide');
             $('#submission_device_select_display').addClass('hide').removeClass('show');
+            $("input.device_id").val('');
             setSubmitStatus();
         });
 

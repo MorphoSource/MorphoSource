@@ -37,6 +37,7 @@ module BatchSubmissionTools
         infer_media_relationships
         construct_biological_specimen_ingests
         construct_taxonomy_ingests
+#byebug
         construct_media_ie_pe_ingests
       end
 
@@ -259,15 +260,23 @@ module BatchSubmissionTools
       # Must convert entire object to hash for ActiveJob serialization
       def to_h
         {
-          biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
-          rows_to_bso: rows_to_bso.transform_keys(&:to_s),
+          biological_specimen_ingests: {},#convert(biological_specimen_ingests),#biological_specimen_ingests.map(&:to_h),
+          rows_to_bso: {},#rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),
           rows_to_taxonomy: rows_to_taxonomy.transform_keys(&:to_s),
-          media_ie_pe_ingests: {},# media_ie_pe_ingests.map(&:to_h),
+          media_ie_pe_ingests: {},#convert(media_ie_pe_ingests), # media_ie_pe_ingests.map(&:to_h),
           collection_ids: {},# collection_ids,
           fund_code_id: fund_code_id
-        }.with_indifferent_access # return a Hash instance where keys can be specified as symbols or strings 
+        }.deep_stringify_keys
+        #with_indifferent_access # return a Hash instance where keys can be specified as symbols or strings 
       end
+
+      def convert(obj)
+        tmp = obj.map(&:to_json)
+#byebug
+        return tmp
+      end
+
     end
   end
 end

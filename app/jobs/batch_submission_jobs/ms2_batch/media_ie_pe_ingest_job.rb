@@ -7,6 +7,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     if !ingest['physical_object_id'].present?
       raise "Physical object ID not present for ingest. Ingest: #{ingest}"
     end
+#byebug
 
     all_media = []
     organization_permissions_fields = {}
@@ -14,6 +15,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     imaging_event = nil
     # ingest imaging event
     if ingest['imaging_event'].present?
+byebug
       imaging_event = Importer::BatchObjectImporter.call(
         'ImagingEvent', 
         ingest['imaging_event'].first[1]['attrs'].merge(
@@ -30,6 +32,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     # ingest parent processing events and media
     ingest['parent'].each do |idx, parent|
       if parent['pe'].present?
+#byebug
         parent_pe = Importer::BatchObjectImporter.call(
           'ProcessingEvent', 
           parent['pe']['attrs'].merge(
@@ -43,10 +46,12 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       end
 
       if parent['media'].present?
+#byebug
         if parent['media']['organization_permissions_fields'].present?
           organization_permissions_fields = parent['media']['organization_permissions_fields']
         end 
 
+#byebug
         parent_media = Importer::BatchObjectImporter.call(
           'Media', 
           parent['media']['attrs'].merge(
@@ -64,8 +69,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     # ingest children processing events and media
     direct_parent = parent_media.presence || imaging_event.presence
+#byebug
     if direct_parent.present?
       ingest['children'].each do |idx, child|
+#byebug
         if child['pe'].present?
           child_pe = Importer::BatchObjectImporter.call(
             'ProcessingEvent', 
@@ -79,6 +86,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           raise "Required processing event not present for child media ingest. Ingest: #{child}"
         end
 
+#byebug
         if child['media'].present?
           if child['media']['organization_permissions_fields'].present?
             organization_permissions_fields = child['media']['organization_permissions_fields']
@@ -109,11 +117,13 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       end
     end  
 
+#byebug
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
   end
 
   def add_media_to_collections(media, collection_ids)
+#byebug
     return unless media.present? && collection_ids.present?
     Array(collection_ids).each do |collection_id|
       c = Collection.find(collection_id)
@@ -123,6 +133,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
   end
 
   def add_media_to_fund_code(media, fund_code_id)
+#byebug
     return unless media.present? && fund_code_id.present? && (fc = FundCode.find(fund_code_id))
     media.each do |m|
       m.new_fund_code_association(fc)

@@ -8,8 +8,12 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
     status.update(manifest: manifest)
     @manifest = manifest
 #byebug
+#    @manifest = manifest.map { |o| JSON.parse(o) }
+
+#byebug
     # Submit jobs for new works to be created
     @manifest['biological_specimen_ingests'].each_with_index do |b, index|
+#byebug
       next unless !b['id'].present? # new work to be created
 
       row_index = @manifest['rows_to_bso']
@@ -34,7 +38,7 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
 
 #byebug        
       #b['job'] = ::BatchObjectImportJob.perform_later('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
-      b['job'] = ::BatchObjectImportJob.perform_later('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
+      b['job'] = ::BatchObjectImportJob.perform_now('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
     end
 
     # Monitor jobs
@@ -53,6 +57,7 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
     end
 
     # Remove BatchObjectImportJobs from manifest
+#byebug
     @manifest['biological_specimen_ingests'].each { |b| b.except!('job') }
     status.update(manifest: @manifest)
   end

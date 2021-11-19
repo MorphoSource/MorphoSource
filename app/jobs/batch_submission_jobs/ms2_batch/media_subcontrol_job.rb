@@ -8,28 +8,36 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     status.update(manifest: manifest)
     @manifest = manifest
 
+#byebug
+
     # Submit jobs for new works to be created
     @manifest['media_ie_pe_ingests'].each do |i|
+#byebug
       if i['parent'].count > 1
         raise "Only one parent should be present for media ingestion, but multiple are present. Parents: #{i['parent']}"
       end
 
+#byebug
       if !i['imaging_event']&.first.present?
         raise "Imaging event not present for ingest. Ingest: #{i}"
       end
 
+#byebug
       # Find the BSO associated with media
       ie_row_index = i['imaging_event'].first[0]
       bso = manifest['biological_specimen_ingests'][manifest['rows_to_bso'][ie_row_index]]
 
+#byebug
       if !bso.present?
         raise "Media ingest requires a biological specimen present. Provided BSO: #{bso}"
       elif !bso['id'].present?
         raise "A supposedly ingested biological specimen does not have ID. Provided BSO: #{bso}"
       end
 
+#byebug
       i['physical_object_id'] = bso['id']
-      i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
+      #i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
+      i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_now(
         i, 
         @manifest['collection_ids'] || [],
         @manifest['fund_code_id'] || nil,
@@ -41,6 +49,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
     # Report errors
     status.update(manifest: @manifest)
+#byebug
     if @manifest['media_ie_pe_ingests'].any? { |i| i['job_exception'].present? }
       exceptions = []
       @manifest['media_ie_pe_ingests'].each_with_index do |i, index|
@@ -51,6 +60,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       raise "One or more media ingests failed. #{exceptions.join('; ')}"
     end
 
+#byebug
     # Remove jobs from manifest (for further serialization)
     @manifest['media_ie_pe_ingests'].each { |i| i.except!('job') }
     status.update(manifest: @manifest)

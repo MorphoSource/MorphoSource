@@ -38,6 +38,13 @@ module BatchSubmissionTools
         construct_biological_specimen_ingests
         construct_taxonomy_ingests
 #byebug
+
+#(byebug)  @taxonomy_ingests.first
+#<BatchSubmissionTools::Ms2Batch::Models::TaxonomyManifest:0x00007f4d53a144b8 @initial_attrs={:taxonomy_genus=>["Myrmoteras"], :taxonomy_species=>["iriodum"], :taxonomy_subspecies=>[]}, @depositor="f47534", @on_behalf_of=nil, @canonical=false, @id=nil, @work=nil, @attrs={:depositor=>"f47534", :on_behalf_of=>nil, :taxonomy_genus=>["Myrmoteras"], :taxonomy_species=>["iriodum"], :taxonomy_subspecies=>[], :visibility=>"open", :work_parents_attributes=>{}}>
+
+#(byebug)  @taxonomy_ingests.first.id
+#nil
+
         construct_media_ie_pe_ingests
       end
 
@@ -136,9 +143,18 @@ module BatchSubmissionTools
 
       # Construct 1+ ingests for taxonomies associated with BSO
       def construct_taxonomy_ingests
+# byebug
+
+#(byebug) rows.pluck(:taxonomy)
+#[{:taxonomy_genus=>["Myrmoteras"], :taxonomy_species=>["iriodum"], :taxonomy_subspecies=>[]}, {:taxonomy_genus=>["Myrmoteras"], :taxonomy_species=>["iriodum"], :taxonomy_subspecies=>[]}, {:taxonomy_genus=>["Scolomastax"], :taxonomy_species=>["Scolomastax sahlsteini"], :taxonomy_subspecies=>[]}]
+
+
         rows.pluck(:taxonomy).each_with_index do |taxonomy_attrs, index|
           bso = biological_specimen_ingests[rows_to_bso[index]]
-
+#byebug
+#(byebug) rows_to_bso
+#{0=>0, 1=>1, 2=>1}
+ 
           # construct taxonomies if necessary (i.e., if BSO is to be created)
           if bso.attrs.present?
             # skip unless there are taxonomy attributes to use or we can get taxonomy from iDigBio
@@ -260,20 +276,20 @@ module BatchSubmissionTools
       # Must convert entire object to hash for ActiveJob serialization
       def to_h
         {
-          biological_specimen_ingests: {},#convert(biological_specimen_ingests),#biological_specimen_ingests.map(&:to_h),
-          rows_to_bso: {},#rows_to_bso.transform_keys(&:to_s),
+          biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
+          rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),
           rows_to_taxonomy: rows_to_taxonomy.transform_keys(&:to_s),
-          media_ie_pe_ingests: {},#convert(media_ie_pe_ingests), # media_ie_pe_ingests.map(&:to_h),
-          collection_ids: {},# collection_ids,
+          media_ie_pe_ingests: media_ie_pe_ingests.map(&:to_h),
+          collection_ids: collection_ids,
           fund_code_id: fund_code_id
         }.deep_stringify_keys
-        #with_indifferent_access # return a Hash instance where keys can be specified as symbols or strings 
       end
 
       def convert(obj)
-        tmp = obj.map(&:to_json)
-#byebug
+        tmp = obj.map(&:to_h) #obj.map(&:to_json)
+byebug
+
         return tmp
       end
 

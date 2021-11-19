@@ -4,7 +4,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   queue_as Hyrax.config.ingest_queue_name
 
   def perform(manifest)
-    begin
+#    begin
       # Step 0. Initial preparation
       status.update(manifest: manifest)
       @manifest = manifest
@@ -15,18 +15,19 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
         sleep(1.minute) until monitor_status(job)
         progress.increment
       end
-    rescue Exception
-byebug
-    ensure
-      status.update(manifest: @manifest)
-    end
+#    rescue StandardError => e
+#
+#byebug
+#    ensure
+#      status.update(manifest: @manifest)
+#    end
   end
 
   def sub_jobs
     [
-      BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob#,
-#      BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob,
-#      BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob
+      BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob,
+      BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob,
+      BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob
     ]
   end
 

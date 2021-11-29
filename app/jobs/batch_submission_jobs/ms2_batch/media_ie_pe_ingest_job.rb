@@ -15,7 +15,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     imaging_event = nil
     # ingest imaging event
     if ingest['imaging_event'].present?
-byebug
       imaging_event = Importer::BatchObjectImporter.call(
         'ImagingEvent', 
         ingest['imaging_event'].first[1]['attrs'].merge(
@@ -32,7 +31,6 @@ byebug
     # ingest parent processing events and media
     ingest['parent'].each do |idx, parent|
       if parent['pe'].present?
-#byebug
         parent_pe = Importer::BatchObjectImporter.call(
           'ProcessingEvent', 
           parent['pe']['attrs'].merge(

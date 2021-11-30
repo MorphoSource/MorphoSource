@@ -22,7 +22,6 @@ module Morphosource
     def call
       qry = assemble_query
       hits = solr.get_docs(qry, { rows: rows, fq: fq_params })
-      # hits = filter_on_taxonomy(hits) if (taxonomy_genus.present? || taxonomy_species.present?)
       hits.map { |hit| SolrDocument.new(hit) }
     end
 

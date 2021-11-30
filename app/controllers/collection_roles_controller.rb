@@ -210,7 +210,7 @@ class CollectionRolesController < ApplicationController
       flash[:error] = translate('hyrax.dashboard.collections.form.permission_update_errors')
     when 'user_status'
       emails = @non_contributors.join(', ')
-      flash[:error] = "Error - users with email: #{ emails } do not have contributor status. Please contact an administrator."
+      flash[:error] = "#{'User'.pluralize(@non_contributors.count)} (#{emails}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the #{'user'.pluralize(@non_contributors.count)} to a membership role that does not require contributor status (downloader, viewer), or have the #{'user'.pluralize(@non_contributors.count)} request contributor status."
     when 'duplicate'
       flash[:error] = "#{@user.name} is already a member of #{@collection.title.first}"
     end

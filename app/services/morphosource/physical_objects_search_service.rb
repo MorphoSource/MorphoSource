@@ -21,28 +21,17 @@ module Morphosource
 
     def call
       qry = assemble_query
-      hits = solr.get_docs(qry, { rows: rows })
-      hits = filter_on_taxonomy(hits) if (taxonomy_genus.present? || taxonomy_species.present?)
+      hits = solr.get_docs(qry, { rows: rows, fq: fq_params })
       hits.map { |hit| SolrDocument.new(hit) }
     end
 
-    def taxonomy_docs
-      taxonomy_query_clauses = [ "#{Solrizer.solr_name('has_model', :symbol)}:Taxonomy" ]
-      taxonomy_query_clauses << "#{Solrizer.solr_name('taxonomy_genus', :stored_searchable)}:(#{prepare_value(taxonomy_genus)})" if taxonomy_genus.present?
-      taxonomy_query_clauses << "#{Solrizer.solr_name('taxonomy_species', :stored_searchable)}:(#{prepare_value(taxonomy_species)})" if taxonomy_species.present?
-      taxonomy_query = taxonomy_query_clauses.join(' AND ')
-      solr.get_docs(taxonomy_query)
-    end
-
     private
-
-      def filter_on_taxonomy(hits)
-        taxonomy_ids = taxonomy_docs.map { |d| d['id'] }
-        if taxonomy_ids.present?
-          hits.select { |hit| (hit[solrize('taxonomy_id', :stored_searchable)] & taxonomy_ids).present? }
-        else
-          []
-        end
+      # merge specific taxonomy fields as needed, using Solr joins
+      def fq_params
+        fq = []
+        fq << "{!join from=id to=taxonomy_id_ssim}taxonomy_genus_tesim:#{prepare_value(taxonomy_genus)}" if taxonomy_genus.present?
+        fq << "{!join from=id to=taxonomy_id_ssim}taxonomy_species_tesim:#{prepare_value(taxonomy_species)}" if taxonomy_species.present?
+        return fq
       end
 
       def model_name

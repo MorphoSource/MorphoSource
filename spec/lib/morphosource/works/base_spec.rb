@@ -97,4 +97,65 @@ RSpec.describe Morphosource::Works::Base do
       expect(work.member_of_public_collection_ids).to match_array([public_collection_1.id, public_collection_2.id])
     end
   end
+
+  describe "remove_solr_record" do
+    let!(:media)                { Media.create(title: ['media']) }
+    let!(:specimen)             { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
+    let!(:taxonomy)             { Taxonomy.create(title: ['taxonomy']) }
+    let!(:cho)                  { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes']) }
+    let!(:organization)         { Organization.create(title: ['organization']) }
+    let!(:device)               { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let!(:imaging_event)        { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality) }
+    let!(:processing_event)     { ProcessingEvent.create(title: ['processing event']) }
+
+    let!(:media_id)             { media.id }
+    let!(:specimen_id)          { specimen.id }
+    let!(:taxonomy_id)          { taxonomy.id }
+    let!(:cho_id)               { cho.id }
+    let!(:organization_id)      { organization.id }
+    let!(:device_id)            { device.id }
+    let!(:imaging_event_id)     { imaging_event.id }
+    let!(:processing_event_id)  { processing_event.id }
+
+    let(:works)                 { [media, specimen, cho, taxonomy, organization, device, imaging_event, processing_event] }
+
+    let(:ids)                   { [media_id, specimen_id, taxonomy_id, cho_id, organization_id, device_id, imaging_event_id, processing_event_id] }
+
+    # in most cases, the remove_solr_record callback should be unnecessary
+    context 'corresponding solr records are deleted as expected' do
+      before do
+        # skip remove_solr_record
+        allow_any_instance_of(described_class).to receive(:remove_solr_record).and_return(true)
+      end
+      it 'solr documents are destroyed without the extra callback' do
+        ids.each do |id|
+          expect(SolrDocument.find(id)).to be_instance_of(SolrDocument)
+        end
+        works.each(&:destroy)
+        # solr docs don't exist
+        ids.each do |id|
+          expect{SolrDocument.find(id)}.to raise_error(Blacklight::Exceptions::RecordNotFound)
+        end
+      end
+    end
+    context 'corresponding solr records are not deleted as expected' do
+      before do
+        allow(ActiveFedora::SolrService).to receive(:delete).and_call_original
+        # don't actually delete the solr docs
+        ids.each do |id|
+          allow(ActiveFedora::SolrService).to receive(:delete).with(id).and_return(true)
+        end
+      end
+      it 'solr documents are destroyed by the extra callback' do
+        ids.each do |id|
+          expect(SolrDocument.find(id)).to be_instance_of(SolrDocument)
+        end
+        # since the docs aren't deleted when they're supposed to be, delete is called a second time in the callback
+        ids.each do |id|
+          expect(ActiveFedora::SolrService).to receive(:delete).with(id).twice
+        end
+        works.each(&:destroy)
+      end
+    end
+  end
 end

@@ -293,8 +293,10 @@ class BatchSubmissionsController < ApplicationController
     error_msg = ""
     case field_types[field_name]
     when /^controlled(_required)?$/
-      if ($1.present?) && (!val.present?)
-        error_msg = "#{field_name}: Please enter a valid value."
+      if !val.present?
+        if $1.present?
+          error_msg = "#{field_name}: Please enter a valid value."
+        end
       else
         unless valid_values_for(field_name).include? val
           error_msg = "#{field_name}: Please enter a valid value: " + valid_values_for(field_name).to_s.gsub(/\[|\]/, '')

@@ -80,7 +80,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(team.managers).not_to include(another_user)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
       end
@@ -109,7 +111,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(team.depositors).not_to include(another_user)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
       end
@@ -212,7 +216,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(team.depositors).not_to include(another_user)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
       end
@@ -246,7 +252,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(team.managers).not_to include(another_user)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
         context 'user is a contributor' do
@@ -290,7 +298,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(team.managers).not_to include(another_user)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
         context 'user is a contributor' do
@@ -321,7 +331,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(team.depositors).not_to include(another_user)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
         context 'user is a contributor' do
@@ -374,7 +386,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(team.managers).not_to include(another_user, user3)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
         context 'all the team members are contributors' do
@@ -404,7 +418,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(team.depositors).not_to include(another_user, user3)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
         context 'all the team members are contributors' do
@@ -475,7 +491,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(project_b.managers).not_to include(another_user)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
         context 'user is a contributor' do
@@ -504,7 +522,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(project_b.depositors).not_to include(another_user)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
         context 'user is a contributor' do
@@ -599,7 +619,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(project_b.viewers).to include(another_user)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
         context 'user is a contributor' do
@@ -644,7 +666,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(project_b.managers).not_to include(another_user, user3, user4)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
 
@@ -690,7 +714,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(project_b.depositors).not_to include(another_user, user3, user4)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
         end
 
@@ -764,7 +790,9 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(project_b.viewers).to include(user3, user4)
           end
           it 'creates a flash message with the user name' do
-            expect(flash[:error]).to match("Error - users with email: #{ another_user.email } do not have contributor status. Please contact an administrator.")
+            expect(flash[:error]).to match(
+              "User (#{another_user.email}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer), or have the user request contributor status."
+            )
           end
 
         end

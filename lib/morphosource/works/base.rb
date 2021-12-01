@@ -12,6 +12,8 @@ module Morphosource
 
       after_update :index_related_works
 
+      after_destroy :remove_solr_record
+
       self.work_requires_files = false
 
       def self.valid_parent_concerns
@@ -94,6 +96,16 @@ module Morphosource
       end
 
       private
+
+      # if everything is working as it should be, the solr document should already have been deleted before this.
+      # catch solr docs that fall through the cracks for some unknown reason.
+      def remove_solr_record
+        begin
+          SolrDocument.find(id)
+          ActiveFedora::SolrService.delete(id)
+        rescue
+        end
+      end
 
       def get_all_children(objects)
         objects.flatten.each do |object|

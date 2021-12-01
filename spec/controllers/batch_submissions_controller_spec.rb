@@ -7,7 +7,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
   let(:admins)                     { Role.create(name: 'admin') }
   let(:batch_submission_contributors)  { Role.create(name: 'batch_submission_contributor') }
   let(:image_file_path)             { fixture_path + '/images/duke.png' }
-  let(:manifest_file_path)             { fixture_path + '/batch_submission_manifest_test.xlsx' }
+  let(:manifest_file_path)             { fixture_path + '/batch_submission_manifest_errors_test.xlsx' }
   let(:invalid_file)         { Rack::Test::UploadedFile.new(image_file_path) }
   let(:valid_file)         { Rack::Test::UploadedFile.new(manifest_file_path) }
 

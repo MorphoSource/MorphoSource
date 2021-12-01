@@ -48,7 +48,7 @@ module Morphosource
 
       def presenter
         @presenter ||= begin
-          curation_concern = SolrDocument.find(params[:id])
+          curation_concern = @curation_concern.present? ? SolrDocument.find(@curation_concern.id) : SolrDocument.find(params[:id])
           raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
           presenter_class.new(curation_concern, current_ability)
         end

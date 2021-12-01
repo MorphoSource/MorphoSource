@@ -20,10 +20,15 @@ module Morphosource
     after_action :reset_recaptcha, only: [:show]
 
     def show
-      create_downloaded_cart_items
       prepare_all_files
-      create_interval_sequence
-      send_interval_response
+      if @files.present? && @all_files.present?
+        create_downloaded_cart_items
+        create_interval_sequence
+        send_interval_response
+      else
+        flash[:error] = "There is an issue with one of the media you have attempted to download, and it is not available right now. Please try again later. If the issue persists, contact us (morphosource@duke.edu)."
+        redirect_to request.referer.present? ? request.referer : '/' and return
+      end
     end
 
     def create_downloaded_cart_items
@@ -74,7 +79,7 @@ module Morphosource
     end
 
     def send_interval_response 
-      zipname = "#{output_prefix}.zip"
+      zipname = "morphosource_media-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}.zip"
       interval_response = IntervalResponse.new(interval_sequence, request.env)
       rack_response = interval_response.to_rack_response_triplet
       self.status = rack_response[0]
@@ -158,10 +163,10 @@ module Morphosource
       def prepare_files
         media.map do |m|
           file_set, original_file = get_and_validate_fileset(m)
+          return [] unless file_set.present? && original_file.present?
           
           attrs = {
             name: File.join(
-              output_prefix, 
               output_dirname(m), 
               output_filename(original_file.original_name, m.id)
             ),
@@ -189,9 +194,7 @@ module Morphosource
         ) 
           return file_set, original_file
         else
-          flash[:error] = "There is an issue with one of the media you have attempted to download, and it is not available right now. Please try again later. If the issue persists, contact us (morphosource@duke.edu)."
-          redirect_to request.referer.present? ? request.referer : '/'
-          return
+          return nil, nil
         end
       end
 
@@ -218,10 +221,7 @@ module Morphosource
         uniq.
         map.with_index do |file_hash, index|
           file_hash.merge(
-            name: File.join(
-              output_prefix, 
-              media_agreement_file_name(file_hash[:path], index + 1)
-            )
+            name: media_agreement_file_name(file_hash[:path], index + 1)
           )
         end
       end
@@ -244,7 +244,7 @@ module Morphosource
           file = File.open(standard_agreement_file_path(file_name))
 
           {
-            name: File.join(output_prefix, file_name),
+            name: file_name,
             size: file.size,
             crc32: crc32_from_io(file),
             file: file
@@ -338,11 +338,6 @@ module Morphosource
       end
 
       # other zip methods
-
-      def output_prefix
-        @output_prefix ||= "morphosource_media-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}"
-      end
-
       def output_dirname(media)
         "Media #{media.id} - #{media.title.join('-').tr('[]:','').tr('/\\','-')}"
       end

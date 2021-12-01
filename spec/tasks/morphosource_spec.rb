@@ -10,7 +10,8 @@ describe 'morphosource rake tasks' do
   let(:create_development_users)  { Rake::Task['morphosource:create_development_users'] }
   let(:create_production_users)   { Rake::Task['morphosource:create_production_users'] }
   let(:update_media_ip_holder)    { Rake::Task['morphosource:update_media_ip_holder'] }
-  let(:tasks)                     { [setup, create_admin_set, create_collection_types, create_admin_role, create_contributor_role, create_development_users, create_production_users, update_media_ip_holder] }
+  let(:find_extra_solr_records)   { Rake::Task['morphosource:find_extra_solr_records'] }
+  let(:tasks)                     { [setup, create_admin_set, create_collection_types, create_admin_role, create_contributor_role, create_development_users, create_production_users, update_media_ip_holder, find_extra_solr_records] }
 
   before do
     Rails.application.load_tasks if Rake::Task.tasks.empty?
@@ -235,6 +236,13 @@ describe 'morphosource rake tasks' do
         expect(media10.rights_holder).to match_array(rh_10)
         expect(media11.rights_holder).to match_array(rh_11)
       end
+    end
+  end
+
+  describe 'find_extra_solr_records' do
+    it 'calls Morphosource::FindExtraSolrJob' do
+      expect(Morphosource::FindExtraSolrJob).to receive(:perform_later)
+      find_extra_solr_records.invoke
     end
   end
 end

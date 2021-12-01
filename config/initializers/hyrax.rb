@@ -39,7 +39,7 @@ Hyrax.config do |config|
   # config.rendering_predicate = ::RDF::DC.hasFormat
 
   # Email recipient of messages sent via the contact form
-  config.contact_email = "morphosource@duke.edu"
+  config.contact_email = "do.not.reply@morphosource.org"
 
   # Text prefacing the subject entered in the contact form
   # config.subject_prefix = "Contact form:"
@@ -356,6 +356,9 @@ Hyrax.config do |config|
   # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
   config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil) 
   config.unused_storage_fund_code_id = ENV.fetch('UNUSED_STORAGE_FUND_CODE_ID', Rails.env.production? ? 18 : nil) 
+
+  # Wordpress blog for news updates (optional)
+  config.wordpress_blog_url = 'https://sites.duke.edu/morphosourceblog/'
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

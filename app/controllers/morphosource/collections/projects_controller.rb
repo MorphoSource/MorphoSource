@@ -2,7 +2,7 @@ module Morphosource
   module Collections
     class ProjectsController < Morphosource::CollectionsController
 
-      skip_load_and_authorize_resource only: [:show, :about], instance_name: :collection
+      skip_load_and_authorize_resource only: [:show, :about, :facet], instance_name: :collection
 
       self.presenter_class = Morphosource::Collections::ProjectPresenter
 
@@ -27,12 +27,16 @@ module Morphosource
 
         # link for facet filters
         def search_action_url(*args)
-          main_app.project_media_path(*args)
+          args&.first&.delete("collection_id")
+          main_app.project_media_path(@curation_concern, *args)
         end
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
-          main_app.project_media_facet_path(@collection.id, args[:id])
+          # args id is the solr facet
+          # params id is the collection id
+          args.merge!(request.params)
+          main_app.project_media_facet_path(@collection.id, args)
         end
 
     end

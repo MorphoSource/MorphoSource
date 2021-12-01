@@ -537,7 +537,7 @@ namespace :morphosource do
       new_rh = rights_holder.each_with_object([]) do |rh, new_rights_holder|
         name = /(?<=^Name: ).*?(?=, Type: )/.match(rh)
         type = /(?<=, Type: ).*?(\z)/.match(rh)
-        next if (name.nil? || name[0].empty?)  
+        next if (name.nil? || name[0].empty?)
         if type.nil? || type[0].empty?
           new_rights_holder << name[0].strip
         else
@@ -554,5 +554,11 @@ namespace :morphosource do
     start_date = args[:start_date].present? ? Date.strptime(args[:start_date], '%m/%d/%Y') : nil
     end_date   = args[:end_date].present?   ? Date.strptime(args[:end_date], '%m/%d/%Y')   : nil
     Morphosource::FundCodes::BillingCycleService.call(custom_start_date: start_date, custom_end_date: end_date)
+  end
+
+  desc 'Find solr documents corresponding to deleted fedora objects'
+  task :find_extra_solr_records => :environment do
+    Morphosource::FindExtraSolrJob.perform_later
+    puts "Checking for extra solr docs. When complete, results will be written to extra_solr_docs.txt"
   end
 end

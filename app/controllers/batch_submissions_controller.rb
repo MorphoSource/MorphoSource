@@ -128,7 +128,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def ingest
-byebug
+#byebug
 #    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(session[:manifest_object])
 
     ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(@manifest_object)
@@ -184,7 +184,7 @@ byebug
 
   def save_params_to_session
     session[:batch_submission].deep_merge!(permitted_params) #.deep_merge!(batch_submission_params) 
-byebug
+#byebug
   end
 
   def manifest_params

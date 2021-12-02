@@ -288,7 +288,7 @@ module BatchSubmissionTools
 
       def convert(obj)
         tmp = obj.map(&:to_h) #obj.map(&:to_json)
-byebug
+#byebug
 
         return tmp
       end

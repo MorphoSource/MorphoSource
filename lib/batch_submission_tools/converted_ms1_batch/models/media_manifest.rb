@@ -97,8 +97,7 @@ module BatchSubmissionTools
             if File.exists?(p)
               return p
             else
-              return p #remove after initial testing
-              # raise "File at path #{p} not found"
+              raise "File to be submitted at path #{p} not found"
             end
           end
         end

@@ -93,9 +93,6 @@ class Organization < Morphosource::Works::Base
       permits_commercial_use: permits_commercial_use,
       permits_3d_use: permits_3d_use,
       rights_holder: rights_holder,
-      funding: funding,
-      publisher: publisher,
-      cite_as: cite_as,
       preview_mode: preview_mode,
       organization_for_attachment: attachment('agreement') ? id : nil
     }

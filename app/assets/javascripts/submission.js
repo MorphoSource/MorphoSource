@@ -1664,8 +1664,6 @@ $( document ).ready(function() {
             break;
           case 'license': // multi-value fields
           case 'rights_holder':
-          case 'funding':
-          case 'publisher':
             $(multiSelector).first().val('');
             $(multiSelector).slice(1).parent().remove();
             break;
@@ -1726,8 +1724,6 @@ $( document ).ready(function() {
             break;
           case 'license': // multi-value fields
           case 'rights_holder':
-          case 'funding':
-          case 'publisher':
             if (Array.isArray(val) && val.length > 1) {
               for (i = 0; i < val.length; i++) {
                 if (val[i]) {

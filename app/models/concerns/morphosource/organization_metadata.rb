@@ -61,6 +61,21 @@ module Morphosource
       property :download_permission, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/publicationStatus"), multiple: true do |index|
         index.as :stored_searchable
       end
+
+      # Rights holder intentionally blank
+      property :rights_holder_blank, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/rightsHolderBlank") do |index|
+        index.as :stored_searchable
+      end
+
+      # License intentionally blank
+      property :license_blank, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/licenseBlank") do |index|
+        index.as :stored_searchable
+      end
+
+      # Rights statement intentionally blank
+      property :rights_statement_blank, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/rightsStatementBlank") do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/MorphoSource/pul_uv_rails.git
-  revision: 163d0ff04c9b0b4716a9aca8623685cc28d93ffa
+  revision: a81dbd91fe99ddb043b4f266066c5b8c9f92fdc0
   branch: webpack-al-slideatlas
   specs:
     pul_uv_rails (2.9)

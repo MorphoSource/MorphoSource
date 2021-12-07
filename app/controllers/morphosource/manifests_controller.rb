@@ -20,7 +20,7 @@ module Morphosource
         authorize_media_with_temporary_link m.id
         authorize! :read, m.id
 
-        if m.import_url.present? && m.file_sets.blank?
+        if m.import_url.present?
           json = remote_manifest_builder.manifest_for(m)
         else
           json = iiif_manifest_builder.manifest_for(

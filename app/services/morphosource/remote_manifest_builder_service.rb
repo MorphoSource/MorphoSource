@@ -9,7 +9,6 @@ module Morphosource
     def self.manifest_for(media)
       manifest_path = Rails.application.routes.url_helpers.manifest_hyrax_media_path(media)
       label = media.title
-      # byebug
       {
         "@context": [
           @json_context,

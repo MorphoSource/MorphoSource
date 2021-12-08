@@ -729,7 +729,10 @@ module Hyrax
         return ordered_events unless immediate_parent.present?
         ordered_events << immediate_parent.processing_event
         while immediate_parent.id != direct_parent_id do
-          immediate_parent = immediate_parent.processing_event.in_works.select(&:media?).first
+          break if immediate_parent.processing_event.nil?
+          parent_media = immediate_parent.processing_event.in_works.select(&:media?)
+          break if parent_media.blank?
+          immediate_parent = parent_media.first
           ordered_events << immediate_parent.processing_event if immediate_parent.present?
         end
         ordered_events.compact.reverse

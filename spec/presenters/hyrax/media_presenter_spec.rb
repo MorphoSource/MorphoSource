@@ -231,15 +231,15 @@ RSpec.describe Hyrax::MediaPresenter do
   end
 
   describe 'ordered_processing_events' do
-    let(:media)  { Media.create(id: presenter.id, title: ['media']) }
-    let(:parent_media)  { Media.create(title: ['parent_media']) }
-    let(:grandparent_media)  { Media.create(title: ['grandparent_media']) }
-    let(:great_grandparent_media)  { Media.create(title: ['great_grandparent_media']) }
+    let(:media)                   { Media.create(id: presenter.id, title: ['media']) }
+    let(:parent_media)            { Media.create(title: ['parent_media']) }
+    let(:grandparent_media)       { Media.create(title: ['grandparent_media']) }
+    let(:great_grandparent_media) { Media.create(title: ['great_grandparent_media']) }
 
-    let(:processing_event_1)  { ProcessingEvent.create(title: ['processing event 1']) }
-    let(:processing_event_2)  { ProcessingEvent.create(title: ['processing event 2']) }
-    let(:processing_event_3)  { ProcessingEvent.create(title: ['processing event 3']) }
-    let(:processing_event_4)  { ProcessingEvent.create(title: ['processing event 4']) }
+    let(:processing_event_1)      { ProcessingEvent.create(title: ['processing event 1']) }
+    let(:processing_event_2)      { ProcessingEvent.create(title: ['processing event 2']) }
+    let(:processing_event_3)      { ProcessingEvent.create(title: ['processing event 3']) }
+    let(:processing_event_4)      { ProcessingEvent.create(title: ['processing event 4']) }
 
     subject { presenter.send(:ordered_processing_events, direct_parent_id) }
 
@@ -364,6 +364,31 @@ RSpec.describe Hyrax::MediaPresenter do
         it 'returns the three processing events in order' do
           expect(subject).to eq([processing_event_1, processing_event_2, processing_event_3])
         end
+      end
+    end
+
+    context 'processing event is child of multiple media' do
+      let(:parent_media_2)  { Media.create(title: ['parent_media_2']) }
+      let(:parent_media_3)  { Media.create(title: ['parent_media_3']) }
+      let(:parent_media_4)  { Media.create(title: ['parent_media_4']) }
+
+      before do
+        grandparent_media.ordered_members << processing_event_1
+        processing_event_1.ordered_members << parent_media
+        parent_media_4.ordered_members << processing_event_2
+        parent_media_3.ordered_members << processing_event_2
+        parent_media_2.ordered_members << processing_event_2
+        parent_media.ordered_members << processing_event_2
+        processing_event_2.ordered_members << media
+
+        [grandparent_media, processing_event_1, parent_media, parent_media_2, parent_media_3, parent_media_4, processing_event_2].each(&:save!)
+      end
+
+      let(:direct_parent_id) { grandparent_media.id }
+
+      it 'does not raise an error and includes at least the lowest level processing event' do
+        expect { subject }.not_to raise_error
+        expect(subject).to include(processing_event_2)
       end
     end
   end

@@ -3,7 +3,7 @@
   wrapper: :showcase_default,
   :url => main_app.update_default_permissions_path(@collection),
   html: {
-    class: 'editor',
+    class: ['editor', 'team_organization_permissions_edit'],
     multipart: true
   } do |f|
 %>
@@ -14,11 +14,11 @@
     <%= render_edit_field_partial('download_reviewer', f: f) %>
     <%= render_edit_field_partial('rights_holder_with_blank', f: f) %>
     <%= render_edit_field_partial('rights_statement_with_blank', f: f) %>
-    <%= render_edit_field_partial('license', f: f) %>
-    <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
-    <%= render_edit_field_partial('permits_commercial_use', f: f) %>
-    <%= render_edit_field_partial('permits_3d_use', f: f) %>
-    <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f) %>
+    <%= render_edit_field_partial('license_with_blank', f: f) %>
+    <%= render_edit_field_partial('morphosource_use_agreement_type_include_blank', f: f) %>
+    <%= render_edit_field_partial('permits_commercial_use_include_blank', f: f) %>
+    <%= render_edit_field_partial('permits_3d_use_include_blank', f: f) %>
+    <%= render_edit_field_partial('required_archival_of_published_derivatives_include_blank', f: f) %>
     <%= render_edit_field_partial('preview_mode', f: f) %>
     <%= render_edit_field_partial('agreement_uri', f: f) %>
     <%= f.submit 'Save Default Permissions' %>

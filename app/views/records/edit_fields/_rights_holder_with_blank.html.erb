@@ -1,12 +1,24 @@
-<div class="form-group row multi_value optional organization_rights_holder managed">
+<div class="form-group row multi_value optional organization_rights_holder value-blank-container">
   <div class="col-xs-6 showcase-label">
     <label class="control-label multi_value optional" for="organization_rights_holder">
       IP holder
     </label>
-    <i class="material-icons tooltip-icon" data-original-title="" title=""></i>
+    <i class="material-icons tooltip-icon" data-original-title="" title="" style="margin-left: -1px;">
+      <p class="hint hide"><%= t('simple_form.hints.defaults.rights_holder') %></p>
+    </i>
   </div>
   <div class="col-xs-6 showcase-value"> 
     <%= f.input_field :rights_holder, as: :multi_value %>
-    <%= f.input :rights_holder_blank, as: :boolean, label: "Value intentionally blank" %>    
+    <div class="form-group boolean optional organization_rights_holder_blank value-blank-check">
+      <div class="checkbox">
+        <label class="boolean optional" for="organization_rights_holder_blank">
+          <%= f.input_field :rights_holder_blank, as: :boolean, boolean_style: :inline %>
+          <span>Value intentionally blank</span>
+          <i class="material-icons tooltip-icon" data-original-title="" title="" style="margin-left: -1px;">
+            <p class="hint hide"><%= t('simple_form.hints.organization.value_blank_check') %></p>
+          </i>
+        </label>
+      </div>
+    </div> 
   </div>
 </div>

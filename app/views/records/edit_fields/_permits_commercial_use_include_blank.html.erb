@@ -1,0 +1,9 @@
+<% # app/views/records/edit_fields/_permits_commercial_use_include_blank.html.erb %>
+<% commercial_use_types_service = Morphosource::CommercialUseTypesService.new %>
+<%= f.input :permits_commercial_use, as: :select,
+    collection: commercial_use_types_service.select_all_options,
+    include_blank: true,
+    item_helper: commercial_use_types_service.method(:include_current_value),
+    input_html: { class: 'form-control' },
+    label_wrapper_html: { class: 'parsed' } 
+%>

@@ -1,9 +1,8 @@
 $( document ).ready(function() {
-  if ( $('form.team_organization_permissions_edit').length ) {
-    $('div#organization-permissions input:checkbox').change(function() {
-      if ($(this).is(':checked')) {
+  var blankValueEffect = function(element) {
+    if (element.is(':checked')) {
         // Clear and disable all other inputs in this section (remove extra multi-selects)
-        $(this)
+        $(element)
           .parents('div.value-blank-container')
           .find('input:text, select')
           .val('')
@@ -12,12 +11,21 @@ $( document ).ready(function() {
           .slice(1).parent().remove() ;
       } else {
         // Reenable all other inputs in this section
-        $(this)
+        $(element)
           .parents('div.value-blank-container')
           .find('input:text, select')
           .prop('disabled', false)
           .trigger('change');
       }
+  };
+
+  if ( $('form.team_organization_permissions_edit').length ) {
+    $('div#organization-permissions input:checkbox').each(function() {
+      blankValueEffect($(this));
+    });
+
+    $('div#organization-permissions input:checkbox').change(function() {
+      blankValueEffect($(this));
     });
   }
 });

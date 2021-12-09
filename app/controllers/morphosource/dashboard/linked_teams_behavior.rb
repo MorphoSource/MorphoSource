@@ -62,10 +62,23 @@ module Morphosource
 
       def update_organization
         @params = params[:organization]
+        ensure_blank_values
         create_attachment_if_needed
         format_update_params
         @params.permit!
         @organization.update(@params)
+      end
+
+      def ensure_blank_values
+        blank_fields.each do |blank_field|
+          if ActiveModel::Type::Boolean.new.cast(@params[blank_field])
+            @params[blank_field.sub('_blank', '')] = ['']
+          end
+        end
+      end
+
+      def blank_fields
+        ['license_blank', 'rights_holder_blank', 'rights_statement_blank']
       end
 
       def create_attachment_if_needed
@@ -84,7 +97,7 @@ module Morphosource
 
       def format_update_params
         format_download_permission
-        multi_value_fields = [:download_permission, :download_reviewer, :permits_3d_use, :permits_commercial_use, :rights_statement, :agreement_uri, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode, :rights_holder, :rights_holder_blank, :rights_statement_blank]
+        multi_value_fields = [:download_permission, :download_reviewer, :permits_3d_use, :permits_commercial_use, :rights_statement, :agreement_uri, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode, :rights_holder, :rights_holder_blank, :rights_statement_blank, :license_blank]
         multi_value_fields.each do |field|
           @params[field] = Array(@params[field])
         end

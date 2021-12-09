@@ -19,8 +19,38 @@
     <%= render_edit_field_partial('permits_commercial_use_include_blank', f: f) %>
     <%= render_edit_field_partial('permits_3d_use_include_blank', f: f) %>
     <%= render_edit_field_partial('required_archival_of_published_derivatives_include_blank', f: f) %>
-    <%= render_edit_field_partial('preview_mode', f: f) %>
     <%= render_edit_field_partial('agreement_uri', f: f) %>
-    <%= f.submit 'Save Default Permissions' %>
+
+    <!-- Media preview non-interactive -->
+    <div class="form-group row" style="margin-top: 20px;">
+      <div class="col-xs-6 showcase-label">
+        <label class="control-label select optional" for="media_preview_mode">Media preview mode</label>
+        <i class="material-icons tooltip-icon" data-original-title="" title="">
+          <p class="hint hide">
+            <%= t('simple_form.hints.defaults.preview_mode') %>
+          </p>
+        </i>
+      </div>
+      <div class="col-xs-6 showcase-value">
+        <%= @collection.organization.preview_mode&.first.present? ? @collection.organization.preview_mode&.first : 'Not Enforced' %>
+      </div>
+    </div>    
+
+    <div class="form-group row">
+      <div class="col-xs-12 showcase-value">
+        <%= t("hyrax.organization.permissions.media_preview").html_safe %>
+      </div>
+    </div>
+
+    <% if current_user.admin? %>
+      <div class="form-group row admin-preview-mode-container>">
+        <h2>Admin Settings</h2>
+        <%= render_edit_field_partial('preview_mode_org_admin', f: f) %>
+      </div>
+    <% end %>
+
+    <div class="form-group row text-center" style="margin-top: 20px;">
+      <%= f.submit 'Save Default Permissions' %>
+    </div>
   </div>
 <% end %>

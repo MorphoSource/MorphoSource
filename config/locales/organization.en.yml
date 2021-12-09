@@ -6,6 +6,9 @@ en:
       organization:
         description:        "Organization works"
         name:               "Organization"
+    organization:
+      permissions:
+        media_preview: By default, all media display an interactive and embeddable 3D/2D preview. Data contributors can optionally disable the interactive preview, replacing it with a small 2D media thumbnail. Organizations with appropriate use cases can enforce interactive previews or 2D thumbnails. If your organization meets this use case, please <a href="mailto:morphosource@duke.edu">contact us</a>. 
   simple_form:
     labels:
       organization:

@@ -128,10 +128,10 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def ingest
-#byebug
+byebug
 #    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(session[:manifest_object])
 
-    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(@manifest_object)
+    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object)
 
   end
 

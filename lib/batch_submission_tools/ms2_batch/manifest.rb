@@ -278,8 +278,8 @@ module BatchSubmissionTools
         {
           biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
-          taxonomy_ingests: [], # taxonomy_ingests.map(&:to_h),
-          rows_to_taxonomy: [], # rows_to_taxonomy.transform_keys(&:to_s),
+          taxonomy_ingests: taxonomy_ingests.map(&:to_h),
+          rows_to_taxonomy: rows_to_taxonomy.transform_keys(&:to_s),
           media_ie_pe_ingests: media_ie_pe_ingests.map(&:to_h),
           collection_ids: collection_ids,
           fund_code_id: fund_code_id
@@ -296,17 +296,3 @@ byebug
     end
   end
 end
-
-class Hash
-  def deep_traverse(&block)
-    stack = self.map{ |k,v| [ [k], v ] }
-    while not stack.empty?
-      key, value = stack.pop
-      yield(key, value)
-      if value.is_a? Hash
-        value.each{ |k,v| stack.push [ key.dup << k, v ] }
-      end
-    end
-  end
-end
-

@@ -4,15 +4,13 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   queue_as Hyrax.config.ingest_queue_name
 
   def perform(manifest)
+byebug
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest
 
-byebug
-
     # Submit jobs for new works to be created
     @manifest['media_ie_pe_ingests'].each do |i|
-byebug
       if i['parent'].count > 1
         raise "Only one parent should be present for media ingestion, but multiple are present. Parents: #{i['parent']}"
       end
@@ -37,9 +35,7 @@ byebug
       i['physical_object_id'] = bso['id']
       #i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
 
-
-
-byebug
+#byebug
       i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
         i, 
         @manifest['collection_ids'] || [],
@@ -48,7 +44,7 @@ byebug
     end
 
     # Monitor jobs
-    sleep(1.minute) until monitor_ingest_jobs
+#    sleep(1.minute) until monitor_ingest_jobs
 
     # Report errors
     status.update(manifest: @manifest)
@@ -72,9 +68,6 @@ byebug
   def monitor_ingest_jobs
     jobs_complete = true
 byebug
-          
-          # always return false here ???
-
 
     @manifest['media_ie_pe_ingests'].each do |i|
       next unless (job = i['job']).present?
@@ -83,16 +76,16 @@ byebug
       job_status = ActiveJob::Status.get(i['job'])
       i['job_status'] = job_status[:status].to_s
       if job_status[:status] == :queued || job_status[:status] == :working
-byebug
+#byebug
         jobs_complete = false
       elsif job_status[:status] == :failed
-byebug
+#byebug
         i['job_exception'] = "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
       elsif job_status[:status] == :completed
-byebug
+#byebug
         next          
       else
-byebug
+#byebug
         i['job_exception'] = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
       end
 

@@ -10,8 +10,12 @@ module BatchSubmissionTools
           @depositor = depositor
           @on_behalf_of = on_behalf_of
           @organization_id = organization_id
-          @organization_permissions_fields = 
-            Organization.find(organization_id).permissions_fields if organization_id.present?
+          if organization_id.present?
+            @organization_permissions_fields = {}
+            Organization.find(organization_id).permissions_fields.map do |k,v|
+              @organization_permissions_fields[k] = v.to_a
+            end
+          end
           @media_path = media_path
           if !attrs.present? && initial_attrs.present?
             @attrs = create_new_attributes

@@ -8,11 +8,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     status.update(manifest: manifest)
     @manifest = manifest
 
-#byebug
+byebug
 
     # Submit jobs for new works to be created
     @manifest['media_ie_pe_ingests'].each do |i|
-#byebug
+byebug
       if i['parent'].count > 1
         raise "Only one parent should be present for media ingestion, but multiple are present. Parents: #{i['parent']}"
       end
@@ -34,10 +34,13 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         raise "A supposedly ingested biological specimen does not have ID. Provided BSO: #{bso}"
       end
 
-#byebug
       i['physical_object_id'] = bso['id']
       #i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
-      i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_now(
+
+
+
+byebug
+      i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
         i, 
         @manifest['collection_ids'] || [],
         @manifest['fund_code_id'] || nil,
@@ -68,6 +71,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
   def monitor_ingest_jobs
     jobs_complete = true
+byebug
+          
+          # always return false here ???
+
 
     @manifest['media_ie_pe_ingests'].each do |i|
       next unless (job = i['job']).present?
@@ -76,12 +83,16 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       job_status = ActiveJob::Status.get(i['job'])
       i['job_status'] = job_status[:status].to_s
       if job_status[:status] == :queued || job_status[:status] == :working
+byebug
         jobs_complete = false
       elsif job_status[:status] == :failed
+byebug
         i['job_exception'] = "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
       elsif job_status[:status] == :completed
+byebug
         next          
       else
+byebug
         i['job_exception'] = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
       end
 

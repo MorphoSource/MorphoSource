@@ -11,8 +11,11 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       
       sub_jobs.each do |job_class|
         #job = job_class.send :perform_later, @manifest
+byebug
         job = job_class.send :perform_now, @manifest
-        sleep(1.minute) until monitor_status(job)
+
+#        sleep(1.minute) until monitor_status(job)
+#byebug
         progress.increment
       end
 #    rescue StandardError => e
@@ -34,7 +37,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   def monitor_status(job)
     return true if job == true # it returns true if perform_now has been called (can be removed later if perform_later is called)
     job_status = ActiveJob::Status.get(job)
-
+byebug
     # update manifest
     new_manifest = job_status[:manifest]
     if new_manifest.present? && new_manifest.is_a?(Hash)
@@ -42,6 +45,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       @manifest = new_manifest
     end
 
+byebug
     # check job status
     if job_status[:status] == :failed
       delete_created_works

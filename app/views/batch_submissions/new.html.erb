@@ -24,6 +24,10 @@
 
   <div class="col-sm-6 pull-right">
 
+  <div class="hide">
+    <span id="organization-alert-message"></span>
+  </div>
+
   <%# todo: remove the media form later if not needed %>
   <%= simple_form_for @media_form,
   wrapper: :showcase_default,
@@ -34,7 +38,7 @@
     multipart: true
   } do |f| %>
 
-    <div class="media-permissions">
+    <div class="media-permissions submission_flow">
       <h2>OWNERSHIP AND PERMISSIONS</h2>
 
       <label class="optional-flag"><span class="label"></span> These ownership and permissions settings will be applied to all media in the batch submission.</label>
@@ -45,63 +49,70 @@
             <span><span id='organization-name'></span> has suggested default permission settings, indicated by the <i class='fas fa-university'></i> icon. If you have agreed to abide by this organization's preferences for media ownership, take caution before changing these settings.</span>
           </div>
         </div>
-        <div class="row media_download_permission">
-          <div class="col-xs-6 showcase-label">
-            <label class="control-label select optional" for="media_download_permission">Download permission</label>
-            <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
-          </div>
-          <div class="col-xs-6 showcase-value">
-            <div class="m-0 p-0 text-nowrap">
-            <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
+        <div id="media-ownership-fields">
+          <div class="row media_download_permission">
+            <div class="col-xs-6 showcase-label">
+              <label class="control-label select optional" for="media_download_permission">Download permission</label>
+              <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'>
+                <p class="hint hide"><%= t('simple_form.hints.defaults.download_permission') %></p>
+              </i>
+            </div>
+            <div class="col-xs-6 showcase-value">
+              <div class="m-0 p-0 text-nowrap">
+              <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
 
-              <span class="label" id="current_visibility_value"></span>
+                <span class="label" id="current_visibility_value"></span>
 
-              <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
-            <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
-              <%= render 'hyrax/media/ms_form_visibility_component', f: f %>
+                <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
+              <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
+                <%= render 'hyrax/media/ms_form_visibility_component', f: f %>
+              </div>
             </div>
           </div>
-        </div>
 
-        <%= render_edit_field_partial('download_reviewer', f: f) %>
-        <%= render_edit_field_partial('rights_holder', f: f) %>
-        <%= render_edit_field_partial('rights_statement', f: f) %>
-        <%= render_edit_field_partial('license', f: f) %>
-        
-        <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
-        <%= render_edit_field_partial('permits_commercial_use', f: f) %>
-        <%= render_edit_field_partial('permits_3d_use', f: f) %>
-        <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f) %>
+          <%= render_edit_field_partial('download_reviewer', f: f) %>
+          <%= render_edit_field_partial('rights_holder', f: f) %>
+          <%= render_edit_field_partial('rights_statement', f: f) %>
+          <%= render_edit_field_partial('license', f: f) %>
+          
+          <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
+          <%= render_edit_field_partial('permits_commercial_use', f: f) %>
+          <%= render_edit_field_partial('permits_3d_use', f: f) %>
+          <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f) %>
 
-        <%= render_edit_field_partial('funding', f: f) %>
-        <%= render_edit_field_partial('publisher', f: f) %>
-        <%= render_edit_field_partial('cite_as', f: f) %>
+          <%= render_edit_field_partial('funding', f: f) %>
+          <%= render_edit_field_partial('publisher', f: f) %>
+          <%= render_edit_field_partial('cite_as', f: f) %>
 
-        <div>
-          <div id='organization-attachment-section' class='hide'>
-            <div id='organization-attachment-row' class="row">
+          <%= render_edit_field_partial('preview_mode', f: f) %>
+
+          <div>
+            <div class="form-group row string optional media_agreement_uri attachment-container">
               <div class="col-xs-6 showcase-label">
-                <label class="control-label optional" for="organization_attachment"><span>Additional usage agreement </span></label>
+                <label class="control-label string optional" for="media_agreement_uri">Additional usage agreement</label>
+                <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'>
+                  <p class="hint hide"><%= t('simple_form.hints.defaults.agreement_uri') %></p>
+                </i>
               </div>
-              <div class="col-xs-6 showcase-value" id="organization_attachment">
-                An <a href='#' id='organization-attachment-url'>agreement file</a> has been suggested by physical object organization. <a href='#' id='organization-attachment-remove'>Remove or replace.</a>
-              </div>
-            </div>
-          </div>
-          <div id='work-attachment-section'>
-            <%= render_edit_field_partial('agreement_uri', f: f) %>
-            <div id='organization-attachment-replace-row' class="row hide">
-              <div class="col-xs-6 showcase-label"></div>
+
               <div class="col-xs-6 showcase-value">
-                <a href='#' id='organization-attachment-replace'>Use suggested organization usage agreement</a>
+                <span id='no-attachment' class='show'>None</span>
+                <span id='organization-agreement-uri' class='hide'>URI missing</span>
+                <a href='#' target=”_blank” id='organization-attachment-url' class='hide'>Agreement file</a>
+              </div>
+
+              <%= f.input :agreement_uri, :as => :hidden %>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-xs-12 showcase-value">
+                <span id='no-agreement-help' class='show'><%= t("morphosource.media.new.agreement_initial").html_safe %></span>
+                <span id='organization-agreement-help' class='hide'><%= t("morphosource.media.new.agreement_organization").html_safe %></span>
               </div>
             </div>
           </div>
-        </div>
+        </div> <!-- End media-ownership-fields -->
       </div>
-
-      <%= render_edit_field_partial('preview_mode', f: f) %>
-
     </div>
 
     <div class="row mt-2 select-projects">

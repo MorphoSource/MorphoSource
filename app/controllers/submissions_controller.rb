@@ -913,22 +913,9 @@ class SubmissionsController < ApplicationController
   end
 
   def default_media_permissions(organization)
-    fields = {
-      download_reviewer: format_reviewers_select2(organization.download_reviewer),
-      agreement_uri: organization.agreement_uri,
-      license: organization.license,
-      rights_statement: organization.rights_statement,
-      permits_commercial_use: organization.permits_commercial_use,
-      permits_3d_use: organization.permits_3d_use,
-      rights_holder: organization.rights_holder,
-      download_permission: organization.download_permission.first,
-      attachment_url: attachment_url(organization),
-      morphosource_use_agreement_type: organization.morphosource_use_agreement_type,
-      required_archival_of_published_derivatives: organization.required_archival_of_published_derivatives,
-      preview_mode: organization.preview_mode
-    }
-
-    fields.select {|k, v| v.present? }
+    organization.enforced_permissions_fields
+      .merge(download_reviewer: format_reviewers_select2(organization.download_reviewer))
+      .except(:license_blank, :rights_holder_blank, :rights_statement_blank)
   end
 
   def format_reviewers_select2(reviewers)
@@ -937,17 +924,6 @@ class SubmissionsController < ApplicationController
         { id: u.id, user_key: u.user_key, text: u.email.present? ? u.email : '' }
       end
     end.compact
-  end
-
-  def attachment_url(organization)
-    if organization.attachment('agreement')
-      Rails.application.routes.url_helpers.attachment_path(
-        id: organization.id,
-        field: 'agreement'
-      )
-    else
-      nil
-    end
   end
 
   # reindex works that have catalog facets depending on metadata from associated work types after all works have been linked with each other.

@@ -59,6 +59,22 @@ module Morphosource
         index.as :stored_searchable
       end
 
+      # -- Media-specific permissions metadata --
+
+      # Funding Attribution
+      property :funding, predicate: ::RDF::URI.new("http://rs.tdwg.org/ac/terms/fundingAttribution") do |index|
+        index.as :stored_searchable
+      end
+
+      # Publisher
+      # Included in Basic Metadata
+      # property :publisher, predicate: ::RDF::Vocab::DC11.publisher
+
+      # Cite As
+      property :cite_as, predicate: ::RDF::URI.new("http://ns.adobe.com/photoshop/1.0/Credit") do |index|
+        index.as :stored_searchable
+      end
+
       # -- Management of File Visibility/Download/View --
       # -- Default settings can be set by organization linked team --
 

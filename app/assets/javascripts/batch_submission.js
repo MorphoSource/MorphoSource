@@ -343,7 +343,9 @@ $( document ).ready(function() {
 
         $('#submission_organization_select_display_container').on(
           'click', '#organization-select-close', function(event){
+            // user click close button to remove selected org
             // Remove data values
+            console.log("removing selected org");
             $("#submission_organization_search").select2('val', null);
             $("#organization_search_form input.organization_id").val('');
             $("#organization_search_form input.organization_title").val('');
@@ -360,6 +362,11 @@ $( document ).ready(function() {
             $("#batch_submission_organization_search").select2('val', null);
             data.setOrganizationDefaults();
             data.noOrganization = true;
+
+            $('form#batch_submission_media')[0].reset();
+            $('#ownership-section-header-text').addClass('hide').removeClass('show');
+            $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
+            $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
 
             setSubmitStatus();
         });

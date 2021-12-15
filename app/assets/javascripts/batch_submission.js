@@ -3,6 +3,7 @@ $( document ).ready(function() {
   if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
     showAlert = false;
     selectedDeviceModality = "";
+    organizationDefaultMediaFields = {};
 
     class BatchSubmissionData {
       constructor(sessionState=null) {
@@ -69,8 +70,9 @@ $( document ).ready(function() {
          },
          function(getData){
           console.log('Got organization default fields');
-          console.log(getData);
+          //console.log("getData=", getData);
           if (getData.default_fields) {
+            organizationDefaultMediaFields = getData.default_fields;
             // Add loading to media page
             $('form.new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
 
@@ -624,6 +626,15 @@ $( document ).ready(function() {
     data = new BatchSubmissionData();
     batchSubmissionForm = new BatchSubmissionForm(data);
 
+    $('#submission_organization_select_display_container').on('click', '#organization-select-close', function(event) {
+        // user click close button to remove selected org
+        console.log("removing selected org");
+        $('#ownership-section-header-text').addClass('hide').removeClass('show');
+        $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
+        $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
+        batchSubmissionForm.emptyMediaFields(organizationDefaultMediaFields);
+    });
+      
     $('#manifest_file, #batch_submission_modality').on('change', function(){ setSubmitStatus() });
     $(".btn-submit-wrapper").on('mouseover', function(){ 
       showAlert = true;

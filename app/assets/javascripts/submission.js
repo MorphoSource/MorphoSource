@@ -3,6 +3,7 @@
 $( document ).ready(function() {
 
   if ($('div[class="submission_flow"]').length) { // check if the page is submission flow page
+    organizationDefaultMediaFields = {};
     class SubmissionData {
       constructor(sessionState=null) {
         if (sessionState) {
@@ -757,6 +758,11 @@ $( document ).ready(function() {
               $('#' + dom_id).replaceWith($('<input>',{id: dom_id, name: form_input_name, class: 'form-control string optional'}));
             });
           });
+          $('#ownership-section-header-text').addClass('hide').removeClass('show');
+          $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
+          $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
+          submissionForm.emptyMediaFields(organizationDefaultMediaFields);
+
           self.next();
 
           console.log(data);
@@ -1571,6 +1577,7 @@ $( document ).ready(function() {
           console.log('Got organization default fields');
           console.log(getData);
           if (getData.default_fields) {
+            organizationDefaultMediaFields = getData.default_fields;
             // Add loading to media page
             $('form#new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
 

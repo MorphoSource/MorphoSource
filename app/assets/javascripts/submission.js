@@ -757,6 +757,10 @@ $( document ).ready(function() {
               $('#' + dom_id).replaceWith($('<input>',{id: dom_id, name: form_input_name, class: 'form-control string optional'}));
             });
           });
+          $('form#new_media')[0].reset();
+          $('#ownership-section-header-text').addClass('hide').removeClass('show');
+          $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
+          $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
           self.next();
 
           console.log(data);

@@ -35,7 +35,9 @@
 		  <%= render(partial: 'batch_submissions/media/device') %>
 		</div>
 
-<%= simple_form_for @batch_submission, html: { id: :batch_submission_form, multipart: true } do |f| %>
+<%# todo: move the form outside of org and device if possible %>
+<%= simple_form_for @batch_submission, 
+    html: { id: :batch_submission_form, multipart: true } do |f| %>
 <input class="organization_institution_code" type="hidden" name="organization_institution_code" value="" />
 <input class="organization_recordset_id" type="hidden" name="organization_recordset_id" value="" />
 <input class="organization_id" type="hidden" name="organization_id" value="" />
@@ -67,7 +69,8 @@
 
   <div class="col-sm-6"><%# right column %>
 
-    <%= f.fields_for @media_form do |builder| %>
+    <%= f.fields_for @media_form,
+      wrapper: :showcase_default do |builder| %>
       <%= render  "batch_submissions/media/media", :f => builder %>
     <% end %>
 

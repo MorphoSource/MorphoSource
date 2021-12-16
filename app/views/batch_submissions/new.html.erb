@@ -21,120 +21,6 @@
 
 <div class="row">
 
-  <div class="col-sm-6 pull-right">
-
-  <div class="hide">
-    <span id="organization-alert-message"></span>
-  </div>
-
-  <%# todo: remove the media form later if not needed %>
-  <%= simple_form_for @media_form,
-  wrapper: :showcase_default,
-  url: { controller: 'submissions', action: 'create' },
-  html: {
-    id: 'batch_submission_media', # setting specific form id to avoid being called in ms_media_form.js
-    data: { behavior: 'work-form', 'param-key' => 'media' },
-    multipart: true
-  } do |f| %>
-
-    <div class="media-permissions submission_flow">
-      <h2>OWNERSHIP AND PERMISSIONS</h2>
-
-      <label class="optional-flag"><span class="label"></span> These ownership and permissions settings will be applied to all media in the batch submission.</label>
-
-      <div id="submission-media-ownership" class="content-block">
-        <div id="ownership-section-header-text" class="row hide">
-          <div class="col-sm-12" style="text-align: center;">
-            <span><span id='organization-name'></span> has suggested default permission settings, indicated by the <i class='fas fa-university'></i> icon. If you have agreed to abide by this organization's preferences for media ownership, take caution before changing these settings.</span>
-          </div>
-        </div>
-        <div id="media-ownership-fields">
-          <div class="row media_download_permission">
-            <div class="col-xs-6 showcase-label">
-              <label class="control-label select optional" for="media_download_permission">Download permission</label>
-              <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'>
-                <p class="hint hide"><%= t('simple_form.hints.defaults.download_permission') %></p>
-              </i>
-            </div>
-            <div class="col-xs-6 showcase-value">
-              <div class="m-0 p-0 text-nowrap">
-              <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
-
-                <span class="label" id="current_visibility_value"></span>
-
-                <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
-              <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
-                <%= render 'hyrax/media/ms_form_visibility_component', f: f %>
-              </div>
-            </div>
-          </div>
-
-          <%= render_edit_field_partial('download_reviewer', f: f) %>
-          <%= render_edit_field_partial('rights_holder', f: f) %>
-          <%= render_edit_field_partial('rights_statement', f: f) %>
-          <%= render_edit_field_partial('license', f: f) %>
-          
-          <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
-          <%= render_edit_field_partial('permits_commercial_use', f: f) %>
-          <%= render_edit_field_partial('permits_3d_use', f: f) %>
-          <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f) %>
-
-          <%= render_edit_field_partial('funding', f: f) %>
-          <%= render_edit_field_partial('publisher', f: f) %>
-          <%= render_edit_field_partial('cite_as', f: f) %>
-
-          <%= render_edit_field_partial('preview_mode', f: f) %>
-
-          <div>
-            <div class="form-group row string optional media_agreement_uri attachment-container">
-              <div class="col-xs-6 showcase-label">
-                <label class="control-label string optional" for="media_agreement_uri">Additional usage agreement</label>
-                <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'>
-                  <p class="hint hide"><%= t('simple_form.hints.defaults.agreement_uri') %></p>
-                </i>
-              </div>
-
-              <div class="col-xs-6 showcase-value">
-                <span id='no-attachment' class='show'>None</span>
-                <span id='organization-agreement-uri' class='hide'>URI missing</span>
-                <a href='#' target=”_blank” id='organization-attachment-url' class='hide'>Agreement file</a>
-              </div>
-
-              <%= f.input :agreement_uri, :as => :hidden %>
-            </div>
-
-            <div class="form-group row">
-              <div class="col-xs-12 showcase-value">
-                <span id='no-agreement-help' class='show'><%= t("morphosource.media.new.agreement_initial").html_safe %></span>
-                <span id='organization-agreement-help' class='hide'><%= t("morphosource.media.new.agreement_organization").html_safe %></span>
-              </div>
-            </div>
-          </div>
-        </div> <!-- End media-ownership-fields -->
-      </div>
-    </div>
-
-    <div class="row mt-2 select-projects">
-      <h2>Projects</h2>
-      <label class="optional-flag"><span class="label"></span> Select one or more projects which the media in the batch submission should be associated with.</label>
-
-      <% if @batch_submission.collection_id %>
-        <div class="row">
-          <div class="content-block">
-            <span>Media will be added to <%= @batch_submission.collection_name %>. Add to additional teams and projects below if desired.</span>
-            <input class="collection_id" type="hidden" name="collection_id" value="<%= @batch_submission.collection_id %>" />
-          </div>
-
-        </div>
-      <% end %>
-
-      <div class="content-block">
-        <%= render 'form_member_of_collections', f: f %>
-      </div>
-    </div>
-
-  <% end # /simple_form_for @media_form %>
-  </div>
 
 	<div class="col-sm-6">
 		<h2>Basic details</h2>
@@ -179,8 +65,16 @@
 
 	</div>
 
+  <div class="col-sm-6"><%# right column %>
+
+    <%= f.fields_for @media_form do |builder| %>
+      <%= render  "batch_submissions/media/media", :f => builder %>
+    <% end %>
+
+  </div>
 
 </div>
+
 
 <div class="row">
   <h2>UPLOAD MANIFEST</h2>

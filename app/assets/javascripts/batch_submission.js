@@ -50,7 +50,7 @@ $( document ).ready(function() {
       }
 
       setMediaPermissionFieldEvent() {
-        $('form.new_media div,form.new_media a').click(function(event) {
+        $('.batch-submission div,.batch-submission a').click(function(event) {
           if ($(this).hasClass('permissions-field')) {
             alert($('#organization-alert-message').text());
             $(this).off(event); // Only fire once
@@ -74,12 +74,12 @@ $( document ).ready(function() {
           if (getData.default_fields) {
             organizationDefaultMediaFields = getData.default_fields;
             // Add loading to media page
-            $('form.new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
+            $('form.new_batch_submission div#submission-media-ownership').addClass('ui-loading-whole-page');
 
             // Remove previous settings, if present
             $('#ownership-section-header-text').addClass('hide').removeClass('show');
-            $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
-            $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
+            $('.batch-submission div#submission-media-ownership div').removeClass('permissions-field');
+            $('.batch-submission div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
             self.emptyMediaFields(getData.default_fields);
 
             if (Object.keys(getData.default_fields).length) {
@@ -137,7 +137,7 @@ $( document ).ready(function() {
             }
 
             // Remove loading
-            $('form.new_media div#submission-media-ownership').removeClass('ui-loading-whole-page');
+            $('.batch-submission div#submission-media-ownership').removeClass('ui-loading-whole-page');
           }
          });
       }
@@ -152,16 +152,16 @@ $( document ).ready(function() {
 
       emptyMediaField(field) {
         let multiSelector =
-          "form.new_media select[name='media[" + field + "][]'], " +
-          "form.new_media input[name='media[" + field + "][]']";
+          ".batch-submission select[name='batch_submission[media][" + field + "][]'], " +
+          ".batch-submission input[name='batch_submission[media][" + field + "][]']";
         let selector =
-          "form.new_media select[name='media[" + field + "]'], " +
-          "form.new_media input[name='media[" + field + "]'], " +
-          "form.new_media textarea[name='media[" + field + "]']";
+          ".batch-submission select[name='batch_submission[media][" + field + "]'], " +
+          ".batch-submission input[name='batch_submission[media][" + field + "]'], " +
+          ".batch-submission textarea[name='batch_submission[media][" + field + "]']";
 
         switch(field) {
           case 'download_permission':
-            $('form.new_media input#media_visibility_open').trigger('click');
+            $('.batch-submission input#media_visibility_open').trigger('click');
             break;
           case 'download_reviewer':
             $(selector).val('').trigger('change');
@@ -187,12 +187,12 @@ $( document ).ready(function() {
 
       fillMediaField(field, val) {
         let multiSelector =
-          "form.new_media select[name='media[" + field + "][]'], " +
-          "form.new_media input[name='media[" + field + "][]']";
+          ".batch-submission select[name='batch_submission[media][" + field + "][]'], " +
+          ".batch-submission input[name='batch_submission[media][" + field + "][]']";
         let selector =
-          "form.new_media select[name='media[" + field + "]'], " +
-          "form.new_media input[name='media[" + field + "]'], " +
-          "form.new_media textarea[name='media[" + field + "]']";
+          ".batch-submission select[name='batch_submission[media][" + field + "]'], " +
+          ".batch-submission input[name='batch_submission[media][" + field + "]'], " +
+          ".batch-submission textarea[name='batch_submission[media][" + field + "]']";
 
         if ( Array.isArray(val) && ( !val.length || val[0] == 'Name: , Type: ' ) ) {
           return;
@@ -207,16 +207,16 @@ $( document ).ready(function() {
             if (val == 'preview_only') {
               let val = 'preview';
             }
-            $('form.new_media input#media_visibility_' + val.toLowerCase()).trigger('click');
-            $('form.new_media div.media_download_permission').addClass('permissions-field');
-            $('form.new_media div.media_download_permission').find('i.tooltip-icon').after(
+            $('.batch-submission input#media_visibility_' + val.toLowerCase()).trigger('click');
+            $('.batch-submission div.media_download_permission').addClass('permissions-field');
+            $('.batch-submission div.media_download_permission').find('i.tooltip-icon').after(
               "<i class='fas fa-university'></i>"
             );
             break;
           case 'download_reviewer':
             $(multiSelector).select2('destroy').empty().userSearchMultiple(val);
-            $('form.new_media div.media_download_reviewer').addClass('permissions-field');
-            $('form.new_media div.media_download_reviewer').find('i.tooltip-icon').after(
+            $('.batch-submission div.media_download_reviewer').addClass('permissions-field');
+            $('.batch-submission div.media_download_reviewer').find('i.tooltip-icon').after(
               "<i class='fas fa-university'></i>"
             );
 
@@ -630,8 +630,8 @@ $( document ).ready(function() {
         // user click close button to remove selected org
         console.log("removing selected org");
         $('#ownership-section-header-text').addClass('hide').removeClass('show');
-        $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
-        $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
+        $('.batch-submission div#submission-media-ownership div').removeClass('permissions-field');
+        $('.batch-submission div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
         batchSubmissionForm.emptyMediaFields(organizationDefaultMediaFields);
     });
       

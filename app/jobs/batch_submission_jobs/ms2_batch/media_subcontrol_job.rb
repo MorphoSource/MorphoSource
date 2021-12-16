@@ -4,7 +4,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   queue_as Hyrax.config.ingest_queue_name
 
   def perform(manifest)
-byebug
+#byebug
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest
@@ -15,7 +15,7 @@ byebug
         raise "Only one parent should be present for media ingestion, but multiple are present. Parents: #{i['parent']}"
       end
 
-#byebug
+byebug
       if !i['imaging_event']&.first.present?
         raise "Imaging event not present for ingest. Ingest: #{i}"
       end
@@ -36,7 +36,7 @@ byebug
       #i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
 
 #byebug
-      i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
+      i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_now(
         i, 
         @manifest['collection_ids'] || [],
         @manifest['fund_code_id'] || nil,

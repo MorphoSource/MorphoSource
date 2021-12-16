@@ -118,8 +118,12 @@ class BatchSubmissionsController < ApplicationController
       depositor = current_user
       organization_id = request.params["organization_id"]
       device_id = request.params["device_id"]
-      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, organization_id:organization_id, device_id:device_id).to_h
-
+      if request.params["batch_submission"]["on_behalf_of"].present?
+        on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
+      end
+byebug
+      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, on_behalf_of:on_behalf_of, organization_id:organization_id, device_id:device_id).to_h
+byebug
       ingest
     else
 
@@ -128,10 +132,10 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def ingest
-byebug
+#byebug
 #    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(session[:manifest_object])
 
-    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object)
+    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(@manifest_object)
 
   end
 

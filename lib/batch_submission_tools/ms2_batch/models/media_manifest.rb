@@ -31,6 +31,7 @@ module BatchSubmissionTools
             download_reviewer: download_reviewer,
             description: description
           }
+byebug
           if organization_id.present?
             addl_attrs.merge!(
               organization_permissions_fields

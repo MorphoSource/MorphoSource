@@ -11,7 +11,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       
       sub_jobs.each do |job_class|
         #job = job_class.send :perform_later, @manifest
-#byebug
+byebug
         job = job_class.send :perform_now, @manifest
 #        sleep(1.minute) until monitor_status(job)
         progress.increment

@@ -121,9 +121,16 @@ class BatchSubmissionsController < ApplicationController
       if request.params["batch_submission"]["on_behalf_of"].present?
         on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
       end
+      media_ownership_fields = request.params["batch_submission"]["media"]
+
 byebug
-      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, on_behalf_of:on_behalf_of, organization_id:organization_id, device_id:device_id).to_h
+      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, on_behalf_of:on_behalf_of, organization_id:organization_id, device_id:device_id, media_ownership_fields:media_ownership_fields).to_h
 byebug
+
+##############   todo: no need to have "organization_permissions_fields" in @manifest_object
+##############          instead , set permission fields from the request params?
+##############   "organization_permissions_fields"=>{"download_permission"=>["restricted_download"], "download_reviewer"=>["e1eefa"], "rights_holder"=>["org ip holder"], "rights_holder_blank"=>["0"],
+
       ingest
     else
 

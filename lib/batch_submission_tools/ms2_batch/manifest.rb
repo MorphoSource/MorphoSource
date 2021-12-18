@@ -5,9 +5,9 @@ module BatchSubmissionTools
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :on_behalf_of,
         :organization_id, :device_id, :device_modality, :collection_ids, :fund_code_id,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
-        :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests
+        :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields
 
-      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil)
+      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:)
         @input_path = input_path
         @media_path = media_path
         @admin_user = admin_user.user_key
@@ -16,6 +16,7 @@ module BatchSubmissionTools
         @organization_id = organization_id
         @device_id = device_id
         @device_modality = Device.find(device_id).modality&.first
+        @media_ownership_fields = media_ownership_fields
 
         @collection_ids = Array(collection_ids)
         @fund_code_id = fund_code_id
@@ -216,14 +217,27 @@ module BatchSubmissionTools
               depositor: depositor,
               on_behalf_of: on_behalf_of
             )
+
+
+            media_attrs = rows[parent_row_index][:media]
+#            if @media_ownership_fields.present?
+#              media_attrs.merge!(
+#                @media_ownership_fields
+#                  .select { |k, v| Array(v)&.first.present? }
+#              ) 
+#addl_attrs.merge!(visibility_from_organization)
+#            end            
+byebug
             parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
-              initial_attrs: rows[parent_row_index][:media],
+              initial_attrs: media_attrs,
               depositor: depositor,
               on_behalf_of: on_behalf_of,
               organization_id: organization_id,
-              media_path: media_path
+              media_path: media_path,
+              media_ownership_fields: media_ownership_fields
             )
-            
+byebug
+
             parent = {
               parent_row_index => 
                 BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
@@ -253,8 +267,10 @@ module BatchSubmissionTools
               depositor: depositor,
               on_behalf_of: on_behalf_of,
               organization_id: organization_id,
-              media_path: media_path
+              media_path: media_path,
+              media_ownership_fields: media_ownership_fields
             )
+byebug
 
             [
               row_index,

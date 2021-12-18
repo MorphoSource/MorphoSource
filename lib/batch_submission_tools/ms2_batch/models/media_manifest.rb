@@ -5,40 +5,69 @@ module BatchSubmissionTools
         attr_accessor :initial_attrs, :depositor, :on_behalf_of, :organization_id, :media_path, :attrs
         attr_accessor :organization_permissions_fields, :organization_attachment_id
 
-        def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, organization_id: nil, media_path: nil, attrs: {}, **kwargs)
+        def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, organization_id: nil, media_path: nil, 
+            media_ownership_fields: {}, attrs: {}, **kwargs)
+          
           @initial_attrs = initial_attrs
           @depositor = depositor
           @on_behalf_of = on_behalf_of
           @organization_id = organization_id
-          if organization_id.present?
-            @organization_permissions_fields = {}
-            Organization.find(organization_id).permissions_fields.map do |k,v|
-              @organization_permissions_fields[k] = v.to_a
-            end
-          end
+#          if organization_id.present?
+#            @organization_permissions_fields = {}
+#            Organization.find(organization_id).permissions_fields.map do |k,v|
+#              @organization_permissions_fields[k] = v.to_a
+#            end
+#          end
           @media_path = media_path
+          @media_ownership_fields = media_ownership_fields
           if !attrs.present? && initial_attrs.present?
+byebug
             @attrs = create_new_attributes
           else
+byebug
             @attrs = attrs
           end
         end
 
         def create_new_attributes
+
+
+
+          # smc:  merge or add each  media_ownership_fields here 
+
+
+
           addl_attrs = { 
             depositor: depositor, 
             on_behalf_of: on_behalf_of, 
             download_reviewer: download_reviewer,
-            description: description
+            description: description,
+
+            rights_holder: "org ip holder smc1 smc2"
+
+
           }
+
+
+
+#          if organization_id.present?
+#            addl_attrs.merge!(
+#              organization_permissions_fields
+#                .select { |k, v| Array(v)&.first.present? }
+#            ) 
+#            addl_attrs.merge!(visibility_from_organization)
+#          end
+
+#          if @media_ownership_fields.present?
+#            addl_attrs.merge!(
+#              @media_ownership_fields
+#                .select { |k, v| Array(v)&.first.present? }
+#            ) 
+#            #addl_attrs.merge!(visibility_from_organization)
+#          end
 byebug
-          if organization_id.present?
-            addl_attrs.merge!(
-              organization_permissions_fields
-                .select { |k, v| Array(v)&.first.present? }
-            ) 
-            addl_attrs.merge!(visibility_from_organization)
-          end
+byebug
+
           p = media_file_path
           addl_attrs[:file] = [p] if p.present?
           

@@ -44,12 +44,13 @@ byebug
       end
 
       if parent['media'].present?
-#byebug
         if parent['media']['organization_permissions_fields'].present?
           organization_permissions_fields = parent['media']['organization_permissions_fields']
         end 
 
-#byebug
+# check parent['media']['attrs'] here
+
+byebug
         parent_media = Importer::BatchObjectImporter.call(
           'Media', 
           parent['media']['attrs'].merge(

@@ -103,6 +103,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def submit
+byebug
     @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
     @xlsx = Roo::Excelx.new(manifest.tempfile.path)
     @modality_selected = @params["batch_submission"]["modality"]
@@ -122,8 +123,6 @@ class BatchSubmissionsController < ApplicationController
         on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
       end
       media_ownership_fields = request.params["batch_submission"]["media"]
-
-byebug
       @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, on_behalf_of:on_behalf_of, organization_id:organization_id, device_id:device_id, media_ownership_fields:media_ownership_fields).to_h
 byebug
 

@@ -21,34 +21,25 @@ module BatchSubmissionTools
           @media_path = media_path
           @media_ownership_fields = media_ownership_fields
           if !attrs.present? && initial_attrs.present?
-byebug
+#byebug
             @attrs = create_new_attributes
           else
-byebug
+#byebug
             @attrs = attrs
           end
         end
 
         def create_new_attributes
 
-
-
-          # smc:  merge or add each  media_ownership_fields here 
-
-
-
           addl_attrs = { 
             depositor: depositor, 
             on_behalf_of: on_behalf_of, 
             download_reviewer: download_reviewer,
-            description: description,
-
-            rights_holder: "org ip holder smc1 smc2"
-
-
+            description: description
           }
-
-
+          addl_attrs.merge!(@media_ownership_fields).symbolize_keys!
+          addl_attrs.merge!(visibility_mapped(@media_ownership_fields["visibility"]))
+byebug
 
 #          if organization_id.present?
 #            addl_attrs.merge!(
@@ -57,16 +48,6 @@ byebug
 #            ) 
 #            addl_attrs.merge!(visibility_from_organization)
 #          end
-
-#          if @media_ownership_fields.present?
-#            addl_attrs.merge!(
-#              @media_ownership_fields
-#                .select { |k, v| Array(v)&.first.present? }
-#            ) 
-#            #addl_attrs.merge!(visibility_from_organization)
-#          end
-byebug
-byebug
 
           p = media_file_path
           addl_attrs[:file] = [p] if p.present?
@@ -93,33 +74,29 @@ byebug
           'Record created by batch submission.'
         end
 
-        def visibility_from_organization
-          if organization_id.present? and organization_permissions_fields[:download_permission]&.first.present?
-            public = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-            private = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
+        def visibility_mapped(requested_visibility)
+          public = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+          private = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
 
-            case organization_permissions_fields[:download_permission]&.first
-            when public
-              { 
-                :visibility => public,
-                :fileset_visibility => "",
-                :fileset_accessibility => "open"
-              }
-            when private
-              { 
-                :visibility => private,
-                :fileset_visibility => "",
-                :fileset_accessibility => "private"
-              }
-            when 'restricted_download'
-              { 
-                :visibility => public,
-                :fileset_visibility => "",
-                :fileset_accessibility => "restricted_download"
-              }
-            else
-              {}
-            end
+          case requested_visibility
+          when public
+            { 
+              :visibility => public,
+              :fileset_visibility => "",
+              :fileset_accessibility => "open"
+            }
+          when private
+            { 
+              :visibility => private,
+              :fileset_visibility => "",
+              :fileset_accessibility => "private"
+            }
+          when 'restricted_download'
+            { 
+              :visibility => public,
+              :fileset_visibility => "",
+              :fileset_accessibility => "restricted_download"
+            }
           else
             {}
           end

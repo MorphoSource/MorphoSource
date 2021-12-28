@@ -103,7 +103,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def submit
-byebug
+#byebug
     @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
     @xlsx = Roo::Excelx.new(manifest.tempfile.path)
     @modality_selected = @params["batch_submission"]["modality"]
@@ -118,7 +118,7 @@ byebug
       admin_user = User.where(email:Hyrax.config.system_admin_email).first
       depositor = current_user
       organization_id = request.params["organization_id"]
-      device_id = request.params["device_id"]
+      device_id = request.params["batch_submission"]["device_id"]
       if request.params["batch_submission"]["on_behalf_of"].present?
         on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
       end
@@ -325,6 +325,7 @@ byebug
           end        
           # If the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API 
           # must have iDigBio-supplied institution code matching pre-selected organization (case-insensitive)
+byebug
           organization_institution_code = @params["organization_institution_code"]
           if organization_institution_code.present?
             idb_institution_code = idb_result.first["indexTerms"]["institutioncode"] # todo: might need to check if this will return multiple values

@@ -2,7 +2,7 @@
   <div class="container-fluid">
 
     <div id="submission_select_organization_section">
-      <%= render(partial: 'batch_submissions/physical_object/organization_select') %>
+      <%= render(partial: 'batch_submissions/physical_object/organization_select', locals: {f: f}) %>
       <div id ="submission_organization_select_display_container">
         <div class="row text-center">
           <%= render(partial: 'batch_submissions/physical_object/organization_select_display') %>

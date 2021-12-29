@@ -634,6 +634,11 @@ $( document ).ready(function() {
         $('.batch-submission div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
         batchSubmissionForm.emptyMediaFields(organizationDefaultMediaFields);
     });
+
+    $('#btn-submit').click(function(event) {
+      // get all project IDs in the form
+      $('[data-behavior="collection-relationships"]').clone().appendTo('#project_ids');
+    });
       
     $('#manifest_file, #batch_submission_modality').on('change', function(){ setSubmitStatus() });
     $(".btn-submit-wrapper").on('mouseover', function(){ 

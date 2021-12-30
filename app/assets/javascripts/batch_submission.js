@@ -1,6 +1,7 @@
 $( document ).ready(function() {
 
   if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
+
     showAlert = false;
     selectedDeviceModality = "";
     organizationDefaultMediaFields = {};
@@ -633,11 +634,6 @@ $( document ).ready(function() {
         $('.batch-submission div#submission-media-ownership div').removeClass('permissions-field');
         $('.batch-submission div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
         batchSubmissionForm.emptyMediaFields(organizationDefaultMediaFields);
-    });
-
-    $('#btn-submit').click(function(event) {
-      // get all project IDs in the form
-      $('[data-behavior="collection-relationships"]').clone().appendTo('#project_ids');
     });
       
     $('#manifest_file, #batch_submission_modality').on('change', function(){ setSubmitStatus() });

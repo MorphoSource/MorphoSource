@@ -119,11 +119,17 @@ class BatchSubmissionsController < ApplicationController
       depositor = current_user
       organization_id = request.params["organization_id"]
       device_id = request.params["batch_submission"]["device_id"]
+      collection_ids = []
+      if request.params["media"]["member_of_collections_attributes"].present?
+        request.params["media"]["member_of_collections_attributes"].each do |k, v|
+          collection_ids << v["id"] if v["_destroy"] == "false"
+        end
+      end
       if request.params["batch_submission"]["on_behalf_of"].present?
         on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
       end
       media_ownership_fields = request.params["batch_submission"]["media"]
-      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, on_behalf_of:on_behalf_of, organization_id:organization_id, device_id:device_id, media_ownership_fields:media_ownership_fields).to_h
+      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, on_behalf_of:on_behalf_of, collection_ids:collection_ids, organization_id:organization_id, device_id:device_id, media_ownership_fields:media_ownership_fields).to_h
 byebug
 
 ##############   todo: no need to have "organization_permissions_fields" in @manifest_object

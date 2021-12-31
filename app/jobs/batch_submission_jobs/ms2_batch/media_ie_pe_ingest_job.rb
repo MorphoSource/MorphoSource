@@ -116,7 +116,7 @@ byebug
       end
     end  
 
-#byebug
+byebug
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
   end

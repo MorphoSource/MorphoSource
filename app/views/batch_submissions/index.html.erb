@@ -3,5 +3,8 @@
 
 <h1>Batch Submission</h1>
 
+<% if row_count.present? %>
+  <p><%= row_count %> <%= "row".pluralize(row_count) %> parsed and submitted.</p>
+<% end %>
 
 <%= link_to "Create a new batch upload submission", main_app.new_batch_submission_path %>

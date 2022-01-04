@@ -28,7 +28,7 @@
 
 <div class="row">
 
-	<div class="col-sm-6">
+	<div class="col-sm-6"><%# left column %>
 		<h2>Basic details</h2>
 
 		<div class="row">
@@ -64,7 +64,7 @@
       </div>
     <% end %>
 
-	</div>
+	</div><%# /left column %>
 
   <div class="col-sm-6"><%# right column %>
     <%= f.fields_for @media_form,
@@ -74,11 +74,11 @@
       } do |builder| %>
       <%= render  "batch_submissions/media/media", :f => builder %>
     <% end %>
-  </div>
+  </div><%# /right column %>
 
 </div>
 
-<div class="row">
+<div class="row mt-2">
   <h2>UPLOAD MANIFEST</h2>
   <div class="col-sm-6 col-sm-offset-3">
     <div class="mt-3 mb-3">

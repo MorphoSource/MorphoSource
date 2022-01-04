@@ -34,7 +34,10 @@ byebug
 
       i['physical_object_id'] = bso['id']
       #i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
+ 
 
+
+ 
 byebug
       i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_now(
         i, 

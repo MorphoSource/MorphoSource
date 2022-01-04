@@ -48,9 +48,7 @@ byebug
           organization_permissions_fields = parent['media']['organization_permissions_fields']
         end 
 
-# check parent['media']['attrs'] here
-
-byebug
+#byebug
         parent_media = Importer::BatchObjectImporter.call(
           'Media', 
           parent['media']['attrs'].merge(
@@ -116,13 +114,11 @@ byebug
       end
     end  
 
-byebug
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
   end
 
   def add_media_to_collections(media, collection_ids)
-#byebug
     return unless media.present? && collection_ids.present?
     Array(collection_ids).each do |collection_id|
       c = Collection.find(collection_id)
@@ -132,7 +128,6 @@ byebug
   end
 
   def add_media_to_fund_code(media, fund_code_id)
-#byebug
     return unless media.present? && fund_code_id.present? && (fc = FundCode.find(fund_code_id))
     media.each do |m|
       m.new_fund_code_association(fc)

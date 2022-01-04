@@ -119,22 +119,19 @@ class BatchSubmissionsController < ApplicationController
       depositor = current_user
       organization_id = request.params["organization_id"]
       device_id = request.params["batch_submission"]["device_id"]
+      if request.params["batch_submission"]["on_behalf_of"].present?
+        on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
+      end
       collection_ids = []
-      if request.params["media"]["member_of_collections_attributes"].present?
+      if request.params["media"]&["member_of_collections_attributes"].present?
         request.params["media"]["member_of_collections_attributes"].each do |k, v|
           collection_ids << v["id"] if v["_destroy"] == "false"
         end
       end
-      if request.params["batch_submission"]["on_behalf_of"].present?
-        on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
-      end
+      fund_code_id = request.params["batch_submission"]["fund_code"]
       media_ownership_fields = request.params["batch_submission"]["media"]
-      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, on_behalf_of:on_behalf_of, collection_ids:collection_ids, organization_id:organization_id, device_id:device_id, media_ownership_fields:media_ownership_fields).to_h
+      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, on_behalf_of:on_behalf_of, collection_ids:collection_ids, fund_code_id:fund_code_id, organization_id:organization_id, device_id:device_id, media_ownership_fields:media_ownership_fields).to_h
 byebug
-
-##############   todo: no need to have "organization_permissions_fields" in @manifest_object
-##############          instead , set permission fields from the request params?
-##############   "organization_permissions_fields"=>{"download_permission"=>["restricted_download"], "download_reviewer"=>["e1eefa"], "rights_holder"=>["org ip holder"], "rights_holder_blank"=>["0"],
 
       ingest
     else
@@ -193,7 +190,9 @@ byebug
 #      instantiate_work_forms      
 #      render :action => 'new'
 #      render 'validation_pass', locals: { row_count: row_count }
-      render 'validation_pass', locals: { row_count: row_count }
+      
+      #todo: remove validation_pass template later if not needed
+      render 'index', locals: { row_count: row_count }
       @manifest_is_valid = true
     end    
   end
@@ -293,6 +292,7 @@ byebug
       sub_field_name = $1
       media_type = @xlsx.cell(current_row, field_column("media.media_type"))
       if valid_media_types.include? media_type # no need to check unless media type is valid
+        @media_type = media_type
         if val.present? && field_to_reject_for_media_type?(media_type, sub_field_name)
           error_msg = "#{field_name}: Value should not be present for media type #{media_type}."
         else
@@ -398,13 +398,22 @@ byebug
         error_msg = "#{field_name}: Please enter a valid value: " + valid_boolean.to_s.gsub(/\[|\]/, '')
       end
     when /^number(_RequiredByMediaType_.*)?$/
-      if ($1.present?) && (!val.present?)
-        media_type = $1.split('_').last
-        error_msg = "#{field_name}: Value should present for media type #{media_type}."
-      else
+      if $1.present?
+        by_media_type = $1.split('_').last
+        if by_media_type == @media_type
+          if !val.present?
+            error_msg = "#{field_name}: Value should be present for media type #{by_media_type}."
+          else
+            required = true
+          end
+        else
+          required = false
+        end
+      end
+      if (!error_msg.present?) && (required)
         unless is_number? val
           error_msg = "#{field_name}: Please enter a valid number."
-        end
+        end        
       end
     when "integer"
       unless is_integer? val

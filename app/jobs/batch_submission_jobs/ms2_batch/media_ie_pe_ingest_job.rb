@@ -4,7 +4,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
   queue_as Hyrax.config.mass_ingest_queue_name
 
   def perform(ingest, collection_ids, fund_code_id)
-byebug
+
     if !ingest['physical_object_id'].present?
       raise "Physical object ID not present for ingest. Ingest: #{ingest}"
     end
@@ -48,7 +48,7 @@ byebug
           organization_permissions_fields = parent['media']['organization_permissions_fields']
         end 
 
-#byebug
+byebug
         parent_media = Importer::BatchObjectImporter.call(
           'Media', 
           parent['media']['attrs'].merge(

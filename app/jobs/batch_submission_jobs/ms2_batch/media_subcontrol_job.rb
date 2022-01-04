@@ -4,7 +4,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   queue_as Hyrax.config.ingest_queue_name
 
   def perform(manifest)
-byebug
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest
@@ -34,10 +33,6 @@ byebug
 
       i['physical_object_id'] = bso['id']
       #i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
- 
-
-
- 
 byebug
       i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_now(
         i, 

@@ -44,17 +44,27 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       end
 
       if parent['media'].present?
-        if parent['media']['organization_permissions_fields'].present?
-          organization_permissions_fields = parent['media']['organization_permissions_fields']
-        end 
+#        if parent['media']['organization_permissions_fields'].present?
+#          organization_permissions_fields = parent['media']['organization_permissions_fields']
+#        end 
 
 byebug
+
+# check parent['media']['attrs']['file'] 
+
+parent['media']['attrs']['file'] = ["fish.jpg"]
+#parent['media']['attrs']['remote_files'] 
+
         parent_media = Importer::BatchObjectImporter.call(
           'Media', 
           parent['media']['attrs'].merge(
             'parent_id' => [parent_pe.id]
           ).symbolize_keys, 
-          nil, 
+
+
+"/vagrant/dropbox/smc101", # set this properly if needed
+
+
           false
         )
 

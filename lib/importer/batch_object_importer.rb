@@ -4,6 +4,7 @@ module Importer
     attr_reader :attributes, :files_directory, :model, :update
 
     def self.call(model, attributes, files_directory = nil, update = false)
+byebug
       new(model, attributes, files_directory, update).call
     end
 

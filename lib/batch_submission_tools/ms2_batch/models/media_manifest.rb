@@ -39,7 +39,6 @@ module BatchSubmissionTools
           }
           addl_attrs.merge!(@media_ownership_fields).symbolize_keys!
           addl_attrs.merge!(visibility_mapped(@media_ownership_fields["visibility"]))
-byebug
 
 #          if organization_id.present?
 #            addl_attrs.merge!(
@@ -50,10 +49,17 @@ byebug
 #          end
 
           p = media_file_path
-          addl_attrs[:file] = [p] if p.present?
-          
+          addl_attrs[:file] = [p] if p.present?          
+byebug
+          tmp = initial_attrs.except(:id, :media_file).merge(addl_attrs)
+byebug
+# check tmp[:file] should be set here
+
+#(byebug) tmp
+#{:preview_file=>[], :publication_status=>["Private"], :media_type=>["Image"], :parent_file=>[], :parent_ms_id=>[], :part=>["head"], :short_description=>["microCT volume and derivatives"], :side=>["Left"], :description=>"Migrated MorphoSource 1 Media File Title: zipped tiff stack Migrated MorphoSource 1 Media Group Title: microCT volume and derivatives\r\n\r\nRecord created by batch submission.", :creator=>[], :orientation=>[], :identifier=>[], :keyword=>[], :date_created=>["2020-12-12"], :related_url=>[], :x_spacing=>[], :y_spacing=>[], :z_spacing=>[], :slice_thickness=>[], :series_type=>[], :unit=>[], :map_type=>[], :depositor=>"88df5a", :on_behalf_of=>nil, :download_reviewer=>["e1eefa"], :visibility=>"restricted", :rights_holder=>["org ip holder"], :rights_statement=>"http://rightsstatements.org/vocab/InC-OW-EU/1.0/", :license=>["https://creativecommons.org/licenses/by-sa/4.0/"], :morphosource_use_agreement_type=>"Permissive", :permits_commercial_use=>"CommercialUsePermitted", :permits_3d_use=>"3DPrintingPermitted", :required_archival_of_published_derivatives=>"EncouragedButNotRequired", :funding=>[""], :publisher=>[""], :cite_as=>"", :preview_mode=>"Thumbnail Only", :agreement_uri=>"", :member_of_collection_ids=>"", :fileset_visibility=>"", :fileset_accessibility=>"private", :file=>["/vagrant/dropbox/smc101/fish.jpg"]}
+
           Importer::Factory::MediaFactory.new(
-            initial_attrs.except(:id, :media_file).merge(addl_attrs), 
+            tmp, 
             ( File.dirname(p) if p.present? )
           ).create_attributes
         end

@@ -7,7 +7,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest    
-byebug
+#byebug
 
     # Submit jobs for new works to be created
     @manifest['taxonomy_ingests'].each do |t|

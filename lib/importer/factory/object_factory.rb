@@ -9,11 +9,15 @@ module Importer
       attr_reader :attributes, :collection_ids, :files_directory, :object, :files, :parent_arks, :visibility, :do_update
 
       def initialize(attributes, files_dir = nil, do_update = false)
+byebug
+#attributes does not include :file here.  use :remote_files instead?
+
         @attributes = attributes
         @files_directory = files_dir
         @do_update = do_update
         @collection_ids = @attributes.delete(:collection_id)
         @files = @attributes.delete(:file)
+byebug
         @parent_arks = @attributes.delete(:parent_ark)
         @visibility = @attributes.delete(:visibility)
       end
@@ -33,9 +37,16 @@ module Importer
       def create
         attrs = create_attributes
         @object = klass.new
+byebug
+                  
         run_callbacks :save do
           run_callbacks :create do
-            work_actor.create(environment(attrs))
+            begin
+              work_actor.create(environment(attrs))
+            rescue Exception => e
+              byebug
+              
+            end
           end
         end
         ingest_thumbnail_image
@@ -115,6 +126,7 @@ module Importer
       def transform_attributes
         based_near_values = attributes.delete(:based_near)
         date_uploaded_values = attributes.delete(:date_uploaded)
+byebug
         sanitized_attributes
             .merge(file_attributes)
             .merge(location_attributes(based_near_values))
@@ -198,11 +210,13 @@ module Importer
       end
 
       def remote_files
+byebug
         files.map do |file_name|
           #f = File.join(files_directory, file_name) # for local files with a files directory
           { url: "file:#{file_name}", file_name: File.basename(file_name) } # for local files
           # { url: "#{file_name}", file_name: File.basename(file_name) } # for URLs
         end
+
       end
 
       # @param [Hash] attrs the attributes to put in the environment

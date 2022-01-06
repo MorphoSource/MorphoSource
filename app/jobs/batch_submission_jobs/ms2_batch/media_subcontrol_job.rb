@@ -33,7 +33,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
       i['physical_object_id'] = bso['id']
       #i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
-byebug
+#byebug
       i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_now(
         i, 
         @manifest['collection_ids'] || [],

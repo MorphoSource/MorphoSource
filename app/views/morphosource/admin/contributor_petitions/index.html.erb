@@ -1,0 +1,102 @@
+<% provide :page_title, "Contributor Applications" %>
+
+<div class="row">
+  <div class="col-xs-12 main-header">
+    <h1>
+      <span class="fa fa-award" aria-hidden="true"></span>
+      Contributor Applications
+    </h1>
+  </div>
+</div>
+
+<div class="panel panel-default tabs" style="display: table;">
+  <ul class="nav nav-tabs" id="my_nav" role="navigation">
+    <li<%= ' class="active"'.html_safe if current_page?(main_app.admin_contributor_petitions_path) %>>
+      <%= link_to(main_app.admin_contributor_petitions_path) do %>
+        <%= t("Current Applications") %>
+        <% if @undecided_petitions.present? %>
+          <span class="count label label-danger" style="vertical-align: text-top;"><%= number_with_delimiter(@undecided_petitions.count, :delimiter => ',') %></span>
+        <% end %>
+      <% end %>
+    </li>
+    <li<%= ' class="active"'.html_safe if current_page?(main_app.admin_contributor_petitions_previous_path) %>>
+      <%= link_to(main_app.admin_contributor_petitions_previous_path) do %>
+        <%= t("Previous Applications") %>
+        <% if @decided_petitions.present? %>
+          <span class="count label label-info" style="vertical-align: text-top;"><%= number_with_delimiter(@decided_petitions.count, :delimiter => ',') %></span>
+        <% end %>
+      <% end %>
+    </li>
+  </ul>
+  <div class="panel-body">
+    <table class="table table-striped datatable" style="font-size: smaller;">
+      <thead>
+        <th><%= t('.table.user') %></th>
+        <th><%= t('.table.reason') %></th>
+        <th><%= t('.table.user_affiliation') %></th>
+        <th><%= t('.table.user_department') %></th>
+        <th><%= t('.table.user_demographics') %></th>
+        <th><%= t('.table.user_advisor') %></th>
+        <th><%= t('.table.contribution_amount') %></th>
+        <th><%= t('.table.terms_agree') %></th>
+        <% if current_page?(main_app.admin_contributor_petitions_previous_path) %>
+          <th><%= t('.table.decision') %></th>
+          <th><%= t('.table.decided_by') %></th>
+          <th><%= t('.table.date_approved') %></th>
+          <th><%= t('.table.date_cleared') %></th>
+          <th><%= t('.table.date_denied') %></th>
+        <% end %>
+      </thead>
+      <tbody>
+      <% if current_page?(main_app.admin_contributor_petitions_previous_path) %>
+        <% current_petitions = @decided_petitions %>
+      <% else %>
+        <% current_petitions = @undecided_petitions %>
+      <% end %>
+      <% current_petitions.each do |p| %>
+        <% demographics = ( p.user_demographics.presence || []).join('; ') %>
+        <tr>
+          <td data-sort="<%= p.user.name_or_email %>"><%= link_to p.user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(p.user) %></td>
+          <td data-sort="<%= p.reason %>"><%= p.reason %></td>
+          <td data-sort="<%= p.user_affiliation %>"><%= p.user_affiliation %></td>
+          <td data-sort="<%= p.user_department %>"><%= p.user_department %></td>
+          <td data-sort="<%= demographics %>"><%= demographics %></td>
+          <td data-sort="<%= p.user_advisor %>"><%= p.user_advisor %></td>
+          <td data-sort="<%= p.contribution_amount %>"><%= p.contribution_amount %></td>
+          <td data-sort="<%= p.terms_agree %>"><%= p.terms_agree ? "Yes" : "No" %></td>
+          <% if current_page?(main_app.admin_contributor_petitions_previous_path) %>
+            <td data-sort="<%= p.decision_state %>"><%= p.decision_state.capitalize %></td>
+            <% decision_user = User.find(p.decision_by) %>
+            <td data-sort="<%= decision_user.name_or_email %>">
+              <%= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %> 
+            </td>
+            <td data-sort="<%= p.date_approved %>"><%= p.date_approved %></td>
+            <td data-sort="<%= p.date_cleared %>"><%= p.date_cleared %></td>
+            <td data-sort="<%= p.date_denied %>"><%= p.date_denied %></td>
+          <% end %>
+        </tr>
+        <tr>
+          <td colspan="<%= current_page?(main_app.admin_contributor_petitions_previous_path) ? "13" : "8" %>">
+            <%= simple_form_for p, url: main_app.admin_contributor_petitions_decide_path(:id => p.id), method: :patch do |f| %>
+              <div class="row" style="padding: 0;">
+                <div class="col-xs-8">
+                  <!-- <div>Message will be sent to user on application decision:</div> -->
+                  <%= f.text_area :decision_message, class: "form-control", placeholder: 'Send a message to user with decision.', :rows => 1 %>
+                </div>
+                <div class="col-xs-4 text-right">
+                  <%= f.submit 'Approve', class: 'btn btn-sm btn-primary' %>
+                  <%= f.submit 'Clear', class: 'btn btn-sm btn-info' %>
+                  <%= f.submit 'Deny', class: 'btn btn-sm btn-danger' %>
+                  <% if current_page?(main_app.admin_contributor_petitions_previous_path) %>
+                    <input type="hidden" id="form_is_previous" name="form_is_previous" value="true">
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

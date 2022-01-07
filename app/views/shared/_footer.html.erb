@@ -11,8 +11,8 @@
           </div>
           <div class="col-xs-3 no-horizontal-padding">
             <div class="row" style='padding-top: 0;'><span class='footer-label'><%= t(:'hyrax.controls.docs.short_title') %></span></div>
+            <div class="row footer-sublink"><%= link_to t("hyrax.controls.docs.all_docs"), 'https://wiki.duke.edu/display/MD/MorphoSource+Documentation+Home' %></div>
             <div class="row footer-sublink"><%= link_to t("hyrax.controls.docs.guide"), Rails.application.routes.url_helpers.guide_docs_path %></div>
-            <div class="row footer-sublink"><%= link_to t("hyrax.controls.resources.glossary"), Rails.application.routes.url_helpers.glossary_docs_path %></div>
             <div class="row footer-sublink"><%= link_to t("hyrax.controls.resources.contributors"), Rails.application.routes.url_helpers.contributors_docs_path %></div>
             <div class="row footer-sublink"><%= link_to t("hyrax.controls.resources.citation"), Rails.application.routes.url_helpers.citation_docs_path %></div>
           </div>

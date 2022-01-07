@@ -328,7 +328,6 @@ Rails.application.routes.draw do
       get 'beta_guide'
       get 'citation'
       get 'contributors'
-      get 'glossary'
       get 'guide'
       get 'rss'
     end
@@ -429,7 +428,7 @@ Rails.application.routes.draw do
   get '/About/userInfo', to: redirect('/docs/guide', status: 301)
   get '/About/userGuide', to: redirect('/docs/guide', status: 301)
   get '/About/contributorInfo', to: redirect('/docs/contributors', status: 301)
-  get '/About/terms', to: redirect('/docs/glossary', status: 301)
+  get '/About/terms', to: redirect('/docs/about', status: 301)
   get '/About/howToCite', to: redirect('/docs/citation', status: 301)
   get '/About/API', to: redirect('/docs/api', status: 301)
   get '/About/report', to: redirect('/docs/rss', status: 301)

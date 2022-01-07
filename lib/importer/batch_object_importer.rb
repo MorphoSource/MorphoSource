@@ -17,6 +17,7 @@ byebug
 
     def call
       fc = factory_class(model)
+byebug
       f = fc.new(attributes, files_directory, update)
       f.run
     end

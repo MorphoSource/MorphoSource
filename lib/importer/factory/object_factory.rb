@@ -37,16 +37,15 @@ byebug
       def create
         attrs = create_attributes
         @object = klass.new
-byebug
                   
         run_callbacks :save do
           run_callbacks :create do
-            begin
+begin
               work_actor.create(environment(attrs))
-            rescue Exception => e
-              byebug
-              
-            end
+rescue Exception => e
+  byebug
+  
+end
           end
         end
         ingest_thumbnail_image
@@ -126,7 +125,7 @@ byebug
       def transform_attributes
         based_near_values = attributes.delete(:based_near)
         date_uploaded_values = attributes.delete(:date_uploaded)
-byebug
+#byebug
         sanitized_attributes
             .merge(file_attributes)
             .merge(location_attributes(based_near_values))

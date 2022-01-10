@@ -1,9 +1,16 @@
 <div class="checkbox-list" style="display: flex; flex-direction: row;">
-  <% current_demographics = @current_petition.user_demographics || [] %>
+  <% current_demographics = @petition.user_demographics || [] %>
   <div class="profile-column">
     <% values.each_with_index do |value, i| %>
       <% if (i + 1) <= ((values.count + 1)/2.0).round %>
-        <%= f.check_box field, { multiple: true, checked: (current_demographics.include? value) }, value, false %>
+        <%= f.check_box field, 
+          { 
+            multiple: true, 
+            checked: (current_demographics.include? value)
+          }, 
+          value, 
+          false 
+        %>
         <%= f.label(field.to_sym, value) %>
         <br/>
       <% end %>
@@ -12,12 +19,21 @@
   <div class="profile-column" style="margin-left: 20px;">
     <% values.each_with_index do |value, i| %>
       <% if (i + 1) > ((values.count + 1)/2.0).round %>
-        <%= f.check_box field, { multiple: true, checked: (current_demographics.include? value) }, value, false %>
+        <%= f.check_box field, 
+          { 
+            multiple: true, 
+            checked: (current_demographics.include? value)
+          }, 
+          value, 
+          false 
+        %>
         <%= f.label(field.to_sym, value) %>
         <br/>
       <% end %>
     <% end %>
     <%= f.label 'Other: ' %>
-    <%= f.text_field :user_demographics_other %>
+    <%= f.text_field :user_demographics_other, 
+      class: "form-control"
+    %>
   </div>
 </div>

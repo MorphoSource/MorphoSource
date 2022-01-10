@@ -14,15 +14,17 @@ module Morphosource
         add_breadcrumb t(:'morphosource.dashboard.my.contributor_petitions.header'), main_app.user_contributor_petition_path
 
         if ContributorPetition.exists?(user: current_user)
-          @current_petition = ContributorPetition.where(user: current_user).first
+          @petition = ContributorPetition.where(user: current_user).first
 
-          if @current_petition.decision_state == 'approve'
+          if @petition.decision_state == 'approve'
             flash[:notice] = 'Your contributor application has already been approved, and you should have contributor privileges. If you do not, please contact the MorphoSource admins.'
             redirect_to main_app.root_url and return
           end
         else
-          @current_petition = ContributorPetition.new
+          @petition = ContributorPetition.new
         end
+
+        fill_user_fields
       end
 
       def create
@@ -32,6 +34,7 @@ module Morphosource
         require_petition_decision
 
         if @petition.save
+          update_user
           redirect_to main_app.user_contributor_petition_path and return
         else
           render :index, status: :unprocessable_entity
@@ -47,6 +50,7 @@ module Morphosource
           validate_required_params
           require_petition_decision
           if @petition.update(petition_params)
+            update_user
             redirect_to main_app.user_contributor_petition_path and return
           else
             render :index, status: :unprocessable_entity
@@ -57,6 +61,23 @@ module Morphosource
       end
 
       private
+
+      def fill_user_fields
+        user_to_petition_fields.each do |user_field, petition_field|
+          if current_user.send(user_field).present?
+            @petition.send("#{petition_field}=", current_user.send(user_field))
+          end
+        end
+      end
+
+      def user_to_petition_fields
+        {
+          :affiliation => :user_affiliation,
+          :department => :user_department,
+          :demographics => :user_demographics,
+          :other_demographics => :user_demographics_other,
+        }
+      end
 
       def prepare_params
         p = params[:contributor_petition]
@@ -105,6 +126,15 @@ module Morphosource
 
       def required_params
         [:user_id, :reason, :user_affiliation, :user_department, :user_demographics, :contribution_amount, :terms_agree]
+      end
+
+      def update_user
+        user_to_petition_fields.each do |user_field, petition_field|
+          if @petition.user.send(user_field) != @petition.send(petition_field)
+            @petition.user.send("#{user_field}=", @petition.send(petition_field))
+          end
+        end
+        @petition.user.save!
       end
     end
   end

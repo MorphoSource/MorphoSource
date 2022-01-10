@@ -107,7 +107,7 @@ ActiveRecord::Schema.define(version: 2022_01_04_175756) do
     t.string "user_advisor"
     t.string "contribution_amount"
     t.boolean "terms_agree"
-    t.boolean "decision_required", default: true
+    t.boolean "decision_required"
     t.string "decision_state"
     t.text "decision_message"
     t.string "decision_by"

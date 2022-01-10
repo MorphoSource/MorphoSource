@@ -3,7 +3,7 @@
 <div class="contributor-petitions">
   <div class="row">
     <div class="col-md-12">
-      <% if @current_petition.decision_required %>
+      <% if @petition.decision_required %>
         <div class="panel panel-default">
           <div class="panel-heading">
               <h2 class="panel-title h2">Contributor Application Submitted, Awaiting Decision</h2>
@@ -15,7 +15,7 @@
           </div>
         </div>
       <% else %>
-        <% if @current_petition.decision_state == 'approve' %> 
+        <% if @petition.decision_state == 'approve' %> 
           <%# Fallback code, this should never be displayed! %>
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -27,7 +27,7 @@
               </div>
             </div>
           </div>
-        <% elsif @current_petition.decision_state == 'deny' %>
+        <% elsif @petition.decision_state == 'deny' %>
           <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="panel-title h2">Contributor Application Denied</h2>
@@ -38,7 +38,7 @@
               </div>
             </div>
           </div>
-        <% elsif @current_petition.decision_state == 'clear' %>
+        <% elsif @petition.decision_state == 'clear' %>
           <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="panel-title h2">Contributor Application Must Be Resubmitted</h2>
@@ -46,30 +46,30 @@
             <div class="panel-body">
               <div class="row">
                 <p style="margin-left: 15px;">Your application was temporarily rejected, likely with a request for further or modified information. If a message is present below, you should consult it, as it likely has instructions for you to follow. Please resubmit your application to become a contributor or data manager, making any necessary changes.</p>
-                <% if @current_petition.decision_message.present? %>
-                  <p style="margin-left: 15px;">The following message was provided with your application decision: <%= @current_petition.decision_message %></p>
+                <% if @petition.decision_message.present? %>
+                  <p style="margin-left: 15px;">The following message was provided with your application decision: <%= @petition.decision_message %></p>
                 <% end %>
               </div>
             </div>
           </div>
         <% end %>
 
-        <% if @current_petition.decision_state.nil? || @current_petition.decision_state == 'clear' %>
+        <% if @petition.decision_state.nil? || @petition.decision_state == 'clear' %>
           <div class="panel panel-default">
             <div class="panel-heading">
               <h2 class="panel-title h2">Become A Contributor or Data Manager</h2>
             </div>
             <div class="panel-body">
               <div class="row">
-                <p style="margin-left: 15px; margin-bottom: 30px;">Fill out the following form to apply for contributor or data manager status on MorphoSource. After your application has been accepted and you have been granted contributor status, you will be able to upload media, participate in projects and teams, and manage media that have been shared with or transferred to you. <b>Please Note: All fields are required, unless indicated otherwise.</b></p>
+                <p style="margin-left: 15px; margin-bottom: 30px;">Fill out the following form to apply for contributor or data manager status on MorphoSource. After your application has been accepted and you have been granted contributor status, you will be able to upload media, participate in projects and teams, and manage media that have been shared with or transferred to you. Some fields may be auto-filled from your user profile. Similarly, information from certain fields of this form - e.g., organization, department - will be saved back to your user profile if what you enter here differs from your profile. <b>Please Note: All fields are required, unless indicated otherwise.</b></p>
               </div>
 
-              <% url = @current_petition.id.present? ? 
-                  main_app.user_contributor_petition_update_path(id: @current_petition.id) :
+              <% url = @petition.id.present? ? 
+                  main_app.user_contributor_petition_update_path(id: @petition.id) :
                   main_app.user_contributor_petition_submit_path
               %>
-              <% method = @current_petition.id.present? ? :patch : :put %>
-              <%= simple_form_for @current_petition, url: url, method: method do |f| %>
+              <% method = @petition.id.present? ? :patch : :put %>
+              <%= simple_form_for @petition, url: url, method: method do |f| %>
                 <div class="form-group row">
                   <%= f.label :reason, class: 'col-sm-4 control-label' do %>
                     <%= t("morphosource.dashboard.my.contributor_petitions.reason").html_safe %>
@@ -84,7 +84,10 @@
                     <%= t("morphosource.dashboard.my.contributor_petitions.user_affiliation").html_safe %>
                   <% end %>
                   <div class="col-sm-8">
-                     <%= f.text_field :user_affiliation, class: "form-control", required: true %>
+                    <%= f.text_field :user_affiliation, 
+                      class: "form-control", 
+                      required: true
+                    %>
                   </div>
                 </div><!-- .form-group -->
 
@@ -93,7 +96,10 @@
                     <%= t("morphosource.dashboard.my.contributor_petitions.user_department").html_safe %>
                   <% end %>
                   <div class="col-sm-8">
-                     <%= f.text_field :user_department, class: "form-control", required: true %>
+                    <%= f.text_field :user_department, 
+                      class: "form-control", 
+                      required: true
+                    %>
                   </div>
                 </div><!-- .form-group -->
              

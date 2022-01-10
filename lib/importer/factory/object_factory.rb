@@ -9,7 +9,7 @@ module Importer
       attr_reader :attributes, :collection_ids, :files_directory, :object, :files, :parent_arks, :visibility, :do_update
 
       def initialize(attributes, files_dir = nil, do_update = false)
-byebug
+#byebug
 #attributes does not include :file here.  use :remote_files instead?
 
         @attributes = attributes
@@ -17,7 +17,7 @@ byebug
         @do_update = do_update
         @collection_ids = @attributes.delete(:collection_id)
         @files = @attributes.delete(:file)
-byebug
+#byebug
         @parent_arks = @attributes.delete(:parent_ark)
         @visibility = @attributes.delete(:visibility)
       end
@@ -209,7 +209,6 @@ end
       end
 
       def remote_files
-byebug
         files.map do |file_name|
           #f = File.join(files_directory, file_name) # for local files with a files directory
           { url: "file:#{file_name}", file_name: File.basename(file_name) } # for local files

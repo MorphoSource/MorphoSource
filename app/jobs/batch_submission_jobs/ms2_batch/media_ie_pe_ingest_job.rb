@@ -52,7 +52,7 @@ byebug
 
 # check parent['media']['attrs']['file'] 
 
-parent['media']['attrs']['file'] = ["fish.jpg"]
+#parent['media']['attrs']['file'] = ["fish.jpg"]
 #parent['media']['attrs']['remote_files'] 
 
         parent_media = Importer::BatchObjectImporter.call(

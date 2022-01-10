@@ -15,7 +15,8 @@ class CharacterizeNoDeriveJob < Hyrax::ApplicationJob
   def perform(file_set, file_id, filepath = nil)
     raise "#{file_set.class.characterization_proxy} was not found for FileSet #{file_set.id}" unless file_set.characterization_proxy?
     filepath = Hyrax::WorkingDirectory.find_or_retrieve(file_id, file_set.id) unless filepath && File.exist?(filepath)
-    # Run FITS , then blender (if it is a mesh file type).  
+    byebug
+    # Run FITS , then blender (if it is a mesh file type).
     # For mesh files:
     # - we want blender to overwrite the mime type output from FITS
     # - we still want to run FITS to get basic file info (e.g. checksum)
@@ -32,7 +33,7 @@ class CharacterizeNoDeriveJob < Hyrax::ApplicationJob
       ext = File.extname(filepath)
       if (ext =~ /\.(glb|gltf|obj|ply|stl|wrl|x3d)$/)
         blender_options = {
-          "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
+          "parser_class" => Hydra::Works::Characterization::BlenderDocument,
           "tool_class" => :blender
         }
         Rails.logger.debug "Running Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
@@ -48,7 +49,7 @@ class CharacterizeNoDeriveJob < Hyrax::ApplicationJob
       file_set.update_index
       file_set.parent&.in_collections&.each(&:update_index)
     end
-    
+
     Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
   end
 end

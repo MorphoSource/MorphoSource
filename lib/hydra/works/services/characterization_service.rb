@@ -8,6 +8,7 @@ module Hydra::Works
     #   If none is provided, it will assume the binary content already present on the object.
     # @param [Hash] options to be passed to characterization.  parser_mapping:, parser_class:, tools:
     def self.run(object, source = nil, options = {})
+      byebug
       new(object, source, options).characterize
     end
 
@@ -29,6 +30,7 @@ module Hydra::Works
       content = source_to_content
       extracted_md = extract_metadata(content)
       terms = parse_metadata(extracted_md)
+      byebug
       store_metadata(terms)
     end
 

@@ -25,6 +25,8 @@ class FileSet < ActiveFedora::Base
     :aperture_value,
     :iso_speed_ratings,
     :shutter_speed,
+    :width,
+    :height,
     to: :characterization_proxy
     )
 

@@ -24,6 +24,7 @@ module Morphosource
           collection = Collection.create(title: [title], collection_type_gid: project_collection_type.gid, depositor: @manager.ms_id, visibility: 'open')
           collection.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
+          collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
           collection
         end
 
@@ -76,15 +77,23 @@ module Morphosource
           file_set = FileSet.create
           @media.ordered_members << file_set
           begin
-            download = open(@file_uri)
-            name = download.meta["content-disposition"].match(/filename=(\"?)(.+)\1/)[2]
+
+            # puts Benchmark.measure { download = open(@file_uri, "r") }
+            # byebug
+
+            response = Faraday.head @file_uri
+            name = response.headers["content-disposition"].match(/filename=(\"?)(.+)\1/)[2]
+            # name = download.meta["content-disposition"].match(/filename=(\"?)(.+)\1/)[2]
             file_set.title = [name]
             file_set.label = name
             text_file = Tempfile.new(name, encoding: 'ascii-8bit')
+            # download.close
+            # download.unlink
+            byebug
             Hydra::Works::AddFileToFileSet.call(file_set, text_file, :original_file, update_existing: true, versioning: true)
 
             CharacterizeNoDeriveJob.perform_now(file_set, file_set.original_file.id, @tempfile.path)
-
+            byebug
             file_set.save
           ensure
             @tempfile.close
@@ -105,7 +114,9 @@ module Morphosource
         end
 
         def copy_remote_file(name)
+          byebug
           @tempfile = Tempfile.new(name, encoding: 'ascii-8bit')
+          byebug
           write_file(@tempfile)
         end
 

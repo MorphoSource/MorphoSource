@@ -13,7 +13,22 @@
           <% else %>
             <dt><%= render_index_field_label document, field: field_name %></dt>
           <% end %>          
+
+          <% 
+          # temporary catch the key not found: "term" error 
+          # in order to display the search result and to output the problematic media id
+          # todo: remove the catch block later if not needed
+          begin %>
           <dd><%= doc_presenter.field_value field_name %></dd>
+          <% 
+          rescue StandardError => e 
+            Rails.logger.debug "EXCEPTION in catalog index page: #{e.message}, ID: #{doc_presenter.field_value('id')}"
+            %>
+            <dd><!-- EXCEPTION IN MEDIA <%= doc_presenter.field_value('id') %> --></dd> 
+            <%
+          end
+          %>
+          
       <% end %>
     <% end %>
     <% if(doc_presenter.field_value('has_model_ssim') == 'BiologicalSpecimen') %>

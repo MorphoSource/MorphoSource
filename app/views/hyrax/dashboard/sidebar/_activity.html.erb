@@ -6,6 +6,12 @@
       <span class="fa fa-id-card" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.profile') %></span>
     <% end %>
 
+    <% if !current_user.contributor? && !current_user.admin? %>
+      <%= menu.nav_link(main_app.user_contributor_petition_path) do %>
+        <span class="fa fa-award" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.become_a_contributor') %></span>
+      <% end %>
+    <% end %>
+
     <%= menu.nav_link(hyrax.notifications_path) do %>
       <span class="fa fa-bell" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.notifications') %></span>
     <% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_03_145709) do
+ActiveRecord::Schema.define(version: 2022_01_04_175756) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -95,6 +95,28 @@ ActiveRecord::Schema.define(version: 2021_08_03_145709) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_key"
+  end
+
+  create_table "contributor_petitions", force: :cascade do |t|
+    t.bigint "user_id"
+    t.text "reason"
+    t.string "user_affiliation"
+    t.string "user_department"
+    t.text "user_demographics"
+    t.string "user_demographics_other"
+    t.string "user_advisor"
+    t.string "contribution_amount"
+    t.boolean "terms_agree"
+    t.boolean "decision_required"
+    t.string "decision_state"
+    t.text "decision_message"
+    t.string "decision_by"
+    t.datetime "date_approved"
+    t.datetime "date_cleared"
+    t.datetime "date_denied"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_contributor_petitions_on_user_id"
   end
 
   create_table "curation_concerns_operations", force: :cascade do |t|
@@ -301,6 +323,16 @@ ActiveRecord::Schema.define(version: 2021_08_03_145709) do
     t.string "message_id"
     t.index ["notification_id"], name: "index_mailboxer_receipts_on_notification_id"
     t.index ["receiver_id", "receiver_type"], name: "index_mailboxer_receipts_on_receiver_id_and_receiver_type"
+  end
+
+  create_table "media_downloads", force: :cascade do |t|
+    t.uuid "uuid", null: false
+    t.bigint "user_id", null: false
+    t.string "media_ids", default: [], array: true
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_media_downloads_on_user_id"
   end
 
   create_table "minter_states", force: :cascade do |t|
@@ -701,6 +733,7 @@ ActiveRecord::Schema.define(version: 2021_08_03_145709) do
     t.index ["work_id"], name: "index_work_view_stats_on_work_id"
   end
 
+  add_foreign_key "contributor_petitions", "users"
   add_foreign_key "fund_code_media_associations", "fund_codes"
   add_foreign_key "fund_code_memberships", "fund_codes"
   add_foreign_key "fund_code_memberships", "users"

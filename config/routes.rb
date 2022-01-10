@@ -328,7 +328,6 @@ Rails.application.routes.draw do
       get 'beta_guide'
       get 'citation'
       get 'contributors'
-      get 'glossary'
       get 'guide'
       get 'rss'
     end
@@ -379,9 +378,20 @@ Rails.application.routes.draw do
       # fund codes
       get 'dashboard/my/fund_codes/(:id)', action: :index, controller: :fund_codes, as: 'my_fund_codes'
       patch 'dashboard/my/fund_codes/:id', action: :update, controller: :fund_codes, as: 'my_fund_codes_update'
+    
+      # apply for contributor status
+      get 'contribute', action: :index, controller: :contributor_petitions, as: 'user_contributor_petition'
+      put 'submit_contributor_application', action: :create, controller: :contributor_petitions, as: 'user_contributor_petition_submit'
+      patch 'update_contributor_application/(:id)', action: :update, controller: :contributor_petitions, as: 'user_contributor_petition_update'
     end
 
     scope module: :admin do
+      # contributor petitions
+      get 'admin/contributor_applications', action: :index, controller: :contributor_petitions, as: 'admin_contributor_petitions'
+      get 'admin/contributor_applications_previous', action: :index, controller: :contributor_petitions, as: 'admin_contributor_petitions_previous'
+      patch 'admin/contributor_applications/(:id)', action: :decide_petition, controller: :contributor_petitions, as: 'admin_contributor_petitions_decide'
+
+      # fund codes
       get 'admin/fund_codes/(:id)', action: :index, controller: :fund_codes, as: 'admin_fund_codes'
       post 'admin/fund_codes', action: :create, controller: :fund_codes, as: 'admin_fund_codes_create'
       patch 'admin/fund_codes/:id', action: :update, controller: :fund_codes, as: 'admin_fund_codes_update'
@@ -418,7 +428,7 @@ Rails.application.routes.draw do
   get '/About/userInfo', to: redirect('/docs/guide', status: 301)
   get '/About/userGuide', to: redirect('/docs/guide', status: 301)
   get '/About/contributorInfo', to: redirect('/docs/contributors', status: 301)
-  get '/About/terms', to: redirect('/docs/glossary', status: 301)
+  get '/About/terms', to: redirect('/docs/about', status: 301)
   get '/About/howToCite', to: redirect('/docs/citation', status: 301)
   get '/About/API', to: redirect('/docs/api', status: 301)
   get '/About/report', to: redirect('/docs/rss', status: 301)

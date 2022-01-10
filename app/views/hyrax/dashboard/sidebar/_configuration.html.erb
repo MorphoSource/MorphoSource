@@ -28,6 +28,16 @@
         <% end %>
       <% end %>
     </li>
+    <%= menu.nav_link(main_app.admin_contributor_petitions_path) do %>
+      <span class="fa fa-award" aria-hidden="true"></span> <span class="sidebar-action-text">
+        <%= t('morphosource.admin.sidebar.contributor_petitions') %>
+        <% if ( petition_count = ContributorPetition.where(decision_required: true).count ) > 0 %>
+          <span class="count label label-danger" style="vertical-align: text-top;">
+            <%= number_with_delimiter(petition_count, :delimiter => ',') %>    
+          </span>
+        <% end %>
+      </span>
+    <% end %>
     <%= menu.nav_link(main_app.admin_fund_codes_path) do %>
       <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_codes') %></span>
     <% end %>

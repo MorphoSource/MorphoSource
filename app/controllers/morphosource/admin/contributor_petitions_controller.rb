@@ -60,7 +60,7 @@ module Morphosource
           @petition.user.remove_contributor
         end
 
-        @petition.save!
+        @petition.save
       end
 
       def acceptable_states

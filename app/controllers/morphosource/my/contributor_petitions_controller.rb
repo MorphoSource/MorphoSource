@@ -29,10 +29,10 @@ module Morphosource
 
       def create
         prepare_params
-        validate_required_params
+        ( redirect_to main_app.root_url and return ) unless validate_create
         @petition = ContributorPetition.new(petition_params)
         require_petition_decision
-
+        
         if @petition.save
           update_user
           redirect_to main_app.user_contributor_petition_path and return
@@ -47,7 +47,7 @@ module Morphosource
           ( @petition = ContributorPetition.find(params[:id]) ).present?
         )
           prepare_params
-          validate_required_params
+          ( redirect_to main_app.root_url and return ) unless validate_update
           require_petition_decision
           if @petition.update(petition_params)
             update_user
@@ -90,10 +90,18 @@ module Morphosource
         end
       end
 
+      def validate_create
+        validate_required_params
+        validate_terms_agreed
+      end
+
+      def validate_update
+        validate_required_params
+        validate_terms_agreed && validate_not_denied
+      end
+
       def validate_required_params
         params.fetch(:contributor_petition, {}).require(required_params)
-        validate_terms_agreed
-        validate_not_denied
       end
 
       def validate_terms_agreed
@@ -101,14 +109,18 @@ module Morphosource
           params.fetch(:contributor_petition, {})[:terms_agree]
         ) != true
           flash[:notice] = 'To submit contributor application, you must agree to the terms!'
-          redirect_to main_app.root_url and return
+          return false
+        else
+          return true
         end
       end
 
       def validate_not_denied
-        if ( params.fetch(:contributor_petition, {})[:decision_state] == 'deny' )
+        if @petition.decision_state == 'deny'
           flash[:notice] = 'Denied contributor applications may not be resubmitted!'
-          redirect_to main_app.root_url and return
+          return false
+        else
+          return true
         end
       end
 

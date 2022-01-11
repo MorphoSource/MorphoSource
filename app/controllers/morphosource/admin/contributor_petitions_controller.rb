@@ -23,9 +23,9 @@ module Morphosource
           if params[:commit].downcase == 'approve'
             set_petition_decision_attributes('approve')
             message_petitioner('approve')
-          elsif params[:commit].downcase == 'clear'
-            set_petition_decision_attributes('clear')
-            message_petitioner('clear')
+          elsif params[:commit].downcase == 'return'
+            set_petition_decision_attributes('return')
+            message_petitioner('return')
           elsif params[:commit].downcase == 'deny'
             set_petition_decision_attributes('deny')
             message_petitioner('deny')
@@ -64,7 +64,7 @@ module Morphosource
       end
 
       def acceptable_states
-        ['approve', 'clear', 'deny']
+        ['approve', 'return', 'deny']
       end
 
       def state_to_date_field(state)
@@ -74,7 +74,7 @@ module Morphosource
       def state_past
         {
           'approve' => 'approved',
-          'clear' => 'cleared',
+          'return' => 'returned',
           'deny' => 'denied'
         }
       end
@@ -85,7 +85,7 @@ module Morphosource
         additional_msg = ""
         if state == 'approve'
           additional_msg = "This means you should now have contributor and data manager privileges on MorphoSource. You may upload new media, create or participate in projects and teams, and have other users transfer media ownership to you."
-        elsif state == 'clear'
+        elsif state == 'return'
           additional_msg = "This means that your application has been temporarily rejected, likely with a request for further or modified information. If a message is present below, you should consult it, as it likely has instructions for you to follow. Please resubmit your application to become a contributor or data manager, making any necessary changes."
         elsif state == 'deny'
           additional_msg = "This means that your application has been rejected. You will not be able to resubmit a contributor application while your application is denied. You should contact the <a href='mailto:morphosource@duke.edu'>MorphoSource administrators</a> to learn what (if anything) may be done to resolve this situation."

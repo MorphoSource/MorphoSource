@@ -38,7 +38,7 @@
               </div>
             </div>
           </div>
-        <% elsif @petition.decision_state == 'clear' %>
+        <% elsif @petition.decision_state == 'return' %>
           <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="panel-title h2">Contributor Application Must Be Resubmitted</h2>
@@ -54,7 +54,7 @@
           </div>
         <% end %>
 
-        <% if @petition.decision_state.nil? || @petition.decision_state == 'clear' %>
+        <% if @petition.decision_state.nil? || @petition.decision_state == 'return' %>
           <div class="panel panel-default">
             <div class="panel-heading">
               <h2 class="panel-title h2">Become A Contributor or Data Manager</h2>

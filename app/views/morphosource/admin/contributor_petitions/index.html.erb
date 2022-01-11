@@ -43,7 +43,7 @@
           <th><%= t('.table.decision') %></th>
           <th><%= t('.table.decided_by') %></th>
           <th><%= t('.table.date_approved') %></th>
-          <th><%= t('.table.date_cleared') %></th>
+          <th><%= t('.table.date_returned') %></th>
           <th><%= t('.table.date_denied') %></th>
         <% end %>
       </thead>
@@ -71,7 +71,7 @@
               <%= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %> 
             </td>
             <td data-sort="<%= p.date_approved %>"><%= p.date_approved %></td>
-            <td data-sort="<%= p.date_cleared %>"><%= p.date_cleared %></td>
+            <td data-sort="<%= p.date_returned %>"><%= p.date_returned %></td>
             <td data-sort="<%= p.date_denied %>"><%= p.date_denied %></td>
           <% end %>
         </tr>
@@ -81,11 +81,14 @@
               <div class="row" style="padding: 0;">
                 <div class="col-xs-8">
                   <!-- <div>Message will be sent to user on application decision:</div> -->
+                  <%= f.label :decision_message, class: 'control-label' do %>
+                    Message to send with decision or already sent with decision:
+                  <% end %>
                   <%= f.text_area :decision_message, class: "form-control", placeholder: 'Send a message to user with decision.', :rows => 1 %>
                 </div>
-                <div class="col-xs-4 text-right">
+                <div class="col-xs-4 text-right" style="margin-top: 25px;">
                   <%= f.submit 'Approve', class: 'btn btn-sm btn-primary' %>
-                  <%= f.submit 'Clear', class: 'btn btn-sm btn-info' %>
+                  <%= f.submit 'Return', class: 'btn btn-sm btn-info', style: 'margin-left: 10px; margin-right: 10px;' %>
                   <%= f.submit 'Deny', class: 'btn btn-sm btn-danger' %>
                   <% if current_page?(main_app.admin_contributor_petitions_previous_path) %>
                     <input type="hidden" id="form_is_previous" name="form_is_previous" value="true">

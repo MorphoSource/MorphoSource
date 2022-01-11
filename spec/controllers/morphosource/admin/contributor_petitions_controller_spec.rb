@@ -69,11 +69,11 @@ RSpec.describe Morphosource::Admin::ContributorPetitionsController, :type => :co
         expect(user.contributor?).to be true
       end
 
-      it 'can clear petition' do
-        petition_params[:commit] = 'Clear'
+      it 'can return petition' do
+        petition_params[:commit] = 'Return'
         patch :decide_petition, params: petition_params
         petition.reload
-        expect(petition.decision_state).to eq('clear')
+        expect(petition.decision_state).to eq('return')
         expect(petition.decision_message).to eq('Test Message')
         expect(petition.decision_by).to eq(admin_user.id.to_s)
         expect(petition.decision_required).to be false

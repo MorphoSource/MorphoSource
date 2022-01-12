@@ -579,7 +579,7 @@ byebug
   end
 
   def valid_imaging_event_ct_filter_material
-    @valid_imaging_event_ct_filter_material ||= ['Molybdenum', 'Aluminum', 'Copper', 'Rhodium', 'Niobium', 'Europium', 'Lead']
+    @valid_imaging_event_ct_filter_material ||= ['Molybdenum', 'Aluminum', 'Copper', 'Rhodium', 'Niobium', 'Europium', 'Lead', 'Tin']
   end
 
   def valid_imaging_event_ct_target_type

@@ -29,6 +29,9 @@
 # Google Analytics config
 /config/analytics.yml
 
+# Browse Everything config
+/config/browse_everything_providers.yml
+
 # ---------------------------------------------------
 # Below are copied from RDR. Might need them later
 # ---------------------------------------------------

@@ -22,10 +22,6 @@ class DocsController < ApplicationController
   def contributor_terms
   end
 
-  def glossary
-    outdated_flash
-  end
-
   def guide
   end
 

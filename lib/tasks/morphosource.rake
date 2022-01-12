@@ -290,6 +290,13 @@ namespace :morphosource do
     end
   end
 
+  desc 'Set up MS email user'
+  task :create_email_sender_user => :environment do 
+    if Hyrax.config.contact_email.present?
+      User.create(email: Hyrax.config.contact_email, password: Morphosource.ms_init_pw)
+    end
+  end
+
   desc 'Set up MS dev team user accounts'
   task :create_production_users => :environment do
     emails = Morphosource.ms_init_usr.split(',')
@@ -309,6 +316,9 @@ namespace :morphosource do
     if !User.find_by(email: test_usr)
       User.create(email: test_usr, password: test_pw)
     end
+
+    # create email sender user
+    Rake::Task['morphosource:create_email_sender_user'].invoke
   end
 
   desc 'Set up MS development user accounts'
@@ -326,6 +336,9 @@ namespace :morphosource do
     contributors = Role.find_or_create_by(name: 'contributor')
     contributors.users += [contributor]
     contributors.save
+
+    # create email sender user
+    Rake::Task['morphosource:create_email_sender_user'].invoke
   end
 
   desc 'Re-index specified model, one job per doc'

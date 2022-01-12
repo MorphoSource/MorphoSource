@@ -101,8 +101,12 @@ describe 'morphosource rake tasks' do
       { user: contributor, settings: contributor_defaults },
       { user: registered, settings: registered_defaults } ] }
 
-    it 'creates admin, contributor, and registered users' do
-      expect { create_development_users.invoke }.to change { User.count }.by(3)
+    it 'creates admin, contributor, registered, and email users (if contact email present)' do
+      if Hyrax.config.contact_email.present? # 4 users created if contact email present
+        expect { create_development_users.invoke }.to change { User.count }.by(4)
+      else
+        expect { create_development_users.invoke }.to change { User.count }.by(3)
+      end
     end
 
     it 'assigns the new users appropriate roles' do

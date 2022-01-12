@@ -1,4 +1,39 @@
-// Javascript code for the Image Capture Event add/edit form
+// Puts concatenated values into filter on submit.
+function buildFilter(filter, filterGroupUl) {
+  var li = document.createElement('li');
+
+  var input = document.createElement('input');
+  input.className = 'string multi_value optional imaging_event_ie_filter form-control multi-text-field';
+  input.setAttribute("id", "imaging_event_ie_filter");
+  input.setAttribute("name", "imaging_event[ie_filter][]");
+  input.value = filter;
+
+  li.appendChild(input);
+  filterGroupUl.appendChild(li);
+}
+
+function prepIeFilter() {
+  // If X-ray modality is selected, submit filter fields. Otherwise, submit an empty filter.
+  var selectedModality = $('select[name="imaging_event[ie_modality]"]').val();
+  console.log('selectedModality '+ selectedModality);      
+  if (selectedModality === 'MicroNanoXRayComputedTomography') {
+    var filterCount = $('select[name="imaging_event[filter_material][]"]').length;
+    for (i = 0; i < filterCount; i++) {
+      var filterMaterial = $('select[name="imaging_event[filter_material][]"]')[i].value || '';
+      var filterThickness = $('input[name="imaging_event[filter_thickness][]"]')[i].value || '';
+      // make sure both fields are filled out before creating a filter string
+      if ((filterMaterial != '') && (filterThickness != '')) {
+        var filter = "Filter material: " + filterMaterial + ", Filter thickness: " + filterThickness;
+      } else {
+        var filter = '';
+      }
+      console.log('filter: '+filter);
+      buildFilter(filter, filterGroupUl);
+    }
+  } else {
+    buildFilter('', filterGroupUl);
+  }
+}
 
 var showFieldsByModality = function() {
   // hide modality specific fields, then show only specific fields based on the modality
@@ -24,29 +59,11 @@ var showFieldsByModality = function() {
   }
 }
 
-
-// Puts concatenated values into filter on submit.
-function buildFilter(filter, filterGroupUl) {
-  var li = document.createElement('li');
-
-  var input = document.createElement('input');
-  input.className = 'string multi_value optional imaging_event_ie_filter form-control multi-text-field';
-  input.setAttribute("id", "imaging_event_ie_filter");
-  input.setAttribute("name", "imaging_event[ie_filter][]");
-  input.value = filter;
-
-  li.appendChild(input);
-  filterGroupUl.appendChild(li);
-}
-
 $( document ).ready(function() {
   //console.log('ready... length='+ $('form[id*="imaging_event"]').length) ;
-  if ($('form[id*="imaging_event"]').length) { // if ICE add/edit form page
+  if ($('form[id*="imaging_event"]').length) { // if IE add/edit form page (submission flow, media edit, default hyrax IE form)
 
     showFieldsByModality();
-
-    // concatenate filter material, filter thickness to filter
-    ie_form = $('form[id*="imaging_event"]')[0];
 
     // Check the Filter Field (will be hidden)
     filterGroup = document.querySelector('div.imaging_event_ie_filter');
@@ -92,7 +109,7 @@ $( document ).ready(function() {
           name : 'imaging_event[filter_material][]',
           class : "form-control select optional form-control",
           append : [
-            $('<option />', {value : "", text : ""}),
+            $('<option />', {value : "", text : "--Select Material--"}),
             $('<option />', {value : "Molybdenum", text : "Molybdenum"}),
             $('<option />', {value : "Aluminum", text : "Aluminum"}),
             $('<option />', {value : "Copper", text : "Copper"}),
@@ -135,33 +152,14 @@ $( document ).ready(function() {
     filterGroupUl.innerHTML = '';
     $(filterGroup).hide(); // hide the field label and add button
 
-//    // On submit, material and thickness fields are concatenated and inserted into hidden default filter field.
-//    ie_form.addEventListener("submit", function() {
-//
-//      // If X-ray modality is selected, submit filter fields. Otherwise, submit an empty filter.
-//      var selectedModality = $('select[name="imaging_event[ie_modality]"]').val();
-//      if (selectedModality === 'MicroNanoXRayComputedTomography') {
-//
-//        var filterCount = $('select[name="imaging_event[filter_material][]"]').length;
-//        for (i = 0; i < filterCount; i++) {
-//
-//          var filterMaterial = $('select[name="imaging_event[filter_material][]"]')[i].value || '';
-//          var filterThickness = $('input[name="imaging_event[filter_thickness][]"]')[i].value || '';
-//
-//          // As long as at least one input is filled out, proceed with creating a filter string. Otherwise, create an empty string.
-//          if ((filterMaterial != '') || (filterThickness != '')) {
-//            var filter = "Filter material: " + filterMaterial + ", Filter thickness: " + filterThickness;
-//          } else {
-//            var filter = '';
-//          }
-//          //console.log('filter: '+filter);
-//          buildFilter(filter, filterGroupUl);
-//        }
-//      }
-//      else {
-//        buildFilter('', filterGroupUl);
-//      }
-//    });
+    // this is bening called by the default hyrax IE form 
+    // On submit, material and thickness fields are concatenated and inserted into hidden default filter field.
+    if ($("body").hasClass("dashboard")) {
+      var ie_form = $('form[id*="imaging_event"]')[0];
+      ie_form.addEventListener("submit", function() {
+        prepIeFilter();
+      });
+    }
 
-  } // end if ICE add/edit form page
+  } // end if IE add/edit form page
 });

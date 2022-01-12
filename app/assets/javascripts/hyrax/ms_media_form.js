@@ -93,7 +93,6 @@ $( document ).ready(function() {
           // Assemble new type, distance, and units inputs
           var li = document.createElement('li');
           li.className = 'field-wrapper input-group input-append';
-          //li.setAttribute('style', "display:flex; flex-direction:row; justify-content:space-evenly;");
 
           var typeInput = document.createElement('input');
           typeInput.className = "string multi_value optional form-control media_scale_bar_target_type form-control multi-text-field";
@@ -479,6 +478,7 @@ $( document ).ready(function() {
     var activeTab = $('.nav-tabs > li.active').find("a").attr("aria-controls");
     $(".related_form." + activeTab).show();
 
+
     form.addEventListener("submit", function(mediaSubmitEvent) {
       mediaSubmitEvent.preventDefault();
       if (uploadStatusOK) {
@@ -487,6 +487,7 @@ $( document ).ready(function() {
           if (isModalityValid() && hasRequiredFields()) {
             disablePageAndSave(".btn-save-media");
             if (HasEditImagingEventForm) {
+              prepFilter();
               $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
             } else {
               IsImagingEventOK = true;
@@ -496,6 +497,29 @@ $( document ).ready(function() {
         }
       } else {
         promptAutoSave(".btn-save-media");
+      }
+
+      function prepFilter() {
+        // If X-ray modality is selected, submit filter fields. Otherwise, submit an empty filter.
+        var selectedModality = $('select[name="imaging_event[ie_modality]"]').val();
+        console.log('selectedModality '+ selectedModality);      
+        if (selectedModality === 'MicroNanoXRayComputedTomography') {
+          var filterCount = $('select[name="imaging_event[filter_material][]"]').length;
+          for (i = 0; i < filterCount; i++) {
+            var filterMaterial = $('select[name="imaging_event[filter_material][]"]')[i].value || '';
+            var filterThickness = $('input[name="imaging_event[filter_thickness][]"]')[i].value || '';
+            // make sure both fields are filled out before creating a filter string
+            if ((filterMaterial != '') && (filterThickness != '')) {
+              var filter = "Filter material: " + filterMaterial + ", Filter thickness: " + filterThickness;
+            } else {
+              var filter = '';
+            }
+            console.log('filter: '+filter);
+            buildFilter(filter, filterGroupUl);
+          }
+        } else {
+          buildFilter('', filterGroupUl);
+        }
       }
 
       function isModalityValid() {

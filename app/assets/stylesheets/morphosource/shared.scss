@@ -340,3 +340,18 @@ input:checked + .slider:before {
 }
 /* /sliders */
 
+/* field specific styles */
+#imaging_event_ie_filter_wrapper {
+  select {
+    width: 122px !important; 
+    font-size: 10px;  
+  }
+  input {
+    width: 68px !important; 
+    font-size: 10px;
+  }
+  .has-warning {
+    display: none;
+  }
+}
+/* /field specific styles */

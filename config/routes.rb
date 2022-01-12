@@ -387,8 +387,9 @@ Rails.application.routes.draw do
 
     scope module: :admin do
       # contributor petitions
-      get 'admin/contributor_applications', action: :index, controller: :contributor_petitions, as: 'admin_contributor_petitions'
-      get 'admin/contributor_applications_previous', action: :index, controller: :contributor_petitions, as: 'admin_contributor_petitions_previous'
+      get 'admin/contributor_applications', action: :current_applications, controller: :contributor_petitions, as: 'admin_contributor_petitions'
+      get 'admin/contributor_applications_previous', action: :previous_applications, controller: :contributor_petitions, as: 'admin_contributor_petitions_previous'
+      get 'admin/contributor_applications_previous/(:id)', action: :update_application_decision, controller: :contributor_petitions, as: 'admin_update_contributor_petition_decision'
       patch 'admin/contributor_applications/(:id)', action: :decide_petition, controller: :contributor_petitions, as: 'admin_contributor_petitions_decide'
 
       # fund codes

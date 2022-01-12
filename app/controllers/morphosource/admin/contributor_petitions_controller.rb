@@ -6,13 +6,46 @@ module Morphosource
       before_action :require_permissions
       with_themed_layout 'morphosource_dashboard'
 
-      def index
+      def current_applications
+        @tab = 'current'
+        @all_petitions = ContributorPetition.where(decision_required: true)
+        @decided_petition_count = ContributorPetition.where.not(decision_required: true).count
+        @undecided_petition_count = ContributorPetition.where(decision_required: true).count
+
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         add_breadcrumb t(:'morphosource.admin.contributor_petitions.header'), main_app.admin_contributor_petitions_path
-      
-        @undecided_petitions = ContributorPetition.where(decision_required: true)
-        @decided_petitions = ContributorPetition.where.not(decision_required: true)
+
+        render('index')
+      end
+
+      def previous_applications
+        @tab = 'previous'
+        @all_petitions = ContributorPetition.where.not(decision_required: true)
+        @decided_petition_count = ContributorPetition.where.not(decision_required: true).count
+        @undecided_petition_count = ContributorPetition.where(decision_required: true).count
+
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'morphosource.admin.contributor_petitions.header'), main_app.admin_contributor_petitions_path
+
+        render('index')
+      end
+
+      def update_application_decision
+        @tab = 'previous'
+        @all_petitions = ContributorPetition.where.not(decision_required: true)
+        @decided_petition_count = ContributorPetition.where.not(decision_required: true).count
+        @undecided_petition_count = ContributorPetition.where(decision_required: true).count
+        if ContributorPetition.exists?(params[:id])
+          @petition = ContributorPetition.find(params[:id])
+        end
+
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'morphosource.admin.contributor_petitions.header'), main_app.admin_contributor_petitions_path
+
+        render('index')
       end
 
       def decide_petition

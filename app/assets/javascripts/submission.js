@@ -1331,7 +1331,7 @@ $( document ).ready(function() {
           });
           $('[name="media[date_created]"]').val($('#imaging_event_date_created').val());
 
-          prepIeFilter();
+          prepIeFilter(true);
           data.imagingEventCreateParams = $('#new_imaging_event').serializeArray();
           data.savedStep = 8;
 

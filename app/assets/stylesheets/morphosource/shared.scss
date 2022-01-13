@@ -343,11 +343,11 @@ input:checked + .slider:before {
 /* field specific styles */
 #imaging_event_ie_filter_wrapper {
   select {
-    width: 122px !important; 
-    font-size: 10px;  
+    width: 50% !important; 
+    font-size: 11px;  
   }
   input {
-    width: 68px !important; 
+    width: 25% !important; 
     font-size: 10px;
   }
   .has-warning {

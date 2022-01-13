@@ -12,7 +12,7 @@ function buildFilter(filter, filterGroupUl) {
   filterGroupUl.appendChild(li);
 }
 
-function prepIeFilter() {
+function prepIeFilter(isSubmission = false) {
   // If X-ray modality is selected, submit filter fields. Otherwise, submit an empty filter.
   var selectedModality = $('select[name="imaging_event[ie_modality]"]').val();
   console.log('selectedModality '+ selectedModality);      
@@ -21,11 +21,22 @@ function prepIeFilter() {
     for (i = 0; i < filterCount; i++) {
       var filterMaterial = $('select[name="imaging_event[filter_material][]"]')[i].value || '';
       var filterThickness = $('input[name="imaging_event[filter_thickness][]"]')[i].value || '';
-      // make sure both fields are filled out before creating a filter string
-      if ((filterMaterial != '') && (filterThickness != '')) {
-        var filter = "Filter material: " + filterMaterial + ", Filter thickness: " + filterThickness;
+      if (isSubmission) {
+        // make sure both fields are filled out before creating a filter string
+        if ((filterMaterial != '') && (filterThickness != '')) {
+          var filter = "Filter material: " + filterMaterial + ", Filter thickness: " + filterThickness;
+        } else {
+          var filter = '';
+        }
       } else {
-        var filter = '';
+        // allow other values
+        if ((filterMaterial != '') && (filterThickness != '')) {
+          var filter = "Filter material: " + filterMaterial + ", Filter thickness: " + filterThickness;
+        } else if ((filterMaterial == '') && (filterThickness != '')) {
+          var filter = filterThickness;
+        } else {
+          var filter = '';
+        }
       }
       console.log('filter: '+filter);
       buildFilter(filter, filterGroupUl);

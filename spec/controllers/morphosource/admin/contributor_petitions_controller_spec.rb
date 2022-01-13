@@ -5,7 +5,7 @@ RSpec.describe Morphosource::Admin::ContributorPetitionsController, :type => :co
   let(:user) { User.create(email: 'user@email.com', password: 'password')}
   let(:admin_user) { User.create(email: 'adminuser@email.com', password: 'password')}
   
-  describe 'GET #index' do
+  describe 'GET #current_applications' do
     before do 
       allow(controller).to receive(:current_user) { user }
     end
@@ -16,14 +16,14 @@ RSpec.describe Morphosource::Admin::ContributorPetitionsController, :type => :co
       end
 
       it 'page loads successfully' do
-        get :index
+        get :current_applications
         expect(response).to have_http_status(200)
       end
     end
 
     context 'when user is not admin' do
       it 'page is forbidden' do
-        get :index
+        get :current_applications
         expect(response).to have_http_status(302)
         expect(response).to redirect_to('/?locale=en')
       end

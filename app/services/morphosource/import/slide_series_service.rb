@@ -4,6 +4,10 @@ module Morphosource
 
       include Morphosource::CustomThumbnails
 
+      def self.call(service, resource_id, user_email)
+        self.new(service, resource_id, user_email).call
+      end
+
       def initialize(service, resource_id, user_email)
         @service = service
         @resource_id = resource_id
@@ -11,91 +15,91 @@ module Morphosource
       end
 
       def call
-        if @service == "GBIF"
-          import_gbif_slides
-        end
+        import_slide_series
         @collection
+      end
+
+      def import_slide_series
+        fetch_json
+        create_series_collection(collection_title)
+        import_slides
+      end
+
+      def import_slides
+        slides.each do |slide_json|
+          @slide = slide_class.new(slide_json)
+          @media = create_new_media
+          add_fileset_and_file
+          characterize_file
+          create_thumbnail
+          add_to_series_collection
+          apply_permissions_and_save
+        end
+      end
+
+      def create_new_media
+        Media.create(title: @slide.title,
+                     short_description: @slide.short_description,
+                     media_type: ["Image"],
+                     license: @slide.license,
+                     publisher: @slide.publisher,
+                     rights_holder: @slide.rights_holder,
+                     related_url: @slide.related_url,
+                     identifier: @slide.identifier,
+                     orientation: @slide.orientation,
+                     depositor: @manager.ms_id,
+                     slice_thickness: @slide.slice_thickness,
+                     x_spacing: @slide.x_spacing,
+                     y_spacing: @slide.y_spacing,
+                     z_spacing: @slide.z_spacing,
+                     slice_thickness: @slide.slice_thickness,
+                     unit: @slide.unit,
+                     visibility: @slide.visibility,
+                     fileset_accessibility: @slide.fileset_accessibility,
+                     preview_mode: ["Interactive/Embeddable"],
+                     date_uploaded: Date.today)
+      end
+
+      def add_fileset_and_file
+        name = @slide.file_name
+        file_set = FileSet.create(title: [name], label: name)
+        @media.ordered_members << file_set
+        file = Tempfile.new(name)
+        Hydra::Works::AddFileToFileSet.call(file_set, file, :original_file, update_existing: true, versioning: true)
+      end
+
+      def characterize_file
+        file = @media.file_sets.first.original_file
+        @slide.file_characterization_methods.each do |method|
+          file.send(method+'=', @slide.send(method))
+        end
+        file.save!
+      end
+
+      def add_to_series_collection
+        @media.member_of_collections += [@collection]
+        Hyrax::PermissionTemplateApplicator.apply(@collection.permission_template).to(model: @media)
+      end
+
+      def apply_permissions_and_save
+        @media.save!
+        InheritPermissionsJob.perform_later(@media)
       end
 
       private
 
-        def slide_series_collection(title)
+        def create_series_collection(title)
           project_collection_type = Hyrax::CollectionType.where(title: "Project").first
-          collection = Collection.create(title: [title], collection_type_gid: project_collection_type.gid, depositor: @manager.ms_id, visibility: 'open')
-          collection.create_collection_groups
-          Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-          collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-          collection
-        end
-
-        def import_gbif_slides
-          json = get_gbif_json
-          media = json["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"]
-          @collection = slide_series_collection(json["scientificName"])
-          media.each do |m|
-            # every slide has two entries, best quality and thumbnail. 
-            next if m["http://rs.tdwg.org/ac/terms/variantLiteral"] == "Best Quality"
-            title = [m["http://purl.org/dc/terms/description"]] #["HEC-1009 Slide A"]
-            description = [m["http://purl.org/dc/terms/description"]] #["HEC-1009 Slide A"]
-            license = [m["http://ns.adobe.com/xap/1.0/rights/WebStatement"]] #["http://creativecommons.org/licences/by-nc-sa/3.0/"]
-            publisher = [m["http://rs.tdwg.org/ac/terms/metadataProviderLiteral"]] #["Museum of Comparative Zoology, Harvard University"]
-            rights_holder = [m["http://ns.adobe.com/xap/1.0/rights/Owner"]] #["Museum of Comparative Zoology, Harvard University"]
-            @import_url = m["http://rs.tdwg.org/ac/terms/accessURI"].split.present? ?  m["http://rs.tdwg.org/ac/terms/accessURI"].split("/tiles/", 2).first : nil #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300"
-            slide_atlas_url = @import_url.gsub('api/v1/','#') #"https://images.slide-atlas.org/#item/5c454d3c70aaa9064404a300"
-            related_url = [m["http://purl.org/dc/terms/identifier"], slide_atlas_url] #["http://mczbase.mcz.harvard.edu/media/1468742", "https://images.slide-atlas.org/#item/5c454d3c70aaa9064404a300"]
-            identifier = [m["http://rs.tdwg.org/ac/terms/accessURI"][/\/item\/(.*?)\/tiles\//,1]] #["5c454d3c70aaa9064404a300"]
-            @thumbnail_path = m["http://rs.tdwg.org/ac/terms/accessURI"].split("?").first #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300/tiles/thumbnail
-
-            @media = Media.create(title: title, description: description, license: license, rights_holder: rights_holder, depositor: @manager.ms_id, publisher: publisher, media_type: ['Image'], import_url: @import_url, identifier: identifier, related_url: related_url, visibility: 'open', fileset_accessibility: ['open'])
-
-            admin_user = User.find_by(email: 'admin@email.com')
-            Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(Media.new, ::Ability.new(admin_user), @media.attributes))
-
-            characterize_and_create_thumbnail
-
-            @media.member_of_collections += [@collection]
-            Hyrax::PermissionTemplateApplicator.apply(@collection.permission_template).to(model: @media)
-            @media.save!
-          end
-        end
-
-        def get_gbif_json
-          uri = "https://api.gbif.org/v1/occurrence/#{@resource_id}"
-          response = RestClient.get uri
-          JSON.parse(response.body)
-        end
-
-        def characterize_and_create_thumbnail
-          make_derivative_directory
-          characterize_file
-          create_thumbnail
-        end
-
-        def characterize_file
-          @file_uri = @import_url + '/download'
-          copy_remote_file(@media.identifier.first + '_full')
-          file_set = FileSet.create
-          @media.ordered_members << file_set
-          begin
-            response = Faraday.head @file_uri
-            name = response.headers["content-disposition"].match(/filename=(\"?)(.+)\1/)[2]
-            file_set.title = [name]
-            file_set.label = name
-            text_file = Tempfile.new(name, encoding: 'ascii-8bit')
-            Hydra::Works::AddFileToFileSet.call(file_set, text_file, :original_file, update_existing: true, versioning: true)
-
-            CharacterizeNoDeriveJob.perform_now(file_set, file_set.original_file.id, @tempfile.path)
-            file_set.save
-          ensure
-            @tempfile.close
-            @tempfile.unlink
-          end
+          @collection = Collection.create(title: [title], collection_type_gid: project_collection_type.gid, depositor: @manager.ms_id, visibility: 'open')
+          @collection.create_collection_groups
+          Morphosource::Collections::PermissionsCreateService.create_default(collection: @collection)
+          @collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+          @collection
         end
 
         # override Morphosource::CustomThumbnails create_thumbnail
         def create_thumbnail
-          @file_uri = @thumbnail_path
-          copy_remote_file(@media.identifier.first + '_thumbnail')
+          copy_remote_file
           create_derivative
           update_thumbnail_id
         end
@@ -104,20 +108,20 @@ module Morphosource
           OpenStruct.new(:path => @tempfile.path, :tempfile => @tempfile)
         end
 
-        def copy_remote_file(name)
+        def copy_remote_file
+          name = @media.identifier.first + '_thumbnail'
           @tempfile = Tempfile.new(name, encoding: 'ascii-8bit')
-          write_file(@tempfile)
+          write_file
         end
 
-        def write_file(f)
+        def write_file
           retriever = BrowseEverything::Retriever.new
-          uri_spec = ActiveSupport::HashWithIndifferentAccess.new(url: URI(@file_uri), headers: {})
+          uri_spec = ActiveSupport::HashWithIndifferentAccess.new(url: URI(@slide.slide_thumbnail_path), headers: {})
           retriever.retrieve(uri_spec) do |chunk|
-            f.write(chunk)
+            @tempfile.write(chunk)
           end
-          f.rewind
+          @tempfile.rewind
         end
-
     end
   end
 end

@@ -33,7 +33,7 @@ module Morphosource
           media = json["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"]
           @collection = slide_series_collection(json["scientificName"])
           media.each do |m|
-            # every slide has two entries, best quality and thumbnail. 
+            # every slide has two entries, best quality and thumbnail.
             next if m["http://rs.tdwg.org/ac/terms/variantLiteral"] == "Best Quality"
             title = [m["http://purl.org/dc/terms/description"]] #["HEC-1009 Slide A"]
             description = [m["http://purl.org/dc/terms/description"]] #["HEC-1009 Slide A"]
@@ -72,8 +72,11 @@ module Morphosource
         end
 
         def characterize_file
-          @file_uri = @import_url + '/download'
+          # @file_uri = @import_url + '/download'
+          @file_uri = "https://images.slide-atlas.org/api/v1/file/5a5f89e41fbb906b49446ddf/download"
+          byebug
           copy_remote_file(@media.identifier.first + '_full')
+          byebug
           file_set = FileSet.create
           @media.ordered_members << file_set
           begin
@@ -85,6 +88,7 @@ module Morphosource
             Hydra::Works::AddFileToFileSet.call(file_set, text_file, :original_file, update_existing: true, versioning: true)
 
             CharacterizeNoDeriveJob.perform_now(file_set, file_set.original_file.id, @tempfile.path)
+            byebug
             file_set.save
           ensure
             @tempfile.close

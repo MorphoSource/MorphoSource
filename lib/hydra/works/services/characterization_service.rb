@@ -28,7 +28,9 @@ module Hydra::Works
     def characterize
       content = source_to_content
       extracted_md = extract_metadata(content)
+
       terms = parse_metadata(extracted_md)
+      byebug
       store_metadata(terms)
     end
 

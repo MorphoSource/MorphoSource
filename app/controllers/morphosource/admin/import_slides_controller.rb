@@ -5,16 +5,23 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'
 
       def index
-
       end
 
       def import_slides
+        organization = params["organization"]
         service = params["service"]
         resource_id = params["resource_id"]
         user_email = params["user_email"]
-        @collection = Morphosource::Import::SlideSeriesService.new(service,resource_id,user_email).call
+        @collection = import_service_class.new(service,resource_id,user_email).call
 
         redirect_to project_media_path(@collection)
+      end
+
+      def import_service_class
+        case params["organization"]
+        when "MCZ"
+          Morphosource::Import::MczSlideSeriesService
+        end
       end
 
     private

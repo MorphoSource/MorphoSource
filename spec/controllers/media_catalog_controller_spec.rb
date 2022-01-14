@@ -135,12 +135,12 @@ RSpec.describe MediaCatalogController, :type => :controller do
         end
       end
 
-      describe 'depositor' do
-        subject { index_fields['depositor_tesim'] }
+      describe 'data manager' do
+        subject { index_fields['user_with_ownership_ssi'] }
 
         it 'has the correct attributes' do
-          expect(subject.label).to eq('Owner')
-          expect(subject.field).to eq('depositor_tesim')
+          expect(subject.label).to eq('Data Manager')
+          expect(subject.field).to eq('user_with_ownership_ssi')
         end
       end
 

@@ -339,17 +339,3 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 /* /sliders */
-
-/* field specific styles */
-#imaging_event_ie_filter_wrapper {
-  select {
-    width: 60% !important; 
-  }
-  input {
-    width: 25% !important; 
-  }
-  .has-warning {
-    display: none;
-  }
-}
-/* /field specific styles */

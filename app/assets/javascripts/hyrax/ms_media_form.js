@@ -487,7 +487,6 @@ $( document ).ready(function() {
           if (isModalityValid() && hasRequiredFields()) {
             disablePageAndSave(".btn-save-media");
             if (HasEditImagingEventForm) {
-              prepIeFilter();
               $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
             } else {
               IsImagingEventOK = true;

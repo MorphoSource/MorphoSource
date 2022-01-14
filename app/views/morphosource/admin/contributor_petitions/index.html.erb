@@ -1,0 +1,171 @@
+<% provide :page_title, "Contributor Applications" %>
+
+<div class="row">
+  <div class="col-xs-12 main-header">
+    <h1>
+      <span class="fa fa-award" aria-hidden="true"></span>
+      Contributor Applications
+    </h1>
+  </div>
+</div>
+
+<% if @petition.present? %>
+<div class="panel panel-default" style="display: table;">
+  <div class="panel-heading">
+    <h2 class="panel-title h2">Update Contributor Application Decision</h2>
+  </div>
+  <div class="panel-body">
+    <table class="table table-striped" style="font-size: smaller;">
+      <thead>
+        <th><%= t('.table.user') %></th>
+        <th><%= t('.table.reason') %></th>
+        <th><%= t('.table.user_affiliation') %></th>
+        <th><%= t('.table.user_department') %></th>
+        <th><%= t('.table.user_demographics') %></th>
+        <th><%= t('.table.user_advisor') %></th>
+        <th><%= t('.table.contribution_amount') %></th>
+        <th><%= t('.table.terms_agree') %></th>
+        <th><%= t('.table.decision') %></th>
+        <th><%= t('.table.decided_by') %></th>
+        <th><%= t('.table.date_approved') %></th>
+        <th><%= t('.table.date_returned') %></th>
+        <th><%= t('.table.date_denied') %></th>
+      </thead>
+      <tbody>
+        <% demographics = ( @petition.user_demographics.presence || []).join('; ') %>
+        <tr>
+          <td><%= link_to @petition.user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(@petition.user) %></td>
+          <td><%= @petition.reason %></td>
+          <td><%= @petition.user_affiliation %></td>
+          <td><%= @petition.user_department %></td>
+          <td><%= demographics %></td>
+          <td><%= @petition.user_advisor %></td>
+          <td><%= @petition.contribution_amount %></td>
+          <td><%= @petition.terms_agree ? "Yes" : "No" %></td>
+          <td><%= @petition.decision_state.capitalize %></td>
+          <% decision_user = User.find(@petition.decision_by) %>
+          <td>
+            <%= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %> 
+          </td>
+          <td><%= @petition.date_approved %></td>
+          <td><%= @petition.date_returned %></td>
+          <td><%= @petition.date_denied %></td>
+        </tr>
+      </tbody>
+    </table>
+    <%= simple_form_for @petition, url: main_app.admin_contributor_petitions_decide_path(:id => @petition.id), method: :patch do |f| %>
+      <div class="row">
+        <div class="col-xs-12">
+          <%= f.label :decision_message, class: 'control-label' do %>
+            Message to send with decision or already sent with decision:
+          <% end %>
+          <%= f.text_area :decision_message, class: "form-control", placeholder: 'Send a message to user with decision.', :rows => 1 %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 text-center" style="margin-top: 25px;">
+          <%= f.submit 'Approve', class: 'btn btn-sm btn-primary' %>
+          <%= f.submit 'Return', class: 'btn btn-sm btn-info', style: 'margin-left: 10px; margin-right: 10px;' %>
+          <%= f.submit 'Deny', class: 'btn btn-sm btn-danger' %>
+          <input type="hidden" id="form_is_previous" name="form_is_previous" value="true">
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+<% end %>
+
+<div class="panel panel-default tabs" style="display: table;">
+  <ul class="nav nav-tabs" id="my_nav" role="navigation">
+    <li<%= ' class="active"'.html_safe if @tab == 'current' %>>
+      <%= link_to(main_app.admin_contributor_petitions_path) do %>
+        <%= t("Current Applications") %>
+        <% if @undecided_petition_count.present? %>
+          <span class="count label label-danger" style="vertical-align: text-top;"><%= number_with_delimiter(@undecided_petition_count, :delimiter => ',') %></span>
+        <% end %>
+      <% end %>
+    </li>
+    <li<%= ' class="active"'.html_safe if @tab == 'previous' %>>
+      <%= link_to(main_app.admin_contributor_petitions_previous_path) do %>
+        <%= t("Previous Applications") %>
+        <% if @decided_petition_count.present? %>
+          <span class="count label label-info" style="vertical-align: text-top;"><%= number_with_delimiter(@decided_petition_count, :delimiter => ',') %></span>
+        <% end %>
+      <% end %>
+    </li>
+  </ul>
+  <div class="panel-body">
+    <table class="table table-striped datatable" style="font-size: smaller;">
+      <thead>
+        <th><%= t('.table.user') %></th>
+        <th><%= t('.table.reason') %></th>
+        <th><%= t('.table.user_affiliation') %></th>
+        <th><%= t('.table.user_department') %></th>
+        <th><%= t('.table.user_demographics') %></th>
+        <th><%= t('.table.user_advisor') %></th>
+        <th><%= t('.table.contribution_amount') %></th>
+        <th><%= t('.table.terms_agree') %></th>
+        <% if @tab == 'previous' %>
+          <th><%= t('.table.decision') %></th>
+          <th><%= t('.table.decision_message') %></th>
+          <th><%= t('.table.decided_by') %></th>
+          <th><%= t('.table.date_approved') %></th>
+          <th><%= t('.table.date_returned') %></th>
+          <th><%= t('.table.date_denied') %></th>
+          <th><%= t('.table.action') %></th>
+        <% end %>
+      </thead>
+      <tbody>
+      <% ( @all_petitions || [] ).each do |p| %>
+        <% demographics = ( p.user_demographics.presence || []).join('; ') %>
+        <tr>
+          <td data-sort="<%= p.user.name_or_email %>"><%= link_to p.user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(p.user) %></td>
+          <td data-sort="<%= p.reason %>"><%= p.reason %></td>
+          <td data-sort="<%= p.user_affiliation %>"><%= p.user_affiliation %></td>
+          <td data-sort="<%= p.user_department %>"><%= p.user_department %></td>
+          <td data-sort="<%= demographics %>"><%= demographics %></td>
+          <td data-sort="<%= p.user_advisor %>"><%= p.user_advisor %></td>
+          <td data-sort="<%= p.contribution_amount %>"><%= p.contribution_amount %></td>
+          <td data-sort="<%= p.terms_agree %>"><%= p.terms_agree ? "Yes" : "No" %></td>
+          <% if @tab == 'previous' %>
+            <td data-sort="<%= p.decision_state %>"><%= p.decision_state.capitalize %></td>
+            <td data-sort="<%= p.decision_message %>"><%= p.decision_message %></td>
+            <% decision_user = User.find(p.decision_by) %>
+            <td data-sort="<%= decision_user.name_or_email %>">
+              <%= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %> 
+            </td>
+            <td data-sort="<%= p.date_approved %>"><%= p.date_approved %></td>
+            <td data-sort="<%= p.date_returned %>"><%= p.date_returned %></td>
+            <td data-sort="<%= p.date_denied %>"><%= p.date_denied %></td>
+            <td>
+              <%= link_to 'Update Decision', main_app.admin_update_contributor_petition_decision_path(:id => p.id), class: 'btn btn-sm btn-primary' %>
+            </td>
+          <% end %>
+        </tr>
+        <% if @tab == 'current' %>
+          <tr>
+            <td colspan="8" style="padding-bottom: 50px;">
+              <%= simple_form_for p, url: main_app.admin_contributor_petitions_decide_path(:id => p.id), method: :patch do |f| %>
+                <div class="row" style="padding: 0;">
+                  <div class="col-xs-8">
+                    <!-- <div>Message will be sent to user on application decision:</div> -->
+                    <%= f.label :decision_message, class: 'control-label' do %>
+                      Message to send with decision or already sent with decision:
+                    <% end %>
+                    <%= f.text_area :decision_message, class: "form-control", placeholder: 'Send a message to user with decision.', :rows => 1 %>
+                  </div>
+                  <div class="col-xs-4 text-right" style="margin-top: 25px;">
+                    <%= f.submit 'Approve', class: 'btn btn-sm btn-primary' %>
+                    <%= f.submit 'Return', class: 'btn btn-sm btn-info', style: 'margin-left: 10px; margin-right: 10px;' %>
+                    <%= f.submit 'Deny', class: 'btn btn-sm btn-danger' %>
+                  </div>
+                </div>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

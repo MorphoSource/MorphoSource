@@ -25,8 +25,8 @@ RSpec.describe Morphosource::PhysicalObjectIndexer do
   describe 'custom fields' do
     it 'indexes organization, media_type, media_collections, and media_keyword' do
       # organization
-      expect(subject['organization_ssim']).to eq(organization.title.to_a)
       expect(subject['organization_tesim']).to eq(organization.title.to_a)
+      expect(subject['organization_ssim']).to eq(organization.title.to_a)
       expect(subject['organization_id_ssim']).to eq([organization.id])
       # media_type
       expect(subject['public_media_type_tesim']).to eq(media.human_readable_media_type.to_a)

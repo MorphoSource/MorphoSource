@@ -21,9 +21,7 @@ module Morphosource::Derivatives
         raise Morphosource::Derivatives::FijiError.new("Input directory: #{input_path} does not exist.")
       end
 
-      imagej_macro
       internal_call # to do add some output/post-process controls
-      cleanup_tmp_files
     end
 
     def tool_path
@@ -32,6 +30,7 @@ module Morphosource::Derivatives
 
     protected
       def imagej_macro
+        # Deprecated, no longer used
         erb_src = File.join(__dir__, 'imagej_macro.txt.erb')
         txt_dst = File.join(tmp_dir_path, File.basename(erb_src, '.erb'))
         File.open(txt_dst, 'w') do |f|
@@ -41,11 +40,25 @@ module Morphosource::Derivatives
       end
 
       def cleanup_tmp_files
+        # Deprecated, no longer used
         FileUtils.remove_dir tmp_dir_path
       end
 
+      def script_path
+        File.join(__dir__, 'imagej_script.js')
+      end
+
+      def script_parameters
+        "input_path=\"#{dir_wrap(input_path)}\",output_path=\"#{dir_wrap(output_path)}\",linear_scale_factor=#{linear_scale_factor}"
+      end
+
+      def dir_wrap(d)
+        # ensure dir path ends with trailing '/'
+        File.join(d, '')
+      end
+
       def command
-        "#{tool_path}/Fiji.app/ImageJ-linux64 --headless -macro #{macro_path}"
+        "#{tool_path}/Fiji.app/ImageJ-linux64 --ij2 --headless --console --run #{script_path} '#{script_parameters}'"
       end
   end
 end

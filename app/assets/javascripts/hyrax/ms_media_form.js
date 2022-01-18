@@ -93,7 +93,6 @@ $( document ).ready(function() {
           // Assemble new type, distance, and units inputs
           var li = document.createElement('li');
           li.className = 'field-wrapper input-group input-append';
-          //li.setAttribute('style', "display:flex; flex-direction:row; justify-content:space-evenly;");
 
           var typeInput = document.createElement('input');
           typeInput.className = "string multi_value optional form-control media_scale_bar_target_type form-control multi-text-field";
@@ -478,6 +477,7 @@ $( document ).ready(function() {
     $(".related_form").hide();
     var activeTab = $('.nav-tabs > li.active').find("a").attr("aria-controls");
     $(".related_form." + activeTab).show();
+
 
     form.addEventListener("submit", function(mediaSubmitEvent) {
       mediaSubmitEvent.preventDefault();

@@ -505,7 +505,7 @@ byebug
       "imaging_event.ct.flux_normalization" => "boolean",
       "imaging_event.ct.geometric_calibration" => "boolean",
       "imaging_event.ct.shading_correction" => "boolean",
-      "imaging_event.ct.filter_material" => "controlled",
+      "imaging_event.ct.filter_material" => "text",
       "imaging_event.ct.filter_thickness" => "text",
       "imaging_event.ct.frame_averaging" => "text",
       "imaging_event.ct.projections" => "text",
@@ -576,10 +576,6 @@ byebug
 
   def valid_biological_specimen_sex
     @valid_biological_specimen_sex ||= ['Female', 'Male', 'Unknowable', 'Undetermined', 'Hermaphrodite', 'Gynandromorph']
-  end
-
-  def valid_imaging_event_ct_filter_material
-    @valid_imaging_event_ct_filter_material ||= ['Molybdenum', 'Aluminum', 'Copper', 'Rhodium', 'Niobium', 'Europium', 'Lead', 'Tin']
   end
 
   def valid_imaging_event_ct_target_type

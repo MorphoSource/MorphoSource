@@ -123,9 +123,11 @@ class BatchSubmissionsController < ApplicationController
         on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
       end
       collection_ids = []
-      if request.params["media"]&["member_of_collections_attributes"].present?
-        request.params["media"]["member_of_collections_attributes"].each do |k, v|
-          collection_ids << v["id"] if v["_destroy"] == "false"
+      if request.params["media"].present?
+        if request.params["media"]["member_of_collections_attributes"].present?
+          request.params["media"]["member_of_collections_attributes"].each do |k, v|
+            collection_ids << v["id"] if v["_destroy"] == "false"
+          end
         end
       end
       fund_code_id = request.params["batch_submission"]["fund_code"]
@@ -505,8 +507,7 @@ byebug
       "imaging_event.ct.flux_normalization" => "boolean",
       "imaging_event.ct.geometric_calibration" => "boolean",
       "imaging_event.ct.shading_correction" => "boolean",
-      "imaging_event.ct.filter_material" => "text",
-      "imaging_event.ct.filter_thickness" => "text",
+      "imaging_event.ct.filter" => "text",
       "imaging_event.ct.frame_averaging" => "text",
       "imaging_event.ct.projections" => "text",
       "imaging_event.ct.voltage" => "text",

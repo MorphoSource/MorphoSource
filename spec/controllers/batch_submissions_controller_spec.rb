@@ -67,7 +67,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         } }
         it "shows result with modality MicroNanoXRayComputedTomography pre-selected" do
           post 'submit', :params => params 
-          expect(response).to render_template 'result'
+          expect(response).to render_template 'validation_fail'
           html = response.body
           expect(html).to include 'media.media_file: File ANSP_Fish_53046_Head.zip cannot be found. Please check your shared folder.'
           expect(html).to include 'media.media_type: Please enter a valid value: "Image", "Video", "CTImageSeries", "PhotogrammetryImageSeries", "Mesh", "Other"'
@@ -84,7 +84,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'imaging_event.ct.acquisition_type: Please enter a valid value: "ConstantAngle", "Free", "Sequenced", "Spiral", "Stationary"'
           expect(html).to include 'imaging_event.photogrammetry.focal_length_type: Value should not be present when modality MicroNanoXRayComputedTomography is pre-selected.'
           expect(html).to include 'imaging_event.photography.light_source: Value should not be present when modality MicroNanoXRayComputedTomography is pre-selected.'
-          expect(html).to include 'media.y_spacing: Value should present for media type CTImageSeries.'
+          expect(html).to include 'media.y_spacing: Value should be present for media type CTImageSeries.'
           expect(html).to include 'media.z_spacing: Please enter a valid number.'
           expect(html).to include 'media.publication_status: Please enter a valid value: "Open", "RestrictedDownload", "Private"'
           expect(html).to include 'A value can be present in media.parent_file or media.parent_ms_id, but not in both.'
@@ -103,7 +103,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photogrammetry"}} }
         it "shows result with modality Photogrammetry pre-selected" do
           post 'submit', :params => params 
-          expect(response).to render_template 'result'
+          expect(response).to render_template 'validation_fail'
           html = response.body
           expect(html).to include 'imaging_event.ct.exposure_time: Value should not be present when modality Photogrammetry is pre-selected'
           expect(html).to include 'imaging_event.photogrammetry.focal_length_type: Please enter a valid value: "Variable", "Fixed"'
@@ -115,7 +115,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photography"}} }
         it "shows result with modality Photography pre-selected" do
           post 'submit', :params => params 
-          expect(response).to render_template 'result'
+          expect(response).to render_template 'validation_fail'
           html = response.body
           expect(html).to include 'imaging_event.ct.acquisition_type: Value should not be present when modality Photography is pre-selected.'
           expect(html).to include 'imaging_event.photogrammetry.focal_length_type: Value should not be present when modality Photography is pre-selected.'

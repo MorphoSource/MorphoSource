@@ -411,11 +411,15 @@ byebug
         else
           required = false
         end
+      else
+        required = false
       end
-      if (!error_msg.present?) && (required)
-        unless is_number? val
-          error_msg = "#{field_name}: Please enter a valid number."
-        end        
+      if (!error_msg.present?)
+        unless (!val.present?) && (!required)
+          unless is_number? val
+            error_msg = "#{field_name}: Please enter a valid number."
+          end
+        end
       end
     when "integer"
       unless is_integer? val

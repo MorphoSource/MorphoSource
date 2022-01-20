@@ -55,6 +55,19 @@ class User < ApplicationRecord
      serialize field, Array
    end
 
+  # Devise callback for checking if user is active
+  def active_for_authentication?
+    super && active
+  end
+
+  def inactive_message
+    active ? super : ms_inactive_message
+  end
+
+  def ms_inactive_message
+    I18n.t 'user.inactive_message'
+  end
+
   # Devise callback for action after authentication
   def after_database_authentication
     if ms1_user
@@ -136,6 +149,14 @@ class User < ApplicationRecord
       charge_api_group.users -= [self]
       puts "#{display_name} charge api user status removed"
     end
+  end
+
+  def make_active
+    update_attributes(active: true)
+  end
+
+  def make_inactive
+    update_attributes(active: false)
   end
 
   # true if user has download access or an approved cart item

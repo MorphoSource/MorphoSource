@@ -195,6 +195,9 @@ Rails.application.routes.draw do
       resources :categories, only: [:index], action: :categories, controller: 'browse', as: 'browse_categories'
     end
 
+    # Routes for making user account active/inactive
+    post 'users/:id/make_active' => 'users#make_user_active', as: 'make_active'
+    post 'users/:id/make_inactive' => 'users#make_user_inactive', as: 'make_inactive'
   end
 
   # override ProfilesController

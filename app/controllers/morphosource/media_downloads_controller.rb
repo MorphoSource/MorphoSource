@@ -123,7 +123,7 @@ module Morphosource
       end
 
       def user_can_download?(user, media)
-        user.can?(:download, media.id) || user.approved_to_download?(media.id)
+        user.active && ( user.can?(:download, media.id) || user.approved_to_download?(media.id) )
       end
 
       # Controller HTTP response methods

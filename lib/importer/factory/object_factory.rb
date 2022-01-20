@@ -6,12 +6,14 @@ module Importer
       extend ActiveModel::Callbacks
       define_model_callbacks :save, :create
       class_attribute :klass
-      attr_reader :attributes, :collection_ids, :files_directory, :object, :files, :parent_arks, :visibility, :do_update
+      attr_reader :attributes, :collection_ids, :files_directory, :object, :files, :parent_arks, :visibility, :do_update, 
+          :preview_file
 
-      def initialize(attributes, files_dir = nil, do_update = false)
+      def initialize(attributes, files_dir = nil, do_update = false, preview_file = nil)
         @attributes = attributes
         @files_directory = files_dir
         @do_update = do_update
+        @preview_file = preview_file
         @collection_ids = @attributes.delete(:collection_id)
         @files = @attributes.delete(:file)
         @parent_arks = @attributes.delete(:parent_ark)
@@ -52,10 +54,19 @@ module Importer
       end
 
       def ingest_thumbnail_image
-        if attributes[:thumbnail]&.first.present? && klass.exists?(object.id) && object.thumbnail_id.present?
+#        if attributes[:thumbnail]&.first.present? && klass.exists?(object.id) && object.thumbnail_id.present?
+        if @preview_file.present? && klass.exists?(object.id) && object.thumbnail_id.present?
+byebug        
+
+
+        
+
+
+
+
           thumbnail_path = get_thumbnail_path(object.thumbnail_id, 'thumbnail')
           original_thumbnail_path = get_thumbnail_path(object.thumbnail_id, 'original_thumbnail')
-
+byebug
           # Move an existing original 'thumbnail' to 'original_thumbnail',
           # but don't overwrite an 'original_thumbnail'
           if File.exist?(thumbnail_path)
@@ -68,7 +79,8 @@ module Importer
           FileUtils.mkdir_p(File.dirname(thumbnail_path))
           
           Morphosource::Derivatives::CroppedImageDerivatives.create(
-            attributes[:thumbnail]&.first,
+            #attributes[:thumbnail]&.first,
+            @preview_file,
             outputs: [{
               label: :thumbnail,
               url: "file://#{thumbnail_path}",
@@ -117,6 +129,7 @@ module Importer
         date_uploaded_values = attributes.delete(:date_uploaded)
         sanitized_attributes
             .merge(file_attributes)
+            .merge(preview_file_attribute)
             .merge(location_attributes(based_near_values))
             .merge(visibility_attributes)
             .merge(collection_membership_attributes)
@@ -151,6 +164,10 @@ module Importer
 
       def file_attributes
         files_directory.present? && files.present? ? { remote_files: remote_files } : {}
+      end
+
+      def preview_file_attribute
+        preview_file.present? && files_directory.present? ? { preview_file: preview_file } : {}
       end
 
       def id_attributes

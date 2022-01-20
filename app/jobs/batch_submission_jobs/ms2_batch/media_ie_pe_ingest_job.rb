@@ -44,7 +44,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       end
 
       if parent['media'].present?
-#byebug
+        if parent['media']['initial_attrs']['preview_file'].present? &&
+            parent['media']['media_path'].present?
+          # this is where preview_file is set
+          preview_file = parent['media']['media_path'] + parent['media']['initial_attrs']['preview_file'].first
+        end
 
         parent_media = Importer::BatchObjectImporter.call(
           'Media', 
@@ -52,7 +56,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             'parent_id' => [parent_pe.id]
           ).symbolize_keys, 
           nil,
-          false
+          false,
+          preview_file
         )
 
         all_media << parent_media
@@ -82,9 +87,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
 #byebug
         if child['media'].present?
-          if child['media']['organization_permissions_fields'].present?
-            organization_permissions_fields = child['media']['organization_permissions_fields']
-          end 
+          if child['media']['initial_attrs']['preview_file'].present? &&
+              child['media']['media_path'].present?
+            # this is where preview_file is set
+            preview_file = child['media']['media_path'] + child['media']['initial_attrs']['preview_file'].first
+          end
 
           child_media = Importer::BatchObjectImporter.call(
             'Media', 
@@ -92,7 +99,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
               'parent_id' => [child_pe.id]
             ).symbolize_keys, 
             nil, 
-            false
+            false,
+            preview_file
           )
 
           all_media << child_media

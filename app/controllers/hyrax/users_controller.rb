@@ -8,10 +8,12 @@ module Hyrax
     # do not restrict json (need it for searching for users during submission/record editing)
     # only allow admins to access the /users page
     def index
+      only_active = true
       if request.format == :html
         authorize! :index, ::User
+        only_active = false
       end
-      @users = search(params[:uq])
+      @users = search(params[:uq], only_active)
     end
 
     # Display user profile
@@ -41,10 +43,11 @@ module Hyrax
       # TODO: this should move to a service.
       # Returns a list of users excluding the system users and guest_users
       # @param query [String] the query string
-      def search(query)
+      def search(query, only_active = true)
         clause = query.blank? ? nil : "%" + query.downcase + "%"
         base = ::User.where(*base_query)
         base = base.where("email like lower(?) OR lower(display_name) like lower(?)", clause, clause) if clause.present?
+        base = base.where(active: true) if only_active
         base.registered
             .where("#{Hydra.config.user_key_field} not in (?)",
                    [::User.batch_user_key, ::User.audit_user_key])

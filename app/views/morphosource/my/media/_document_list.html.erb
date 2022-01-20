@@ -14,7 +14,9 @@
           <th>Part</th>
           <th>Object</th>
           <th>Taxonomy</th>
-          <th>Type</th>
+          <th>Type
+            <%= link_to 'Sort', url_for(sort: 'human_readable_media_type_ssi desc') %>
+          </th>
           <th>Date Added</th>
           <th>Publication Status</th>
           <th class="remove-column">&nbsp;</th>

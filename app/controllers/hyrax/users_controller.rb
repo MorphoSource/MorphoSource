@@ -1,7 +1,7 @@
 module Hyrax
   class UsersController < ApplicationController
     include Blacklight::SearchContext
-    prepend_before_action :find_user, only: [:show]
+    prepend_before_action :find_user, only: [:show, :make_user_active, :make_user_inactive]
 
     helper Hyrax::TrophyHelper
 
@@ -20,6 +20,20 @@ module Hyrax
       user = ::User.from_url_component(params[:id])
       return redirect_to root_path, alert: "User '#{params[:id]}' does not exist" if user.nil?
       @presenter = Hyrax::UserProfilePresenter.new(user, current_ability)
+    end
+
+    def make_user_active
+      return unless current_user.admin?
+
+      @user.make_active
+      redirect_to hyrax.user_path(@user)
+    end
+
+    def make_user_inactive
+      return unless current_user.admin?
+
+      @user.make_inactive
+      redirect_to hyrax.user_path(@user)
     end
 
     private

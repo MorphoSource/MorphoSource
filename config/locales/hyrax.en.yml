@@ -319,3 +319,5 @@ en:
     placeholders:
       defaults:
         find_parent_work: Search...
+  user:
+    inactive_message: Your user account has been made inactive. This may be because you requested that your account be removed from active status, the original person associated with this account has left their field or is deceased, or you have been banned from MorphoSource due to not complying with the site terms of use. You may contact the MorphoSource admins (morphosource@duke.edu) to discuss this and potentially have your account returned to active status.

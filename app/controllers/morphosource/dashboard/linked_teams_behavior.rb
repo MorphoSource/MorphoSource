@@ -65,6 +65,7 @@ module Morphosource
         ensure_blank_values
         create_attachment_if_needed
         format_update_params
+        correct_empty_str_arrays
         @params.permit!
         @organization.update(@params)
       end
@@ -108,6 +109,10 @@ module Morphosource
           @params[:download_permission] = @params[:visibility]
           @params.delete(:visibility)
         end
+      end
+
+      def correct_empty_str_arrays
+        @params.transform_values! { |v| v == [''] ? [] : v }
       end
 
       def redirect_back_organization

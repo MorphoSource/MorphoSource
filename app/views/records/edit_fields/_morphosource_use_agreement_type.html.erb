@@ -2,7 +2,7 @@
 <% morphosource_use_agreement_types_service = Morphosource::MorphosourceUseAgreementTypesService.new %>
 <%= f.input :morphosource_use_agreement_type, as: :select,
     collection: morphosource_use_agreement_types_service.select_all_options,
-    include_blank: false,
+    include_blank: local_assigns[:placeholder],
     item_helper: morphosource_use_agreement_types_service.method(:include_current_value),
     input_html: { class: 'form-control' },
     label_wrapper_html: { class: 'parsed' }

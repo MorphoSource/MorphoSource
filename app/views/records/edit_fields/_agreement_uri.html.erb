@@ -14,7 +14,7 @@
   <div class="col-xs-6 showcase-value">
     <%= f.input_field :agreement_uri,
       as: :string,
-      placeholder: 'Enter Agreement File URL',
+      placeholder: local_assigns[:placeholder] || 'Enter Agreement File URL',
       id: 'media_agreement_uri',
       disabled: object.present? && object.persisted? && object.attachment('agreement') ? true : false,
       class: 'form-control string optional'

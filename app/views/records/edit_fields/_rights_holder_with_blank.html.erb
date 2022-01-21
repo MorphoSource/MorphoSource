@@ -8,7 +8,7 @@
     </i>
   </div>
   <div class="col-xs-6 showcase-value"> 
-    <%= f.input_field :rights_holder, as: :multi_value %>
+    <%= f.input_field :rights_holder, as: :multi_value, placeholder: local_assigns[:placeholder] %>
     <div class="form-group boolean optional organization_rights_holder_blank value-blank-check">
       <div class="checkbox">
         <label class="boolean optional" for="organization_rights_holder_blank">

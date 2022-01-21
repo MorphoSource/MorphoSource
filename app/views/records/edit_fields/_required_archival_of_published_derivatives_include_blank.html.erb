@@ -1,9 +1,0 @@
-<% # app/views/records/edit_fields/_required_archival_of_published_derivatives_include_blank.html.erb %>
-<% required_archival_of_published_derivatives_types_service = Morphosource::RequiredArchivalOfPublishedDerivativesTypesService.new %>
-<%= f.input :required_archival_of_published_derivatives, as: :select,
-    collection: required_archival_of_published_derivatives_types_service.select_all_options,
-    include_blank: true,
-    item_helper: required_archival_of_published_derivatives_types_service.method(:include_current_value),
-    input_html: { class: 'form-control' },
-    label_wrapper_html: { class: 'parsed' } 
-%>

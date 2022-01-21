@@ -1,0 +1,10 @@
+.select2-container {
+  padding:  0 !important;
+  border:  none;
+}
+
+.select2-choices {
+  border-color:  #cccccc !important;
+  border-radius:  4px;
+  padding-left:  4px !important;
+}

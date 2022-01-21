@@ -9,6 +9,7 @@
     <%= f.text_field :download_reviewer,
       id: 'media_download_reviewer',
       name: "#{f.object_name}[download_reviewer][]",
+      placeholder: local_assigns[:placeholder],
       'data-reviewers' => reviewer_data(f),
       class: 'form-control string optional'
     %>

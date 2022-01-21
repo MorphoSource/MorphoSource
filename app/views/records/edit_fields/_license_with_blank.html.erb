@@ -11,7 +11,7 @@
   <div class="col-xs-6 showcase-value">
     <%= f.input_field :license, as: :multi_value_select,
       collection: license_service.select_active_options,
-      include_blank: true,
+      include_blank: local_assigns[:placeholder],
       item_helper: license_service.method(:include_current_value),
       class: 'form-control' 
     %>

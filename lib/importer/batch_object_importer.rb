@@ -1,23 +1,22 @@
 module Importer
   class BatchObjectImporter
 
-    attr_reader :attributes, :files_directory, :model, :update, :preview_file
+    attr_reader :attributes, :files_directory, :model, :update
 
-    def self.call(model, attributes, files_directory = nil, update = false, preview_file = nil)
-      new(model, attributes, files_directory, update, preview_file).call
+    def self.call(model, attributes, files_directory = nil, update = false)
+      new(model, attributes, files_directory, update).call
     end
 
-    def initialize(model, attributes, files_directory = nil, update = false, preview_file = nil)
+    def initialize(model, attributes, files_directory = nil, update = false)
       @model = model
       @attributes = attributes
       @files_directory = files_directory
       @update = update
-      @preview_file = preview_file
     end
 
     def call
       fc = factory_class(model)
-      f = fc.new(attributes, files_directory, update, preview_file)
+      f = fc.new(attributes, files_directory, update)
       f.run
     end
 

@@ -15,7 +15,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     imaging_event = nil
     # ingest imaging event
     if ingest['imaging_event'].present?
-      imaging_event = Importer::BatchObjectImporter.call(
+      imaging_event = BatchSubmissionsImporter::BatchObjectImporter.call(
         'ImagingEvent', 
         ingest['imaging_event'].first[1]['attrs'].merge(
           'physical_object_id' => [ingest['physical_object_id']]
@@ -31,7 +31,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     # ingest parent processing events and media
     ingest['parent'].each do |idx, parent|
       if parent['pe'].present?
-        parent_pe = Importer::BatchObjectImporter.call(
+        parent_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
           'ProcessingEvent', 
           parent['pe']['attrs'].merge(
             'parent_id' => [imaging_event.id]
@@ -50,7 +50,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           preview_file = parent['media']['media_path'] + parent['media']['initial_attrs']['preview_file'].first
         end
 
-        parent_media = Importer::BatchObjectImporter.call(
+        parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
           'Media', 
           parent['media']['attrs'].merge(
             'parent_id' => [parent_pe.id]
@@ -73,7 +73,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       ingest['children'].each do |idx, child|
 #byebug
         if child['pe'].present?
-          child_pe = Importer::BatchObjectImporter.call(
+          child_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
             'ProcessingEvent', 
             child['pe']['attrs'].merge(
               'parent_id' => [direct_parent.id]
@@ -93,7 +93,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             preview_file = child['media']['media_path'] + child['media']['initial_attrs']['preview_file'].first
           end
 
-          child_media = Importer::BatchObjectImporter.call(
+          child_media = BatchSubmissionsImporter::BatchObjectImporter.call(
             'Media', 
             child['media']['attrs'].merge(
               'parent_id' => [child_pe.id]

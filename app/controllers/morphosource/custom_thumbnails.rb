@@ -3,7 +3,7 @@ module Morphosource
 
     # called from submissions #create and media #update
     def create_thumbnail
-      return if params[:custom_thumbnail].blank?
+      return unless custom_thumbnail.present?
 
       return unless thumbnail_format_valid?
 
@@ -64,8 +64,10 @@ module Morphosource
           }]
         )
       ensure
-        custom_thumbnail.tempfile.close
-        custom_thumbnail.tempfile.unlink
+        unless @preview_file.present? # no need to remove temp file for batch submission
+          custom_thumbnail.tempfile.close
+          custom_thumbnail.tempfile.unlink
+        end
       end
     end
 

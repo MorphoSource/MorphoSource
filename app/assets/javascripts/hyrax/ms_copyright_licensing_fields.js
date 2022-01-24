@@ -138,12 +138,12 @@ $( document ).ready(function() {
   };
 
   var disableLicense = function(media_or_organization, licenses) {
-    $(`select[name="${media_or_organization}[license][]"] option`).each(function() {
+    $(`select[name="${media_or_organization}[license]"] option`).each(function() {
       // Disable options
       if ( licenses.includes( $(this).val() ) ) {
         // Remove select value if disabled selected
-        if ( $(`select[name="${media_or_organization}[license][]"]`).val() == $(this).val() ) {
-          $(`select[name="${media_or_organization}[license][]"]`).val('');
+        if ( $(`select[name="${media_or_organization}[license]"]`).val() == $(this).val() ) {
+          $(`select[name="${media_or_organization}[license]"]`).val('');
         }
 
         // Disable option
@@ -166,12 +166,12 @@ $( document ).ready(function() {
   });
 
   // When a license statement is selected, prune commercial use options
-  $('select[name="media[license][]"]').change(function() {
+  $('select[name="media[license]"]').change(function() {
     event.preventDefault();
     licenseChange('media');
   });
 
-  $('select[name="organization[license][]"]').change(function() {
+  $('select[name="organization[license]"]').change(function() {
     event.preventDefault();
     licenseChange('organization');
   });

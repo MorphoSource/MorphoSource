@@ -317,6 +317,7 @@ en:
         agreement_uri: Additional terms and conditions that users must agree to in order to download media.
         download_permission: Media publication status. Can be private, published with open download (any user can download), or published with restricted download (users must request to download).
         download_reviewer: MorphoSource user(s) who will receive download requests for restricted download media. If no reviewers are listed, the data manager will receive requests. If reviewers are listed, ONLY those users will receive requests.
+        permissions_enforcement_mode: Whether organization default permission values are recommended or required to be used by new media contributors.
         preview_mode: "Whether media should be previewed with an interactive 3D/2D preview or restricted to a small 2D thumbnail. Interactive/Embeddable is generally recommended."
         morphosource_use_agreement_type: "The type of usage agreement that users must agree to in order to download media. Other conditions and agreements may be specified above and beyond this."
         permits_3d_use: "Whether 3D printing of media is permitted, prohibited, or limited. If 3D printing is limited, see documentation for more detail."

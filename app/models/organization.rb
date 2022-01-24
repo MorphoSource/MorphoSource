@@ -86,11 +86,8 @@ class Organization < Morphosource::Works::Base
       download_permission: download_permission,
       download_reviewer: download_reviewer,
       rights_holder: rights_holder,
-      rights_holder_blank: rights_holder_blank,
       rights_statement: rights_statement,
-      rights_statement_blank: rights_statement_blank,
       license: license,
-      license_blank: license_blank,
       morphosource_use_agreement_type: morphosource_use_agreement_type,
       permits_commercial_use: permits_commercial_use,
       permits_3d_use: permits_3d_use,
@@ -98,7 +95,7 @@ class Organization < Morphosource::Works::Base
       preview_mode: preview_mode,
       agreement_uri: agreement_uri,
       attachment_url: agreement_attachment_url,
-      organization_for_attachment: attachment('agreement') ? id : nil,
+      organization_for_attachment: attachment('agreement') ? id : nil
     }
   end
 

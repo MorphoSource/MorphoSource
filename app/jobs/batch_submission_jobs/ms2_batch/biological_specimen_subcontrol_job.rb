@@ -13,7 +13,7 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
 #byebug
     # Submit jobs for new works to be created
     @manifest['biological_specimen_ingests'].each_with_index do |b, index|
-#byebug
+byebug
       next unless !b['id'].present? # new work to be created
 
       row_index = @manifest['rows_to_bso']
@@ -21,7 +21,7 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
         .first
 #byebug
       tmp = @manifest['rows_to_taxonomy'][row_index] || []
-#byebug
+byebug
 
       taxonomy_ingests = tmp
         .map { |t_idx| @manifest['taxonomy_ingests'][t_idx] }

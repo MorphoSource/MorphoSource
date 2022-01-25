@@ -227,7 +227,7 @@ module BatchSubmissionTools
 #              ) 
 #addl_attrs.merge!(visibility_from_organization)
 #            end            
-byebug
+#byebug
             parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
               initial_attrs: media_attrs,
               depositor: depositor,
@@ -236,8 +236,6 @@ byebug
               media_path: media_path,
               media_ownership_fields: media_ownership_fields
             )
-byebug
-
             parent = {
               parent_row_index => 
                 BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)

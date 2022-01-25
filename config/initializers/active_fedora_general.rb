@@ -8,3 +8,11 @@ ActiveFedora::Aggregation::ListSource.class_eval do
     attributes_changed_by_setter[:nodes] = true
   end
 end
+
+# overriding MAX_ROWS definition here: https://github.com/samvera/active_fedora/blob/a66a7e9618c101e6d06d0f77e36cc5a2c28b8d89/lib/active_fedora/solr_service.rb#L8
+# Fixes bug where unable to remove media from large collections
+class ActiveFedora::SolrService
+
+  MAX_ROWS = 50_000
+
+end

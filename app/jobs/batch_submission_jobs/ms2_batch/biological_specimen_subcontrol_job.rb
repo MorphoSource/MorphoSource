@@ -14,6 +14,7 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
     # Submit jobs for new works to be created
     @manifest['biological_specimen_ingests'].each_with_index do |b, index|
 byebug
+byebug
       next unless !b['id'].present? # new work to be created
 
       row_index = @manifest['rows_to_bso']
@@ -66,6 +67,12 @@ byebug
     jobs_complete = true
 
     @manifest['biological_specimen_ingests'].each do |i|
+byebug
+      if i['job'] == true # it returns true if perform_now has been called (can be removed later if perform_later is called)
+byebug
+        next
+      end
+
       next unless (job = i['job']).present?
 
       # check job status

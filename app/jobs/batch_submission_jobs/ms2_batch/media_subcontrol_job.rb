@@ -68,6 +68,12 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 byebug
 
     @manifest['media_ie_pe_ingests'].each do |i|
+byebug
+      if i['job'] == true # it returns true if perform_now has been called (can be removed later if perform_later is called)
+byebug
+        next
+      end
+
       next unless (job = i['job']).present?
 
       # check job status

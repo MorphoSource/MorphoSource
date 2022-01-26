@@ -1,0 +1,74 @@
+<div id="submission-media-ownership" class="content-block">
+  <div id="ownership-section-header-text" class="row hide">
+    <div id="ownership-text-container" class="col-sm-12 permissions-alert-info">
+      <span>Some of the fields below have values <span id="permissions-action"></span> by <b><span id="organization-name"></span></b>. These fields are indicated with labels. <span id="permissions-text-follow-up"></span></span>
+    </div>
+  </div>
+  <div id="media-ownership-fields">
+    <div class="row media_download_permission">
+      <div class="col-xs-6 showcase-label">
+        <label class="control-label select optional" for="media_download_permission">Download permission</label>
+        <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'>
+          <p class="hint hide"><%= t('simple_form.hints.defaults.download_permission') %></p>
+        </i>
+      </div>
+      <div class="col-xs-6 showcase-value">
+        <div class="m-0 p-0 text-nowrap">
+        <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
+        <% if f.object.embargo_release_date %>
+          <span class="label label-warning">Embargo</span>
+        <% elsif f.object.lease_expiration_date %>
+          <span class="label label-warning">Lease</span>
+        <% else %>
+          <span class="label" id="current_visibility_value"></span>
+        <% end %>
+          <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
+        <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
+          <%= render 'hyrax/base/ms_form_visibility_component', f: f %>
+        </div>
+      </div>
+    </div>
+
+    <%= render_edit_field_partial('download_reviewer', f: f) %>
+    <%= render_edit_field_partial('rights_holder', f: f) %>
+    <%= render_edit_field_partial('rights_statement', f: f) %>
+    <%= render_edit_field_partial('license', f: f) %>
+    
+    <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
+    <%= render_edit_field_partial('permits_commercial_use', f: f) %>
+    <%= render_edit_field_partial('permits_3d_use', f: f) %>
+    <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f) %>
+
+    <%= render_edit_field_partial('funding', f: f) %>
+    <%= render_edit_field_partial('publisher', f: f) %>
+    <%= render_edit_field_partial('cite_as', f: f) %>
+
+    <%= render_edit_field_partial('preview_mode', f: f) %>
+
+    <div>
+      <div class="form-group row string optional media_agreement_uri attachment-container">
+        <div class="col-xs-6 showcase-label">
+          <label class="control-label string optional" for="media_agreement_uri">Additional usage agreement</label>
+          <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'>
+            <p class="hint hide"><%= t('simple_form.hints.defaults.agreement_uri') %></p>
+          </i>
+        </div>
+
+        <div class="col-xs-6 showcase-value">
+          <span id='no-attachment' class='show'>None</span>
+          <span id='organization-agreement-uri' class='hide'>URI missing</span>
+          <a href='#' target=”_blank” id='organization-attachment-url' class='hide'>Agreement file</a>
+        </div>
+
+        <%= f.input :agreement_uri, :as => :hidden %>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-xs-12 showcase-value">
+          <span id='no-agreement-help' class='show'><%= t("morphosource.media.new.agreement_initial").html_safe %></span>
+          <span id='organization-agreement-help' class='hide'><%= t("morphosource.media.new.agreement_organization").html_safe %></span>
+        </div>
+      </div>
+    </div>
+  </div> <!-- End media-ownership-fields -->
+</div>

@@ -132,18 +132,7 @@
     display: none;
   }
 
-
-
   /* Styling for ownership and permissions settings, incl. permission defaults */
-
-  /*i.fa-university.fa-permissions-icon {
-    margin-right: 5px;
-    color: purple;
-  }*/
-
-  div.showcase-label i.fa-university {
-    margin-left: 3px;
-  }
 
   li.input-group.required-input-group {
     display: unset !important;
@@ -151,6 +140,11 @@
 
   div.permissions-label {
     margin-top: 0 !important;
+  }
+
+  div.permissions-label span.label {
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 
   div.permissions-alert-info {

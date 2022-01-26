@@ -31,12 +31,12 @@ $( document ).ready(function() {
         setCommercialUsePermitted(media_or_organization, false, false);
         break;
       case '3':
-        disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/']);
+        disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/', 'http://creativecommons.org/publicdomain/zero/1.0/']);
         limitMorphoSourceUseAgreementToStandard(media_or_organization, false);
         setCommercialUsePermitted(media_or_organization, true, false);
         break;
       case '4':
-        disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/']);
+        disableLicense(media_or_organization, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/','http://creativecommons.org/publicdomain/zero/1.0/']);
         limitMorphoSourceUseAgreementToStandard(media_or_organization, true);
         setCommercialUsePermitted(media_or_organization, false, false);
         break;
@@ -54,7 +54,7 @@ $( document ).ready(function() {
       limitMorphoSourceUseAgreementToStandard(media_or_organization, true);
       setCommercialUsePermitted(media_or_organization, false, false);
     }
-    else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == '')) {
+    else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == 'http://creativecommons.org/publicdomain/mark/1.0/') || (selected_license == '')) {
       limitMorphoSourceUseAgreementToStandard(media_or_organization, false);
       setCommercialUsePermitted(media_or_organization, true, false);
     }

@@ -2,21 +2,26 @@
 <div class="row">
   <div class="col-xs-6 showcase-label">
     <%= t('simple_form.labels.media.download_permission') %>
+    <i class="material-icons tooltip-icon" data-original-title="" title="" style="margin-left: -1px;">
+      <p class="hint hide"><%= t('simple_form.hints.defaults.download_permission') %></p>
+    </i>
   </div>
   <div class="col-xs-6 showcase-value">
     <div class="btn-group form-control" style="">
-      <a class="btn dropdown-toggle" data-toggle="dropdown" style="width: 100%; max-width: 100%; padding: 3px; display: flex; justify-content: space-between; align-items: center; height: 100%;" href="#">
+      <a class="btn dropdown-toggle" data-toggle="dropdown" style="width: 100%; max-width: 100%; padding: 3px; display: flex; justify-content: space-between; align-items: center; height: 100%; color: #555555" href="#">
         <span style="height:110%;" class= "<%= badge_class(f) %>" >
-          <%= human_readable_publication_status(f) %>
+          <%= human_readable_publication_status(f) || local_assigns[:placeholder] %>
         </span>
         <span class="glyphicon glyphicon-chevron-down" style="font-size:10px; color: black;"></span>
       </a>
       <ul class="dropdown-menu download-permission-dropdown">
-        <li>
-          <a href="javascript:void(0);" style="height:20px;">
-            <span title="clear selection"></span>
-          </a>
-        </li>
+        <% if local_assigns[:org_permissions] %>
+          <li>
+            <a href="javascript:void(0);" style="height:20px;">
+              <span title="clear selection"><%= local_assigns[:placeholder] %></span>
+            </a>
+          </li>
+        <% end %>
         <li>
           <a href="javascript:void(0);" id='open'>
             <span class="label label-success">Open Download</span>

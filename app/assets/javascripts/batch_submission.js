@@ -3,6 +3,7 @@ $( document ).ready(function() {
   if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
     showAlert = false;
     selectedDeviceModality = "";
+    organizationDefaultMediaFields = {};
 
     class BatchSubmissionData {
       constructor(sessionState=null) {
@@ -44,8 +45,18 @@ $( document ).ready(function() {
           new OrganizationView(this),
           new DeviceView(this),
         ];
+
+        this.setMediaPermissionFieldEvent();
       }
 
+      setMediaPermissionFieldEvent() {
+        $('form.new_media div,form.new_media a').click(function(event) {
+          if ($(this).hasClass('permissions-field')) {
+            alert($('#organization-alert-message').text());
+            $(this).off(event); // Only fire once
+          }
+        });
+      }
 
       setDefaultMediaPermissionFields() {
         let self = this;
@@ -59,42 +70,74 @@ $( document ).ready(function() {
          },
          function(getData){
           console.log('Got organization default fields');
-          console.log(getData);
+          //console.log("getData=", getData);
           if (getData.default_fields) {
-            console.log($('form#new_media div#submission-media-ownership'));
+            organizationDefaultMediaFields = getData.default_fields;
             // Add loading to media page
-            $('form#new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
+            $('form.new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
 
             // Remove previous settings, if present
-            $('form#new_media div#submission-media-ownership div').removeClass('permissions-field');
-            $('form#new_media div#submission-media-ownership i.fa-university').remove();
+            $('#ownership-section-header-text').addClass('hide').removeClass('show');
+            $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
+            $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
             self.emptyMediaFields(getData.default_fields);
 
-            // Set up text
-            $('#organization-alert-message').text(getData.organization_alert_message);
-            $('#organization-name').text(getData.organization_title);
-            $('#ownership-section-header-text').addClass('show').removeClass('hide');
+            if (Object.keys(getData.default_fields).length) {
+              // Set up text
+              $('#organization-alert-message').text(getData.organization_alert_message);
+              $('#organization-name').text(getData.organization_title);
+              $('#ownership-section-header-text').addClass('show').removeClass('hide');
 
-            // Add new settings
-            self.fillMediaFields(getData.default_fields);
+              // Add new settings
+              self.fillMediaFields(getData.default_fields);
 
-            // Organization agreement attachment
-            if (getData.default_fields.attachment_url && getData.organization_id) {
-              self.data.organizationForAttachment = getData.organization_id;
-              $('#organization-attachment-url').attr('href', getData.default_fields.attachment_url);
-              $('#organization-attachment-section').addClass('show').removeClass('hide');
-              $('div#organization-attachment-replace-row').addClass('show').removeClass('hide');
-              $('#work-attachment-section').addClass('hide').removeClass('show');
-            } else {
-              self.data.organizationForAttachment = null;
-              $('#organization-attachment-url').attr('href', '#');
-              $('#organization-attachment-section').addClass('hide').removeClass('show');
-              $('div#organization-attachment-replace-row').addClass('hide').removeClass('show');
-              $('#work-attachment-section').addClass('show').removeClass('hide');
+              // Organization agreement attachment
+              if ( getData.organization_id && ( getData.default_fields.attachment_url || getData.default_fields.agreement_uri ) ) {
+                if (getData.default_fields.attachment_url) {
+                  self.data.organizationForAttachment = getData.organization_id;
+
+                  $('#organization-attachment-url').attr('href', getData.default_fields.attachment_url);
+                  $('#organization-attachment-url').addClass('show').removeClass('hide');
+
+                  $('#no-attachment').addClass('hide').removeClass('show');
+
+                  $('#organization-agreement-uri').text('');
+                  $('#organization-agreement-uri').addClass('hide').removeClass('show');
+
+                  $('#organization-agreement-help').addClass('show').removeClass('hide');
+                  $('#no-agreement-help').addClass('hide').removeClass('show');
+                } else if (getData.default_fields.agreement_uri) {
+                  self.data.organizationForAttachment = null;
+
+                  $('#organization-agreement-uri').text(getData.default_fields.agreement_uri);
+                  $('#organization-agreement-uri').addClass('show').removeClass('hide');
+
+                  $('#no-attachment').addClass('hide').removeClass('show');
+
+                  $('#organization-attachment-url').attr('href', '#');
+                  $('#organization-attachment-url').addClass('hide').removeClass('show');
+
+                  $('#organization-agreement-help').addClass('show').removeClass('hide');
+                  $('#no-agreement-help').addClass('hide').removeClass('show');
+                }
+              } else {
+                self.data.organizationForAttachment = null;
+                $('#no-attachment').addClass('show').removeClass('hide');
+
+                $('#organization-agreement-uri').text('');
+                $('#organization-agreement-uri').addClass('hide').removeClass('show');
+
+                $('#organization-attachment-url').attr('href', '#');
+                $('#organization-attachment-url').addClass('hide').removeClass('show');
+
+                $('#no-agreement-help').addClass('show').removeClass('hide');
+                $('#organization-agreement-help').addClass('hide').removeClass('show');
+              }
+
             }
 
             // Remove loading
-            $('form#new_media div#submission-media-ownership').removeClass('ui-loading-whole-page');
+            $('form.new_media div#submission-media-ownership').removeClass('ui-loading-whole-page');
           }
          });
       }
@@ -109,26 +152,23 @@ $( document ).ready(function() {
 
       emptyMediaField(field) {
         let multiSelector =
-          "form#new_media select[name='media[" + field + "][]'], " +
-          "form#new_media input[name='media[" + field + "][]']";
+          "form.new_media select[name='media[" + field + "][]'], " +
+          "form.new_media input[name='media[" + field + "][]']";
         let selector =
-          "form#new_media select[name='media[" + field + "]'], " +
-          "form#new_media input[name='media[" + field + "]'], " +
-          "form#new_media textarea[name='media[" + field + "]']";
+          "form.new_media select[name='media[" + field + "]'], " +
+          "form.new_media input[name='media[" + field + "]'], " +
+          "form.new_media textarea[name='media[" + field + "]']";
 
         switch(field) {
           case 'download_permission':
-            $('form#new_media input#media_visibility_open').trigger('click');
+            $('form.new_media input#media_visibility_open').trigger('click');
             break;
           case 'download_reviewer':
             $(selector).val('').trigger('change');
-            // $('form#new_media div.media_download_reviewer span.select2-chosen').text('');
             break;
           case 'license': // multi-value fields
           case 'rights_holder':
           case 'agreement_uri':
-          case 'funding':
-          case 'publisher':
             $(multiSelector).first().val('');
             $(multiSelector).slice(1).parent().remove();
             break;
@@ -140,8 +180,6 @@ $( document ).ready(function() {
       fillMediaFields(defaultFields) {
         for (const f in defaultFields) {
           if (defaultFields[f] && defaultFields[f] != []) {
-            console.log(f);
-            console.log(defaultFields[f]);
             this.fillMediaField(f, defaultFields[f]);
           }
         }
@@ -149,37 +187,36 @@ $( document ).ready(function() {
 
       fillMediaField(field, val) {
         let multiSelector =
-          "form#new_media select[name='media[" + field + "][]'], " +
-          "form#new_media input[name='media[" + field + "][]']";
+          "form.new_media select[name='media[" + field + "][]'], " +
+          "form.new_media input[name='media[" + field + "][]']";
         let selector =
-          "form#new_media select[name='media[" + field + "]'], " +
-          "form#new_media input[name='media[" + field + "]'], " +
-          "form#new_media textarea[name='media[" + field + "]']";
+          "form.new_media select[name='media[" + field + "]'], " +
+          "form.new_media input[name='media[" + field + "]'], " +
+          "form.new_media textarea[name='media[" + field + "]']";
 
-        if (Array.isArray(val)) {
-          val = val.filter(v => v !== '');
-        }
-
-        if ( !val || (Array.isArray(val) && ( !val.length || val[0] == 'Name: , Type: ') ) ) {
+        if ( Array.isArray(val) && ( !val.length || val[0] == 'Name: , Type: ' ) ) {
           return;
         }
 
         console.log(val);
         switch(field) {
           case 'download_permission':
+            if (Array.isArray(val)) {
+              val = val[0];
+            }
             if (val == 'preview_only') {
               let val = 'preview';
             }
-            $('form#new_media input#media_visibility_' + val.toLowerCase()).trigger('click');
-            $('form#new_media div.media_download_permission').addClass('permissions-field');
-            $('form#new_media div.media_download_permission').find('i.tooltip-icon').after(
+            $('form.new_media input#media_visibility_' + val.toLowerCase()).trigger('click');
+            $('form.new_media div.media_download_permission').addClass('permissions-field');
+            $('form.new_media div.media_download_permission').find('i.tooltip-icon').after(
               "<i class='fas fa-university'></i>"
             );
             break;
           case 'download_reviewer':
             $(multiSelector).select2('destroy').empty().userSearchMultiple(val);
-            $('form#new_media div.media_download_reviewer').addClass('permissions-field');
-            $('form#new_media div.media_download_reviewer').find('i.tooltip-icon').after(
+            $('form.new_media div.media_download_reviewer').addClass('permissions-field');
+            $('form.new_media div.media_download_reviewer').find('i.tooltip-icon').after(
               "<i class='fas fa-university'></i>"
             );
 
@@ -190,8 +227,6 @@ $( document ).ready(function() {
           case 'license': // multi-value fields
           case 'rights_holder':
           case 'agreement_uri':
-          case 'funding':
-          case 'publisher':
             if (Array.isArray(val) && val.length > 1) {
               for (i = 0; i < val.length; i++) {
                 if (val[i]) {
@@ -588,6 +623,15 @@ $( document ).ready(function() {
     data = new BatchSubmissionData();
     batchSubmissionForm = new BatchSubmissionForm(data);
 
+    $('#submission_organization_select_display_container').on('click', '#organization-select-close', function(event) {
+        // user click close button to remove selected org
+        console.log("removing selected org");
+        $('#ownership-section-header-text').addClass('hide').removeClass('show');
+        $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
+        $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
+        batchSubmissionForm.emptyMediaFields(organizationDefaultMediaFields);
+    });
+      
     $('#manifest_file, #batch_submission_modality').on('change', function(){ setSubmitStatus() });
     $(".btn-submit-wrapper").on('mouseover', function(){ 
       showAlert = true;

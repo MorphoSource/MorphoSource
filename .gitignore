@@ -29,7 +29,7 @@
 # Google Analytics config
 /config/analytics.yml
 
-# Browse Everything config
+# Browse Everything providers config
 /config/browse_everything_providers.yml
 
 # ---------------------------------------------------

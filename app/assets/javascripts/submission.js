@@ -3,6 +3,7 @@
 $( document ).ready(function() {
 
   if ($('div[class="submission_flow"]').length) { // check if the page is submission flow page
+    organizationDefaultMediaFields = {};
     class SubmissionData {
       constructor(sessionState=null) {
         if (sessionState) {
@@ -757,6 +758,11 @@ $( document ).ready(function() {
               $('#' + dom_id).replaceWith($('<input>',{id: dom_id, name: form_input_name, class: 'form-control string optional'}));
             });
           });
+          $('#ownership-section-header-text').addClass('hide').removeClass('show');
+          $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
+          $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
+          submissionForm.emptyMediaFields(organizationDefaultMediaFields);
+
           self.next();
 
           console.log(data);
@@ -1571,64 +1577,68 @@ $( document ).ready(function() {
           console.log('Got organization default fields');
           console.log(getData);
           if (getData.default_fields) {
-            console.log($('form#new_media div#submission-media-ownership'));
+            organizationDefaultMediaFields = getData.default_fields;
             // Add loading to media page
             $('form#new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
 
             // Remove previous settings, if present
+            $('#ownership-section-header-text').addClass('hide').removeClass('show');
             $('form#new_media div#submission-media-ownership div').removeClass('permissions-field');
-            $('form#new_media div#submission-media-ownership i.fa-university').remove();
+            $('form#new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
             self.emptyMediaFields(getData.default_fields);
 
-            // Set up text
-            $('#organization-alert-message').text(getData.organization_alert_message);
-            $('#organization-name').text(getData.organization_title);
-            $('#ownership-section-header-text').addClass('show').removeClass('hide');
+            if (Object.keys(getData.default_fields).length) {
+              // Set up text
+              $('#organization-alert-message').text(getData.organization_alert_message);
+              $('#organization-name').text(getData.organization_title);
+              $('#ownership-section-header-text').addClass('show').removeClass('hide');
 
-            // Add new settings
-            self.fillMediaFields(getData.default_fields);
+              // Add new settings
+              self.fillMediaFields(getData.default_fields);
 
-            // Organization agreement attachment
-            if ( getData.organization_id && ( getData.default_fields.attachment_url || getData.default_fields.agreement_uri ) ) {
-              if (getData.default_fields.attachment_url) {
-                self.data.organizationForAttachment = getData.organization_id;
+              // Organization agreement attachment
+              if ( getData.organization_id && ( getData.default_fields.attachment_url || getData.default_fields.agreement_uri ) ) {
+                if (getData.default_fields.attachment_url) {
+                  self.data.organizationForAttachment = getData.organization_id;
 
-                $('#organization-attachment-url').attr('href', getData.default_fields.attachment_url);
-                $('#organization-attachment-url').addClass('show').removeClass('hide');
+                  $('#organization-attachment-url').attr('href', getData.default_fields.attachment_url);
+                  $('#organization-attachment-url').addClass('show').removeClass('hide');
 
-                $('#no-attachment').addClass('hide').removeClass('show');
+                  $('#no-attachment').addClass('hide').removeClass('show');
+
+                  $('#organization-agreement-uri').text('');
+                  $('#organization-agreement-uri').addClass('hide').removeClass('show');
+
+                  $('#organization-agreement-help').addClass('show').removeClass('hide');
+                  $('#no-agreement-help').addClass('hide').removeClass('show');
+                } else if (getData.default_fields.agreement_uri) {
+                  self.data.organizationForAttachment = null;
+
+                  $('#organization-agreement-uri').text(getData.default_fields.agreement_uri);
+                  $('#organization-agreement-uri').addClass('show').removeClass('hide');
+
+                  $('#no-attachment').addClass('hide').removeClass('show');
+
+                  $('#organization-attachment-url').attr('href', '#');
+                  $('#organization-attachment-url').addClass('hide').removeClass('show');
+
+                  $('#organization-agreement-help').addClass('show').removeClass('hide');
+                  $('#no-agreement-help').addClass('hide').removeClass('show');
+                }
+              } else {
+                self.data.organizationForAttachment = null;
+                $('#no-attachment').addClass('show').removeClass('hide');
 
                 $('#organization-agreement-uri').text('');
                 $('#organization-agreement-uri').addClass('hide').removeClass('show');
 
-                $('#organization-agreement-help').addClass('show').removeClass('hide');
-                $('#no-agreement-help').addClass('hide').removeClass('show');
-              } else if (getData.default_fields.agreement_uri) {
-                self.data.organizationForAttachment = null;
-
-                $('#organization-agreement-uri').text(getData.default_fields.agreement_uri);
-                $('#organization-agreement-uri').addClass('show').removeClass('hide');
-
-                $('#no-attachment').addClass('hide').removeClass('show');
-
                 $('#organization-attachment-url').attr('href', '#');
                 $('#organization-attachment-url').addClass('hide').removeClass('show');
 
-                $('#organization-agreement-help').addClass('show').removeClass('hide');
-                $('#no-agreement-help').addClass('hide').removeClass('show');
+                $('#no-agreement-help').addClass('show').removeClass('hide');
+                $('#organization-agreement-help').addClass('hide').removeClass('show');
               }
-            } else {
-              self.data.organizationForAttachment = null;
-              $('#no-attachment').addClass('show').removeClass('hide');
 
-              $('#organization-agreement-uri').text('');
-              $('#organization-agreement-uri').addClass('hide').removeClass('show');
-
-              $('#organization-attachment-url').attr('href', '#');
-              $('#organization-attachment-url').addClass('hide').removeClass('show');
-
-              $('#no-agreement-help').addClass('show').removeClass('hide');
-              $('#organization-agreement-help').addClass('hide').removeClass('show');
             }
 
             // Remove loading
@@ -1660,12 +1670,9 @@ $( document ).ready(function() {
             break;
           case 'download_reviewer':
             $(selector).val('').trigger('change');
-            // $('form#new_media div.media_download_reviewer span.select2-chosen').text('');
             break;
           case 'license': // multi-value fields
           case 'rights_holder':
-          case 'funding':
-          case 'publisher':
             $(multiSelector).first().val('');
             $(multiSelector).slice(1).parent().remove();
             break;
@@ -1677,8 +1684,6 @@ $( document ).ready(function() {
       fillMediaFields(defaultFields) {
         for (const f in defaultFields) {
           if (defaultFields[f] && defaultFields[f] != []) {
-            console.log(f);
-            console.log(defaultFields[f]);
             this.fillMediaField(f, defaultFields[f]);
           }
         }
@@ -1693,19 +1698,18 @@ $( document ).ready(function() {
           "form#new_media input[name='media[" + field + "]'], " +
           "form#new_media textarea[name='media[" + field + "]']";
 
-        if (Array.isArray(val)) {
-          val = val.filter(v => v !== '');
-        }
-
-        if ( !val || (Array.isArray(val) && ( !val.length || val[0] == 'Name: , Type: ') ) ) {
+        if ( Array.isArray(val) && ( !val.length || val[0] == 'Name: , Type: ' ) ) {
           return;
         }
 
         console.log(val);
         switch(field) {
           case 'download_permission':
+            if (Array.isArray(val)) {
+              val = val[0];
+            }
             if (val == 'preview_only') {
-              let val = 'preview';
+              val = 'preview';
             }
             $('form#new_media input#media_visibility_' + val.toLowerCase()).trigger('click');
             $('form#new_media div.media_download_permission').addClass('permissions-field');
@@ -1726,8 +1730,6 @@ $( document ).ready(function() {
             break;
           case 'license': // multi-value fields
           case 'rights_holder':
-          case 'funding':
-          case 'publisher':
             if (Array.isArray(val) && val.length > 1) {
               for (i = 0; i < val.length; i++) {
                 if (val[i]) {

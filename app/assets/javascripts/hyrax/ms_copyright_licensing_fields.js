@@ -41,6 +41,9 @@ $( document ).ready(function() {
         setCommercialUsePermitted(media_or_organization, false, false);
         break;
       default:
+        disableLicense(media_or_organization, []);
+        limitMorphoSourceUseAgreementToStandard(media_or_organization, false);
+        setCommercialUsePermitted(media_or_organization, true, false);
         break;
     }
   };

@@ -6,6 +6,9 @@ en:
       organization:
         description:        "Organization works"
         name:               "Organization"
+    organization:
+      permissions:
+        media_preview: By default, all media display an interactive and embeddable 3D/2D preview. Data contributors can optionally disable the interactive preview, replacing it with a small 2D media thumbnail. Organizations with appropriate use cases can enforce interactive previews or 2D thumbnails. If your organization meets this use case, please <a href="mailto:morphosource@duke.edu">contact us</a>. 
   simple_form:
     labels:
       organization:
@@ -25,3 +28,4 @@ en:
         institution_code: The code used in the first part of the organization's Darwin Core triplet for specimens. Probably used by multiple organizations in an institution.
         collection_code: The code used in the second part of the organization's Darwin Core triplet for specimens. Used to differentiate specimens in one collection from specimens in other collections.
         related_url: The website(s) associated with the organization.
+        value_blank_check: If this is selected, users contributing media will be recommended or required to leave this field blank. You may not add a value to this field if this is selected.

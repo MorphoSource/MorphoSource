@@ -51,7 +51,7 @@ module Hyrax
 
     self.required_fields = [:organization_type, :institution_name, :title, :institution_code]
 
-    self.single_valued_fields = [:organization_type, :title, :description, :address, :city, :state_province, :country, :institution_name, :download_permission, :agreement_uri, :rights_statement, :rights_statement_blank, :rights_statement_blank, :rights_holder_blank, :license_blank, :permits_commercial_use, :permits_3d_use, :postal_code, :morphosource_use_agreement_type, :preview_mode]
+    self.single_valued_fields = [:organization_type, :title, :description, :address, :city, :state_province, :country, :institution_name, :download_permission, :agreement_uri, :rights_statement, :rights_statement_blank, :rights_holder_blank, :license_blank, :permits_commercial_use, :permits_3d_use, :postal_code, :morphosource_use_agreement_type, :preview_mode]
 
     self.media_permissions_fields = [:download_permission, :download_reviewer, :agreement_uri, :license, :license_blank, :rights_statement, :rights_statement_blank, :permits_commercial_use, :permits_3d_use, :rights_holder, :rights_holder_blank, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode]
 

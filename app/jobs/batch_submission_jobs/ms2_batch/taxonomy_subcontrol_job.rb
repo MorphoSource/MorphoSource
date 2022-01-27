@@ -11,10 +11,9 @@ byebug
 
     # Submit jobs for new works to be created
     @manifest['taxonomy_ingests'].each do |t|
-#      t['job'] = ::BatchObjectImportJob.perform_later('Taxonomy', t['attrs'].symbolize_keys, nil, false) if !t['id'].present? 
-byebug
-      t['job'] = ::BatchObjectImportJob.perform_now('Taxonomy', t['attrs'].symbolize_keys, nil, false) if !t['id'].present? 
-byebug
+#byebug
+      t['job'] = ::BatchObjectImportJob.perform_later('Taxonomy', t['attrs'].symbolize_keys, nil, false) if !t['id'].present? 
+      #t['job'] = ::BatchObjectImportJob.perform_now('Taxonomy', t['attrs'].symbolize_keys, nil, false) if !t['id'].present? 
     end
 
     # Monitor jobs

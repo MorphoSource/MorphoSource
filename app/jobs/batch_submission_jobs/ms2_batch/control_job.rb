@@ -4,25 +4,26 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   queue_as Hyrax.config.ingest_queue_name
 
   def perform(manifest)
- #   begin
+    begin
       # Step 0. Initial preparation
       status.update(manifest: manifest)
       @manifest = manifest
       
       sub_jobs.each do |job_class|
-        #job = job_class.send :perform_later, @manifest
 #byebug
-        job = job_class.send :perform_now, @manifest
-#        sleep(1.minute) until monitor_status(job)
+        job = job_class.send :perform_later, @manifest
+        #job = job_class.send :perform_now, @manifest
+        sleep(1.minute) until monitor_status(job)
         progress.increment
       end
-#    rescue StandardError => e
+    rescue StandardError => e
 
-#byebug
-#
-#    ensure
-#      status.update(manifest: @manifest)
-#    end
+byebug
+# check exception here if stopped
+
+    ensure
+      status.update(manifest: @manifest)
+    end
   end
 
   def sub_jobs
@@ -35,7 +36,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
 
   def monitor_status(job)
     #return true if job == true # it returns true if perform_now (for testing)
-byebug
+#byebug
     job_status = ActiveJob::Status.get(job)
 
     # update manifest

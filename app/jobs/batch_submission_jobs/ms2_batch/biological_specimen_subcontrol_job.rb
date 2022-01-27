@@ -38,8 +38,8 @@ byebug
       end
 
 #byebug        
-      #b['job'] = ::BatchObjectImportJob.perform_later('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
-      b['job'] = ::BatchObjectImportJob.perform_now('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
+      b['job'] = ::BatchObjectImportJob.perform_later('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
+      #b['job'] = ::BatchObjectImportJob.perform_now('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
     end
 
     # Monitor jobs

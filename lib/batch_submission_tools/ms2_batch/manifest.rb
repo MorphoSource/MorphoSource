@@ -103,6 +103,7 @@ module BatchSubmissionTools
 
           matching_bso_index = match_bsos(bso)
           if matching_bso_index.present?
+byebug
             rows_to_bso[index] = matching_bso_index
           else
             # proceed with constructing ingest
@@ -112,6 +113,7 @@ module BatchSubmissionTools
               on_behalf_of: on_behalf_of,
               organization_id: organization_id
             )
+byebug
             biological_specimen_ingests << bso_ingest
             rows_to_bso[index] = biological_specimen_ingests.count - 1
           end

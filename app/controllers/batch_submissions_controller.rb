@@ -143,11 +143,8 @@ byebug
   end
 
   def ingest
-#byebug
-#    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(session[:manifest_object])
-
+    #::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(session[:manifest_object])
     ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(@manifest_object)
-
   end
 
   def parse_manifest

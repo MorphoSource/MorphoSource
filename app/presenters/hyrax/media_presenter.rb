@@ -503,7 +503,7 @@ module Hyrax
           @flux_normalization = @imaging_event.flux_normalization.first
           @pixel_spacing_calibration = @imaging_event.pixel_spacing_calibration.first
           @shading_correction = @imaging_event.shading_correction.first
-          @filter = @imaging_event.ie_filter.first
+          @filter = @imaging_event.ie_filter
           @frame_averaging = @imaging_event.frame_averaging.first
           @projections = @imaging_event.projections.first
           @voltage = @imaging_event.voltage.first

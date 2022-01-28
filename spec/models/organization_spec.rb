@@ -27,9 +27,6 @@ RSpec.describe Organization do
       subject.permits_commercial_use = ['foo']
       subject.permits_3d_use = ['foo']
       subject.rights_holder = ['foo']
-      subject.funding = ['foo']
-      subject.publisher = ['foo']
-      subject.cite_as = ['foo']
       expect(subject).to be_valid
   end
 
@@ -50,9 +47,6 @@ RSpec.describe Organization do
     subject.permits_commercial_use = ['foo']
     subject.permits_3d_use = ['foo']
     subject.rights_holder = ['foo']
-    subject.funding = ['foo']
-    subject.publisher = ['foo']
-    subject.cite_as = ['foo']
     expect(subject).to_not be_valid
   end
 

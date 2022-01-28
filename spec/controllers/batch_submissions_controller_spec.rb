@@ -76,7 +76,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'biological_specimen.is_type_specimen: Please enter a valid value: "Yes", "No", "Y", "N", "true", "false", "0", "1"'
           expect(html).to include 'biological_specimen.sex: Please enter a valid value: "Female", "Male", "Unknowable", "Undetermined", "Hermaphrodite", "Gynandromorph"'
           expect(html).to include 'imaging_event.ct.exposure_time: Please enter a valid number.'
-          expect(html).to include 'imaging_event.ct.filter_material: Please enter a valid value: "Molybdenum", "Aluminum", "Copper", "Rhodium", "Niobium", "Europium", "Lead"'
+          expect(html).to include 'imaging_event.ct.filter_material: Please enter a valid value: "Molybdenum", "Aluminum", "Copper", "Rhodium", "Niobium", "Europium", "Lead", "Tin"'
           expect(html).to include 'imaging_event.ct.target_type: Please enter a valid value: "Reflection", "Transmission"'
           expect(html).to include 'imaging_event.ct.detector_type: Please enter a valid value: "Direct (X-Ray photoconductor)", "Scintillator (Phosphor used)", "Storage (Storage Phosphor)", "Film (Scanned film/screen)"'
           expect(html).to include 'imaging_event.ct.detector_pixels_x: Please enter a valid integer.'

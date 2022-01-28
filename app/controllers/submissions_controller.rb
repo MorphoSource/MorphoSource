@@ -168,6 +168,7 @@ class SubmissionsController < ApplicationController
       organization_alert_message = alert(organization)
       organization_title = organization.title
       organization_id = organization.id
+      organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
     else
       status = 'FAIL'
       message = 'Organization does not exist'
@@ -175,6 +176,7 @@ class SubmissionsController < ApplicationController
       organization_alert_message = ''
       organization_title = ''
       organization_id = nil
+      organization_permissions_mode = nil
     end
     response_object = {
       status: status,
@@ -182,7 +184,8 @@ class SubmissionsController < ApplicationController
       default_fields: default_fields,
       organization_alert_message: organization_alert_message,
       organization_title: organization_title,
-      organization_id: organization_id
+      organization_id: organization_id,
+      organization_permissions_mode: organization_permissions_mode
     }
     render :json => response_object
   end
@@ -913,9 +916,13 @@ class SubmissionsController < ApplicationController
   end
 
   def default_media_permissions(organization)
-    organization.enforced_permissions_fields
-      .merge(download_reviewer: format_reviewers_select2(organization.download_reviewer))
-      .except(:license_blank, :rights_holder_blank, :rights_statement_blank)
+    fields = organization.enforced_permissions_fields
+
+    fields.merge!(
+      download_reviewer: format_reviewers_select2(organization.download_reviewer)
+    ) if organization.download_reviewer.present?
+
+    fields
   end
 
   def format_reviewers_select2(reviewers)

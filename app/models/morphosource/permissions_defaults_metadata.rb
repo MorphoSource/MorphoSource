@@ -31,7 +31,7 @@ module Morphosource
 
       # License
       # Included in Basic Metadata
-      # property :license, predicate: ::RDF::Vocab::DC.license, multiple: true
+      # property :license, predicate: ::RDF::Vocab::DC.license 
 
       # Copyright Statement
       # Included in Basic Metadata

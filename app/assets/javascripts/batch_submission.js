@@ -1,9 +1,10 @@
+//= require morphosource/submission/submission_form
+
 $( document ).ready(function() {
 
   if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
     showAlert = false;
     selectedDeviceModality = "";
-    organizationDefaultMediaFields = {};
 
     class BatchSubmissionData {
       constructor(sessionState=null) {
@@ -36,243 +37,6 @@ $( document ).ready(function() {
       }
 
     } // BatchSubmissionData
-
-
-    class BatchSubmissionForm {
-      constructor(submissionData) {
-        this.data = submissionData;
-        this.views = [
-          new OrganizationView(this),
-          new DeviceView(this),
-        ];
-
-        this.setMediaPermissionFieldEvent();
-      }
-
-      setMediaPermissionFieldEvent() {
-        $('form.new_media div,form.new_media a').click(function(event) {
-          if ($(this).hasClass('permissions-field')) {
-            alert($('#organization-alert-message').text());
-            $(this).off(event); // Only fire once
-          }
-        });
-      }
-
-      setDefaultMediaPermissionFields() {
-        let self = this;
-
-        $.get('/submissions/organization_default_media_fields',
-         {
-          'parent_media_list': this.data.parentMediaList,
-          'organization_id': this.data.organizationId,
-          'biological_specimen_id': this.data.biologicalSpecimenId,
-          'cultural_heritage_object_id': this.data.culturalHeritageObjectId
-         },
-         function(getData){
-          console.log('Got organization default fields');
-          //console.log("getData=", getData);
-          if (getData.default_fields) {
-            organizationDefaultMediaFields = getData.default_fields;
-            // Add loading to media page
-            $('form.new_media div#submission-media-ownership').addClass('ui-loading-whole-page');
-
-            // Remove previous settings, if present
-            $('#ownership-section-header-text').addClass('hide').removeClass('show');
-            $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
-            $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
-            self.emptyMediaFields(getData.default_fields);
-
-            if (Object.keys(getData.default_fields).length) {
-              // Set up text
-              $('#organization-alert-message').text(getData.organization_alert_message);
-              $('#organization-name').text(getData.organization_title);
-              $('#ownership-section-header-text').addClass('show').removeClass('hide');
-
-              // Add new settings
-              self.fillMediaFields(getData.default_fields);
-
-              // Organization agreement attachment
-              if ( getData.organization_id && ( getData.default_fields.attachment_url || getData.default_fields.agreement_uri ) ) {
-                if (getData.default_fields.attachment_url) {
-                  self.data.organizationForAttachment = getData.organization_id;
-
-                  $('#organization-attachment-url').attr('href', getData.default_fields.attachment_url);
-                  $('#organization-attachment-url').addClass('show').removeClass('hide');
-
-                  $('#no-attachment').addClass('hide').removeClass('show');
-
-                  $('#organization-agreement-uri').text('');
-                  $('#organization-agreement-uri').addClass('hide').removeClass('show');
-
-                  $('#organization-agreement-help').addClass('show').removeClass('hide');
-                  $('#no-agreement-help').addClass('hide').removeClass('show');
-                } else if (getData.default_fields.agreement_uri) {
-                  self.data.organizationForAttachment = null;
-
-                  $('#organization-agreement-uri').text(getData.default_fields.agreement_uri);
-                  $('#organization-agreement-uri').addClass('show').removeClass('hide');
-
-                  $('#no-attachment').addClass('hide').removeClass('show');
-
-                  $('#organization-attachment-url').attr('href', '#');
-                  $('#organization-attachment-url').addClass('hide').removeClass('show');
-
-                  $('#organization-agreement-help').addClass('show').removeClass('hide');
-                  $('#no-agreement-help').addClass('hide').removeClass('show');
-                }
-              } else {
-                self.data.organizationForAttachment = null;
-                $('#no-attachment').addClass('show').removeClass('hide');
-
-                $('#organization-agreement-uri').text('');
-                $('#organization-agreement-uri').addClass('hide').removeClass('show');
-
-                $('#organization-attachment-url').attr('href', '#');
-                $('#organization-attachment-url').addClass('hide').removeClass('show');
-
-                $('#no-agreement-help').addClass('show').removeClass('hide');
-                $('#organization-agreement-help').addClass('hide').removeClass('show');
-              }
-
-            }
-
-            // Remove loading
-            $('form.new_media div#submission-media-ownership').removeClass('ui-loading-whole-page');
-          }
-         });
-      }
-
-      emptyMediaFields(defaultFields) {
-        for (const f in defaultFields) {
-          if (defaultFields[f]) {
-            this.emptyMediaField(f);
-          }
-        }
-      }
-
-      emptyMediaField(field) {
-        let multiSelector =
-          "form.new_media select[name='media[" + field + "][]'], " +
-          "form.new_media input[name='media[" + field + "][]']";
-        let selector =
-          "form.new_media select[name='media[" + field + "]'], " +
-          "form.new_media input[name='media[" + field + "]'], " +
-          "form.new_media textarea[name='media[" + field + "]']";
-
-        switch(field) {
-          case 'download_permission':
-            $('form.new_media input#media_visibility_open').trigger('click');
-            break;
-          case 'download_reviewer':
-            $(selector).val('').trigger('change');
-            break;
-          case 'license': // multi-value fields
-          case 'rights_holder':
-          case 'agreement_uri':
-            $(multiSelector).first().val('');
-            $(multiSelector).slice(1).parent().remove();
-            break;
-          default: // single-value fields
-            $(selector).val('');
-        }
-      }
-
-      fillMediaFields(defaultFields) {
-        for (const f in defaultFields) {
-          if (defaultFields[f] && defaultFields[f] != []) {
-            this.fillMediaField(f, defaultFields[f]);
-          }
-        }
-      }
-
-      fillMediaField(field, val) {
-        let multiSelector =
-          "form.new_media select[name='media[" + field + "][]'], " +
-          "form.new_media input[name='media[" + field + "][]']";
-        let selector =
-          "form.new_media select[name='media[" + field + "]'], " +
-          "form.new_media input[name='media[" + field + "]'], " +
-          "form.new_media textarea[name='media[" + field + "]']";
-
-        if ( Array.isArray(val) && ( !val.length || val[0] == 'Name: , Type: ' ) ) {
-          return;
-        }
-
-        console.log(val);
-        switch(field) {
-          case 'download_permission':
-            if (Array.isArray(val)) {
-              val = val[0];
-            }
-            if (val == 'preview_only') {
-              let val = 'preview';
-            }
-            $('form.new_media input#media_visibility_' + val.toLowerCase()).trigger('click');
-            $('form.new_media div.media_download_permission').addClass('permissions-field');
-            $('form.new_media div.media_download_permission').find('i.tooltip-icon').after(
-              "<i class='fas fa-university'></i>"
-            );
-            break;
-          case 'download_reviewer':
-            $(multiSelector).select2('destroy').empty().userSearchMultiple(val);
-            $('form.new_media div.media_download_reviewer').addClass('permissions-field');
-            $('form.new_media div.media_download_reviewer').find('i.tooltip-icon').after(
-              "<i class='fas fa-university'></i>"
-            );
-
-            $('#media_download_reviewer').one("select2-opening", function() {
-              alert($('#organization-alert-message').text());
-            });
-            break;
-          case 'license': // multi-value fields
-          case 'rights_holder':
-          case 'agreement_uri':
-            if (Array.isArray(val) && val.length > 1) {
-              for (i = 0; i < val.length; i++) {
-                if (val[i]) {
-                  // console.log('element: ' + val[i]);
-                  $(multiSelector).eq(i).val(val[i]);
-                  if (i < (val.length - 1) && val[i+1]) {
-                    $(multiSelector).eq(i).parent().find('button.add').trigger('click');
-                  } else {
-                    $(multiSelector).parents('div .media_'+field).addClass('permissions-field');
-                    $(multiSelector).parents('div .media_'+field).find('i.tooltip-icon').after(
-                      "<i class='fas fa-university'></i>"
-                    );
-                  }
-
-                }
-              }
-            } else {
-              $(multiSelector).val(val);
-              $(multiSelector).parents('div .media_'+field).addClass('permissions-field');
-              $(multiSelector).parents('div .media_'+field).find('i.tooltip-icon').after(
-                "<i class='fas fa-university'></i>"
-              );
-            }
-            break;
-          case 'attachment_url':
-            $('div#organization-attachment-row').addClass('permissions-field');
-            $('div#organization-attachment-row label span').after(
-              "<i class='fas fa-university'></i>"
-            );
-            break;
-          default: // single-value fields
-            $(selector).val(val);
-            $(selector).parents('div .media_'+field).addClass('permissions-field');
-            $(selector).parents('div .media_'+field).find('i.tooltip-icon').after(
-              "<i class='fas fa-university'></i>"
-            );
-
-        }
-      }
-
-
-      setVisibility(idArray) {
-        $('.submission_section').addClass('hide').removeClass('show');
-        $(idArray.join(', ')).addClass('show').removeClass('hide');
-      }
-    } // BatchSubmissionForm
 
     class BatchSubmissionView {
       constructor(id, form) {
@@ -620,16 +384,19 @@ $( document ).ready(function() {
       }
     }
 
-    data = new BatchSubmissionData();
-    batchSubmissionForm = new BatchSubmissionForm(data);
+    var data = new BatchSubmissionData();
+    var batchSubmissionForm = new SubmissionForm(data);
+
+    batchSubmissionForm.views = [
+      new OrganizationView(batchSubmissionForm),
+      new DeviceView(batchSubmissionForm),
+    ];
+    batchSubmissionForm.initializeForm();
 
     $('#submission_organization_select_display_container').on('click', '#organization-select-close', function(event) {
         // user click close button to remove selected org
         console.log("removing selected org");
-        $('#ownership-section-header-text').addClass('hide').removeClass('show');
-        $('form.new_media div#submission-media-ownership div').removeClass('permissions-field');
-        $('form.new_media div#submission-media-ownership div#media-ownership-fields i.fa-university').remove();
-        batchSubmissionForm.emptyMediaFields(organizationDefaultMediaFields);
+        batchSubmissionForm.resetFormFromOrg(batchSubmissionForm.organizationDefaultMediaFields);
     });
       
     $('#manifest_file, #batch_submission_modality').on('change', function(){ setSubmitStatus() });

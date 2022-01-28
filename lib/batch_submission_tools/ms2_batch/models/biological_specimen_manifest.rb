@@ -17,18 +17,18 @@ module BatchSubmissionTools
           @work = work
           @work_imported = work_imported
           @attrs = attrs
-byebug
+#byebug
 
           # match, import, or create BSO
           if attrs.present?
-byebug
+#byebug
             @occurrence_id = @attrs[:occurrence_id]&.first || @attrs['occurrence_id']
             @idigbio_uuid = @attrs[:idigbio_uuid]&.first || @attrs['idigbio_uuid']
             @institution_code = @attrs[:institution_code]&.first || @attrs['institution_code']
             @collection_code = @attrs[:collection_code]&.first || @attrs['collection_code']
             @catalog_number = @attrs[:catalog_number]&.first || @attrs['catalog_number']
           elsif work.present?
-byebug
+#byebug
             @id = work.id
             @work_imported = false
             @occurrence_id = work.occurrence_id&.first
@@ -37,7 +37,7 @@ byebug
             @collection_code = work.collection_code&.first
             @catalog_number = work.catalog_number&.first
           elsif initial_attrs[:occurrence_id].present? && (imported_attrs = import_work).present?
-byebug
+#byebug
             @attrs = imported_attrs.merge( 
               organization_id: [@organization_id],
               depositor: @depositor,
@@ -51,7 +51,7 @@ byebug
             @collection_code = @attrs['collection_code']
             @catalog_number = @attrs['catalog_number']
           elsif !attrs.present? && initial_attrs.present?
-byebug
+#byebug
             @attrs = create_new_attributes.merge( 
               organization_id: [@organization_id],
               depositor: @depositor,
@@ -80,13 +80,13 @@ byebug
         end
 
         def work
-byebug
+#byebug
           @work ||=
             if (
                 id.present? && 
                 ::BiologicalSpecimen.exists?(id)
               )
-byebug
+#byebug
               ::BiologicalSpecimen.find(id)
             elsif (
                 initial_attrs[:occurrence_id].present? && 
@@ -95,7 +95,7 @@ byebug
                   )
                 ).present?
               )
-byebug
+#byebug
               oi_bsos.first
             elsif (
                 initial_attrs[:catalog_number].present? && 
@@ -106,16 +106,16 @@ byebug
                   )
                 ).present?
               )
-byebug
+#byebug
               cc_bsos.first
             else
-byebug
+#byebug
               nil
             end
         end
 
         def import_work
-byebug
+#byebug
           ::Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(initial_attrs[:occurrence_id])
         end
 

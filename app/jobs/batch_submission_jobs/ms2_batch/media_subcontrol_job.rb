@@ -10,8 +10,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
     # Submit jobs for new works to be created
     @manifest['media_ie_pe_ingests'].each do |i|
-      if i['parent'].count > 1
-        raise "Only one parent should be present for media ingestion, but multiple are present. Parents: #{i['parent']}"
+      if i['parent'].present?
+        if i['parent'].count > 1
+          raise "Only one parent should be present for media ingestion, but multiple are present. Parents: #{i['parent']}"
+        end
       end
 
 #byebug

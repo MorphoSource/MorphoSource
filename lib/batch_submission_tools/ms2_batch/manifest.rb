@@ -87,11 +87,26 @@ module BatchSubmissionTools
               children = parents.drop(1) + children
               parents = parents.first
             end
+            (media_group_to_rows[sheet_index][:parents] << parents).flatten!
+            (media_group_to_rows[sheet_index][:children] << children).flatten!
 
-            media_group_to_rows[sheet_index][:parents] = parents
-            media_group_to_rows[sheet_index][:children] = children
+          end # /mg[:raw_list]
+        end # /media_group_to_rows
+
+
+        # Only the parent item of the media group is needed for ingest job for all media
+        parent_row_index = nil
+        media_group_to_rows.each do |sheet_index, mg|
+          if mg[:parents].present?          
+            parent_row_index = mg[:parents].first
+            break
           end
         end
+        if parent_row_index.present?
+          media_group_to_rows.slice!([parent_row_index])
+        end
+byebug
+
 
       end
 
@@ -113,7 +128,7 @@ byebug
               on_behalf_of: on_behalf_of,
               organization_id: organization_id
             )
-byebug
+#byebug
             biological_specimen_ingests << bso_ingest
             rows_to_bso[index] = biological_specimen_ingests.count - 1
           end
@@ -154,9 +169,6 @@ byebug
 
         rows.pluck(:taxonomy).each_with_index do |taxonomy_attrs, index|
           bso = biological_specimen_ingests[rows_to_bso[index]]
-#byebug
-#(byebug) rows_to_bso
-#{0=>0, 1=>1, 2=>1}
  
           # construct taxonomies if necessary (i.e., if BSO is to be created)
           if bso.attrs.present?
@@ -204,6 +216,8 @@ byebug
       end
 
       def construct_media_ie_pe_ingests
+byebug
+
         # iterating through each media group
         media_group_to_rows.each do |sheet_index, mg|
           if mg[:parents].count > 1
@@ -270,7 +284,7 @@ byebug
               media_path: media_path,
               media_ownership_fields: media_ownership_fields
             )
-byebug
+#byebug
 
             [
               row_index,
@@ -286,7 +300,7 @@ byebug
             parent: parent, 
             children: children
           )
-        end
+        end # / media_group_to_rows.each
       end
 
       # Must convert entire object to hash for ActiveJob serialization

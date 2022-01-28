@@ -29,46 +29,48 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     parent_media = nil
     # ingest parent processing events and media
-    ingest['parent'].each do |idx, parent|
-      if parent['pe'].present?
-        parent_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
-          'ProcessingEvent', 
-          parent['pe']['attrs'].merge(
-            'parent_id' => [imaging_event.id]
-          ).symbolize_keys, 
-          nil, 
-          false
-        )
-      else
-        raise "Required processing event not present for parent media ingest. Ingest: #{parent}"
-      end
-
-      if parent['media'].present?
-        if parent['media']['initial_attrs']['preview_file'].present? &&
-            parent['media']['media_path'].present?
-          # this is where preview_file is set
-          preview_file = parent['media']['media_path'] + parent['media']['initial_attrs']['preview_file'].first
+    if ingest['parent'].present?
+      ingest['parent'].each do |idx, parent|
+        if parent['pe'].present?
+          parent_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
+            'ProcessingEvent', 
+            parent['pe']['attrs'].merge(
+              'parent_id' => [imaging_event.id]
+            ).symbolize_keys, 
+            nil, 
+            false
+          )
+        else
+          raise "Required processing event not present for parent media ingest. Ingest: #{parent}"
         end
 
-        parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
-          'Media', 
-          parent['media']['attrs'].merge(
-            'parent_id' => [parent_pe.id]
-          ).symbolize_keys, 
-          nil,
-          false,
-          preview_file
-        )
+        if parent['media'].present?
+          if parent['media']['initial_attrs']['preview_file'].present? &&
+              parent['media']['media_path'].present?
+            # this is where preview_file is set
+            preview_file = parent['media']['media_path'] + parent['media']['initial_attrs']['preview_file'].first
+          end
 
-        all_media << parent_media
-      else
-        raise "Required processing event not present for parent media ingest. Ingest: #{parent}"
+          parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
+            'Media', 
+            parent['media']['attrs'].merge(
+              'parent_id' => [parent_pe.id]
+            ).symbolize_keys, 
+            nil,
+            false,
+            preview_file
+          )
+
+          all_media << parent_media
+        else
+          raise "Required processing event not present for parent media ingest. Ingest: #{parent}"
+        end
       end
     end
 
     # ingest children processing events and media
     direct_parent = parent_media.presence || imaging_event.presence
-#byebug
+byebug
     if direct_parent.present?
       ingest['children'].each do |idx, child|
 #byebug
@@ -121,6 +123,13 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
+
+    
+
+    # todo: re-index bso here?
+
+
+
   end
 
   def add_media_to_collections(media, collection_ids)

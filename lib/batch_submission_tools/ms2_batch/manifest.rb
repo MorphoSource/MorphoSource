@@ -94,19 +94,19 @@ module BatchSubmissionTools
         end # /media_group_to_rows
 
 
-        # Only the parent item of the media group is needed for ingest job for all media
-        parent_row_index = nil
+#byebug
+        # Only the parent items of the media group is needed for ingest job for all media
+        # otherwise duplicate media will be created
+        parent_row_indexes = []
         media_group_to_rows.each do |sheet_index, mg|
           if mg[:parents].present?          
-            parent_row_index = mg[:parents].first
-            break
+            parent_row_indexes << [mg[:parents].first]
           end
         end
-        if parent_row_index.present?
-          media_group_to_rows.slice!([parent_row_index])
-        end
-byebug
-
+#byebug
+        filtered_group = @media_group_to_rows.select { |k, v| parent_row_indexes.uniq.include?(k) }
+        @media_group_to_rows = filtered_group
+#byebug
 
       end
 
@@ -118,7 +118,7 @@ byebug
 
           matching_bso_index = match_bsos(bso)
           if matching_bso_index.present?
-byebug
+#byebug
             rows_to_bso[index] = matching_bso_index
           else
             # proceed with constructing ingest
@@ -216,7 +216,7 @@ byebug
       end
 
       def construct_media_ie_pe_ingests
-byebug
+#byebug
 
         # iterating through each media group
         media_group_to_rows.each do |sheet_index, mg|

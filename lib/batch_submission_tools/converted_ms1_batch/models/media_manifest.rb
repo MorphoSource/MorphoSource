@@ -11,7 +11,7 @@ module BatchSubmissionTools
           @on_behalf_of = on_behalf_of
           @organization_id = organization_id
           @organization_permissions_fields = 
-            Organization.find(organization_id).permissions_fields if organization_id.present?
+            Organization.find(organization_id).enforced_permissions_fields if organization_id.present?
           @media_path = media_path
           if !attrs.present? && initial_attrs.present?
             @attrs = create_new_attributes
@@ -30,7 +30,14 @@ module BatchSubmissionTools
           if organization_id.present?
             addl_attrs.merge!(
               organization_permissions_fields
-                .select { |k, v| Array(v)&.first.present? }
+                .except(
+                  :license_blank, 
+                  :rights_holder_blank, 
+                  :rights_statement_blank, 
+                  :download_permission, 
+                  :attachment_url, 
+                  :organization_for_attachment
+                )
             ) 
             addl_attrs.merge!(visibility_from_organization)
           end

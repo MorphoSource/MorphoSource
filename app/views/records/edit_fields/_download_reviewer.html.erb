@@ -1,12 +1,15 @@
 <div class="form-group row string optional media_download_reviewer">
   <div class="col-xs-6 showcase-label">
     <label class="control-label string optional" for="media_download_reviewer"><%= t('simple_form.labels.media.download_reviewer') %></label>
-    <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'></i>
+    <i class="material-icons tooltip-icon" data-original-title="" title="" style="margin-left: -1px;">
+      <p class="hint hide"><%= t('simple_form.hints.defaults.download_reviewer') %></p>
+    </i>
   </div>
   <div class="col-xs-6 showcase-value">
     <%= f.text_field :download_reviewer,
       id: 'media_download_reviewer',
       name: "#{f.object_name}[download_reviewer][]",
+      placeholder: local_assigns[:placeholder],
       'data-reviewers' => reviewer_data(f),
       class: 'form-control string optional'
     %>

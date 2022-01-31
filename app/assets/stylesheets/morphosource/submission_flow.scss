@@ -132,13 +132,31 @@
     display: none;
   }
 
-  i.fa-university {
-    color: #ff861f;
+  /* Styling for ownership and permissions settings, incl. permission defaults */
+
+  li.input-group.required-input-group {
+    display: unset !important;
   }
 
-  div.showcase-label i.fa-university {
-    margin-left: 3px;
+  div.permissions-label {
+    margin-top: 0 !important;
   }
+
+  div.permissions-label span.label {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  div.permissions-alert-info {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+    border-radius:  4px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  /* End permissions  */
 
   .submission-v2 {
 

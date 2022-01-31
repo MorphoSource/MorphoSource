@@ -48,31 +48,28 @@ RSpec.describe SubmissionsController, type: :controller do
         organization_id: '012345678'
       }}
 
-      let(:organization_double) {
-        double("Organization",
-          :id => '123456789',
-          :title => ['Test Title'],
-          :download_reviewer => ['012345'],
-          :agreement_uri => ['http://agreement.uri'],
-          :license => ['CC0'],
-          :rights_statement => ['In Copyright'],
-          :permits_commercial_use => [true],
-          :permits_3d_use => [false],
-          :rights_holder => ['Name: Fname, Type: Copyright'],
-          :funding => ['Funder'],
-          :publisher => ['Publisher'],
-          :cite_as => ['Citation'],
-          :download_permission => ['restricted_download'],
-          :morphosource_use_agreement_type => ['Permissive'],
-          :required_archival_of_published_derivatives => ['EncouragedButNotRequired'],
-          :preview_mode => ['Interactive/Embeddable']
-        )
-      }
+      let(:organization) { Organization.new(
+        title: ['Test Title'],
+        download_reviewer: ['012345'],
+        agreement_uri: ['http://agreement.uri'],
+        license: ['CC0'],
+        rights_statement: ['In Copyright'],
+        permits_commercial_use: ['CommercialUsePermitted'],
+        permits_3d_use: ['3DPrintingProhibited'],
+        rights_holder: ['Name: Fname, Type: Copyright'],
+        download_permission: ['restricted_download'],
+        morphosource_use_agreement_type: ['Permissive'],
+        required_archival_of_published_derivatives: ['EncouragedButNotRequired'],
+        preview_mode: ['Interactive/Embeddable']
+      ) }
+
+      before do
+        organization.save!
+      end
 
       it 'returns JSON organization response' do
-        allow(organization_double).to receive(:attachment) { 'test/url/path/attachment.pdf' }
         allow(subject).to receive(:format_reviewers_select2).and_return([ { id: 012345, user_key: '012345', text: 'email@email.com' } ])
-        allow(subject).to receive(:find_ancestor_organization).and_return(organization_double)
+        allow(subject).to receive(:find_ancestor_organization).and_return(organization)
 
         post :organization_default_media_fields, params: form_params
 
@@ -84,12 +81,9 @@ RSpec.describe SubmissionsController, type: :controller do
           'agreement_uri': ['http://agreement.uri'],
           'license': ['CC0'],
           'rights_statement': ['In Copyright'],
-          'permits_commercial_use': [true],
-          'permits_3d_use': [false],
+          'permits_commercial_use': ['CommercialUsePermitted'],
+          'permits_3d_use': ['3DPrintingProhibited'],
           'rights_holder': ['Name: Fname, Type: Copyright'],
-          'funding': ['Funder'],
-          'publisher': ['Publisher'],
-          'cite_as': ['Citation'],
           'morphosource_use_agreement_type': ['Permissive'],
           'required_archival_of_published_derivatives': ['EncouragedButNotRequired'],
           'preview_mode': ['Interactive/Embeddable']

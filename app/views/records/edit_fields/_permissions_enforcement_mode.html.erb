@@ -1,0 +1,9 @@
+<% # app/views/records/edit_fields/_permissions_enforcement_mode.html.erb %>
+<% permissions_enforcement_modes_service = Morphosource::PermissionsEnforcementModesService.new %>
+<%= f.input :permissions_enforcement_mode, as: :select,
+    collection: permissions_enforcement_modes_service.select_all_options,
+    include_blank: false,
+    item_helper: permissions_enforcement_modes_service.method(:include_current_value),
+    input_html: { class: 'form-control' },
+    label_wrapper_html: { class: 'parsed' }
+%>

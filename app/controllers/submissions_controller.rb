@@ -168,6 +168,7 @@ class SubmissionsController < ApplicationController
       organization_alert_message = alert(organization)
       organization_title = organization.title
       organization_id = organization.id
+      organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
     else
       status = 'FAIL'
       message = 'Organization does not exist'
@@ -175,6 +176,7 @@ class SubmissionsController < ApplicationController
       organization_alert_message = ''
       organization_title = ''
       organization_id = nil
+      organization_permissions_mode = nil
     end
     response_object = {
       status: status,
@@ -182,7 +184,8 @@ class SubmissionsController < ApplicationController
       default_fields: default_fields,
       organization_alert_message: organization_alert_message,
       organization_title: organization_title,
-      organization_id: organization_id
+      organization_id: organization_id,
+      organization_permissions_mode: organization_permissions_mode
     }
     render :json => response_object
   end
@@ -913,25 +916,13 @@ class SubmissionsController < ApplicationController
   end
 
   def default_media_permissions(organization)
-    fields = {
-      download_reviewer: format_reviewers_select2(organization.download_reviewer),
-      agreement_uri: organization.agreement_uri,
-      license: organization.license,
-      rights_statement: organization.rights_statement,
-      permits_commercial_use: organization.permits_commercial_use,
-      permits_3d_use: organization.permits_3d_use,
-      rights_holder: organization.rights_holder,
-      funding: organization.funding,
-      publisher: organization.publisher,
-      cite_as: organization.cite_as,
-      download_permission: organization.download_permission.first,
-      attachment_url: attachment_url(organization),
-      morphosource_use_agreement_type: organization.morphosource_use_agreement_type,
-      required_archival_of_published_derivatives: organization.required_archival_of_published_derivatives,
-      preview_mode: organization.preview_mode
-    }
+    fields = organization.enforced_permissions_fields
 
-    fields.select {|k, v| v.present? }
+    fields.merge!(
+      download_reviewer: format_reviewers_select2(organization.download_reviewer)
+    ) if organization.download_reviewer.present?
+
+    fields
   end
 
   def format_reviewers_select2(reviewers)
@@ -940,17 +931,6 @@ class SubmissionsController < ApplicationController
         { id: u.id, user_key: u.user_key, text: u.email.present? ? u.email : '' }
       end
     end.compact
-  end
-
-  def attachment_url(organization)
-    if organization.attachment('agreement')
-      Rails.application.routes.url_helpers.attachment_path(
-        id: organization.id,
-        field: 'agreement'
-      )
-    else
-      nil
-    end
   end
 
   # reindex works that have catalog facets depending on metadata from associated work types after all works have been linked with each other.

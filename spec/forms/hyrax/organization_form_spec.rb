@@ -28,18 +28,15 @@ RSpec.describe Hyrax::OrganizationForm do
     :permits_commercial_use,
     :permits_3d_use,
     :rights_holder,
-    :funding,
-    :publisher,
-    :cite_as,
     :morphosource_use_agreement_type,
     :required_archival_of_published_derivatives,
     :preview_mode] }
 
   let(:required_fields)           { [:organization_type, :institution_name, :title, :institution_code] }
 
-  let(:single_valued_fields)      { [:organization_type, :title, :description, :address, :city, :state_province, :postal_code, :country, :institution_name, :cite_as, :download_permission, :agreement_uri, :rights_statement, :permits_commercial_use, :permits_3d_use, :cite_as, :morphosource_use_agreement_type, :preview_mode] }
+  let(:single_valued_fields)      { [:organization_type, :title, :description, :address, :city, :state_province, :postal_code, :country, :institution_name, :download_permission, :agreement_uri, :rights_holder_blank, :rights_statement, :rights_statement_blank, :license, :license_blank, :permits_commercial_use, :permits_3d_use, :morphosource_use_agreement_type, :preview_mode, :permissions_enforcement_mode] }
 
-  let(:media_permissions_fields)  { [:download_permission, :download_reviewer, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode] }
+  let(:media_permissions_fields)  { [:download_permission, :download_reviewer, :agreement_uri, :rights_holder, :rights_holder_blank, :rights_statement, :rights_statement_blank, :license, :license_blank, :permits_commercial_use, :permits_3d_use, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :preview_mode, :permissions_enforcement_mode] }
 
   let(:secondary_terms)           { [:description, :related_url, :address, :city, :state_province, :postal_code, :country, :contact_person, :collection_code, :recordset_id] }
 

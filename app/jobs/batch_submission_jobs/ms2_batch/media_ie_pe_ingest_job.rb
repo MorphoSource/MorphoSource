@@ -70,7 +70,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     # ingest children processing events and media
     direct_parent = parent_media.presence || imaging_event.presence
-byebug
+#byebug
     if direct_parent.present?
       ingest['children'].each do |idx, child|
 #byebug
@@ -123,12 +123,8 @@ byebug
 
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
-
     
-
-    # todo: re-index bso here?
-
-
+    UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
 
   end
 

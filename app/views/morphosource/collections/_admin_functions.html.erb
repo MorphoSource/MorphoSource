@@ -1,0 +1,19 @@
+<% if current_user.admin? %>
+  <div class="admin-csv-links mb-1">
+    <div class="collection-export-links">
+      <b>Admin functions:</b>
+    </div>
+    <div class="collection-export-links">
+      <%= link_to request.parameters.merge({:format => :csv, :per_page => 1000000}) do %>
+        <i class="fas fa-file-csv fa-lg"></i> <span>Save current media query with facets applied</span>
+      <% end %>
+    </div>
+    <div class="collection-export-links">
+      <% if @presenter.team? && @presenter.organization.present? %>
+        <%= link_to main_app.team_media_projects_path(id: @presenter.id, :format => :csv, :per_page => 1000000, 'f[intersections][]' => 'organization_not_team' ) do %>
+          <i class="fas fa-file-csv fa-lg"></i> <span>Save projects with media not owned by team</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div><!-- /admin-csv-links -->
+<% end %>

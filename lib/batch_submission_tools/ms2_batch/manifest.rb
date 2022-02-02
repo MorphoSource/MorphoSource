@@ -128,7 +128,7 @@ module BatchSubmissionTools
               on_behalf_of: on_behalf_of,
               organization_id: organization_id
             )
-#byebug
+byebug
             biological_specimen_ingests << bso_ingest
             rows_to_bso[index] = biological_specimen_ingests.count - 1
           end

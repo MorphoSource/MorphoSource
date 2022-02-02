@@ -3,26 +3,48 @@
 
 <h1><span class="fa fa-upload" aria-hidden="true"></span> Batch Submission</h1>
 
+<p><%= row_count %> <%= "row".pluralize(row_count) %> parsed.</p>
+
 <p><%= general_error_msg %></p>
 
 <%#--div class="scrolling-wrapper w-100">
 	<div class="row" %>
 
-		<% error_rows.map do |row_number, row| %>
-			<ul class="error-list">Row <%= row_number %>: <%= error_messages[row_number].to_wrapped_html('li') %></ul>
-			<table class="table error-rows">
-			<tr>
-				<% field_names.each_with_index do |field_name, index| %>
-					<th<%= " class=text-alert" if error_cell_numbers[row_number].include? index %>><%= field_name %></th>
-				<% end %>
-			</tr>
-			<tr>
-				<%= row.to_wrapped_html('td')%>
-			</tr>
-			</table>
+<% error_rows.map do |row_number, row| %>
+	<ul class="error-list">Row <%= row_number %>: <%= error_messages[row_number].to_wrapped_html('li') %></ul>
+	<table class="table error-rows">
+	<tr>
+		<% field_names.each_with_index do |field_name, index| %>
+			<th<%= " class=text-alert" if error_cell_numbers[row_number].include? index %>><%= field_name %></th>
 		<% end %>
+	</tr>
+	<tr>
+		<%= row.to_wrapped_html('td')%>
+	</tr>
+	</table>
+<% end %>
 
 	<%#/div>
 </div %>
 
-<p><%= row_count %> rows parsed.</p>
+<% if warn_rows.present? %>
+	<p><a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-warnings">Click here to see other warnings</a>.
+
+	<div id="collapse-block-warnings" class="collapse-block collapse out" aria-expanded="true">
+		<% warn_rows.map do |row_number, row| %>
+			<ul class="warn-list">Row <%= row_number %>: <%= warn_messages[row_number].to_wrapped_html('li') %></ul>
+			<%# todo: remove the table later if not needed
+			table class="table warn-rows">
+			<tr>
+				<%# field_names.each_with_index do |field_name, index| % >
+					<th><%#= field_name % ></th>
+				<% end % >
+			</tr>
+			<tr>
+				<%= row.to_wrapped_html('td')% >
+			</tr>
+			</table -- %>
+		<% end %>
+	</div>
+<% end %>
+

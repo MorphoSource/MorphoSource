@@ -151,21 +151,31 @@ byebug
     # field names is on row 7 
     # field values start from row 8, column 3 (column 1 and 2 can be skipped)   
     general_error_msg = ""
+    general_warning_msg = ""
     error_rows = {}
     error_messages = {}
     error_cell_numbers = {}
+    warn_rows = {}
+    warn_messages = {}
+    warn_cell_numbers = {}
     row_index = 8
     @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
       data_row = row.drop(2) 
       row_cell_errors = []
-      row_cell_numbers = []
+      error_row_cell_numbers = []
+      row_cell_warnings = []
+      warn_row_cell_numbers = []
       data_row.each_with_index do |cell, cell_index|
         begin
-          error_msg = error_found(field_names[cell_index], cell, row_index)
+          error_msg, warn_msg = error_found(field_names[cell_index], cell, row_index)
           if error_msg.present?
             row_cell_errors << error_msg
             error_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
-            row_cell_numbers << cell_index
+            error_row_cell_numbers << cell_index
+          elsif warn_msg.present?
+            row_cell_warnings << warn_msg
+            warn_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
+            warn_row_cell_numbers << cell_index
           end
         rescue => e
           Rails.logger.debug "Exception in BatchSubmissionsController: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
@@ -176,13 +186,24 @@ byebug
         end
       end # /looping cells
       error_messages[row_index] = row_cell_errors 
-      error_cell_numbers[row_index] = row_cell_numbers
+      error_cell_numbers[row_index] = error_row_cell_numbers
+      warn_messages[row_index] = row_cell_warnings 
+      warn_cell_numbers[row_index] = warn_row_cell_numbers
       row_index = row_index + 1
     end # /lopping rows /xlsx.each_row_streaming
     row_count = row_index - 8
     if error_rows.count > 0
       general_error_msg = "There are validation errors.  Please check the details below."
-      render 'validation_fail', locals: { general_error_msg: general_error_msg, error_rows: error_rows, error_messages: error_messages, error_cell_numbers: error_cell_numbers, field_names: field_names, row_count: row_count }
+      render 'validation_fail', locals: { 
+        general_error_msg: general_error_msg, 
+        error_rows: error_rows, 
+        error_messages: error_messages, 
+        error_cell_numbers: error_cell_numbers, 
+        warn_rows: warn_rows, 
+        warn_messages: warn_messages, 
+        warn_cell_numbers: warn_cell_numbers, 
+        field_names: field_names, 
+        row_count: row_count }
       @manifest_is_valid = false
     else
 #      save_params_to_session
@@ -191,7 +212,12 @@ byebug
 #      render 'validation_pass', locals: { row_count: row_count }
       
       #todo: remove validation_pass template later if not needed
-      render 'index', locals: { row_count: row_count }
+      render 'index', locals: { 
+        warn_rows: warn_rows, 
+        warn_messages: warn_messages, 
+        warn_cell_numbers: warn_cell_numbers, 
+        field_names: field_names, 
+        row_count: row_count }
       @manifest_is_valid = true
     end    
   end
@@ -235,6 +261,7 @@ byebug
   def error_found(field_name, cell, current_row)
     val = cell.present? ? cell.value.to_s : ""
     error_msg = ""
+    warn_msg = ""
     case field_name
     when "media.media_file"
       if !val.present?
@@ -305,6 +332,25 @@ byebug
         unless BiologicalSpecimen.where(id:val).present?
           error_msg = "biological_specimen.ms_id: Existing biological specimen #{val} not found."
         end
+        ignored_values = []
+        if @xlsx.cell(current_row, field_column("biological_specimen.idigbio_uuid")).present? 
+          ignored_values << "biological_specimen.idigbio_uuid"
+        end
+        if @xlsx.cell(current_row, field_column("biological_specimen.occurrence_id")).present? 
+          ignored_values << "biological_specimen.occurrence_id"
+        end
+        if @xlsx.cell(current_row, field_column("biological_specimen.institution_code")).present? 
+          ignored_values << "biological_specimen.institution_code"
+        end
+        if @xlsx.cell(current_row, field_column("biological_specimen.collection_code")).present?
+          ignored_values << "biological_specimen.collection_code"
+        end
+        if @xlsx.cell(current_row, field_column("biological_specimen.catalog_number")).present?
+          ignored_values << "biological_specimen.catalog_number"
+        end
+        if ignored_values.present?
+          warn_msg += "The following fields are ignored since biological_specimen.ms_id exists: " + ignored_values.join(', ')
+        end
       else
         if !@xlsx.cell(current_row, field_column("biological_specimen.idigbio_uuid")).present? &&
            !@xlsx.cell(current_row, field_column("biological_specimen.occurrence_id")).present? &&
@@ -316,7 +362,7 @@ byebug
         end
       end
     when "biological_specimen.idigbio_uuid"
-      if val.present?
+      if val.present? && !@xlsx.cell(current_row, field_column("biological_specimen.ms_id")).present?
         idb_result = Morphosource::IDigBioSearchService.call( { "idigbio_uuid" => val } )
         if idb_result.present?
           # If the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a 
@@ -330,7 +376,6 @@ byebug
           end        
           # If the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API 
           # must have iDigBio-supplied institution code matching pre-selected organization (case-insensitive)
-byebug
           organization_institution_code = @params["organization_institution_code"]
           if organization_institution_code.present?
             idb_institution_code = idb_result.first["indexTerms"]["institutioncode"] # todo: might need to check if this will return multiple values
@@ -345,7 +390,7 @@ byebug
       end
     when "biological_specimen.institution_code"
       # If pre-selected organization has existing institution codes, value must match one of the institution codes from the pre-selected organization
-      if val.present?
+      if val.present? && !@xlsx.cell(current_row, field_column("biological_specimen.ms_id")).present?
         organization_institution_code = @params["organization_institution_code"]
         if organization_institution_code.present?
           unless organization_institution_code.upcase.split(', ').include? val.upcase
@@ -376,7 +421,7 @@ byebug
         error_msg = error_by_type(field_name, val)
       end
     end
-    return error_msg
+    return error_msg, warn_msg
   end
 
   def error_by_type(field_name, val)

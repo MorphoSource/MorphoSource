@@ -81,6 +81,8 @@ module BatchSubmissionTools
 
         def work
 #byebug
+# if specimen ms_id exists, get the object and ignore other BSO columns (occur id, coll code, catalog num, etc) 
+
           @work ||=
             if (
                 id.present? && 

@@ -349,7 +349,7 @@ byebug
           ignored_values << "biological_specimen.catalog_number"
         end
         if ignored_values.present?
-          warn_msg += "The following are ignored since biological_specimen.ms_id exists: " + ignored_values.join(', ')
+          warn_msg += "The following fields are ignored since biological_specimen.ms_id exists: " + ignored_values.join(', ')
         end
       else
         if !@xlsx.cell(current_row, field_column("biological_specimen.idigbio_uuid")).present? &&

@@ -4,24 +4,34 @@
 <h1>Batch Submission</h1>
 
 <% if row_count.present? %>
-  <p><%= row_count %> <%= "row".pluralize(row_count) %> parsed and submitted.</p>
+
+	<p><%= row_count %> <%= "row".pluralize(row_count) %> parsed 
+	<% if warn_rows.present? %>
+		with <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-warnings">warnings</a>.
+
+		<div id="collapse-block-warnings" class="collapse-block collapse out" aria-expanded="true">
+			<% warn_rows.map do |row_number, row| %>
+				<ul class="warn-list">Row <%= row_number %>: <%= warn_messages[row_number].to_wrapped_html('li') %></ul>
+				<%# todo: remove the table later if not needed
+				table class="table warn-rows">
+				<tr>
+					<%# field_names.each_with_index do |field_name, index| % >
+						<th><%#= field_name % ></th>
+					<% end % >
+				</tr>
+				<tr>
+					<%= row.to_wrapped_html('td')% >
+				</tr>
+				</table -- %>
+			<% end %>
+		</div>
+	<% else %>
+	.
+	<% end %>
+	</p>
+
 <% end %>
 
-<% if warn_rows.present? %>
-	<p>There are warnings.</p>
-	<% warn_rows.map do |row_number, row| %>
-		<ul class="warn-list">Row <%= row_number %>: <%= warn_messages[row_number].to_wrapped_html('li') %></ul>
-		<table class="table warn-rows">
-		<tr>
-			<% field_names.each_with_index do |field_name, index| %>
-				<th<%= " class=text-tbd" if warn_cell_numbers[row_number].include? index %>><%= field_name %></th>
-			<% end %>
-		</tr>
-		<tr>
-			<%= row.to_wrapped_html('td')%>
-		</tr>
-		</table>
-	<% end %>
-<% end %>
+<p>Ingestion is in progress.</p>
 
 <%= link_to "Create a new batch upload submission", main_app.new_batch_submission_path %>

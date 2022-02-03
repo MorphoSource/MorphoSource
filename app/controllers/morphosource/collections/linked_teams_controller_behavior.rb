@@ -77,7 +77,7 @@ module Morphosource
         repository.blacklight_config.max_per_page = 999999
         collection_search_builder = Morphosource::Collections::Teams::OrganizationCollectionsSearchBuilder.new(self)
         response = repository.search(collection_search_builder.rows(999999))
-        response.documents
+        response.docs
       end
 
     end

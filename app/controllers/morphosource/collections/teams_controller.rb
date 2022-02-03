@@ -31,7 +31,6 @@ module Morphosource
 
       # Outputs CSV of projects containing org media not owned by linked team
       def media_projects
-        (@response, @document_list) = query_solr
         query_organization_media_collections
 
         respond_to do |format|

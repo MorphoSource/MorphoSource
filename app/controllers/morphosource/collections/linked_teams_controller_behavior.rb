@@ -68,8 +68,8 @@ module Morphosource
         search_builder = Morphosource::Collections::MediaProjectsSearchBuilder.new(
           scope: self, collection: @collection
         ).with(params)
-        response = repository.search(search_builder.rows(999999).query).response
-        response["docs"].map{|d| d["member_of_collection_ids_ssim"]}.flatten.compact.uniq        
+        @response = repository.search(search_builder.rows(999999).query)
+        @response.docs.map{|d| d["member_of_collection_ids_ssim"]}.flatten.compact.uniq        
       end
 
       def organization_media_collections

@@ -52,19 +52,26 @@ module Morphosource
         response = repository.search(search_builder.rows(999999).query).response
         org_media_object_ids = response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
         org_media_count = response["numFound"].to_i
-        [org_media_object_ids, org_media_count]
+        [org_media_object_ids, org_media_count] 
       end
 
       # Returns collections containing media of organization specimens not owned by team
       # Filtered by user access
       def query_organization_media_collections
+        return unless current_user.admin?
+        
+        repository.blacklight_config.max_per_page = 999999
+        repository.blacklight_config.facet_fields = {}
+        repository.blacklight_config.add_facet_field "member_of_project_ids_ssim", limit: 999999
+        repository.blacklight_config.add_facet_field "member_of_team_ids_ssim", limit: 999999
+        create_intersections_facet
+
         @org_media_collection_ids = organization_media_collection_ids
         @collections_document_list = organization_media_collections
       end
  
       def organization_media_collection_ids
         return [] unless current_user.admin?
-        repository.blacklight_config.max_per_page = 999999
         search_builder = Morphosource::Collections::MediaProjectsSearchBuilder.new(
           scope: self, collection: @collection
         ).with(params)
@@ -74,7 +81,6 @@ module Morphosource
 
       def organization_media_collections
         return [] unless current_user.admin?
-        repository.blacklight_config.max_per_page = 999999
         collection_search_builder = Morphosource::Collections::Teams::OrganizationCollectionsSearchBuilder.new(self)
         response = repository.search(collection_search_builder.rows(999999))
         response.docs

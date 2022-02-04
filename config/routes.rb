@@ -108,6 +108,9 @@ Rails.application.routes.draw do
       # teams redirects
       get 'teams/specimens/:id', to: redirect('teams/%{id}/biological_specimens')
       get 'teams/chos/:id', to: redirect('teams/%{id}/cultural_heritage_objects')
+
+      # linked teams csv
+      get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
     end
   end
 

@@ -55,6 +55,31 @@ module Morphosource
         [org_media_object_ids, org_media_count]
       end
 
+      # Returns collections containing media of organization specimens not owned by team
+      # Filtered by user access
+      def query_organization_media_collections
+        @org_media_collection_ids = organization_media_collection_ids
+        @collections_document_list = organization_media_collections
+      end
+ 
+      def organization_media_collection_ids
+        return [] unless current_user.admin?
+        repository.blacklight_config.max_per_page = 999999
+        search_builder = Morphosource::Collections::MediaProjectsSearchBuilder.new(
+          scope: self, collection: @collection
+        ).with(params)
+        @response = repository.search(search_builder.rows(999999).query)
+        @response.docs.map{|d| d["member_of_collection_ids_ssim"]}.flatten.compact.uniq        
+      end
+
+      def organization_media_collections
+        return [] unless current_user.admin?
+        repository.blacklight_config.max_per_page = 999999
+        collection_search_builder = Morphosource::Collections::Teams::OrganizationCollectionsSearchBuilder.new(self)
+        response = repository.search(collection_search_builder.rows(999999))
+        response.docs
+      end
+
     end
   end
 end

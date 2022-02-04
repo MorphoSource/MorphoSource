@@ -16,7 +16,9 @@ module Morphosource
       end
 
       def return_selected_fields(solr_parameters)
-        solr_parameters[:fl] = 'id,has_model_ssim,title_tesim,thumbnail_path_ss,part_tesim,physical_object_title_ssim,taxonomy_ssim,human_readable_media_type_tesim,date_uploaded_dtsi,fileset_accessibility_ssim'
+        if !@blacklight_params[:return_all_fields]
+          solr_parameters[:fl] = 'id,has_model_ssim,title_tesim,thumbnail_path_ss,part_tesim,physical_object_title_ssim,taxonomy_ssim,human_readable_media_type_tesim,date_uploaded_dtsi,fileset_accessibility_ssim'
+        end
       end
 
       def models

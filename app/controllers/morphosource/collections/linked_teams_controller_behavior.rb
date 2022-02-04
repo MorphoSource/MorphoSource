@@ -52,8 +52,7 @@ module Morphosource
         response = repository.search(search_builder.rows(999999).query).response
         org_media_object_ids = response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
         org_media_count = response["numFound"].to_i
-        [org_media_object_ids, org_media_count]
-        
+        [org_media_object_ids, org_media_count] 
       end
 
       # Returns collections containing media of organization specimens not owned by team

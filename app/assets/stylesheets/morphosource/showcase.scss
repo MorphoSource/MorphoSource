@@ -1341,3 +1341,19 @@ html {
   }
 }
 /* /Media transfer page specific */
+
+/* Works list data table specific */
+.showcase table#datatable-media-list {
+  a.table-sort-header {
+    color: inherit;
+    text-decoration: none;
+
+    span.glyphicon-sort {
+      opacity:  0.3;
+    }
+
+    span.glyphicon-sort-by-attributes,span.glyphicon-sort-by-attributes-alt {
+      opacity:  0.7;
+    }
+  }
+}

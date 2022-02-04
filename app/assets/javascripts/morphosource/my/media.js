@@ -19,14 +19,16 @@ $(document).ready(function() {
           { responsivePriority: 1, targets: 0 },
           { responsivePriority: 2, targets: 1 },
           { responsivePriority: 3, targets: 2 },
-          { responsivePriority: 4, targets: -1 } // rightmost column
+          { responsivePriority: 4, targets: -1 }, // rightmost column
+          { responsivePriority: 5, targets: -2 }
         ],
         pageLength: 10,
         bPaginate: false,
         bInfo: false,
         bDestroy: true,
         bLengthChange: false, // hide the show number of entries dropdown
-        bFilter: false // hide search box
+        bFilter: false, // hide search box
+        ordering: false
       });
 
       // Toggle the visibility of table column

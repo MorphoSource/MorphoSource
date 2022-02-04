@@ -29,7 +29,6 @@ class MediaIndexer < Morphosource::WorkIndexer
       # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
       solr_doc['human_readable_media_type_sim'] = mt
       solr_doc['human_readable_media_type_ssim'] = mt
-      solr_doc['human_readable_media_type_ssi'] = mt
       # add modality facet
       modality = object.modality
       solr_doc['media_modality_tesim'] = modality
@@ -125,7 +124,8 @@ class MediaIndexer < Morphosource::WorkIndexer
       @project_ids = object.member_of_project_ids
       solr_doc['member_of_project_ids_ssim'] = @project_ids
 
-      solr_doc['publication_status_ssi'] = publication_status
+      pub_status = publication_status
+      solr_doc['publication_status_ssi'] = pub_status
 
       # related media ids
       ie = object.imaging_event
@@ -137,6 +137,13 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['media_device_facility_organization_ssim'] = facility_org_title
       solr_doc['media_device_facility_organization_id_tesim'] = facility_org&.id
       solr_doc['media_device_facility_organization_id_ssim'] = facility_org&.id
+
+      # sorting fields
+      solr_doc['part_si'] = object.part
+      solr_doc['physical_object_title_si'] = physical_object_title&.first
+      solr_doc['taxonomy_si'] = taxonomy_titles&.first
+      solr_doc['human_readable_media_type_si'] = mt
+      solr_doc['publication_status_si'] = pub_status
    end
   end
 

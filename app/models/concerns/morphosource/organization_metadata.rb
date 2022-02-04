@@ -55,10 +55,30 @@ module Morphosource
 
       # -- default media permissions settings --
 
+      # Permissions enforcement mode (whether permissions template is required or recommended, admin-only)
+      property :permissions_enforcement_mode, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/permissionsEnforcementMode") do |index|
+        index.as :stored_searchable
+      end
+
       # Download permission
       # default publication settings
       # determins media visibility, fileset_visibility, fileset_accessibility settings
       property :download_permission, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/publicationStatus"), multiple: true do |index|
+        index.as :stored_searchable
+      end
+
+      # Rights holder intentionally blank
+      property :rights_holder_blank, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/rightsHolderBlank") do |index|
+        index.as :stored_searchable
+      end
+
+      # License intentionally blank
+      property :license_blank, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/licenseBlank") do |index|
+        index.as :stored_searchable
+      end
+
+      # Rights statement intentionally blank
+      property :rights_statement_blank, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/rightsStatementBlank") do |index|
         index.as :stored_searchable
       end
     end

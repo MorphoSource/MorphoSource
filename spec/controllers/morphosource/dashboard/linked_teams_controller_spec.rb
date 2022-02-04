@@ -164,22 +164,20 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
     let(:permits_commercial_use)  { ['true'] }
     let(:permits_3d_use)          { ['true'] }
     let(:rights_holder)           { ['Name: name1, Type: type1', 'Name: name2, Type: type2', 'Name: name3, Type: type3'] }
-    let(:funding)                 { ['funding'] }
-    let(:publisher)               { ['publisher'] }
-    let(:cite_as)                 { ['cite as'] }
-    let(:params)                  { { organization:
-                                      { download_permission: download_permission.first,
+    let(:params)                  { { 
+                                    id: team.id,
+                                    organization:
+                                      { 
+                                        download_permission: download_permission.first,
                                         download_reviewer: download_reviewer.first,
                                         license: license,
                                         rights_statement: rights_statement.first,
                                         agreement_uri: agreement_uri,
                                         permits_commercial_use: permits_commercial_use.first,
                                         permits_3d_use: permits_3d_use.first,
-                                        rights_holder: rights_holder,
-                                        funding: funding,
-                                        publisher: publisher,
-                                        cite_as: cite_as.first },
-                                        id: team.id } }
+                                        rights_holder: rights_holder 
+                                      } 
+                                  } }
 
     context 'user is not a team admin' do
       before do
@@ -208,9 +206,6 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
         expect(org2.permits_commercial_use).to eq(permits_commercial_use)
         expect(org2.permits_3d_use).to eq(permits_3d_use)
         expect(org2.rights_holder).to match_array(rights_holder)
-        expect(org2.funding).to eq(funding)
-        expect(org2.publisher).to eq(publisher)
-        expect(org2.cite_as).to eq(cite_as)
         # it redirects back
         expect(response).to redirect_to('original_page')
       end

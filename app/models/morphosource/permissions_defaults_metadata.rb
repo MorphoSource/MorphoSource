@@ -13,9 +13,6 @@ module Morphosource
     # Commercial Use Permitted
     # 3D Use Permitted
     # IP Holder
-    # Funding Attribution
-    # Publisher
-    # Cite As
 
     included do
       # Publication Status set on Organization
@@ -34,7 +31,7 @@ module Morphosource
 
       # License
       # Included in Basic Metadata
-      # property :license, predicate: ::RDF::Vocab::DC.license, multiple: true
+      # property :license, predicate: ::RDF::Vocab::DC.license 
 
       # Copyright Statement
       # Included in Basic Metadata
@@ -60,20 +57,6 @@ module Morphosource
 
       # Rights Holder
       property :rights_holder, predicate: ::RDF::URI.new("http://ns.adobe.com/xap/1.0/rights/Owner") do |index|
-        index.as :stored_searchable
-      end
-
-      # Funding Attribution
-      property :funding, predicate: ::RDF::URI.new("http://rs.tdwg.org/ac/terms/fundingAttribution") do |index|
-        index.as :stored_searchable
-      end
-
-      # Publisher
-      # Included in Basic Metadata
-      # property :publisher, predicate: ::RDF::Vocab::DC11.publisher
-
-      # Cite As
-      property :cite_as, predicate: ::RDF::URI.new("http://ns.adobe.com/photoshop/1.0/Credit") do |index|
         index.as :stored_searchable
       end
 

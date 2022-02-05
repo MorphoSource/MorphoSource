@@ -8,6 +8,8 @@ class BatchSubmissionsController < ApplicationController
   before_action :check_params, only: [:submit]
   after_action :create_manifest_object, only: [:submit]
 
+  attr_accessor :parent_media_row, :parent_media_id
+
   def instantiate_work_forms
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
   end
@@ -289,13 +291,18 @@ byebug
       if val.present? 
         if @xlsx.cell(current_row, field_column("media.parent_ms_id")).present?
           error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
+        elsif @parent_media_id.present?
+          error_msg = "media.parent_file: Only one parent media should be present, but media.parent_ms_id is found in another row."
         else
           # look for the val in the media_file column
           parent_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
           if parent_media_found_row.present?
-            parent_media_row = parent_media_found_row + 1
-            if parent_media_row == current_row
+            if @parent_media_row.present? && (@parent_media_row != parent_media_found_row + 1)
+              error_msg = "media.parent_file: Only one parent media should be present, but multiple parent_file are found."
+            elsif parent_media_found_row + 1 == current_row
               error_msg = "media.parent_file #{val} cannot be media.media_file in the same row."
+            else              
+              @parent_media_row = parent_media_found_row + 1
             end
           else
             error_msg = "media.parent_file #{val} not found in another row."
@@ -308,8 +315,16 @@ byebug
         #error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
       else
         if val.present?
-          unless Media.where(id:pad(val.to_s)).present?
-            error_msg = "media.parent_ms_id: Existing media #{val} not found."
+          if @parent_media_row.present?
+            error_msg = "media.parent_ms_id: Only one parent media should be present, but media.parent_file is found in another row."
+          elsif @parent_media_id.present? && (@parent_media_id != val)
+            error_msg = "media.parent_ms_id: Only one parent media should be present, but multiple parent_ms_id are found."
+          else
+            if Media.where(id:pad(val.to_s)).present?
+              @parent_media_id = val
+            else
+              error_msg = "media.parent_ms_id: Existing media #{val} not found."
+            end
           end
         end
       end

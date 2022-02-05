@@ -7,7 +7,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest    
-byebug
+#byebug
 
     # Submit jobs for new works to be created
     @manifest['taxonomy_ingests'].each do |t|
@@ -41,7 +41,7 @@ byebug
 
     @manifest['taxonomy_ingests'].each do |t|
       if t['job'] == true # it returns true if perform_now has been called (can be removed later if perform_later is called)
-byebug
+#byebug
 # get or set id here ?
 
         # update manifest
@@ -53,7 +53,7 @@ byebug
       next unless (job = t['job']).present?
       # check job status
       job_status = ActiveJob::Status.get(t['job'])
-byebug
+#byebug
       t['job_status'] = job_status[:status].to_s
       if job_status[:status] == :queued || job_status[:status] == :working
         jobs_complete = false

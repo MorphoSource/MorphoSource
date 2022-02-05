@@ -70,10 +70,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     # ingest children processing events and media
     direct_parent = parent_media.presence || imaging_event.presence
-#byebug
+byebug
     if direct_parent.present?
       ingest['children'].each do |idx, child|
-#byebug
+byebug
         if child['pe'].present?
           child_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
             'ProcessingEvent', 
@@ -84,10 +84,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             false
           )
         else
+byebug
           raise "Required processing event not present for child media ingest. Ingest: #{child}"
         end
 
-#byebug
+byebug
         if child['media'].present?
           if child['media']['initial_attrs']['preview_file'].present? &&
               child['media']['media_path'].present?
@@ -95,6 +96,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             preview_file = child['media']['media_path'] + child['media']['initial_attrs']['preview_file'].first
           end
 
+byebug
           child_media = BatchSubmissionsImporter::BatchObjectImporter.call(
             'Media', 
             child['media']['attrs'].merge(
@@ -107,7 +109,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
           all_media << child_media
         else
-          raise "Required processing event not present for child media ingest. Ingest: #{child}"
+byebug
+byebug
+          raise "Required media not present for child media ingest. Ingest: #{child}"
         end
       end
     else

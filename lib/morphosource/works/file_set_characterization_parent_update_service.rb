@@ -8,11 +8,12 @@ module Morphosource
       attr_accessor :file_set, :parents, :field_for_number_of_images, :value_for_number_of_images
 
       def initialize(file_set)
+        byebug
         @file_set = file_set
         @parents = file_set.member_of
       end
 
-      def isDicom?(fs) 
+      def isDicom?(fs)
         extension = fs.file_type_extension&.first
         if extension.present?
           return extension.downcase == 'dcm'
@@ -61,6 +62,7 @@ module Morphosource
       end
 
       def field_transform
+        byebug
         {
           :x_spacing => [file_set.pixel_spacing&.first.split("\\").last],
           :y_spacing => [file_set.pixel_spacing&.first.split("\\").first],
@@ -103,7 +105,7 @@ module Morphosource
           :source_detector_distance => :distance_source_to_detector,
           :target_material => :anode_target_material,
           :rotation_number => :spiral_pitch_factor
-    
+
         }
       end
 

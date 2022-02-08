@@ -37,9 +37,10 @@ def import_mesh(filepath):
 
 def get_scale_factor(unit):
     factors = {
+        'um': 1e-6,
         'mm': 0.001,
         'cm': 0.01,
-        'm': 1.0,
+         'm': 1.0,
         'km': 1000,
         'in': 0.025400050800102,
         'ft': 0.304785126485827,
@@ -72,21 +73,21 @@ else:
 parser = argparse.ArgumentParser(description='Blender mesh file to GLB conversion tool')
 parser.add_argument('-i', '--input', help='mesh file to be converted')
 parser.add_argument('-o', '--output', help='output GLB file')
-parser.add_argument('-u', '--unit', 
-    help='Unit of input mesh file, one of mm, cm, m, km, in, ft, or mi')
+parser.add_argument('-u', '--unit',
+    help='Unit of input mesh file, one of um, mm, cm, m, km, in, ft, or mi')
 args = parser.parse_args(argv)
 
 target_faces = 1000000
 
-if (args.input and args.output and args.unit and 
-    args.unit in ['mm','cm','m', 'km', 'in', 'ft', 'mi']):
+if (args.input and args.output and args.unit and
+    args.unit in ['um', 'mm', 'cm', 'm', 'km', 'in', 'ft', 'mi']):
 
     ifile = args.input
     ofile = args.output
     unit = args.unit
 
     err_msg = ''
-    try: 
+    try:
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.delete()
         if len(bpy.data.objects) == 0:
@@ -98,7 +99,7 @@ if (args.input and args.output and args.unit and
                         if need_to_apply_material(obj):
                             print('Applying Material')
                             obj.data.materials.clear()
-                            
+
                             # Create and apply material
                             mat = bpy.data.materials.new("material")
                             mat.use_nodes = True
@@ -119,7 +120,7 @@ if (args.input and args.output and args.unit and
                         # the api has been changed in blender 2.8
                         # https://b3d.interplanety.org/en/how-to-set-object-mesh-to-active-in-blender-2-8-python-api/
                         bpy.context.view_layer.objects.active = obj
-                        
+
                         # Decimate mesh
                         if len(obj.data.polygons) > target_faces:
                             clean_decimate_modifiers(obj)
@@ -136,7 +137,7 @@ if (args.input and args.output and args.unit and
                             sf = get_scale_factor(unit)
                             for v in obj.data.vertices:
                                 v.co = v.co * sf
-               
+
                 bpy.ops.object.origin_set()
                 bpy.ops.export_scene.gltf(filepath=ofile)
             else:

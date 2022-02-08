@@ -1,7 +1,7 @@
 require 'roo'
 
 class BatchSubmissionsController < ApplicationController
-  load_and_authorize_resource 
+  load_and_authorize_resource
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms
   before_action :check_sftp_share_connection, only: [:new]
@@ -10,7 +10,7 @@ class BatchSubmissionsController < ApplicationController
   def instantiate_work_forms
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
   end
-  
+
   def index
   end
 
@@ -109,15 +109,15 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def parse_manifest
-    # field names is on row 7 
-    # field values start from row 8, column 3 (column 1 and 2 can be skipped)   
+    # field names is on row 7
+    # field values start from row 8, column 3 (column 1 and 2 can be skipped)
     general_error_msg = ""
     error_rows = {}
     error_messages = {}
     error_cell_numbers = {}
     row_index = 8
-    @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
-      data_row = row.drop(2) 
+    @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row|
+      data_row = row.drop(2)
       row_cell_errors = []
       row_cell_numbers = []
       data_row.each_with_index do |cell, cell_index|
@@ -137,7 +137,7 @@ class BatchSubmissionsController < ApplicationController
           break # skip the rest of the cells
         end
       end # /looping cells
-      error_messages[row_index] = row_cell_errors 
+      error_messages[row_index] = row_cell_errors
       error_cell_numbers[row_index] = row_cell_numbers
       row_index = row_index + 1
     end # /lopping rows /xlsx.each_row_streaming
@@ -160,7 +160,7 @@ class BatchSubmissionsController < ApplicationController
       end
     when "media.media_type"
       if valid_media_types.include? val
-        if val.downcase != "other" 
+        if val.downcase != "other"
           # check if media_type value +  pre-selected modality is a permitted combination
           if @submission_yaml['status'][val][@modality_selected] == 'none'
           error_msg = "media.media_type: The combination of media type #{val} and pre-selected modality #{@modality_selected} is not permitted.  Please provide a different media type or select a different modality. "
@@ -171,7 +171,7 @@ class BatchSubmissionsController < ApplicationController
       end
     when "media.parent_file"
       # IF value is present, another row must contain this value in media.media_file
-      if val.present? 
+      if val.present?
         if @xlsx.cell(current_row, field_column("media.parent_ms_id")).present?
           error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
         else
@@ -222,7 +222,7 @@ class BatchSubmissionsController < ApplicationController
            !@xlsx.cell(current_row, field_column("biological_specimen.institution_code")).present? &&
            !@xlsx.cell(current_row, field_column("biological_specimen.collection_code")).present? &&
            !@xlsx.cell(current_row, field_column("biological_specimen.catalog_number")).present?
-        
+
           error_msg = "One of the following must have a value: biological_specimen.ms_id, biological_specimen.idigbio_uuid, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number."
         end
       end
@@ -230,7 +230,7 @@ class BatchSubmissionsController < ApplicationController
       if val.present?
         idb_result = Morphosource::IDigBioSearchService.call( { "idigbio_uuid" => val } )
         if idb_result.present?
-          # If the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a 
+          # If the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a
           # recordset_id matching the recordset_id of the pre-selected organization
           organization_recordset_id = @params["organization_recordset_id"]
           if organization_recordset_id.present?
@@ -238,8 +238,8 @@ class BatchSubmissionsController < ApplicationController
             unless organization_recordset_id.upcase.split(', ').include? idb_recordset.upcase
               error_msg += "Specimen in iDigBio has recordset id #{idb_recordset} which does not match the pre-selected organization's recordset id: #{organization_recordset_id}. "
             end
-          end        
-          # If the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API 
+          end
+          # If the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API
           # must have iDigBio-supplied institution code matching pre-selected organization (case-insensitive)
           organization_institution_code = @params["organization_institution_code"]
           if organization_institution_code.present?
@@ -266,23 +266,23 @@ class BatchSubmissionsController < ApplicationController
     when /^imaging_event\.(.*)$/
       case $1
       when /^(ct|photogrammetry|photography)\.(.*)$/
-        # handle modality specific fields 
+        # handle modality specific fields
         field_modality = $1
         if val.present?
           if field_modality.downcase == modality_mapped(@modality_selected).downcase
             error_msg = error_by_type(field_name, val)
           else
-            # no need to check the values if they should not be present 
+            # no need to check the values if they should not be present
             error_msg = "#{field_name}: Value should not be present when modality #{@modality_selected} is pre-selected."
           end
-        end  
+        end
       else
-        # handle non-modality specific fields 
+        # handle non-modality specific fields
         error_msg = error_by_type(field_name, val)
       end
     when /^(biological_specimen|taxonomy|processing_event)\.(.*)$/
       # note that specific *.* fields should be handled above already
-      if val.present?        
+      if val.present?
         error_msg = error_by_type(field_name, val)
       end
     end
@@ -440,9 +440,9 @@ class BatchSubmissionsController < ApplicationController
     }
   end
 
-  def field_column(field) 
+  def field_column(field)
     # this returns the actual column number of a field (by adding first 2 columns and "0")
-    field_names.index(field) + 3 
+    field_names.index(field) + 3
   end
 
   def valid_values_for(field)
@@ -456,7 +456,7 @@ class BatchSubmissionsController < ApplicationController
 
   def valid_media_types
     @valid_media_types ||= Morphosource::MediaTypesService.new.select_all_options.map { |o| o[1] }
-  end  
+  end
 
   def valid_media_side
     @valid_media_side ||= ["Left", "Midline", "NotApplicable", "Right", "Unknown"]
@@ -467,7 +467,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def valid_media_unit
-    @valid_media_unit ||= ['Cm', 'Ft', 'In', 'Km', 'M', 'Mi', 'Mm']
+    @valid_media_unit ||= ['Um', 'Cm', 'Ft', 'In', 'Km', 'M', 'Mi', 'Mm']
   end
 
   def valid_media_map_type
@@ -512,7 +512,7 @@ class BatchSubmissionsController < ApplicationController
 
   def field_to_reject_for_media_type?(media_type, field)
     case media_type
-    when 'CTImageSeries'  
+    when 'CTImageSeries'
       ['map_type'].include? field
     when 'PhotogrammetryImageSeries'
       ['x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
@@ -522,7 +522,7 @@ class BatchSubmissionsController < ApplicationController
       ['series_type', 'x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
     end
   end
-  
+
   def pad(id)
     if id.length < 9
       ("0" * (9 - id.length)) + id
@@ -585,7 +585,7 @@ class BatchSubmissionsController < ApplicationController
           flash[:error] = 'The file uploaded is invalid.  Please upload a file in this format: ' + Morphosource.manifest_formats.join(',')
           return redirect_to main_app.new_batch_submission_path
         end
-      else 
+      else
         flash[:error] = 'The manifest file is missing. '
         return redirect_to main_app.new_batch_submission_path
       end
@@ -600,7 +600,7 @@ class BatchSubmissionsController < ApplicationController
         user_set_path = current_user.sftp_share
         if !user_set_path.present?
           "NOT_FOUND"
-        elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
+        elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path)
           Hyrax.config.sftp_share_root + user_set_path + '/' unless user_set_path.end_with?('/')
         elsif Dir.exist?(user_set_path)
           user_set_path + '/' unless user_set_path.end_with?('/')
@@ -612,7 +612,7 @@ class BatchSubmissionsController < ApplicationController
 
     def check_sftp_share_connection
       if user_share_full_path == "NOT_FOUND"
-        render 'not_connected'      
+        render 'not_connected'
       end
     end
 

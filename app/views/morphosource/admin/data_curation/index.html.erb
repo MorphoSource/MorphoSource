@@ -1,0 +1,103 @@
+<% provide :page_title, 'Data Curation' %>
+
+<h1>Data Curation</h1>
+
+<div class="data-curation">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title h2">Normalize Organization Media By Project</h2>
+        </div>
+        <div class="panel-body">
+          <div class="summary">
+            <h4>For all of an organization's media in the selected project:</h4>
+            <ul>
+              <h4>Applies organizational permissions</h4>
+              <h4>Assigns a new owner/data manager</h4>
+              <h4>Adds the media to the organization's linked team</h4>
+            </ul>
+          </div>
+          <div style="display:flex; flex-direction:row;">
+            <div class="data-curation-form">
+            <%= form_with url: admin_apply_permission_template_path, method: :post, local: true do |form| %>
+
+              <div class="input-field">
+                <div>
+                  <%= form.label :team_id, "Org-Linked Team ID" %>
+                </div>
+                <p>Ex: 000345596</p>
+                <div>
+                  <%= form.text_field :team_id, required: true %>
+                </div>
+              </div>
+              <div class="input-field">
+                <div>
+                  <%= form.label :project_id, "Media Project ID" %>
+                </div>
+                <p>Ex: 000778565</p>
+                <div>
+                  <%= form.text_field :project_id %>
+                </div>
+              </div>
+              <div class="input-field">
+                <div>
+                  <%= form.label :email, "Data Manager Email" %>
+                </div>
+                <p>Ex: user@email.com</p>
+                <div>
+                  <%= form.text_field :email %>
+                </div>
+              </div>
+              <div class="input-field">
+                <div>
+                  <%= form.label :change_publication_status, "Change Publication Status?" %>
+                </div>
+                <div>
+                  <%= form.select_tag(:update_publication_status, options_for_select([['No','none'], ['Yes - All Media','all'], ['Yes - Published Media Only','published']])) %>
+                </div>
+              </div>
+              <div>
+                <%= form.submit "Apply Permissions", class: 'btn btn-sm btn-primary'  %>
+              </div>
+              <% end %>
+            </div>
+            <div class="notes">
+              <div class="notes-column list">
+                <h4>This will update:</h4>
+                <ul>
+                  <li>Owner (Data Manager)</li>
+                  <li>Publication Status - if selected</li>
+                  <li>Download Reviewer(s)</li>
+                  <li>Rights Holder</li>
+                  <li>Rights Statement</li>
+                  <li>License</li>
+                  <li>Use Agreement Type</li>
+                  <li>Permits Commercial Use</li>
+                  <li>Permits 3D Use</li>
+                  <li>Required Archival of Published Derivatives</li>
+                  <li>Additional Agreement - url or attachment</li>
+                  <li>Team Membership</li>
+                </ul>
+              </div>
+              <div class="notes-column">
+                <h4>Notes:</h4>
+                <p>It is safe to run this update even if media in the project are already in the team, it will still update permissions metadata for those media.</p>
+                <p>Media download reviewers will be updated to the following, based on the original publication status:
+                  <ul>
+                    <li>Open: Organization Reviewers</li>
+                    <li>Restricted Download: Organization Reviewers + Previous Reviewers (default or designated)</li>
+                    <li>Private: Organization Reviewers + Previous Reviewers (designated only)</li>
+                  </ul>
+                </p>
+                <h4>For developers:</h4>
+                <p>To run this service from the console:</p>
+                <p>Morphosource::DataCuration::OrganizationNormalizationService.call(team_id: team_id, project_id: project_id, email: email, update_publication_status: 'none'/'all'/'published')
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+.data-curation {
+
+  .summary {
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-bottom: 20px;
+
+    h4 {
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+  }
+
+  .input-field {
+    margin-bottom: 15px;
+
+    label {
+      margin-bottom: 2px;
+    }
+
+    p {
+      margin-bottom: 2px;
+    }
+  }
+
+  .notes {
+    display: flex;
+    flex-direction: row;
+
+    .notes-column {
+      margin-left: 30px;
+    }
+
+    .list {
+      width: 40%;
+    }
+
+  }
+}

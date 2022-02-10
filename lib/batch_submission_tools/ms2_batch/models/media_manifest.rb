@@ -3,30 +3,51 @@ module BatchSubmissionTools
     module Models
       class MediaManifest
         attr_accessor :initial_attrs, :depositor, :on_behalf_of, :organization_id, :media_path, :attrs
+        attr_accessor :id, :work, :work_imported
         attr_accessor :organization_permissions_fields, :organization_attachment_id
 
         def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, organization_id: nil, media_path: nil, 
-            media_ownership_fields: {}, attrs: {}, **kwargs)
+            media_ownership_fields: {}, attrs: {}, work_imported: false, **kwargs)
           
           @initial_attrs = initial_attrs
           @depositor = depositor
           @on_behalf_of = on_behalf_of
           @organization_id = organization_id
-#          if organization_id.present?
-#            @organization_permissions_fields = {}
-#            Organization.find(organization_id).permissions_fields.map do |k,v|
-#              @organization_permissions_fields[k] = v.to_a
-#            end
-#          end
+
+          @id = initial_attrs[:ms_id] || id
+#byebug
+          @work = work
+          @work_imported = work_imported
+#byebug
+
           @media_path = media_path
           @media_ownership_fields = media_ownership_fields
-          if !attrs.present? && initial_attrs.present?
+          if work.present?
+#byebug
+            @id = work.id
+            @work_imported = false
+            @attrs = attrs
+          elsif !attrs.present? && initial_attrs.present?
 #byebug
             @attrs = create_new_attributes
           else
 #byebug
             @attrs = attrs
           end
+        end
+
+        def work
+          @work ||=
+            if (
+                id.present? && 
+                ::Media.exists?(id)
+              )
+#byebug
+              ::Media.find(id)
+            else
+#byebug
+              nil
+            end
         end
 
         def create_new_attributes
@@ -124,7 +145,7 @@ module BatchSubmissionTools
         end
 
         def to_h
-          instance_values.symbolize_keys
+          instance_values.symbolize_keys.except(:work)
         end
       end
     end

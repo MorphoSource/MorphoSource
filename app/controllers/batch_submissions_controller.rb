@@ -519,6 +519,7 @@ byebug
       "media.preview_file" => "text",
       "media.publication_status" => "controlled_required",
       "media.media_type" => "controlled_required",
+      "media.raw_or_derived" => "controlled_required",
       "media.parent_file" => "text",
       "media.parent_ms_id" => "text",
       "biological_specimen.ms_id" => "text",
@@ -619,6 +620,10 @@ byebug
   def valid_media_types
     @valid_media_types ||= Morphosource::MediaTypesService.new.select_all_options.map { |o| o[1] }
   end  
+
+  def valid_media_raw_or_derived
+    @valid_media_raw_or_derived ||= ["Raw", "Derived"]
+  end
 
   def valid_media_side
     @valid_media_side ||= ["Left", "Midline", "NotApplicable", "Right", "Unknown"]

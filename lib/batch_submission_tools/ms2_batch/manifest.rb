@@ -69,10 +69,12 @@ module BatchSubmissionTools
           parents = []
           children = []
 
+#byebug
           mg[:raw_list].each do |row_index|
             row = rows[row_index]
             # is parent?
             if row[:media][:parent_file].present? 
+#byebug
               children << row_index
               rows_to_remove << row_index
               # look for the parent row index
@@ -80,8 +82,10 @@ module BatchSubmissionTools
               parents << parent_index
               media_group_to_rows[[parent_index]][:children] << row_index
             elsif row[:media][:parent_ms_id].present?
+#byebug
               children << row_index
-            else
+            else 
+              # note that child with undeposited parent also falls in here
               parents << row_index
             end
 
@@ -89,6 +93,7 @@ module BatchSubmissionTools
               children = parents.drop(1) + children
               parents = parents.first
             end
+#byebug
             (media_group_to_rows[sheet_index][:parents] << parents).flatten!
             (media_group_to_rows[sheet_index][:children] << children).flatten!
 
@@ -101,7 +106,7 @@ module BatchSubmissionTools
           # otherwise duplicate media will be created
           rows_to_remove.each { |k| media_group_to_rows.delete [k] }
         end
-#byebug          
+byebug          
 
       end
 
@@ -217,31 +222,52 @@ module BatchSubmissionTools
           end
 
           # Is there a parent? If so, get IE and parent PE/media ingest from it. Otherwise, get IE from first child
-          if mg[:parents].present?
+          if mg[:parents].present? 
             parent_row_index = mg[:parents].first
-            ie_row_index = parent_row_index
-            parent_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
-              initial_attrs: rows[parent_row_index][:processing_event],
-              depositor: depositor,
-              on_behalf_of: on_behalf_of
-            )
-
-
             media_attrs = rows[parent_row_index][:media]
 #byebug
-            parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
-              initial_attrs: media_attrs,
-              depositor: depositor,
-              on_behalf_of: on_behalf_of,
-              organization_id: organization_id,
-              media_path: media_path,
-              media_ownership_fields: media_ownership_fields
-            )
-            parent = {
-              parent_row_index => 
-                BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
-            }
+            if parent_row_index == sheet_index.first && media_attrs[:raw_or_derived].first == "Raw"
+#byebug
+#              is_raw = true
+              ie_row_index = parent_row_index
 
+              parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
+                initial_attrs: media_attrs,
+                depositor: depositor,
+                on_behalf_of: on_behalf_of,
+                organization_id: organization_id,
+                media_path: media_path,
+                media_ownership_fields: media_ownership_fields
+              )
+              parent = {
+                parent_row_index => 
+                  BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media)
+              }
+
+            else
+              ie_row_index = parent_row_index
+              parent_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
+                initial_attrs: rows[parent_row_index][:processing_event],
+                depositor: depositor,
+                on_behalf_of: on_behalf_of
+              )
+
+              media_attrs = rows[parent_row_index][:media]
+  #byebug
+              parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
+                initial_attrs: media_attrs,
+                depositor: depositor,
+                on_behalf_of: on_behalf_of,
+                organization_id: organization_id,
+                media_path: media_path,
+                media_ownership_fields: media_ownership_fields
+              )
+              parent = {
+                parent_row_index => 
+                  BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
+              }
+
+            end
 #byebug
           else
             # if parent_ms_id exists, get the existing parent 
@@ -304,7 +330,7 @@ module BatchSubmissionTools
               )
             ]
           end.to_h
-
+#byebug
           media_ie_pe_ingests << BatchSubmissionTools::Ms2Batch::Models::MediaIePeManifest.new(
             imaging_event: imaging_event, 
             parent: parent, 

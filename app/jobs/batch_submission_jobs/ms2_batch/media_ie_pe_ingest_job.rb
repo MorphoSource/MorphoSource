@@ -40,18 +40,24 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 #byebug
           next
         end
-
-        if parent['pe'].present?
-          parent_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
-            'ProcessingEvent', 
-            parent['pe']['attrs'].merge(
-              'parent_id' => [imaging_event.id]
-            ).symbolize_keys, 
-            nil, 
-            false
-          )
+#byebug
+        if parent['media']['initial_attrs']['raw_or_derived']&.first == "Raw"
+          is_raw = true
         else
-          raise "Required processing event not present for parent media ingest. Ingest: #{parent}"
+          is_raw = false
+#byebug
+          if parent['pe'].present?
+            parent_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
+              'ProcessingEvent', 
+              parent['pe']['attrs'].merge(
+                'parent_id' => [imaging_event.id]
+              ).symbolize_keys, 
+              nil, 
+              false
+            )
+          else
+            raise "Required processing event not present for parent media ingest. Ingest: #{parent}"
+          end
         end
 
         if parent['media'].present?
@@ -61,15 +67,28 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             preview_file = parent['media']['media_path'] + parent['media']['initial_attrs']['preview_file'].first
           end
 
-          parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
-            'Media', 
-            parent['media']['attrs'].merge(
-              'parent_id' => [parent_pe.id]
-            ).symbolize_keys, 
-            nil,
-            false,
-            preview_file
-          )
+          if is_raw
+#byebug
+            parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
+              'Media', 
+              parent['media']['attrs'].merge(
+                'parent_id' => [imaging_event.id]
+              ).symbolize_keys, 
+              nil,
+              false,
+              preview_file
+            )
+          else
+            parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
+              'Media', 
+              parent['media']['attrs'].merge(
+                'parent_id' => [parent_pe.id]
+              ).symbolize_keys, 
+              nil,
+              false,
+              preview_file
+            )
+          end
 
           all_media << parent_media
         else

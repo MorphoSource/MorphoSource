@@ -21,12 +21,12 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
                                     catalog_number: [ '123' ],
                                     institution_code: [ 'INST1' ],
                                     collection_code: [ 'abc' ],
-                                    vouchered: [ true ]),
+                                    vouchered: [ "Yes" ]),
           BiologicalSpecimen.create(title: [ 'abc:456' ],
                                     catalog_number: [ '456' ],
                                     institution_code: [ 'INST2' ],
                                     collection_code: [ 'abc' ],
-                                    vouchered: [ true ]),
+                                    vouchered: [ "Yes" ]),
       ]
     end
     let!(:chos) do
@@ -34,7 +34,7 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
           CulturalHeritageObject.create(title: [ 'abc:456' ],
                                         catalog_number: [ '456' ],
                                         collection_code: [ 'abc' ],
-                                        vouchered: [ true ])
+                                        vouchered: [ "Yes" ])
       ]
     end
     describe 'no search params' do

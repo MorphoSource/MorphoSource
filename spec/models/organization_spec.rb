@@ -127,8 +127,8 @@ RSpec.describe Organization do
     describe 'team-related instance methods' do
       let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
       let(:team)                  { Collection.create(id: 'teamid', title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: 'abcdef') }
-      let(:specimen1)             { BiologicalSpecimen.create(title: ['title'], vouchered: [true], organization_id: [subject.id]) }
-      let(:specimen2)             { BiologicalSpecimen.create(title: ['title'], vouchered: [false], organization_id: [subject.id]) }
+      let(:specimen1)             { BiologicalSpecimen.create(title: ['title'], vouchered: ["Yes"], organization_id: [subject.id]) }
+      let(:specimen2)             { BiologicalSpecimen.create(title: ['title'], vouchered: ["No"], organization_id: [subject.id]) }
 
       before do
         subject.team_id = [team.id]

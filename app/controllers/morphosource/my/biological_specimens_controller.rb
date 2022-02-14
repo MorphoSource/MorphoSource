@@ -1,6 +1,6 @@
 module Morphosource
   module My
-    class BiologicalSpecimensController < WorksController
+    class BiologicalSpecimensController < Morphosource::My::WorksController
 
       def self.configure_facets
         configure_blacklight do |config|
@@ -14,6 +14,7 @@ module Morphosource
           config.add_facet_field "media_member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
         end
       end
+      
       configure_facets
 
       def search_builder_class

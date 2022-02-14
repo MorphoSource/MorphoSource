@@ -139,11 +139,11 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['media_device_facility_organization_id_ssim'] = facility_org&.id
 
       # sorting fields
-      solr_doc['part_si'] = object.part
-      solr_doc['physical_object_title_si'] = physical_object_title&.first
-      solr_doc['taxonomy_si'] = taxonomy_titles&.first
-      solr_doc['human_readable_media_type_si'] = mt
-      solr_doc['publication_status_si'] = pub_status
+      solr_doc['part_si'] = object.part&.first&.downcase
+      solr_doc['physical_object_title_si'] = physical_object_title&.first&.downcase
+      solr_doc['taxonomy_si'] = taxonomy_titles&.first&.downcase
+      solr_doc['human_readable_media_type_si'] = mt&.first&.downcase
+      solr_doc['publication_status_si'] = pub_status&.downcase
    end
   end
 

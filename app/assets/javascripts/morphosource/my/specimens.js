@@ -20,7 +20,8 @@ $(document).ready(function() {
       bInfo: false,
       bDestroy: true,
       bLengthChange: false, // hide the show number of entries dropdown
-      bFilter: false // hide search box
+      bFilter: false, // hide search box
+      ordering: false
     });
 
     $('.choose-columns-bso .toggle-vis').on( 'click', function (e) {

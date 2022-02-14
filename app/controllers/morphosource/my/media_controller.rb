@@ -25,12 +25,6 @@ module Morphosource
         end
       end
 
-      def sort_parameters
-        s = (params[:sort].presence || '').split(' ')
-        return s[0], s[1]
-      end
-      helper_method :sort_parameters
-
       private
 
         # The url of the "more" link for additional facet values

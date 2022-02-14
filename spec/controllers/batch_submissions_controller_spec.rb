@@ -96,6 +96,9 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'media.parent_file ANSP_Fish_193352_Head.zip cannot be media.media_file in the same row.'
           expect(html).to include 'Specimen in iDigBio has institution code cm which does not match the pre-selected organization\'s institution code: ' + organization_institution_code
           expect(html).to include 'Specimen in iDigBio has recordset id 71b8ffab-444e-43f9-9a9c-5c42b0eaa5eb which does not match the pre-selected organization\'s recordset id: ' + organization_recordset_id
+          expect(html).to include 'media.raw_or_derived: Please enter a valid value.'
+          expect(html).to include "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
+
         end
       end
 

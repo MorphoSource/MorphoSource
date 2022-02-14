@@ -40,8 +40,10 @@ module Morphosource
           @field_for_number_of_images = :number_of_series_related_instances
           @value_for_number_of_images = file_set.number_of_series_related_instances&.first
         end
+        byebug
         field_map.each do |work_field, file_set_field|
           field_value_found = file_set.send(file_set_field)&.first
+          byebug
           if field_value_found
             transformed_value = field_transform[work_field]
             work.send(work_field.to_s + "=", transformed_value)

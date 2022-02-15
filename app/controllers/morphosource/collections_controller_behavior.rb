@@ -33,6 +33,16 @@ module Morphosource
       publication_settings_nag
       query_collection_counts
       query_collection_members
+      
+      respond_to do |format|
+        format.html { store_preferred_view }
+        format.rss  { render :layout => false }
+        format.atom { render :layout => false }
+        format.csv  do
+          (_, @csv_document_list) = query_solr_all_results
+          @new_document_list = @csv_document_list.map { |d| d.to_semantic_values }
+        end
+      end
     end
 
     def about
@@ -112,6 +122,10 @@ module Morphosource
 
       def query_solr
         search_results(params)
+      end
+
+      def query_solr_all_results
+        search_results(params.merge(return_all_fields: true))
       end
 
       def collection_media

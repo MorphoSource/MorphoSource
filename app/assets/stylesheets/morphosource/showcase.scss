@@ -1341,6 +1341,15 @@ html {
 }
 /* /Media transfer page specific */
 
+.admin-csv-links {
+  padding-left: 10px;
+}
+
+.collection-export-links {
+  margin-right: 15px;
+  display: inline-block;
+}
+
 /* Works list data table specific */
 .showcase table#datatable-media-list,table#datatable-bso-list,table#datatable-cho-list {
   a.table-sort-header {

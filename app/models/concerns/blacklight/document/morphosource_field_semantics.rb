@@ -8,9 +8,28 @@ module Blacklight
           media_field_semantics
         when 'BiologicalSpecimen', 'CulturalHeritageObject'
           physical_object_field_semantics
+        when 'Collection'
+          collection_field_semantics
         else
           other_work_field_semantics
         end
+      end
+
+      def collection_field_semantics
+        @field_semantics ||= {
+          id: 'id',
+          project_or_team: 'human_readable_type_tesim',
+          title: Solrizer.solr_name('title', :stored_searchable),
+          linked_organization: 'linked_organization_tesim',
+          description: 'description_tesim',
+          creator: 'creator_tesim',
+          contributor: 'contributor_tesim',
+          location: 'based_near_tesim',
+          related_url: 'related_url_tesim',
+          visibility: 'visibility_ssi',
+          date_uploaded: 'date_uploaded_dtsi',
+          date_modified: 'date_modified_dtsi',
+        }
       end
 
       def media_field_semantics

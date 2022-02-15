@@ -20,8 +20,8 @@ RSpec.describe Hyrax::Dashboard::CollectionsController, type: :controller do
 
   let!(:org1)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
 
-  let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id, organization_id: [org1.id]) }
-  let(:cho)              { CulturalHeritageObject.create(title: ['cho'], vouchered: [true], depositor: user.ms_id, ) }
+  let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: ["Yes"], depositor: user.ms_id, organization_id: [org1.id]) }
+  let(:cho)              { CulturalHeritageObject.create(title: ['cho'], vouchered: ["Yes"], depositor: user.ms_id, ) }
   let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
   let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
   let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }

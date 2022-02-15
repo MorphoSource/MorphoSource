@@ -8,7 +8,6 @@ module Morphosource
       attr_accessor :file_set, :parents, :field_for_number_of_images, :value_for_number_of_images
 
       def initialize(file_set)
-        byebug
         @file_set = file_set
         @parents = file_set.member_of
       end
@@ -40,10 +39,8 @@ module Morphosource
           @field_for_number_of_images = :number_of_series_related_instances
           @value_for_number_of_images = file_set.number_of_series_related_instances&.first
         end
-        byebug
         field_map.each do |work_field, file_set_field|
           field_value_found = file_set.send(file_set_field)&.first
-          byebug
           if field_value_found
             transformed_value = field_transform[work_field]
             work.send(work_field.to_s + "=", transformed_value)
@@ -64,12 +61,11 @@ module Morphosource
       end
 
       def field_transform
-        byebug
         {
           :x_spacing => [file_set.pixel_spacing&.first.split("\\").last],
           :y_spacing => [file_set.pixel_spacing&.first.split("\\").first],
           :z_spacing => [file_set.spacing_between_slices&.first],
-          :unit => ["Mm"],
+          :unit => @parents.first.unit,
           :slice_thickness => [file_set.slice_thickness&.first],
           :number_of_images_in_set => @value_for_number_of_images.to_s
         }

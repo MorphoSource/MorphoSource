@@ -122,7 +122,7 @@ module BatchSubmissionTools
         end
 
         def create_new_attributes
-byebug
+#byebug
           ::Importer::Factory::BiologicalSpecimenFactory.new(
             initial_attrs.except(:id)
           ).create_attributes

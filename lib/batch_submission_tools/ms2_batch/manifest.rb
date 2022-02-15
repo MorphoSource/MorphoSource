@@ -106,7 +106,7 @@ module BatchSubmissionTools
           # otherwise duplicate media will be created
           rows_to_remove.each { |k| media_group_to_rows.delete [k] }
         end
-byebug          
+#byebug          
 
       end
 

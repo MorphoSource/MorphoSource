@@ -134,7 +134,17 @@ class BatchSubmissionsController < ApplicationController
       end
       fund_code_id = request.params["batch_submission"]["fund_code"]
       media_ownership_fields = request.params["batch_submission"]["media"]
-      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(input_path:input_path, media_path:media_path, admin_user:admin_user, depositor:depositor, on_behalf_of:on_behalf_of, collection_ids:collection_ids, fund_code_id:fund_code_id, organization_id:organization_id, device_id:device_id, media_ownership_fields:media_ownership_fields).to_h
+      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
+        input_path:input_path, 
+        media_path:media_path, 
+        admin_user:admin_user, 
+        depositor:depositor, 
+        on_behalf_of:on_behalf_of, 
+        collection_ids:collection_ids, 
+        fund_code_id:fund_code_id, 
+        organization_id:organization_id, 
+        device_id:device_id, 
+        media_ownership_fields:media_ownership_fields).to_h
 byebug
 
       ingest
@@ -149,6 +159,19 @@ byebug
     ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(@manifest_object)
   end
 
+  def initial_error_message
+    # basic validation: check field names, column count
+    if @xlsx.last_column != 87
+      return "The columns are invalid.  Please check the file or download the blank submission manifest again."
+    end
+    field_names.each_with_index do |fname, idx|
+      if fname != @xlsx.excelx_value(7, idx + 3) 
+        return "Invalid field in column " +  (idx + 3).to_s + " (expecting " + fname + ").  Please check the file or download the blank submission manifest again. <--" + @xlsx.excelx_value(7, idx + 3) + "-->"
+      end
+    end
+    return ""
+  end
+
   def parse_manifest
     # field names is on row 7 
     # field values start from row 8, column 3 (column 1 and 2 can be skipped)   
@@ -161,43 +184,10 @@ byebug
     warn_messages = {}
     warn_cell_numbers = {}
     row_index = 8
-    @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
-      data_row = row.drop(2) 
-      row_cell_errors = []
-      error_row_cell_numbers = []
-      row_cell_warnings = []
-      warn_row_cell_numbers = []
-      data_row.each_with_index do |cell, cell_index|
-        begin
-          error_msg, warn_msg = error_found(field_names[cell_index], cell, row_index)
-          if error_msg.present?
-            row_cell_errors << error_msg
-            error_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
-            error_row_cell_numbers << cell_index
-          elsif warn_msg.present?
-            row_cell_warnings << warn_msg
-            warn_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
-            warn_row_cell_numbers << cell_index
-          end
-        rescue => e
-          Rails.logger.debug "Exception in BatchSubmissionsController: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
-          general_error_msg = "ERROR: There are problems parsing some rows in the file.  Please check the details below."
-          row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
-          error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
-          break # skip the rest of the cells
-        end
-      end # /looping cells
-      error_messages[row_index] = row_cell_errors 
-      error_cell_numbers[row_index] = error_row_cell_numbers
-      warn_messages[row_index] = row_cell_warnings 
-      warn_cell_numbers[row_index] = warn_row_cell_numbers
-      row_index = row_index + 1
-    end # /lopping rows /xlsx.each_row_streaming
-    row_count = row_index - 8
-    if error_rows.count > 0
-      general_error_msg = "There are validation errors.  Please check the details below."
+
+    if initial_error_message.present?
       render 'validation_fail', locals: { 
-        general_error_msg: general_error_msg, 
+        general_error_msg: initial_error_message, 
         error_rows: error_rows, 
         error_messages: error_messages, 
         error_cell_numbers: error_cell_numbers, 
@@ -205,23 +195,71 @@ byebug
         warn_messages: warn_messages, 
         warn_cell_numbers: warn_cell_numbers, 
         field_names: field_names, 
-        row_count: row_count }
-      @manifest_is_valid = false
-    else
-#      save_params_to_session
-#      instantiate_work_forms      
-#      render :action => 'new'
-#      render 'validation_pass', locals: { row_count: row_count }
-      
-      #todo: remove validation_pass template later if not needed
-      render 'index', locals: { 
-        warn_rows: warn_rows, 
-        warn_messages: warn_messages, 
-        warn_cell_numbers: warn_cell_numbers, 
-        field_names: field_names, 
-        row_count: row_count }
-      @manifest_is_valid = true
-    end    
+        row_count: 0 }
+    else      
+      @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
+        data_row = row.drop(2) 
+        row_cell_errors = []
+        error_row_cell_numbers = []
+        row_cell_warnings = []
+        warn_row_cell_numbers = []
+        data_row.each_with_index do |cell, cell_index|
+          begin
+            error_msg, warn_msg = error_found(field_names[cell_index], cell, row_index)
+            if error_msg.present?
+              row_cell_errors << error_msg
+              error_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
+              error_row_cell_numbers << cell_index
+            elsif warn_msg.present?
+              row_cell_warnings << warn_msg
+              warn_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
+              warn_row_cell_numbers << cell_index
+            end
+          rescue => e
+            Rails.logger.debug "Exception in BatchSubmissionsController: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
+            general_error_msg = "ERROR: There are problems parsing some rows in the file.  Please check the details below."
+            row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
+            error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
+            break # skip the rest of the cells
+          end
+        end # /looping cells
+        error_messages[row_index] = row_cell_errors 
+        error_cell_numbers[row_index] = error_row_cell_numbers
+        warn_messages[row_index] = row_cell_warnings 
+        warn_cell_numbers[row_index] = warn_row_cell_numbers
+        row_index = row_index + 1
+      end # /lopping rows /xlsx.each_row_streaming
+      row_count = row_index - 8
+      if error_rows.count > 0
+        general_error_msg = "There are validation errors.  Please check the details below."
+        render 'validation_fail', locals: { 
+          general_error_msg: general_error_msg, 
+          error_rows: error_rows, 
+          error_messages: error_messages, 
+          error_cell_numbers: error_cell_numbers, 
+          warn_rows: warn_rows, 
+          warn_messages: warn_messages, 
+          warn_cell_numbers: warn_cell_numbers, 
+          field_names: field_names, 
+          row_count: row_count }
+        @manifest_is_valid = false
+      else
+  #      save_params_to_session
+  #      instantiate_work_forms      
+  #      render :action => 'new'
+  #      render 'validation_pass', locals: { row_count: row_count }
+        
+        #todo: remove validation_pass template later if not needed
+        render 'index', locals: { 
+          warn_rows: warn_rows, 
+          warn_messages: warn_messages, 
+          warn_cell_numbers: warn_cell_numbers, 
+          field_names: field_names, 
+          row_count: row_count }
+        @manifest_is_valid = true
+      end    
+
+    end
   end
 
   def save_params_to_session
@@ -291,6 +329,8 @@ byebug
       if val.present? 
         if @xlsx.cell(current_row, field_column("media.parent_ms_id")).present?
           error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
+        elsif @xlsx.cell(current_row, field_column("media.raw_or_derived")) == "Raw"
+          error_msg = "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
         elsif @parent_media_id.present?
           error_msg = "media.parent_file: Only one parent media should be present, but media.parent_ms_id is found in another row."
         else
@@ -317,6 +357,8 @@ byebug
         if val.present?
           if @parent_media_row.present?
             error_msg = "media.parent_ms_id: Only one parent media should be present, but media.parent_file is found in another row."
+          elsif @xlsx.cell(current_row, field_column("media.raw_or_derived")) == "Raw"
+            error_msg = "A value cannot be present in media.parent_ms_id if media.raw_or_derived value is set to 'Raw'."
           elsif @parent_media_id.present? && (@parent_media_id != val)
             error_msg = "media.parent_ms_id: Only one parent media should be present, but multiple parent_ms_id are found."
           else
@@ -569,7 +611,7 @@ byebug
       "imaging_event.ct.flux_normalization" => "boolean",
       "imaging_event.ct.geometric_calibration" => "boolean",
       "imaging_event.ct.shading_correction" => "boolean",
-      "imaging_event.ct.filter" => "text",
+      "imaging_event.ct.ie_filter" => "text",
       "imaging_event.ct.frame_averaging" => "text",
       "imaging_event.ct.projections" => "text",
       "imaging_event.ct.voltage" => "text",

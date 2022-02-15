@@ -19,7 +19,7 @@ RSpec.describe Morphosource::BrowseService do
       catalog_number: [ '123' ],
       institution_code: [ 'INST1' ],
       collection_code: [ 'abc' ],
-      vouchered: [ true ],
+      vouchered: [ "Yes" ],
       organization_id: [org1.id]
     )
   }

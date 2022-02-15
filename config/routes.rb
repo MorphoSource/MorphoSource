@@ -108,6 +108,9 @@ Rails.application.routes.draw do
       # teams redirects
       get 'teams/specimens/:id', to: redirect('teams/%{id}/biological_specimens')
       get 'teams/chos/:id', to: redirect('teams/%{id}/cultural_heritage_objects')
+
+      # linked teams csv
+      get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
     end
   end
 
@@ -195,6 +198,9 @@ Rails.application.routes.draw do
       resources :categories, only: [:index], action: :categories, controller: 'browse', as: 'browse_categories'
     end
 
+    # Routes for making user account active/inactive
+    post 'users/:id/make_active' => 'users#make_user_active', as: 'make_active'
+    post 'users/:id/make_inactive' => 'users#make_user_inactive', as: 'make_inactive'
   end
 
   # override ProfilesController
@@ -378,7 +384,7 @@ Rails.application.routes.draw do
       # fund codes
       get 'dashboard/my/fund_codes/(:id)', action: :index, controller: :fund_codes, as: 'my_fund_codes'
       patch 'dashboard/my/fund_codes/:id', action: :update, controller: :fund_codes, as: 'my_fund_codes_update'
-    
+
       # apply for contributor status
       get 'contribute', action: :index, controller: :contributor_petitions, as: 'user_contributor_petition'
       put 'submit_contributor_application', action: :create, controller: :contributor_petitions, as: 'user_contributor_petition_submit'
@@ -398,6 +404,10 @@ Rails.application.routes.draw do
       patch 'admin/fund_codes/:id', action: :update, controller: :fund_codes, as: 'admin_fund_codes_update'
       delete 'admin/fund_codes/:id', action: :delete, controller: :fund_codes, as: 'admin_fund_codes_delete'
       delete 'admin/fund_codes/:id/attachments/:index', action: :delete_attachment, controller: :fund_codes, as: 'admin_fund_codes_delete_attachment'
+
+      # data curation
+      get 'admin/data_curation', action: :index, controller: :data_curation, as: 'admin_data_curation'
+      post 'admin/data_curation/apply_permission_template', action: :apply_permission_template, controller: :data_curation, as: 'admin_apply_permission_template'
     end
   end
 

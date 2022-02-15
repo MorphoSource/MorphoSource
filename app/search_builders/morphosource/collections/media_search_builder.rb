@@ -8,7 +8,8 @@ module Morphosource
 
       def member_of_collection(solr_parameters)
         solr_parameters[:fq] ||= []
-        if collection.organization.present?
+        # if collection is a team, get linked organization media
+        if collection.team? && collection.organization.present?
           solr_parameters[:fq] << "(#{collection_membership_field}:(#{collection_ids.join(' OR ')}) OR media_organization_id_ssim:#{collection.organization&.id})"
         else
           solr_parameters[:fq] << "(#{collection_membership_field}:(#{collection_ids.join(' OR ')}))"
@@ -16,7 +17,9 @@ module Morphosource
       end
 
       def return_selected_fields(solr_parameters)
-        solr_parameters[:fl] = 'id,has_model_ssim,title_tesim,thumbnail_path_ss,part_tesim,physical_object_title_ssim,taxonomy_ssim,human_readable_media_type_tesim,date_uploaded_dtsi,fileset_accessibility_ssim'
+        if !@blacklight_params[:return_all_fields]
+          solr_parameters[:fl] = 'id,has_model_ssim,title_tesim,thumbnail_path_ss,part_tesim,physical_object_title_ssim,taxonomy_ssim,human_readable_media_type_tesim,date_uploaded_dtsi,fileset_accessibility_ssim'
+        end
       end
 
       def models

@@ -43,7 +43,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
 
       context "when the processing event's params include parents" do
         let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
-        let(:old_specimen)          { BiologicalSpecimen.create(title: ['old specimen'], vouchered: [true], organization_id: [old_organization.id]) }
+        let(:old_specimen)          { BiologicalSpecimen.create(title: ['old specimen'], vouchered: ["Yes"], organization_id: [old_organization.id]) }
         let(:media)                 { Media.create(title: ['media']) }
         let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry']) }
         let(:imaging_event)         { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [old_specimen.id], ie_modality: device.modality) }
@@ -125,7 +125,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
 
         context 'and the parents are changed' do
           let(:new_organization) { Organization.create(title: ['new org'], team_id: []) }
-          let(:new_specimen)     { BiologicalSpecimen.create(title: ['new specimen'], vouchered: [true], organization_id: [new_organization.id]) }
+          let(:new_specimen)     { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ["Yes"], organization_id: [new_organization.id]) }
           let(:new_imaging_event) { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], physical_object_id: [new_specimen.id], ie_modality: device.modality) }
           let(:new_team)         { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
 
@@ -197,7 +197,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
         context 'and the media is updated' do
           let(:new_media)         { Media.create(title: ['new media']) }
           let(:new_organization)  { Organization.create(title: ['new organization']) }
-          let(:new_specimen)      { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ['false'], organization_id: [new_organization.id]) }
+          let(:new_specimen)      { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ['No'], organization_id: [new_organization.id]) }
           let(:new_imaging_event) { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], physical_object_id: [new_specimen.id], ie_modality: device.modality) }
           let(:child_media)       { Media.create(title: ['child media']) }
           let(:parent_attributes) { { '0' => { 'id' => media.id, '_destroy' => 'true' }, '1' => { 'id' => new_media.id, '_destroy' => 'false' } } }

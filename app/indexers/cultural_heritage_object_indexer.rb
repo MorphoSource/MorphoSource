@@ -9,10 +9,11 @@ class CulturalHeritageObjectIndexer < Morphosource::PhysicalObjectIndexer
   # this behavior
   include Hyrax::IndexesLinkedMetadata
 
-  # Uncomment this block if you want to add custom indexing behavior:
-  # def generate_solr_document
-  #  super.tap do |solr_doc|
-  #    solr_doc['my_custom_field_ssim'] = object.my_custom_property
-  #  end
-  # end
+  def generate_solr_document
+   super.tap do |solr_doc|
+     solr_doc['material_si'] = object.material&.first&.downcase
+     solr_doc['cho_type_si'] = object.cho_type&.first&.downcase
+     solr_doc['vouchered_si'] = object.vouchered&.first&.downcase
+   end
+  end
 end

@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Works::Base do
   let(:organization)    { Organization.create(title: ['organization title']) }
-  let(:specimen1)       { BiologicalSpecimen.create(title: ['title'], vouchered: [true], organization_id: [organization.id]) }
-  let(:specimen2)       { BiologicalSpecimen.create(title: ['title'], vouchered: [false], organization_id: [organization.id]) }
+  let(:specimen1)       { BiologicalSpecimen.create(title: ['title'], vouchered: ["Yes"], organization_id: [organization.id]) }
+  let(:specimen2)       { BiologicalSpecimen.create(title: ['title'], vouchered: ["No"], organization_id: [organization.id]) }
   let(:media1)          { Media.create(title: ['title']) }
   let(:media2)          { Media.create(title: ['title']) }
   let(:media3)          { Media.create(title: ['title']) }

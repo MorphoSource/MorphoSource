@@ -82,6 +82,7 @@ provide :page_title, construct_page_title(@presenter.title)
         <%= render 'search_header' %>
         <%= render_document_index %>
         <%# <%= render 'document_list' %>
+        <%= render 'admin_functions' %>
         <%= render 'shared/lists/results_pagination' %>
       </div>
 
@@ -89,5 +90,4 @@ provide :page_title, construct_page_title(@presenter.title)
     <!-- </div><!-- /tab-content -->
 
   </div><!-- /panel panel-default tabs -->
-
 </div><!-- div hyc-container -->

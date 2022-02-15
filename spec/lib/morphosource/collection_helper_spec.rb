@@ -13,10 +13,10 @@ RSpec.describe Morphosource::CollectionHelper, type: :helper do
   let(:role) { Role.new(name: 'role') }
   let!(:org1)                  { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
 
-  let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true], depositor: user.ms_id, organization_id: [org1.id]) }
+  let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: ["Yes"], depositor: user.ms_id, organization_id: [org1.id]) }
   let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
   let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
-  let(:cho)         { CulturalHeritageObject.create(title: ['cho title'], vouchered: [true], depositor: user.ms_id) }
+  let(:cho)         { CulturalHeritageObject.create(title: ['cho title'], vouchered: ["Yes"], depositor: user.ms_id) }
   let(:imagingEvent2)     { ImagingEvent.create(title: ['imagingEvent2'], depositor: user.ms_id, device_id: [device.id], physical_object_id: [cho.id], ie_modality: device.modality) }
   let(:media)            { Media.create(title: ['new media'], depositor: user.ms_id) }
   let(:media2)            { Media.create(title: ['new media 2'], depositor: user.ms_id) }

@@ -6,7 +6,7 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
   let(:ability) { double Ability }
 
   let!(:org1)  { Organization.create(title: ['title'], organization_type: ["foobar"]) }
-  let!(:specimen) { BiologicalSpecimen.create(title: [ 'abc:123' ], catalog_number: [ '123' ], institution_code: [ 'INST1' ], collection_code: [ 'abc' ], vouchered: [ true ], organization_id: [ org1.id ] ) }
+  let!(:specimen) { BiologicalSpecimen.create(title: [ 'abc:123' ], catalog_number: [ '123' ], institution_code: [ 'INST1' ], collection_code: [ 'abc' ], vouchered: [ "Yes" ], organization_id: [ org1.id ] ) }
 
   let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let!(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }

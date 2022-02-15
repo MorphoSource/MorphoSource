@@ -34,7 +34,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
 
   describe 'instance methods' do
     let(:actor)     { double(update: true) }
-    let(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], vouchered: [true]) }
+    let(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], vouchered: ["Yes"]) }
     let(:user)      { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
     before do

@@ -1,6 +1,6 @@
 module Morphosource
   module My
-    class CulturalHeritageObjectsController < Morphosource::My::WorksController
+    class CulturalHeritageObjectsController < WorksController
 
       def self.configure_facets
         configure_blacklight do |config|

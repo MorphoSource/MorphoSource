@@ -1,6 +1,6 @@
 module Morphosource
   module My
-    class BiologicalSpecimensController < Morphosource::My::WorksController
+    class BiologicalSpecimensController < WorksController
 
       def self.configure_facets
         configure_blacklight do |config|

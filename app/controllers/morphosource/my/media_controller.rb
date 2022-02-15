@@ -1,6 +1,6 @@
 module Morphosource
   module My
-    class MediaController < Morphosource::My::WorksController
+    class MediaController < WorksController
 
       def self.configure_facets
         configure_blacklight do |config|

@@ -2,11 +2,11 @@
   <caption class="sr-only">List of items in this team</caption>
   <thead>
   <tr>
-    <th>Identifier</th>
-    <th>Taxonomy</th>
+    <th><%= sortable_table_header('Identifier', 'title_ssi') %></th>
+    <th><%= sortable_table_header('Taxonomy', 'taxonomy_si') %></th>
     <th>Total Media</th>
-    <th>Date Added</th>
-    <th>Source</th>
+    <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
+    <th><%= sortable_table_header('Source', 'record_source_si') %></th>
   </tr>
   </thead>
   <tbody>

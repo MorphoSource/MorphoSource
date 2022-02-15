@@ -1,15 +1,1 @@
-<table id="datatable-bso-list" class="table table-striped teams-projects">
-  <caption class="sr-only">List of items in this team</caption>
-  <thead>
-  <tr>
-    <th><%= sortable_table_header('Identifier', 'title_ssi') %></th>
-    <th><%= sortable_table_header('Taxonomy', 'taxonomy_si') %></th>
-    <th>Total Media</th>
-    <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
-    <th><%= sortable_table_header('Source', 'record_source_si') %></th>
-  </tr>
-  </thead>
-  <tbody>
-    <%= render partial: 'document_list_row', collection: @document_list, as: :document %>
-  </tbody>
-</table>
+<%= render 'shared/lists/specimen_list/document_list' %>

@@ -25,6 +25,13 @@ module Morphosource
           file_set.class.archive_mime_types
       end
 
+      def create_video_derivatives(filename)
+        Morphosource::Derivatives::VideoDerivatives.create(filename,
+                                                    outputs: [{ label: :thumbnail, format: 'jpg', url: derivative_url('thumbnail') },
+                                                              { label: 'webm', format: 'webm', url: derivative_url('webm') },
+                                                              { label: 'mp4', format: 'mp4', url: derivative_url('mp4') }])
+      end
+
       def create_image_derivatives(filename)
         # We're asking for layer 0, becauase otherwise pyramidal tiffs flatten all the layers together into the thumbnail
         Morphosource::Derivatives::CroppedImageDerivatives.create(filename,

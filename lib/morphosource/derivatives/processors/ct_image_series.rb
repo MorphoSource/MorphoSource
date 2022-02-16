@@ -3,7 +3,7 @@ require 'zip'
 
 module Morphosource::Derivatives::Processors
   class TimeoutError < Hydra::Derivatives::TimeoutError
-    end
+  end
 
   class CTImageSeries < Hydra::Derivatives::Processors::Processor
     attr_accessor :tmp_dir_path, :img_coll, :ext
@@ -67,8 +67,9 @@ module Morphosource::Derivatives::Processors
 
         # If unit is not Mm, must convert spacing values to Mm
         @unit = directives.fetch(:unit, 'Mm').presence || 'Mm'
+        byebug
         correct_spacing_scale if unit != 'Mm'
-
+        byebug
         begin
           locate_images
           if !img_coll
@@ -99,7 +100,11 @@ module Morphosource::Derivatives::Processors
     def correct_spacing_scale
       unit_factors = { 'Cm' => 10.0, 'M' => 1000.0, 'Km' => 1e6, 'In' => 25.4, 'Ft' => 304.8, 'Mi' => 1.609e+6, 'Um' => 0.001 }
       uf = unit_factors[unit]
+      byebug
+      @x_spacing = x_spacing * uf
+      y_spacing = y_spacing * uf
       [x_spacing, y_spacing, z_spacing, slice_thickness].each { |var| var = var * uf }
+      # byebug
     end
 
     def locate_images

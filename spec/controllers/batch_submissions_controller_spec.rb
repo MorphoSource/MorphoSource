@@ -58,7 +58,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       render_views
 
       context "result with MicroNanoXRayComputedTomography pre-selected" do
-        let(:params) { {"manifest" => valid_file, 
+        let(:params) { {"manifest" => valid_file,
           "organization_institution_code" => organization_institution_code,
           "organization_recordset_id" => organization_recordset_id,
           "batch_submission" => {
@@ -66,7 +66,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           }
         } }
         it "shows result with modality MicroNanoXRayComputedTomography pre-selected" do
-          post 'submit', :params => params 
+          post 'submit', :params => params
           expect(response).to render_template 'result'
           html = response.body
           expect(html).to include 'media.media_file: File ANSP_Fish_53046_Head.zip cannot be found. Please check your shared folder.'
@@ -103,7 +103,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       context "result with Photogrammetry pre-selected" do
         let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photogrammetry"}} }
         it "shows result with modality Photogrammetry pre-selected" do
-          post 'submit', :params => params 
+          post 'submit', :params => params
           expect(response).to render_template 'result'
           html = response.body
           expect(html).to include 'imaging_event.ct.exposure_time: Value should not be present when modality Photogrammetry is pre-selected'
@@ -115,7 +115,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       context "result with Photography pre-selected" do
         let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photography"}} }
         it "shows result with modality Photography pre-selected" do
-          post 'submit', :params => params 
+          post 'submit', :params => params
           expect(response).to render_template 'result'
           html = response.body
           expect(html).to include 'imaging_event.ct.acquisition_type: Value should not be present when modality Photography is pre-selected.'
@@ -129,24 +129,31 @@ RSpec.describe BatchSubmissionsController, type: :controller do
     context "manifest file not present" do
       let(:params) { {"manifest" => nil} }
       it "redirected back to new" do
-        post 'submit', :params => params 
+        post 'submit', :params => params
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
     context "manifest format not valid" do
       let(:params) { {"manifest" => invalid_file} }
       it "redirected back to new" do
-        post 'submit', :params => params 
+        post 'submit', :params => params
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
     context "modailty not present" do
       let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => ""}} }
       it "redirected back to new" do
-        post 'submit', :params => params 
+        post 'submit', :params => params
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
   end
 
+  describe 'valid_media_unit' do
+    let(:valid_units) { ['Um', 'Cm', 'Ft', 'In', 'Km', 'M', 'Mi', 'Mm'] }
+
+    it 'returns a list of valid units' do
+      expect(subject.valid_media_unit).to match_array(valid_units)
+    end
+  end
 end

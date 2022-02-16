@@ -24,6 +24,7 @@ class Ability
     if registered_user?
       can [ :zip ], Media
       can [ :show ], ::User
+      can [ :index, :create, :update], ContributorPetition
     end
   end
 end

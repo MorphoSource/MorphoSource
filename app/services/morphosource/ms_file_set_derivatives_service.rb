@@ -26,45 +26,60 @@ module Morphosource
       end
 
       def create_video_derivatives(filename)
-        Morphosource::Derivatives::VideoDerivatives.create(filename,
-                                                    outputs: [{ label: :thumbnail, format: 'jpg', url: derivative_url('thumbnail') },
-                                                              { label: 'webm', format: 'webm', url: derivative_url('webm') },
-                                                              { label: 'mp4', format: 'mp4', url: derivative_url('mp4') }])
+        Morphosource::Derivatives::VideoDerivatives.create(
+          filename,
+          outputs: [
+            { label: :thumbnail, format: 'jpg', url: derivative_url('thumbnail') },
+            { label: 'mp4', format: 'mp4', url: derivative_url('mp4') }
+          ]
+        )
       end
 
       def create_image_derivatives(filename)
         # We're asking for layer 0, becauase otherwise pyramidal tiffs flatten all the layers together into the thumbnail
-        Morphosource::Derivatives::CroppedImageDerivatives.create(filename,
-                                                  outputs: [{ label: :thumbnail,
-                                                              url: derivative_url('thumbnail') }])
+        Morphosource::Derivatives::CroppedImageDerivatives.create(
+          filename,
+          outputs: [ { label: :thumbnail, url: derivative_url('thumbnail') } ]
+        )
       end
 
       def create_mesh_derivatives(filename)
-        Morphosource::Derivatives::MeshDerivatives.create(filename,
-                                                          outputs: [{ label: :glb,
-                                                                      format: 'glb',
-                                                                      unit: file_set.member_of&.first&.unit&.first,
-                                                                      url: derivative_url('glb')}])
+        Morphosource::Derivatives::MeshDerivatives.create(
+          filename,
+          outputs: [ {
+            label: :glb, 
+            format: 'glb', 
+            unit: file_set.member_of&.first&.unit&.first, 
+            url: derivative_url('glb')
+          } ]
+        )
       end
 
       def create_archive_derivatives(filename)
         if file_set.member_of.first.media_type.first == 'CTImageSeries'
-          Morphosource::Derivatives::CTImageSeriesDerivatives.create(filename,
-                                                                     outputs: [{ label: :dcm,
-                                                                                 format: 'dcm',
-                                                                                 slice_thickness: file_set.member_of.first.slice_thickness.first,
-                                                                                 unit: file_set.member_of.first.unit.first,
-                                                                                 url: derivative_url('dcm'),
-                                                                                 x_spacing: file_set.member_of.first.x_spacing.first,
-                                                                                 y_spacing: file_set.member_of.first.y_spacing.first,
-                                                                                 z_spacing: file_set.member_of.first.z_spacing.first
-                                                                              }])
+          Morphosource::Derivatives::CTImageSeriesDerivatives.create(
+            filename,
+            outputs: [ { 
+              label: :dcm,
+              format: 'dcm',
+              slice_thickness: file_set.member_of.first.slice_thickness.first,
+              unit: file_set.member_of.first.unit.first,
+              url: derivative_url('dcm'),
+              x_spacing: file_set.member_of.first.x_spacing.first,
+              y_spacing: file_set.member_of.first.y_spacing.first,
+              z_spacing: file_set.member_of.first.z_spacing.first
+            } ]
+          )
         elsif file_set.member_of.first.media_type.first == 'Mesh'
-           Morphosource::Derivatives::MeshDerivatives.create(filename,
-                                                             outputs: [{ label: :glb,
-                                                                         format: 'glb',
-                                                                         unit: file_set.member_of.first.unit.first,
-                                                                         url: derivative_url('glb')}])
+          Morphosource::Derivatives::MeshDerivatives.create(
+            filename,
+            outputs: [ { 
+              label: :glb,
+              format: 'glb',
+              unit: file_set.member_of.first.unit.first,
+              url: derivative_url('glb')
+            }]
+          )
         end
       end
   end

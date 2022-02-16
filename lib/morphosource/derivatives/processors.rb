@@ -7,6 +7,7 @@ module Morphosource
       autoload :CroppedImage
       autoload :CTImageSeries
       autoload :Mesh
+      autoload :Video
     end
   end
 end

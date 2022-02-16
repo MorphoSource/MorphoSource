@@ -136,8 +136,8 @@ module Hyrax
     def universal_viewable_ready?
       return false unless representative_presenter.present?
       viewable =
-        ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.volume? ) &&
-        ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_volume? )
+        ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.video? || representative_presenter.volume? ) &&
+        ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_video? || members_include_viewable_volume? )
       return viewable
     end
 
@@ -687,6 +687,10 @@ module Hyrax
 
       def members_include_viewable_mesh?
         file_set_presenters.any? { |presenter| presenter.mesh? && current_ability.can?(:read, presenter.id) }
+      end
+
+      def members_include_viewable_video?
+        file_set_presenters.any? { |presenter| presenter.video? && current_ability.can?(:read, presenter.id) }
       end
 
       def members_include_viewable_volume?

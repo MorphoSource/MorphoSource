@@ -7,7 +7,9 @@ class SubmissionForm {
     this.views = null;
     this.viewSidebarClass = null;
     this.viewSectionIds = null;
-      
+
+    this.customFormName = "batch_submission[media]";
+
     // All below is deprecated, but good example for these properties
 
     // this.views = [
@@ -79,7 +81,6 @@ class SubmissionForm {
 
     // Remove previous settings from organization, if present
     self.resetFormFromOrg(self.organizationDefaultMediaFields);
-
     $.get('/submissions/organization_default_media_fields',
      {
       'parent_media_list': this.data.parentMediaList,
@@ -151,16 +152,16 @@ class SubmissionForm {
 
   emptyMediaField(field) {
     let multiSelector =
-      "form.new_media select[name='media[" + field + "][]'], " +
-      "form.new_media input[name='media[" + field + "][]']";
+      "form.new_media select[name$='[" + field + "][]'], " +
+      "form.new_media input[name$='[" + field + "][]']";
     let selector =
-      "form.new_media select[name='media[" + field + "]'], " +
-      "form.new_media input[name='media[" + field + "]'], " +
-      "form.new_media textarea[name='media[" + field + "]']";
+      "form.new_media select[name$='[" + field + "]'], " +
+      "form.new_media input[name$='[" + field + "]'], " +
+      "form.new_media textarea[name$='[" + field + "]']";
 
     switch(field) {
       case 'download_permission':
-        $('form.new_media input#media_visibility_open').trigger('click');
+        $('form.new_media input[id$="visibility_open"]').trigger('click');
         break;
       case 'download_reviewer':
         $(multiSelector).select2('destroy').empty().userSearchMultiple($(multiSelector).data('reviewers'));
@@ -187,12 +188,12 @@ class SubmissionForm {
 
   fillMediaField(field, val, mandateValues) {
     let multiSelector =
-      "form.new_media select[name='media[" + field + "][]'], " +
-      "form.new_media input[name='media[" + field + "][]']";
+      "form.new_media select[name$='[" + field + "][]'], " +
+      "form.new_media input[name$='[" + field + "][]']";
     let selector =
-      "form.new_media select[name='media[" + field + "]'], " +
-      "form.new_media input[name='media[" + field + "]'], " +
-      "form.new_media textarea[name='media[" + field + "]']";
+      "form.new_media select[name$='[" + field + "]'], " +
+      "form.new_media input[name$='[" + field + "]'], " +
+      "form.new_media textarea[name$='[" + field + "]']";
 
     switch(field) {
       case 'download_permission':
@@ -202,7 +203,7 @@ class SubmissionForm {
         if (val == 'preview_only') {
           val = 'preview';
         }
-        $('form.new_media input#media_visibility_' + val.toLowerCase()).trigger('click');
+        $('form.new_media input[id$="visibility_' + val.toLowerCase() + '"]').trigger('click');
         this.recommendOrRequirePermissions(
           $('form.new_media div.media_download_permission'),
           val.toLowerCase(), 
@@ -265,12 +266,12 @@ class SubmissionForm {
     if (mandateValues) {
       if (element.hasClass('media_download_permission')) {
         if (val == 'open') {
-          $('form.new_media input#media_visibility_restricted_download').prop('disabled', 'disabled');
+          $('form.new_media input[id$="visibility_restricted_download"]').prop('disabled', 'disabled');
           element.find('div.showcase-value ul#publication-options').before(
             "<div class='permissions-label' style='padding-left: 8px;'><span class='label label-default'><i class='fas fa-exclamation-circle fa-lg'></i> Limited to Open or Private</span></div>"
           );
         } else if (val == 'restricted_download') {
-          $('form.new_media input#media_visibility_open').prop('disabled', 'disabled');
+          $('form.new_media input[id$="visibility_open"]').prop('disabled', 'disabled');
           element.find('div.showcase-value ul#publication-options').before(
             "<div class='permissions-label' style='padding-left: 8px;'><span class='label label-default'><i class='fas fa-exclamation-circle fa-lg'></i> Limited to Restricted or Private</span></div>"
           );
@@ -372,10 +373,13 @@ class SubmissionForm {
   }
 
   setSidebarViewFade(sidebarViewFade) {
-    var sidebarViewFade = Array.isArray(sidebarViewFade) ? sidebarViewFade : [sidebarViewFade];
+    // temporarily skip this for batch submission form
+    if ($('[class*="batch-submission-form"]').length == 0) {
+      var sidebarViewFade = Array.isArray(sidebarViewFade) ? sidebarViewFade : [sidebarViewFade];
 
-    for (const s of sidebarViewFade) {
-      $(this.viewSidebarClass[s]).addClass('inactive');
+      for (const s of sidebarViewFade) {
+        $(this.viewSidebarClass[s]).addClass('inactive');
+      }    
     }
   }
 

@@ -63,7 +63,7 @@ $( document ).ready(function() {
        $('form[id="batch_submission_form"]').length ) { 
 
     set_initial_value();
-    $('input[name="media[visibility]"]').change(function(event){
+    $('input[name="media[visibility]"], input[name="batch_submission[media][visibility]"]').change(function(event){
       console.log('Radio visibility changed');
 
       if ($(this).val()){

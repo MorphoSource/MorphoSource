@@ -481,14 +481,19 @@ module Hyrax
       [10, 50, 100, 500, 1000, 2000] # rows per page that users can choose
     end
 
+    attr_writer :system_admin_email
+    def system_admin_email
+      @system_admin_email ||= 'morphosource@duke.edu'
+    end
+
     attr_writer :batch_user_key
     def batch_user_key
-      @batch_user_key ||= '614de0' # User key for user morphosource@duke.edu
+      @batch_user_key ||= '614de0' 
     end
 
     attr_writer :audit_user_key
     def audit_user_key
-      @audit_user_key ||= '614de0' # User key for user morphosource@duke.edu
+      @audit_user_key ||= '614de0' 
     end
 
     # NOTE: This used to be called `working_path` in CurationConcerns

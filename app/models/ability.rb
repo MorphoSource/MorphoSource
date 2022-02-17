@@ -18,7 +18,7 @@ class Ability
     end
 
     if admin? || batch_submission_contributor?
-      can [ :index, :new, :submit, :result ], BatchSubmission
+      can [ :index, :new, :submit, :result, :ingest ], BatchSubmission
     end
 
     if registered_user?

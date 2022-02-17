@@ -11,6 +11,9 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
   let (:media_path) { fixture_path }
   let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry'])}
   let(:organization)  { Organization.create(title: ['Organization'] ) }
+  let(:media_ownership_fields) {
+         {"visibility"=>"restricted", "download_reviewer"=>["e1eefa"], "rights_holder"=>["org ip holder"], "rights_statement"=>"http://rightsstatements.org/vocab/InC-OW-EU/1.0/", "license"=>["https://creativecommons.org/licenses/by-sa/4.0/"], "morphosource_use_agreement_type"=>"Permissive", "permits_commercial_use"=>"CommercialUsePermitted", "permits_3d_use"=>"3DPrintingPermitted", "required_archival_of_published_derivatives"=>"EncouragedButNotRequired", "funding"=>[""], "publisher"=>[""], "cite_as"=>"", "preview_mode"=>"Thumbnail Only", "agreement_uri"=>"", "member_of_collection_ids"=>""}
+    }
 
   before do
     admins.users << [admin_user]
@@ -26,7 +29,9 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
       admin_user:admin_user, 
       depositor:depositor, 
       organization_id:organization.id, 
-      device_id:device.id)
+      device_id:device.id,
+      media_ownership_fields:media_ownership_fields
+      )
     }
 
     it "contains rows data" do
@@ -60,14 +65,15 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
     end
 
     it "contains media_ie_pe_ingests data" do
-      expect(subject.instance_variable_get(:@media_ie_pe_ingests).count).to eq(3)
-      expect(subject.to_h[:media_ie_pe_ingests].first[:imaging_event].count).to eq(1)
-      expect(subject.to_h[:media_ie_pe_ingests].first[:imaging_event][0][:initial_attrs]).to include(
+      ingest_obj = subject.instance_variable_get(:@media_ie_pe_ingests)
+      expect(ingest_obj.count).to eq(2)
+      expect(ingest_obj.first.to_h[:imaging_event].count).to eq(1)
+      expect(ingest_obj.first.to_h[:imaging_event][0][:initial_attrs]).to include(
         :description=>["smc IE desc"], 
         :creator=>["Zach Randall"], 
         :software=>["smc IE software"]
       )
-      expect(subject.to_h[:media_ie_pe_ingests][0][:children][1][:pe][:attrs]).to include(
+      expect(ingest_obj.first.to_h[:children][1][:pe][:attrs]).to include(
         :software=>["pe smc sw"], 
         :description=>["pe smc desc"]
       )

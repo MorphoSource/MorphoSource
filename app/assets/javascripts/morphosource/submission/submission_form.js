@@ -228,7 +228,7 @@ class SubmissionForm {
                 $(multiSelector).eq(i).parent().find('button.add').trigger('click');
               } else {
                 self.recommendOrRequirePermissions(
-                  $(multiSelector).parents('div .media_'+field), 
+                  $(multiSelector).parents('div [class*="media_' + field + '"]'), 
                   null, 
                   mandateValues
                 );
@@ -239,7 +239,7 @@ class SubmissionForm {
         } else {
           $(multiSelector).val(val);
           this.recommendOrRequirePermissions(
-            $(multiSelector).parents('div .media_'+field), 
+            $(multiSelector).parents('div [class*="media_' + field + '"]'), 
             null, 
             mandateValues
           );
@@ -255,7 +255,7 @@ class SubmissionForm {
       default: // single-value fields
         $(selector).val(val);
         this.recommendOrRequirePermissions(
-          $(selector).parents('div .media_'+field),
+          $(selector).parents('div [class*="media_' + field + '"]'), 
           null, 
           mandateValues
         );
@@ -263,7 +263,7 @@ class SubmissionForm {
   }
 
   recommendOrRequirePermissions(element, val, mandateValues) {
-    if (mandateValues) {
+    if (mandateValues) { // required
       if (element.hasClass('media_download_permission')) {
         if (val == 'open') {
           $('form.new_media input[id$="visibility_restricted_download"]').prop('disabled', 'disabled');
@@ -287,7 +287,7 @@ class SubmissionForm {
 
       element.find('button.btn.btn-link').addClass('hide');
       element.find('li.input-group').addClass('required-input-group');
-    } else {
+    } else { // recommended
       if (element.hasClass('media_download_reviewer')) {
         this.canAlertDownloadReviewer = true;
         var self = this;

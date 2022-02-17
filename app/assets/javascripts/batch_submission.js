@@ -264,7 +264,7 @@ $( document ).ready(function() {
         // Organization utility function
 
         function clearList() {
-          $('form#submission_device_select_form select#batch_submission_device_id option').each(function () {
+          $('select#batch_submission_device_id option').each(function () {
             $("#batch_submission_device_id").select2('val', null);
             if ($(this).attr('value')) {
               $(this).remove();
@@ -279,13 +279,13 @@ $( document ).ready(function() {
         }
 
         function enableDeviceList() {
-          $('form#submission_device_select_form select#batch_submission_device_id').removeAttr('disabled');
-          $('form#submission_device_select_form div.batch_submission_device_id label').removeClass('disabled');
+          $('select#batch_submission_device_id').removeAttr('disabled');
+          $('div.batch_submission_device_id label').removeClass('disabled');
         }
 
         function listDevices(devices) {
           for (const device of devices) {
-            $('form#submission_device_select_form select#batch_submission_device_id')
+            $('select#batch_submission_device_id')
               .append($('<option></option>')
                 .attr('value', device.id)
                 .attr('data-modality', device.modality)

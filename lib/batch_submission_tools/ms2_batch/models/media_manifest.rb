@@ -15,23 +15,18 @@ module BatchSubmissionTools
           @organization_id = organization_id
 
           @id = initial_attrs[:ms_id] || id
-#byebug
           @work = work
           @work_imported = work_imported
-#byebug
 
           @media_path = media_path
           @media_ownership_fields = media_ownership_fields
           if work.present?
-#byebug
             @id = work.id
             @work_imported = false
             @attrs = attrs
           elsif !attrs.present? && initial_attrs.present?
-#byebug
             @attrs = create_new_attributes
           else
-#byebug
             @attrs = attrs
           end
         end
@@ -42,10 +37,8 @@ module BatchSubmissionTools
                 id.present? && 
                 ::Media.exists?(id)
               )
-#byebug
               ::Media.find(id)
             else
-#byebug
               nil
             end
         end
@@ -61,25 +54,8 @@ module BatchSubmissionTools
           addl_attrs.merge!(@media_ownership_fields).symbolize_keys!
           addl_attrs.merge!(visibility_mapped(@media_ownership_fields["visibility"]))
 
-#          if organization_id.present?
-#            addl_attrs.merge!(
-#              organization_permissions_fields
-#                .select { |k, v| Array(v)&.first.present? }
-#            ) 
-#            addl_attrs.merge!(visibility_from_organization)
-#          end
-
           p = media_file_path
           addl_attrs[:file] = [p] if p.present?          
-#byebug
-#          tmp = initial_attrs.except(:id, :media_file).merge(addl_attrs)
-#byebug
-# check tmp[:file] should be set here
-
-#          if initial_attrs[:preview_file].present? && media_path.present?
-#byebug
-#            preview_file = media_path + initial_attrs[:preview_file].first
-#          end
 
           Importer::Factory::MediaFactory.new(
             initial_attrs.except(:id, :media_file).merge(addl_attrs), 

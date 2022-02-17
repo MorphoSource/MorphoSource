@@ -10,17 +10,13 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       @manifest = manifest
       
       sub_jobs.each do |job_class|
-#byebug
         job = job_class.send :perform_later, @manifest
-        #job = job_class.send :perform_now, @manifest
         sleep(1.minute) until monitor_status(job)
         progress.increment
       end
     rescue StandardError => e
-
-byebug
-# check exception here if stopped
-
+      # debug: check exception here if stopped
+      #byebug
     ensure
       status.update(manifest: @manifest)
     end
@@ -36,7 +32,6 @@ byebug
 
   def monitor_status(job)
     #return true if job == true # it returns true if perform_now (for testing)
-#byebug
     job_status = ActiveJob::Status.get(job)
 
     # update manifest

@@ -105,7 +105,6 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def submit
-#byebug
     @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
     @xlsx = Roo::Excelx.new(manifest.tempfile.path)
     @modality_selected = @params["batch_submission"]["modality"]
@@ -145,7 +144,6 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id, 
         device_id:device_id, 
         media_ownership_fields:media_ownership_fields).to_h
-byebug
 
       ingest
     else
@@ -155,8 +153,7 @@ byebug
   end
 
   def ingest
-    #::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(session[:manifest_object])
-    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(@manifest_object)
+    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object)
   end
 
   def initial_error_message
@@ -244,12 +241,6 @@ byebug
           row_count: row_count }
         @manifest_is_valid = false
       else
-  #      save_params_to_session
-  #      instantiate_work_forms      
-  #      render :action => 'new'
-  #      render 'validation_pass', locals: { row_count: row_count }
-        
-        #todo: remove validation_pass template later if not needed
         render 'index', locals: { 
           warn_rows: warn_rows, 
           warn_messages: warn_messages, 
@@ -260,11 +251,6 @@ byebug
       end    
 
     end
-  end
-
-  def save_params_to_session
-    session[:batch_submission].deep_merge!(permitted_params) #.deep_merge!(batch_submission_params) 
-#byebug
   end
 
   def manifest_params

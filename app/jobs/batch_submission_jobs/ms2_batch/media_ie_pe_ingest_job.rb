@@ -32,20 +32,15 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     if ingest['parent'].present?
       ingest['parent'].each do |idx, parent|
 
-#byebug
-
         if parent['media']['id'].present? 
           # parent media is existing.  get the obj and skip (no need to create)
           parent_media = Media.find(parent['media']['id'])
-#byebug
           next
         end
-#byebug
         if parent['media']['initial_attrs']['raw_or_derived']&.first == "Raw"
           is_raw = true
         else
           is_raw = false
-#byebug
           if parent['pe'].present?
             parent_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
               'ProcessingEvent', 
@@ -68,7 +63,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           end
 
           if is_raw
-#byebug
             parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
               'Media', 
               parent['media']['attrs'].merge(
@@ -99,10 +93,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     # ingest children processing events and media
     direct_parent = parent_media.presence || imaging_event.presence
-#byebug
     if direct_parent.present?
       ingest['children'].each do |idx, child|
-#byebug
         if child['pe'].present?
           # associate with the direct parent
           child_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
@@ -114,11 +106,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             false
           )
         else
-#byebug
           raise "Required processing event not present for child media ingest. Ingest: #{child}"
         end
 
-#byebug
         if child['media'].present?
           if child['media']['initial_attrs']['preview_file'].present? &&
               child['media']['media_path'].present?
@@ -126,7 +116,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             preview_file = child['media']['media_path'] + child['media']['initial_attrs']['preview_file'].first
           end
 
-#byebug
           child_media = BatchSubmissionsImporter::BatchObjectImporter.call(
             'Media', 
             child['media']['attrs'].merge(
@@ -138,7 +127,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           )
           all_media << child_media
         else
-#byebug
           raise "Required media not present for child media ingest. Ingest: #{child}"
         end
       end

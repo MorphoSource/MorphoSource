@@ -16,17 +16,14 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         end
       end
 
-#byebug
       if !i['imaging_event']&.first.present?
         raise "Imaging event not present for ingest. Ingest: #{i}"
       end
 
-#byebug
       # Find the BSO associated with media
       ie_row_index = i['imaging_event'].first[0]
       bso = manifest['biological_specimen_ingests'][manifest['rows_to_bso'][ie_row_index]]
 
-#byebug
       if !bso.present?
         raise "Media ingest requires a biological specimen present. Provided BSO: #{bso}"
       elif !bso['id'].present?
@@ -34,9 +31,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       end
 
       i['physical_object_id'] = bso['id']
-#byebug
       i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
-      #i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_now(
         i, 
         @manifest['collection_ids'] || [],
         @manifest['fund_code_id'] || nil,
@@ -44,11 +39,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     end
 
     # Monitor jobs
-#    sleep(1.minute) until monitor_ingest_jobs
+    sleep(1.minute) until monitor_ingest_jobs
 
     # Report errors
     status.update(manifest: @manifest)
-#byebug
     if @manifest['media_ie_pe_ingests'].any? { |i| i['job_exception'].present? }
       exceptions = []
       @manifest['media_ie_pe_ingests'].each_with_index do |i, index|
@@ -59,7 +53,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       raise "One or more media ingests failed. #{exceptions.join('; ')}"
     end
 
-#byebug
     # Remove jobs from manifest (for further serialization)
     @manifest['media_ie_pe_ingests'].each { |i| i.except!('job') }
     status.update(manifest: @manifest)
@@ -67,12 +60,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
   def monitor_ingest_jobs
     jobs_complete = true
-byebug
 
     @manifest['media_ie_pe_ingests'].each do |i|
-byebug
       if i['job'] == true # it returns true if perform_now has been called (can be removed later if perform_later is called)
-byebug
         next
       end
 
@@ -82,16 +72,12 @@ byebug
       job_status = ActiveJob::Status.get(i['job'])
       i['job_status'] = job_status[:status].to_s
       if job_status[:status] == :queued || job_status[:status] == :working
-#byebug
         jobs_complete = false
       elsif job_status[:status] == :failed
-#byebug
         i['job_exception'] = "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
       elsif job_status[:status] == :completed
-#byebug
         next          
       else
-#byebug
         i['job_exception'] = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
       end
 

@@ -23,6 +23,7 @@ RSpec.describe Hyrax::MediaPresenter do
     let(:representative_presenter) { double('representative', present?: false) }
     let(:image_boolean) { false }
     let(:mesh_boolean) { false }
+    let(:video_boolean) { false }
     let(:volume_boolean) { false }
     let(:iiif_enabled) { true }
     let(:file_set_presenter) { Hyrax::MediaFileSetPresenter.new(solr_document, ability) }
@@ -35,10 +36,12 @@ RSpec.describe Hyrax::MediaPresenter do
       allow(presenter).to receive(:file_set_presenters).and_return(file_set_presenters)
       allow(file_set_presenter).to receive(:image?).and_return(true)
       allow(file_set_presenter).to receive(:mesh?).and_return(true)
+      allow(file_set_presenter).to receive(:video?).and_return(true)
       allow(file_set_presenter).to receive(:volume?).and_return(true)
       allow(ability).to receive(:can?).with(:read, solr_document.id).and_return(read_permission)
       allow(representative_presenter).to receive(:image?).and_return(image_boolean)
       allow(representative_presenter).to receive(:mesh?).and_return(mesh_boolean)
+      allow(representative_presenter).to receive(:video?).and_return(video_boolean)
       allow(representative_presenter).to receive(:volume?).and_return(volume_boolean)
       allow(Hyrax.config).to receive(:iiif_image_server?).and_return(iiif_enabled)
     end
@@ -94,6 +97,38 @@ RSpec.describe Hyrax::MediaPresenter do
       let(:representative_presenter) { double('representative', present?: true) }
       let(:image_boolean) { false }
       let(:mesh_boolean) { true }
+      let(:iiif_enabled) { true }
+
+      it { is_expected.to be true }
+
+      context "when the user doesn't have permission to view the image" do
+        let(:read_permission) { false }
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context 'with representative video and IIIF turned on' do
+      let(:id_present) { true }
+      let(:representative_presenter) { double('representative', present?: true) }
+      let(:image_boolean) { false }
+      let(:video_boolean) { true }
+      let(:iiif_enabled) { true }
+
+      it { is_expected.to be true }
+
+      context "when the user doesn't have permission to view the image" do
+        let(:read_permission) { false }
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context 'with representative volume and IIIF turned on' do
+      let(:id_present) { true }
+      let(:representative_presenter) { double('representative', present?: true) }
+      let(:image_boolean) { false }
+      let(:volume_boolean) { true }
       let(:iiif_enabled) { true }
 
       it { is_expected.to be true }

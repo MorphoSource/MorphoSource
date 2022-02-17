@@ -214,8 +214,14 @@ module Hyrax
 
       def generate_display_content
         return display_content_video if model.video?
-        return display_content_mesh if model.mesh?
-        return display_content_volume if model.volume?
+        
+        # Some mime types overlap for mesh/volume, have to check parent media type
+        if ( model.mesh? || model.volume? ) && model.id.present? && ::FileSet.exists?(model.id)
+          parent_work = ::FileSet.find(id).parent
+          return display_content_mesh if parent_work&.media_type&.first == 'Mesh'
+          return display_content_volume if parent_work&.media_type&.first == 'CTImageSeries'
+        end
+
         return nil
       end
 

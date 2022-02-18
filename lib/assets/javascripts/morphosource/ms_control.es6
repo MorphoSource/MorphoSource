@@ -31,6 +31,7 @@ export default class RelationshipsControl {
     this.input = this.element.find(`[data-autocomplete]`)
     this.warning = this.element.find(".message.has-warning")
     this.addButton = this.element.find("[data-behavior='add-relationship']")
+    this.autoAdd = this.input.data('autoadd') || false
     this.errors = null
     this.repeatable = this.element.data('repeatable') || 'yes'
     this.workType = this.element.data('work-type')
@@ -38,6 +39,7 @@ export default class RelationshipsControl {
 
   init() {
     this.bindAddButton();
+    this.bindInput();
     this.displayMembers();
   }
 
@@ -151,6 +153,13 @@ export default class RelationshipsControl {
    */
   bindAddButton() {
     this.addButton.on("click", () => this.attemptToAddRow())
+  }
+
+  bindInput() {
+    if (this.autoAdd) {
+      // add row will be called after an option is added (instead of using add button)
+      this.input.on("change", () => this.attemptToAddRow())
+    }
   }
 
   attemptToAddRow() {

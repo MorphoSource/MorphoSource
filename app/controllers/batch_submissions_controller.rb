@@ -153,7 +153,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def ingest
-    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(@manifest_object)
+    ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object)
   end
 
   def initial_error_message

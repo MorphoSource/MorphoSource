@@ -1,7 +1,7 @@
 class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest
 
-  queue_as Hyrax.config.ingest_queue_name
+  queue_as Hyrax.config.batch_submission_queue_name
 
   def perform(manifest)
     begin

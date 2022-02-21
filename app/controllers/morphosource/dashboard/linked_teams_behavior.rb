@@ -98,7 +98,7 @@ module Morphosource
 
       def format_update_params
         format_download_permission
-        multi_value_fields = [:download_permission, :download_reviewer, :permits_3d_use, 
+        multi_value_fields = [:data_manager, :download_permission, :download_reviewer, :permits_3d_use, 
           :permits_commercial_use, :license, :rights_statement, :agreement_uri, 
           :morphosource_use_agreement_type, :required_archival_of_published_derivatives, 
           :preview_mode, :rights_holder, :rights_holder_blank, :rights_statement_blank, 

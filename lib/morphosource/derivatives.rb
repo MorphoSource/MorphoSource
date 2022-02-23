@@ -7,6 +7,8 @@ module Morphosource
     autoload :CroppedImageDerivatives
     autoload :CTImageSeriesDerivatives
     autoload :MeshDerivatives
+    autoload :VideoDerivatives
+
     autoload :Processors
 
     autoload :Alembic

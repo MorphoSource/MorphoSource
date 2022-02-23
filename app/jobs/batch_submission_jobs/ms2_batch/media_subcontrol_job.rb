@@ -1,5 +1,5 @@
 class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
-  attr_accessor :manifest
+  attr_accessor :manifest, :created_media
 
   queue_as Hyrax.config.ingest_queue_name
 
@@ -7,9 +7,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest
+    @created_media = {}
 
     # Submit jobs for new works to be created
-    @manifest['media_ie_pe_ingests'].each do |i|
+    @manifest['media_ie_pe_ingests'].each_with_index do |i, ingest_index|
       if i['parent'].present?
         if i['parent'].count > 1
           raise "Only one parent should be present for media ingestion, but multiple are present. Parents: #{i['parent']}"
@@ -29,13 +30,40 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       elif !bso['id'].present?
         raise "A supposedly ingested biological specimen does not have ID. Provided BSO: #{bso}"
       end
-
       i['physical_object_id'] = bso['id']
+
+      # check if the ingest depends on a derived parent
+      derived_parent_file = ""
+      i['children'].each do |idx, child|
+        if child['media'].present?
+          derived_parent_file = child['media']['derived_parent_file']
+#byebug
+          break if derived_parent_file.present?
+        end
+      end            
+
+      if derived_parent_file.present?
+#byebug
+        target_parent_id = created_parent_id(derived_parent_file)
+        sleep(1.minute) until target_parent_id.present?
+        # save created_media before removing it from job status
+        @created_media[derived_parent_file] = target_parent_id
+      end
+
+      # Remove jobs from manifest (for further serialization, preventing ActiveJob::SerializationError)
+      @manifest['media_ie_pe_ingests'].each { |i| i.except!('job') }
+      status.update(manifest: @manifest)
+
+#byebug # job start
       i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
+        @manifest,
         i, 
+        ingest_index,
         @manifest['collection_ids'] || [],
         @manifest['fund_code_id'] || nil,
+        target_parent_id
       )
+#byebug # job done
     end
 
     # Monitor jobs
@@ -56,6 +84,25 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     # Remove jobs from manifest (for further serialization)
     @manifest['media_ie_pe_ingests'].each { |i| i.except!('job') }
     status.update(manifest: @manifest)
+  end
+
+  def created_parent_id(parent_file)
+    id = nil
+    if @created_media[parent_file].present?
+      return @created_media[parent_file]
+    end
+
+    @manifest['media_ie_pe_ingests'].each do |i|
+      next unless (job = i['job']).present?
+      job_status = ActiveJob::Status.get(i['job'])
+      i['job_status'] = job_status[:status].to_s
+      if (job_status[:status] == :completed)
+        # get parent id 
+        id = job_status[:created_media][parent_file]
+      end
+      break if id.present?
+    end
+    return id    
   end
 
   def monitor_ingest_jobs
@@ -80,7 +127,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       else
         i['job_exception'] = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
       end
-
       # update manifest
       status.update(manifest: @manifest)
     end

@@ -144,7 +144,8 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id, 
         device_id:device_id, 
         media_ownership_fields:media_ownership_fields).to_h
-
+        
+      #byebug # check manifest_object
       ingest
     else
 
@@ -323,9 +324,11 @@ class BatchSubmissionsController < ApplicationController
           # look for the val in the media_file column
           parent_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
           if parent_media_found_row.present?
-            if @parent_media_row.present? && (@parent_media_row != parent_media_found_row + 1)
-              error_msg = "media.parent_file: Only one parent media should be present, but multiple parent_file are found."
-            elsif parent_media_found_row + 1 == current_row
+#            if @parent_media_row.present? && (@parent_media_row != parent_media_found_row + 1)
+#              error_msg = "media.parent_file: Only one parent media should be present, but multiple parent_file are found."
+#            els
+
+            if parent_media_found_row + 1 == current_row
               error_msg = "media.parent_file #{val} cannot be media.media_file in the same row."
             else              
               @parent_media_row = parent_media_found_row + 1

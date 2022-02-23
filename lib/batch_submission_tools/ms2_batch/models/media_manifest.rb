@@ -3,11 +3,11 @@ module BatchSubmissionTools
     module Models
       class MediaManifest
         attr_accessor :initial_attrs, :depositor, :on_behalf_of, :organization_id, :media_path, :attrs
-        attr_accessor :id, :work, :work_imported
+        attr_accessor :id, :work, :work_imported, :derived_parent_file
         attr_accessor :organization_permissions_fields, :organization_attachment_id
 
         def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, organization_id: nil, media_path: nil, 
-            media_ownership_fields: {}, attrs: {}, work_imported: false, **kwargs)
+            media_ownership_fields: {}, derived_parent_file: nil, attrs: {}, work_imported: false, **kwargs)
           
           @initial_attrs = initial_attrs
           @depositor = depositor
@@ -20,6 +20,7 @@ module BatchSubmissionTools
 
           @media_path = media_path
           @media_ownership_fields = media_ownership_fields
+          @derived_parent_file = derived_parent_file
           if work.present?
             @id = work.id
             @work_imported = false
@@ -44,12 +45,12 @@ module BatchSubmissionTools
         end
 
         def create_new_attributes
-
           addl_attrs = { 
             depositor: depositor, 
             on_behalf_of: on_behalf_of, 
             download_reviewer: download_reviewer,
-            description: description
+            description: description,
+            derived_parent_file: derived_parent_file
           }
           addl_attrs.merge!(@media_ownership_fields).symbolize_keys!
           addl_attrs.merge!(visibility_mapped(@media_ownership_fields["visibility"]))

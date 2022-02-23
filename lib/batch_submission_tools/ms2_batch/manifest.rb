@@ -52,25 +52,44 @@ module BatchSubmissionTools
       def infer_media_relationships
         @media_group_to_rows = rows.each_with_object({}).with_index do |(row, hash), index|
           sheet_index = [index]
-          hash[sheet_index] = { raw_list: [], parents: [], children: [] } if !hash.key?(sheet_index)
+          hash[sheet_index] = { raw_list: [], parents: [], derived_parents: [], children: [] } if !hash.key?(sheet_index)
           hash[sheet_index][:raw_list] << index
         end
         rows_to_remove = []
 
         media_group_to_rows.each do |sheet_index, mg|
           parents = []
+          derived_parents = []
           children = []
 
           mg[:raw_list].each do |row_index|
             row = rows[row_index]
+            parent_index = ""
+            derived_parent_index = ""
             # is parent?
             if row[:media][:parent_file].present? 
               children << row_index
-              rows_to_remove << row_index
               # look for the parent row index
-              parent_index = rows.index { |r| r[:media][:media_file]&.first == row[:media][:parent_file].first }
-              parents << parent_index
-              media_group_to_rows[[parent_index]][:children] << row_index
+              rows.each_with_index do |r , idx|
+                if (r[:media][:media_file]&.first == row[:media][:parent_file].first) 
+                  if r[:media][:raw_or_derived]&.first == "Derived" 
+                    derived_parent_index = idx
+                  else
+                    parent_index = idx
+                    rows_to_remove << row_index
+                  end
+                end
+              end
+
+              if parent_index.present?
+                parents << parent_index
+                media_group_to_rows[[parent_index]][:children] << row_index
+              elsif derived_parent_index.present?
+                parents << derived_parent_index
+                # find the media group that ingest the derived parent
+                derived_parents << derived_parent_index
+#                media_group_to_rows[[derived_parent_index]][:children] << row_index
+              end                  
             elsif row[:media][:parent_ms_id].present?
               children << row_index
             else 
@@ -83,6 +102,7 @@ module BatchSubmissionTools
               parents = parents.first
             end
             (media_group_to_rows[sheet_index][:parents] << parents).flatten!
+            (media_group_to_rows[sheet_index][:derived_parents] << derived_parents).flatten!
             (media_group_to_rows[sheet_index][:children] << children).flatten!
 
           end # /mg[:raw_list]
@@ -94,7 +114,7 @@ module BatchSubmissionTools
           # otherwise duplicate media will be created
           rows_to_remove.each { |k| media_group_to_rows.delete [k] }
         end
-
+        #byebug # check media_group_to_rows
       end
 
       def construct_biological_specimen_ingests
@@ -275,6 +295,12 @@ module BatchSubmissionTools
           }
 
           children = mg[:children].map do |row_index|
+
+            if mg[:derived_parents].present?
+              # mark the ingest with dependency
+              derived_parent_file = rows[row_index][:media][:parent_file].first             
+            end
+
             child_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[row_index][:processing_event],
               depositor: depositor,
@@ -286,7 +312,8 @@ module BatchSubmissionTools
               on_behalf_of: on_behalf_of,
               organization_id: organization_id,
               media_path: media_path,
-              media_ownership_fields: media_ownership_fields
+              media_ownership_fields: media_ownership_fields,
+              derived_parent_file: derived_parent_file
             )
 
             [

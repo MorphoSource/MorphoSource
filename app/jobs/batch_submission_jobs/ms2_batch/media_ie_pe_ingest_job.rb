@@ -3,7 +3,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
   queue_as Hyrax.config.mass_ingest_queue_name
 
-  def perform(ingest, collection_ids, fund_code_id)
+  def perform(manifest, ingest, ingest_index, collection_ids, fund_code_id, target_parent_id)
+
+    status.update(manifest: manifest)
+    @manifest = manifest
 
     if !ingest['physical_object_id'].present?
       raise "Physical object ID not present for ingest. Ingest: #{ingest}"
@@ -11,6 +14,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     all_media = []
     organization_permissions_fields = {}
+    created_media = {}
 
     imaging_event = nil
     # ingest imaging event
@@ -31,6 +35,12 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     # ingest parent processing events and media
     if ingest['parent'].present?
       ingest['parent'].each do |idx, parent|
+
+        if target_parent_id.present? 
+          # the media has been created as a child media earlier
+          parent_media = Media.find(target_parent_id)
+          next
+        end
 
         if parent['media']['id'].present? 
           # parent media is existing.  get the obj and skip (no need to create)
@@ -125,6 +135,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             false,
             preview_file
           )
+
+          media_file = child['media']['initial_attrs']['media_file'].first
+          created_media[media_file] = child_media.id
+
           all_media << child_media
         else
           raise "Required media not present for child media ingest. Ingest: #{child}"
@@ -133,6 +147,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     else
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
+
+    status.update(created_media: created_media)
 
     # Add org agreement attachment fields
     if all_media.present? && organization_permissions_fields.present? && organization_permissions_fields['organization_for_attachment'].present?
@@ -146,6 +162,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     
     UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
 
+    # look for dependent child 
   end
 
   def add_media_to_collections(media, collection_ids)

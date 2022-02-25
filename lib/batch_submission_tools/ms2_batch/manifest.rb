@@ -115,6 +115,7 @@ module BatchSubmissionTools
           rows_to_remove.each { |k| media_group_to_rows.delete [k] }
         end
         #byebug # check media_group_to_rows
+        Rails.logger.debug "In Manifest: media_group_to_rows: #{media_group_to_rows}"
       end
 
       def construct_biological_specimen_ingests

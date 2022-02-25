@@ -37,15 +37,14 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       i['children'].each do |idx, child|
         if child['media'].present?
           derived_parent_file = child['media']['derived_parent_file']
-#byebug
           break if derived_parent_file.present?
         end
       end            
 
       if derived_parent_file.present?
-#byebug
-        target_parent_id = created_parent_id(derived_parent_file)
-        sleep(1.minute) until target_parent_id.present?
+        Rails.logger.debug "In MediaSubcontrolJob: waiting for parent media creation: #{derived_parent_file}"        
+        sleep(1.minute) until (target_parent_id = created_parent_id(derived_parent_file)).present?
+        Rails.logger.debug "In MediaSubcontrolJob: parent media created: #{derived_parent_file}"
         # save created_media before removing it from job status
         @created_media[derived_parent_file] = target_parent_id
       end
@@ -54,7 +53,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       @manifest['media_ie_pe_ingests'].each { |i| i.except!('job') }
       status.update(manifest: @manifest)
 
-#byebug # job start
       i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
         @manifest,
         i, 
@@ -63,7 +61,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         @manifest['fund_code_id'] || nil,
         target_parent_id
       )
-#byebug # job done
     end
 
     # Monitor jobs

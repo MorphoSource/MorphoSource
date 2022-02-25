@@ -44,7 +44,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       if derived_parent_file.present?
         Rails.logger.debug "In MediaSubcontrolJob: waiting for parent media creation: #{derived_parent_file}"        
         sleep(1.minute) until (target_parent_id = created_parent_id(derived_parent_file)).present?
-        Rails.logger.debug "In MediaSubcontrolJob: parent media created: #{derived_parent_file}"
+        Rails.logger.debug "In MediaSubcontrolJob: parent media created: #{derived_parent_file} > #{target_parent_id}"
         # save created_media before removing it from job status
         @created_media[derived_parent_file] = target_parent_id
       end

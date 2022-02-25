@@ -39,6 +39,7 @@ module Morphosource
         format.rss  { render :layout => false }
         format.atom { render :layout => false }
         format.csv  do
+          redirect_to '/' unless current_user&.admin?
           (_, @csv_document_list) = query_solr_all_results
           @new_document_list = @csv_document_list.map { |d| d.to_semantic_values }
         end

@@ -15,5 +15,15 @@
         <% end %>
       <% end %>
     </div>
+    <div class="collection-export-links">
+      <%= link_to media_downloads_csv_url(@collection) do %>
+        <i class="fas fa-file-csv fa-lg"></i> <span>Save all media downloads</span>
+      <% end %>
+    </div>
+    <div class="collection-export-links">
+      <%= link_to media_requests_csv_url(@collection) do %>
+        <i class="fas fa-file-csv fa-lg"></i> <span>Save all media download requests</span>
+      <% end %>
+    </div>
   </div><!-- /admin-csv-links -->
 <% end %>

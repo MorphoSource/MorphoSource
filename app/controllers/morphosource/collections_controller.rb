@@ -93,5 +93,11 @@ module Morphosource
       response.headers['Content-Type'] = 'text/csv'
       response.headers['Content-Disposition'] = "attachment; filename=MorphoSource%20#{collection.human_readable_type}%20#{@collection.id}%20-%20#{file_name}.csv"
     end
+
+    def sort_parameters
+      s = (params[:sort].presence || '').split(' ')
+      return s[0], s[1]
+    end
+    helper_method :sort_parameters
   end
 end

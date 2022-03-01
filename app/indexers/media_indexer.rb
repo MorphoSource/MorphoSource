@@ -39,7 +39,7 @@ class MediaIndexer < Morphosource::WorkIndexer
       # data processing for subsequent fields
       physical_objects = object.physical_objects
 
-      if physical_objects.present?
+      if physical_objects.present? && are_physical_objects(physical_objects)
         physical_object_id = physical_objects.map(&:id)
         physical_object_title = physical_objects.map { |po| po.title&.first }.compact
         institution_code = physical_objects.map { |po| po.institution_code&.first }.compact
@@ -163,5 +163,15 @@ class MediaIndexer < Morphosource::WorkIndexer
       obj.organizations.each { |org| orgs << org }
     end
     organizations.uniq
+  end
+
+  def are_physical_objects(works)
+    works.all? do |w|
+      if w.respond_to?(:physical_object?) && w.physical_object?
+        true
+      else
+        raise "Work #{w.id} is supposed to be a physical object, but is actually class #{w.class}"
+      end
+    end
   end
 end

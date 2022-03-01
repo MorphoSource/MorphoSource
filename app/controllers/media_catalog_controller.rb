@@ -8,9 +8,6 @@ class MediaCatalogController < CatalogController
 
     config.max_per_page = 1000000
 
-    config.add_sort_field "human_readable_media_type_ssi desc", label: "media type \u25BC"
-    config.add_sort_field "human_readable_media_type_ssi asc", label: "media \u25B2"
-
     # facet fields
     # type
     config.add_facet_field solr_name("human_readable_media_type", :facetable), label: "Type", limit: 10

@@ -11,12 +11,12 @@
           <th class="checkbox no-sort"><input type="checkbox" id="select-all-for-download" /></th>
           <th>&nbsp;<!-- thumbnail column --></th>
           <th>ID</th>
-          <th>Part</th>
-          <th>Object</th>
-          <th>Taxonomy</th>
-          <th>Type</th>
-          <th>Date Added</th>
-          <th>Publication Status</th>
+          <th><%= sortable_table_header('Part', 'part_si') %></th>
+          <th><%= sortable_table_header('Object', 'physical_object_title_si') %></th>
+          <th><%= sortable_table_header('Taxonomy', 'taxonomy_si') %></th>
+          <th><%= sortable_table_header('Type', 'human_readable_media_type_si') %></th>
+          <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
+          <th><%= sortable_table_header('Publication Status', 'publication_status_si') %></th>
           <th class="remove-column">&nbsp;</th>
         </tr>
         </thead>

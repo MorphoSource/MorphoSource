@@ -1,6 +1,6 @@
 <% if current_user&.admin? %>
   <div class="admin-csv-links mb-1">
-    <div class="collection-export-links">
+    <div>
       <b>Admin functions:</b>
     </div>
     <div class="collection-export-links">
@@ -11,13 +11,18 @@
     <div class="collection-export-links">
       <% if @presenter.team? && @presenter.organization.present? %>
         <%= link_to main_app.team_media_projects_path(id: @presenter.id, :format => :csv, :per_page => 1000000, 'f[intersections][]' => 'organization_not_team' ) do %>
-          <i class="fas fa-file-csv fa-lg"></i> <span>Save projects with media not owned by team</span>
+          <i class="fas fa-file-csv fa-lg"></i> <span>Save projects with media not managed by team</span>
         <% end %>
       <% end %>
     </div>
     <div class="collection-export-links">
       <%= link_to media_downloads_csv_url(@collection) do %>
         <i class="fas fa-file-csv fa-lg"></i> <span>Save all media downloads</span>
+      <% end %>
+    </div>
+    <div class="collection-export-links">
+      <%= link_to media_download_counts_csv_url(@collection) do %>
+        <i class="fas fa-file-csv fa-lg"></i> <span>Save all media metadata with counts of downloads</span>
       <% end %>
     </div>
     <div class="collection-export-links">

@@ -1,6 +1,7 @@
 module Morphosource
   module My
     class ContributorPetitionsController < ApplicationController
+      load_and_authorize_resource except: [:create]
       with_themed_layout 'morphosource_dashboard'
 
       def index

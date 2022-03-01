@@ -180,8 +180,6 @@ module Hyrax
       delegate_all
 
       include Hyrax::DisplaysImage
-      include Hyrax::DisplaysMesh
-      include Hyrax::DisplaysVolume
 
       ##
       # @!attribute [w] ability
@@ -207,44 +205,69 @@ module Hyrax
       end
 
       ##
+      # Creates correct display content depending on #model type
+      #
+      # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
+      def display_content
+        @display_content ||= generate_display_content
+      end
+
+      def generate_display_content
+        return display_content_video if model.video?
+        
+        # Some mime types overlap for mesh/volume, have to check parent media type
+        if ( model.mesh? || model.volume? ) && model.id.present? && ::FileSet.exists?(model.id)
+          parent_work = ::FileSet.find(id).parent
+          return display_content_mesh if parent_work&.media_type&.first == 'Mesh'
+          return display_content_volume if parent_work&.media_type&.first == 'CTImageSeries'
+        end
+
+        return nil
+      end
+
+      ##
+      # Creates a display video only where #model is a video.
+      #
+      # @return [IIIFManifest::V3::DisplayContent] the video display content required by the manifest builder.
+      def display_content_video
+        return nil unless model.video?
+        return nil unless latest_file_id
+        display_generic_download_content('mp4', 'video/mp4', 'Video')
+      end
+
+      ##
       # Creates a display mesh only where #model is a mesh.
       #
-      # @return [IIIFManifest::MeshImage] the display mesh required by the manifest builder.
-      def display_mesh
+      # @return [IIIFManifest::V3::DisplayContent] the display mesh required by the manifest builder.
+      def display_content_mesh
         return nil unless model.mesh?
         return nil unless latest_file_id
-
-        url = URI::join(
-          hostname,
-          Hyrax::Engine.routes.url_helpers.download_path(model.access_control_id, file: 'glb')
-        )
-        format = 'model/gltf+json'
-        type = 'Model'
-
-        # @see https://github.com/samvera-labs/iiif_manifest TODO: Change this to eventual mesh3D fork?
-        IIIFManifest::DisplayMesh.new(url, 
-                                      format: format, 
-                                      type: type)
+        display_generic_download_content('glb', 'model/gltf+json', 'Model')
       end
 
       ##
       # Creates a display volume only where #model is a volume.
       #
-      # @return [IIIFManifest::DisplayVolume] usable by the manifest builder.
-      def display_volume
+      # @return [IIIFManifest::V3::DisplayContent] usable by the manifest builder.
+      def display_content_volume
         return nil unless model.volume?
         return nil unless latest_file_id
+        display_generic_download_content('dcm', 'application/dicom', 'Model')
+      end
 
-        url = URI::join(
-          hostname,
-          Hyrax::Engine.routes.url_helpers.download_path(model.access_control_id, file: 'dcm')
+      ##
+      # Creates a generic singular content display downloadable through #model access control id
+      #
+      # @return [IIIFManifest::V3::DisplayContent] the display content required by the manifest builder.
+      def display_generic_download_content(download_file_suffix, format, type)
+        IIIFManifest::V3::DisplayContent.new(
+          URI::join(
+            hostname,
+            Hyrax::Engine.routes.url_helpers.download_path(model.access_control_id, file: download_file_suffix)
+          ),
+          format: format,
+          type: type
         )
-        format = 'application/dicom'
-        type = 'Model'
-
-        IIIFManifest::DisplayVolume.new(url,
-                                      format: format,
-                                      type: type)
       end
 
       def image_format(channels)

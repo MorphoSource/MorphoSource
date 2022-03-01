@@ -14,7 +14,7 @@ class ObjectsCatalogController < CatalogController
     # creator
     config.add_facet_field solr_name("creator", :facetable), label: "Creator", limit: 10
     # organization
-    config.add_facet_field solr_name("organization", :facetable), label: "Organization", limit: 10
+    config.add_facet_field "organization_ssim", label: "Organization", limit: 10
     # external taxonomy
     config.add_facet_field "external_taxonomy_ssim", label: "Taxonomy (GBIF)", limit: 25
     # media types

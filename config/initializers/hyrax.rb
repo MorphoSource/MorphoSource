@@ -70,7 +70,8 @@ Hyrax.config do |config|
   # Date you wish to start collecting Google Analytic statistics for
   # Leaving it blank will set the start date to when ever the file was uploaded by
   # NOTE: if you have always sent analytics to GA for downloads and page views leave this commented out
-  # config.analytic_start_date = DateTime.new(2014, 9, 10)
+  # NOTE2: Env variable should be a string in format YYYY-MM-DD, e.g. "2010-09-01" for Sep 1 2010
+  config.analytic_start_date = ENV['GOOGLE_ANALYTICS_START_DATE'].present? ? DateTime.parse(ENV['GOOGLE_ANALYTICS_START_DATE']) : DateTime.new(2010, 1, 1)
 
   # Enables a link to the citations page for a work
   # Default is false

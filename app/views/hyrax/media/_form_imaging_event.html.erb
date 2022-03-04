@@ -28,13 +28,13 @@
       label: 'Photographic reference file',
       curation_concern: @imaging_event_form.model
     ) %>
+    <%= render_edit_field_partial('ie_filter', f: i) %>
 
     <div class="ie_xray_ct">
     <%= render_edit_field_partial('exposure_time', f: i) %>
     <%= render_edit_field_partial('flux_normalization', f: i) %>
     <%= render_edit_field_partial('pixel_spacing_calibration', f: i) %>
     <%= render_edit_field_partial('shading_correction', f: i) %>
-    <%= render_edit_field_partial('ie_filter', f: i) %>
     <%= render_edit_field_partial('frame_averaging', f: i) %>
     <%= render_edit_field_partial('projections', f: i) %>
     <%= render_edit_field_partial('voltage', f: i) %>
@@ -44,6 +44,10 @@
     <%= render_edit_field_partial('xray_tube_type', f: i) %>
     <%= render_edit_field_partial('target_type', f: i) %>
     <%= render_edit_field_partial('detector_type', f: i) %>
+    <%= render_edit_field_partial('detector_pixels_x', f: i) %>
+    <%= render_edit_field_partial('detector_pixel_size_x', f: i) %>
+    <%= render_edit_field_partial('detector_pixels_y', f: i) %>
+    <%= render_edit_field_partial('detector_pixel_size_y', f: i) %>
     <%= render_edit_field_partial('detector_configuration', f: i) %>
     <%= render_edit_field_partial('source_object_distance', f: i) %>
     <%= render_edit_field_partial('source_detector_distance', f: i) %>

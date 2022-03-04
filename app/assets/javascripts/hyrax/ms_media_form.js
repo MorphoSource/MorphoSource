@@ -618,7 +618,9 @@ var hasRequiredFields = function() {
     x = $('#media_x_spacing').val()
     y = $('#media_y_spacing').val()
     z = $('#media_z_spacing').val()
-    if (x && y && z) {
+    unit = $('#media_unit').val()
+
+    if (x && y && z && unit) {
       return true;
     } else {
       if (!x) {
@@ -629,6 +631,9 @@ var hasRequiredFields = function() {
       }
       if (!z) {
         missing_fields.push('Z Pixel Spacing');
+      }
+      if (!unit) {
+        missing_fields.push('Pixel Spacing Units');
       }
       let field = (missing_fields.length > 1) ? "fields" : "field";
       alert(`Please add required ${field}: ${missing_fields.join(', ')}.`);

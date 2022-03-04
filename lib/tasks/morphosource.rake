@@ -3,6 +3,14 @@ require 'ms1to2'
 require 'importer'
 
 namespace :morphosource do
+  # Taken from hyrax:stats:user_stats at https://github.com/samvera/hyrax/blob/v2.9.0/lib/tasks/stats_tasks.rake
+  # But requiring retriable as otherwise this produces errors
+  desc "Cache work view, file view & file download stats for all users"
+  task import_user_stats: :environment do
+    require 'retriable'
+    importer = Hyrax::UserStatImporter.new(verbose: true, logging: true)
+    importer.import
+  end
 
   # Loosely adapted from https://github.com/curationexperts/nurax/blob/master/lib/tasks/nurax.rake
   # Hyrax's CharacterizeJob performs file characterization and then queues up CreativeDerivativesJob.

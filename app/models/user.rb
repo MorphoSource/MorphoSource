@@ -93,6 +93,10 @@ class User < ApplicationRecord
     display_name.blank? ? email : display_name
   end
 
+  def name_and_email
+    display_name.blank? ? email : "#{display_name} (#{email})"
+  end
+
   def registered?
     groups.include? 'registered'
   end

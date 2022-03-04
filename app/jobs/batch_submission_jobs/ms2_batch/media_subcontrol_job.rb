@@ -27,7 +27,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
       if !bso.present?
         raise "Media ingest requires a biological specimen present. Provided BSO: #{bso}"
-      elif !bso['id'].present?
+      elsif !bso['id'].present?
         raise "A supposedly ingested biological specimen does not have ID. Provided BSO: #{bso}"
       end
       i['physical_object_id'] = bso['id']
@@ -41,12 +41,12 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         end
       end            
 
+      update_created_media
+
       if derived_parent_file.present?
-        Rails.logger.debug "In MediaSubcontrolJob: waiting for parent media creation: #{derived_parent_file}"        
+        Rails.logger.debug "iN MediaSubcontrolJob: waiting for parent media creation: #{derived_parent_file}"        
         sleep(1.minute) until (target_parent_id = created_parent_id(derived_parent_file)).present?
-        Rails.logger.debug "In MediaSubcontrolJob: parent media created: #{derived_parent_file} > #{target_parent_id}"
-        # save created_media before removing it from job status
-        @created_media[derived_parent_file] = target_parent_id
+        Rails.logger.debug "iN MediaSubcontrolJob: parent media found: #{derived_parent_file} > #{target_parent_id}"
       end
 
       # Remove jobs from manifest (for further serialization, preventing ActiveJob::SerializationError)
@@ -83,23 +83,22 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     status.update(manifest: @manifest)
   end
 
-  def created_parent_id(parent_file)
-    id = nil
-    if @created_media[parent_file].present?
-      return @created_media[parent_file]
-    end
-
+  def update_created_media
+    # sync created_media list from all jobs
     @manifest['media_ie_pe_ingests'].each do |i|
       next unless (job = i['job']).present?
       job_status = ActiveJob::Status.get(i['job'])
       i['job_status'] = job_status[:status].to_s
-      if (job_status[:status] == :completed)
-        # get parent id 
-        id = job_status[:created_media][parent_file]
+      if job_status[:created_media].present?
+        @created_media.merge!(job_status[:created_media])
       end
-      break if id.present?
     end
-    return id    
+    @manifest["created_media"] = @created_media
+    Rails.logger.debug "iN update_created_media: #{@created_media}"        
+  end
+
+  def created_parent_id(parent_file)
+    return @created_media[parent_file]
   end
 
   def monitor_ingest_jobs

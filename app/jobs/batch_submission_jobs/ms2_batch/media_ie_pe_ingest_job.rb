@@ -138,7 +138,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
           media_file = child['media']['initial_attrs']['media_file'].first
           created_media[media_file] = child_media.id
-
+          #Rails.logger.debug "iN MediaIePeIngestJob: setting created_media [ #{media_file} ] = #{child_media.id} "
           all_media << child_media
         else
           raise "Required media not present for child media ingest. Ingest: #{child}"
@@ -149,6 +149,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     end
 
     status.update(created_media: created_media)
+    #Rails.logger.debug "iN MediaIePeIngestJob: status.update created_media: #{created_media}"
 
     # Add org agreement attachment fields
     if all_media.present? && organization_permissions_fields.present? && organization_permissions_fields['organization_for_attachment'].present?

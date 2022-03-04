@@ -214,7 +214,7 @@ class BatchSubmissionsController < ApplicationController
               warn_row_cell_numbers << cell_index
             end
           rescue => e
-            Rails.logger.debug "Exception in BatchSubmissionsController: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
+            Rails.logger.debug "iN BatchSubmissionsController, Exception: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
             general_error_msg = "ERROR: There are problems parsing some rows in the file.  Please check the details below."
             row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
             error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }

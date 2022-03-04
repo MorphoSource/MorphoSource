@@ -4,11 +4,10 @@ require 'importer'
 
 namespace :morphosource do
   # Taken from hyrax:stats:user_stats at https://github.com/samvera/hyrax/blob/v2.9.0/lib/tasks/stats_tasks.rake
-  # But requiring retriable as otherwise this produces errors
+  # But using a slightly customized UserStatImporter to prevent DB row bloat
   desc "Cache work view, file view & file download stats for all users"
   task import_user_stats: :environment do
-    require 'retriable'
-    importer = Hyrax::UserStatImporter.new(verbose: true, logging: true)
+    importer = Morphosource::UserStatImporter.new(verbose: true, logging: true)
     importer.import
   end
 

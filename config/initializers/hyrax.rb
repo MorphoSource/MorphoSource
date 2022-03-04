@@ -71,8 +71,8 @@ Hyrax.config do |config|
   # Leaving it blank will set the start date to when ever the file was uploaded by
   # NOTE: if you have always sent analytics to GA for downloads and page views leave this commented out
   # NOTE2: Env variable should be a string in format YYYY-MM-DD, e.g. "2010-09-01" for Sep 1 2010
-  # NOTE3: Default value is date prior to earliest MorphoSource 1.0 download, 2013-10-18
-  config.analytic_start_date = ENV['GOOGLE_ANALYTICS_START_DATE'].present? ? DateTime.parse(ENV['GOOGLE_ANALYTICS_START_DATE']) : DateTime.new(2013, 10, 1)
+  # NOTE3: Default value is Jan 1st of 2021, when MorphoSource 2.0 launched
+  config.analytic_start_date = ENV['GOOGLE_ANALYTICS_START_DATE'].present? ? DateTime.parse(ENV['GOOGLE_ANALYTICS_START_DATE']) : DateTime.new(2021, 1, 1)
 
   # Enables a link to the citations page for a work
   # Default is false

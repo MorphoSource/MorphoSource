@@ -53,14 +53,16 @@ module Morphosource
           user_stat.save! unless (user_stat.file_views == 0 && user_stat.file_downloads == 0 && user_stat.work_views == 0)
         end
 
-        # Ensure last user stat date DB row gets created, even if no usage
+        # Ensure last user stat date DB row gets created if the user deposited media, even if no usage of those media
         # This is to allow for last-date caching to be accurate, even while usually not storing no-usage rows
-        user_stat = UserStat.where(user_id: user.id, date: newest_date).first_or_initialize(user_id: user.id, date: newest_date)
+        if stats.present?
+          user_stat = UserStat.where(user_id: user.id, date: newest_date).first_or_initialize(user_id: user.id, date: newest_date)
 
-        user_stat.file_views = newest_data.fetch(:views, 0)
-        user_stat.file_downloads = newest_data.fetch(:downloads, 0)
-        user_stat.work_views = newest_data.fetch(:work_views, 0)
-        user_stat.save!
+          user_stat.file_views = newest_data.fetch(:views, 0)
+          user_stat.file_downloads = newest_data.fetch(:downloads, 0)
+          user_stat.work_views = newest_data.fetch(:work_views, 0)
+          user_stat.save!
+        end
       end
   end
 end

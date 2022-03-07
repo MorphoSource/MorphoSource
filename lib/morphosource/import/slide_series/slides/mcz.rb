@@ -25,13 +25,25 @@ module Morphosource
           # file.create_date
           # date_created
           def date_created
-            @file_json["created"]
+            [Date.parse(@file_json["created"]).strftime("%Y-%m-%d")]
           end
 
           # date_modified
           # ["2018:12:17 17:03:34"]
           def date_modified
             @item_json["updated"]
+          end
+
+          def description
+            if @json["preparations"].present? &&  @json["identificationRemarks"].present?
+              [@json["preparations"] + ' | ' + @json["identificationRemarks"]]
+            elsif @json["preparations"].present?
+              [@json["preparations"]]
+            elsif @json["identificationRemarks"].present?
+              [@json["identificationRemarks"]]
+            else
+              []
+            end
           end
 
           # file_name
@@ -98,7 +110,7 @@ module Morphosource
           end
 
           def scanning_software
-            scan_date = Date.parse(date_created)
+            scan_date = Date.parse(date_created.first)
             if scan_date < Date.parse('2018-04-24')
               ["MACROscan 1.26"]
             elsif scan_date < Date.parse('2018-08-01')
@@ -145,7 +157,6 @@ module Morphosource
           def y_spacing
             [@tiles_json["mm_y"].to_s]
           end
-
         end
       end
     end

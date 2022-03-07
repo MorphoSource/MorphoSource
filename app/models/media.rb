@@ -450,6 +450,14 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def external_file?
+    file_sets.first.external_file.present?
+  end
+
+  def external_file
+    file_sets.first.original_file.external_file
+  end
+
 
   private
 

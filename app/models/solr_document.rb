@@ -181,6 +181,10 @@ class SolrDocument
     self[Solrizer.solr_name('media_organization_id', :stored_searchable)]
   end
 
+  def external_file
+    self[Solrizer.solr_name('external_file', :stored_searchable)]
+  end
+
   # Physical Object Fields
   def organization_id
     self[Solrizer.solr_name('organization_id', :stored_searchable)]

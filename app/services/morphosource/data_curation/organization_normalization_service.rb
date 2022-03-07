@@ -2,20 +2,20 @@ module Morphosource
   module DataCuration
     class OrganizationNormalizationService
 
-      def self.call(team_id: nil, project_id: nil, email: nil, update_publication_status: nil)
+      def self.call(team_id: nil, collection_id: nil, email: nil, update_publication_status: nil)
         new(team_id: team_id,
-            project_id: project_id,
+            collection_id: collection_id,
             email: email,
             update_publication_status: update_publication_status
         ).call
       end
 
-      def initialize(team_id: nil, project_id: nil, email: nil, update_publication_status: nil)
+      def initialize(team_id: nil, collection_id: nil, email: nil, update_publication_status: nil)
         begin
           # verify all objects exist
           @team = Collection.find(team_id)
           @organization = @team.organization
-          @project_id = Collection.find(project_id).id
+          @collection_id = Collection.find(collection_id).id
           @user_email = User.find_by(email: email).email
           @update_publication_status = update_publication_status
         rescue
@@ -30,7 +30,7 @@ module Morphosource
       private
 
         def media_ids
-          Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_project_ids_ssim:#{@project_id}", fl:"id").map{|m| m["id"]}
+          Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_collection_ids_ssim:#{@collection_id}", fl:"id").map{|m| m["id"]}
         end
 
         def update_media(media_ids)

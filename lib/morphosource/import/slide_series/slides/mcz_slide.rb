@@ -11,6 +11,15 @@ module Morphosource
             @slide_thumbnail_path ||= @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split("?").first
           end
 
+          #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300"
+          def import_url
+            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split.present? ?  @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split("/tiles/", 2).first : nil
+          end
+
+          def external_file
+            [import_url.concat("/download")]
+          end
+
           private
 
             def gather_metadata
@@ -19,11 +28,6 @@ module Morphosource
               @slide_thumbnail_path = slide_thumbnail_path
               @file_json = json(file_uri)
               @tiles_json = json(tiles_uri)
-            end
-
-            #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300"
-            def import_url
-              @import_url = @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split.present? ?  @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split("/tiles/", 2).first : nil
             end
 
             def file_uri

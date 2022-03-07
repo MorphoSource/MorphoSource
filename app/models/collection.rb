@@ -98,10 +98,6 @@ class Collection < ActiveFedora::Base
     !member_of_collections.empty?
   end
 
-  def child_projects
-    ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id}")
-  end
-
   def organization
     if parent_id
       Organization.where(team_id: parent_id).first
@@ -208,6 +204,14 @@ class Collection < ActiveFedora::Base
     super
     @collection_type = new_collection_type
     collection_type_gid
+  end
+
+  def media_docs
+    Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media")
+  end
+
+  def media
+    Media.where("member_of_collection_ids_ssim:#{id}")
   end
 
   private

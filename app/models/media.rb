@@ -481,7 +481,7 @@ class Media < Morphosource::Works::Base
   # but the method can handle this circumstance for use in developer console, etc
   def transfer_media_to_organization
     org = organizations&.first
-    if ( 
+    if (
       org.present? &&
       (new_manager_id = org&.data_manager&.first).present? &&
       (new_manager = User.find_by_user_key(new_manager_id)).present?
@@ -499,7 +499,7 @@ class Media < Morphosource::Works::Base
         create_new_organization_transfer_request(new_manager)
       end
 
-      
+
     else
       message = "Failed to transfer management of media #{id} to organization #{org&.id} with data manager #{org&.data_manager}"
 
@@ -522,12 +522,20 @@ class Media < Morphosource::Works::Base
     # Create new proxy deposit request from user with ownership to organization
     message = I18n.t('morphosource.media.organization_transfer.transfer_message').html_safe
     ProxyDepositRequest.create!(
-      work_id: id, 
-      receiving_user: org_data_manager, 
-      sending_user: User.find_by_user_key(user_with_ownership), 
-      sender_comment: message, 
+      work_id: id,
+      receiving_user: org_data_manager,
+      sending_user: User.find_by_user_key(user_with_ownership),
+      sender_comment: message,
       organization_transfer: true
     )
+  end
+
+  def external_file?
+    file_sets.first.external_file.present?
+  end
+
+  def external_file
+    file_sets.first.original_file.external_file
   end
 
   private

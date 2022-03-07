@@ -13,6 +13,7 @@ class FileSet < ActiveFedora::Base
   # for all file types
   delegate(
     :crc32,
+    :external_file,
     to: :characterization_proxy
   )
 

@@ -8,11 +8,11 @@ module Morphosource
       end
 
       def import_slides
-        organization = params["organization"]
+        organization_id = params["organization"]
         service = params["service"]
         resource_id = params["resource_id"]
         user_email = params["user_email"]
-        @collection = import_service_class.new(service,resource_id,user_email).call
+        @collection = import_service_class.new(service: service, resource_id:resource_id, user_email: user_email).call
 
         redirect_to project_media_path(@collection)
       end

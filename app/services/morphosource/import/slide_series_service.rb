@@ -4,14 +4,16 @@ module Morphosource
 
       include Morphosource::CustomThumbnails
 
-      def self.call(service, resource_id, user_email)
+      def self.call(service: nil, resource_id: nil, user_email: nil)
         self.new(service, resource_id, user_email).call
       end
 
-      def initialize(service, resource_id, user_email)
+      def initialize(service: nil, resource_id: nil, user_email: nil)
+        @organization = organization
         @service = service
         @resource_id = resource_id
         @manager = User.find_by(email: user_email)
+        @admin = User.find_by(ms_id: Hyrax.config.batch_user_key)
       end
 
       def call
@@ -20,44 +22,82 @@ module Morphosource
       end
 
       def import_slide_series
-        fetch_json
-        create_series_collection(collection_title)
+        @json = fetch_json
+        @specimen = find_or_create_specimen
+        @taxonomy = @specimen.taxonomies.first
+        @device = device
+        @collection = create_series_collection
+        # return import_errors if import_errors.present?
+        byebug
         import_slides
       end
 
       def import_slides
+        Hyrax.config.index_related_works = false
         slides.each do |slide_json|
-          @slide = slide_class.new(slide_json)
+          @slide = slide_class.new(@json, slide_json)
+          @imaging_event = create_new_imaging_event
           @media = create_new_media
+          add_media_to_imaging_event
           add_fileset_and_file
           characterize_file
           create_thumbnail
-          add_to_series_collection
-          apply_permissions_and_save
+          add_to_collection_and_save
         end
+        @specimen.update_index
+        @collection.update_index
+      end
+
+      def create_new_imaging_event
+        imaging_event = ImagingEvent.create( aperture_value: @slide.aperture_value,
+                                             creator: @slide.creator,
+                                             date_created: @slide.date_created,
+                                             depositor: @manager.user_key,
+                                             device_id: [@device.id],
+                                             focal_length: @slide.focal_length,
+                                             ie_modality: ["SlideScan"],
+                                             optical_magnification: @slide.magnification,
+                                             physical_object_id: [@specimen.id],
+                                             slide_type: ['Histological'],
+                                             software: @slide.scanning_software,
+                                             title: ['new imaging event'] )
+
+        Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(ImagingEvent.new, ::Ability.new(@admin), imaging_event.attributes))
+
+        imaging_event.reload
       end
 
       def create_new_media
-        Media.create(title: @slide.title,
-                     short_description: @slide.short_description,
-                     media_type: ["Image"],
-                     license: @slide.license,
-                     publisher: @slide.publisher,
-                     rights_holder: @slide.rights_holder,
-                     related_url: @slide.related_url,
-                     identifier: @slide.identifier,
-                     orientation: @slide.orientation,
-                     depositor: @manager.ms_id,
-                     slice_thickness: @slide.slice_thickness,
-                     x_spacing: @slide.x_spacing,
-                     y_spacing: @slide.y_spacing,
-                     z_spacing: @slide.z_spacing,
-                     slice_thickness: @slide.slice_thickness,
-                     unit: @slide.unit,
-                     visibility: @slide.visibility,
-                     fileset_accessibility: @slide.fileset_accessibility,
-                     preview_mode: ["Interactive/Embeddable"],
-                     date_uploaded: Date.today)
+        media =  Media.create(date_created: @slide.date_created,
+                                  date_uploaded: Date.today,
+                                  depositor: @manager.user_key,
+                                  description: @slide.description,
+                                  fileset_accessibility: @slide.fileset_accessibility,
+                                  identifier: @slide.identifier,
+                                  import_url: @slide.import_url,
+                                  license: @slide.license,
+                                  media_type: ["Image"],
+                                  orientation: @slide.orientation,
+                                  part: @slide.short_description,
+                                  preview_mode: ["Interactive/Embeddable"],
+                                  publisher: @slide.publisher,
+                                  rights_holder: @slide.rights_holder,
+                                  related_url: @slide.related_url,
+                                  slice_thickness: @slide.slice_thickness,
+                                  title: @slide.title,
+                                  unit: @slide.unit,
+                                  visibility: @slide.visibility,
+                                  x_spacing: @slide.x_spacing,
+                                  y_spacing: @slide.y_spacing,
+                                  z_spacing: @slide.z_spacing)
+
+        Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(Media.new, ::Ability.new(@admin), media.attributes))
+        media.reload
+      end
+
+      def add_media_to_imaging_event
+        @imaging_event.ordered_members << media
+        @imaging_event.save!
       end
 
       def add_fileset_and_file
@@ -76,25 +116,67 @@ module Morphosource
         file.save!
       end
 
-      def add_to_series_collection
+      def add_to_collection_and_save
         @media.member_of_collections += [@collection]
         Hyrax::PermissionTemplateApplicator.apply(@collection.permission_template).to(model: @media)
-      end
-
-      def apply_permissions_and_save
         @media.save!
         InheritPermissionsJob.perform_later(@media)
       end
 
+      def find_or_create_specimen
+        specimen_doc = Morphosource::SolrService.new.get_docs("occurrence_id_tesim:#{occurrence_id} AND has_model_ssim:BiologicalSpecimen")&.first
+
+        byebug
+
+        return BiologicalSpecimen.find(specimen_doc["id"]) if specimen_doc.present?
+        byebug
+        specimen = BiologicalSpecimen.new(title: ['new specimen'],
+                                          depositor: @admin.user_key,
+                                          date_uploaded: Date.today,
+                                          visibility: 'open',
+                                          organization_id: [@organization.id],
+                                          taxonomy_id: [taxonomy.id])
+
+        params = Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(occurrence_id)
+        byebug
+        params.each do |key,value|
+          specimen.send(key + '=', [value].flatten)
+        end
+
+        specimen.save
+
+        Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(BiologicalSpecimen.new, ::Ability.new(@admin), specimen.attributes))
+        byebug
+        specimen.reload
+      end
+
+      def taxonomy
+        taxonomy_doc = Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_tesim:#{gbif_key}")&.first
+        byebug
+        return Taxonomy.find(taxonomy_doc["id"]) if taxonomy_doc.present?
+
+        taxonomy = Taxonomy.new(title: ['new taxonomy'], visibility: 'open', depositor: @admin.user_key, source: ["Imported by Morphosource::Import::SlideSeriesService"])
+        byebug
+        params = Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key, correct_synonym=false)
+        byebug
+        params.each do |key,value|
+          specimen.send(key + '=', [value].flatten)
+        end
+
+        Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(Taxonomy.new, ::Ability.new(@admin), taxonomy.attributes))
+        byebug
+        taxonomy.reload
+      end
+
       private
 
-        def create_series_collection(title)
+        def create_series_collection
           project_collection_type = Hyrax::CollectionType.where(title: "Project").first
-          @collection = Collection.create(title: [title], collection_type_gid: project_collection_type.gid, depositor: @manager.ms_id, visibility: 'open')
-          @collection.create_collection_groups
-          Morphosource::Collections::PermissionsCreateService.create_default(collection: @collection)
-          @collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-          @collection
+          collection = Collection.create(title: collection_title, collection_type_gid: project_collection_type.gid, depositor: @manager.ms_id, visibility: 'open', related_url: collection_related_url, description: collection_description)
+          collection.create_collection_groups
+          Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
+          collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+          collection
         end
 
         # override Morphosource::CustomThumbnails create_thumbnail

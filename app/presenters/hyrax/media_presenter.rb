@@ -131,7 +131,7 @@ module Hyrax
     end
 
     def external_file?
-      media.import_url.present?
+      media.external_file?
     end
 
     def is_file_uploaded?

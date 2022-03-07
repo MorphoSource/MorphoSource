@@ -4,19 +4,25 @@ module Morphosource
   # Cache work view, file view & file download stats for all users
   # Modified from Hyrax::UserStatImporter to reduce DB bloat of rows with 0 views & downloads
   class UserStatImporter < Hyrax::UserStatImporter
-    private
+    
+    def import
+      log_message('Begin import of User stats.')
 
-      def process_files(stats, user, start_date)
-        file_ids_for_user(user).each do |file_id|
-          file = ::FileSet.find(file_id)
-          view_stats = extract_stats_for(object: file, from: FileViewStat, start_date: start_date, user: user)
-          stats = tally_results(view_stats, :views, stats) if view_stats.present?
-          delay
-          dl_stats = extract_stats_for(object: file, from: FileDownloadStat, start_date: start_date, user: user)
-          stats = tally_results(dl_stats, :downloads, stats) if dl_stats.present?
-          delay
-        end
+      sorted_users.each do |user|
+        start_date = date_since_last_cache(user)
+        # this user has already been processed today continue without delay
+        next if start_date.to_date >= Time.zone.today
+
+        stats = {}
+
+        # process_files(stats, user, start_date) # Hyrax processes FileSet, we don't need this
+        process_works(stats, user, start_date)
+        create_or_update_user_stats(stats, user)
       end
+      log_message('User stats import complete.')
+    end
+    
+    private
 
       def process_works(stats, user, start_date)
         media_ids_for_user(user).each do |work_id|
@@ -24,6 +30,15 @@ module Morphosource
           work_stats = extract_stats_for(object: work, from: WorkViewStat, start_date: start_date, user: user)
           stats = tally_results(work_stats, :work_views, stats) if work_stats.present?
           delay
+        end
+      end
+
+      # This method tries multiple times and finally raises the exception
+      # Hyrax version rescued errors but causes bug because it returns true to tally_results
+      # Might fix this later, but for now raising error to diagnose issues
+      def rescue_and_retry(fail_message)
+        Retriable.retriable(retry_options) do
+          return yield
         end
       end
 
@@ -40,7 +55,7 @@ module Morphosource
         newest_data = {}
         stats.each do |date_string, data|
           date = Time.zone.parse(date_string)
-          if date > newest_date
+          if ( date > newest_date ) && ( date < Time.zone.today )
             newest_date = date
             newest_data = data
           end
@@ -50,7 +65,7 @@ module Morphosource
           user_stat.file_views = data.fetch(:views, 0)
           user_stat.file_downloads = data.fetch(:downloads, 0)
           user_stat.work_views = data.fetch(:work_views, 0)
-          user_stat.save! unless (user_stat.file_views == 0 && user_stat.file_downloads == 0 && user_stat.work_views == 0)
+          user_stat.save! unless ( date == Time.zone.today || (user_stat.file_views == 0 && user_stat.file_downloads == 0 && user_stat.work_views == 0) )
         end
 
         # Ensure last user stat date DB row gets created if the user deposited media, even if no usage of those media

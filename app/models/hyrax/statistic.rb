@@ -52,11 +52,25 @@ module Hyrax
           stats = stat_cache_info[:cached_stats]
           if stat_cache_info[:ga_start_date] < Time.zone.today
             ga_stats = ga_statistics(stat_cache_info[:ga_start_date], object)
+
+            newest_date = stat_cache_info[:ga_start_date]
+            newest_lstat = nil
             ga_stats.each do |stat|
+              date = Date.parse(stat[:date])
+
               lstat = build_for(object, date: stat[:date], object_method => stat[ga_key], user_id: user_id)
-              lstat.save unless ( Date.parse(stat[:date]) == Time.zone.today || stat[ga_key].to_i == 0 ) 
+              lstat.save if ( date != Time.zone.today && stat[ga_key].to_i > 0 ) 
               stats << lstat
+
+              # Want to locate the newest date that is not today to place 0-usage bookmark (if needed) for last-date caching
+              if ( date > newest_date ) && ( date < Time.zone.today )
+                newest_date = date
+                newest_lstat = lstat
+              end
             end
+
+            # To make last-date caching work, must save last-date "bookmark" even if no usage
+            newest_lstat.save if newest_lstat.present?
           end
           stats
         end

@@ -55,6 +55,7 @@ module Morphosource
         newest_data = {}
         stats.each do |date_string, data|
           date = Time.zone.parse(date_string)
+          # Want to locate the newest date that is not today to place 0-usage bookmark (if needed) for last-date caching
           if ( date > newest_date ) && ( date < Time.zone.today )
             newest_date = date
             newest_data = data
@@ -68,7 +69,7 @@ module Morphosource
           user_stat.save! unless ( date == Time.zone.today || (user_stat.file_views == 0 && user_stat.file_downloads == 0 && user_stat.work_views == 0) )
         end
 
-        # Ensure last user stat date DB row gets created if the user deposited media, even if no usage of those media
+        # Ensure last user stat date DB row (most recent date before today) gets created if the user deposited media, even if no usage of those media
         # This is to allow for last-date caching to be accurate, even while usually not storing no-usage rows
         if stats.present?
           user_stat = UserStat.where(user_id: user.id, date: newest_date).first_or_initialize(user_id: user.id, date: newest_date)

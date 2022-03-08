@@ -26,11 +26,14 @@ module Morphosource
 
       def process_works(stats, user, start_date)
         media_ids_for_user(user).each do |work_id|
-          work = Hyrax::WorkRelation.new.find(work_id)
-          work_stats = extract_stats_for(object: work, from: WorkViewStat, start_date: start_date, user: user)
+          work_stats = extract_stats_for(object: work_id, from: ::Morphosource::WorkViewStat, start_date: start_date, user: user)
           stats = tally_results(work_stats, :work_views, stats) if work_stats.present?
           delay
         end
+      end
+
+      def extract_stats_for(object:, from:, start_date:, user:)
+        rescue_and_retry("Retried #{from} on #{user} for object #{object} too many times.") { from.statistics(object, start_date, user.id) }
       end
 
       # This method tries multiple times and finally raises the exception

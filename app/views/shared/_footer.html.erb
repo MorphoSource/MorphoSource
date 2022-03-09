@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div class="row no-horizontal-padding">
       <div class="col-md-2 col-sm-6 col-xs-12 col-align col-align--top footer-section copyright">
-        <span><%= t('hyrax.footer.copyright_html', current_year: Time.now.year) %></span>
+        <%= link_to t('hyrax.footer.copyright_html', current_year: Time.now.year), 'https://www.morphosource.org' %>
       </div>
       <div class="col-md-4 col-sm-6 col-xs-12 col-align col-align--center footer-section footer-links">
         <div class="row">

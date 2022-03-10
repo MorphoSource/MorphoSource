@@ -1,9 +1,9 @@
 class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest
 
-  queue_as Hyrax.config.ingest_queue_name
+  queue_as Hyrax.config.batch_submission_queue_name
 
-  def perform(manifest)
+  def perform(manifest, job_id)
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest    

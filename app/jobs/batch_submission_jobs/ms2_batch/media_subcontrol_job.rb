@@ -1,13 +1,14 @@
 class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
-  attr_accessor :manifest, :created_media
+  attr_accessor :manifest, :created_media, :main_job_id
 
-  queue_as Hyrax.config.ingest_queue_name
+  queue_as Hyrax.config.batch_submission_queue_name
 
-  def perform(manifest)
+  def perform(manifest, job_id)
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest
     @created_media = {}
+    @main_job_id = job_id
 
     # Submit jobs for new works to be created
     @manifest['media_ie_pe_ingests'].each_with_index do |i, ingest_index|
@@ -51,6 +52,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
       # Remove jobs from manifest (for further serialization, preventing ActiveJob::SerializationError)
       @manifest['media_ie_pe_ingests'].each { |i| i.except!('job') }
+    @manifest["created_media"] = @created_media
+    Rails.logger.debug "iN update_created_media: #{@created_media}"        
       status.update(manifest: @manifest)
 
       i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
@@ -59,7 +62,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         ingest_index,
         @manifest['collection_ids'] || [],
         @manifest['fund_code_id'] || nil,
-        target_parent_id
+        target_parent_id,
+        job_id
       )
     end
 
@@ -93,12 +97,14 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         @created_media.merge!(job_status[:created_media])
       end
     end
-    @manifest["created_media"] = @created_media
     Rails.logger.debug "iN update_created_media: #{@created_media}"        
   end
 
   def created_parent_id(parent_file)
-    return @created_media[parent_file]
+    Rails.logger.debug "iN created_parent_id: looking for #{parent_file} in job #{main_job_id}"        
+    main_job = BackgroundJob.where(job_id: main_job_id).first
+    return main_job.created_objects[parent_file]
+    #return @created_media[parent_file]
   end
 
   def monitor_ingest_jobs
@@ -112,7 +118,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       next unless (job = i['job']).present?
 
       # check job status
-      job_status = ActiveJob::Status.get(i['job'])
+      job_status = ActiveJob::Status.get(i['job'])      
       i['job_status'] = job_status[:status].to_s
       if job_status[:status] == :queued || job_status[:status] == :working
         jobs_complete = false

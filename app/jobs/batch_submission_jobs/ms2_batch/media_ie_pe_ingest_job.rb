@@ -1,12 +1,12 @@
 class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::ApplicationJobWithStatus
-  attr_accessor :manifest
+  attr_accessor :manifest, :main_job_id
 
-  queue_as Hyrax.config.mass_ingest_queue_name
+  queue_as Hyrax.config.batch_submission_queue_name
 
-  def perform(manifest, ingest, ingest_index, collection_ids, fund_code_id, target_parent_id)
-
+  def perform(manifest, ingest, ingest_index, collection_ids, fund_code_id, target_parent_id, job_id)
     status.update(manifest: manifest)
     @manifest = manifest
+    @main_job_id = job_id
 
     if !ingest['physical_object_id'].present?
       raise "Physical object ID not present for ingest. Ingest: #{ingest}"
@@ -94,6 +94,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             )
           end
 
+          media_file = parent['media']['initial_attrs']['media_file'].first
+          created_media[media_file] = parent_media.id
+          Rails.logger.debug "iN MediaIePeIngestJob: parent media created: #{parent_media.id} "
+
           all_media << parent_media
         else
           raise "Required parent media not present for parent media ingest. Ingest: #{parent}"
@@ -126,6 +130,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             preview_file = child['media']['media_path'] + child['media']['initial_attrs']['preview_file'].first
           end
 
+          Rails.logger.debug "iN MediaIePeIngestJob: creating child media... "
+
           child_media = BatchSubmissionsImporter::BatchObjectImporter.call(
             'Media', 
             child['media']['attrs'].merge(
@@ -138,7 +144,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
           media_file = child['media']['initial_attrs']['media_file'].first
           created_media[media_file] = child_media.id
-          #Rails.logger.debug "iN MediaIePeIngestJob: setting created_media [ #{media_file} ] = #{child_media.id} "
+          Rails.logger.debug "iN MediaIePeIngestJob: child media created: #{child_media.id} "
+
           all_media << child_media
         else
           raise "Required media not present for child media ingest. Ingest: #{child}"
@@ -147,6 +154,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     else
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
+
+    Rails.logger.debug "iN MediaIePeIngestJob: updating job_id: #{main_job_id} with created_media #{created_media}" 
+    main_job = BackgroundJob.where(job_id: main_job_id).first
+    main_job.update_created_objects(created_media)
+#byebug
 
     status.update(created_media: created_media)
     #Rails.logger.debug "iN MediaIePeIngestJob: status.update created_media: #{created_media}"

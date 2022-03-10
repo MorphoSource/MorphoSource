@@ -29,7 +29,7 @@ module Morphosource
 			def value_transform(k, v)
 				case k
 				when 'user_id', 'action_by', 'reviewers'
-					User.find_by_user_key(v).name_and_email
+					User.find_by_user_key(v).present? ? User.find_by_user_key(v).name_and_email : v
 				else
 					v
 				end

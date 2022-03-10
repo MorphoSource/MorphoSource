@@ -20,7 +20,7 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
   let(:media)                   { [media1, media2, media3, media4, media5] }
   let(:media_ids)               { [media1.id, media2.id, media3.id, media4.id, media5.id] }
 
-  let(:params)                  { { team_id: team.id, project_id: project.id, email: user.email, update_publication_status: 'all' } }
+  let(:params)                  { { team_id: team.id, collection_id: project.id, email: user.email, update_publication_status: 'all' } }
 
   before do
     imaging_event.ordered_members += media
@@ -53,8 +53,25 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
   describe 'get_media_ids' do
     subject { described_class.new(params) }
 
-    it 'returns all project media associated with the organization' do
-      expect(subject.send(:media_ids)).to match_array(media_ids)
+    context 'collection is another project' do
+      it 'returns all project media associated with the organization' do
+        expect(subject.send(:media_ids)).to match_array(media_ids)
+      end
+    end
+
+    context 'collection is the team' do
+      let(:params)  { { team_id: team.id, collection_id: team.id, email: user.email, update_publication_status: 'all' } }
+
+      before do
+        media.each do |m|
+          m.member_of_collections += [team]
+          m.save!
+        end
+      end
+
+      it 'returns all media associated with the organization belonging to the team' do
+        expect(subject.send(:media_ids)).to match_array(media_ids)
+      end
     end
   end
 end

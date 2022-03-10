@@ -31,6 +31,7 @@ module Morphosource
     def media_downloads
       redirect_to '/' unless current_user&.admin?
 
+      repository.blacklight_config.max_per_page = 9999999
       (@response, @document_list) = query_solr_all_results
       media_ids = @document_list.map{|d| d["id"]}.flatten.compact.uniq 
       @new_document_list = Morphosource::Reports::DownloadsReportService.call(media_ids)
@@ -46,6 +47,7 @@ module Morphosource
     def media_download_counts
       redirect_to '/' unless current_user&.admin?
 
+      repository.blacklight_config.max_per_page = 9999999
       (@response, @document_list) = query_solr_all_results
       media_ids = @document_list.map{|d| d["id"]}.flatten.compact.uniq 
       downloads = Morphosource::Reports::DownloadsReportService.call(media_ids).
@@ -65,6 +67,7 @@ module Morphosource
     def media_requests
       redirect_to '/' unless current_user&.admin?
 
+      repository.blacklight_config.max_per_page = 9999999
       (@response, @document_list) = query_solr_all_results
       media_ids = @document_list.map{|d| d["id"]}.flatten.compact.uniq 
       @new_document_list = Morphosource::Reports::RequestsReportService.call(media_ids)

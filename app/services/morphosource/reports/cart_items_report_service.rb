@@ -36,7 +36,12 @@ module Morphosource
 			def format_results
 				results_for_format = attributes.present? ? results.select(attributes) : results
 				results_for_format.map do |cart_item|
-					transform_for_report(cart_item.attributes.except('id'))
+					transformed_item = transform_for_report(cart_item.attributes.except('id'))
+					if attributes.include? :user_id
+						transformed_item.merge('download_user_id' => cart_item[:user_id])
+					else
+						transformed_item
+					end
 				end
 			end
 

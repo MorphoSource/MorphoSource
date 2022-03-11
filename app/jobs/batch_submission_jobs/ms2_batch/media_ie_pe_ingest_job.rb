@@ -1,6 +1,7 @@
 class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest, :main_job_id
 
+  #queue_as Hyrax.config.mass_ingest_queue_name
   queue_as Hyrax.config.batch_submission_queue_name
 
   def perform(manifest, ingest, ingest_index, collection_ids, fund_code_id, target_parent_id, job_id)
@@ -155,8 +156,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
 
-    Rails.logger.debug "iN MediaIePeIngestJob: updating job_id: #{main_job_id} with created_media #{created_media}" 
-    main_job = BackgroundJob.where(job_id: main_job_id).first
+    Rails.logger.debug "iN MediaIePeIngestJob: (1) updating job_id: #{main_job_id} ... " 
+#byebug
+    main_job = BackgroundJob.where(job_id: @main_job_id).first
+    Rails.logger.debug "iN MediaIePeIngestJob: (2) updating job_id: #{main_job.id} with created_media #{created_media}" 
     main_job.update_created_objects(created_media)
 #byebug
 

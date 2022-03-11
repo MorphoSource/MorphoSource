@@ -1,25 +1,29 @@
 class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWithStatus
-  attr_accessor :manifest
+  attr_accessor :manifest, :main_job_id
 
+  #queue_as Hyrax.config.ingest_queue_name
   queue_as Hyrax.config.batch_submission_queue_name
 
   def perform(manifest)
-    begin
+#    begin
       # Step 0. Initial preparation
       status.update(manifest: manifest)
       @manifest = manifest
-      
+      @main_job_id = status.job_id
+
+      Rails.logger.debug "iN ControlJob: (1) main_job_id is  #{@main_job_id}  " 
       sub_jobs.each do |job_class|
-        job = job_class.send :perform_later, @manifest, status.job_id
+        Rails.logger.debug "iN ControlJob: (2) sending main_job_id  #{@main_job_id} to sub_job  " 
+        job = job_class.send :perform_later, @manifest, @main_job_id
         sleep(1.minute) until monitor_status(job)
         progress.increment
       end
-    rescue StandardError => e
-      # debug: check exception here if stopped
-      #byebug
-    ensure
-      status.update(manifest: @manifest)
-    end
+#    rescue StandardError => e
+#      # debug: check exception here if stopped
+#      byebug
+#    ensure
+#      status.update(manifest: @manifest)
+#    end
   end
 
   def sub_jobs

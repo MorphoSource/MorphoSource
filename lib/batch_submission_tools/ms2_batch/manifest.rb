@@ -56,6 +56,7 @@ module BatchSubmissionTools
           hash[sheet_index][:raw_list] << index
         end
         rows_to_remove = []
+        derived_group_rows = {} # 
 
         media_group_to_rows.each do |sheet_index, mg|
           parents = []
@@ -88,7 +89,13 @@ module BatchSubmissionTools
                 parents << derived_parent_index
                 # find the media group that ingest the derived parent
                 derived_parents << derived_parent_index
-#                media_group_to_rows[[derived_parent_index]][:children] << row_index
+                if derived_group_rows[[derived_parent_index]].present?
+                  # 
+                  media_group_to_rows[derived_group_rows[[derived_parent_index]]][:children] << row_index 
+                  rows_to_remove << row_index
+                else
+                  derived_group_rows[[derived_parent_index]] = [row_index]
+                end
               end                  
             elsif row[:media][:parent_ms_id].present?
               children << row_index
@@ -114,8 +121,8 @@ module BatchSubmissionTools
           # otherwise duplicate media will be created
           rows_to_remove.each { |k| media_group_to_rows.delete [k] }
         end
-        #byebug # check media_group_to_rows
-        Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
+        byebug # check media_group_to_rows
+        Rails.logger.debug "In Manifest: media_group_to_rows: #{media_group_to_rows}"
       end
 
       def construct_biological_specimen_ingests

@@ -1,6 +1,7 @@
 class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest, :created_media, :main_job_id
 
+  #queue_as Hyrax.config.ingest_queue_name
   queue_as Hyrax.config.batch_submission_queue_name
 
   def perform(manifest, job_id)

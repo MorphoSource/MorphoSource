@@ -43,8 +43,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         end
       end            
 
-      update_created_media
-
       if derived_parent_file.present?
         Rails.logger.debug "iN MediaSubcontrolJob: waiting for parent media creation: #{derived_parent_file}"        
         sleep(1.minute) until (target_parent_id = created_parent_id(derived_parent_file)).present?
@@ -53,8 +51,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
       # Remove jobs from manifest (for further serialization, preventing ActiveJob::SerializationError)
       @manifest['media_ie_pe_ingests'].each { |i| i.except!('job') }
-    @manifest["created_media"] = @created_media
-    Rails.logger.debug "iN update_created_media: #{@created_media}"        
       status.update(manifest: @manifest)
 
       i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
@@ -88,24 +84,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     status.update(manifest: @manifest)
   end
 
-  def update_created_media
-    # sync created_media list from all jobs
-    @manifest['media_ie_pe_ingests'].each do |i|
-      next unless (job = i['job']).present?
-      job_status = ActiveJob::Status.get(i['job'])
-      i['job_status'] = job_status[:status].to_s
-      if job_status[:created_media].present?
-        @created_media.merge!(job_status[:created_media])
-      end
-    end
-    Rails.logger.debug "iN update_created_media: #{@created_media}"        
-  end
-
   def created_parent_id(parent_file)
     Rails.logger.debug "iN created_parent_id: looking for #{parent_file} in job #{main_job_id}"        
     main_job = BackgroundJob.where(job_id: main_job_id).first
     return main_job.created_objects[parent_file]
-    #return @created_media[parent_file]
   end
 
   def monitor_ingest_jobs

@@ -90,7 +90,8 @@ module BatchSubmissionTools
                 # find the media group that ingest the derived parent
                 derived_parents << derived_parent_index
                 if derived_group_rows[[derived_parent_index]].present?
-                  # 
+                  # combine children with a derived parent so they will be all ingested in one job.  
+                  # this will avoid race condition when children are created at the same time
                   media_group_to_rows[derived_group_rows[[derived_parent_index]]][:children] << row_index 
                   rows_to_remove << row_index
                 else
@@ -121,8 +122,8 @@ module BatchSubmissionTools
           # otherwise duplicate media will be created
           rows_to_remove.each { |k| media_group_to_rows.delete [k] }
         end
-        byebug # check media_group_to_rows
-        Rails.logger.debug "In Manifest: media_group_to_rows: #{media_group_to_rows}"
+        #byebug # check media_group_to_rows
+        Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
       end
 
       def construct_biological_specimen_ingests

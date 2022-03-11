@@ -117,7 +117,7 @@ module Morphosource
       downloads_by_user = downloads.group_by{|h| h['download_user_id'] }
       downloads_by_user.map do |user_id, user_downloads|
         # download usage intents
-        use_intents = user_downloads.pluck('download_usage_list').map { |x| x.split(';') }.flatten.uniq.compact
+        use_intents = user_downloads.pluck('download_usage_list').map { |x| x&.split(';') }.flatten.uniq.compact
         use_intents.each { |cat| result[cat] += 1 if result.key?(cat) }
         # user demographics
         demographics = user_demographics[user_id]

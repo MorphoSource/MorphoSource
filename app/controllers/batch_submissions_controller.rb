@@ -184,6 +184,9 @@ class BatchSubmissionsController < ApplicationController
     warn_cell_numbers = {}
     row_index = 8
 
+    @mo_idx = 0
+    @media_order = { @mo_idx => [] }
+
     if initial_error_message.present?
       render 'validation_fail', locals: { 
         general_error_msg: initial_error_message, 
@@ -285,7 +288,7 @@ class BatchSubmissionsController < ApplicationController
         )
     )
   end
-
+  
   def error_found(field_name, cell, current_row)
     val = cell.present? ? cell.value.to_s : ""
     error_msg = ""
@@ -296,6 +299,11 @@ class BatchSubmissionsController < ApplicationController
         error_msg = "media.media_file: Please enter a value."
       elsif !File.exist?(user_share_full_path + val)
         error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
+      else
+        duplicate_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
+        if duplicate_media_found_row + 1 != current_row
+          error_msg = "media.media_file: File #{val} found in more than one row (see row #{duplicate_media_found_row+1})."
+        end
       end
     when "media.preview_file"
       if val.present? && !File.exist?(user_share_full_path + val)
@@ -325,14 +333,36 @@ class BatchSubmissionsController < ApplicationController
           # look for the val in the media_file column
           parent_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
           if parent_media_found_row.present?
-#            if @parent_media_row.present? && (@parent_media_row != parent_media_found_row + 1)
-#              error_msg = "media.parent_file: Only one parent media should be present, but multiple parent_file are found."
-#            els
 
             if parent_media_found_row + 1 == current_row
               error_msg = "media.parent_file #{val} cannot be media.media_file in the same row."
             else              
               @parent_media_row = parent_media_found_row + 1
+              # start building a list, look for the parent of the parent 
+              # until found a duplicate, or no more parent
+              parent_chain = [current_row, @parent_media_row]
+              this_row = @parent_media_row
+              no_parent = false
+              duplicate_found = false
+              until no_parent || duplicate_found do
+                next_parent_file = @xlsx.cell(this_row, field_column("media.parent_file"))
+                if next_parent_file.present?
+                  next_parent_row = @xlsx.column(field_column("media.media_file")).index(next_parent_file) + 1
+                  if next_parent_row.present?
+                    if parent_chain.include? next_parent_row
+                      duplicate_found = true
+                      error_msg = "media.parent_file #{val} has invalid parent(s) (found in row #{next_parent_row}).  Please check and make sure each parent_file is pointing to the correct row."
+                    else
+                      parent_chain << next_parent_row 
+                      this_row = next_parent_row 
+                    end
+                  else
+                    byebug # should not be here since parent file must exists in another column (check validation rule)
+                  end
+                else
+                  no_parent = true                  
+                end
+              end # /until
             end
           else
             error_msg = "media.parent_file #{val} not found in another row."

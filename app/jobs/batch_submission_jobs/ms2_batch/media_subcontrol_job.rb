@@ -1,8 +1,8 @@
 class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
   attr_accessor :manifest, :created_media, :main_job_id
 
-  #queue_as Hyrax.config.ingest_queue_name
-  queue_as Hyrax.config.batch_submission_queue_name
+  queue_as Hyrax.config.ingest_queue_name
+  #queue_as Hyrax.config.batch_submission_queue_name
 
   def perform(manifest, job_id)
     # Step 0. Initial preparation
@@ -76,7 +76,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
           exceptions << "Media ingest #{index} failed. Exception: \"#{i['job_exception']}\"."
         end
       end
-      raise "One or more media ingests failed. #{exceptions.join('; ')}"
+      exception_message = "One or more media ingests failed. #{exceptions.join('; ')}"
+      update_main_job(exception_message) 
+      raise exception_message
     end
 
     # Remove jobs from manifest (for further serialization)
@@ -86,8 +88,15 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
   def created_parent_id(parent_file)
     Rails.logger.debug "iN created_parent_id: looking for #{parent_file} in job #{main_job_id}"        
-    main_job = BackgroundJob.where(job_id: main_job_id).first
     return main_job.created_objects[parent_file]
+  end
+
+  def main_job
+    BackgroundJob.where(job_id: main_job_id).first
+  end
+
+  def update_main_job(exception=nil)
+    main_job.update_status(nil, exception)
   end
 
   def monitor_ingest_jobs

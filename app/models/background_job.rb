@@ -6,12 +6,19 @@ class BackgroundJob < ApplicationRecord
     Rails.logger.debug "iN BackgroundJob: saving #{params} to #{created_objects}" 
 	# merge the existing params with the passed params
 	self.created_objects.merge!(params)
-
-
-#byebug # the last created child media not saved ?
-
-
   	self.save
+  end
+
+  def update_status(status=nil, exception=nil)
+  	if exception.present?
+	  Rails.logger.debug "iN BackgroundJob: exception: #{exception} "
+	  #todo: update exception here later
+	end 
+  	if status.present?
+	  Rails.logger.debug "iN BackgroundJob: updating job #{job_id} with status: #{status} " 
+	  self.status = status
+	  self.save  
+	end
   end
 
 end

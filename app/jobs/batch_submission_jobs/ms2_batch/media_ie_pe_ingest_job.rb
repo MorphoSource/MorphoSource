@@ -157,7 +157,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     end
 
     main_job = BackgroundJob.where(job_id: @main_job_id).first
-    Rails.logger.debug "iN MediaIePeIngestJob:  updating job #{main_job.id} with created_media #{created_media}" 
+    Rails.logger.debug "iN MediaIePeIngestJob:  updating job #{main_job.job_id} with created_media #{created_media}" 
     main_job.update_created_objects(created_media)
 
     # Add org agreement attachment fields

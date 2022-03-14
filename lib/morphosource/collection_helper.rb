@@ -43,6 +43,30 @@ module Morphosource
       end
     end
 
+    def media_downloads_csv_url(collection)
+      if collection.project?
+        project_media_downloads_path(id: collection.id, :format => :csv, :per_page => 1000000)
+      elsif collection.team?
+        team_media_downloads_path(id: collection.id, :format => :csv, :per_page => 1000000)
+      end
+    end
+
+    def media_download_counts_csv_url(collection)
+      if collection.project?
+        project_media_download_counts_path(id: collection.id, :format => :csv, :per_page => 1000000)
+      elsif collection.team?
+        team_media_download_counts_path(id: collection.id, :format => :csv, :per_page => 1000000)
+      end
+    end
+
+    def media_requests_csv_url(collection)
+      if collection.project?
+        project_media_requests_path(id: collection.id, :format => :csv, :per_page => 1000000)
+      elsif collection.team?
+        team_media_requests_path(id: collection.id, :format => :csv, :per_page => 1000000)
+      end
+    end
+
     def page_is_team?
       path_info.include?("teams")
     end

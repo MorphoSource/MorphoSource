@@ -10,3 +10,6 @@ en:
     labels:
       cultural_heritage_object:
         short_title: Short description
+    hints:
+      cultural_heritage_object:
+        cho_type: Type, genre, classification, or category of the object

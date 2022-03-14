@@ -1,6 +1,6 @@
 <% if @new_document_list.present? %>
   <%= @new_document_list.first.keys.to_csv.html_safe -%>
   <% @new_document_list.each do |d| %>
-    <%= d.values.map { |v| v.join('; ') if v.present? }.to_csv.html_safe -%>
+    <%= d.values.map { |v| v.kind_of?(Array) ? v.join('; ') : v }.to_csv.html_safe -%>
   <% end %>
 <% end %>

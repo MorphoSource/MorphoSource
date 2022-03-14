@@ -1,0 +1,7 @@
+<% # app/views/records/edit_fields/_slice_thickness.html.erb %>
+<% # validates numbers only while user types %>
+<%= f.input :slice_thickness, as: :string,
+    wrapper_html: { class: 'CTImageSeries' },
+    label: 'Slice thickness',
+    input_html: { type: "text", onkeyup: "reportValidity('');", pattern: "[0-9]+(\.[0-9]+)?", oninvalid: "this.setCustomValidity('Only valid numbers allowed');", oninput: "this.setCustomValidity('');" }
+%>

@@ -10,7 +10,7 @@
           include_blank: true,
           # item_helper: method(:include_current_value),
           input_html: { class: 'form-control' },
-          label_wrapper_html: { class: 'required-flag' } 
+          label_wrapper_html: { class: 'required-flag' }
       %>
       <%= f.input :institution_code, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :collection_code, label_wrapper_html: { class: 'recommended-flag' }  %>
@@ -22,9 +22,9 @@
 
     <div class="content-block">
       <h2>GENERAL DETAILS</h2>
-      
+
       <%= f.input :description, label: 'Description' %>
-      <%= f.input :cho_type, as: :multi_value %>
+      <%= f.input :cho_type, label: 'Object Type', as: :multi_value %>
       <%= f.input :material, as: :multi_value %>
       <%# todo: render date_field in simple_form_bootstrap %>
       <div class="row">
@@ -36,11 +36,11 @@
       <%= @presenter.attribute_to_html(:date_uploaded, render_as: :showcase_date, include_empty: true, html_dl: false) %>
       <% if @presenter.parent_organization.present? %>
         <%= @presenter.attribute_to_html(
-          :parent_organization_title, 
-          label: 'Organization', 
-          link: Rails.application.routes.url_helpers.hyrax_organization_path(@presenter.parent_organization.id), 
-          render_as: :showcase_organization_title, 
-          html_dl: false) 
+          :parent_organization_title,
+          label: 'Organization',
+          link: Rails.application.routes.url_helpers.hyrax_organization_path(@presenter.parent_organization.id),
+          render_as: :showcase_organization_title,
+          html_dl: false)
         %>
       <% else %>
         <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
@@ -65,8 +65,8 @@
       <%= f.input 'Locality Geographical Coordinates', value_wrapper: false %>
       <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
       <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
-    </div>  
-  
+    </div>
+
   </div>
   <!-- /left column  -->
 

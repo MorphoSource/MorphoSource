@@ -15,7 +15,6 @@ class Media < Morphosource::Works::Base
   end
 
   self.work_requires_files = true
-
   self.indexer = MediaIndexer
   # Change this to restrict which works can be added as a child.
   self.valid_child_concerns = [ProcessingEvent]

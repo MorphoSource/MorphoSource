@@ -78,6 +78,14 @@ Rails.application.routes.draw do
     get 'collections/:id/about', to: 'collections#about'
     get 'collections/:id/facet/:id', to: 'collections#facet'
 
+    # csv exports
+    get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
+    get 'teams/:id/media_downloads', to: 'collections#media_downloads', as: 'team_media_downloads'
+    get 'projects/:id/media_download_counts', to: 'collections#media_download_counts', as: 'project_media_download_counts'
+    get 'teams/:id/media_download_counts', to: 'collections#media_download_counts', as: 'team_media_download_counts'
+    get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
+    get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
+
     scope module: :collections do
       # these get redirected to projects/teams
       get 'collections/:id/biological_specimens', to: 'biological_specimens#show'

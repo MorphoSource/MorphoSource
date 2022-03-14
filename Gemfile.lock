@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/MorphoSource/iiif_manifest.git
-  revision: 65c76544c439d87f5613b90c1f679adfc864ce74
+  revision: 35a4ad395b3f6b284e459d35e7d639a06bd756da
   branch: morphosource
   specs:
     iiif_manifest (0.5.0)
@@ -200,7 +200,7 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     commonjs (0.2.7)
-    concurrent-ruby (1.1.7)
+    concurrent-ruby (1.1.9)
     connection_pool (2.2.3)
     crack (0.4.4)
     crass (1.0.6)
@@ -492,7 +492,7 @@ GEM
       signet
       solrizer (>= 3.4, < 5)
       tinymce-rails (~> 4.1)
-    i18n (1.8.5)
+    i18n (1.10.0)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     interval_response (0.1.7)
@@ -624,7 +624,7 @@ GEM
     mini_magick (4.10.1)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
-    minitest (5.14.2)
+    minitest (5.15.0)
     mono_logger (1.1.0)
     multi_json (1.15.0)
     multi_xml (0.6.0)
@@ -961,7 +961,7 @@ GEM
       railties (>= 3.1)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
-    tzinfo (1.2.7)
+    tzinfo (1.2.9)
       thread_safe (~> 0.1)
     uber (0.1.0)
     uglifier (4.1.18)

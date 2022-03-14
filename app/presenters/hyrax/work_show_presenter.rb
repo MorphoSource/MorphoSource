@@ -28,7 +28,7 @@ module Hyrax
     end
 
     def page_title
-      "#{human_readable_type} | #{title.first} | ID: #{id} | #{I18n.t('hyrax.product_name')}"
+      "#{human_readable_type} | #{title.first} | ID: #{id} | #{application_name}"
     end
 
     # CurationConcern methods

@@ -79,17 +79,27 @@ module Morphosource
     end
 
     def copy_organization_permissions
-      @media.morphosource_use_agreement_type = @organization.morphosource_use_agreement_type
-      @media.required_archival_of_published_derivatives = @organization.required_archival_of_published_derivatives
-      @media.permits_commercial_use = @organization.permits_commercial_use
-      @media.permits_3d_use = @organization.permits_3d_use
-      @media.rights_holder = @organization.rights_holder
-      @media.preview_mode = @organization.preview_mode
-      @media.license = @organization.license
-      @media.rights_statement = @organization.rights_statement
+      # copy organization settings to media if filled out or intentionally blank
+      if @organization.rights_holder.present? || @organization.rights_holder_blank == ["1"]
+        @media.rights_holder = @organization.rights_holder
+      end
+      if @organization.rights_statement.present? || @organization.rights_statement_blank == ["1"]
+        @media.rights_statement = @organization.rights_statement
+      end
+      if @organization.license.present? || @organization.license_blank == ["1"]
+        @media.license = @organization.license
+      end
+      # copy organization settings to media, unless org settings are blank ('no preference')
+      @media.morphosource_use_agreement_type = @organization.morphosource_use_agreement_type unless @organization.morphosource_use_agreement_type.blank?
+      @media.required_archival_of_published_derivatives = @organization.required_archival_of_published_derivatives unless @organization.required_archival_of_published_derivatives.blank?
+      @media.permits_commercial_use = @organization.permits_commercial_use unless @organization.permits_commercial_use.blank?
+      @media.permits_3d_use = @organization.permits_3d_use unless @organization.permits_3d_use.blank?
+      @media.preview_mode = @organization.preview_mode unless @organization.preview_mode.blank?
     end
 
     def update_attachment
+      return if (@organization.agreement_uri.blank? && @organization.attachment('agreement').blank?)
+
       @media.agreement_uri = @organization.agreement_uri
       Morphosource::AttachmentService.delete(@media.id, 'agreement')
       if @organization.attachment('agreement')

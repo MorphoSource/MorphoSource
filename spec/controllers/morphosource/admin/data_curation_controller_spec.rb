@@ -18,7 +18,7 @@ RSpec.describe Morphosource::Admin::DataCurationController, type: :controller do
   end
 
   describe 'apply_permission_template' do
-    let(:params) { { team_id: team.id, project_id: project.id, email: admin.email, update_publication_status: 'all' } }
+    let(:params) { { team_id: team.id, collection_id: project.id, email: admin.email, update_publication_status: 'all' } }
 
     context 'admin is not logged in' do
       it 'does not call apply_permission_template' do

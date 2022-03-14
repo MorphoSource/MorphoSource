@@ -38,26 +38,72 @@ Hyrax.config do |config|
   # avoid clashes if you plan to use the default (dct:hasFormat) for other relations.
   # config.rendering_predicate = ::RDF::DC.hasFormat
 
-  # Email recipient of messages sent via the contact form
-  config.contact_email = "do.not.reply@morphosource.org"
+  ### Site appearance and branding (can be customized for repository instances) ###
+  # These should be customized via environment variables
 
-  # Text prefacing the subject entered in the contact form
-  # config.subject_prefix = "Contact form:"
+  # Site URL
+  config.host_name = ENV['HOST_NAME'] || 'www.morphosource.org'
 
-  # How many notifications should be displayed on the dashboard
-  # config.max_notifications_for_dashboard = 5
+  # Title for UI header and front page tab title
+  config.site_title = ENV['SITE_TITLE'] || 'MorphoSource'
 
-  # How frequently should a file be fixity checked
-  # config.max_days_between_fixity_checks = 7
+  # Logo displayed in UI header and in dashboard welcome message
+  # This image should be placed in app/assets/images/ or in public/.
+  # If image is in public/, it should be listed with a slash before the filename ("/image.png").
+  # If image is in app/assets/images, no slash is needed ("image.png"), but assets will need to be pre-compiled.
+  config.logo_image = ENV['LOGO_IMAGE'] || 'skeleton_head_default_80px.png'
 
-  # Options to control the file uploader
-  config.uploader = {
-    limitConcurrentUploads: 6,
-    maxNumberOfFiles: 10000,
-    maxFileSize: 50.gigabytes
-  }
+  # ID of a media work to be used as the front page preview
+  config.front_page_media = Rails.env.production? ? '000009951' : nil
 
-  # Enable displaying usage statistics in the UI
+  # Wordpress blog for news updates (optional), if excluded news & updates section will not appear on front page
+  config.wordpress_blog_url = ENV['WORDPRESS_BLOG_URL'] || nil
+
+  ### Initial users and system users (should be customized for repository instances) ###
+
+  # Initial user accounts that will be created when running rake task create_development_users
+
+  # Single user email set by ENV["MS_TEST_USR"]
+  config.ms_test_usr = Morphosource.ms_test_usr
+  # Set by ENV["MS_TEST_PW"]
+  config.ms_test_pw = Morphosource.ms_test_pw
+
+  # Initial user accounts that will be created when running rake task create_development_users
+
+  # One or more user emails set by ENV["MS_INIT_USR"], comma separated (user@email1.com,user2@email2.com)
+  config.ms_init_usr = Morphosource.ms_init_usr
+  # Set by ENV["MS_INIT_PW"]
+  config.ms_init_pw = Morphosource.ms_init_pw
+  
+  # Email message sender (for download review notifications, contributor app responses, etc.)
+  # Rake task create_production_users will create a user account corresponding to this email
+  config.contact_email = ENV['CONTACT_EMAIL'] || "do.not.reply@morphosource.org"
+
+  # The user who runs batch jobs.
+  # Should be user key of site-wide admin user or dedicated batch job user
+  config.batch_user_key = ENV['BATCH_USER_KEY'] || '1'
+
+  # The user who runs fixity check jobs. Update this if you aren't using emails
+  # Should be user key of site-wide admin user or dedicated audit job user
+  # By default, this is user key of morphosource@duke.edu site-wide admin user
+  config.audit_user_key = ENV['AUDIT_USER_KEY'] || '614de0'
+
+  # Location autocomplete uses geonames to search for named regions
+  # Username for connecting to geonames. Is set by ENV["GEONAMES_USER"]
+  config.geonames_username = Morphosource.geonames_user
+
+  ### Media contribution settings (should be customized for repository instances) ###
+
+  # Imaging devices not associated with any specific organization are instead grouped under a "null" organization
+  # This should be the ID of a specially created null organization
+  config.null_organization_id = ENV['NULL_ORGANIZATION_ID'] || ( Rails.env.production? ? '000332114' : nil )
+
+  # Device work ID for "unknown CT scanner"
+  config.unknown_ct_scanner = ENV['UNKNOWN_CT_SCANNER'] || ( Rails.env.production? ? '00000D567' : nil )
+
+  ### Analytics and external API connections (can be customized for repository instances) ###
+
+  # Enable recording/displaying usage statistics in the UI
   # Defaults to false
   # Requires a Google Analytics id and OAuth2 keyfile.  See README for more info
   # config.analytics = false
@@ -70,36 +116,55 @@ Hyrax.config do |config|
   # Date you wish to start collecting Google Analytic statistics for
   # Leaving it blank will set the start date to when ever the file was uploaded by
   # NOTE: if you have always sent analytics to GA for downloads and page views leave this commented out
-  # config.analytic_start_date = DateTime.new(2014, 9, 10)
+  # NOTE2: Env variable should be a string in format YYYY-MM-DD, e.g. "2010-09-01" for Sep 1 2010
+  # NOTE3: Default value is Jan 1st of 2021, when MorphoSource 2.0 launched
+  config.analytic_start_date = ENV['GOOGLE_ANALYTICS_START_DATE'].present? ? DateTime.parse(ENV['GOOGLE_ANALYTICS_START_DATE']) : DateTime.new(2021, 1, 1)
 
-  # Enables a link to the citations page for a work
-  # Default is false
-  # config.citations = false
+  # Packrat API fields (if not using Duke Packrat Storage, these fields are unnecessary)
+  config.packrat_api_endpoint_client_id = ENV.fetch('ENDPOINT_CLIENT_ID', 'packrat-production')
+  config.packrat_api_service_url = ENV.fetch('SERVICE_URL', 'https://packrat.oit.duke.edu')
+  config.packrat_api_oidc_long_lived_token = ENV.fetch('OIDC_LONG_LIVED_TOKEN', nil)
+  config.packrat_api_idms_token_exchange_url = ENV.fetch('IDMS_TOKEN_EXCHANGE_URL', 'https://idms-web-ws.oit.duke.edu/idm-ws/clientSecret/createClientToken')
+  config.packrat_api_endpoint = ENV.fetch('PACKRAT_API_ENDPOINT', '/api/v2')
+  config.packrat_api_volume_id = ENV.fetch('PACKRAT_API_VOLUME_ID', 1931)
+
+  ### Locations where temporary or ancillary files are stored ###
+
+  # Temporary paths to hold uploads before they are ingested into FCrepo
+  # These must be lambdas that return a Pathname. Can be configured separately
+  config.upload_path = ->() { ENV['HYRAX_UPLOAD_PATH'].present? ? ENV['HYRAX_UPLOAD_PATH'] : Rails.root + 'tmp' + 'uploads' }
+  config.cache_path = ->() { ENV['HYRAX_CACHE_PATH'].present? ? ENV['HYRAX_CACHE_PATH'] : Rails.root + 'tmp' + 'uploads' + 'cache' }
+
+  # Location on local file system where uploaded files will be staged
+  # prior to being ingested into the repository or having derivatives generated.
+  # If you use a multi-server architecture, this MUST be a shared volume.
+  # config.working_path = Rails.root.join( 'tmp', 'uploads')
+  config.working_path = ENV['HYRAX_WORKING_PATH'].present? ? ENV['HYRAX_WORKING_PATH'] : Rails.root + 'tmp' + 'uploads'
+
+  # Location on local file system where derivatives will be stored
+  # If you use a multi-server architecture, this MUST be a shared volume
+  config.derivatives_path = ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives"))
+
+  # Location on local file system where attachments will be stored
+  # If you use a multi-server architecture, this MUST be a shared volume
+  config.attachments_path = ENV.fetch("ATTACHMENTS_PATH", Rails.root.join("tmp", "attachments"))
+
+  # Path to where derivative generation tmp files should be placed (temporary method)
+  config.derivatives_tmp_path = ENV.fetch("DERIVATIVES_TMP_PATH", Rails.root.join("tmp"))
+  
+  # directory path for finding MS1 dropbox user folders
+  config.sftp_share_root = ENV['SFTP_SHARE_ROOT']
 
   # Where to store tempfiles, leave blank for the system temp directory (e.g. /tmp)
   # config.temp_file_base = '/home/developer1'
 
-  # Hostpath to be used in Endnote exports
-  # config.persistent_hostpath = 'http://localhost/files/'
+  ### Derivative and characterizer tool paths and settings ###
 
   # If you have ffmpeg installed and want to transcode audio and video set to true
   config.enable_ffmpeg = true
 
-  # Hyrax uses NOIDs for files and collections instead of Fedora UUIDs
-  # where NOID = 10-character string and UUID = 32-character string w/ hyphens
-  # config.enable_noids = true
-
-  # Template for your repository's NOID IDs
-  config.noid_template = ".zddddddddd"
-
-  # Use the database-backed minter class
-  # config.noid_minter_class = Noid::Rails::Minter::Db
-
-  # Store identifier minter's state in a file for later replayability
-  # config.minter_statefile = '/tmp/minter-state'
-
-  # Prefix for Redis keys
-  # config.redis_namespace = "hyrax"
+  # Path to the ffmpeg tool
+  config.ffmpeg_path = 'ffmpeg'
 
   # Path to the file characterization tool
   config.fits_path = ENV.fetch("FITS_PATH", "fits.sh")
@@ -124,9 +189,6 @@ Hyrax.config do |config|
 
   config.python_path = ENV.fetch("MORPHOSOURCE_PYTHON", "python3")
 
-  # Path to where derivative generation tmp files should be placed (temporary method)
-  config.derivatives_tmp_path = ENV.fetch("DERIVATIVES_TMP_PATH", Rails.root.join("tmp"))
-
   # Path to the file derivatives creation tool
   # config.libreoffice_path = "soffice"
 
@@ -134,35 +196,7 @@ Hyrax.config do |config|
   # Default is true, set to false to disable full text extraction
   # config.extract_full_text = true
 
-  # How many seconds back from the current time that we should show by default of the user's activity on the user's dashboard
-  # config.activity_to_show_default_seconds_since_now = 24*60*60
-
-  # Hyrax can integrate with Zotero's Arkivo service for automatic deposit
-  # of Zotero-managed research items.
-  # config.arkivo_api = false
-
-  # Stream realtime notifications to users in the browser
-  # config.realtime_notifications = true
-
-  # Location autocomplete uses geonames to search for named regions
-  # Username for connecting to geonames
-  config.geonames_username = Morphosource.geonames_user
-
-  # for initial setup accounts
-  config.ms_test_usr = Morphosource.ms_test_usr
-  config.ms_test_pw = Morphosource.ms_test_pw
-  config.ms_init_pw = Morphosource.ms_init_pw
-  config.ms_init_usr = Morphosource.ms_init_usr
-
-  # Should the acceptance of the licence agreement be active (checkbox), or
-  # implied when the save button is pressed? Set to true for active
-  # The default is true.
-  # config.active_deposit_agreement_acceptance = true
-
-  # Should work creation require file upload, or can a work be created first
-  # and a file added at a later time?
-  # The default is true.
-  config.work_requires_files = false
+  ### IIIF ###
 
   # Enable IIIF image service. This is required to use the
   # UniversalViewer-ified show page
@@ -206,39 +240,53 @@ Hyrax.config do |config|
   # Fields to display in the IIIF metadata section; default is the required fields
   # config.iiif_metadata_fields = Hyrax::Forms::WorkForm.required_fields
 
+  ### General configuration ###
+
+  # Options to control the file uploader
+  config.uploader = {
+    limitConcurrentUploads: 6,
+    maxNumberOfFiles: 10000,
+    maxFileSize: 50.gigabytes
+  }
+
+  # Hyrax uses NOIDs for files and collections instead of Fedora UUIDs
+  # where NOID = 10-character string and UUID = 32-character string w/ hyphens
+  # config.enable_noids = true
+
+  # Template for your repository's NOID IDs
+  config.noid_template = ".zddddddddd"
+
+  # Use the database-backed minter class
+  # config.noid_minter_class = Noid::Rails::Minter::Db
+
+  # Store identifier minter's state in a file for later replayability
+  # config.minter_statefile = '/tmp/minter-state'
+
+  # Prefix for Redis keys
+  # config.redis_namespace = "hyrax"
+
+  # How many seconds back from the current time that we should show by default of the user's activity on the user's dashboard
+  # config.activity_to_show_default_seconds_since_now = 24*60*60
+
+  # Hyrax can integrate with Zotero's Arkivo service for automatic deposit
+  # of Zotero-managed research items.
+  # config.arkivo_api = false
+
+  # Stream realtime notifications to users in the browser
+  # config.realtime_notifications = true
+
+  # Should the acceptance of the licence agreement be active (checkbox), or
+  # implied when the save button is pressed? Set to true for active
+  # The default is true.
+  # config.active_deposit_agreement_acceptance = true
+
+  # Should work creation require file upload, or can a work be created first
+  # and a file added at a later time?
+  # The default is true.
+  config.work_requires_files = false
+
   # Should a button with "Share my work" show on the front page to all users (even those not logged in)?
   # config.display_share_button_when_not_logged_in = true
-
-  # The user who runs batch jobs. Update this if you aren't using emails
-  # config.batch_user_key = 'batchuser@example.com'
-  config.batch_user_key = '1' # user with key '1' (admin@email.com)
-
-  # The user who runs fixity check jobs. Update this if you aren't using emails
-  # config.audit_user_key = 'audituser@example.com'
-  #
-  # The banner image. Should be 5000px wide by 1000px tall
-  config.banner_image = 'banner_image.png'
-
-  # ID of a media work to be used as the front page preview
-  config.front_page_media = Rails.env.production? ? '000009951' : nil
-
-  config.host_name = ENV['HOST_NAME'].present? ? ENV['HOST_NAME'] : 'morphosource.org'
-
-  # directory path for finding MS1 dropbox user folders
-  config.sftp_share_root = ENV['SFTP_SHARE_ROOT']
-
-  # Temporary paths to hold uploads before they are ingested into FCrepo
-  # These must be lambdas that return a Pathname. Can be configured separately
-  config.upload_path = ->() { ENV['HYRAX_UPLOAD_PATH'].present? ? ENV['HYRAX_UPLOAD_PATH'] : Rails.root + 'tmp' + 'uploads' }
-  config.cache_path = ->() { ENV['HYRAX_CACHE_PATH'].present? ? ENV['HYRAX_CACHE_PATH'] : Rails.root + 'tmp' + 'uploads' + 'cache' }
-
-  # Location on local file system where derivatives will be stored
-  # If you use a multi-server architecture, this MUST be a shared volume
-  config.derivatives_path = ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives"))
-
-  # Location on local file system where attachments will be stored
-  # If you use a multi-server architecture, this MUST be a shared volume
-  config.attachments_path = ENV.fetch("ATTACHMENTS_PATH", Rails.root.join("tmp", "attachments"))
 
   # Should schema.org microdata be displayed?
   # config.display_microdata = true
@@ -246,12 +294,6 @@ Hyrax.config do |config|
   # What default microdata type should be used if a more appropriate
   # type can not be found in the locale file?
   # config.microdata_default_type = 'http://schema.org/CreativeWork'
-
-  # Location on local file system where uploaded files will be staged
-  # prior to being ingested into the repository or having derivatives generated.
-  # If you use a multi-server architecture, this MUST be a shared volume.
-  # config.working_path = Rails.root.join( 'tmp', 'uploads')
-  config.working_path = ENV['HYRAX_WORKING_PATH'].present? ? ENV['HYRAX_WORKING_PATH'] : Rails.root + 'tmp' + 'uploads'
 
   # Should the media display partial render a download link?
   config.display_media_download_link = false
@@ -268,9 +310,6 @@ Hyrax.config do |config|
 
   # Labels for owner permission levels
   # config.owner_permission_levels = { "Edit Access" => "edit" }
-
-  # Path to the ffmpeg tool
-  config.ffmpeg_path = 'ffmpeg'
 
   # Max length of FITS messages to display in UI
   # config.fits_message_length = 5
@@ -336,26 +375,9 @@ Hyrax.config do |config|
 
   config.index_related_works = true
 
-  # Organization work ID for organization that includes "non-organization" devices
-  config.null_organization_id = Rails.env.production? ? '000332114' : nil
-
-  # Device work ID for unknown CT scanner
-  config.unknown_ct_scanner = Rails.env.production? ? '00000D567' : nil
-
-  # Packrat API fields (if not using Duke Packrat Storage, these fields are unnecessary)
-  config.packrat_api_endpoint_client_id = ENV.fetch('ENDPOINT_CLIENT_ID', 'packrat-production')
-  config.packrat_api_service_url = ENV.fetch('SERVICE_URL', 'https://packrat.oit.duke.edu')
-  config.packrat_api_oidc_long_lived_token = ENV.fetch('OIDC_LONG_LIVED_TOKEN', nil)
-  config.packrat_api_idms_token_exchange_url = ENV.fetch('IDMS_TOKEN_EXCHANGE_URL', 'https://idms-web-ws.oit.duke.edu/idm-ws/clientSecret/createClientToken')
-  config.packrat_api_endpoint = ENV.fetch('PACKRAT_API_ENDPOINT', '/api/v2')
-  config.packrat_api_volume_id = ENV.fetch('PACKRAT_API_VOLUME_ID', 1931)
-
   # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
   config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil) 
   config.unused_storage_fund_code_id = ENV.fetch('UNUSED_STORAGE_FUND_CODE_ID', Rails.env.production? ? 18 : nil) 
-
-  # Wordpress blog for news updates (optional)
-  config.wordpress_blog_url = 'https://sites.duke.edu/morphosourceblog/'
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

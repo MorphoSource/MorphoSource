@@ -7,6 +7,9 @@ terms:
   - id: Mm
     term: Millimeters
     active: true
+  - id: Um
+    term: Micrometers
+    active: true
   - id: M
     term: Meters
     active: true

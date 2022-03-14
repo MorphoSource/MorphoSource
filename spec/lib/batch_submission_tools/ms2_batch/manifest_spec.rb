@@ -70,7 +70,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
       expect(ingest_obj.first.to_h[:imaging_event].count).to eq(1)
       expect(ingest_obj.first.to_h[:imaging_event][0][:initial_attrs]).to include(
         :description=>["smc IE desc"], 
-        :creator=>["Zach Randall"], 
+        :creator=>["John Doe"], 
         :software=>["smc IE software"]
       )
       expect(ingest_obj.first.to_h[:children][1][:pe][:attrs]).to include(

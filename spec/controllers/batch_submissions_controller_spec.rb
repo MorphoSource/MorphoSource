@@ -10,10 +10,12 @@ RSpec.describe BatchSubmissionsController, type: :controller do
   let(:manifest_file_path)             { fixture_path + '/batch_submission_manifest_errors_test.xlsx' }
   let(:invalid_columns_file_path)             { fixture_path + '/batch_submission_manifest_errors_columns.xlsx' }
   let(:invalid_fields_file_path)             { fixture_path + '/batch_submission_manifest_errors_fields.xlsx' }
+  let(:invalid_parents_file_path)             { fixture_path + '/batch_submission_manifest_errors_parents.xlsx' }
   let(:invalid_file)         { Rack::Test::UploadedFile.new(image_file_path) }
   let(:valid_file)         { Rack::Test::UploadedFile.new(manifest_file_path) }
   let(:invalid_columns_file)         { Rack::Test::UploadedFile.new(invalid_columns_file_path) }
   let(:invalid_fields_file)         { Rack::Test::UploadedFile.new(invalid_fields_file_path) }
+  let(:invalid_parents_file)         { Rack::Test::UploadedFile.new(invalid_parents_file_path) }
 
   before do
     batch_submission_contributors.users << [user, user3]
@@ -161,6 +163,17 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         expect(response).to render_template 'validation_fail'
         html = response.body
         expect(html).to include 'The columns are invalid.  Please check the file or download the blank submission manifest again.'
+      end
+    end
+
+    context "parents not valid" do
+      render_views
+      let(:params) { {"manifest" => invalid_parents_file, "batch_submission" => {"modality" => "photography"}} }
+      it "displays invalid parents message" do
+        post 'submit', :params => params 
+        expect(response).to render_template 'validation_fail'
+        html = response.body
+        expect(html).to include 'media.parent_file ANSP_Fish_180334_Head.jpg has invalid parent(s) (found in row 10).  Please check and make sure each parent_file is pointing to the correct row.'
       end
     end
 

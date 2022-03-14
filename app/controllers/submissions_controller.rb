@@ -55,7 +55,8 @@ class SubmissionsController < ApplicationController
         postal_code: o['postal_code_tesim']&.first,
         description: o['description_tesim']&.first,
         contact_person: o['contact_person_tesim']&.first,
-        devices: o['member_ids_ssim']
+        devices: o['member_ids_ssim'],
+        data_manager: o['data_manager_tesim']&.first
       }
     end
 

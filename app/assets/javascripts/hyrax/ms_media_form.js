@@ -155,6 +155,9 @@ $( document ).ready(function() {
         // show/hide in hyrax add media form
         show_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit']);
         hide_fields(['.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
+
+        // add required flag to pixel spacing unit
+        $('.media_unit').addClass('required-flag');
       } else if ($('#media_media_type').val() == 'PhotogrammetryImageSeries') {
         $('.PhotogrammetryImageSeries').show();
         $('#file-object-details').show();
@@ -162,6 +165,7 @@ $( document ).ready(function() {
         // show/hide in hyrax add media form
         show_fields(['#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
         hide_fields(['.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type']);
+        
       } else if ($('#media_media_type').val() == 'Mesh') {
         $('.Mesh').show();
         $('#file-object-details').show();
@@ -169,6 +173,8 @@ $( document ).ready(function() {
         // show/hide in hyrax add media form
         show_fields(['.media_unit', '.media_map_type']);
         hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
+        // remove required flag from pixel spacing unit
+        $('.media_unit').removeClass('required-flag');
       } else {
         $('.media_type_block').hide();
 

@@ -22,6 +22,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     rescue StandardError => e
       # debug: check exception here if stopped
       #byebug
+      update_main_job(e.message)
       status.update(manifest: @manifest, exception: e.message)      
     ensure
       update_main_job
@@ -39,11 +40,11 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   end
 
   def main_job
-    BackgroundJob.where(job_id: main_job_id).first
+    BackgroundJob.where(main_job_id: main_job_id).first
   end
 
-  def update_main_job(exception=nil)
-    main_job.update_status(status.status.to_s, exception)
+  def update_main_job(exceptions=nil)
+    main_job.update_status(status.status.to_s, exceptions)
   end
 
   def monitor_status(job)

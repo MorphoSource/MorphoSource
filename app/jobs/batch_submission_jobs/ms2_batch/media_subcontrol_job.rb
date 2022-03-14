@@ -4,12 +4,12 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   queue_as Hyrax.config.ingest_queue_name
   #queue_as Hyrax.config.batch_submission_queue_name
 
-  def perform(manifest, job_id)
+  def perform(manifest, main_job_id)
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest
     @created_media = {}
-    @main_job_id = job_id
+    @main_job_id = main_job_id
 
     # Submit jobs for new works to be created
     @manifest['media_ie_pe_ingests'].each_with_index do |i, ingest_index|
@@ -60,7 +60,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         @manifest['collection_ids'] || [],
         @manifest['fund_code_id'] || nil,
         target_parent_id,
-        job_id
+        main_job_id
       )
     end
 
@@ -92,11 +92,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   end
 
   def main_job
-    BackgroundJob.where(job_id: main_job_id).first
+    BackgroundJob.where(main_job_id: main_job_id).first
   end
 
-  def update_main_job(exception=nil)
-    main_job.update_status(nil, exception)
+  def update_main_job(exceptions=nil)
+    main_job.update_status(nil, exceptions)
   end
 
   def monitor_ingest_jobs

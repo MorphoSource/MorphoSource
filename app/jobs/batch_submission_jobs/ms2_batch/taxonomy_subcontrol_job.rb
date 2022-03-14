@@ -4,7 +4,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
   queue_as Hyrax.config.ingest_queue_name
   #queue_as Hyrax.config.batch_submission_queue_name
 
-  def perform(manifest, job_id)
+  def perform(manifest, main_job_id)
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest    

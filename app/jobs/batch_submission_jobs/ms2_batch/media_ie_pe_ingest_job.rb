@@ -175,14 +175,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
-
-
-byebug
-raise "TEST EXCEPTION and objects DELETING"
     
     UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
-
-    # look for dependent child 
   end
 
   def main_job

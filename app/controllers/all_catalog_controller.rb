@@ -24,7 +24,7 @@ class AllCatalogController < CatalogController
     # objects
     config.add_facet_field solr_name("creator", :facetable), label: "Object Creator", limit: 5
     # organization
-    config.add_facet_field solr_name("organization", :facetable), label: "Object Organization", limit: 5
+    config.add_facet_field "organization_ssim", label: "Object Organization", limit: 5
     # media types - human_readable_media_type for child   media
     # media collection
     config.add_facet_field solr_name("media_collections", :facetable), label: "Object Media Team / Project", limit: 5

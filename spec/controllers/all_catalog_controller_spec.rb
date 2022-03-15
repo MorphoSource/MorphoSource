@@ -73,7 +73,7 @@ RSpec.describe AllCatalogController, :type => :controller do
       end
 
       describe 'object organization' do
-        subject { facet_fields['organization_sim'] }
+        subject { facet_fields['organization_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Object Organization")
           expect(subject.limit).to eq(5)

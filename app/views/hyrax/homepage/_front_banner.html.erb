@@ -1,0 +1,46 @@
+<div id="front-banner" class="row equal">
+  <div class="col-xs-12 col-sm-6 col-sm-push-6">
+    <% if Hyrax.config.front_page_media.present? && Media.exists?(Hyrax.config.front_page_media) %>
+      <iframe
+        height="100%"
+        width="100%"
+        src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: Media.find(Hyrax.config.front_page_media).access_control_id) %>&config=/universalviewer/front/uvconfig.json"
+        allowfullscreen
+        frameborder="0">
+      </iframe>
+    <% end %>
+    <!-- <a href="#">Dummy media text: Genus species. Created by Ed Stanley.</a> -->
+  </div>
+  <div class="col-xs-12 col-sm-6 col-sm-pull-6" style='text-align: left;'>
+    <p style='font-size: 26px; font-weight: 300;'><%= t('morphosource.homepage.banner_text_1') %></p>
+    <p style='font-size: 18px; font-weight: 300;'><%= t('morphosource.homepage.banner_text_2') %></p>
+    <div class="row" style='text-align: center;'>
+      <div class="col-xs-12 col-md-6 no-padding">
+        <%= link_to Rails.application.routes.url_helpers.browse_categories_path, class: 'btn' do %>
+          <div class="row" style='text-align: left;'>
+            <div class="col-xs-3 col-align col-align--center">
+              <div class="row"><i class="fas fa-book-open fa-2x"></i></div>
+            </div>
+            <div class="col-xs-9 col-align col-align--center">
+              <div class="row">Want to find data?</div>
+              <div class="row">Browse categories</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="col-xs-12 col-md-6 no-padding">
+        <%= link_to Rails.application.routes.url_helpers.contributors_docs_path, class: 'btn' do %>
+          <div class="row" style='text-align: left;'>
+            <div class="col-xs-3 col-align col-align--center">
+              <div class="row"><i class="fas fa-feather-alt fa-2x"></i></div>
+            </div>
+            <div class="col-xs-9 col-align col-align--center">
+              <div class="row">Want to contribute</div>
+              <div class="row">or manage data?</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

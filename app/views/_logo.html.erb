@@ -1,5 +1,20 @@
-<a id="logo" class="navbar-brand" href="<%= hyrax.root_path %>" data-no-turbolink="true">
-  <span class="glyphicon"><%= image_tag('skeleton_head_80px.png', size: '40') %></span>
-  <span class="organization_name"><%= application_name %></span>
-  <span style='font-size: small'>BETA</span>
-</a>
+<% is_core_site = Hyrax.config.site_title == Hyrax.config.default_site_title %>
+<div id="logo" class="navbar-brand">
+  <div style="display: inline-block">
+    <a href="<%= hyrax.root_path %>" data-no-turbolink="true">
+      <span class="glyphicon" style="<%= !is_core_site ? 'top: -8px;' : '' %>">
+        <%= image_tag(Hyrax.config.logo_image, size: '40') %>
+      </span>
+    </a>
+  </div>
+  <div style="display: inline-block; padding-top: 2px;">
+    <a href="<%= hyrax.root_path %>" data-no-turbolink="true" style="color: unset; text-decoration: none;">
+      <span class="organization_name" style="<%= !is_core_site ? 'display: block;' : '' %>">
+        <%= application_name %>
+      </span>
+    </a>
+    <span style="font-size: small; <%= !is_core_site ? 'display: block;' : 'display: none;' %>">
+      <a href="https://www.morphosource.org" data-no-turbolink="true" style="color: unset;">By MorphoSource</a>
+    </span>
+  </div>
+</div>

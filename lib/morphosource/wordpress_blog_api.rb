@@ -14,10 +14,12 @@ module Morphosource
     end
 
     def self.get_posts
-      response = RestClient.get(
-        API_URL + POSTS_ENDPOINT,
-        { params: { per_page: 3 } }
-      )
+      begin
+        response = api_request
+      rescue => e
+        Rails.logger.error "WordpressBlogApi: API request to Wordpress site failed with following exception: #{e}"
+        return []
+      end
 
       if response.code == 200
         posts = JSON.parse(response.body)
@@ -33,6 +35,13 @@ module Morphosource
       else
         []
       end
+    end
+
+    def self.api_request
+      RestClient.get(
+        API_URL + POSTS_ENDPOINT,
+        { params: { per_page: 3 } }
+      )
     end
   end
 end

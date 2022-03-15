@@ -1,27 +1,10 @@
+//= require morphosource/data_tables/cho_table
+
 $(document).ready(function() {
 
     if ($('body[class*="media-works"]').length || $('body[class*="teams"]').length) { // check if the page is dashboard media works
 
-    var choTable = $('#datatable-cho-list').DataTable({
-      responsive: {
-        details: {
-          display: $.fn.dataTable.Responsive.display.childRowImmediate,
-          type: ''
-        }
-      },
-      //order: [[ 1, "asc" ]],
-      columnDefs: [
-        { responsivePriority: 1, targets: 0 },
-        { responsivePriority: 3, targets: 1 },
-        { responsivePriority: 4, targets: 2 }
-      ],
-      pageLength: 10,
-      bPaginate: false,
-      bInfo: false,
-      bDestroy: true,
-      bLengthChange: false, // hide the show number of entries dropdown
-      bFilter: false // hide search box
-    });
+    var choTable = createCulturalHeritageObjectTable('#datatable-cho-list');
 
     $('.choose-columns-cho .toggle-vis').on( 'click', function (e) {
       var column = choTable.column( $(this).attr('data-column') );

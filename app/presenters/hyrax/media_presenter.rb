@@ -136,8 +136,8 @@ module Hyrax
     def universal_viewable_ready?
       return false unless representative_presenter.present?
       viewable =
-        ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.volume? ) &&
-        ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_volume? )
+        ( representative_presenter.image? || representative_presenter.mesh? || representative_presenter.video? || representative_presenter.volume? ) &&
+        ( members_include_viewable_image? || members_include_viewable_mesh? || members_include_viewable_video? || members_include_viewable_volume? )
       return viewable
     end
 
@@ -488,6 +488,7 @@ module Hyrax
 
         # get imaging event details
         @imaging_event_modality = Morphosource::ModalitiesService.new.label(@imaging_event.ie_modality.first)
+        @filter = @imaging_event.ie_filter
         if @imaging_event_modality == "Photogrammetry" or
             @imaging_event_modality == "Photography"
           @lens = ""
@@ -503,7 +504,6 @@ module Hyrax
           @flux_normalization = @imaging_event.flux_normalization.first
           @pixel_spacing_calibration = @imaging_event.pixel_spacing_calibration.first
           @shading_correction = @imaging_event.shading_correction.first
-          @filter = @imaging_event.ie_filter
           @frame_averaging = @imaging_event.frame_averaging.first
           @projections = @imaging_event.projections.first
           @voltage = @imaging_event.voltage.first
@@ -513,6 +513,10 @@ module Hyrax
           @xray_tube_type = @imaging_event.xray_tube_type.first
           @target_type = @imaging_event.target_type.first
           @detector_type = @imaging_event.detector_type.first
+          @detector_pixels_x = @imaging_event.detector_pixels_x.first
+          @detector_pixel_size_x = @imaging_event.detector_pixel_size_x.first
+          @detector_pixels_y = @imaging_event.detector_pixels_y.first
+          @detector_pixel_size_y = @imaging_event.detector_pixel_size_y.first
           @detector_configuration = @imaging_event.detector_configuration.first
           @source_object_distance = @imaging_event.source_object_distance.first
           @source_detector_distance = @imaging_event.source_detector_distance.first
@@ -687,6 +691,10 @@ module Hyrax
 
       def members_include_viewable_mesh?
         file_set_presenters.any? { |presenter| presenter.mesh? && current_ability.can?(:read, presenter.id) }
+      end
+
+      def members_include_viewable_video?
+        file_set_presenters.any? { |presenter| presenter.video? && current_ability.can?(:read, presenter.id) }
       end
 
       def members_include_viewable_volume?

@@ -58,7 +58,7 @@ module Morphosource
       # Returns collections containing media of organization specimens not owned by team
       # Filtered by user access
       def query_organization_media_collections
-        return unless current_user.admin?
+        return unless current_user&.admin?
         
         repository.blacklight_config.max_per_page = 999999
         repository.blacklight_config.facet_fields = {}

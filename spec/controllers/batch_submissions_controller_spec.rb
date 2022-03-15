@@ -64,7 +64,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       render_views
 
       context "result with MicroNanoXRayComputedTomography pre-selected" do
-        let(:params) { {"manifest" => valid_file, 
+        let(:params) { {"manifest" => valid_file,
           "organization_institution_code" => organization_institution_code,
           "organization_recordset_id" => organization_recordset_id,
           "batch_submission" => {
@@ -137,21 +137,21 @@ RSpec.describe BatchSubmissionsController, type: :controller do
     context "manifest file not present" do
       let(:params) { {"manifest" => nil} }
       it "redirected back to new" do
-        post 'submit', :params => params 
+        post 'submit', :params => params
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
     context "manifest format not valid" do
       let(:params) { {"manifest" => invalid_file} }
       it "redirected back to new" do
-        post 'submit', :params => params 
+        post 'submit', :params => params
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
     context "modailty not present" do
       let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => ""}} }
       it "redirected back to new" do
-        post 'submit', :params => params 
+        post 'submit', :params => params
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
@@ -179,4 +179,11 @@ RSpec.describe BatchSubmissionsController, type: :controller do
 
   end
 
+  describe 'valid_media_unit' do
+    let(:valid_units) { ['Um', 'Cm', 'Ft', 'In', 'Km', 'M', 'Mi', 'Mm'] }
+
+    it 'returns a list of valid units' do
+      expect(subject.valid_media_unit).to match_array(valid_units)
+    end
+  end
 end

@@ -66,7 +66,7 @@ module Hyrax
       @working_path ||= Rails.root.join('tmp', 'uploads')
     end
 
-    # Path on the local file system where where log and banners will be stored.
+    # Path on the local file system where where logos and banners for specific collections will be stored.
     attr_writer :branding_path
     def branding_path
       @branding_path ||= Rails.root.join('public', 'branding')
@@ -318,12 +318,6 @@ module Hyrax
     attr_writer :null_organization_id
     def null_organization_id
       @null_organization_id ||= nil
-    end
-
-    attr_writer :banner_image
-    def banner_image
-      # This image can be used for free and without attribution. See here for source and license: https://github.com/samvera/hyrax/issues/1551#issuecomment-326624909
-      @banner_image ||= 'https://user-images.githubusercontent.com/101482/29949206-ffa60d2c-8e67-11e7-988d-4910b8787d56.jpg'
     end
 
     attr_writer :max_for_download_request_details
@@ -666,6 +660,32 @@ module Hyrax
                     else
                       default_uploader_config
                     end
+    end
+
+    # Site-wide branding fields (can customize logo and title for non-MorphoSource instances)
+
+    # DEPRECATED, not used in this application
+    attr_writer :banner_image
+    def banner_image
+      # This image can be used for free and without attribution. See here for source and license: https://github.com/samvera/hyrax/issues/1551#issuecomment-326624909
+      @banner_image ||= 'https://user-images.githubusercontent.com/101482/29949206-ffa60d2c-8e67-11e7-988d-4910b8787d56.jpg'
+    end
+
+    attr_writer :logo_image
+    def logo_image
+      # Default image is 80x80 pixels and is located in app/assets/images/, it is displayed at 40x40 and 60x60
+      @logo_image ||= nil
+    end
+
+    attr_writer :site_title
+    def site_title
+      # Will fall back to "MorphoSource" where not otherwise provided
+      @site_title ||= nil
+    end
+
+    attr_writer :default_site_title
+    def default_site_title
+      @default_site_title ||= 'MorphoSource'
     end
 
     # Packrat API fields (if not using Duke Packrat Storage, these fields are unnecessary)

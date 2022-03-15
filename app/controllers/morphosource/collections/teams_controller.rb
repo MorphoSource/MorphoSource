@@ -46,6 +46,7 @@ module Morphosource
                 media_number: [media_number_in_collection(coll)]
               })
             end
+            csv_response_headers('Projects%20With%20Media%20Not%20Managed%20By%20Team')
           }
         end
       end

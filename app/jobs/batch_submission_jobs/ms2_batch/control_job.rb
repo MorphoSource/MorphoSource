@@ -4,8 +4,6 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   queue_as Hyrax.config.batch_submission_queue_name
 
   def perform(manifest)
-
-# todo: put back the error catching code after testing
     begin
       # Step 0. Initial preparation
       status.update(manifest: manifest)
@@ -22,13 +20,12 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     rescue StandardError => e
       # debug: check exception here if stopped
       #byebug
+      status.update(status: :failed)
       update_main_job(e.message)
       status.update(manifest: @manifest, exception: e.message)      
     ensure
-      update_main_job
       status.update(manifest: @manifest)
     end
-    update_main_job
   end
 
   def sub_jobs
@@ -44,6 +41,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   end
 
   def update_main_job(exceptions=nil)
+    # might need to update status to fail if exceptions are found?
     main_job.update_status(status.status.to_s, exceptions)
   end
 
@@ -62,7 +60,6 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     if job_status[:status] == :failed
       delete_created_works
       exception = "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
-      update_main_job(exception)
       raise exception
     elsif job_status[:status] == :queued || job_status[:status] == :working
       return false
@@ -71,10 +68,8 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     else
       delete_created_works
       exception = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
-      update_main_job(exception)
       raise exception
     end
-    update_main_job
   end
 
   # if ingest fails, need to delete mid-stream works
@@ -82,26 +77,9 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     status.update(work_deletion: :working)
 
     related_ids = []
-    @manifest['media_ie_pe_ingests'].each do |i|
-      i['children'].each do |k, combined_pe_media|
-        related_ids.concat delete_work_if_needed(combined_pe_media['media'])
-        related_ids.concat delete_work_if_needed(combined_pe_media['pe'])
-      end
-
-      i['parent'].each do |k, combined_pe_media|
-        related_ids.concat delete_work_if_needed(combined_pe_media['media'])
-        related_ids.concat delete_work_if_needed(combined_pe_media['pe'])
-      end
-
-      related_ids.concat delete_work_if_needed(i['imaging_event'].values.first)
-    end
-
-    @manifest['biological_specimen_ingests'].each do |i|
-      related_ids.concat delete_work_if_needed(i)
-    end
-
-    @manifest['taxonomy_ingests'].each do |i|
-      related_ids.concat delete_work_if_needed(i)
+    
+    main_job.created_objects.each do |key, id|
+      related_ids.concat delete_work_if_needed(id)
     end
 
     final_related_ids = related_ids
@@ -110,14 +88,16 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       .compact
     UpdateRelatedWorksIndexJob.perform_later(final_related_ids)
 
+    # clear the created_objects list
+    main_job.clear_created_objects
+
     status.update(work_deletion: :completed)
   end
 
-  def delete_work_if_needed(i)
+  def delete_work_if_needed(id)
     related_work_ids = []
-
-    if i['attrs'].present? && i['id'].present? && ActiveFedora::Base.exists?(i['id'])
-      work = ActiveFedora::Base.find(i['id'])
+    if ActiveFedora::Base.exists?(id)
+      work = ActiveFedora::Base.find(id)
       case work.class
       when ImagingEvent
         related_work_ids.concat(work.objects) if work.objects.present?
@@ -131,4 +111,5 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
 
     return related_work_ids
   end
+
 end

@@ -1,5 +1,5 @@
 class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
-  attr_accessor :manifest, :created_media, :main_job_id
+  attr_accessor :manifest, :main_job_id
 
   queue_as Hyrax.config.ingest_queue_name
   #queue_as Hyrax.config.batch_submission_queue_name
@@ -8,7 +8,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     # Step 0. Initial preparation
     status.update(manifest: manifest)
     @manifest = manifest
-    @created_media = {}
     @main_job_id = main_job_id
 
     # Submit jobs for new works to be created

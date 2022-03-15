@@ -15,7 +15,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     all_media = []
     organization_permissions_fields = {}
-    created_media = {}
+    created_objects = {}
 
     imaging_event = nil
     # ingest imaging event
@@ -28,6 +28,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
         nil, 
         false
       )
+      created_objects["ie"] = imaging_event.id
+      main_job.update_created_objects(created_objects)
     else
       raise "Imaging event not present for ingest. Ingest: #{ingest}"
     end
@@ -61,6 +63,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
               nil, 
               false
             )
+            created_objects["parent_pe_"+idx] = parent_pe.id
+            main_job.update_created_objects(created_objects)
           else
             raise "Required processing event not present for parent media ingest. Ingest: #{parent}"
           end
@@ -96,8 +100,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           end
 
           media_file = parent['media']['initial_attrs']['media_file'].first
-          created_media[media_file] = parent_media.id
+          created_objects[media_file] = parent_media.id
           Rails.logger.debug "iN MediaIePeIngestJob: parent media created: #{parent_media.id} "
+          Rails.logger.debug "iN MediaIePeIngestJob:  updating job #{@main_job_id} with created_objects #{created_objects}" 
+          main_job.update_created_objects(created_objects)
 
           all_media << parent_media
         else
@@ -120,6 +126,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             nil, 
             false
           )
+          created_objects["child_pe_"+idx] = child_pe.id
+          main_job.update_created_objects(created_objects)
         else
           raise "Required processing event not present for child media ingest. Ingest: #{child}"
         end
@@ -144,8 +152,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           )
 
           media_file = child['media']['initial_attrs']['media_file'].first
-          created_media[media_file] = child_media.id
+          created_objects[media_file] = child_media.id
           Rails.logger.debug "iN MediaIePeIngestJob: child media created: #{child_media.id} "
+          Rails.logger.debug "iN MediaIePeIngestJob:  updating job #{@main_job_id} with created_objects #{created_objects}" 
+          main_job.update_created_objects(created_objects)
 
           all_media << child_media
         else
@@ -156,10 +166,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
 
-    main_job = BackgroundJob.where(main_job_id: @main_job_id).first
-    Rails.logger.debug "iN MediaIePeIngestJob:  updating job #{main_job.main_job_id} with created_media #{created_media}" 
-    main_job.update_created_objects(created_media)
-
     # Add org agreement attachment fields
     if all_media.present? && organization_permissions_fields.present? && organization_permissions_fields['organization_for_attachment'].present?
       all_media.each do |media_work|
@@ -169,10 +175,18 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
+
+
+byebug
+raise "TEST EXCEPTION and objects DELETING"
     
     UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
 
     # look for dependent child 
+  end
+
+  def main_job
+    BackgroundJob.where(main_job_id: @main_job_id).first
   end
 
   def add_media_to_collections(media, collection_ids)

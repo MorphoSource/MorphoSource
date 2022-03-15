@@ -170,6 +170,7 @@ class SubmissionsController < ApplicationController
       organization_title = organization.title
       organization_id = organization.id
       organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
+      organization_data_manager = organization.data_manager&.first
     else
       status = 'FAIL'
       message = 'Organization does not exist'
@@ -186,7 +187,8 @@ class SubmissionsController < ApplicationController
       organization_alert_message: organization_alert_message,
       organization_title: organization_title,
       organization_id: organization_id,
-      organization_permissions_mode: organization_permissions_mode
+      organization_permissions_mode: organization_permissions_mode,
+      organization_data_manager: organization_data_manager
     }
     render :json => response_object
   end

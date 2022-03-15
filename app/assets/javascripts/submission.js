@@ -1423,6 +1423,10 @@ $( document ).ready(function() {
           }
         });
 
+        $("select#media_transfer_management, input[name='media[visibility]']").change(function(event){
+          self.form.updateOrganizationDataManagementInfo();
+        });
+
         $('#new_media').submit(function(){
           if (!uploadStatusOK) {
             // file upload is in progress. Prompt for auto save

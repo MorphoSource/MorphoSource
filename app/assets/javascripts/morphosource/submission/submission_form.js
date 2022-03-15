@@ -101,7 +101,7 @@ class SubmissionForm {
         if (Object.keys(getData.default_fields).length) {
           // Set up text
           $('#organization-alert-message').text(getData.organization_alert_message);
-          $('#organization-name').text(getData.organization_title);
+          $('.organization-name').text(getData.organization_title);
           var mandateValues = getData.organization_permissions_mode == 'Require';
           if (mandateValues) {
             $('#permissions-action').text('mandated');
@@ -111,6 +111,11 @@ class SubmissionForm {
             $('#permissions-text-follow-up').text("If you have agreed to abide by this organization's preferences for media ownership, take caution before changing these settings.");
           }
           $('#ownership-section-header-text').addClass('show').removeClass('hide');
+
+          // If organization has data manager specified, show appropriate form elements
+          if (getData.organization_data_manager) {
+            self.enableOrgMediaTransferSettings(getData.default_fields);
+          }
 
           // Add new settings
           self.fillMediaFields(getData.default_fields, mandateValues);
@@ -141,6 +146,7 @@ class SubmissionForm {
     $('form.new_media div#submission-media-ownership div#media-ownership-fields button.btn.btn-link').removeClass('hide');
     $('form.new_media div#submission-media-ownership div#media-ownership-fields li.input-group').removeClass('required-input-group');
     $('form.new_media div#submission-media-ownership div#media-ownership-fields input,select,textarea').prop('disabled', false); 
+    this.resetOrgMediaTransferSettings();
   }
 
   emptyMediaFields(defaultFields) {
@@ -346,6 +352,38 @@ class SubmissionForm {
 
     $('#no-agreement-help').addClass('show').removeClass('hide');
     $('#organization-agreement-help').addClass('hide').removeClass('show');
+  }
+
+  // Methods for controlling transfer of media to organization with specified data manager
+
+  enableOrgMediaTransferSettings(default_fields) {
+    $('#ownership-section-header-text2').addClass('show').removeClass('hide');
+    $('div#media_transfer_management').addClass('show').removeClass('hide');
+    $('select#media_transfer_management').removeAttr('disabled');
+
+    // If no organization preferred download permission, set to private
+    if (!default_fields.download_permission) {
+      $('form.new_media input#media_visibility_restricted').trigger('click');
+    }
+
+    this.updateOrganizationDataManagementInfo();
+  }
+
+  resetOrgMediaTransferSettings() {
+    $('#ownership-section-header-text2').addClass('hide').removeClass('show');
+    $('div#media_transfer_management').addClass('hide').removeClass('show');
+    $('select#media_transfer_management').attr('disabled', 'disabled');
+  };
+
+  updateOrganizationDataManagementInfo() {
+    if (
+      $('select#media_transfer_management').val() == 'immediate' || 
+      ( $('select#media_transfer_management').val() == 'publication' && ( $('input#media_visibility_open').prop('checked') || $('input#media_visibility_restricted_download').prop('checked') ) ) 
+      ) {
+      $('span#permissions-org-management-status').text('immediately when this media is submitted');
+    } else {
+      $('span#permissions-org-management-status').text('when this media is published in the future after submission');
+    }
   }
 
   // TODO: Implement submission data checking? Probably best done at the end

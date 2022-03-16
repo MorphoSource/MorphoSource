@@ -116,7 +116,7 @@ class BatchSubmissionsController < ApplicationController
     if @manifest_is_valid
       input_path = manifest.tempfile.path
       media_path = user_share_full_path
-      admin_user = User.where(email:Hyrax.config.system_admin_email).first
+      admin_user = User.where(ms_id:Hyrax.config.batch_user_key).first
       depositor = current_user
       organization_id = request.params["organization_id"]
       device_id = request.params["batch_submission"]["device_id"]
@@ -696,7 +696,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def valid_media_unit
-    @valid_media_unit ||= ['Cm', 'Ft', 'In', 'Km', 'M', 'Mi', 'Mm']
+    @valid_media_unit ||= ['Um', 'Cm', 'Ft', 'In', 'Km', 'M', 'Mi', 'Mm']
   end
 
   def valid_media_map_type

@@ -81,7 +81,7 @@ Hyrax.config do |config|
 
   # The user who runs batch jobs.
   # Should be user key of site-wide admin user or dedicated batch job user
-  config.batch_user_key = ENV['BATCH_USER_KEY'] || '1'
+  config.batch_user_key = ENV['BATCH_USER_KEY'] || '614de0'
 
   # The user who runs fixity check jobs. Update this if you aren't using emails
   # Should be user key of site-wide admin user or dedicated audit job user
@@ -241,12 +241,6 @@ Hyrax.config do |config|
   # config.iiif_metadata_fields = Hyrax::Forms::WorkForm.required_fields
 
   ### General configuration ###
-
-  # The system user for running admin tasks, e.g. batch jobs
-  config.system_admin_email = "morphosource@duke.edu"
-
-  # this might not be used any more.  remove later
-  config.batch_user_key = '1' 
 
   # Options to control the file uploader
   config.uploader = {

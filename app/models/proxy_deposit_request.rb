@@ -55,6 +55,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   validate :transfer_to_should_be_a_contributor
   validate :sending_user_should_not_be_receiving_user
   validate :should_not_be_already_part_of_a_transfer
+  validate :should_not_cancel_if_organization_transfer
 
   after_save :send_request_transfer_message
 
@@ -88,6 +89,10 @@ class ProxyDepositRequest < ActiveRecord::Base
     def should_not_be_already_part_of_a_transfer
       transfers = ProxyDepositRequest.where(work_id: work_id, status: PENDING)
       errors.add(:open_transfer, 'must close open transfer on the work before creating a new one') unless transfers.blank? || (transfers.count == 1 && transfers[0].id == id)
+    end
+
+    def should_not_cancel_if_organization_transfer
+      errors.add(:organization_transfer, 'sending user can not cancel an organization transfer') if status == CANCELED && organization_transfer
     end
 
   public

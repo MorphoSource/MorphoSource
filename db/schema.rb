@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_20_194429) do
+ActiveRecord::Schema.define(version: 2022_03_16_172957) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -397,6 +397,7 @@ ActiveRecord::Schema.define(version: 2022_01_20_194429) do
     t.text "receiver_comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "organization_transfer", default: false
     t.index ["receiving_user_id"], name: "index_proxy_deposit_requests_on_receiving_user_id"
     t.index ["sending_user_id"], name: "index_proxy_deposit_requests_on_sending_user_id"
   end

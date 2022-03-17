@@ -28,8 +28,8 @@ module Hyrax
         else
           link_label = options[:link_label] || ''
           Array(values).each_with_index do |value, index|
-            if is_number_with_decimal?(value)
-              value = value.to_f.round(3)
+            if options[:number_with_precision].present?
+              value = number_with_precision(value, precision: options[:number_with_precision])
             end
             markup << '; ' unless index == 0
             markup << attribute_value_to_html(parse_url(value.to_s), link_label)

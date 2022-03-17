@@ -52,6 +52,7 @@ class Submission
                 :taxonomy_params_array,
                 :organization_for_attachment,
                 :organization_data_management_agree,
+                :organization_transfer_immediately,
                 :on_behalf_of,
                 :fund_code
 

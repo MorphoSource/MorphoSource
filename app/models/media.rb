@@ -4,7 +4,7 @@ class Media < Morphosource::Works::Base
   after_create :mint_ark
   before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids
   before_validation :normalize_download_reviewer
-  after_update :update_ark_status, :update_cartitem_reviewer
+  after_update :update_ark_status, :update_cartitem_reviewer, :check_for_organization_transfer
   before_destroy :record_original_objects
   after_destroy :reindex_physical_objects
 
@@ -447,6 +447,31 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def check_for_organization_transfer
+    if self.visibility_changed? && self.visibility == 'open' && self.organization_transfer_on_publish
+      transfer_media_to_organization
+    end
+  end
+
+  def transfer_media_to_organization
+    if (
+      (org = organizations&.first).present? && 
+      (new_manager_id = org&.data_manager&.first).present? && 
+      (new_manager = User.find_by_user_key(new_manager_id)).present?
+    )
+      # Cancel existing pending proxy deposit requests
+      if (existing_transfers = ProxyDepositRequest.where(work_id: id, status: 'pending')).present?
+        existing_transfers.each { |t| t.cancel! }
+      end
+
+      # Create new proxy deposit request from depositor to organization
+      deposit_user = User.find_by_user_key(depositor)
+      message = I18n.t 'morphosource.media.organization_transfer.transfer_message'
+      ProxyDepositRequest.create!(work_id: id, receiving_user: new_manager, sending_user: deposit_user, sender_comment: message)
+    else
+      raise "Failed to transfer management of media #{id} to organization data manager"
+    end
+  end
 
   private
 

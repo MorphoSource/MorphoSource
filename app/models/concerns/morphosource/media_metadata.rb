@@ -75,6 +75,14 @@ module Morphosource
         index.as :stored_searchable
       end
 
+      # -- Data Manager Status and Transfer Timing --
+      # -- This is technical metadata and will be used by the repository ---
+
+      # Should media management be transferred to the object organization when media is published?
+      property :organization_transfer_on_publish, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationTransferOnPublish"), multiple: false do |index|
+        index.as :stored_sortable
+      end
+
       # -- Management of File Visibility/Download/View --
       # -- Default settings can be set by organization linked team --
 

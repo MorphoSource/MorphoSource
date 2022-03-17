@@ -258,7 +258,7 @@ class SubmissionsController < ApplicationController
     works.each do |work|
       if work == 'taxonomy' && @submission.taxonomy_params_array.present?
         @submission.taxonomy_params_array.each do |taxon_params|
-          new_taxon_id = prepare_and_create_work('taxonomy', { 'taxonomy' => taxon_params })
+          new_taxon_id = prepare_and_create_work('taxonomy', { 'taxonomy' => taxon_params })[0]
           @submission.taxonomy_id_array << new_taxon_id
           @submission.canonical_taxonomy_id = new_taxon_id if taxon_params[:canonical]
         end
@@ -284,7 +284,7 @@ class SubmissionsController < ApplicationController
   def new_organization_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      new_organization_id = prepare_and_create_work('organization', { 'organization' => params[:organization] })
+      new_organization_id = prepare_and_create_work('organization', { 'organization' => params[:organization] })[0]
     rescue
       new_organization_id = nil
     end
@@ -323,7 +323,7 @@ class SubmissionsController < ApplicationController
   def new_taxonomy_create(params)
     # this method is expected to be called from the backend
     begin
-      prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })
+      prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })[0]
     rescue
       nil
     end
@@ -332,7 +332,7 @@ class SubmissionsController < ApplicationController
   def new_taxonomy_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      new_taxonomy_id = prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })
+      new_taxonomy_id = prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })[0]
     rescue
       new_taxonomy_id = nil
     end
@@ -379,7 +379,7 @@ class SubmissionsController < ApplicationController
   def new_device_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      new_device_id = prepare_and_create_work('device', { 'device' => params[:device] })
+      new_device_id = prepare_and_create_work('device', { 'device' => params[:device] })[0]
     rescue Exception => ex
       new_device_id = nil
       exception_message = "Exception: #{ex.class}, #{ex.message}"
@@ -412,7 +412,7 @@ class SubmissionsController < ApplicationController
   def new_processing_event_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      new_processing_event_id = prepare_and_create_work('processing_event', { 'processing_event' => params[:processing_event] })
+      new_processing_event_id = prepare_and_create_work('processing_event', { 'processing_event' => params[:processing_event] })[0]
     rescue Exception => ex
       new_processing_event_id = nil
       exception_message = "Exception: #{ex.class}, #{ex.message}"
@@ -458,12 +458,15 @@ class SubmissionsController < ApplicationController
   def create_work_if_needed(work, params)
     if !@submission.public_send(to_id(work)).present? && params[work]
       puts("Creating #{work}")
-      new_work_id = prepare_and_create_work(work, params)
+      new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
       create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
       # Morphosource::CustomThumbnails
-      create_thumbnail if work == 'media'
-      set_new_fund_code if work == 'media' && @submission.fund_code.present?
+      if work == 'media'
+        create_thumbnail
+        set_new_fund_code if @submission.fund_code.present?
+        create_organization_transfer_request(new_work) if @submission.organization_transfer_immediately
+      end
     end
   end
 
@@ -655,6 +658,10 @@ class SubmissionsController < ApplicationController
     ).save!
   end
 
+  def create_organization_transfer_request(work)
+    work.transfer_media_to_organization
+  end
+
   # Utility functions
 
   def to_id(work)
@@ -757,7 +764,7 @@ class SubmissionsController < ApplicationController
     curation_concern = model.new
     env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
     Hyrax::CurationConcern.actor.create(env)
-    curation_concern.id
+    curation_concern.id, curation_concern
   end
 
   def instantiate_work_forms

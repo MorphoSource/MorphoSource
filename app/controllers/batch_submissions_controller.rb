@@ -15,6 +15,7 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def index
+    render 'index', locals: { row_count: nil }
   end
 
   def new

@@ -47,8 +47,7 @@ module Morphosource
       end
 
       mattr_accessor :mesh_formats do
-        [".glb", ".gltf", ".obj", ".ply", ".stl",  ".wrl", ".x3d", ".zip",
-          ".bin", ".bmp",  ".gif", ".jp2", ".jpeg", ".jpg", ".mtl", ".png", ".svg", ".tif", ".tiff"]
+        [".glb", ".gltf", ".obj", ".ply", ".stl",  ".wrl", ".x3d", ".zip"]
       end
 
       # Allowed formats for attachments (default for documents)

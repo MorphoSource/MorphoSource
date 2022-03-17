@@ -34,4 +34,24 @@
 
 <% end %>
 
-<p><i class="fa fa-hand-point-right" aria-hidden="true"></i> <%= link_to "Create a new batch upload submission", main_app.new_batch_submission_path %></p>
+<% if job.present? %>
+	<h2>Last Job</h2>
+	<table class="table">
+		<tr>
+			<th>Job ID</th>
+			<th>Status</th>
+			<th>Created</th>
+			<th>Exception</th>
+		</tr>
+		<tr>
+			<td><%= job.main_job_id %></td>
+			<td><%= job.status %></td>
+			<td><%= job.created_at %></td>
+			<td><%= job.exceptions %></td>
+		</tr>
+	</table>
+<% end %>
+
+<% if current_user.can_submit_new_batch_submission? %>
+	<p><i class="fa fa-hand-point-right" aria-hidden="true"></i> <%= link_to "Create a new batch upload submission", main_app.new_batch_submission_path %></p>
+<% end %>

@@ -246,7 +246,20 @@ class User < ApplicationRecord
   def standard_member_fund_codes
     fund_codes.joins(:fund_code_memberships).where(fund_code_memberships: { manager: false })
   end
-  
+
+  def batch_submission_jobs
+    BackgroundJob.where(user_id: self.id).where.not(status:nil)
+  end
+
+  def last_batch_submission_job
+    batch_submission_jobs.last
+  end
+
+  def can_submit_new_batch_submission?
+    return true unless batch_submission_jobs.present? 
+    return last_batch_submission_job.status == "completed" || last_batch_submission_job.status == "canceled"
+  end
+
   private
 
   # Assigns a random string to be used as the user_key

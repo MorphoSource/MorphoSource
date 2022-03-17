@@ -15,7 +15,10 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def index
-    render 'index', locals: { row_count: nil }
+#    batch_submission_jobs = current_user.batch_submission_jobs
+#    job = batch_submission_jobs&.first
+    job = current_user.last_batch_submission_job
+    render 'index', locals: { row_count: nil, job: job }
   end
 
   def new

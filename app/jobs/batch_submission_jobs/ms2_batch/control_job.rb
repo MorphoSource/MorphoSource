@@ -46,6 +46,7 @@ byebug
 
   def update_main_job(exceptions=nil)
     # might need to update status to fail if exceptions are found?
+byebug
     main_job.update_status(status: status.status.to_s, exceptions: exceptions)
   end
 

@@ -4,7 +4,7 @@ class BatchSubmissionsController < ApplicationController
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms, only: [:new]
-  before_action :check_sftp_share_connection, only: [:new]
+  before_action :check_submit_allowed, only: [:new]
   before_action :check_params, only: [:submit]
   after_action :create_manifest_object, only: [:submit]
 
@@ -838,9 +838,13 @@ class BatchSubmissionsController < ApplicationController
       end
     end
 
-    def check_sftp_share_connection
-      if user_share_full_path == "NOT_FOUND"
-        render 'not_connected'      
+    def check_submit_allowed
+      if !current_user.batch_submission_contributor?
+        render 'not_allowed', locals: { message: 'Sorry, you do not have permission.' }
+      elsif !current_user.can_submit_new_batch_submission?
+        render 'not_allowed', locals: { message: 'Sorry, you currently have a batch submission job running.' }
+      elsif user_share_full_path == "NOT_FOUND"
+        render 'not_allowed', locals: { message: 'Your SFTP share is not connected.  Please check your user profile.' }
       end
     end
 

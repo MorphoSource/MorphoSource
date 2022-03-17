@@ -76,7 +76,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         end
       end
       exception_message = "One or more media ingests failed. #{exceptions.join('; ')}"
-      update_main_job(status: 'failed', exceptions: exception_message) 
+      update_main_job('failed', exception_message) 
       raise exception_message
     end
 
@@ -94,8 +94,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     BackgroundJob.where(main_job_id: main_job_id).first
   end
 
-  def update_main_job(status=nil, exceptions=nil)
-    main_job.update_status(status: status, exceptions: exceptions)
+  def update_main_job(status_str=nil, exceptions=nil)
+byebug
+    main_job.update_status(status_str, exceptions)
   end
 
   def monitor_ingest_jobs

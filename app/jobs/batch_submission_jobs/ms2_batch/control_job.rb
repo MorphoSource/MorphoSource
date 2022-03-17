@@ -9,7 +9,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       status.update(manifest: manifest)
       @manifest = manifest
       @main_job_id = status.job_id
-      update_main_job
+      update_main_job(status.status.to_s, nil)
 
       sub_jobs.each do |job_class|
         Rails.logger.debug "iN ControlJob: sending main_job_id  #{@main_job_id} to sub_job  " 
@@ -21,13 +21,18 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       # debug: check exception here if stopped
       #byebug
       status.update(status: :failed)
-      update_main_job(exceptions: e.message)
+      update_main_job("failed", e.message)
       status.update(manifest: @manifest, exception: e.message)      
     ensure
       status.update(manifest: @manifest)
     end
 
 byebug
+
+
+#    at this point ControlJob is done. may need to check each subjob's status ?
+
+
     sleep(1.minute) until monitor_main_status
 
   end
@@ -44,13 +49,18 @@ byebug
     BackgroundJob.where(main_job_id: main_job_id).first
   end
 
-  def update_main_job(exceptions=nil)
+  def update_main_job(status_str=nil, exceptions=nil)
     # might need to update status to fail if exceptions are found?
-byebug
-    main_job.update_status(status: status.status.to_s, exceptions: exceptions)
+#byebug
+    main_job.update_status(status_str, exceptions)
   end
 
   def monitor_main_status
+
+byebug
+      
+ # make sure status is from main job here, not sub job
+
     if status.status == :queued || status.status == :working
 byebug
       update_main_job
@@ -61,7 +71,7 @@ byebug
       return true
     elsif status.status == :failed
 byebug
-      update_main_job(status.exception)
+      update_main_job("failed", status.exception)
       return true
     else
 byebug

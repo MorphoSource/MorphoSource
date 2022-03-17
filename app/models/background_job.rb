@@ -15,18 +15,19 @@ class BackgroundJob < ApplicationRecord
   	self.save
   end
 
-  def update_status(status=nil, exceptions=nil)
+  def update_status(status_str=nil, exceptions=nil)
   	if exceptions.present?
 	  Rails.logger.debug "iN BackgroundJob: updating main_job #{main_job_id} with exceptions: #{exceptions} "
 	  self.exceptions = exceptions
 	  self.save
 	end 
-  	if status.present?
-	  Rails.logger.debug "iN BackgroundJob: updating main_job #{main_job_id} with status: #{status} " 
-	  self.status = status
+  	if status_str.present?
+	  Rails.logger.debug "iN BackgroundJob: updating main_job #{main_job_id} with status: #{status_str} " 
+byebug
+	  self.status = status_str
 	  self.save  
 	end
-  	if exceptions.present? || status.present?
+  	if exceptions.present? || status_str.present?
   	  self.save
   	end
   end

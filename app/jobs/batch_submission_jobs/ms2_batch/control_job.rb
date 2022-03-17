@@ -21,11 +21,15 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       # debug: check exception here if stopped
       #byebug
       status.update(status: :failed)
-      update_main_job(e.message)
+      update_main_job(exceptions: e.message)
       status.update(manifest: @manifest, exception: e.message)      
     ensure
       status.update(manifest: @manifest)
     end
+
+byebug
+    sleep(1.minute) until monitor_main_status
+
   end
 
   def sub_jobs
@@ -42,7 +46,28 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
 
   def update_main_job(exceptions=nil)
     # might need to update status to fail if exceptions are found?
-    main_job.update_status(status.status.to_s, exceptions)
+    main_job.update_status(status: status.status.to_s, exceptions: exceptions)
+  end
+
+  def monitor_main_status
+    if status.status == :queued || status.status == :working
+byebug
+      update_main_job
+      return false
+    elsif status.status == :completed 
+byebug
+      update_main_job
+      return true
+    elsif status.status == :failed
+byebug
+      update_main_job(status.exception)
+      return true
+    else
+byebug
+      Rails.logger.debug "iN ControlJob: unknown status #{status.status} " 
+      update_main_job
+      return true
+    end
   end
 
   def monitor_status(job)

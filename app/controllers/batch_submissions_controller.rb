@@ -15,8 +15,6 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def index
-#    batch_submission_jobs = current_user.batch_submission_jobs
-#    job = batch_submission_jobs&.first
     job = current_user.last_batch_submission_job
     render 'index', locals: { row_count: nil, job: job }
   end
@@ -255,7 +253,8 @@ class BatchSubmissionsController < ApplicationController
           warn_messages: warn_messages, 
           warn_cell_numbers: warn_cell_numbers, 
           field_names: field_names, 
-          row_count: row_count }
+          row_count: row_count,
+          job: nil }
         @manifest_is_valid = true
       end    
 

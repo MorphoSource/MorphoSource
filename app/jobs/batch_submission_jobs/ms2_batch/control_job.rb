@@ -19,7 +19,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
         progress.increment
       end
     rescue StandardError => e
-      Rails.logger.debug "iN ControlJob #{@main_job_id}: UNKNOWN EXCEPTION: #{e.message} "
+      Rails.logger.debug "iN ControlJob #{@main_job_id}: Exception caught #{e.message} "
       status.update(status: :failed)
       update_main_job("failed", e.message)
       status.update(manifest: @manifest, exception: e.message)

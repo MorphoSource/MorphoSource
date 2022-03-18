@@ -7,5 +7,9 @@
 <div class="row">
 	<div class="col-xs-12">
 		<%= message %>
+		<% if show_dashboard_link %>
+			<p>Back to <%= link_to "Batch Submission Dashboard", main_app.batch_submissions_path %></p>
+		<% end %>
 	</div>
 </div>
+

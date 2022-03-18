@@ -17,20 +17,28 @@ class BackgroundJob < ApplicationRecord
 
   def update_status(status_str=nil, exceptions=nil)
   	if exceptions.present?
-byebug
 	  Rails.logger.debug "iN BackgroundJob #{main_job_id}: updating with exceptions: #{exceptions} "
 	  self.exceptions = exceptions
 	  self.save
 	end 
   	if status_str.present?
 	  Rails.logger.debug "iN BackgroundJob #{main_job_id}: updating with status: #{status_str} " 
-byebug
 	  self.status = status_str
 	  self.save  
 	end
   	if exceptions.present? || status_str.present?
   	  self.save
   	end
+  end
+
+  def sync_status
+  	# check the status from ActiveJob and update if needed
+    job_status = ActiveJob::Status.get(self.main_job_id)
+    # todo: might need to update the ActiveJob here if the status is marked "canceled"
+    if self.status != "canceled" && self.status != "completed" && job_status.present? && job_status.status.to_s != self.status
+	  Rails.logger.debug "iN BackgroundJob #{main_job_id}: syncing status with ActiveJob to #{job_status.status.to_s} "
+      update_status(job_status.status.to_s)
+    end
   end
 
 end

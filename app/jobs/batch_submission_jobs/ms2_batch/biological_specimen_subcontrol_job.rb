@@ -27,7 +27,8 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
 
       b['job'] = ::BatchObjectImportJob.perform_later('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
     end
-
+byebug
+raise "test exceptions in BiologicalSpecimenSubcontrolJob"
     # Monitor jobs
     sleep(1.minute) until monitor_works_to_be_created
 

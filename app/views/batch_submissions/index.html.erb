@@ -5,39 +5,8 @@
 
 <p>On this page you can create new batch submissions or monitor the status of your current batch submissions. Please read the <a href="#">documentation</a>.</p>
 
-<% if row_count.present? %>
-
-	<p><%= row_count %> <%= "row".pluralize(row_count) %> parsed 
-	<% if warn_rows.present? %>
-		with <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-warnings">warnings</a>.
-
-		<div id="collapse-block-warnings" class="collapse-block collapse out" aria-expanded="true">
-			<% warn_rows.map do |row_number, row| %>
-				<ul class="warn-list">Row <%= row_number %>: <%= warn_messages[row_number].to_wrapped_html('li') %></ul>
-				<%# todo: remove the table later if not needed
-				table class="table warn-rows">
-				<tr>
-					<%# field_names.each_with_index do |field_name, index| % >
-						<th><%#= field_name % ></th>
-					<% end % >
-				</tr>
-				<tr>
-					<%= row.to_wrapped_html('td')% >
-				</tr>
-				</table -- %>
-			<% end %>
-		</div>
-	<% else %>
-	.
-	<% end %>
-	</p>
-
-	<p>Ingestion is in progress.</p>
-
-<% end %>
-
 <% if job.present? %>
-	<h2>Last Job</h2>
+	<h2>Job Status</h2>
 	<table class="table">
 		<tr>
 			<th>Job ID</th>
@@ -47,11 +16,12 @@
 		</tr>
 		<tr>
 			<td><%= job.main_job_id %></td>
-			<td><%= job.status %></td>
+			<td><%= job.status.capitalize %></td>
 			<td><%= job.created_at %></td>
 			<td><%= job.exceptions %></td>
 		</tr>
 	</table>
+	<p>Only one batch submission job is allowed at a time.  Please contact MorphoSource team if you see any issue.</p>
 <% end %>
 
 <% if current_user.can_submit_new_batch_submission? %>

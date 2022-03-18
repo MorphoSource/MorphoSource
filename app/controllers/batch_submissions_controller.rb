@@ -16,7 +16,7 @@ class BatchSubmissionsController < ApplicationController
   
   def index
     job = current_user.last_batch_submission_job
-    render 'index', locals: { row_count: nil, job: job }
+    render 'index', locals: { job: job }
   end
 
   def new
@@ -157,7 +157,6 @@ class BatchSubmissionsController < ApplicationController
 
   def ingest
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object)
-byebug
     main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
 
@@ -249,13 +248,12 @@ byebug
           row_count: row_count }
         @manifest_is_valid = false
       else
-        render 'index', locals: { 
+        render 'validation_success', locals: { 
           warn_rows: warn_rows, 
           warn_messages: warn_messages, 
           warn_cell_numbers: warn_cell_numbers, 
           field_names: field_names, 
-          row_count: row_count,
-          job: nil }
+          row_count: row_count }
         @manifest_is_valid = true
       end    
 

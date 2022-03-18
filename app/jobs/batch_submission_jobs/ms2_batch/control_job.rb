@@ -10,31 +10,26 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       @manifest = manifest
       @main_job_id = status.job_id
       update_main_job(status.status.to_s, nil)
+      exception_caught = false
 
       sub_jobs.each do |job_class|
-        Rails.logger.debug "iN ControlJob: sending main_job_id  #{@main_job_id} to sub_job  " 
+        Rails.logger.debug "iN ControlJob #{@main_job_id}: sending to sub_job  " 
         job = job_class.send :perform_later, @manifest, @main_job_id
-        sleep(1.minute) until monitor_status(job)
+        sleep(1.minute) until monitor_subjob_status(job)
         progress.increment
       end
     rescue StandardError => e
-      # debug: check exception here if stopped
-      #byebug
+      Rails.logger.debug "iN ControlJob #{@main_job_id}: UNKNOWN EXCEPTION: #{e.message} "
       status.update(status: :failed)
       update_main_job("failed", e.message)
-      status.update(manifest: @manifest, exception: e.message)      
+      status.update(manifest: @manifest, exception: e.message)
+      exception_caught = true
     ensure
       status.update(manifest: @manifest)
     end
-
-byebug
-
-
-#    at this point ControlJob is done. may need to check each subjob's status ?
-
-
-    sleep(1.minute) until monitor_main_status
-
+    # at this point, all subjobs are either :completed, 
+    # or exception was raised and caught already
+    update_main_job("completed") unless exception_caught
   end
 
   def sub_jobs
@@ -50,38 +45,13 @@ byebug
   end
 
   def update_main_job(status_str=nil, exceptions=nil)
-    # might need to update status to fail if exceptions are found?
-#byebug
+    unless status_str.present?
+      status_str = status.status.to_s 
+    end
     main_job.update_status(status_str, exceptions)
   end
 
-  def monitor_main_status
-
-byebug
-      
- # make sure status is from main job here, not sub job
-
-    if status.status == :queued || status.status == :working
-byebug
-      update_main_job
-      return false
-    elsif status.status == :completed 
-byebug
-      update_main_job
-      return true
-    elsif status.status == :failed
-byebug
-      update_main_job("failed", status.exception)
-      return true
-    else
-byebug
-      Rails.logger.debug "iN ControlJob: unknown status #{status.status} " 
-      update_main_job
-      return true
-    end
-  end
-
-  def monitor_status(job)
+  def monitor_subjob_status(job)
     #return true if job == true # it returns true if perform_now (for testing)
     job_status = ActiveJob::Status.get(job)
 
@@ -106,6 +76,9 @@ byebug
       exception = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
       raise exception
     end
+
+    byebug
+    update_main_job
   end
 
   # if ingest fails, need to delete mid-stream works

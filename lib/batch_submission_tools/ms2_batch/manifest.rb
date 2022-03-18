@@ -5,9 +5,9 @@ module BatchSubmissionTools
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :on_behalf_of,
         :organization_id, :device_id, :device_modality, :collection_ids, :fund_code_id,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
-        :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests
+        :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields
 
-      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil)
+      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:)
         @input_path = input_path
         @media_path = media_path
         @admin_user = admin_user.user_key
@@ -16,6 +16,7 @@ module BatchSubmissionTools
         @organization_id = organization_id
         @device_id = device_id
         @device_modality = Device.find(device_id).modality&.first
+        @media_ownership_fields = media_ownership_fields
 
         @collection_ids = Array(collection_ids)
         @fund_code_id = fund_code_id
@@ -51,26 +52,56 @@ module BatchSubmissionTools
       def infer_media_relationships
         @media_group_to_rows = rows.each_with_object({}).with_index do |(row, hash), index|
           sheet_index = [index]
-          hash[sheet_index] = { raw_list: [], parents: [], children: [] } if !hash.key?(sheet_index)
+          hash[sheet_index] = { raw_list: [], parents: [], derived_parents: [], children: [] } if !hash.key?(sheet_index)
           hash[sheet_index][:raw_list] << index
         end
+        rows_to_remove = []
+        derived_group_rows = {} # 
 
         media_group_to_rows.each do |sheet_index, mg|
           parents = []
+          derived_parents = []
           children = []
 
           mg[:raw_list].each do |row_index|
             row = rows[row_index]
+            parent_index = ""
+            derived_parent_index = ""
             # is parent?
             if row[:media][:parent_file].present? 
               children << row_index
               # look for the parent row index
-              parent_index = rows.index { |r| r[:media][:media_file]&.first == row[:media][:parent_file].first }
-              parents << parent_index
-              media_group_to_rows[[parent_index]][:children] << row_index
+              rows.each_with_index do |r , idx|
+                if (r[:media][:media_file]&.first == row[:media][:parent_file].first) 
+                  if r[:media][:raw_or_derived]&.first == "Derived" 
+                    derived_parent_index = idx
+                  else
+                    parent_index = idx
+                    rows_to_remove << row_index
+                  end
+                end
+              end
+
+              if parent_index.present?
+                parents << parent_index
+                media_group_to_rows[[parent_index]][:children] << row_index
+              elsif derived_parent_index.present?
+                parents << derived_parent_index
+                # find the media group that ingest the derived parent
+                derived_parents << derived_parent_index
+                if derived_group_rows[[derived_parent_index]].present?
+                  # combine children with a derived parent so they will be all ingested in one job.  
+                  # this will avoid race condition when children are created at the same time
+                  media_group_to_rows[derived_group_rows[[derived_parent_index]]][:children] << row_index 
+                  rows_to_remove << row_index
+                else
+                  derived_group_rows[[derived_parent_index]] = [row_index]
+                end
+              end                  
             elsif row[:media][:parent_ms_id].present?
               children << row_index
-            else
+            else 
+              # note that child with undeposited parent also falls in here
               parents << row_index
             end
 
@@ -78,12 +109,21 @@ module BatchSubmissionTools
               children = parents.drop(1) + children
               parents = parents.first
             end
+            (media_group_to_rows[sheet_index][:parents] << parents).flatten!
+            (media_group_to_rows[sheet_index][:derived_parents] << derived_parents).flatten!
+            (media_group_to_rows[sheet_index][:children] << children).flatten!
 
-            media_group_to_rows[sheet_index][:parents] = parents
-            media_group_to_rows[sheet_index][:children] = children
-          end
+          end # /mg[:raw_list]
+        end # /media_group_to_rows
+
+        if rows_to_remove.present?
+          # when new parent media will be created,
+          # Only the parent items of the media group is needed for ingest job for all media
+          # otherwise duplicate media will be created
+          rows_to_remove.each { |k| media_group_to_rows.delete [k] }
         end
-
+        #byebug # check media_group_to_rows
+        Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
       end
 
       def construct_biological_specimen_ingests
@@ -91,7 +131,6 @@ module BatchSubmissionTools
           if !bso.present?
             raise "Empty biological specimen issue"
           end
-
           matching_bso_index = match_bsos(bso)
           if matching_bso_index.present?
             rows_to_bso[index] = matching_bso_index
@@ -114,8 +153,8 @@ module BatchSubmissionTools
         biological_specimen_ingests.each_with_index do |s, index| 
           if 
             (
-              bso_hash[:id]&.present? &&
-              bso_hash[:id]&.first == s.biological_specimen_id 
+              bso_hash[:ms_id]&.present? &&
+              bso_hash[:ms_id]&.first == s.id 
             ) ||
             ( 
               bso_hash[:occurrence_id].present? &&
@@ -135,9 +174,10 @@ module BatchSubmissionTools
 
       # Construct 1+ ingests for taxonomies associated with BSO
       def construct_taxonomy_ingests
+
         rows.pluck(:taxonomy).each_with_index do |taxonomy_attrs, index|
           bso = biological_specimen_ingests[rows_to_bso[index]]
-
+ 
           # construct taxonomies if necessary (i.e., if BSO is to be created)
           if bso.attrs.present?
             # skip unless there are taxonomy attributes to use or we can get taxonomy from iDigBio
@@ -191,27 +231,65 @@ module BatchSubmissionTools
           end
 
           # Is there a parent? If so, get IE and parent PE/media ingest from it. Otherwise, get IE from first child
-          if mg[:parents].present?
+          if mg[:parents].present? 
             parent_row_index = mg[:parents].first
-            ie_row_index = parent_row_index
-            parent_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
-              initial_attrs: rows[parent_row_index][:processing_event],
-              depositor: depositor,
-              on_behalf_of: on_behalf_of
-            )
-            parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
-              initial_attrs: rows[parent_row_index][:media],
-              depositor: depositor,
-              on_behalf_of: on_behalf_of,
-              organization_id: organization_id,
-              media_path: media_path
-            )
+            media_attrs = rows[parent_row_index][:media]
 
-            parent = {
-              parent_row_index => 
-                BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
-            }
+            if parent_row_index == sheet_index.first && media_attrs[:raw_or_derived].first == "Raw"
+
+              ie_row_index = parent_row_index
+
+              parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
+                initial_attrs: media_attrs,
+                depositor: depositor,
+                on_behalf_of: on_behalf_of,
+                organization_id: organization_id,
+                media_path: media_path,
+                media_ownership_fields: media_ownership_fields
+              )
+              parent = {
+                parent_row_index => 
+                  BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media)
+              }
+
+            else
+              ie_row_index = parent_row_index
+              parent_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
+                initial_attrs: rows[parent_row_index][:processing_event],
+                depositor: depositor,
+                on_behalf_of: on_behalf_of
+              )
+
+              media_attrs = rows[parent_row_index][:media]
+              parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
+                initial_attrs: media_attrs,
+                depositor: depositor,
+                on_behalf_of: on_behalf_of,
+                organization_id: organization_id,
+                media_path: media_path,
+                media_ownership_fields: media_ownership_fields
+              )
+              parent = {
+                parent_row_index => 
+                  BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
+              }
+
+            end
           else
+            # if parent_ms_id exists, get the existing parent 
+            if rows[mg[:children].first][:media][:parent_ms_id].present?
+
+              media_attrs = { 
+                ms_id: rows[mg[:children].first][:media][:parent_ms_id].first
+              }
+              parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
+                initial_attrs: media_attrs
+              )
+              parent = {
+                "existing" => BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media)
+              }              
+            end
+
             ie_row_index = mg[:children].first
           end
 
@@ -226,6 +304,12 @@ module BatchSubmissionTools
           }
 
           children = mg[:children].map do |row_index|
+
+            if mg[:derived_parents].present?
+              # mark the ingest with dependency
+              derived_parent_file = rows[row_index][:media][:parent_file].first             
+            end
+
             child_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
               initial_attrs: rows[row_index][:processing_event],
               depositor: depositor,
@@ -236,7 +320,9 @@ module BatchSubmissionTools
               depositor: depositor,
               on_behalf_of: on_behalf_of,
               organization_id: organization_id,
-              media_path: media_path
+              media_path: media_path,
+              media_ownership_fields: media_ownership_fields,
+              derived_parent_file: derived_parent_file
             )
 
             [
@@ -253,7 +339,7 @@ module BatchSubmissionTools
             parent: parent, 
             children: children
           )
-        end
+        end # / media_group_to_rows.each
       end
 
       # Must convert entire object to hash for ActiveJob serialization
@@ -266,8 +352,13 @@ module BatchSubmissionTools
           media_ie_pe_ingests: media_ie_pe_ingests.map(&:to_h),
           collection_ids: collection_ids,
           fund_code_id: fund_code_id
-        }
+        }.deep_stringify_keys
       end
+
+      def convert(obj)
+        obj.map(&:to_h) #obj.map(&:to_json)
+      end
+
     end
   end
 end

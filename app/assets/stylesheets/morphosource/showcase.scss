@@ -37,7 +37,12 @@ html {
       color: red;
     }    
   }
-  .error-rows {
+  .warn-list {
+    li {
+      color: #000;
+    }    
+  }
+  .error-rows, .warn-rows {
     th, td {
       border: 1px solid #999;
       font-size: 11px;
@@ -61,7 +66,7 @@ html {
 */
 .showcase { 
 
-  ul.error-list {
+  ul.error-list, ul.warn-list {
     margin-left: 0;
     margin-block-start: 0;
     margin-block-end: 1em;

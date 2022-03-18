@@ -58,6 +58,8 @@
 /fits.log
 
 .DS_Store
+._*
+/bin
 
 # ---------------------------------------------------
 # MorphoSource specific changes

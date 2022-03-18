@@ -12,7 +12,7 @@ module BatchSubmissionTools
           @depositor = depositor
           @on_behalf_of = on_behalf_of
           @organization_id = organization_id
-          @id = initial_attrs[:id]&.first || id
+          @id = initial_attrs[:ms_id]&.first || id
           @work = work
           @work_imported = work_imported
           @attrs = attrs
@@ -74,6 +74,7 @@ module BatchSubmissionTools
         end
 
         def work
+          # if specimen ms_id exists, get the object and ignore other BSO columns (occur id, coll code, catalog num, etc) 
           @work ||=
             if (
                 id.present? && 

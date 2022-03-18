@@ -13,8 +13,8 @@ module BatchSubmissionTools
         def to_h
           {
             imaging_event: imaging_event.symbolize_keys.transform_values(&:to_h),
-            parent: parent.symbolize_keys.transform_values(&:to_h),
-            children: children.symbolize_keys.transform_values(&:to_h),
+            parent: parent&.symbolize_keys&.transform_values(&:to_h),
+            children: children&.symbolize_keys&.transform_values(&:to_h),
           }
         end
       end

@@ -15,17 +15,6 @@
           </div>
         </div>
 
-        <div id="submission_organization_data_management_clause" class="row form-group hide">
-          <div class="col-xs-12 col-sm-6 col-sm-offset-3 block" style="padding-left: 15px;">
-            <div class="text-left mb-1"><%= t('morphosource.submission.organization_data_management') %></div>
-            <%= f.input :organization_data_management_agree, 
-              as: :boolean, 
-              label: 'I understand and agree.',
-              :label_html => { :style => 'font-weight: bold;' }
-            %>
-          </div>
-        </div>
-
         <div class="row mt-1">
           <%= f.submit t('morphosource.submission.continue'), id: 'submission_select_organization', class: 'btn btn-primary btn-continue', disabled: true %>
         </div> 

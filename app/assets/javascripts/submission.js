@@ -572,12 +572,17 @@ $( document ).ready(function() {
           var recordsetId = $(this).data('recordset');
 
           if (data.idigbioId && recordsetId) {
+            var recordsetMatch = false;
+
             // Is there a MS organization that matches this recordset?
             $.get('organization_for_recordset',
               { 'recordset_id': recordsetId },
               function(getData){
                 console.log(getData);
                 if (getData.organization_found && getData.organization_id) {
+                  // Set variables for view next step logic
+                  recordsetMatch = true;
+ 
                   // Set organization data
                   data.setOrganizationDefaults();
                   data.organizationId = getData.organization_id;
@@ -586,20 +591,23 @@ $( document ).ready(function() {
 
                   // Set organization-related default media permission fields
                   self.form.setDefaultMediaPermissionFields();
-
-                  // Proceed
-                  data.savedStep = 3;
-                  self.form.setSidebarViewCheck([3, 4, 5, 6]);
-                  self.form.setSidebarViewFade([3, 4, 5, 6]);
-                  self.form.setVisibleView(7); // view 7 select device
-                } else {
-                  data.savedStep = 3;
-                  self.form.setSidebarViewCheck([3, 5, 6]);
-                  self.form.setSidebarViewFade([3, 5, 6]);
-                  self.form.setVisibleView(4); // view 4 select organization
                 }
               }
             );
+
+            if (recordsetMatch) {
+              // Skip physical object steps and proceed to select device
+              data.savedStep = 3;
+              self.form.setSidebarViewCheck([3, 4, 5, 6]);
+              self.form.setSidebarViewFade([3, 4, 5, 6]);
+              self.form.setVisibleView(7); // view 7 select device
+            } else {
+              // Must select organization
+              data.savedStep = 3;
+              self.form.setSidebarViewCheck([3, 5, 6]);
+              self.form.setSidebarViewFade([3, 5, 6]);
+              self.form.setVisibleView(4); // view 4 select organization
+            }
           }
 
           console.log(data);
@@ -685,18 +693,6 @@ $( document ).ready(function() {
               }
             }
 
-            // Uncheck org data management clause and make required if appropriate
-            $('input#submission_organization_data_management_agree').prop('checked', false);
-            if (item.data_manager) {
-              $('input#submission_organization_data_management_agree').attr('required', 'required');
-              $('input#submission_organization_data_management_agree').attr('aria-required', 'true');
-              $('#submission_organization_data_management_clause').addClass('show').removeClass('hide');
-            } else {
-              $('input#submission_organization_data_management_agree').removeAttr('required');
-              $('input#submission_organization_data_management_agree').removeAttr('aria-required');
-              $('#submission_organization_data_management_clause').addClass('hide').removeClass('show');
-            }
-
             // Other UI control
             $('#submission_create_organization_button_section').addClass('hide').removeClass('show');
             $('#submission_create_organization_form_section').addClass('hide').removeClass('show');
@@ -704,7 +700,6 @@ $( document ).ready(function() {
             $('#submission_select_organization').removeAttr('disabled');
           }
         });
-
 
         $('#submission_organization_select_display_container').on(
           'click', '#organization-select-close', function(event){
@@ -715,15 +710,11 @@ $( document ).ready(function() {
             $("#organization_search_form input.organization_label").val('');
             $("#submission_organization_select_display .showcase-value").text('');
 
-            // Uncheck org data management clause if it was checked
-            $('input#submission_organization_data_management_agree').prop('checked', false);
-
             // UI controls
             $('#submission_select_organization_section').addClass('show').removeClass('hide');
             $('#submission_create_organization_button_section').addClass('show').removeClass('hide');
             $('#submission_no_organization_section').addClass('show').removeClass('hide');
             $('#submission_organization_select_display').addClass('hide').removeClass('show');
-            $('#submission_organization_data_management_clause').addClass('hide').removeClass('show');
             $('#submission_select_organization').attr('disabled', 'disabled');
         });
 

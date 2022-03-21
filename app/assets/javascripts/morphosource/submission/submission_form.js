@@ -99,6 +99,7 @@ class SubmissionForm {
         // Prepare for new organization permission fields, empty fields vals from user for current org fields
         self.emptyMediaFields(getData.default_fields); // 
 
+        // Set up organization recommended/required field values
         if (Object.keys(getData.default_fields).length) {
           // Set up text
           $('#organization-alert-message').text(getData.organization_alert_message);
@@ -113,11 +114,6 @@ class SubmissionForm {
           }
           $('#ownership-section-header-text').addClass('show').removeClass('hide');
 
-          // If organization has data manager specified, show appropriate form elements
-          if (getData.organization_data_manager) {
-            self.enableOrgMediaTransferSettings(getData.default_fields);
-          }
-
           // Add new settings
           self.fillMediaFields(getData.default_fields, mandateValues);
 
@@ -127,6 +123,15 @@ class SubmissionForm {
           } else {
             self.setNoOrganizationAgreement();
           }
+        }
+
+        // Set up organization media transfer settings and warnings
+        if (getData.organization_data_manager) {
+          self.enableOrgMediaTransferSettings(getData.default_fields);
+          $('.organization-name').text(getData.organization_title);
+          $('.organization-data-manager').text(getData.organization_data_manager_name);
+          $('.organization-data-manager').attr('href', '/users/' + getData.organization_data_manager);
+          $('#organizationTransferModal').modal({ backdrop: 'static', keyboard: false });
         }
 
         // Remove loading

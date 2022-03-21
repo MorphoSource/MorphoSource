@@ -177,6 +177,7 @@ class SubmissionsController < ApplicationController
       organization_id = organization.id
       organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
       organization_data_manager = organization.data_manager&.first
+      organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email
     else
       status = 'FAIL'
       message = 'Organization does not exist'
@@ -185,6 +186,8 @@ class SubmissionsController < ApplicationController
       organization_title = ''
       organization_id = nil
       organization_permissions_mode = nil
+      organization_data_manager = nil
+      organization_data_manager_name = nil
     end
     response_object = {
       status: status,
@@ -194,7 +197,8 @@ class SubmissionsController < ApplicationController
       organization_title: organization_title,
       organization_id: organization_id,
       organization_permissions_mode: organization_permissions_mode,
-      organization_data_manager: organization_data_manager
+      organization_data_manager: organization_data_manager,
+      organization_data_manager_name: organization_data_manager_name
     }
     render :json => response_object
   end
@@ -248,7 +252,6 @@ class SubmissionsController < ApplicationController
       if @submission.will_create_taxonomy
         @submission.taxonomy_params_array << params[:taxonomy]
       end
-
 
       @submission.taxonomy_gbif_key_array.each do |gbif_key| # this may be empty
         gbif = Morphosource::TaxonomySearchService.call({ gbif_key: gbif_key.to_s })
@@ -471,7 +474,7 @@ class SubmissionsController < ApplicationController
       if work == 'media'
         create_thumbnail
         set_new_fund_code if @submission.fund_code.present?
-        create_organization_transfer_request(new_work) if @submission.organization_transfer_immediately
+        create_organization_transfer_request(new_work) if ( organization_media_transfer == :immediate )
       end
     end
   end
@@ -488,6 +491,7 @@ class SubmissionsController < ApplicationController
       addl_params = { uploaded_files: params[:uploaded_files] }
       addl_params[:selected_files] = params[:selected_files] if params[:selected_files].present?
       addl_params[:collection_id] = params[:collection_id] if params[:collection_id].present?
+      addl_params[:organization_transfer_on_publish] = true if ( organization_media_transfer == :publication )
       finalize_model_params(work, model_params, addl_params)
     elsif work == 'imaging_event'
       addl_params = { device_id: [@submission.device_id] }
@@ -574,6 +578,9 @@ class SubmissionsController < ApplicationController
       end
       if addl_params[:selected_files].present?
         model_params.merge!({ selected_files: addl_params[:selected_files] })
+      end
+      if addl_params[:organization_transfer_on_publish].present?
+        model_params.merge!({ organization_transfer_on_publish: addl_params[:organization_transfer_on_publish] })
       end
       @media_create_params = model_params
 
@@ -664,8 +671,36 @@ class SubmissionsController < ApplicationController
     ).save!
   end
 
+  # Methods related to transferring media to organization control
+
   def create_organization_transfer_request(work)
     work.transfer_media_to_organization
+  end
+
+  def organization_media_transfer
+    @organization_media_transfer ||= get_organization_media_transfer
+  end
+
+  def get_organization_media_transfer
+    if params[:media][:transfer_management].present?
+      if transfer_media_immediately?
+        :immediate
+      elsif params[:media][:transfer_management] == 'publication'
+        :publication
+      else
+        nil
+      end
+    else
+      nil
+    end
+  end
+
+  def transfer_media_immediately?
+    ( params[:media][:transfer_management] == 'immediate' ) ||
+    ( 
+      params[:media][:transfer_management] == 'publication' && 
+      ['open', 'restricted_download'].include?(params[:media][:visibility]) 
+    )
   end
 
   # Utility functions
@@ -770,7 +805,7 @@ class SubmissionsController < ApplicationController
     curation_concern = model.new
     env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
     Hyrax::CurationConcern.actor.create(env)
-    curation_concern.id, curation_concern
+    return curation_concern.id, curation_concern
   end
 
   def instantiate_work_forms

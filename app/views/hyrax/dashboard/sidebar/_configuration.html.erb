@@ -50,7 +50,7 @@
       <% end %>
     <% end %>
 
-    <% if current_user.admin? || current_user.batch_submission_contributor? %>
+    <% if current_user.batch_submission_contributor? %>
       <%= menu.nav_link(main_app.batch_submissions_path) do %>
         <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
       <% end %>

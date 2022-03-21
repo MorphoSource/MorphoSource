@@ -1,6 +1,7 @@
 <% if current_user.admin? %>
   <div class="content-block block admin-block">
     <h2>ADMIN SETTINGS</h2>
+    <%= f.input :organization_transfer_on_publish, as: :select, include_blank: false, collection: [['No', nil], ['Yes', true]], label: 'Org. transfer on publish' %>
     <%= f.input :select_fund_code, collection: @presenter.fund_code_associations - [@presenter.active_fund_code_association], label: "Activate fund code" %>
     <%= f.input :select_new_fund_code, collection: FundCode.all - @presenter.fund_codes, label: "New fund code" %>
     <%= render_edit_field_partial('agreement_uri', f: f) %>

@@ -257,7 +257,7 @@ class User < ApplicationRecord
 
   def can_submit_new_batch_submission?
     return true unless batch_submission_jobs.present? 
-    return last_batch_submission_job.status == "completed" || last_batch_submission_job.status == "canceled"
+    return last_batch_submission_job.status == "completed" || last_batch_submission_job.status == "failed"
   end
 
   private

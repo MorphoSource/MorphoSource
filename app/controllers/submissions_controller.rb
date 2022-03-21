@@ -17,6 +17,11 @@ class SubmissionsController < ApplicationController
 
   before_action :instantiate_work_forms
 
+  # return all possible organization records for organization search
+  configure_blacklight do |config|
+    config.max_per_page = 1000000
+  end
+
   # override the layout from WorksControllerBehavior
   def decide_layout
     layout = 'submission'
@@ -37,7 +42,8 @@ class SubmissionsController < ApplicationController
       work_data: work_data
     })
 
-    @organizations = Organization.all_solr
+    @organizations = repository.search(Morphosource::Catalog::OrganizationsCatalogSearchBuilder.new(self).rows(999999).query)["response"]["docs"]
+
     @organizations_select2 = @organizations.map do |o|
       {
         id: o['id'],
@@ -752,10 +758,10 @@ class SubmissionsController < ApplicationController
     # we need the hash of files with url and file_name
     browse_everything_files = selected_files.select { |v| uploaded_files.include?(v[:url]) }
     attributes_for_actor[:remote_files] = browse_everything_files
-    
+
     # Strip out any BrowseEverthing files from the regular uploads.
     attributes_for_actor[:uploaded_files] = uploaded_files - browse_everything_urls
-    
+
     return attributes_for_actor
   end
 

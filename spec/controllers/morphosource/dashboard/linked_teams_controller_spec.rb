@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+include ActionDispatch::TestProcess
 
 RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller do
   let(:org1)                  { Organization.create(title: ['new organization'], institution_code: ['ABC']) }
@@ -48,59 +49,10 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
         works.each(&:reload)
       end
 
-      context 'the team already has a linked organization' do
-        let(:specimen2)        { BiologicalSpecimen.create(title: ['specimen2'], vouchered: ["Yes"], depositor: admin.ms_id, organization_id: [org2.id]) }
-        let(:imagingEvent2)    { ImagingEvent.create(title: ['imagingEvent2'], depositor: admin.ms_id, device_id: [device.id], physical_object_id: [specimen2.id], ie_modality: device.modality) }
-        let(:media2)           { Media.create(title: ['old media'], depositor: admin.ms_id) }
-        let(:file_set2)        { FileSet.create }
-        let(:works)            { [imagingEvent, imagingEvent2, media, media2, file_set2] }
-
-        before do
-          imagingEvent2.ordered_members << media2
-          media2.ordered_members << file_set2
-          media2.read_groups += team.user_groups.map(&:name)
-          file_set2.read_groups += team.user_groups.map(&:name)
-          works.each(&:save)
-          works.each(&:reload)
-          post :link_organization, params: params
-        end
-
-        it 'updates organization link, media and file set permissions' do
-          # it clears the old organization
-          expect(org2.reload.team_id).to eq([])
-          # it links the new organization
-          expect(org1.reload.team_id).to eq([team.id])
-          # it removes the linked team's view access from the old organization's media
-          expect(media2.read_groups).not_to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
-          expect(team_manager.can?(:read, media2)).to be(false)
-          expect(team_depositor.can?(:read, media2)).to be(false)
-          expect(team_viewer.can?(:read, media2)).to be(false)
-          # it removes the linked team's view access from the old organization's file_set
-          expect(file_set2.read_groups).not_to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
-          expect(team_manager.can?(:read, file_set2)).to be(false)
-          expect(team_depositor.can?(:read, file_set2)).to be(false)
-          expect(team_viewer.can?(:read, file_set2)).to be(false)
-          # it adds view access for the linked team's members to the new organization's media
-          expect(media.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
-          expect(team_manager.can?(:read, media)).to be(true)
-          expect(team_depositor.can?(:read, media)).to be(true)
-          expect(team_viewer.can?(:read, media)).to be(true)
-          # it adds view access for the linked team's members to the new organization's file_set
-          expect(file_set.reload.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
-          expect(team_manager.can?(:read, file_set)).to be(true)
-          expect(team_depositor.can?(:read, file_set)).to be(true)
-          expect(team_viewer.can?(:read, file_set)).to be(true)
-          # it redirects back to the collection dashboard page
-          expect(response).to redirect_to('original_page')
-        end
-      end
-
       context 'the team does not already have a linked organization' do
         context 'the team was created as a team' do
-          before do
-            post :link_organization, params: params
-          end
           it 'updates organization link and media permissions' do
+            post :link_organization, params: params
             # it adds the new organization
             expect(org1.reload.team_id).to eq([team.id])
             # it adds view access for the linked team's members to the new organization's media
@@ -115,6 +67,26 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
             expect(team_viewer.can?(:read, file_set)).to be(true)
             # it redirects back to the collection dashboard page
             expect(response).to redirect_to('original_page')
+          end
+          context "the team has read access to another organization's media" do
+            let!(:rogue_media) { Media.create(title: ['rogue media']) }
+            before do
+              rogue_media.read_groups += [team.managers_group.name]
+              rogue_media.save!
+            end
+            it 'redirects with an error and does not update the organization and media' do
+              post :link_organization, params: params
+              # it does not add the new organization
+              expect(org1.reload.team_id).not_to eq([team.id])
+              # it does not add view access for the linked team's members to the new organization's media
+              expect(media.read_groups).not_to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+              expect(team_manager.can?(:read, media)).to be(false)
+              expect(team_depositor.can?(:read, media)).to be(false)
+              expect(team_viewer.can?(:read, media)).to be(false)
+              # it redirects back to the collection dashboard page with an error
+              expect(response.flash[:error]).to include(rogue_media.id)
+              expect(response).to redirect_to('original_page')
+            end
           end
         end
         context 'the team was converted from a project' do
@@ -164,10 +136,10 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
     let(:permits_commercial_use)  { ['true'] }
     let(:permits_3d_use)          { ['true'] }
     let(:rights_holder)           { ['Name: name1, Type: type1', 'Name: name2, Type: type2', 'Name: name3, Type: type3'] }
-    let(:params)                  { { 
+    let(:params)                  { {
                                     id: team.id,
                                     organization:
-                                      { 
+                                      {
                                         download_permission: download_permission.first,
                                         download_reviewer: download_reviewer.first,
                                         license: license,
@@ -175,8 +147,8 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
                                         agreement_uri: agreement_uri,
                                         permits_commercial_use: permits_commercial_use.first,
                                         permits_3d_use: permits_3d_use.first,
-                                        rights_holder: rights_holder 
-                                      } 
+                                        rights_holder: rights_holder
+                                      }
                                   } }
 
     context 'user is not a team admin' do

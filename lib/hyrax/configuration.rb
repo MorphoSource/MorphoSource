@@ -209,6 +209,13 @@ module Hyrax
       @mass_ingest_queue_name ||= :mass_ingest
     end
 
+    # @!attribute [w] batch_submission_queue_name
+    #   ActiveJob queue to handle jobs related to batch submission ingest.
+    attr_writer :batch_submission_queue_name
+    def batch_submission_queue_name
+      @batch_submission_queue_name ||= :batch_submission_ingest
+    end
+
     # @!attribute [w] update_fast_queue_name
     #   ActiveJob queue to handle background work or collection update jobs that need to be run relatively soon. 
     attr_writer :update_fast_queue_name
@@ -477,12 +484,12 @@ module Hyrax
 
     attr_writer :batch_user_key
     def batch_user_key
-      @batch_user_key ||= '614de0' # User key for user morphosource@duke.edu
+      @batch_user_key 
     end
 
     attr_writer :audit_user_key
     def audit_user_key
-      @audit_user_key ||= '614de0' # User key for user morphosource@duke.edu
+      @audit_user_key
     end
 
     # NOTE: This used to be called `working_path` in CurationConcerns

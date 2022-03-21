@@ -36,7 +36,7 @@
   </div>
 <% end %>
 
-<% if !Hyrax.config.wordpress_blog_url.present? %>
+<% if Hyrax.config.wordpress_blog_url.present? %>
   <div class="row showcase">
     <%= render(partial: 'news_updates') %>
     <%= render(partial: 'featured_projects') %>

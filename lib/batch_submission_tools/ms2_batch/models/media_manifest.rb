@@ -3,21 +3,45 @@ module BatchSubmissionTools
     module Models
       class MediaManifest
         attr_accessor :initial_attrs, :depositor, :on_behalf_of, :organization_id, :media_path, :attrs
+        attr_accessor :id, :work, :work_imported, :derived_parent_file
         attr_accessor :organization_permissions_fields, :organization_attachment_id
 
-        def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, organization_id: nil, media_path: nil, attrs: {}, **kwargs)
+        def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, organization_id: nil, media_path: nil, 
+            media_ownership_fields: {}, derived_parent_file: nil, attrs: {}, work_imported: false, **kwargs)
+          
           @initial_attrs = initial_attrs
           @depositor = depositor
           @on_behalf_of = on_behalf_of
           @organization_id = organization_id
-          @organization_permissions_fields = 
-            Organization.find(organization_id).permissions_fields if organization_id.present?
+
+          @id = initial_attrs[:ms_id] || id
+          @work = work
+          @work_imported = work_imported
+
           @media_path = media_path
-          if !attrs.present? && initial_attrs.present?
+          @media_ownership_fields = media_ownership_fields
+          @derived_parent_file = derived_parent_file
+          if work.present?
+            @id = work.id
+            @work_imported = false
+            @attrs = attrs
+          elsif !attrs.present? && initial_attrs.present?
             @attrs = create_new_attributes
           else
             @attrs = attrs
           end
+        end
+
+        def work
+          @work ||=
+            if (
+                id.present? && 
+                ::Media.exists?(id)
+              )
+              ::Media.find(id)
+            else
+              nil
+            end
         end
 
         def create_new_attributes
@@ -25,21 +49,19 @@ module BatchSubmissionTools
             depositor: depositor, 
             on_behalf_of: on_behalf_of, 
             download_reviewer: download_reviewer,
-            description: description
+            description: description,
+            derived_parent_file: derived_parent_file
           }
-          if organization_id.present?
-            addl_attrs.merge!(
-              organization_permissions_fields
-                .select { |k, v| Array(v)&.first.present? }
-            ) 
-            addl_attrs.merge!(visibility_from_organization)
-          end
+          addl_attrs.merge!(@media_ownership_fields).symbolize_keys!
+          addl_attrs.merge!(visibility_mapped(@media_ownership_fields["visibility"]))
+
           p = media_file_path
-          addl_attrs[:file] = [p] if p.present?
-          
+          addl_attrs[:file] = [p] if p.present?          
+
           Importer::Factory::MediaFactory.new(
             initial_attrs.except(:id, :media_file).merge(addl_attrs), 
-            ( File.dirname(p) if p.present? )
+            ( File.dirname(p) if p.present? ),
+            false
           ).create_attributes
         end
 
@@ -59,33 +81,29 @@ module BatchSubmissionTools
           'Record created by batch submission.'
         end
 
-        def visibility_from_organization
-          if organization_id.present? and organization_permissions_fields[:download_permission]&.first.present?
-            public = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-            private = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
+        def visibility_mapped(requested_visibility)
+          public = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+          private = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
 
-            case organization_permissions_fields[:download_permission]&.first
-            when public
-              { 
-                :visibility => public,
-                :fileset_visibility => "",
-                :fileset_accessibility => "open"
-              }
-            when private
-              { 
-                :visibility => private,
-                :fileset_visibility => "",
-                :fileset_accessibility => "private"
-              }
-            when 'restricted_download'
-              { 
-                :visibility => public,
-                :fileset_visibility => "",
-                :fileset_accessibility => "restricted_download"
-              }
-            else
-              {}
-            end
+          case requested_visibility
+          when public
+            { 
+              :visibility => public,
+              :fileset_visibility => "",
+              :fileset_accessibility => "open"
+            }
+          when private
+            { 
+              :visibility => private,
+              :fileset_visibility => "",
+              :fileset_accessibility => "private"
+            }
+          when 'restricted_download'
+            { 
+              :visibility => public,
+              :fileset_visibility => "",
+              :fileset_accessibility => "restricted_download"
+            }
           else
             {}
           end
@@ -104,7 +122,7 @@ module BatchSubmissionTools
         end
 
         def to_h
-          instance_values.symbolize_keys
+          instance_values.symbolize_keys.except(:work)
         end
       end
     end

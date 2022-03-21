@@ -15,6 +15,17 @@ ActiveRecord::Schema.define(version: 2022_03_16_172957) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "background_jobs", force: :cascade do |t|
+    t.string "job_id"
+    t.string "status"
+    t.string "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.json "created_objects", default: {}
+    t.string "main_job_id"
+    t.text "exceptions"
+  end
+
   create_table "batch_submissions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -323,16 +334,6 @@ ActiveRecord::Schema.define(version: 2022_03_16_172957) do
     t.string "message_id"
     t.index ["notification_id"], name: "index_mailboxer_receipts_on_notification_id"
     t.index ["receiver_id", "receiver_type"], name: "index_mailboxer_receipts_on_receiver_id_and_receiver_type"
-  end
-
-  create_table "media_downloads", force: :cascade do |t|
-    t.uuid "uuid", null: false
-    t.bigint "user_id", null: false
-    t.string "media_ids", default: [], array: true
-    t.datetime "expires_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_media_downloads_on_user_id"
   end
 
   create_table "minter_states", force: :cascade do |t|

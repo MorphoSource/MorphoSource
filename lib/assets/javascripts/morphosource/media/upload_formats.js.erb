@@ -41,7 +41,7 @@ const mediaFormatLabels = {
 
 // Set allowed formats for each Media Type in lib/morphosource/configurable.
 // Returns a formats object.
-function mediaTypeFormats() {
+function mediaTypeFormats(){
   let mediaType = $('#media_media_type').val();
   let mediaTitle = mediaFormatLabels[mediaType];
   let acceptedFormatsMessage = "Accepted formats for " + mediaTitle + " file are: ";
@@ -49,7 +49,7 @@ function mediaTypeFormats() {
   let formats = {};
 
   switch (mediaType) {
-    case 'Image':
+    case 'Image': 
       var list = (<%= Morphosource.image_formats %>).join(', ');
       break;
     case 'Video':

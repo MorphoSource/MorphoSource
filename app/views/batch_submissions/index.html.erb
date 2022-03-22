@@ -3,16 +3,15 @@
 
 <h1>Batch Submission</h1>
 
-<p>On this page you can create new batch submissions or monitor the status of your current batch submissions. Please read the <a href="#">documentation</a>.</p>
+<p>On this page you can create a new batch submission or monitor the status of your current batch submission. Please read the <a href="#">documentation</a>.</p>
 
 <% if job.present? %>
-	<h2>Job Status</h2>
 	<table class="table">
 		<tr class="bg-light-gray">
-			<th class="col-xs-3">Job ID</th>
+			<th class="col-xs-3"><%= job.running? ? "Current" : "Last" %> Job</th>
 			<th class="col-xs-1	">Status</th>
 			<th class="col-xs-3">Created</th>
-			<th class="col-xs-5">Exception</th>
+			<th class="col-xs-5">Error Message</th>
 		</tr>
 		<tr>
 			<td><%= job.main_job_id %></td>

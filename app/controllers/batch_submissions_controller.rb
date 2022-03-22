@@ -839,7 +839,7 @@ class BatchSubmissionsController < ApplicationController
     end
 
     def check_batch_submission_access
-      if !current_user.batch_submission_contributor?
+      if !current_user.batch_submission_contributor? && !current_user.admin?
         render 'not_allowed', locals: { message: 'Sorry, you do not have permission.', show_dashboard_link: false }
       elsif user_share_full_path == "NOT_FOUND"
         render 'not_allowed', locals: { message: 'Your SFTP share is not connected.  Please check your user profile.', show_dashboard_link: false }

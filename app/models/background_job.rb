@@ -31,6 +31,10 @@ class BackgroundJob < ApplicationRecord
   	end
   end
 
+  def running?
+  	self.status == "queued" || self.status == "working"
+  end
+
   def sync_status
   	# check the status from ActiveJob and update if needed
     job_status = ActiveJob::Status.get(self.main_job_id)

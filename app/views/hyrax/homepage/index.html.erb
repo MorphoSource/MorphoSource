@@ -1,193 +1,55 @@
 <% content_for :body_css_classes do %>showcase<% end %>
 <% provide :page_title, application_name %>
-<div id="front-banner" class="row equal">
-  <div class="col-xs-12 col-sm-6 col-sm-push-6">
-    <% if Hyrax.config.front_page_media.present? && Media.exists?(Hyrax.config.front_page_media) %>
-      <iframe
-        height="100%"
-        width="100%"
-        src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: Media.find(Hyrax.config.front_page_media).access_control_id) %>&config=/universalviewer/front/uvconfig.json"
-        allowfullscreen
-        frameborder="0">
-      </iframe>
-    <% end %>
-    <!-- <a href="#">Dummy media text: Genus species. Created by Ed Stanley.</a> -->
-  </div>
-  <div class="col-xs-12 col-sm-6 col-sm-pull-6" style='text-align: left;'>
-    <p style='font-size: 26px; font-weight: 300;'><%= t('morphosource.homepage.banner_text_1') %></p>
-    <p style='font-size: 18px; font-weight: 300;'><%= t('morphosource.homepage.banner_text_2') %></p>
-    <div class="row" style='text-align: center;'>
-      <div class="col-xs-12 col-md-6 no-padding">
-        <%= link_to Rails.application.routes.url_helpers.browse_categories_path, class: 'btn' do %>
-          <div class="row" style='text-align: left;'>
-            <div class="col-xs-3 col-align col-align--center">
-              <div class="row"><i class="fas fa-book-open fa-2x"></i></div>
-            </div>
-            <div class="col-xs-9 col-align col-align--center">
-              <div class="row">Want to find data?</div>
-              <div class="row">Browse categories</div>
-            </div>
-          </div>
-        <% end %>
-      </div>
-      <div class="col-xs-12 col-md-6 no-padding">
-        <%= link_to Rails.application.routes.url_helpers.contributors_docs_path, class: 'btn' do %>
-          <div class="row" style='text-align: left;'>
-            <div class="col-xs-3 col-align col-align--center">
-              <div class="row"><i class="fas fa-feather-alt fa-2x"></i></div>
-            </div>
-            <div class="col-xs-9 col-align col-align--center">
-              <div class="row">Want to contribute</div>
-              <div class="row">or manage data?</div>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class="row stats-and-projects showcase">
-  <div class="col-xs-12 col-sm-6 col-left blog">
-    <h2>News and Updates</h2>
-    <% blog_posts = Morphosource::WordpressBlogApi.get_posts %>
-    <% if blog_posts.present? %>
-      <% blog_posts.each do |post| %>
-        <div class="row post">
-          <div class="post-title-container">
-            <div class="post-title"><%= post[:title] %></div>
+<% is_core_site = Hyrax.config.site_title == Hyrax.config.default_site_title %>
+
+<% if is_core_site %>
+  <%= render(partial: 'front_banner') %>
+<% else %>
+  <div id="front-banner" class="row" style='text-align: center; background-color: unset; border: none; padding: 20px;'>
+    <div class="col-xs-12 col-md-3 col-align no-padding">
+      <%= link_to Rails.application.routes.url_helpers.browse_categories_path, class: 'btn' do %>
+        <div class="row" style='text-align: left;'>
+          <div class="col-xs-3 col-align col-align--center">
+            <div class="row"><i class="fas fa-book-open fa-2x"></i></div>
           </div>
-          <div><i><%= post[:date] %></i></div>
-          <div class="post-excerpt">
-            <%= sanitize post[:excerpt] %>
+          <div class="col-xs-9 col-align col-align--center">
+            <div class="row">Want to find data?</div>
+            <div class="row">Browse categories</div>
           </div>
         </div>
       <% end %>
-      <div class="view-all-link">
-        <%= link_to(Morphosource::WordpressBlogApi.blog_url, target: :_blank) do %>
-          <span>View all news and updates <i class="fas fa-external-link-alt fa-sm"></i></span>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="row">
-        <div class="col-xs-12">No news is currently available. Check back later!</div>
-      </div>
-    <% end %>
-  </div>
-
-  <div class="col-xs-12 col-sm-6 col-right projects">
-    <h2>Featured Projects</h2>
-      <table class="table table-striped collection-highlights">
-        <tbody>
-          <%# featured project ids set in config/environments. If no ids added, returns 6 collections the user can access at random. %>
-          <% featured_projects.each do |collection| %>
-            <tr>
-              <td>
-                <div class="media">
-                  <div class="media-body">
-                    <div class="media-heading" style="display:flex; flex-direction:row; align-items:center;">
-                      <%= link_to [hyrax, collection] do %>
-                        <%= render_thumbnail_tag(collection, { class: 'hidden-xs file_listing_thumbnail' }, { suppress_link: true }) %>
-                      <% end %>
-                      <%= link_to [hyrax, collection] do %>
-                        <%= collection.title_or_label %>
-                      <% end %>
-                    </div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-  </div>
-  
-</div>
-
-<div class="row showcase">
-
-  <div class="col-xs-12 col-sm-6 col-left stats">
-    <h2>Repository Statistics</h2>
-    <div class="row">
-      <div class="col-xs-6 showcase-label">Media Files</div>
-      <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(Media.count, :delimiter => ',') %>
-      </div>
     </div>
-    <div class="row">
-      <div class="col-xs-6 showcase-label">Physical Objects Represented</div>
-      <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(BiologicalSpecimen.count + CulturalHeritageObject.count, :delimiter => ',') %>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xs-6 showcase-label">Data Projects</div>
-      <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(
-          Morphosource::SolrService.new.get_count(
-            'has_model_ssim:Collection AND collection_type_gid_ssim:gid://morpho-source-sf/hyrax-collectiontype/2'
-          ),
-          :delimiter => ','
-        ) %>
-      </div>
-    </div>
-    <% taxonomy_not_gbif_count = Taxonomy.where(gbif_key: nil).count %>
-    <div class="row">
-      <div class="col-xs-6 showcase-label">Taxonomies (GBIF Linked)</div>
-      <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(( Taxonomy.count - taxonomy_not_gbif_count ), :delimiter => ',') %>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xs-6 showcase-label">Taxonomies (User Created)</div>
-      <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(taxonomy_not_gbif_count, :delimiter => ',') %>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xs-6 showcase-label">Collections and Facilities</div>
-      <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(Organization.count, :delimiter => ',') %>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xs-6 showcase-label">Users</div>
-      <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(User.registered.count, :delimiter => ',') %>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-xs-6 showcase-label">Contributors</div>
-      <div class="col-xs-6 showcase-value">
-        <%= number_with_delimiter(
-          Role.find_by(name: 'contributor').users.count,
-          :delimiter => ','
-        ) %>
-      </div>
+    <div class="col-xs-12 col-md-3 col-align no-padding">
+      <%= link_to Rails.application.routes.url_helpers.contributors_docs_path, class: 'btn' do %>
+        <div class="row" style='text-align: left;'>
+          <div class="col-xs-3 col-align col-align--center">
+            <div class="row"><i class="fas fa-feather-alt fa-2x"></i></div>
+          </div>
+          <div class="col-xs-9 col-align col-align--center">
+            <div class="row">Want to contribute</div>
+            <div class="row">or manage data?</div>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
+<% end %>
 
-  <div class="col-xs-12 col-sm-6 col-right">
-    <h2>Educators Organizing Online Courses</h2>
-    <% published_mesh_number = Media.where(visibility_ssi: 'open', media_type: 'Mesh').count %>
-    <% open_download_mesh_number = Media.where(visibility_ssi: 'open', fileset_accessibility: 'open', media_type: 'Mesh').count %>
-    <p>
-      MorphoSource currently has <%= published_mesh_number %> published 3D models, largely biological skeletal material. You can view all of these in your browser with no required software. <%= open_download_mesh_number %> of these media can be freely downloaded for further visualization and measurement. The remaining <%= published_mesh_number - open_download_mesh_number %> media can usually be downloaded after a simple request process. You can use our search page to see all of these published web-viewable 3D models, and you can refine the search further by anatomical element or by genus and species.
-    </p>
-    <div style="text-align: center; font-weight: 500;">
-      <%= link_to 'Search Published 3D Models', main_app.media_search_path('f[human_readable_media_type_sim][]' => 'Mesh') %>
-    </div>
+<% if Hyrax.config.wordpress_blog_url.present? %>
+  <div class="row showcase">
+    <%= render(partial: 'news_updates') %>
+    <%= render(partial: 'featured_projects') %>
   </div>
 
-</div>
-
-<% if @presenter.display_share_button? %>
-<div class="home-share-work text-center" style='margin-top: 30px;'>
-  <% if signed_in? && current_user.admin? %>
-    <%= link_to '/submissions/new', class: "btn btn-primary btn-lg" do %>
-      <i class="glyphicon glyphicon-upload" aria-hidden="true"></i> <%= t('morphosource.homepage.share_button') %>
-    <% end %>
-    <p class="terms-of-use"><%= link_to t(:'hyrax.pages.tabs.terms_page'), hyrax.terms_path %></p>
-  <% end %>
-</div>
+  <div class="row showcase">
+    <%= render(partial: 'repository_statistics') %>
+    <%= render(partial: 'for_educators') if is_core_site %>
+  </div>
+<% else %>
+  <div class="row showcase">
+    <%= render(partial: 'featured_projects') %>
+    <%= render(partial: 'repository_statistics') %>
+    <%= render(partial: 'for_educators') if is_core_site %> 
+  </div>
 <% end %>

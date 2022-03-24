@@ -10,13 +10,13 @@
 		<tr class="bg-light-gray">
 			<th class="col-xs-3"><%= job.running? ? "Current" : "Last" %> Job</th>
 			<th class="col-xs-1	">Status</th>
-			<th class="col-xs-3">Created</th>
+			<th class="col-xs-3">Submitted</th>
 			<th class="col-xs-5">Error Message</th>
 		</tr>
 		<tr>
 			<td><%= job.main_job_id %></td>
 			<td><%= job.status.capitalize %></td>
-			<td><%= job.created_at.strftime("%m/%d/%Y %I:%M%p %Z") %></td>
+			<td><%= time_ago_in_words(job.created_at).capitalize %> ago</td>
 			<td><%= job.exceptions %></td>
 		</tr>
 	</table>

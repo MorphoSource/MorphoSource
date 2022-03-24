@@ -95,7 +95,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   end
 
   def update_main_job(status_str=nil, exceptions=nil)
-byebug
     main_job.update_status(status_str, exceptions)
   end
 

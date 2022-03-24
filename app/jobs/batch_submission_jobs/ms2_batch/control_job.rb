@@ -1,9 +1,10 @@
 class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWithStatus
+  include Morphosource::MessageHelper
   attr_accessor :manifest, :main_job_id
 
   queue_as Hyrax.config.batch_submission_queue_name
 
-  def perform(manifest)
+  def perform(manifest, user)
     begin
       # Step 0. Initial preparation
       status.update(manifest: manifest)
@@ -22,14 +23,24 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       Rails.logger.debug "iN ControlJob #{@main_job_id}: Exception caught #{e.message} "
       status.update(status: :failed)
       update_main_job("failed", e.message)
+      notify_user(user, "failed")
       status.update(manifest: @manifest, exception: e.message)
       exception_caught = true
     ensure
       status.update(manifest: @manifest)
     end
     # at this point, all subjobs are either :completed, 
-    # or exception was raised and caught already
-    update_main_job("completed") unless exception_caught
+    # unless exception was raised and caught above
+    unless exception_caught    
+      update_main_job("completed") 
+      notify_user(user, "completed")
+    end
+  end
+
+  def notify_user(user, status)
+    subject = "Batch submission job has #{status}."
+    message = "Submission job #{@main_job_id} has #{status}.  Please contact MorphoSource team if you need assistence."
+    deliver_message(email_sender, user, message.html_safe, subject)
   end
 
   def sub_jobs

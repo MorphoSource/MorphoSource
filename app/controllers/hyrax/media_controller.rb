@@ -136,7 +136,7 @@ module Hyrax
         Morphosource::AttachmentService.delete(curation_concern.id, 'agreement')
         params.delete(:media_attachment_delete)
       end
-        
+
       if file_formats_valid? && actor.update(actor_environment)
         after_update_response
       else
@@ -196,7 +196,7 @@ module Hyrax
     end
 
     def destroy
-      # delete the PE parent of that media 
+      # delete the PE parent of that media
       # If the media has a direct or indirect IE parent and that IE parent has no other children, it should also be deleted
       processing_event = curation_concern.parent_works.select { |w| w.class == ProcessingEvent }&.first
       if processing_event.present?
@@ -223,7 +223,10 @@ module Hyrax
         media_work = Media.find(params[:id])
         if media_work.doi.empty?
           minted_doi = media_work.mint_doi(main_app.media_showcase_url(id: params[:id]))
-          if minted_doi.nil?
+          # if minted_doi is an exception put the exception message in flash[:error]
+          if minted_doi.respond_to?(:message)
+            flash[:error] = minted_doi.message
+          elsif minted_doi.nil?
             flash[:error] = "Error minting DOI"
           else
             flash[:notice] = "Minted DOI: #{minted_doi}"
@@ -246,7 +249,7 @@ module Hyrax
     def thumbnail
       if authorize!(:read, curation_concern)
         redirect_to(main_app.download_path(
-          id: curation_concern.thumbnail.present? ? curation_concern.thumbnail.id : curation_concern.id, 
+          id: curation_concern.thumbnail.present? ? curation_concern.thumbnail.id : curation_concern.id,
           file: 'thumbnail'
         )) and return
       else
@@ -436,7 +439,7 @@ module Hyrax
       end
 
       def set_fund_code
-        if current_user.admin? 
+        if current_user.admin?
           if params[:media][:select_fund_code].present?
             activate_fund_code
           end
@@ -468,7 +471,7 @@ module Hyrax
       def validate_individual_access
         if params["media"]["permissions_attributes"].present?
           non_contributors = []
-          params["media"]["permissions_attributes"].each do |k, v| 
+          params["media"]["permissions_attributes"].each do |k, v|
             if v[:type] == "person" && v[:access] == "edit"
               if v[:name].present?
                 user = ::User.find_by_user_key(v[:name])
@@ -478,7 +481,7 @@ module Hyrax
               if user.present?
                 unless user.contributor?
                   params["media"]["permissions_attributes"].delete(k)
-                  non_contributors << user.name_or_email 
+                  non_contributors << user.name_or_email
                 end
               else
                 params["media"]["permissions_attributes"].delete(k)
@@ -500,10 +503,10 @@ module Hyrax
 
       def deliver_individual_access_messages
         media_link = "<b><a href='http://#{host_name}/media/#{curation_concern.id}'>Media #{curation_concern.id}: #{curation_concern.title.first}</a></b>"
-        contact_message = "<p>Please contact #{user_email_link([current_user])} if you have a question related to this media access settings.</p>" 
+        contact_message = "<p>Please contact #{user_email_link([current_user])} if you have a question related to this media access settings.</p>"
 
-        unless curation_concern.edit_users.sort == @saved_edit_users.sort          
-          # find new EDIT access user(s) 
+        unless curation_concern.edit_users.sort == @saved_edit_users.sort
+          # find new EDIT access user(s)
           new_edit_users = curation_concern.edit_users - @saved_edit_users
           new_edit_users.each do |user_key|
             message = "You now have edit access to #{media_link}." + contact_message
@@ -520,7 +523,7 @@ module Hyrax
         end
 
         unless curation_concern.download_users.sort == @saved_download_users.sort
-          # find new DOWNLOAD access user(s) 
+          # find new DOWNLOAD access user(s)
           new_download_users = curation_concern.download_users - @saved_download_users
           new_download_users.each do |user_key|
             message = "You now have download access to #{media_link}." + contact_message
@@ -534,10 +537,10 @@ module Hyrax
             receiving_user = ::User.find_by_user_key(user_key)
             deliver_message(email_sender, receiving_user, message.html_safe, "Your download access to a media has been removed")
           end
-        end        
+        end
 
         unless curation_concern.read_users.sort == @saved_read_users.sort
-          # find new READ access user(s) 
+          # find new READ access user(s)
           new_read_users = curation_concern.read_users - @saved_read_users
           new_read_users.each do |user_key|
             message = "You now have view access to #{media_link}." + contact_message
@@ -551,7 +554,7 @@ module Hyrax
             receiving_user = ::User.find_by_user_key(user_key)
             deliver_message(email_sender, receiving_user, message.html_safe, "Your view access to a media has been removed")
           end
-        end        
+        end
 
       end
 

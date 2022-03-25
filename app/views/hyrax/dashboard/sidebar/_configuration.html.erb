@@ -54,10 +54,3 @@
     <% end %>
 
 <% end %>
-
-<%# todo: might need to move this somewhere else.  For now keep this outside of a section that requires admin access %>
-<% if current_user.batch_submission_contributor? %>
-  <%= menu.nav_link(main_app.batch_submissions_path) do %>
-    <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
-  <% end %>
-<% end %>

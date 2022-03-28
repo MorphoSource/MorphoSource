@@ -102,6 +102,24 @@ RSpec.describe User, type: :model do
       end
     end
 
+    describe '#can_submit_new_batch_submission?' do
+      context 'user cannot submit' do
+        it 'returns false when job is working' do
+          BackgroundJob.create({ main_job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
+          expect(user.can_submit_new_batch_submission?).to be(false)
+        end
+      end
+      context 'user can submit' do
+        it 'returns true when never submitted a job' do
+          expect(user.can_submit_new_batch_submission?).to be(true)
+        end
+        it 'returns true when job completed' do
+          BackgroundJob.create({ main_job_id: '456', status: 'completed', user_id: user.id, created_objects: {} })
+          expect(user.can_submit_new_batch_submission?).to be(true)
+        end
+      end
+    end
+
     describe '#make_contributor' do
       let(:user) { User.create(email: 'user@email.com', password: 'password') }
       let!(:contributor_group) { Role.create(name: 'contributor') }

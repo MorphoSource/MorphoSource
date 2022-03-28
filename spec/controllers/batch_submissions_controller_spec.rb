@@ -4,6 +4,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
   let(:user)                       { User.create(email: 'email@email.com', password: 'password', sftp_share: '/tmp') }
   let(:user2)                      { User.create(email: 'email2@email.com', password: 'password', sftp_share: '') }
   let(:user3)                      { User.create(email: 'email3@email.com', password: 'password', sftp_share: '/dir_not_found') }
+  let(:user4)                      { User.create(email: 'email4@email.com', password: 'password', sftp_share: '/tmp') }
   let(:admins)                     { Role.create(name: 'admin') }
   let(:batch_submission_contributors)  { Role.create(name: 'batch_submission_contributor') }
   let(:image_file_path)             { fixture_path + '/images/duke.png' }
@@ -24,13 +25,46 @@ RSpec.describe BatchSubmissionsController, type: :controller do
 
   describe "GET #new for batch_submission_contributor" do
     before do
-      batch_submission_contributors.users << user
-      batch_submission_contributors.save
       sign_in user
     end
     it "returns http success for batch_submission_contributor" do
       get :new
       expect(response).to have_http_status(:success)
+    end
+  end
+
+  describe "User has queued or working job running" do
+    before do
+      sign_in user
+    end
+    context "render index page" do
+      render_views
+      it "returns only one job allowed message" do
+        BackgroundJob.create({ main_job_id: '123', status: 'queued', user_id: user.id, created_objects: {} })
+        get :index
+        expect(response.body).to include 'Only one batch submission job is allowed at a time.'
+      end
+    end
+    context "render new submission page" do
+      render_views
+      it "returns currently have job running message" do
+        BackgroundJob.create({ main_job_id: '234', status: 'working', user_id: user.id, created_objects: {} })
+        get :new
+        expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
+      end
+    end
+    context "post new submission" do
+      render_views
+      let(:params) { {"manifest" => valid_file,
+        "batch_submission" => {
+          "modality" => "MicroNanoXRayComputedTomography"
+        }
+      } }
+      it "returns" do
+        BackgroundJob.create({ main_job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
+        post 'submit', :params => params 
+        expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
+      end
     end
   end
 
@@ -50,7 +84,21 @@ RSpec.describe BatchSubmissionsController, type: :controller do
     end
     it "render not_connected page" do
       get :new
-      expect(response).to render_template 'not_connected'
+      expect(response).to render_template 'not_allowed'
+    end
+  end
+
+  describe "User with no batch_submission_contributor access" do
+    before do
+      sign_in user4
+    end
+    it "redirected for index" do
+      get :index
+      expect(response).to have_http_status(302)
+    end
+    it "redirected for new submission" do
+      get :new
+      expect(response).to have_http_status(302)
     end
   end
 

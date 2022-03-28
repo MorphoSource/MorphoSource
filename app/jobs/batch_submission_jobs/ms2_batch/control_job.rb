@@ -87,8 +87,6 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       exception = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
       raise exception
     end
-
-    byebug
     update_main_job
   end
 

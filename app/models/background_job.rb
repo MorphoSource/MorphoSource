@@ -35,14 +35,4 @@ class BackgroundJob < ApplicationRecord
   	self.status == "queued" || self.status == "working"
   end
 
-  def sync_status
-  	# check the status from ActiveJob and update if needed
-    job_status = ActiveJob::Status.get(self.main_job_id)
-    # todo: might need to update the ActiveJob here if the status is marked "canceled"
-    if self.status != "canceled" && self.status != "completed" && job_status.present? && job_status.status.to_s != self.status
-	  Rails.logger.debug "iN BackgroundJob #{main_job_id}: syncing status with ActiveJob to #{job_status.status.to_s} "
-      update_status(job_status.status.to_s)
-    end
-  end
-
 end

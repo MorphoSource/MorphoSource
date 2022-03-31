@@ -83,38 +83,32 @@ class BiologicalSpecimen < Morphosource::Works::Base
     end
   end
 
-
-  def update_metadata_from_idigbio_occurrence_id(save_work=false)
+  def update_metadata_from_idigbio_occurrence_id
     # Occurrence ID less than 10 characters should be ignored
-    if self.occurrence_id.first.length > 10 
+    if self.occurrence_id.present? && self.occurrence_id.first.length > 10 
       idigbio_occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
       if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
         idigbio_occurrence = idigbio_occurrence_id_results.first
-        #idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(idigbio_occurrence['uuid'])
-        idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(idigbio_occurrence['uuid'])[:gbif]
-  #byebug
+#        idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(idigbio_occurrence['uuid'])
+        #idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(idigbio_occurrence['uuid'])[:gbif]
 
-  ## if an existing specimen found with the same taxonomy, set the canonical_taxonomy to existing specimen's taxonomy
-  ## otherwise, create a new taxonomy and associate with this specimen
-
-        existing_bso = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params.clone)
-  #byebug
-        if (!existing_bso.nil?) && existing_bso.any?
-  byebug
-          self.canonical_taxonomy = [ existing_bso.first.canonical_taxonomy.present? ? existing_bso.first.canonical_taxonomy.first : existing_bso.first.taxonomies.first.id ]
-        else
+#        existing_bso = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params.clone)
+#        if (!existing_bso.nil?) && existing_bso.any?
+#  byebug
+#          self.canonical_taxonomy = [ existing_bso.first.canonical_taxonomy.present? ? existing_bso.first.canonical_taxonomy.first : existing_bso.first.taxonomies.first.id ]
+#        else
           # we need to create the taxonomy here and set it as the canonical_taxonomy for this work
-  #byebug
-  #          taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(ActionController::Parameters.new(idb_taxonomy_params))
-  #          new_taxonomy = Taxonomy.new
-  #          attributes_for_actor = taxonomy_model_params
-  #          attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-  #          env = Hyrax::Actors::Environment.new(new_taxonomy, Ability.new(User.find_by_ms_id(self.depositor)), attributes_for_actor)
-  #          Hyrax::CurationConcern.actor.create(env)
-  #          new_taxonomy = create_work(Taxonomy, taxonomy_model_params)
-  #          self.canonical_taxonomy = [ new_taxonomy.id ]
-  #byebug
-        end
+#  byebug
+#            taxonomy_model_params = Hyrax::TaxonomyForm.model_attributes(ActionController::Parameters.new(idb_taxonomy_params))
+#            new_taxonomy = Taxonomy.new
+#            attributes_for_actor = taxonomy_model_params
+#            attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
+#            env = Hyrax::Actors::Environment.new(new_taxonomy, Ability.new(User.find_by_ms_id(self.depositor)), attributes_for_actor)
+#            Hyrax::CurationConcern.actor.create(env)
+#            new_taxonomy = create_work(Taxonomy, taxonomy_model_params)
+#            self.canonical_taxonomy = [ new_taxonomy.id ]
+#  byebug
+#        end
 
         # set the taxonomy to the canonical taxonomy
   #        self.taxonomy_id = self.taxonomy_id + [ self.canonical_taxonomy.first ] unless self.taxonomy_id.include?(self.canonical_taxonomy.first)
@@ -125,11 +119,9 @@ class BiologicalSpecimen < Morphosource::Works::Base
           self.send("#{key}=", value.is_a?(Array) ? value : [value] )
           field_changed = self.send("#{key}_changed?")
           if field_changed
-            Rails.logger.debug "Pulling value from IDigBio... BSO #{id} : #{key} field will be updated to #{value} "
+            Rails.logger.debug "UpdateBsoFromIdigbio: BSO #{id} : #{key} field will be updated to '#{value}'"
           end
         end
-  byebug
-        self.save if save_work
       end
     end # / if occurrence_id > 10 char
   end

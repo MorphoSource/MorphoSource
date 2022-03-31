@@ -581,4 +581,17 @@ namespace :morphosource do
     Morphosource::FindExtraSolrJob.perform_later
     puts "Checking for extra solr docs. When complete, results will be written to extra_solr_docs.txt"
   end
+
+  desc "Update specimens from IDigbio"
+  task :update_bso_from_idigbio => :environment do |task, args|
+    if args[:update].present? && args[:update].to_i == true
+      update = true
+    else
+      update = false
+    end
+    BiologicalSpecimen.find_each do |o|
+      UpdateBsoFromIdigbioJob.perform_later(o, update)
+    end
+  end
+
 end

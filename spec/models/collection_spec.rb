@@ -12,6 +12,7 @@ RSpec.describe Collection, type: :model do
   let(:media)     { Media.create(title: ['media']) }
   let(:media2)    { Media.create(title: ['media2']) }
   let(:media3)    { Media.create(title: ['media3']) }
+  let(:all_media) { [media, media2, media3] }
 
 
   describe 'organization methods' do
@@ -338,5 +339,58 @@ RSpec.describe Collection, type: :model do
       project.save
     end
     it { expect(team.child_projects).to match_array([project]) }
+  end
+
+  describe 'destroy callbacks' do
+    let!(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
+    let!(:cho)       { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes']) }
+    let!(:cho2)      { CulturalHeritageObject.create(title: ['cho2'], vouchered: ['Yes']) }
+    let!(:device)    { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let!(:ie)        { ImagingEvent.create(title: ['ie'], device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id]) }
+    let!(:ie2)       { ImagingEvent.create(title: ['ie'], device_id: [device.id], ie_modality: device.modality, physical_object_id: [cho.id]) }
+    let!(:ie3)       { ImagingEvent.create(title: ['ie'], device_id: [device.id], ie_modality: device.modality, physical_object_id: [cho2.id]) }
+    let(:objects)    { [specimen, cho, cho2] }
+    let(:imaging_events)  { [ie, ie2, ie3] }
+    let(:all_members) { all_media + [project] }
+    before do
+      project.member_of_collections << team
+      project.save!
+
+      ie.ordered_members << media
+      ie2.ordered_members << media2
+      ie3.ordered_members << media3
+
+      imaging_events.each(&:update_index)
+
+      all_media.each do |m|
+        m.member_of_collections << team
+        m.save!
+      end
+      objects.each(&:update_index)
+    end
+
+    it 'reindexes members and related objects when the collection is destroyed' do
+      all_media.each do |work|
+        solr_doc = SolrDocument.find(work.id)
+        expect(solr_doc['member_of_collection_ids_ssim']).to include(team.id)
+        expect(solr_doc['member_of_team_ids_ssim']).to include(team.id)
+      end
+      expect(SolrDocument.find(project.id)['member_of_collection_ids_ssim']).to include(team.id)
+      objects.each do |work|
+        solr_doc = SolrDocument.find(work.id)
+        expect(solr_doc['media_member_of_team_ids_ssim']).to include(team.id)
+      end
+      team.destroy
+      all_media.each do |work|
+        solr_doc = SolrDocument.find(work.id)
+        expect(solr_doc['member_of_collection_ids_ssim']).to be(nil)
+        expect(solr_doc['member_of_team_ids_ssim']).to be(nil)
+      end
+      expect(SolrDocument.find(project.id)['member_of_collection_ids_ssim']).to be(nil)
+      objects.each do |work|
+        solr_doc = SolrDocument.find(work.id)
+        expect(solr_doc['media_member_of_collection_ids_ssim']).to be(nil)
+      end
+    end
   end
 end

@@ -583,8 +583,8 @@ namespace :morphosource do
   end
 
   desc "Update specimens from IDigbio"
-  task :update_bso_from_idigbio => :environment do |task, args|
-    if args[:update].present? && args[:update].to_i == true
+  task :update_bso_from_idigbio, [:update] => :environment do |task, args|
+    if args[:update].present? && args[:update] == 'true'
       update = true
     else
       update = false

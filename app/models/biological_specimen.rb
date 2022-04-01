@@ -3,6 +3,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
+  before_update :capitalize_field_value
   after_update :reindex_media
 
   self.indexer = BiologicalSpecimenIndexer
@@ -142,6 +143,10 @@ class BiologicalSpecimen < Morphosource::Works::Base
           UpdateWorkIndexJob.perform_later(media.id)
         end
       end
+    end
+
+    def capitalize_field_value
+      self.sex = self.sex.map(&:capitalize)
     end
 
 end

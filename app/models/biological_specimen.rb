@@ -84,12 +84,105 @@ class BiologicalSpecimen < Morphosource::Works::Base
     end
   end
 
-  def update_metadata_from_idigbio_occurrence_id
+
+  def prepare_and_create_work(work, params)
+byebug
+    model_params = Hyrax::TaxonomyForm.model_attributes(params[work])
+byebug
+    attributes_for_actor = create_attributes_for_actor(Taxonomy, model_params)
+byebug
+
+    curation_concern = Taxonomy.new
+byebug
+    env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
+byebug
+    Hyrax::CurationConcern.actor.create(env)
+byebug
+    new_id = curation_concern.id
+byebug
+    return new_id
+  end
+
+  def update_metadata_from_idigbio_occurrence_id(save_work=false)
     # Occurrence ID less than 10 characters should be ignored
     if self.occurrence_id.present? && self.occurrence_id.first.length > 10 
       idigbio_occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
       if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
         idigbio_occurrence = idigbio_occurrence_id_results.first
+
+        taxonomy_params_array = []
+        taxonomy_id_array = []
+        taxonomy_gbif_key_array = []
+        canonical_taxonomy_id = nil
+
+        idb_taxonomy_param_sets = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(idigbio_occurrence['uuid'])
+        provider_params = idb_taxonomy_param_sets[:provider]
+        gbif_params = idb_taxonomy_param_sets[:gbif]
+
+        if provider_params.present?
+byebug
+          prov = Morphosource::TaxonomySearchService.call(provider_params)
+          if prov.present?
+byebug
+            # Exists, link as canonical
+            canonical_taxonomy_id = prov.first.id 
+            taxonomy_id_array << prov.first.id
+          else
+byebug
+            # Is new, must create            
+            provider_params[:canonical] = true # to be hooked in later to set canonical taxonomy ID
+byebug #make sure it will set canonical_taxonomy_id later
+            taxonomy_params_array << ActionController::Parameters.new(provider_params)
+          end
+        end
+byebug # check taxonomy_id_array and canonical_taxonomy_id for linking, or taxonomy_params_array for adding
+
+        if gbif_params.present?
+          gbif = Morphosource::TaxonomySearchService.call(gbif_params)
+byebug
+          if gbif.present?
+            taxonomy_id_array << gbif.first.id 
+          else
+            taxonomy_params_array << ActionController::Parameters.new(gbif_params)
+          end
+        end
+byebug # check taxonomy_id_array for linking or taxonomy_params_array for adding
+
+        # add new taxonomy if any
+        taxonomy_params_array.each do |taxon_params|
+          new_taxon_id = prepare_and_create_work('taxonomy', { 'taxonomy' => taxon_params })
+byebug
+          taxonomy_id_array << new_taxon_id
+          if taxon_params[:canonical]
+        byebug
+        byebug
+            canonical_taxonomy_id = new_taxon_id 
+          end
+        end
+
+        # now link taxonomy (new or existing) to the bso  
+        if taxonomy_id_array.present?
+          #model_params.merge!(taxonomy_id: Array(@submission.taxonomy_id_array))
+          old_taxonomy_id = self.taxonomy_id.to_a
+          self.taxonomy_id = (self.taxonomy_id + taxonomy_id_array).uniq
+byebug
+        end
+        if canonical_taxonomy_id.present?
+          #model_params.merge!(canonical_taxonomy: [@submission.canonical_taxonomy_id])
+byebug
+          old_canonical_taxonomy = self.canonical_taxonomy.to_a
+          self.canonical_taxonomy_will_change! unless old_canonical_taxonomy.include? canonical_taxonomy_id 
+          self.canonical_taxonomy = (self.canonical_taxonomy << canonical_taxonomy_id).uniq
+        end
+
+byebug
+        if self.taxonomy_id_changed?
+          Rails.logger.debug "UpdateBsoFromIdigbio: BSO #{id} : taxonomy_id #{old_taxonomy_id} will be updated to '#{self.taxonomy_id.to_a}'"
+        end
+        if self.canonical_taxonomy_changed?
+          Rails.logger.debug "UpdateBsoFromIdigbio: BSO #{id} : canonical_taxonomy #{old_canonical_taxonomy} will be updated to '#{self.canonical_taxonomy.to_a}'"
+        end
+
 #        idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(idigbio_occurrence['uuid'])
         #idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(idigbio_occurrence['uuid'])[:gbif]
 
@@ -123,7 +216,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
             Rails.logger.debug "UpdateBsoFromIdigbio: BSO #{id} : #{key} field will be updated to '#{value}'"
           end
         end
-      end
+        self.save if save_work # set save_work flag for debugging
+      end # / if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
     end # / if occurrence_id > 10 char
   end
 

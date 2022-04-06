@@ -324,6 +324,22 @@ class Media < Morphosource::Works::Base
     member_of_projects.map(&:id)
   end
 
+  def member_of_media_lists
+    member_of_collections.select { |c| c.media_list? }
+  end
+
+  def member_of_media_list_ids
+    member_of_media_lists.map(&:id)
+  end
+
+  def member_of_slide_lists
+    member_of_collections.select { |c| c.slide_list? }
+  end
+
+  def member_of_slide_list_ids
+    member_of_slide_lists.map(&:id)
+  end
+
   def ark_resource_type
     # Valid ARK resource types:
     # 'Audiovisual', 'Collection', 'DataPaper', 'Dataset', 'Event', 'Image',
@@ -531,11 +547,11 @@ class Media < Morphosource::Works::Base
   end
 
   def external_file?
-    file_sets.first.external_file.present?
+    file_sets&.first&.external_file.present?
   end
 
   def external_file
-    file_sets.first.original_file.external_file
+    file_sets&.first&.original_file&.external_file
   end
 
   private

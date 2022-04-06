@@ -1,0 +1,5 @@
+<div class="row tab-action-buttons">
+  <label>Add media to <%= @presenter.collection_type_title.downcase %>:</label>
+  <%= link_to t('hyrax.dashboard.collections.actions.add_media_to.label'), Rails.application.routes.url_helpers.my_add_media_index_path(@presenter.id), class: 'btn btn-sm btn-primary' %>
+  <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
+</div>

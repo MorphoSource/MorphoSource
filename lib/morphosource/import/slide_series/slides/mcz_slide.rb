@@ -28,6 +28,7 @@ module Morphosource
               @slide_thumbnail_path = slide_thumbnail_path
               @file_json = json(file_uri)
               @tiles_json = json(tiles_uri)
+              byebug
             end
 
             def file_uri

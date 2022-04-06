@@ -1,0 +1,50 @@
+<% provide :page_title, t("morphosource.dashboard.my.media_lists.page_title") %>
+<% provide :head do %>
+<% end %>
+<script>
+//<![CDATA[
+
+  <%= render partial: 'scripts', formats: [:js] %>
+
+//]]>
+</script>
+<% provide :page_header do %>
+  <h1><span class="fa fa-list" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.media_lists.page_title") %></h1>
+<% end %>
+<div class="collections-wrapper">
+  <section class="tabs-row">
+    <!-- Page tabs -->
+    <nav></nav>
+
+    <% if can?(:create_any, MediaList) %>
+        <% # link directly to create collection form with type %>
+        <%= link_to(t('morphosource.dashboard.my.media_lists.action.new'), main_app.new_media_list_path, class: 'btn btn-primary') %>
+    <% end %>
+  </section>
+
+  <%# Collections list %>
+  <div class="panel panel-default collections-panel-wrapper">
+    <div class="panel-heading">
+      <span class="count-display"><%= I18n.t('morphosource.dashboard.my.media_lists.count', total_count: @response.total_count).html_safe %></span>
+    </div>
+    <div class="panel-body">
+      <h2 class="sr-only">Collections listing</h2>
+      <%= render 'search_header' %>
+      <%= render 'hyrax/my/document_list' %>
+      <%= render 'shared/lists/results_pagination' %>
+    </div>
+  </div>
+
+  <!-- Render Modals -->
+  <%= render 'modal_add_to_collection', source: "my" %>
+  <%# <%= render 'modal_add_to_collection_deny' %>
+  <%# <%= render 'modal_add_to_collection_permission_deny' %>
+  <%= render 'modal_delete_collection' %>
+  <%# <%= render 'modal_delete_collection_deny' %>
+  <%# <%= render 'modal_delete_collections_deny' %>
+  <%# <%= render 'modal_delete_deny' %>
+  <%# <%= render 'modal_delete_empty_collection' %>
+  <%= render 'modal_delete_selected_collections' %>
+  <%# <%= render 'modal_edit_deny' %>
+
+</div><!-- /collections-wrapper -->

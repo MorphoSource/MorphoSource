@@ -1,0 +1,214 @@
+<% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
+
+<%= simple_form_for @form, url: [main_app, @form], wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+
+  <div class="col-xs-9 title team-title">
+    <span class="fa fa-edit" aria-hidden="true"></span>
+    <%= render 'shared/collections/title' %>
+  </div>
+  <div class="col-xs-3 show-actions text-right">
+
+      <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Actions <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <% if can? :edit, @presenter.solr_document %>
+            <% if @collection.persisted? %>
+              <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
+              <%#= link_to t(:'helpers.action.cancel'), hyrax.dashboard_collection_path(@collection), class: 'btn btn-link' %>
+            <% else %>
+              <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
+              <%#= link_to t(:'helpers.action.cancel'), hyrax.my_collections_path, class: 'btn btn-link' %>
+            <% end %>
+          <% end %>
+
+          <% if can? :destroy, @presenter.solr_document %>
+            <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                        hyrax.dashboard_collection_path(@presenter),
+                        title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                        class: 'btn btn-primary btn-delete-collection',
+                        data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
+                                method: :delete } %>
+          <% end %>
+
+          <%= link_to t('hyrax.dashboard.collections.actions.public_view.label'),
+                      hyrax.collection_path(@presenter),
+                      class: 'btn btn-primary' %>
+
+        </li>
+      </ul>
+
+  </div>
+
+
+  <div class="panel panel-default tabs teams" id="collection-edit-controls">
+
+    <%= render 'nav_tabs' %>
+
+    <div class="tab-content">
+
+      <%# media, bso, cho tabs are outside of the edit form %>
+
+      <% if @current_user.can?(:edit, @collection) %>
+        <div id="details" class="tab-pane">
+          <div class="panel panel-default labels">
+            <div class="panel-body">
+                <%= render 'tab_details', f: f %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @form.persisted? %>
+
+        <div id="organization" class="tab-pane">
+          <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
+            <div class="panel-body">
+              <% if @collection.team? %>
+                <%= render 'tab_linked_organization', f: f %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <% if @current_user.can?(:edit, @collection) %>
+          <div id="members" class="tab-pane">
+            <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
+              <div class="panel-body">
+                <%= render 'tab_members', f: f %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+      <% end %>
+
+<% end # simple_form_for (edit collection form) %>
+
+      <%# the following forms needs to be outside of the edit collection form %>
+
+      <div id="media" role="tabpanel" class="tab-pane active">
+        <div class="form-tab-content">
+
+          <% if can? :deposit, @presenter.solr_document %>
+            <div class="row tab-action-buttons">
+
+              <label>Add media to <%= @presenter.collection_type_title.downcase %>:</label>
+              <%= link_to t('hyrax.dashboard.collections.actions.add_media_to.label'),
+                          Rails.application.routes.url_helpers.my_add_media_index_path(@presenter.id),
+                          class: 'btn btn-sm btn-primary' %>
+
+              <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter %>
+            </div>
+          <% end %>
+
+          <%= render 'search_header' %>
+          <%= render_document_index %>
+          <%= render 'shared/lists/results_pagination' %>
+        </div>
+      </div>
+
+      <% if @po_type == 'bso' %>
+
+        <div id="biological_specimens" role="tabpanel" class="tab-pane">
+          <div class="form-tab-content">
+
+            <% if can? :deposit, @presenter.solr_document %>
+              <div class="row">
+                <div class="col-sm-6 col-md-5 col-lg-4 col-xl-2 pull-right tab-note">
+                  <i>Media represent objects. To add a new
+                  object, add media representing that object.</i>
+                </div>
+              </div>
+            <% end %>
+
+            <%= render 'bso_filters' %>
+            <div class="row">
+              <!-- Search bar -->
+              <div class="col-xs-6">
+                <%= render 'hyrax/teams/search_form', presenter: @presenter, url: @presenter.search_form_url, tab: 'biological_specimens' %>
+              </div>
+              <div class="col-xs-6">
+                <%= render 'hyrax/teams/sort_and_per_page_bso', collection: @presenter %>
+              </div>
+            </div>
+            <%#= render 'hyrax/teams/tab_bso' %>
+            <%= render_async dashboard_bso_tab_url(@presenter.id), event_name: "bso-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
+          </div>
+        </div>
+
+      <% elsif @po_type == 'cho' %>
+
+        <div id="cultural_heritage_objects" role="tabpanel" class="tab-pane">
+          <div class="form-tab-content">
+
+            <% if can? :deposit, @presenter.solr_document %>
+              <div class="row">
+                <div class="col-sm-6 col-md-5 col-lg-4 col-xl-2 pull-right tab-note">
+                  <i>Media represent objects. To add a new
+                  object, add media representing that object.</i>
+                </div>
+              </div>
+            <% end %>
+
+            <%= render 'cho_filters' %>
+            <div class="row">
+              <!-- Search bar -->
+              <div class="col-xs-6">
+                <%= render 'hyrax/teams/search_form', presenter: @presenter, url: @presenter.search_form_url, tab: 'cultural_heritage_objects' %>
+              </div>
+              <div class="col-xs-6">
+                <%= render 'hyrax/teams/sort_and_per_page_cho', collection: @presenter %>
+              </div>
+            </div>
+            <%#= render 'hyrax/teams/tab_cho' %>
+            <%= render_async dashboard_cho_tab_url(@presenter.id), event_name: "cho-loaded" do %>
+              <div class="ui-loading-whole-page" style="height:200px"></div>
+            <% end %>
+          </div>
+        </div>
+
+      <% end %>
+
+      <% if @collection.team? && @presenter.collection_type_is_nestable? %>
+        <div id="team_projects" role="tabpanel" class="tab-pane">
+          <div class="form-tab-content">
+
+              <% unless has_collection_search_parameters? %>
+                <div class="row tab-action-buttons sub-collections-wrapper">
+                    <!-- The user should have deposit access to the parent (the collection we are showing) and read access to the child -->
+                    <% if @presenter.user_can_nest_collection? %>
+
+                    <%= button_tag t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
+                          type: 'button',
+                          class: 'btn btn-primary add-subcollection',
+                          title: t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
+                          data: { nestable: true,
+                                  hasaccess: true,
+                                  presenter_id: @presenter.id } %>
+
+                      <!-- The user must have the ability to create a new collection of parent's type -->
+                      <%# pass the collection type id for Projects so it will redirect user to a new Project form %>
+                      <% if @presenter.user_can_create_new_nest_collection? %>
+                        <%= link_to t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
+                          hyrax.dashboard_create_subcollection_under_path(parent_id: @presenter.id, target_collection_type_id: Hyrax::CollectionType.find_by(machine_id: "project").id),
+                          title: t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
+                          class: 'btn btn-primary' %>
+                      <% end %>
+
+                    <% end %>
+
+                </div>
+              <% end %>
+
+              <%= render 'project_filters' %>
+              <%= render 'tab_project_list', id: @presenter.id, collection: filter_projects(@subcollection_docs, request.params) %>
+
+          </div>
+        </div>
+      <% end %>
+    </div> <!-- end tab-content -->
+  </div> <!-- end collection-controls -->

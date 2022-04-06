@@ -1,0 +1,14 @@
+<div class="text-muted">
+  <%= @media_count.to_s + ' Media' %>
+  <span class="bso-count">
+    <% if @specimen_count > 0 %>
+      <%= ' · ' + @specimen_count.to_s + ' Specimen'.pluralize(@specimen_count) %>
+    <% end %>
+  </span>
+  <span class="cho-count">
+    <% if @cho_count > 0 %>
+      <%= ' · ' + @cho_count.to_s + ' Object'.pluralize(@cho_count) %>
+    <% end %>
+  </span>
+   · Managed by: <%= @presenter.collection_managers %>
+</div>

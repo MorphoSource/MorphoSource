@@ -18,7 +18,6 @@ module Morphosource
 
     self.presenter_class = presenter_class
 
-
     def search_builder_class
       Morphosource::Collections::MediaSearchBuilder
     end

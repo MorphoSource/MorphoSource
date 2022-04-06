@@ -195,7 +195,7 @@ module MorphosourceHelper
   end
 
   def render_view_link_publication_status_badge(document)
-    publication_status = document[ "fileset_accessibility_ssim"].first
+    publication_status = document["fileset_accessibility_ssim"].first
     badge = publication_badge(publication_status)
 
     link_to(badge, polymorphic_path([main_app, document]), id:"permission_#{document.id}", class: 'visibility-link')

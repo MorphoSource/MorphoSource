@@ -20,6 +20,18 @@ module Morphosource
       self.class == Morphosource::Collections::ProjectPresenter
     end
 
+    def media_list?
+      self.class == Morphosource::Collections::MediaListPresenter
+    end
+
+    def slide_list?
+      self.class == Morphosource::Collections::SlideListPresenter
+    end
+
+    def list?
+      media_list? || slide_list?
+    end
+
     def manager_list(managers)
       ml = []
       managers.each do |m|

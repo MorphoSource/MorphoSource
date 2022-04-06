@@ -1,0 +1,73 @@
+<%# taken from form_share.html.erb %>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="content-block">
+
+      <div id="participants" class="tab-pane">
+        <div class="edit-sharing-tab">
+          <section class="section-add-sharing">
+            <!-- TODO: removing form tags below makes add group form hit the collections controller - needs more investigation -->
+            <div>
+              <form></form>
+            </div>
+
+
+            <div class="form-add-user-sharing-wrapper" data-id="<%= @collection.id %>">
+              <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'user-participants-form' }) do |f| %>
+
+                <div class="row form-inline sharing-row-form add-users">
+                  <div class="col-sm-6 col-md-3 col-lg-3">
+                    <label><%= t('.add_individual_user') %>:</label>
+                  </div>
+                  <div class="col-sm-6 col-md-3 col-lg-3">
+                    <%= f.hidden_field_tag('collection_roles[agent_type]', 'user') %>
+                    <%= f.text_field 'collection_roles[agent_id]', placeholder: "Search for a user..." %>
+                  </div>
+                  <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
+                    <label>as</label>
+                    <%= f.select 'collection_roles[access]', list_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                  </div>
+                  <div class="col-sm-6 col-md-3 col-lg-3">
+                    <%= submit_tag 'Add', class: 'btn btn-info edit-collection-add-user-sharing-button', disabled: true %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </section>
+
+          <section class="section-collection-sharing">
+            <%= render 'tab_members_table', access: 'managers', filter: :manage? %>
+          </section>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// disable update user role button if no selection made
+$(document).ready(function() {
+  function updateAccessEnabled(el){
+    let saveButton = $(el).closest('tr').find(".btn");
+    if (verifyAccess(el)) {
+      saveButton.prop('disabled', false);
+    } else {
+      saveButton.prop('disabled', true);
+    }
+  }
+
+  function verifyAccess(el) {
+    if ($(el).val() != '') {
+      return true;
+    } else {
+      return false
+    }
+  }
+
+  $('.select-edit-access').change(function(){
+    updateAccessEnabled(this);
+  });
+});
+
+</script>

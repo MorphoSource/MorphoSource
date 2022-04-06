@@ -33,7 +33,7 @@ module Morphosource
       publication_settings_nag
       query_collection_counts
       query_collection_members
-      
+
       respond_to do |format|
         format.html { store_preferred_view }
         format.rss  { render :layout => false }
@@ -107,6 +107,22 @@ module Morphosource
               redirect_to project_chos_path(request.parameters)
             else
               redirect_to project_media_path(request.parameters)
+            end
+          elsif @collection.media_list?
+            if @_request.fullpath.include? '/biological_specimens'
+              redirect_to media_list_specimens_path(request.parameters)
+            elsif @_request.fullpath.include? '/cultural_heritage_objects'
+              redirect_to media_list_chos_path(request.parameters)
+            else
+              redirect_to media_list_media_path(request.parameters)
+            end
+          elsif @collection.slide_list?
+            if @_request.fullpath.include? '/biological_specimens'
+              redirect_to slide_list_specimens_path(request.parameters)
+            elsif @_request.fullpath.include? '/cultural_heritage_objects'
+              redirect_to slide_list_chos_path(request.parameters)
+            else
+              redirect_to slide_list_media_path(request.parameters)
             end
           else
             return

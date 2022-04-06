@@ -62,6 +62,8 @@ Rails.application.routes.draw do
         resources :media, path: "media/:collection_id", only: [:index], controller: 'add_media', as: 'add_media'
         resources :specimens, only: [:index], controller: 'biological_specimens'
         resources :cultural_heritage_objects, only: [:index], controller: 'cultural_heritage_objects'
+        resources :media_lists, only: [:index], controller: 'media_lists'
+        resources :slide_lists, only: [:index], controller: 'slide_lists'
 
         get '/media/facet/:id', to: 'media#facet', as: 'dashboard_media_facet'
         get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
@@ -87,7 +89,7 @@ Rails.application.routes.draw do
     get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
 
     scope module: :collections do
-      # these get redirected to projects/teams
+      # these get redirected to projects/teams/media lists/slide lists
       get 'collections/:id/biological_specimens', to: 'biological_specimens#show'
       get 'collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show'
 
@@ -119,6 +121,15 @@ Rails.application.routes.draw do
 
       # linked teams csv
       get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
+
+      # media_lists
+      get 'media_lists/:id', to: 'media_lists#show', as: 'media_list_media'
+      get 'media_lists/:id/biological_specimens', to: 'biological_specimens#show', as: 'media_list_specimens'
+      get 'media_lists/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'media_list_chos'
+      get 'media_lists/:id/about', to: 'media_lists#about', as: 'media_list_about'
+      get 'media_lists/:collection_id/facet/:id', to: 'media_lists#facet', as: 'media_list_media_facet'
+      get 'media_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'media_list_specimens_facet'
+      get 'media_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
     end
   end
 

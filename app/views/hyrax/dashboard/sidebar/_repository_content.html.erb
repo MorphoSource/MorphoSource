@@ -8,6 +8,14 @@
     <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.teams') %></span>
   <% end %>
 
+  <%= menu.nav_link(Rails.application.routes.url_helpers.my_media_lists_path) do %>
+    <span class="fa fa-list" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media_lists') %></span>
+  <% end %>
+
+  <%= menu.nav_link(Rails.application.routes.url_helpers.my_slide_lists_path) do %>
+    <span class="fa fa-list" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.slide_lists') %></span>
+  <% end %>
+
   <%= menu.nav_link(Rails.application.routes.url_helpers.my_media_index_path) do %>
     <span class="fa fa-cube" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media_and_objects') %></span>
   <% end %>

@@ -4,7 +4,7 @@ module Morphosource
 
       skip_load_and_authorize_resource only: [:show, :about, :facet], instance_name: :collection
 
-      self.presenter_class = Morphosource::Collections::MediaListPresenter
+      self.presenter_class = Morphosource::MediaListPresenter
 
       copy_blacklight_config_from(::MediaCatalogController)
 

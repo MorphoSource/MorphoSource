@@ -1,7 +1,11 @@
 class MediaList < Collection
   after_create :create_collection_groups
 
-  def initialize
+  def self.collection_type
+    Hyrax::CollectionType.find_by(machine_id: 'media_list')
+  end
+
+  def initialize(params=nil)
     super
     self.collection_type_gid = collection_type.gid
   end
@@ -21,7 +25,7 @@ class MediaList < Collection
   end
 
   def collection_type
-    Hyrax::CollectionType.find_by(machine_id: 'media_list')
+    self.class.collection_type
   end
 
   def type_assigns_groups?

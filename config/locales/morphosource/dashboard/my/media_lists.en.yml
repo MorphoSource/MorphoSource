@@ -3,4 +3,7 @@ en:
     dashboard:
       my:
         media_lists:
+          action:
+            new: 'New Media List'
+          count: "<strong>%{total_count} lists</strong>"
           page_title: 'Media Lists'

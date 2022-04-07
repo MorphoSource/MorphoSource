@@ -28,7 +28,7 @@
     <% end %>
   </ul>
 <% byebug %>
-  <%= simple_form_for @form, url: collection_form_url(@form), html: { class: 'editor' } do |f| %>
+  <%= simple_form_for @form, url: "dashboard/media_lists/#{@collection.id}/edit", html: { class: 'editor' } do |f| %>
     <div class="tab-content">
       <div id="description" class="tab-pane active">
         <div class="panel panel-default labels">
@@ -98,21 +98,7 @@
         <div id="sharing" class="tab-pane">
           <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
             <div class="panel-body">
-              <% if @collection.type_assigns_groups? %>
-                <%= render 'ms_form_share', f: f %>
-              <% else %>
-                <%= render 'form_share', f: f %>
-              <% end %>
-            </div>
-          </div>
-        </div>
-
-        <div id="organization" class="tab-pane">
-          <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
-            <div class="panel-body">
-              <% if @collection.team? && @collection.organization %>
-                <%= render 'ms_form_organization', f: f %>
-              <% end %>
+              <%= render 'form_share', f: f %>
             </div>
           </div>
         </div>

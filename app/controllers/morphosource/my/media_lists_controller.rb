@@ -21,15 +21,15 @@ module Morphosource
       configure_facets
 
       def search_builder_class
-        Hyrax::My::CollectionsSearchBuilder
+        Morphosource::My::MediaListsSearchBuilder
       end
 
       def index
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         add_breadcrumb t("morphosource.dashboard.my.media_lists.page_title"), main_app.my_media_lists_path
-        collection_type_list_presenter
-        managed_collections_count
+        # collection_type_list_presenter
+        # managed_collections_count
         super
       end
 
@@ -44,13 +44,13 @@ module Morphosource
           hyrax.my_dashboard_collections_facet_path(args[:id])
         end
 
-        def collection_type_list_presenter
-          @collection_type_list_presenter ||= Hyrax::SelectCollectionTypeListPresenter.new(current_user)
-        end
-
-        def managed_collections_count
-          @managed_collection_count = Hyrax::Collections::ManagedCollectionsService.managed_collections_count(scope: self)
-        end
+        # def collection_type_list_presenter
+        #   @collection_type_list_presenter ||= Hyrax::SelectCollectionTypeListPresenter.new(current_user)
+        # end
+        #
+        # def managed_collections_count
+        #   @managed_collection_count = Hyrax::Collections::ManagedCollectionsService.managed_collections_count(scope: self)
+        # end
     end
   end
 end

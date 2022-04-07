@@ -436,7 +436,15 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     scope module: :dashboard do
       resources :collections, only: [:create]
+      # resources :media_lists
       # resources :collections, only: [:update_members]
+    end
+  end
+
+  scope module: :morphosource do
+    scope module: :dashboard, path: :dashboard do
+      resources :media_lists
+      resources :slide_lists
     end
   end
 

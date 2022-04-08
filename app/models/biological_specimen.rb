@@ -3,7 +3,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
-  before_update :capitalize_field_value
   after_update :reindex_media
 
   self.indexer = BiologicalSpecimenIndexer
@@ -84,9 +83,14 @@ class BiologicalSpecimen < Morphosource::Works::Base
     end
   end
 
+  def occurrence_id_valid? 
+    # valid if 8 characters minimum AND has both a letter and a number
+    occurrence_id.present? && occurrence_id.first.length >= 8 && 
+      occurrence_id.first.count("0-9") > 0 && occurrence_id.first.count("a-zA-Z") > 0
+  end
+
   def update_metadata_from_idigbio_occurrence_id(save_work=false)
-    # Occurrence ID less than 10 characters should be ignored
-    if self.occurrence_id.present? && self.occurrence_id.first.length > 10 
+    if occurrence_id_valid?
       idigbio_occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
       if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
         idigbio_occurrence = idigbio_occurrence_id_results.first
@@ -162,7 +166,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
         # set save_work flag if needed for debugging in the console
         self.save if save_work 
       end # / if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
-    end # / if occurrence_id > 10 char
+    end # / if occurrence_id_valid?
   end
 
 
@@ -181,10 +185,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
           UpdateWorkIndexJob.perform_later(media.id)
         end
       end
-    end
-
-    def capitalize_field_value
-      self.sex = self.sex.map(&:capitalize)
     end
 
     def prepare_and_create_taxonomy(params)

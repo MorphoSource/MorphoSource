@@ -49,6 +49,7 @@ module Hyrax
       load_and_authorize_resource except: [:index, :specimens, :chos, :create], instance_name: :collection
 
       def deny_collection_access(exception)
+        byebug
         if exception.action == :edit
           #redirect_to(url_for(action: 'show'), alert: 'You do not have sufficient privileges to edit this document')
           redirect_to root_url, alert: 'You do not have sufficient privileges to edit this collection'
@@ -68,12 +69,14 @@ module Hyrax
         @collection.collection_type_gid = CollectionType.find(collection_type_id).gid
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        byebug
         add_breadcrumb t('.header', type_title: @collection.collection_type.title), request.path
         @collection.apply_depositor_metadata(current_user.user_key)
         form
       end
 
       def show
+        byebug
         # if the current user has edit permission, redirect to edit
         if current_user and can? :edit, @collection
           tab = request.params[:tab]

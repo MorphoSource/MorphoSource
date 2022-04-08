@@ -25,6 +25,7 @@ class Ability
       can [ :zip ], Media
       can [ :show ], ::User
       can [ :index, :create, :update], ContributorPetition
+      can [ :show ], MediaList
     end
   end
 end

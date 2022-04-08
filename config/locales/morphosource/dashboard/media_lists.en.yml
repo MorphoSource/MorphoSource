@@ -1,0 +1,6 @@
+en:
+  morphosource:
+    dashboard:
+      media_lists:
+        new:
+          header: 'Media List'

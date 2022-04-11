@@ -1,9 +1,9 @@
-<div class="modal-body">
+<div class="modal-body exp-date-wrapper">
   <%= bootstrap_form_tag url: main_app.edit_expiration_path, method: :put, :class => "form-horizontal" do |f| %>
-    <%= f.date_field :expiration_date, label: "New Expiration Date", value: Date.today.next_year, input_html: { :class => "datepicker form-control" } %>
+    <%= f.date_field :expiration_date, label: "New Expiration Date", value: Date.today.next_year, class: "datepicker form-control", max: "9999-12-31" %>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-    <%= f.submit_tag "Submit", name: nil, class: "btn btn-success" %>
+    <%= f.submit_tag "Submit", name: 'exp-date-submit', class: "btn btn-success" %>
   <% end %>
 </div>

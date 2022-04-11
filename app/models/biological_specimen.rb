@@ -162,6 +162,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
             Rails.logger.debug "UpdateBsoFromIdigbio: BSO #{id} : #{key} field will be updated to '#{value}'"
           end
         end
+        self.idigbio_link_origin = ["system_generated"]
         # normally saving work is done in a background job
         # set save_work flag if needed for debugging in the console
         self.save if save_work 

@@ -208,6 +208,7 @@ class SubmissionsController < ApplicationController
     @submission.taxonomy_id_array = @submission.taxonomy_id_array.present? ? @submission.taxonomy_id_array.split(',') : []
     @submission.taxonomy_gbif_key_array = @submission.taxonomy_gbif_key_array.present? ? @submission.taxonomy_gbif_key_array.split(',') : []
 
+byebug
     if @submission.idigbio_id.present?
       # What taxonomy does this specimen have? Do they exist in MS2 or create them?
       idb_taxonomy_param_sets = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(@submission.idigbio_id)
@@ -240,12 +241,13 @@ class SubmissionsController < ApplicationController
       params[:biological_specimen] = ActionController::Parameters.new(
         Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(
           @submission.idigbio_id))
+      # track how the specimen is linked
+      params[:biological_specimen]["idigbio_link_origin"] = :user
     else
       # Manual physical object creation, may need to do extra steps
       if @submission.will_create_taxonomy
         @submission.taxonomy_params_array << params[:taxonomy]
       end
-
 
       @submission.taxonomy_gbif_key_array.each do |gbif_key| # this may be empty
         gbif = Morphosource::TaxonomySearchService.call({ gbif_key: gbif_key.to_s })
@@ -256,6 +258,7 @@ class SubmissionsController < ApplicationController
             Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key))
         end
       end
+
     end
 
     works.each do |work|
@@ -267,6 +270,10 @@ class SubmissionsController < ApplicationController
         end
       else
         puts("Creating #{work} if necessary")
+
+if work == 'biological_specimen' 
+  byebug
+end
         create_work_if_needed(work, params)
       end
     end

@@ -4,7 +4,8 @@ class BatchSubmissionsController < ApplicationController
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms, only: [:new]
-  before_action :check_sftp_share_connection, only: [:new]
+  before_action :check_batch_submission_access, only: [:index, :new, :submit]
+  before_action :check_new_submit_allowed, only: [:new, :submit]
   before_action :check_params, only: [:submit]
   after_action :create_manifest_object, only: [:submit]
 
@@ -15,7 +16,8 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def index
-    render 'index', locals: { row_count: nil }
+    job = current_user.last_batch_submission_job
+    render 'index', locals: { job: job }
   end
 
   def new
@@ -155,8 +157,8 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def ingest
-    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object)
-    main_job = BackgroundJob.create({ main_job_id: job.job_id, user_id: current_user.id, created_objects: {} })
+    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object, current_user)
+    main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
 
   def initial_error_message
@@ -247,7 +249,7 @@ class BatchSubmissionsController < ApplicationController
           row_count: row_count }
         @manifest_is_valid = false
       else
-        render 'index', locals: { 
+        render 'validation_success', locals: { 
           warn_rows: warn_rows, 
           warn_messages: warn_messages, 
           warn_cell_numbers: warn_cell_numbers, 
@@ -836,9 +838,17 @@ class BatchSubmissionsController < ApplicationController
       end
     end
 
-    def check_sftp_share_connection
-      if user_share_full_path == "NOT_FOUND"
-        render 'not_connected'      
+    def check_batch_submission_access
+      if !current_user.batch_submission_contributor? && !current_user.admin?
+        render 'not_allowed', locals: { message: 'Sorry, you do not have permission.', show_dashboard_link: false }
+      elsif user_share_full_path == "NOT_FOUND"
+        render 'not_allowed', locals: { message: 'Your SFTP share is not connected.  Please check your user profile.', show_dashboard_link: false }
+      end
+    end
+
+    def check_new_submit_allowed
+      if !current_user.can_submit_new_batch_submission?
+        render 'not_allowed', locals: { message: 'Sorry, you currently have a batch submission job running. ', show_dashboard_link: true }
       end
     end
 

@@ -49,16 +49,8 @@
         <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.workflow_roles') %></span>
       <% end %>
     <% end %>
-
-    <% if current_user.admin? || current_user.batch_submission_contributor? %>
-      <%= menu.nav_link(main_app.batch_submissions_path) do %>
-        <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
-      <% end %>
-    <% end %>
-
     <%= menu.nav_link(main_app.admin_data_curation_path) do %>
-      <span class="fa-solid fa-pen-to-square" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.data_curation') %></span>
+      <span class="fa fa-database" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.data_curation') %></span>
     <% end %>
 
 <% end %>
-

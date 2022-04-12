@@ -156,6 +156,10 @@ class BiologicalSpecimen < Morphosource::Works::Base
         # sync bso metadata
         biospec_model_params = Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(idigbio_occurrence['uuid'])
         biospec_model_params.each do |key, value|
+          if (key == "sex") && (!['Female','Male','Unknowable','Undetermined','Hermaphrodite','Gynandromorph'].include? value.capitalize)
+            # do not update the value from iDigBio unless it matches MS control list
+            next
+          end
           self.send("#{key}=", value.is_a?(Array) ? value : [value] )
           field_changed = self.send("#{key}_changed?")
           if field_changed

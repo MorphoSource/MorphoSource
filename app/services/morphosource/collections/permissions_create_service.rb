@@ -11,6 +11,14 @@ module Morphosource
       # Add auto-generated groups.
       # Don't give creating_user individual manager status since they are already added to the manager group.
       def self.access_grants_attributes(collection:)
+        if collection.list?
+          list_access_grants_attributes(collection)
+        else
+          team_project_access_grants_attributes(collection)
+        end
+      end
+
+      def self.team_project_access_grant_attributes
         [
           { agent_type: 'group', agent_id: admin_group_name, access: Hyrax::PermissionTemplateAccess::MANAGE },
           { agent_type: 'group', agent_id: collection.managers_group.name, access: Hyrax::PermissionTemplateAccess::MANAGE },
@@ -18,6 +26,13 @@ module Morphosource
           { agent_type: 'group', agent_id: collection.depositors_group.name, access: Hyrax::PermissionTemplateAccess::DEPOSIT },
           { agent_type: 'group', agent_id: collection.downloaders_group.name, access: Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS },
           { agent_type: 'group', agent_id: collection.viewers_group.name, access: Hyrax::PermissionTemplateAccess::VIEW }
+        ] + managers_of_collection_type(collection_type: collection.collection_type)
+      end
+
+      def self.list_access_grants_attributes
+        [
+          { agent_type: 'group', agent_id: admin_group_name, access: Hyrax::PermissionTemplateAccess::MANAGE },
+          { agent_type: 'group', agent_id: collection.curators_group.name, access: Hyrax::PermissionTemplateAccess::MANAGE },
         ] + managers_of_collection_type(collection_type: collection.collection_type)
       end
     end

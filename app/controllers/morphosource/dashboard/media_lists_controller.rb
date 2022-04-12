@@ -360,7 +360,7 @@ module Morphosource
 
         def set_default_permissions
           additional_grants = @participants # Grants converted from older versions (< Hyrax 2.1.0) where share was edit or read access instead of managers, depositors, and viewers
-          Collections::PermissionsCreateService.create_default(collection: @collection, creating_user: current_user, grants: additional_grants)
+          Collections::PermissionsCreateService.create_default(collection: @collection)
         end
 
         def query_collection_members

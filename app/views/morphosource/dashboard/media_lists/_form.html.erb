@@ -20,15 +20,11 @@
         <a href="#sharing" role="tab" data-toggle="tab"><%= t('.tabs.sharing') %></a>
       </li>
       <% end %>
-      <% if @collection.team? && @collection.organization && @current_user.can?(:edit, @collection) %>
-        <li>
-          <a href="#organization" role="tab" data-toggle="tab"><%= 'Organization' %></a>
-        </li>
-      <% end %>
     <% end %>
   </ul>
 <% byebug %>
-  <%= simple_form_for @form, url: "dashboard/media_lists/#{@collection.id}/edit", html: { class: 'editor' } do |f| %>
+  <%# <%= simple_form_for @form, url: collection_form_url(@form), html: { class: 'editor' } do |f| %>
+  <%= simple_form_for @form, url: [main_app, @form], html: { class: 'editor' } do |f| %>
     <div class="tab-content">
       <div id="description" class="tab-pane active">
         <div class="panel panel-default labels">

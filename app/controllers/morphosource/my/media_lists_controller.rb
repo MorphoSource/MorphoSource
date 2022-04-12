@@ -30,7 +30,16 @@ module Morphosource
         add_breadcrumb t("morphosource.dashboard.my.media_lists.page_title"), main_app.my_media_lists_path
         # collection_type_list_presenter
         # managed_collections_count
-        super
+        # super
+        @user = current_user
+        (@response, @document_list) = query_solr
+        prepare_instance_variables_for_batch_control_display
+
+        respond_to do |format|
+          format.html {}
+          format.rss  { render layout: false }
+          format.atom { render layout: false }
+        end
       end
 
       private
@@ -51,6 +60,11 @@ module Morphosource
         # def managed_collections_count
         #   @managed_collection_count = Hyrax::Collections::ManagedCollectionsService.managed_collections_count(scope: self)
         # end
+
+        def query_solr
+          byebug
+          search_results(params)
+        end
     end
   end
 end

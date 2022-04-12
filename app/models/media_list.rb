@@ -20,7 +20,7 @@ class MediaList < Collection
     Role.find_by(name: id.concat("_managers"))
   end
 
-  def curators
+  def managers
     Role.find_by(name: id.concat("_managers")).users
   end
 

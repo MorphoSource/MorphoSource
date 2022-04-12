@@ -1,0 +1,38 @@
+<% id = collection_presenter.id %>
+<% ul_id = 'collection-action-dropdown-ul-' + id %>
+
+<div class="btn-group">
+  <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" type="button" id="dropdownMenu_<%= id %>" aria-haspopup="true" aria-expanded="false" aria-controls="<%= ul_id %>">
+    <span class="sr-only"><%= t("hyrax.dashboard.my.sr.press_to") %> </span>
+    <%= t("hyrax.dashboard.my.action.select") %> <span class="caret" aria-hidden="true"></span>
+  </button>
+
+  <ul role="menu" id="<%= ul_id %>" class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu_<%= id %>">
+    <% if can? :edit, id %>
+    <li role="menuitem" tabindex="-1">
+      <%= link_to main_app.media_list_media_path(id),
+                  class: 'itemicon itemedit',
+                  title: t("morphosource.dashboard.media_lists.action.view")  do %>
+          <%= t("morphosource.dashboard.media_lists.action.view") %>
+      <% end %>
+    </li>
+    <li role="menuitem" tabindex="-1">
+      <%= link_to main_app.edit_media_list_path(id),
+                  class: 'itemicon itemedit',
+                  title: t("morphosource.dashboard.media_lists.action.edit")  do %>
+          <%= t("morphosource.dashboard.media_lists.action.edit") %>
+      <% end %>
+    </li>
+      <li role="menuitem" tabindex="-1">
+        <%= link_to "#",
+                    class: 'itemicon itemtrash delete-collection-button',
+                    title: t("morphosource.dashboard.media_lists.action.delete"),
+                    data: { totalitems: collection_presenter.total_items ,
+                            membership: collection_presenter.collection_type_is_require_membership? ,
+                            hasaccess: (can?(:edit, collection_presenter.solr_document)) } do %>
+          <%= t("morphosource.dashboard.media_lists.action.delete") %>
+        <% end %>
+      <% end %>
+    </li>
+  </ul>
+</div>

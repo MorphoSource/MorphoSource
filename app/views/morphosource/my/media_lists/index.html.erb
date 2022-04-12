@@ -17,7 +17,6 @@
     <nav></nav>
 
     <% if can?(:create_any, MediaList) %>
-    <% byebug %>
         <% # link directly to create collection form with type %>
         <%= link_to(t('morphosource.dashboard.my.media_lists.action.new'), main_app.new_media_list_path, class: 'btn btn-primary') %>
     <% end %>

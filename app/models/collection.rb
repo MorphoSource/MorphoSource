@@ -61,6 +61,10 @@ class Collection < ActiveFedora::Base
     collection_type.title == 'Project'
   end
 
+  def list?
+    media_list? || slide_list?
+  end
+
   def media_list?
     collection_type.title == 'Media List'
   end

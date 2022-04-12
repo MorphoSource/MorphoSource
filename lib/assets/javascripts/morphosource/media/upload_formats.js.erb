@@ -50,7 +50,7 @@ function mediaTypeFormats(){
   let formats = {};
 
   switch (mediaType) {
-    case 'Image': 
+    case 'Image':
       var list = (<%= Morphosource.image_formats %>).join(', ');
       break;
     case 'Video':
@@ -227,6 +227,8 @@ function unallowedFilesAlert() {
 }
 
 $( document ).ready(function(){
+  if ($('form[id*="edit_media_list"]').length) { return }
+
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) { // if media form page (add/edit)
     // Adds file formats requirement to the Requirements list

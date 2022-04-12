@@ -3,21 +3,9 @@ class Morphosource::My::MediaListsSearchBuilder < ::SearchBuilder
   include Hyrax::My::SearchBuilderBehavior
   include Hyrax::FilterByType
 
-  self.default_processor_chain += [:apply_list_ids_filter]
 
-  def apply_list_ids_filter(solr_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << list_ids_filter
-  end
-
-  def list_ids_filter
-    "(id:(#{list_ids.join(' OR ')}))"
-  end
-
-  def list_ids
-    groups = @scope.current_ability.user_groups
-    groups = groups.select{ |g| g.include? "creators" }
-    groups.map{|group| group.split(/_/, 2).first}
+  def discovery_permissions
+     @discovery_permissions ||= ["edit"]
   end
 
   # This overrides the models in FilterByType

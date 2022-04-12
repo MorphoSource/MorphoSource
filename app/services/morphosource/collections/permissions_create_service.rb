@@ -18,7 +18,7 @@ module Morphosource
         end
       end
 
-      def self.team_project_access_grant_attributes
+      def self.team_project_access_grants_attributes(collection)
         [
           { agent_type: 'group', agent_id: admin_group_name, access: Hyrax::PermissionTemplateAccess::MANAGE },
           { agent_type: 'group', agent_id: collection.managers_group.name, access: Hyrax::PermissionTemplateAccess::MANAGE },
@@ -29,10 +29,10 @@ module Morphosource
         ] + managers_of_collection_type(collection_type: collection.collection_type)
       end
 
-      def self.list_access_grants_attributes
+      def self.list_access_grants_attributes(collection)
         [
           { agent_type: 'group', agent_id: admin_group_name, access: Hyrax::PermissionTemplateAccess::MANAGE },
-          { agent_type: 'group', agent_id: collection.curators_group.name, access: Hyrax::PermissionTemplateAccess::MANAGE },
+          { agent_type: 'group', agent_id: collection.managers_group.name, access: Hyrax::PermissionTemplateAccess::MANAGE },
         ] + managers_of_collection_type(collection_type: collection.collection_type)
       end
     end

@@ -79,11 +79,23 @@ module Morphosource
       path_info.include?("projects")
     end
 
+    def page_is_media_list?
+      path_info.include?("media_lists")
+    end
+
+    def page_is_slide_list?
+      path_info.include?("slide_lists")
+    end
+
     def collection_type
       if page_is_team?
         'team'
       elsif page_is_project?
         'project'
+      elsif page_is_media_list?
+        'media list'
+      elsif page_is_slide_list?
+        'slide list'
       end
     end
 

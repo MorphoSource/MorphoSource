@@ -9,11 +9,7 @@ module Morphosource
       super
       @search_form_url = ''
       @collection ||= Collection.find(id)
-      if @collection.media_list?
-        @collection_creators = creator_list(@collection.creators)
-      else
-        @collection_managers = manager_list(@collection.managers)
-      end
+      @collection_managers = manager_list(@collection.managers)
     end
 
     def team?
@@ -30,6 +26,10 @@ module Morphosource
 
     def slide_list?
       self.class == Morphosource::Collections::SlideListPresenter
+    end
+
+    def list?
+      media_list? || slide_list?
     end
 
     def manager_list(managers)

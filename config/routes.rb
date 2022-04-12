@@ -443,7 +443,7 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     scope module: :dashboard, path: :dashboard do
-      resources :media_lists
+      resources :media_lists, except: [:index, :show]
       resources :slide_lists
     end
   end

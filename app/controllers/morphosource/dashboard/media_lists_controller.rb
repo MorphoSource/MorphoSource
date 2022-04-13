@@ -255,14 +255,14 @@ module Morphosource
         # end
 
         def presenter
-          byebug
+          # byebug
           @presenter ||= begin
             # Query Solr for the collection.
             # run the solr query to find the collection members
             response = repository.search(single_item_search_builder.query)
-            byebug
+            # byebug
             curation_concern = response.documents.first
-            byebug
+            # byebug
             raise CanCan::AccessDenied unless curation_concern
             presenter_class.new(curation_concern, current_ability)
           end
@@ -271,7 +271,7 @@ module Morphosource
         # Instantiates the search builder that builds a query for a single item
         # this is useful in the show view.
         def single_item_search_builder
-          byebug
+          # byebug
           single_item_search_builder_class.new(self).with(params.except(:q, :page))
         end
 

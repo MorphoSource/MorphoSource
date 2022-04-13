@@ -44,5 +44,6 @@ module Morphosource
     def id_badge
       content_tag(:span, "ID: #{id}", class: "label label-info")
     end
+
   end
 end

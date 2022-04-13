@@ -65,6 +65,8 @@ gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
 gem 'render_async'
 gem 'recaptcha'
 gem 'roo'
+gem 'zip-zip'
+gem 'axlsx'
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.

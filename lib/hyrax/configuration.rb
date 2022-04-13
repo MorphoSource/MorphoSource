@@ -727,7 +727,15 @@ module Hyrax
     attr_accessor :nested_relationship_reindexer
 
     def default_nested_relationship_reindexer
-      ->(id:, extent:) { Samvera::NestingIndexer.reindex_relationships(id: id, extent: extent) }
+      ->(id:, extent:) { rescued_nested_relationship_reindexer(id: id, extent: extent) }
+    end
+
+    def rescued_nested_relationship_reindexer(id:, extent:)
+      begin
+        Samvera::NestingIndexer.reindex_relationships(id: id, extent: extent)
+      rescue Ldp::Gone => e
+        Rails.logger.error "Samvera::NestingIndexer.reindex_relationships experienced Ldp::Gone error with work #{id}"
+      end
     end
 
     private

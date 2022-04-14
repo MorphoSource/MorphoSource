@@ -1,7 +1,7 @@
 module Morphosource
   module Dashboard
-    ## Shows a list of all collections to the admins
     class MediaListsController < Hyrax::Dashboard::CollectionsController
+      include Morphosource::CollectionsControllerBehavior
 
       self.presenter_class = Morphosource::MediaListPresenter
 
@@ -11,11 +11,42 @@ module Morphosource
 
       load_and_authorize_resource except: [:index, :specimens, :chos, :create], instance_name: :media_list
 
-      before_action :copy_params, only: [:update]
+      before_action :copy_params, only: [:create, :update]
+
+      copy_blacklight_config_from(::MediaCatalogController)
+
+      def self.configure_facets
+        configure_blacklight do |config|
+          config.http_method = :post
+          config.search_builder_class = self.new.search_builder_class
+          # clear catalog facet fields
+          config.facet_fields = {}
+          config.add_facet_field "publication_status_ssi", label: "Publication Status", limit: 10
+          config.add_facet_field "human_readable_media_type_ssim", label: "Media Type", limit: 10
+          config.add_facet_field "media_organization_ssim", label: "Organization", limit: 10
+          config.add_facet_field "member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
+          config.add_facet_field "member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
+        end
+      end
+      configure_facets
 
       def edit
+        @curation_concern = @collection
         presenter
+        # query_collection_information
+        # query_collection_members
+        (@media_count, @object_ids) = collection_media
+        # byebug
+        (@response, @document_list) = query_solr
+        # byebug
+        query_collection_counts
+        # byebug
         form
+      end
+
+      def query_collection_counts
+        @specimen_count ||= collection_specimen_count
+        @cho_count ||= collection_cho_count
       end
 
       def after_create
@@ -136,6 +167,10 @@ module Morphosource
       # def search_builder_class
       #   Hyrax::Dashboard::CollectionsSearchBuilder
       # end
+
+      def search_builder_class
+        Morphosource::Collections::MediaSearchBuilder
+      end
 
       private
 
@@ -365,8 +400,6 @@ module Morphosource
 
         # def query_collection_members
         #   member_works
-        #   member_subcollections if collection.collection_type.nestable?
-        #   parent_collections if collection.collection_type.nestable? && action_name == 'show'
         # end
 
         # Instantiate the membership query service
@@ -376,6 +409,7 @@ module Morphosource
 
         # def member_works
         #   @response = collection_member_service.available_member_works
+        #   byebug
         #   @member_docs = @response.documents
         #   @members_count = @response.total
         # end
@@ -419,6 +453,12 @@ module Morphosource
         def copy_params
           params[:collection] = params[:media_list]
         end
+
+        def sort_parameters
+          s = (params[:sort].presence || '').split(' ')
+          return s[0], s[1]
+        end
+        helper_method :sort_parameters
     end
   end
 end

@@ -12,18 +12,25 @@ class CollectionRolesController < ApplicationController
 
     if users_are_eligible?
       update_subcollections
+      byebug
       update_agent_access
+      byebug
     else
+      byebug
       update_notice('user_status')
     end
+    byebug
     reload_collection_share
   end
 
   private
 
+  # Team/Project:
   # users are eligible if they are being removed from a role, are being added to a downloader or viewer role, or have contributor status.
+  # List:
+  # all registered users are eligible.
   def users_are_eligible?
-    if @remove
+    if @remove || @collection.list?
       return true
     elsif group_is_downloader_or_viewer?
       return true
@@ -97,10 +104,15 @@ class CollectionRolesController < ApplicationController
   end
 
   def reload_collection_share
-    redirect_to(hyrax.edit_dashboard_collection_path(collection.id, anchor: 'members'))
+    if collection.media_list?
+      redirect_to(main_app.edit_media_list_path(collection.id, anchor: 'members'))
+    else
+      redirect_to(hyrax.edit_dashboard_collection_path(collection.id, anchor: 'members'))
+    end
   end
 
   def update_user_access
+    byebug
     if @new_group || @remove
       if @new_group
         change_groups(user)
@@ -120,6 +132,7 @@ class CollectionRolesController < ApplicationController
   end
 
   def change_groups(user)
+    byebug
     @group.users.delete(user)
     add_user_to_group(user, @new_group)
     @new_group.save
@@ -127,6 +140,7 @@ class CollectionRolesController < ApplicationController
 
   # Add user to appropriate role if user does not already have another collection role.
   def add_user_to_group(user, group)
+    byebug
     group.users << user unless collection.group_members.include? user
   end
 
@@ -222,7 +236,16 @@ class CollectionRolesController < ApplicationController
 
   # CollectionsControllerBehavior methods
   def find_subcollections
+    byebug
     presenter
     member_subcollections
+  end
+
+  def presenter
+    if @collection.list?
+      self.presenter_class = Morphosource::MediaListPresenter
+      self.single_item_search_builder_class = Morphosource::MediaLists::SingleMediaListSearchBuilder
+    end
+    super
   end
 end

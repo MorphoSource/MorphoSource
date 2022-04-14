@@ -35,7 +35,6 @@ module Morphosource
           ActiveFedora::Base.where(id: object_id).first.try(:update_index)
         end
       end
-
     end
   end
 end

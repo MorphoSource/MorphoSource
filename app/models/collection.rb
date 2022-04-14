@@ -163,6 +163,8 @@ class Collection < ActiveFedora::Base
           Hyrax::PermissionTemplateApplicator.apply(permission_template).to(model: member)
           member.save!
           InheritPermissionsJob.perform_later(member)
+        else
+          member.save! 
         end
       end
       member

@@ -124,6 +124,13 @@ class MediaIndexer < Morphosource::WorkIndexer
       # project
       @project_ids = object.member_of_project_ids
       solr_doc['member_of_project_ids_ssim'] = @project_ids
+      # media list
+      media_list_ids = object.member_of_media_list_ids
+      solr_doc['member_of_media_list_ids_ssim'] = media_list_ids
+      # slide list
+      slide_list_ids = object.member_of_slide_list_ids
+      solr_doc['member_of_slide_list_ids_ssim'] = slide_list_ids
+
 
       pub_status = publication_status
       solr_doc['publication_status_ssi'] = pub_status

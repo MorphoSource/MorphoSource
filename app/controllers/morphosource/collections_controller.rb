@@ -15,7 +15,6 @@ module Morphosource
 
     self.presenter_class = presenter_class
 
-
     def search_builder_class
       Morphosource::Collections::MediaSearchBuilder
     end
@@ -33,11 +32,11 @@ module Morphosource
 
       repository.blacklight_config.max_per_page = 9999999
       (@response, @document_list) = query_solr_all_results
-      media_ids = @document_list.map{|d| d["id"]}.flatten.compact.uniq 
+      media_ids = @document_list.map{|d| d["id"]}.flatten.compact.uniq
       @new_document_list = Morphosource::Reports::DownloadsReportService.call(media_ids)
 
       respond_to do |format|
-        format.csv do 
+        format.csv do
           csv_response_headers('Media%20Downloads')
           render 'show'
         end
@@ -49,15 +48,15 @@ module Morphosource
 
       repository.blacklight_config.max_per_page = 9999999
       (@response, @document_list) = query_solr_all_results
-      media_ids = @document_list.map{|d| d["id"]}.flatten.compact.uniq 
+      media_ids = @document_list.map{|d| d["id"]}.flatten.compact.uniq
       downloads = Morphosource::Reports::DownloadsReportService.call(media_ids).
         group_by{|h| h['media_id'] }.map{|k, v| [k, v.length]}.to_h
-      @new_document_list = @document_list.map do |doc| 
+      @new_document_list = @document_list.map do |doc|
         doc.to_semantic_values.merge(downloads: ( downloads[doc['id']] || 0 ) )
       end
 
       respond_to do |format|
-        format.csv do 
+        format.csv do
           csv_response_headers('Media%20Download%20Counts')
           render 'show'
         end
@@ -69,17 +68,17 @@ module Morphosource
 
       repository.blacklight_config.max_per_page = 9999999
       (@response, @document_list) = query_solr_all_results
-      media_ids = @document_list.map{|d| d["id"]}.flatten.compact.uniq 
+      media_ids = @document_list.map{|d| d["id"]}.flatten.compact.uniq
       @new_document_list = Morphosource::Reports::RequestsReportService.call(media_ids)
 
       respond_to do |format|
-        format.csv do 
+        format.csv do
           csv_response_headers('Media%20Requests')
           render 'show'
         end
       end
     end
-    
+
     private
 
     def decide_layout

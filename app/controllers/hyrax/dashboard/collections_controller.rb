@@ -49,7 +49,9 @@ module Hyrax
       load_and_authorize_resource except: [:index, :specimens, :chos, :create], instance_name: :collection
 
       def deny_collection_access(exception)
-        if exception.action == :edit
+        if @collection.list?
+          redirect_lists
+        elsif exception.action == :edit
           #redirect_to(url_for(action: 'show'), alert: 'You do not have sufficient privileges to edit this document')
           redirect_to root_url, alert: 'You do not have sufficient privileges to edit this collection'
           # todo: might be better to redirect to /dashboard/collections
@@ -678,6 +680,13 @@ module Hyrax
 
             ActiveFedora::Base.where(id: object_id).first.try(:update_index)
           end
+        end
+
+        def redirect_lists
+          if self.action_name == "show" || self.action_name == "edit"
+            redirect_to main_app.edit_media_list_path(@collection)
+          end
+          return
         end
 
 

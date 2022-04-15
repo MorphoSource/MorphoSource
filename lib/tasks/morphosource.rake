@@ -3,6 +3,55 @@ require 'ms1to2'
 require 'importer'
 
 namespace :morphosource do
+  desc 'Runs rake task db:schema:load if no tables exist'
+  task db_schema_load_if_needed: :environment do
+    if !ActiveRecord::Base.connection.data_sources.present?
+      Rake::Task['db:schema:load'].invoke
+    end
+  end
+
+  desc 'Runs db:create, morphosource:db_schema_load_if_needed, db:migrate'
+  task db_setup_idempotent: :environment do
+    Rake::Task['db:create'].invoke
+    Rake::Task['morphosource:db_schema_load_if_needed'].invoke
+    Rake::Task['db:migrate'].invoke
+  end
+
+  desc 'MorphoSource Setup'
+  task :setup  => :environment do
+    # default admin set
+    Rake::Task["hyrax:default_admin_set:create"].invoke
+    # team and project collection types
+    Rake::Task['morphosource:create_collection_types'].invoke
+    # admin role
+    Rake::Task['morphosource:create_admin_role'].invoke
+    # contributor role
+    Rake::Task['morphosource:create_contributor_role'].invoke
+    # charge api role
+    Rake::Task['morphosource:create_charge_api_role'].invoke
+  end
+
+  desc 'MorphoSource Docker Setup'
+  task :docker_setup => :environment do
+    Rails.logger.info('Setup DB')
+    Rake::Task['morphosource:db_setup_idempotent']
+    Rails.logger.info('Clear cache')
+    Rake::Task['tmp:cache:clear'].invoke
+    Rails.logger.info('Load workflow')
+    Rake::Task['hyrax:workflow:load'].invoke
+    Rails.logger.info('Setup MorphoSource app')
+    Rake::Task['morphosource:setup'].invoke
+    Rails.logger.info('Create initial users')
+    Rake::Task['morphosource:create_production_users'].invoke
+    Rails.logger.info('Initiate dev caching')
+    Rake::Task['morphosource:dev_cache_on'].invoke
+  end
+
+  # Runs rake task dev:cache to turn on caching only if it is off
+  task dev_cache_on: :environment do
+    Rake::Task['dev:cache'].invoke if !Rails.root.join('tmp', 'caching-dev.txt').exist?
+  end
+  
   # Taken from hyrax:stats:user_stats at https://github.com/samvera/hyrax/blob/v2.9.0/lib/tasks/stats_tasks.rake
   # But using a slightly customized UserStatImporter to prevent DB row bloat
   desc "Cache work view, file view & file download stats for all users"
@@ -299,7 +348,7 @@ namespace :morphosource do
 
   desc 'Set up MS email user'
   task :create_email_sender_user => :environment do 
-    if Hyrax.config.contact_email.present?
+    if Hyrax.config.contact_email.present? && !User.find_by(email: Hyrax.config.contact_email)
       User.create(email: Hyrax.config.contact_email, password: Morphosource.ms_init_pw)
     end
   end
@@ -392,10 +441,14 @@ namespace :morphosource do
 
   desc 'Set up Team and Project collection types'
   task :create_collection_types => :environment do
-    team = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Teams::SETTINGS)
-    project = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
-    Hyrax::CollectionTypes::CreateService.add_default_participants(team.id)
-    Hyrax::CollectionTypes::CreateService.add_default_participants(project.id)
+    if !Hyrax::CollectionType.where(title: Morphosource::CollectionTypes::Teams::SETTINGS[:title]).present?
+      team = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Teams::SETTINGS)
+      Hyrax::CollectionTypes::CreateService.add_default_participants(team.id)
+    end
+    if !Hyrax::CollectionType.where(title: Morphosource::CollectionTypes::Projects::SETTINGS[:title]).present?
+      project = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
+      Hyrax::CollectionTypes::CreateService.add_default_participants(project.id)
+    end
   end
 
   desc 'Set Up Contributor Role'
@@ -406,20 +459,6 @@ namespace :morphosource do
   desc 'Set Up Fund Code Charge API User Role'
   task :create_charge_api_role => :environment do
     Role.find_or_create_by(name: 'charge_api')
-  end
-
-  desc 'MorphoSource Setup'
-  task :setup  => :environment do
-    # default admin set
-    Rake::Task["hyrax:default_admin_set:create"].invoke
-    # team and project collection types
-    Rake::Task['morphosource:create_collection_types'].invoke
-    # admin role
-    Rake::Task['morphosource:create_admin_role'].invoke
-    # contributor role
-    Rake::Task['morphosource:create_contributor_role'].invoke
-    # charge api role
-    Rake::Task['morphosource:create_charge_api_role'].invoke
   end
 
   desc 'Update reviewers column for all cart items'

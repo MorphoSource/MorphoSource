@@ -1,5 +1,5 @@
 ARG RUBY_VERSION=2.7.4
-FROM ruby:$RUBY_VERSION-alpine3.14 as hyrax-base
+FROM ruby:$RUBY_VERSION-alpine3.14 as msbase
 
 ARG DATABASE_APK_PACKAGE="postgresql-dev"
 ARG EXTRA_APK_PACKAGES="git"
@@ -45,8 +45,9 @@ ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 
 
-FROM hyrax-base as hyrax
+FROM msbase as morphosource
 
+USER app
 ARG BUNDLE_WITHOUT="development test"
 ENV BLENDER_PATH="/app/blender/"
 
@@ -54,8 +55,9 @@ RUN bundle install --jobs "$(nproc)"
 RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
 
 
-FROM hyrax-base as hyrax-with-tools
+FROM msbase as mstools
 
+USER app
 ENV FITS_VERSION='1.3.0'
 
 # Install FITS characterization tool
@@ -98,15 +100,17 @@ RUN mkdir -p /app/dcmtk && \
 ENV PATH="${PATH}:/app/dcmtk/bin"
 
 
-FROM hyrax-with-tools as hyrax-worker-base
+FROM mstools as msworkerbase
 
+USER app
 ENV MALLOC_ARENA_MAX=2
 
 CMD bundle exec sidekiq
 
 
-FROM hyrax-worker-base as hyrax-worker
+FROM msworkerbase as msworker
 
+USER app
 ARG BUNDLE_WITHOUT="development test"
 ENV BLENDER_PATH="/app/blender/"
 

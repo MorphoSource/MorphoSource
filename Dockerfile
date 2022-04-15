@@ -48,6 +48,7 @@ CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 FROM hyrax-base as hyrax
 
 ARG BUNDLE_WITHOUT="development test"
+ENV BLENDER_PATH="/app/blender/"
 
 RUN bundle install --jobs "$(nproc)"
 RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
@@ -107,6 +108,7 @@ CMD bundle exec sidekiq
 FROM hyrax-worker-base as hyrax-worker
 
 ARG BUNDLE_WITHOUT="development test"
+ENV BLENDER_PATH="/app/blender/"
 
 RUN bundle install --jobs "$(nproc)"
 RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile

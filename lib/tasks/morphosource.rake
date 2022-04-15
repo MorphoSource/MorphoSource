@@ -34,7 +34,9 @@ namespace :morphosource do
   desc 'MorphoSource Docker Setup'
   task :docker_setup => :environment do
     Rails.logger.info('Setup DB')
-    Rake::Task['morphosource:db_setup_idempotent']
+    Rake::Task['db:create'].invoke
+    Rake::Task['morphosource:db_schema_load_if_needed'].invoke
+    Rake::Task['db:migrate'].invoke
     Rails.logger.info('Clear cache')
     Rake::Task['tmp:cache:clear'].invoke
     Rails.logger.info('Load workflow')

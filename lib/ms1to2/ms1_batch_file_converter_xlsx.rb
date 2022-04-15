@@ -25,6 +25,7 @@ module Ms1to2
       parse
       normalize # parse ms1 special fields into optimal format
       finalize # get ms2 attributes using Ms1to2::Models::BaseObject
+
       to_xlsx(finalized_data, output_path)
 
       return response
@@ -98,7 +99,13 @@ module Ms1to2
       .except(:id)
       new_row[:media][:media_file] = mf[:media]
 
-
+      # add additional ms1-to-ms2 mapped field & value pairs
+#      new_row[:media][:raw_or_derived] = row['ms_media_files']['file_type']
+#      new_row[:media][:side] = row['ms_media']['side'] # or row['ms_media_files']['side'] ?
+#      new_row[:media][:publication_status] = row['ms_media_files']['published']
+#      new_row[:biological_specimen][:ms_id] = row['ms_specimens']['specimen_id']
+      #new_row[:biological_specimen][:vouchered] = row['ms_specimens']['reference_source']
+#byebug
       return new_row
     end
 
@@ -230,17 +237,17 @@ module Ms1to2
           'no'          => '1'
         },
         'sex' => {
-          'm' => 'M',
-          'male' => 'M',
-          'f' => 'F',
-          'female' => 'F'
+          'm' => 'Male',
+          'male' => 'Male',
+          'f' => 'Female',
+          'female' => 'Female'
         },
       }
     end
 
     def media_special_fields
       {
-        'published' => published_filter,
+        'visibility' => published_filter,
         'side' => side_filter,
         'is_copyrighted' => boolean_filter,
         'copyright_permission' => {
@@ -290,12 +297,12 @@ module Ms1to2
         'side' => side_filter,
         'use_for_preview' => boolean_filter,
         'file_type' => {
-          '1' => '1',
-          'raw file of group' => '1',
-          'raw' => '1',
-          '2' => '2',
-          'derivative file' => '2',
-          'derivative' => '2'
+          '1' => 'Raw',
+          'raw file of group' => 'Raw',
+          'raw' => 'Raw',
+          '2' => 'Derived',
+          'derivative file' => 'Derived',
+          'derivative' => 'Derived'
         },
         'published' => published_filter
       }
@@ -303,12 +310,12 @@ module Ms1to2
 
     def published_filter
       {
-        '0' => '0',
-        'not published / not available in public search' => '0',
-        '1' => '1',
-        'published / available in public search and for download' => '1',
-        '2' => '2',
-        'published / available in public search / users must request download permission' => '2'
+        '0' => 'Private',
+        'not published / not available in public search' => 'Private',
+        '1' => 'Open',
+        'published / available in public search and for download' => 'Open',
+        '2' => 'RestrictedDownload',
+        'published / available in public search / users must request download permission' => 'RestrictedDownload'
       }
     end
 
@@ -330,25 +337,154 @@ module Ms1to2
       }
     end
 
+    def converted_value(field, value)
+      case field 
+      when "media.publication_status"
+        case value
+        when 'restricted'
+          'RestrictedDownload'
+        else
+          value.capitalize
+        end
+      else
+        value
+      end 
+    end
+
+    def mapped_value(row, field_name, mapped_field_name)
+      value = ""
+      if mapped_field_name.present?
+        model_attribute_array = mapped_field_name.split('.') 
+        model = model_attribute_array.first
+        attribute = model_attribute_array.last
+        if row[model.to_sym].present?
+          value = row[model.to_sym][attribute.to_sym]
+          if value.kind_of?(Array)
+            value = converted_value(field_name, value.first)
+          else
+            value = converted_value(field_name, value)
+          end
+          puts "Found value for " + model + " " + attribute + " = " + value
+        else
+          value = ""
+        end
+      else
+        value = "" # + field_name
+      end
+      return value
+    end
+
     def to_xlsx(data, xlsx_path)
       p = Axlsx::Package.new
       wb = p.workbook
-      headers = []
-      data.first.each do |table_name, table_attrs|
-        headers += table_attrs.keys.map { |k| [table_name, k].join('.') }
-      end
-      wb.add_worksheet(name: 'MS2 template') do |sheet|
+      headers = ["Field Name (Machine Readable)", "Field name formatted to be read by software."] + field_mapped.keys
+      wb.add_worksheet(name: 'Ms1 Batch File Converted') do |sheet|
         sheet.add_row headers
         data.each do |row|
-          attr_values = []
-          row.values.each do |table_attrs|
-            attr_values += table_attrs.values.map { |v| Array(v).first }
+          attr_values = ["", ""]
+          field_mapped.each do |field_name, mapped_field_name|
+            value = mapped_value(row, field_name, mapped_field_name)
+            attr_values << value
           end
+
+#byebug
           sheet.add_row attr_values
         end
+
       end
       p.serialize xlsx_path
     end
 
+    def field_mapped
+      @field_mapped ||= {
+        "media.media_file" => "media.media_file",
+        "media.preview_file" => "",
+        "media.publication_status" => "media.visibility",
+        "media.media_type" => "media.media_type",
+        "media.raw_or_derived" => "metadata.raw_or_derived",
+        "media.parent_file" => "",
+        "media.parent_ms_id" => "",
+        "biological_specimen.ms_id" => "biological_specimen.id",
+        "biological_specimen.idigbio_uuid" => "",
+        "biological_specimen.occurrence_id" => "biological_specimen.occurrence_id",
+        "biological_specimen.institution_code" => "biological_specimen.institution_code",
+        "biological_specimen.collection_code" => "biological_specimen.collection_code",
+        "biological_specimen.catalog_number" => "biological_specimen.catalog_number",
+        "media.part" => "media.part",
+        "media.short_description" => "media.short_description",
+        "media.side" => "media.side",
+        "media.description" => "media.description",
+        "media.creator" => "",
+        "media.orientation" => "",
+        "media.identifier" => "",
+        "media.keyword" => "",
+        "media.date_created" => "",
+        "media.related_url" => "",
+        "media.x_spacing" => "media.x_spacing",
+        "media.y_spacing" => "media.y_spacing",
+        "media.z_spacing" => "media.z_spacing",
+        "media.slice_thickness" => "",
+        "media.series_type" => "",
+        "media.unit" => "media.unit",
+        "media.map_type" => "",
+        "biological_specimen.identifier" => "",
+        "biological_specimen.related_url" => "biological_specimen.related_url",
+        "biological_specimen.date_created" => "biological_specimen.date_created",
+        "biological_specimen.creator" => "biological_specimen.creator",
+        "biological_specimen.description" => "biological_specimen.description",
+        "biological_specimen.latitude" => "biological_specimen.latitude",
+        "biological_specimen.longitude" => "biological_specimen.longitude",
+        "biological_specimen.numeric_time" => "biological_specimen.numeric_time",
+        "biological_specimen.original_location" => "biological_specimen.original_location",
+        "biological_specimen.periodic_time" => "biological_specimen.periodic_time",
+        "biological_specimen.is_type_specimen" => "biological_specimen.is_type_specimen",
+        "biological_specimen.sex" => "biological_specimen.sex",
+        "biological_specimen.vouchered" => "biological_specimen.vouchered",
+        "taxonomy.taxonomy_genus" => "taxonomy.taxonomy_genus",
+        "taxonomy.taxonomy_species" => "taxonomy.taxonomy_species",
+        "taxonomy.taxonomy_subspecies" => "taxonomy.taxonomy_subspecies",
+        "imaging_event.description" => "imaging_event.description",
+        "imaging_event.creator" => "imaging_event.creator",
+        "imaging_event.software" => "",
+        "imaging_event.date_created" => "",
+        "imaging_event.ct.exposure_time" => "imaging_event.exposure_time",
+        "imaging_event.ct.flux_normalization" => "imaging_event.flux_normalization",
+        "imaging_event.ct.geometric_calibration" => "imaging_event.geometric_calibration",
+        "imaging_event.ct.shading_correction" => "imaging_event.shading_correction",
+        "imaging_event.ct.ie_filter" => "imaging_event.ie_filter",
+        "imaging_event.ct.frame_averaging" => "imaging_event.frame_averaging",
+        "imaging_event.ct.projections" => "imaging_event.projections",
+        "imaging_event.ct.voltage" => "imaging_event.voltage",
+        "imaging_event.ct.power" => "imaging_event.power",
+        "imaging_event.ct.amperage" => "imaging_event.amperage",
+        "imaging_event.ct.surrounding_material" => "imaging_event.surrounding_material",
+        "imaging_event.ct.xray_tube_type" => "",
+        "imaging_event.ct.target_type" => "",
+        "imaging_event.ct.detector_type" => "",
+        "imaging_event.ct.detector_pixels_x" => "",
+        "imaging_event.ct.detector_pixel_size_x" => "",
+        "imaging_event.ct.detector_pixels_y" => "",
+        "imaging_event.ct.detector_pixel_size_y" => "",
+        "imaging_event.ct.detector_configuration" => "",
+        "imaging_event.ct.source_object_distance" => "",
+        "imaging_event.ct.source_detector_distance" => "",
+        "imaging_event.ct.target_material" => "",
+        "imaging_event.ct.rotation_number" => "",
+        "imaging_event.ct.phase_contrast" => "",
+        "imaging_event.ct.optical_magnification" => "",
+        "imaging_event.ct.acquisition_type" => "",
+        "imaging_event.photogrammetry.focal_length_type" => "",
+        "imaging_event.photogrammetry.background_removal" => "",
+        "imaging_event.photography.lens_make" => "",
+        "imaging_event.photography.lens_model" => "",
+        "imaging_event.photography.light_source" => "",
+        "processing_event.creator" => "processing_event.creator",
+        "processing_event.date_created" => "",
+        "processing_event.software" => "",
+        "processing_event.description" => ""
+      }
+    end
+
   end
+
 end

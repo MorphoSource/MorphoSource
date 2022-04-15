@@ -47,7 +47,6 @@ CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 
 FROM msbase as morphosource
 
-USER app
 ARG BUNDLE_WITHOUT="development test"
 ENV BLENDER_PATH="/app/blender/"
 
@@ -57,7 +56,11 @@ RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DAT
 
 FROM msbase as mstools
 
+# Install GLTF Pipeline 3D mesh derivative tool
+USER root
+RUN npm install --global gltf-pipeline
 USER app
+
 ENV FITS_VERSION='1.3.0'
 
 # Install FITS characterization tool
@@ -71,9 +74,6 @@ COPY ./vendor/fits_config/fits.xml /app/fits/xml
 COPY ./vendor/fits_config/exiftool/exiftool_dicom_to_fits.xslt /app/fits/xml/exiftool
 COPY ./vendor/fits_config/exiftool/exiftool_xslt_map.xml /app/fits/xml/exiftool
 ENV PATH="${PATH}:/app/fits"
-
-# Install GLTF Pipeline 3D mesh derivative tool
-RUN npm install -g gltf-pipeline
 
 # Install Blender 3D mesh derivative tool
 RUN mkdir -p /app/blender && \
@@ -102,7 +102,6 @@ ENV PATH="${PATH}:/app/dcmtk/bin"
 
 FROM mstools as msworkerbase
 
-USER app
 ENV MALLOC_ARENA_MAX=2
 
 CMD bundle exec sidekiq
@@ -110,7 +109,6 @@ CMD bundle exec sidekiq
 
 FROM msworkerbase as msworker
 
-USER app
 ARG BUNDLE_WITHOUT="development test"
 ENV BLENDER_PATH="/app/blender/"
 

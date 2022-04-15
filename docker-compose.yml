@@ -4,7 +4,7 @@ services:
   app: &app
     build:
       context: .
-      target: hyrax
+      target: morphosource
       args:
         - EXTRA_APK_PACKAGES=git less
     command: sh -l -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
@@ -34,7 +34,7 @@ services:
   resque:
     build:
       context: .
-      target: hyrax-worker
+      target: msworker
     command: sh -l -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
     user: root
     env_file:
@@ -58,7 +58,7 @@ services:
   db_migrate:
     build:
       context: .
-      target: hyrax
+      target: morphosource
       args:
         - EXTRA_APK_PACKAGES=git less
     user: root

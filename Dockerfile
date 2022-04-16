@@ -18,6 +18,7 @@ RUN apk --no-cache upgrade && \
   tzdata \
   nodejs \
   npm \
+  python3 \
   yarn \
   zip \
   $DATABASE_APK_PACKAGE \

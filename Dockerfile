@@ -61,12 +61,12 @@ RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DAT
 
 FROM msbase as mstools
 
+USER root
 # Install Python packages
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir numpy Pillow pydicom
 
 # Install GLTF Pipeline 3D mesh derivative tool
-USER root
 RUN npm install --global gltf-pipeline
 USER app
 

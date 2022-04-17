@@ -19,6 +19,8 @@ RUN apk --no-cache upgrade && \
   nodejs \
   npm \
   python3 \
+  python3-dev \
+  py3-pip \
   yarn \
   zip \
   $DATABASE_APK_PACKAGE \
@@ -32,6 +34,7 @@ RUN mkdir -p /app/samvera/hyrax-webapp
 WORKDIR /app/samvera/hyrax-webapp
 
 ENV PATH="/app/samvera/hyrax-webapp/bin:$PATH"
+ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:$LD_LIBRARY_PATH"
 ENV RAILS_ROOT="/app/samvera/hyrax-webapp"
 ENV RAILS_SERVE_STATIC_FILES="1"
 
@@ -57,6 +60,10 @@ RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DAT
 
 
 FROM msbase as mstools
+
+# Install Python packages
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir numpy Pillow pydicom
 
 # Install GLTF Pipeline 3D mesh derivative tool
 USER root

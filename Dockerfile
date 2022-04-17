@@ -13,7 +13,7 @@ RUN apk --no-cache upgrade && \
   gcompat \
   imagemagick \
   mediainfo \
-  openjdk11-jre \
+  openjdk8-jre \
   perl \
   tzdata \
   nodejs \

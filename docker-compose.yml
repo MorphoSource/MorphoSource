@@ -7,7 +7,7 @@ services:
       target: morphosource
       args:
         - EXTRA_APK_PACKAGES=git less
-    command: sh -l -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
+    command: sh -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
     stdin_open: true
     tty: true
     user: root
@@ -35,7 +35,7 @@ services:
     build:
       context: .
       target: msworker
-    command: sh -l -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
+    command: sh -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
     user: root
     env_file:
       - .env
@@ -64,7 +64,7 @@ services:
     user: root
     env_file:
       - .env
-    command: sh -l -c 'bundle && db-migrate-seed.sh'
+    command: sh -c 'bundle && db-migrate-seed.sh'
     depends_on:
       - postgres
       - fcrepo

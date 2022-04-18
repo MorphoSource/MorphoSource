@@ -8,6 +8,7 @@ RUN apt update && \
   apt install -y \
   libcurl4 \
   imagemagick \
+  netcat \
   nodejs \
   npm \
   perl \

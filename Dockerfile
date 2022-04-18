@@ -1,33 +1,22 @@
 ARG RUBY_VERSION=2.7.4
-FROM ruby:$RUBY_VERSION-alpine3.14 as msbase
+FROM ruby:$RUBY_VERSION-bullseye as msbase
 
-ARG DATABASE_APK_PACKAGE="postgresql-dev"
-ARG EXTRA_APK_PACKAGES="git"
+# ARG DATABASE_APK_PACKAGE="postgresql-dev"
+# ARG EXTRA_APK_PACKAGES="git"
 
-RUN apk --no-cache upgrade && \
-  apk --no-cache add build-base \
-  bash \
-  curl \
-  curl-dev \
-  ffmpeg \
-  gcompat \
+RUN apt update && \
+  apt install -y \
+  libcurl4 \
   imagemagick \
-  mediainfo \
-  openjdk8-jre \
-  perl \
-  tzdata \
   nodejs \
   npm \
-  python3 \
-  python3-dev \
-  py3-pip \
-  yarn \
-  zip \
+  perl \
+  tzdata \
   $DATABASE_APK_PACKAGE \
   $EXTRA_APK_PACKAGES
 
-RUN addgroup -S --gid 101 app && \
-  adduser -S -G app -u 1001 -s /bin/sh -h /app app
+RUN addgroup --system --gid 501 app && \
+  adduser --system --gid 501 --uid 1001 --home /app app
 USER app
 
 RUN mkdir -p /app/samvera/hyrax-webapp
@@ -44,7 +33,7 @@ ENV BUNDLER_VERSION='2.0.2'
 RUN gem install bundler -v 2.0.2
 
 ARG APP_PATH=.
-COPY --chown=1001:101 $APP_PATH /app/samvera/hyrax-webapp
+COPY --chown=1001:501 $APP_PATH /app/samvera/hyrax-webapp
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
@@ -62,9 +51,23 @@ RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DAT
 FROM msbase as mstools
 
 USER root
+# Setup for installing Java 8 on Debian 11
+RUN wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
+RUN apt install -y software-properties-common
+RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+
+# Install additional system packages related to tools
+RUN apt update && \
+  apt install -y \
+  adoptopenjdk-8-hotspot \
+  ffmpeg \
+  libglu1-mesa \
+  python3 \
+  python3-pip
+
 # Install Python packages
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir numpy Pillow pydicom
+RUN pip3 install --no-cache-dir --upgrade pip && \
+    pip3 install --no-cache-dir numpy Pillow pydicom
 
 # Install GLTF Pipeline 3D mesh derivative tool
 RUN npm install --global gltf-pipeline

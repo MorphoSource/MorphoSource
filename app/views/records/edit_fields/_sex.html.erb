@@ -1,6 +1,5 @@
-<% # app/views/records/edit_fields/_sex.html.erb %>
 <%= f.input :sex, as: :select,
     collection: ['Female','Male','Unknowable','Undetermined','Hermaphrodite','Gynandromorph'],
     include_blank: true,
-    # item_helper: method(:include_current_value),
+    selected: f.object.sex.capitalize,
     input_html: { class: 'form-control select optional form-control' } %>

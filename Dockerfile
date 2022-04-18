@@ -12,6 +12,7 @@ RUN apt update && \
   npm \
   perl \
   tzdata \
+  yarnpkg \
   $DATABASE_APK_PACKAGE \
   $EXTRA_APK_PACKAGES
 

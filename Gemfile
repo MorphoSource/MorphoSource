@@ -66,6 +66,8 @@ gem 'render_async'
 gem 'recaptcha'
 gem 'roo'
 
+gem 'dalli' # mem_cache_store support
+
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
   gem 'web-console', '>= 3.3.0'
@@ -97,12 +99,6 @@ group :test do
   gem 'axe-matchers', '~> 2.3.0'
   gem 'rspec-json_expectations'
   gem 'vcr'
-end
-
-group :production do
-  gem 'passenger'
-  gem 'therubyracer', platforms: :ruby
-  gem 'dalli'
 end
 
 gem "ezid-client", "~> 1.8"

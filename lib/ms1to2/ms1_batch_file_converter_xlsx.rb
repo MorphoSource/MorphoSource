@@ -69,6 +69,7 @@ module Ms1to2
       .except(:id)
       .merge(id: [ derive_specimen_id(row['ms_specimens']['specimen_id']&.first) ] )
 
+      new_row[:biological_specimen][:sex] = bso[:sex]
       # process ms_media and ms_media_files tables to get
       # imaging event, processing event, and media attributes
       mg = row['ms_media'].transform_keys(&:to_sym)
@@ -98,9 +99,10 @@ module Ms1to2
       .ms2_attributes
       .except(:id)
       new_row[:media][:media_file] = mf[:media]
+      new_row[:media][:media_preview] = mf[:media_preview]
       new_row[:media][:parent_file] = mf[:parent_file]
-
-#byebug
+      new_row[:media][:side] = mf[:side]
+      new_row[:media][:published] = mf[:published]
       return new_row
     end
 
@@ -126,7 +128,7 @@ module Ms1to2
       Ms1to2::CSVParser.new(input_path, false, false).each_with_index do |row, index|
         input_data.concat hashify(row, index)
       end
-#byebug
+
       # update response
       response[:steps][:input][:status] = 'success'
       response[:data][:input] = input_data
@@ -145,6 +147,7 @@ module Ms1to2
           media_field, media_number = field.to_s.split('.', 2)
           row_data[model][media_number] = {} if !row_data[model].key?(media_number)
           row_data[model][media_number][media_field] = val
+          # handle child media
           if media_number.to_i > 1 && media_field == 'file_type'
             if row_data[model][media_number]["media"].present?
               # if child media found, set the parent media and related fields
@@ -156,7 +159,7 @@ module Ms1to2
           row_data[model][field] = val
         end
       end
-#byebug
+
       final_hashes = []
 
       # how many media files are present?
@@ -177,7 +180,6 @@ module Ms1to2
       # update response
       response[:steps][:normalize] = { status: 'in progress' }
       @normalized_data = input_data.map.with_index { |row, index| normalize_row(row, index) }
-#byebug
 
       # update response
       response[:steps][:normalize][:status] = 'success' if ( response[:steps][:normalize][:status] != 'failure' && response[:steps][:normalize][:status] != 'warnings' )
@@ -322,12 +324,12 @@ module Ms1to2
 
     def side_filter
       {
-        'left' => 'LEFT',
-        'midline' => 'MIDLINE',
-        'na' => 'NA',
-        'not applicable' => 'NA',
-        'right' => 'RIGHT',
-        'unknown' => 'UNKNOWN'
+        'left' => 'Left',
+        'midline' => 'Midline',
+        'na' => 'NotApplicable',
+        'not applicable' => 'NotApplicable',
+        'right' => 'Right',
+        'unknown' => 'Unknown'
       }
     end
 
@@ -338,16 +340,9 @@ module Ms1to2
       }
     end
 
-    def convert(field, value, row)
+    def clean_up(field, value, row)
       return "" unless value.present?
       case field 
-      when "media.publication_status"
-        case value
-        when 'restricted'
-          'RestrictedDownload'
-        else
-          value.capitalize
-        end
       when /^media\.(x|y|z)_spacing$/
         case row[:media][:media_type]
         when ["CTImageSeries"]
@@ -361,19 +356,19 @@ module Ms1to2
     end
 
     def mapped_value(row, field_name, mapped_field_name)
-      puts "getting mapped_value for #{field_name} "
+      #puts "getting mapped_value for #{field_name} "
       value = ""
       if mapped_field_name.present?
-        puts " mapped_field_name #{mapped_field_name} "
+        #puts " mapped_field_name #{mapped_field_name} "
         model_attribute_array = mapped_field_name.split('.') 
         model = model_attribute_array.first
         attribute = model_attribute_array.last
         if row[model.to_sym].present?
           value = row[model.to_sym][attribute.to_sym]
           if value.kind_of?(Array) 
-            value = convert(field_name, value.first, row)
+            value = clean_up(field_name, value.first, row)
           else
-            value = convert(field_name, value, row)
+            value = clean_up(field_name, value, row)
           end
           puts "Found value for " + model + " " + attribute + " = " + value
         else
@@ -398,8 +393,6 @@ module Ms1to2
             value = mapped_value(row, field_name, mapped_field_name)
             attr_values << value
           end
-
-#byebug
           sheet.add_row attr_values
         end
 
@@ -410,8 +403,8 @@ module Ms1to2
     def field_mapped
       @field_mapped ||= {
         "media.media_file" => "media.media_file",
-        "media.preview_file" => "",
-        "media.publication_status" => "media.visibility",
+        "media.preview_file" => "media.media_preview",
+        "media.publication_status" => "media.published", 
         "media.media_type" => "media.media_type",
         "media.raw_or_derived" => "metadata.raw_or_derived",
         "media.parent_file" => "media.parent_file",

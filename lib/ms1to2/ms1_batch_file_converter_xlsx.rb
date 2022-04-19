@@ -98,13 +98,8 @@ module Ms1to2
       .ms2_attributes
       .except(:id)
       new_row[:media][:media_file] = mf[:media]
+      new_row[:media][:parent_file] = mf[:parent_file]
 
-      # add additional ms1-to-ms2 mapped field & value pairs
-#      new_row[:media][:raw_or_derived] = row['ms_media_files']['file_type']
-#      new_row[:media][:side] = row['ms_media']['side'] # or row['ms_media_files']['side'] ?
-#      new_row[:media][:publication_status] = row['ms_media_files']['published']
-#      new_row[:biological_specimen][:ms_id] = row['ms_specimens']['specimen_id']
-      #new_row[:biological_specimen][:vouchered] = row['ms_specimens']['reference_source']
 #byebug
       return new_row
     end
@@ -131,7 +126,7 @@ module Ms1to2
       Ms1to2::CSVParser.new(input_path, false, false).each_with_index do |row, index|
         input_data.concat hashify(row, index)
       end
-
+#byebug
       # update response
       response[:steps][:input][:status] = 'success'
       response[:data][:input] = input_data
@@ -150,11 +145,18 @@ module Ms1to2
           media_field, media_number = field.to_s.split('.', 2)
           row_data[model][media_number] = {} if !row_data[model].key?(media_number)
           row_data[model][media_number][media_field] = val
+          if media_number.to_i > 1 && media_field == 'file_type'
+            if row_data[model][media_number]["media"].present?
+              # if child media found, set the parent media and related fields
+              row_data[model][media_number]["parent_file"] = row_data[model]["1"]["media"]
+              row_data[model][media_number]["file_type"] = ["2"] # derived 
+            end
+          end
         else
           row_data[model][field] = val
         end
       end
-
+#byebug
       final_hashes = []
 
       # how many media files are present?
@@ -174,8 +176,8 @@ module Ms1to2
     def normalize
       # update response
       response[:steps][:normalize] = { status: 'in progress' }
-
       @normalized_data = input_data.map.with_index { |row, index| normalize_row(row, index) }
+#byebug
 
       # update response
       response[:steps][:normalize][:status] = 'success' if ( response[:steps][:normalize][:status] != 'failure' && response[:steps][:normalize][:status] != 'warnings' )
@@ -218,7 +220,6 @@ module Ms1to2
         'ms_media' => media_special_fields,
         'ms_media_files' => media_file_special_fields
       }
-
       tsf.key?(table_name) ? tsf[table_name] : {}
     end
 
@@ -337,7 +338,8 @@ module Ms1to2
       }
     end
 
-    def converted_value(field, value)
+    def convert(field, value, row)
+      return "" unless value.present?
       case field 
       when "media.publication_status"
         case value
@@ -346,23 +348,32 @@ module Ms1to2
         else
           value.capitalize
         end
+      when /^media\.(x|y|z)_spacing$/
+        case row[:media][:media_type]
+        when ["CTImageSeries"]
+          value
+        else
+          ""
+        end
       else
         value
       end 
     end
 
     def mapped_value(row, field_name, mapped_field_name)
+      puts "getting mapped_value for #{field_name} "
       value = ""
       if mapped_field_name.present?
+        puts " mapped_field_name #{mapped_field_name} "
         model_attribute_array = mapped_field_name.split('.') 
         model = model_attribute_array.first
         attribute = model_attribute_array.last
         if row[model.to_sym].present?
           value = row[model.to_sym][attribute.to_sym]
-          if value.kind_of?(Array)
-            value = converted_value(field_name, value.first)
+          if value.kind_of?(Array) 
+            value = convert(field_name, value.first, row)
           else
-            value = converted_value(field_name, value)
+            value = convert(field_name, value, row)
           end
           puts "Found value for " + model + " " + attribute + " = " + value
         else
@@ -377,8 +388,9 @@ module Ms1to2
     def to_xlsx(data, xlsx_path)
       p = Axlsx::Package.new
       wb = p.workbook
-      headers = ["Field Name (Machine Readable)", "Field name formatted to be read by software."] + field_mapped.keys
+      headers = ["intentionally_blank", "intentionally_blank"] + field_mapped.keys
       wb.add_worksheet(name: 'Ms1 Batch File Converted') do |sheet|
+        6.times { sheet.add_row ["intentionally_blank"] } # header starts at 7th row  
         sheet.add_row headers
         data.each do |row|
           attr_values = ["", ""]
@@ -402,7 +414,7 @@ module Ms1to2
         "media.publication_status" => "media.visibility",
         "media.media_type" => "media.media_type",
         "media.raw_or_derived" => "metadata.raw_or_derived",
-        "media.parent_file" => "",
+        "media.parent_file" => "media.parent_file",
         "media.parent_ms_id" => "",
         "biological_specimen.ms_id" => "biological_specimen.id",
         "biological_specimen.idigbio_uuid" => "",

@@ -147,8 +147,7 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id, 
         device_id:device_id, 
         media_ownership_fields:media_ownership_fields).to_h
-        
-      #byebug # check manifest_object
+byebug
       ingest
     else
 
@@ -168,7 +167,7 @@ class BatchSubmissionsController < ApplicationController
     end
     field_names.each_with_index do |fname, idx|
       if fname != @xlsx.excelx_value(7, idx + 3) 
-        return "Invalid field in column " +  (idx + 3).to_s + " (expecting " + fname + ").  Please check the file or download the blank submission manifest again. <--" + @xlsx.excelx_value(7, idx + 3) + "-->"
+        return "Invalid field name in row 7, column " +  (idx + 3).to_s + " (expecting " + fname + ").  Please check the file or download the blank submission manifest again."
       end
     end
     return ""
@@ -548,7 +547,7 @@ class BatchSubmissionsController < ApplicationController
         error_msg = "#{field_name}: Please enter a valid integer."
       end
     when "date"
-      unless is_date? val
+      unless (is_date? val) || (val == '') 
         error_msg = "#{field_name}: Please enter a valid date in YYYY-MM-DD or MM-DD-YYYY format."
       end
     end

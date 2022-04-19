@@ -21,7 +21,11 @@
         </tr>
         </thead>
         <tbody>
-          <%= render partial: 'shared/lists/media_list/document_list_row', collection: @document_list, as: :document %>
+          <% if dashboard_collection_edit? %>
+            <%= render partial: 'shared/lists/media_list/dashboard_document_list_row', collection: @document_list, as: :document %>
+          <% else %>
+            <%= render partial: 'shared/lists/media_list/document_list_row', collection: @document_list, as: :document %>
+          <% end %>
         </tbody>
       </table>
     <% end # / form_tag %>

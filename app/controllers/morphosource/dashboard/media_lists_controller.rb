@@ -30,7 +30,18 @@ module Morphosource
       end
       configure_facets
 
+      def show
+        @tab = tab
+        authorize! :edit, @collection
+        @curation_concern = @collection
+        presenter
+        (@media_count, @object_ids) = collection_media
+        (@response, @document_list) = query_solr
+        query_collection_counts
+      end
+
       def edit
+        authorize! :edit, @collection
         @curation_concern = @collection
         presenter
         # query_collection_information
@@ -41,7 +52,22 @@ module Morphosource
         # byebug
         query_collection_counts
         # byebug
+        @tab = :details
         form
+        render 'show'
+      end
+
+      def members
+        authorize! :edit, @collection
+        @curation_concern = @collection
+        presenter
+        (@media_count, @object_ids) = collection_media
+        (@response, @document_list) = query_solr
+        query_collection_counts
+        @tab = :members
+        # byebug
+        form
+        render 'show'
       end
 
       def query_collection_counts
@@ -104,23 +130,23 @@ module Morphosource
       #   end
       # end
 
-      # def update
-      #   byebug
-      #   unless params[:update_collection].nil?
-      #     process_banner_input
-      #     process_logo_input
-      #   end
-      #
-      #   process_member_changes
-      #   @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
-      #   # we don't have to reindex the full graph when updating collection
-      #   @collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-      #   if @collection.update(collection_params.except(:members))
-      #     after_update
-      #   else
-      #     after_update_error
-      #   end
-      # end
+      def update
+        unless params[:update_collection].nil?
+          process_banner_input
+          process_logo_input
+        end
+
+        process_member_changes
+        # @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
+        update_thumbnail
+        # we don't have to reindex the full graph when updating collection
+        @collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+        if @collection.update(collection_params.except(:members))
+          after_update
+        else
+          after_update_error
+        end
+      end
 
       # def after_destroy(_id)
       #   # leaving id to avoid changing the method's parameters prior to release

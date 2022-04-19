@@ -11,35 +11,100 @@ module Morphosource
       @tab == tab ? 'active' : ''
     end
 
+    # show page main/media tab
     def media_tab_url(collection)
       if collection.project?
         project_media_path(collection)
       elsif collection.team?
         team_media_path(collection)
+      elsif collection.media_list?
+        media_list_media_path(collection)
+      elsif collection.slide_list?
+        slide_list_media_path(collection)
       end
     end
 
+    # show page main/specimens tab
     def specimens_tab_url(collection)
       if collection.project?
         project_specimens_path(collection)
       elsif collection.team?
         team_specimens_path(collection)
+      elsif collection.media_list?
+        media_list_specimens_path(collection)
+      elsif collection.slide_list?
+        slide_list_specimens_path(collection)
       end
     end
 
+    # show page main/chos tab
     def chos_tab_url(collection)
       if collection.project?
         project_chos_path(collection)
       elsif collection.team?
         team_chos_path(collection)
+      elsif collection.media_list?
+        media_list_chos_path(collection)
+      elsif collection.slide_list?
+        slide_list_chos_path(collection)
       end
     end
 
+    # show page main/about tab
     def about_tab_url(collection)
       if collection.project?
         project_about_path(collection)
       elsif collection.team?
         team_about_path(collection)
+      elsif collection.media_list?
+        media_list_about_path(collection)
+      elsif collection.slide_list?
+        slide_list_about_path(collection)
+      end
+    end
+
+    # dashboard edit main/media tab
+    def dashboard_media_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_media_path(collection)
+      elsif collection.slide_list?
+        dashboard_slide_list_media_path(collection)
+      end
+    end
+
+    # dashboard edit specimens tab
+    def dashboard_specimens_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_specimens_path(collection)
+      elsif collection.slide_list?
+        dashboard_slide_list_specimens_path(collection)
+      end
+    end
+
+    # dashboard edit chos tab
+    def dashboard_chos_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_chos_path(collection)
+      elsif collection.slide_list?
+        dashboard_slide_list_chos_path(collection)
+      end
+    end
+
+    # dashboard edit details tab
+    def dashboard_about_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_about_path(collection)
+      elsif collection.slide_list?
+        dashboard_slide_list_about_path(collection)
+      end
+    end
+
+    # dashboard edit members tab
+    def dashboard_members_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_members_path(collection)
+      elsif collection.slide_list?
+        dashboard_slide_list_members_path(collection)
       end
     end
 
@@ -463,6 +528,9 @@ module Morphosource
       collection_controllers.include? controller.class
     end
 
+    def dashboard_collection_edit?
+      controller.action_name == 'edit' && path_info.include?("dashboard")
+    end
 
   end
 end

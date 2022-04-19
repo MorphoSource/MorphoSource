@@ -12,7 +12,7 @@
             </div>
 
 
-            <div class="form-add-user-sharing-wrapper" data-id="<%= @form.id %>">
+            <div class="form-add-user-sharing-wrapper" data-id="<%= @collection.id %>">
               <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'user-participants-form' }) do |f| %>
 
                 <div class="row form-inline sharing-row-form add-users">

@@ -14,8 +14,9 @@
         <input type="checkbox" class="disabled" disabled=true />
     <% end %>
   </td>
-  <td>
+    <td>
     <div class="thumbnail-title-wrapper">
+
       <div class="thumbnail-wrapper">
         <% if (collection_presenter.thumbnail_path == nil) %>
           <span class="<%= Hyrax::ModelIcon.css_class_for(Collection) %> collection-icon-small"></span>
@@ -23,6 +24,10 @@
           <%= image_tag(collection_presenter.thumbnail_path) %>
         <% end %>
       </div>
+      </div>
+      </td>
+      <td>
+        <div class="thumbnail-title-wrapper">
       <%= link_to collection_presenter.edit_path, id: "src_copy_link#{id}" do %>
         <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>
         <%= collection_presenter.title_or_label %>

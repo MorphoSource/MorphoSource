@@ -443,7 +443,18 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     scope module: :dashboard, path: :dashboard do
-      resources :media_lists, except: [:index, :show]
+      resources :media_lists, except: [:index]
+
+      # media_lists
+      get 'media_lists/:id', to: 'media_lists#show', as: 'dashboard_media_list_media'
+      get 'media_lists/:id/biological_specimens', to: 'media_lists/biological_specimens#show', as: 'dashboard_media_list_specimens'
+      get 'media_lists/:id/cultural_heritage_objects', to: 'media_lists/cultural_heritage_objects#show', as: 'dashboard_media_list_chos'
+      get 'media_lists/:id/about', to: 'media_lists#edit', as: 'dashboard_media_list_about'
+      get 'media_lists/:id/members', to: 'media_lists#members', as: 'dashboard_media_list_members'
+      get 'media_lists/:collection_id/facet/:id', to: 'media_lists#facet', as: 'dashboard_media_list_media_facet'
+      get 'media_lists/:collection_id/biological_specimens/facet/:id', to: 'media_lists/biological_specimens#facet', as: 'dashboard_media_list_specimens_facet'
+      get 'media_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'media_lists/cultural_heritage_objects#facet', as: 'dashboard_media_list_chos_facet'
+
       resources :slide_lists
     end
   end

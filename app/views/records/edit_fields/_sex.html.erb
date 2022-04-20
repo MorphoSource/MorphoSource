@@ -1,5 +1,5 @@
 <%= f.input :sex, as: :select,
     collection: ['Female','Male','Unknowable','Undetermined','Hermaphrodite','Gynandromorph'],
     include_blank: true,
-    selected: f.object.sex.capitalize,
+    selected: f.object.sex&.capitalize,
     input_html: { class: 'form-control select optional form-control' } %>

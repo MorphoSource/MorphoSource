@@ -25,6 +25,8 @@ namespace :morphosource do
     Rake::Task['morphosource:create_collection_types'].invoke
     # admin role
     Rake::Task['morphosource:create_admin_role'].invoke
+    # batch submission contributor role
+    Rake::Task['morphosource:create_batch_submission_contributor_role'].invoke
     # contributor role
     Rake::Task['morphosource:create_contributor_role'].invoke
     # charge api role
@@ -451,6 +453,11 @@ namespace :morphosource do
       project = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
       Hyrax::CollectionTypes::CreateService.add_default_participants(project.id)
     end
+  end
+
+  desc 'Set Up Batch Submission Contributor Role'
+  task :create_batch_submission_contributor_role => :environment do
+    Role.find_or_create_by(name: 'batch_submission_contributor')
   end
 
   desc 'Set Up Contributor Role'

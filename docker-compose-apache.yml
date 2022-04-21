@@ -12,7 +12,7 @@ services:
   #   tty: true
   #   user: root
   #   env_file:
-  #     - .env
+  #     - docker-compose.env
   #   depends_on:
   #     - db_migrate
   #     - fcrepo
@@ -38,7 +38,7 @@ services:
   #   command: sh -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
   #   user: root
   #   env_file:
-  #     - .env
+  #     - docker-compose.env
   #   depends_on:
   #     - db_migrate
   #     - fcrepo
@@ -63,7 +63,7 @@ services:
   #       - EXTRA_APK_PACKAGES=git less
   #   user: root
   #   env_file:
-  #     - .env
+  #     - docker-compose.env
   #   command: sh -c 'bundle && db-migrate-seed.sh'
   #   depends_on:
   #     - postgres
@@ -82,9 +82,9 @@ services:
       - '80:8081'
       - '443:8443'
     env_file:
-      - .env
+      - docker-compose.env
     volumes:
-    - ./vendor/docker/apache/ms-vhost.conf:/vhosts/ms-vhost.conf:ro
+    - ./vendor/docker/apache/vhost.conf:/vhosts/vhost.conf:ro
     networks:
       - morphosource
 
@@ -109,6 +109,8 @@ services:
       - fcrepo:/data
     ports:
       - 8080:8080
+    volumes:
+      - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
     networks:
       - morphosource
 

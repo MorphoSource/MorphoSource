@@ -9,8 +9,8 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'      
 
       before_action :get_items_by_id, only: [:clear_request, :approve_download, :deny_download, :edit_expiration]
-
-      before_action :get_expiration_date, only: [:approve_download, :edit_expiration]
+      before_action :get_expiration_date_for_approve, only: [:approve_download]
+      before_action :get_expiration_date_for_edit, only: [:edit_expiration]
 
       def index
         get_items_for_tab
@@ -122,8 +122,20 @@ module Morphosource
           end
         end
 
-        def get_expiration_date
+        def get_expiration_date_for_approve
           @date = params[:expiration_date]
+          unless @date.present?
+            flash[:error] = "Expiration date is missing"
+            redirect_to main_app.request_manager_path 
+          end
+        end
+
+        def get_expiration_date_for_edit
+          @date = params[:expiration_date]
+          unless @date.present?
+            flash[:error] = "Expiration date is missing"
+            redirect_to main_app.previous_requests_path
+          end
         end
 
     end

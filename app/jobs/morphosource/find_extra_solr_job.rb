@@ -6,6 +6,11 @@ module Morphosource
     def perform
       extra_docs = ids.each_with_object([]) do |id, docs|
         begin
+          SolrDocument.find(id)
+        rescue
+          next
+        end
+        begin
           ActiveFedora::Base.find(id)
         rescue
           docs << id

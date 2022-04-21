@@ -1,0 +1,31 @@
+<% content_for :body_css_classes do %>showcase showcase-edit batch-submission<% end %>
+<% provide :page_title, "Batch Submission || MorphoSource" %>
+
+<h1>Batch Submission</h1>
+
+<p><%= row_count %> <%= "row".pluralize(row_count) %> parsed 
+<% if warn_rows.present? %>
+	with <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-warnings">warnings</a>.
+
+	<div id="collapse-block-warnings" class="collapse-block collapse out" aria-expanded="true">
+		<% warn_rows.map do |row_number, row| %>
+			<ul class="warn-list">Row <%= row_number %>: <%= warn_messages[row_number].to_wrapped_html('li') %></ul>
+			<%# todo: remove the table later if not needed
+			table class="table warn-rows">
+			<tr>
+				<%# field_names.each_with_index do |field_name, index| % >
+					<th><%#= field_name % ></th>
+				<% end % >
+			</tr>
+			<tr>
+				<%= row.to_wrapped_html('td')% >
+			</tr>
+			</table -- %>
+		<% end %>
+	</div>
+<% else %>
+.
+<% end %>
+</p>
+
+<p>Your submission job has started.  You can check the job status in the <%= link_to "Batch Submission Dashboard", main_app.batch_submissions_path %>.</p>

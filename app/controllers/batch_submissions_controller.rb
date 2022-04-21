@@ -147,7 +147,6 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id, 
         device_id:device_id, 
         media_ownership_fields:media_ownership_fields).to_h
-byebug
       ingest
     else
 

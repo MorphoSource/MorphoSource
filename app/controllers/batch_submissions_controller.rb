@@ -172,6 +172,15 @@ class BatchSubmissionsController < ApplicationController
     return ""
   end
 
+  def empty_row?(row)
+    row.each do |cell|
+      if cell.present? && cell.value.squish.length > 0
+        return false
+      end
+    end
+    return true
+  end
+
   def parse_manifest
     # field names is on row 7 
     # field values start from row 8, column 3 (column 1 and 2 can be skipped)   
@@ -202,34 +211,36 @@ class BatchSubmissionsController < ApplicationController
     else      
       @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
         data_row = row.drop(2) 
-        row_cell_errors = []
-        error_row_cell_numbers = []
-        row_cell_warnings = []
-        warn_row_cell_numbers = []
-        data_row.each_with_index do |cell, cell_index|
-          begin
-            error_msg, warn_msg = error_found(field_names[cell_index], cell, row_index)
-            if error_msg.present?
-              row_cell_errors << error_msg
-              error_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
-              error_row_cell_numbers << cell_index
-            elsif warn_msg.present?
-              row_cell_warnings << warn_msg
-              warn_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
-              warn_row_cell_numbers << cell_index
+        unless empty_row?(data_row)
+          row_cell_errors = []
+          error_row_cell_numbers = []
+          row_cell_warnings = []
+          warn_row_cell_numbers = []
+          data_row.each_with_index do |cell, cell_index|
+            begin
+              error_msg, warn_msg = error_found(field_names[cell_index], cell, row_index)
+              if error_msg.present?
+                row_cell_errors << error_msg
+                error_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
+                error_row_cell_numbers << cell_index
+              elsif warn_msg.present?
+                row_cell_warnings << warn_msg
+                warn_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
+                warn_row_cell_numbers << cell_index
+              end
+            rescue => e
+              Rails.logger.debug "iN BatchSubmissionsController, Exception: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
+              general_error_msg = "ERROR: There are problems parsing some rows in the file.  Please check the details below."
+              row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
+              error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
+              break # skip the rest of the cells
             end
-          rescue => e
-            Rails.logger.debug "iN BatchSubmissionsController, Exception: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
-            general_error_msg = "ERROR: There are problems parsing some rows in the file.  Please check the details below."
-            row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
-            error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
-            break # skip the rest of the cells
-          end
-        end # /looping cells
-        error_messages[row_index] = row_cell_errors 
-        error_cell_numbers[row_index] = error_row_cell_numbers
-        warn_messages[row_index] = row_cell_warnings 
-        warn_cell_numbers[row_index] = warn_row_cell_numbers
+          end # /looping cells
+          error_messages[row_index] = row_cell_errors 
+          error_cell_numbers[row_index] = error_row_cell_numbers
+          warn_messages[row_index] = row_cell_warnings 
+          warn_cell_numbers[row_index] = warn_row_cell_numbers
+        end
         row_index = row_index + 1
       end # /lopping rows /xlsx.each_row_streaming
       row_count = row_index - 8

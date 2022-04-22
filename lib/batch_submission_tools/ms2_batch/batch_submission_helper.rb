@@ -1,7 +1,7 @@
 module BatchSubmissionTools
   module Ms2Batch
     module BatchSubmissionHelper
-
+ 
       def empty_row?(row)
         row.each do |cell|
           if cell[1].present?

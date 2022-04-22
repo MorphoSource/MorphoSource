@@ -374,7 +374,7 @@ class BatchSubmissionsController < ApplicationController
                       this_row = next_parent_row 
                     end
                   else
-                    byebug # should not be here since parent file must exists in another column (check validation rule)
+                    #byebug # should not be here since parent file must exists in another column (check validation rule)
                   end
                 else
                   no_parent = true                  

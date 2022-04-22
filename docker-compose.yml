@@ -95,6 +95,7 @@ services:
     image: ghcr.io/samvera/fcrepo4:4.7.5
     volumes:
       - fcrepo:/data
+      - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
     ports:
       - 8080:8080
     networks:

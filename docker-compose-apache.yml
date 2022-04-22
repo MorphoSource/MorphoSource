@@ -1,90 +1,90 @@
 version: '3.7'
 
 services:
-  # app: &app
-  #   build:
-  #     context: .
-  #     target: morphosource
-  #     args:
-  #       - EXTRA_APK_PACKAGES=git less
-  #   command: sh -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
-  #   stdin_open: true
-  #   tty: true
-  #   user: root
-  #   env_file:
-  #     - docker-compose.env
-  #   depends_on:
-  #     - db_migrate
-  #     - fcrepo
-  #     - memcached
-  #     - postgres
-  #     - redis
-  #     - solr
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - .:/app/samvera/hyrax-webapp
-  #     - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
-  #     - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
-  #     - rails-public:/app/samvera/hyrax-webapp/public
-  #     - rails-tmp:/app/samvera/hyrax-webapp/tmp
-  #   networks:
-  #     - morphosource
+  app: &app
+    build:
+      context: .
+      target: morphosource
+      args:
+        - EXTRA_APK_PACKAGES=git less
+    command: sh -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
+    stdin_open: true
+    tty: true
+    user: root
+    env_file:
+      - docker-compose.env
+    depends_on:
+      - db_migrate
+      - fcrepo
+      - memcached
+      - postgres
+      - redis
+      - solr
+    volumes:
+      - .:/app/samvera/hyrax-webapp
+      - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
+      - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
+      - rails-public:/app/samvera/hyrax-webapp/public
+      - rails-tmp:/app/samvera/hyrax-webapp/tmp
+    networks:
+      - morphosource
 
-  # resque:
-  #   build:
-  #     context: .
-  #     target: msworker
-  #   command: sh -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
-  #   user: root
-  #   env_file:
-  #     - docker-compose.env
-  #   depends_on:
-  #     - db_migrate
-  #     - fcrepo
-  #     - memcached
-  #     - postgres
-  #     - redis
-  #     - solr
-  #   volumes:
-  #     - .:/app/samvera/hyrax-webapp
-  #     - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
-  #     - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
-  #     - resque-public:/app/samvera/hyrax-webapp/public
-  #     - resque-tmp:/app/samvera/hyrax-webapp/tmp
-  #   networks:
-  #     - morphosource
+  resque:
+    build:
+      context: .
+      target: msworker
+    command: sh -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
+    user: root
+    env_file:
+      - docker-compose.env
+    depends_on:
+      - db_migrate
+      - fcrepo
+      - memcached
+      - postgres
+      - redis
+      - solr
+    volumes:
+      - .:/app/samvera/hyrax-webapp
+      - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
+      - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
+      - resque-public:/app/samvera/hyrax-webapp/public
+      - resque-tmp:/app/samvera/hyrax-webapp/tmp
+    networks:
+      - morphosource
 
-  # db_migrate:
-  #   build:
-  #     context: .
-  #     target: morphosource
-  #     args:
-  #       - EXTRA_APK_PACKAGES=git less
-  #   user: root
-  #   env_file:
-  #     - docker-compose.env
-  #   command: sh -c 'bundle && db-migrate-seed.sh'
-  #   depends_on:
-  #     - postgres
-  #     - fcrepo
-  #     - solr
-  #   volumes:
-  #     - .:/app/samvera/hyrax-webapp
-  #     - rails-public:/app/samvera/hyrax-webapp/public
-  #     - rails-tmp:/app/samvera/hyrax-webapp/tmp
-  #   networks:
-  #     - morphosource
+  db_migrate:
+    build:
+      context: .
+      target: morphosource
+      args:
+        - EXTRA_APK_PACKAGES=git less
+    user: root
+    env_file:
+      - docker-compose.env
+    command: sh -c 'bundle && db-migrate-seed.sh'
+    depends_on:
+      - postgres
+      - fcrepo
+      - solr
+    volumes:
+      - .:/app/samvera/hyrax-webapp
+      - rails-public:/app/samvera/hyrax-webapp/public
+      - rails-tmp:/app/samvera/hyrax-webapp/tmp
+    networks:
+      - morphosource
 
   apache:
     image: 'bitnami/apache:latest'
+    user: root
     ports:
-      - '80:8081'
-      - '443:8443'
+      - '80:80'
+      - '443:443'
     env_file:
       - docker-compose.env
     volumes:
     - ./vendor/docker/apache/vhost.conf:/vhosts/vhost.conf:ro
+    # - ./vendor/docker/apache/certs:/certs
     networks:
       - morphosource
 
@@ -96,8 +96,6 @@ services:
       - POSTGRES_PASSWORD=$DB_PASSWORD
       - POSTGRES_DB=$DB_NAME
       - POSTGRES_HOST_AUTH_METHOD=trust
-    ports:
-      - "5432:5432"
     volumes:
       - db:/var/lib/postgresql/data
     networks:
@@ -107,17 +105,12 @@ services:
     image: ghcr.io/samvera/fcrepo4:4.7.5
     volumes:
       - fcrepo:/data
-    ports:
-      - 8080:8080
-    volumes:
       - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
     networks:
       - morphosource
 
   memcached:
     image: bitnami/memcached
-    ports:
-      - '11211:11211'
     networks:
       - morphosource
 
@@ -130,8 +123,6 @@ services:
 
   solr:
     image: solr:7.7.3
-    ports:
-      - 8983:8983
     command:
       - sh
       - "-c"

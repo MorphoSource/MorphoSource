@@ -46,6 +46,7 @@ module BatchSubmissionTools
       end
 
       def parse_manifest
+byebug
         @rows = parse_xlsx_split_sections(input_path)
       end
 
@@ -122,7 +123,7 @@ module BatchSubmissionTools
           # otherwise duplicate media will be created
           rows_to_remove.each { |k| media_group_to_rows.delete [k] }
         end
-        #byebug # check media_group_to_rows
+        byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
       end
 

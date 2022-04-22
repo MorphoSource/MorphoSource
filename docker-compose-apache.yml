@@ -20,8 +20,6 @@ services:
       - postgres
       - redis
       - solr
-    ports:
-      - 3000:3000
     volumes:
       - .:/app/samvera/hyrax-webapp
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
@@ -76,6 +74,20 @@ services:
     networks:
       - morphosource
 
+  apache:
+    image: 'bitnami/apache:latest'
+    user: root
+    ports:
+      - '80:80'
+      - '443:443'
+    env_file:
+      - docker-compose.env
+    volumes:
+    - ./vendor/docker/apache/vhost.conf:/vhosts/vhost.conf:ro
+    # - ./vendor/docker/apache/certs:/certs
+    networks:
+      - morphosource
+
   postgres:
     image: postgres:latest
     restart: always
@@ -84,8 +96,6 @@ services:
       - POSTGRES_PASSWORD=$DB_PASSWORD
       - POSTGRES_DB=$DB_NAME
       - POSTGRES_HOST_AUTH_METHOD=trust
-    ports:
-      - "5432:5432"
     volumes:
       - db:/var/lib/postgresql/data
     networks:
@@ -96,15 +106,11 @@ services:
     volumes:
       - fcrepo:/data
       - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
-    ports:
-      - 8080:8080
     networks:
       - morphosource
 
   memcached:
     image: bitnami/memcached
-    ports:
-      - '11211:11211'
     networks:
       - morphosource
 
@@ -117,8 +123,6 @@ services:
 
   solr:
     image: solr:7.7.3
-    ports:
-      - 8983:8983
     command:
       - sh
       - "-c"

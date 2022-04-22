@@ -76,3 +76,9 @@
 
 vendor/alembic/__pycache__/*
 *.pyc
+
+# ---------------------------------------------------
+# Docker related rules
+# ---------------------------------------------------
+
+/vendor/docker/apache/certs/*

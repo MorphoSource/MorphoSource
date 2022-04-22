@@ -5,7 +5,8 @@ module BatchSubmissionTools
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :on_behalf_of,
         :organization_id, :device_id, :device_modality, :collection_ids, :fund_code_id,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
-        :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields
+        :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields,
+        :skipped_row_count
 
       def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:)
         @input_path = input_path
@@ -46,7 +47,7 @@ module BatchSubmissionTools
       end
 
       def parse_manifest
-        @rows = parse_xlsx_split_sections(input_path)
+        @rows, @skipped_row_count = parse_xlsx_split_sections(input_path)
       end
 
       def infer_media_relationships
@@ -351,7 +352,8 @@ module BatchSubmissionTools
           rows_to_taxonomy: rows_to_taxonomy.transform_keys(&:to_s),
           media_ie_pe_ingests: media_ie_pe_ingests.map(&:to_h),
           collection_ids: collection_ids,
-          fund_code_id: fund_code_id
+          fund_code_id: fund_code_id,
+          skipped_row_count: skipped_row_count
         }.deep_stringify_keys
       end
 

@@ -4,18 +4,10 @@ module BatchSubmissionTools
 
       def empty_row?(row)
         row.each do |cell|
-          if cell.present?
-begin
-            if cell.kind_of?(Array) && cell.first.value.squish.length > 0
-              return false
-            elsif cell.value.squish.length > 0
+          if cell[1].present?
+            if cell[1].first.squish.length > 0
               return false
             end
-
-catch
-byebug
-end
-
           end
         end
         return true
@@ -23,12 +15,15 @@ end
 
       def parse_xlsx_split_sections(input_path)
         input_data = []
+        skipped_row_count = 0
         ::Morphosource::Ms2Batch::XLSXParser.new(input_path, false, false).each do |row|
-          unless empty_row?(row)
+          if empty_row?(row)
+            skipped_row_count += 1
+          else
             input_data << split_sections(row) 
           end
         end
-        return input_data
+        return input_data, skipped_row_count
       end
 
       def split_sections(row)

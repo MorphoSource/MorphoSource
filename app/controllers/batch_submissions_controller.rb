@@ -193,6 +193,7 @@ class BatchSubmissionsController < ApplicationController
     warn_messages = {}
     warn_cell_numbers = {}
     row_index = 8
+    skipped_row_count = 0
 
     @mo_idx = 0
     @media_order = { @mo_idx => [] }
@@ -211,7 +212,9 @@ class BatchSubmissionsController < ApplicationController
     else      
       @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
         data_row = row.drop(2) 
-        unless empty_row?(data_row)
+        if empty_row?(data_row)
+          skipped_row_count += 1
+        else
           row_cell_errors = []
           error_row_cell_numbers = []
           row_cell_warnings = []
@@ -243,7 +246,7 @@ class BatchSubmissionsController < ApplicationController
         end
         row_index = row_index + 1
       end # /lopping rows /xlsx.each_row_streaming
-      row_count = row_index - 8
+      row_count = row_index - 8 - skipped_row_count
       if error_rows.count > 0
         general_error_msg = "There are validation errors.  Please check the details below."
         render 'validation_fail', locals: { 
@@ -255,7 +258,8 @@ class BatchSubmissionsController < ApplicationController
           warn_messages: warn_messages, 
           warn_cell_numbers: warn_cell_numbers, 
           field_names: field_names, 
-          row_count: row_count }
+          row_count: row_count
+        }
         @manifest_is_valid = false
       else
         render 'validation_success', locals: { 
@@ -263,7 +267,8 @@ class BatchSubmissionsController < ApplicationController
           warn_messages: warn_messages, 
           warn_cell_numbers: warn_cell_numbers, 
           field_names: field_names, 
-          row_count: row_count }
+          row_count: row_count
+        }
         @manifest_is_valid = true
       end    
 

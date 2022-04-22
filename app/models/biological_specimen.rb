@@ -13,6 +13,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   include Morphosource::PhysicalObjectMetadata
   include Morphosource::BiologicalSpecimenMetadata
+  include Morphosource::LocationMetadata
 
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)

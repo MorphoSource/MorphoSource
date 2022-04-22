@@ -8,12 +8,21 @@ RSpec.describe CulturalHeritageObject do
 
   describe 'metadata' do
 
+    # attributes shared between chos and specimens
     it_behaves_like 'a work with physical object metadata'
 
+    # attributes unique to chos
     it 'has cultural heritage object metadata' do
-      expect(subject.attributes.keys).to include('cho_type', 'material', 'short_title')
+      expect(subject.attributes.keys).to include( "aat_attributes",
+                                                  "aat_material",
+                                                  "aat_type",
+                                                  "cho_attributes",
+                                                  "cho_type",
+                                                  "collection_date",
+                                                  "collection_location",
+                                                  "material",
+                                                  "short_title" )
     end
-
   end
 
   describe "valid work relationships" do

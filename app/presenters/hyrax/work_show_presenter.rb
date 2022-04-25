@@ -2,6 +2,7 @@ module Hyrax
   class WorkShowPresenter
     include ModelProxy
     include PresentsAttributes
+    include Hyrax::TitleHelper
 
     attr_accessor :solr_document, :current_ability, :request
 

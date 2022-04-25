@@ -30,12 +30,9 @@ Please enter information for editable fields. Uneditable fields will be parsed a
   <%= render_edit_field_partial('y_spacing', f: f) %>
   <%= render_edit_field_partial('z_spacing', f: f) %>
   <%= render_edit_field_partial('slice_thickness', f: f) %>
-  <div class="required-flag">
-    <%= render_edit_field_partial('unit', f: f) %>
-  </div>
 </div>
 
-<div class="media_type_block Mesh">
+<div class="media_type_block CTImageSeries Mesh">
   <%= render_edit_field_partial('unit', f: f) %>
 </div>
 

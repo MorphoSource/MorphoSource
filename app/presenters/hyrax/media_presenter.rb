@@ -3,6 +3,7 @@ require 'active_support/core_ext/numeric/conversions'
 #  `rails generate hyrax:work Media`
 module Hyrax
   class MediaPresenter < Hyrax::WorkShowPresenter
+    include ActionView::Helpers::NumberHelper
     include Morphosource::PresenterMethods
     include MorphosourceHelper
     include MediaFinderHelper
@@ -184,14 +185,6 @@ module Hyrax
       !preview_mode.present? || preview_mode&.first == "" || preview_mode&.first == "Interactive/Embeddable"
     end
 
-    def round_it(string_value)
-      if is_number_with_decimal?(string_value)
-        string_value.to_f.round(3).to_s
-      else
-        string_value
-      end
-    end
-
     def media
       @media ||= Media.where('id' => solr_document.id).first
     end
@@ -275,11 +268,11 @@ module Hyrax
           @has_uv_space << file_set.has_uv_space.first.to_s if file_set.has_uv_space.present?
           @vertex_color << file_set.vertex_color.first.to_s if file_set.vertex_color.present?
           if (file_set.bounding_box_x.present? and file_set.bounding_box_y.present? and file_set.bounding_box_z.present?)
-            temp = round_it(file_set.bounding_box_x.first) + ', ' + round_it(file_set.bounding_box_y.first) + ', ' + round_it(file_set.bounding_box_z.first)
+            temp = number_with_precision(file_set.bounding_box_x.first, precision: 3) + ', ' + number_with_precision(file_set.bounding_box_y.first, precision: 3) + ', ' + number_with_precision(file_set.bounding_box_z.first, precision: 3)
             @bounding_box_dimensions << temp
           end
           if (file_set.centroid_x.present? and file_set.centroid_y.present? and file_set.centroid_z.present?)
-            temp = round_it(file_set.centroid_x.first) + ', ' + round_it(file_set.centroid_y.first) + ', ' + round_it(file_set.centroid_z.first)
+            temp = number_with_precision(file_set.centroid_x.first, precision: 3) + ', ' + number_with_precision(file_set.centroid_y.first, precision: 3) + ', ' + number_with_precision(file_set.centroid_z.first, precision: 3)
             @centroid_location << temp
           end
         elsif @this_media_type.match(/image/i)

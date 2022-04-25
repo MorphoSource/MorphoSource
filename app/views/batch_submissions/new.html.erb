@@ -2,7 +2,6 @@
 <% provide :page_title, "Batch Submission || MorphoSource" %>
 
 <script type="text/javascript">
-
   var orgData = <%= @organizations_select2.to_json.html_safe %>;
   var nullOrg = <%= @null_organization.to_json.html_safe %>;
   var deviceData = <%= @devices_with_ids.to_json.html_safe %>;
@@ -11,79 +10,37 @@
 <h1><span class="fa fa-upload" aria-hidden="true"></span> Batch Submission</h1>
 
 <div class="row">
-	<div class="col-xs-12">
-		<p>On this page you can create new batch submissions or monitor the status of your current batch submissions. Please read the <a href="#">documentation</a>.</p>
-		<b>Create New Batch Submission</b>
-		<p><i class="fa fa-hand-point-right"></i> <%= link_to "Download blank submission manifest Excel file (XLSX) <i class='fa fa-file-alt'></i>".html_safe, asset_path("ingest_manifest_template.xlsx"), target: "_blank" %></p>
-		<p class="mt-2"><i class="fa fa-hand-point-right"></i> <b>Fill out the required and optional fields below as appropriate and then upload your completed blank submission manifest.</b></p>
+  <div class="col-xs-12">
+    <b>Create New Batch Submission</b>
+    <p><i class="fa fa-hand-point-right"></i> <%= link_to "Download blank submission manifest Excel file (XLSX) <i class='fa fa-file-alt'></i>".html_safe, asset_path("ingest_manifest_template.xlsx"), target: "_blank" %></p>
+    <p class="mt-2"><i class="fa fa-hand-point-right"></i> <b>Fill out the required and optional fields below as appropriate and then upload your completed blank submission manifest.</b></p>
 
-	</div>
+  </div>
 </div>
+
+<%= simple_form_for @batch_submission, 
+    html: { 
+      id: :batch_submission_form, multipart: true, 
+      class: 'new_media', # new_media class is needed by submission_form.js for form fields handling
+      data: { behavior: 'work-form', 'param-key' => 'media' }
+    } do |f| %>
+<input class="organization_recordset_id" type="hidden" name="organization_recordset_id" value="" />
 
 <div class="row">
 
-  <div class="col-sm-6 pull-right">
+  <div class="col-sm-6"><%# left column %>
+    <h2>Basic details</h2>
 
-  <div class="hide">
-    <span id="organization-alert-message"></span>
-  </div>
-
-  <%# todo: remove the media form later if not needed %>
-  <%= simple_form_for @media_form,
-  wrapper: :showcase_default,
-  url: { controller: 'submissions', action: 'create' },
-  html: {
-    id: 'batch_submission_media', # setting specific form id to avoid being called in ms_media_form.js
-    data: { behavior: 'work-form', 'param-key' => 'media' },
-    multipart: true
-  } do |f| %>
-
-    <div class="media-permissions submission_flow">
-      <h2>OWNERSHIP AND PERMISSIONS</h2>
-
-      <label class="optional-flag"><span class="label"></span> These ownership and permissions settings will be applied to all media in the batch submission.</label>
-
-      <%= render 'submission_media_ownership', f: f %>
+    <div class="row">
+      <label class="required-flag select-organization"><span class="label"></span> Select the organization that represents the physical objects in this batch submission.</label>
+      <%= render 'batch_submissions/physical_object/organization', f: f %>
     </div>
 
-    <div class="row mt-2 select-projects">
-      <h2>Projects</h2>
-      <label class="optional-flag"><span class="label"></span> Select one or more projects which the media in the batch submission should be associated with.</label>
+    <div class="row mt-2">
+      <label class="required-flag select-device"><span class="label"></span> Select the device used to image media in this batch submission. To do so, first find the organization that manages the device.</label>
+      <%= render 'batch_submissions/media/device', f: f %>
 
-      <% if @batch_submission.collection_id %>
-        <div class="row">
-          <div class="content-block">
-            <span>Media will be added to <%= @batch_submission.collection_name %>. Add to additional teams and projects below if desired.</span>
-            <input class="collection_id" type="hidden" name="collection_id" value="<%= @batch_submission.collection_id %>" />
-          </div>
-
-        </div>
-      <% end %>
-
-      <div class="content-block">
-        <%= render 'form_member_of_collections', f: f %>
-      </div>
     </div>
-
-  <% end # /simple_form_for @media_form %>
-  </div>
-
-	<div class="col-sm-6">
-		<h2>Basic details</h2>
-
-		<div class="row">
-			<label class="required-flag select-organization"><span class="label"></span> Select the organization that represents the physical objects in this batch submission.</label>
-		  <%= render(partial: 'batch_submissions/physical_object/organization') %>
-		</div>
-
-		<div class="row mt-2">
-			<label class="required-flag select-device"><span class="label"></span> Select the device used to image media in this batch submission. To do so, first find the organization that manages the device.</label>
-		  <%= render(partial: 'batch_submissions/media/device') %>
-		</div>
-
-<%= simple_form_for @batch_submission, html: { id: :batch_submission_form, multipart: true } do |f| %>
-<input class="organization_institution_code" type="hidden" name="organization_institution_code" value="" />
-<input class="organization_recordset_id" type="hidden" name="organization_recordset_id" value="" />
 
     <div class="row mt-2">
       <label class="required-flag select-modality"><span class="label"></span> Select the modality used to image media (must match the device modality):</label>
@@ -92,10 +49,10 @@
 
     <% if current_user.fund_codes.present? %>
       <div class="row mt-2">
-      	<label class="required-flag"><span class="label"></span> Select the appropriate fund code for the media in this batch submission. If you are not the final manager of these date, select the manager on whose behalf you are acting as a proxy.</label>
+        <label class="required-flag"><span class="label"></span> Select the appropriate fund code for the media in this batch submission. If you are not the final manager of these date, select the manager on whose behalf you are acting as a proxy.</label>
         <%= f.input :fund_code, label: 'What fund code supports this deposit?', 
           collection: current_user.fund_codes, prompt: "None (Data Supported By MorphoSource)" %>
-      </div>	      
+      </div>        
     <% end %>
 
     <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? 
@@ -107,12 +64,21 @@
       </div>
     <% end %>
 
-	</div>
+  </div><%# /left column %>
 
+  <div class="col-sm-6"><%# right column %>
+    <%= f.fields_for @media_form,
+      wrapper: :showcase_default,
+      html: {
+        data: { behavior: 'work-form', 'param-key' => 'media' }
+      } do |builder| %>
+      <%= render  "batch_submissions/media/media", :f => builder %>
+    <% end %>
+  </div><%# /right column %>
 
 </div>
 
-<div class="row">
+<div class="row mt-2">
   <h2>UPLOAD MANIFEST</h2>
   <div class="col-sm-6 col-sm-offset-3">
     <div class="mt-3 mb-3">

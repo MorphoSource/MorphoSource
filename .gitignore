@@ -58,6 +58,8 @@
 /fits.log
 
 .DS_Store
+._*
+/bin
 
 # ---------------------------------------------------
 # MorphoSource specific changes
@@ -74,3 +76,9 @@
 
 vendor/alembic/__pycache__/*
 *.pyc
+
+# ---------------------------------------------------
+# Docker related rules
+# ---------------------------------------------------
+
+/vendor/docker/apache/certs/*

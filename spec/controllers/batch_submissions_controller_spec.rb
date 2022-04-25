@@ -4,12 +4,19 @@ RSpec.describe BatchSubmissionsController, type: :controller do
   let(:user)                       { User.create(email: 'email@email.com', password: 'password', sftp_share: '/tmp') }
   let(:user2)                      { User.create(email: 'email2@email.com', password: 'password', sftp_share: '') }
   let(:user3)                      { User.create(email: 'email3@email.com', password: 'password', sftp_share: '/dir_not_found') }
+  let(:user4)                      { User.create(email: 'email4@email.com', password: 'password', sftp_share: '/tmp') }
   let(:admins)                     { Role.create(name: 'admin') }
   let(:batch_submission_contributors)  { Role.create(name: 'batch_submission_contributor') }
   let(:image_file_path)             { fixture_path + '/images/duke.png' }
   let(:manifest_file_path)             { fixture_path + '/batch_submission_manifest_errors_test.xlsx' }
+  let(:invalid_columns_file_path)             { fixture_path + '/batch_submission_manifest_errors_columns.xlsx' }
+  let(:invalid_fields_file_path)             { fixture_path + '/batch_submission_manifest_errors_fields.xlsx' }
+  let(:invalid_parents_file_path)             { fixture_path + '/batch_submission_manifest_errors_parents.xlsx' }
   let(:invalid_file)         { Rack::Test::UploadedFile.new(image_file_path) }
   let(:valid_file)         { Rack::Test::UploadedFile.new(manifest_file_path) }
+  let(:invalid_columns_file)         { Rack::Test::UploadedFile.new(invalid_columns_file_path) }
+  let(:invalid_fields_file)         { Rack::Test::UploadedFile.new(invalid_fields_file_path) }
+  let(:invalid_parents_file)         { Rack::Test::UploadedFile.new(invalid_parents_file_path) }
 
   before do
     batch_submission_contributors.users << [user, user3]
@@ -18,13 +25,46 @@ RSpec.describe BatchSubmissionsController, type: :controller do
 
   describe "GET #new for batch_submission_contributor" do
     before do
-      batch_submission_contributors.users << user
-      batch_submission_contributors.save
       sign_in user
     end
     it "returns http success for batch_submission_contributor" do
       get :new
       expect(response).to have_http_status(:success)
+    end
+  end
+
+  describe "User has queued or working job running" do
+    before do
+      sign_in user
+    end
+    context "render index page" do
+      render_views
+      it "returns only one job allowed message" do
+        BackgroundJob.create({ main_job_id: '123', status: 'queued', user_id: user.id, created_objects: {} })
+        get :index
+        expect(response.body).to include 'Only one batch submission job is allowed at a time.'
+      end
+    end
+    context "render new submission page" do
+      render_views
+      it "returns currently have job running message" do
+        BackgroundJob.create({ main_job_id: '234', status: 'working', user_id: user.id, created_objects: {} })
+        get :new
+        expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
+      end
+    end
+    context "post new submission" do
+      render_views
+      let(:params) { {"manifest" => valid_file,
+        "batch_submission" => {
+          "modality" => "MicroNanoXRayComputedTomography"
+        }
+      } }
+      it "returns" do
+        BackgroundJob.create({ main_job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
+        post 'submit', :params => params 
+        expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
+      end
     end
   end
 
@@ -44,7 +84,21 @@ RSpec.describe BatchSubmissionsController, type: :controller do
     end
     it "render not_connected page" do
       get :new
-      expect(response).to render_template 'not_connected'
+      expect(response).to render_template 'not_allowed'
+    end
+  end
+
+  describe "User with no batch_submission_contributor access" do
+    before do
+      sign_in user4
+    end
+    it "redirected for index" do
+      get :index
+      expect(response).to have_http_status(302)
+    end
+    it "redirected for new submission" do
+      get :new
+      expect(response).to have_http_status(302)
     end
   end
 
@@ -66,8 +120,8 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           }
         } }
         it "shows result with modality MicroNanoXRayComputedTomography pre-selected" do
-          post 'submit', :params => params
-          expect(response).to render_template 'result'
+          post 'submit', :params => params 
+          expect(response).to render_template 'validation_fail'
           html = response.body
           expect(html).to include 'media.media_file: File ANSP_Fish_53046_Head.zip cannot be found. Please check your shared folder.'
           expect(html).to include 'media.media_type: Please enter a valid value: "Image", "Video", "CTImageSeries", "PhotogrammetryImageSeries", "Mesh", "Other"'
@@ -76,7 +130,6 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'biological_specimen.is_type_specimen: Please enter a valid value: "Yes", "No", "Y", "N", "true", "false", "0", "1"'
           expect(html).to include 'biological_specimen.sex: Please enter a valid value: "Female", "Male", "Unknowable", "Undetermined", "Hermaphrodite", "Gynandromorph"'
           expect(html).to include 'imaging_event.ct.exposure_time: Please enter a valid number.'
-          expect(html).to include 'imaging_event.ct.filter_material: Please enter a valid value: "Molybdenum", "Aluminum", "Copper", "Rhodium", "Niobium", "Europium", "Lead", "Tin"'
           expect(html).to include 'imaging_event.ct.target_type: Please enter a valid value: "Reflection", "Transmission"'
           expect(html).to include 'imaging_event.ct.detector_type: Please enter a valid value: "Direct (X-Ray photoconductor)", "Scintillator (Phosphor used)", "Storage (Storage Phosphor)", "Film (Scanned film/screen)"'
           expect(html).to include 'imaging_event.ct.detector_pixels_x: Please enter a valid integer.'
@@ -85,7 +138,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'imaging_event.ct.acquisition_type: Please enter a valid value: "ConstantAngle", "Free", "Sequenced", "Spiral", "Stationary"'
           expect(html).to include 'imaging_event.photogrammetry.focal_length_type: Value should not be present when modality MicroNanoXRayComputedTomography is pre-selected.'
           expect(html).to include 'imaging_event.photography.light_source: Value should not be present when modality MicroNanoXRayComputedTomography is pre-selected.'
-          expect(html).to include 'media.y_spacing: Value should present for media type CTImageSeries.'
+          expect(html).to include 'media.y_spacing: Value should be present for media type CTImageSeries.'
           expect(html).to include 'media.z_spacing: Please enter a valid number.'
           expect(html).to include 'media.publication_status: Please enter a valid value: "Open", "RestrictedDownload", "Private"'
           expect(html).to include 'A value can be present in media.parent_file or media.parent_ms_id, but not in both.'
@@ -97,14 +150,17 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'media.parent_file ANSP_Fish_193352_Head.zip cannot be media.media_file in the same row.'
           expect(html).to include 'Specimen in iDigBio has institution code cm which does not match the pre-selected organization\'s institution code: ' + organization_institution_code
           expect(html).to include 'Specimen in iDigBio has recordset id 71b8ffab-444e-43f9-9a9c-5c42b0eaa5eb which does not match the pre-selected organization\'s recordset id: ' + organization_recordset_id
+          expect(html).to include 'media.raw_or_derived: Please enter a valid value.'
+          expect(html).to include "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
+
         end
       end
 
       context "result with Photogrammetry pre-selected" do
         let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photogrammetry"}} }
         it "shows result with modality Photogrammetry pre-selected" do
-          post 'submit', :params => params
-          expect(response).to render_template 'result'
+          post 'submit', :params => params 
+          expect(response).to render_template 'validation_fail'
           html = response.body
           expect(html).to include 'imaging_event.ct.exposure_time: Value should not be present when modality Photogrammetry is pre-selected'
           expect(html).to include 'imaging_event.photogrammetry.focal_length_type: Please enter a valid value: "Variable", "Fixed"'
@@ -115,8 +171,8 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       context "result with Photography pre-selected" do
         let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photography"}} }
         it "shows result with modality Photography pre-selected" do
-          post 'submit', :params => params
-          expect(response).to render_template 'result'
+          post 'submit', :params => params 
+          expect(response).to render_template 'validation_fail'
           html = response.body
           expect(html).to include 'imaging_event.ct.acquisition_type: Value should not be present when modality Photography is pre-selected.'
           expect(html).to include 'imaging_event.photogrammetry.focal_length_type: Value should not be present when modality Photography is pre-selected.'
@@ -147,6 +203,28 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
+    context "column count not valid" do
+      render_views
+      let(:params) { {"manifest" => invalid_columns_file, "batch_submission" => {"modality" => "photography"}} }
+      it "displays column count invalid message" do
+        post 'submit', :params => params 
+        expect(response).to render_template 'validation_fail'
+        html = response.body
+        expect(html).to include 'The columns are invalid.  Please check the file or download the blank submission manifest again.'
+      end
+    end
+
+    context "parents not valid" do
+      render_views
+      let(:params) { {"manifest" => invalid_parents_file, "batch_submission" => {"modality" => "photography"}} }
+      it "displays invalid parents message" do
+        post 'submit', :params => params 
+        expect(response).to render_template 'validation_fail'
+        html = response.body
+        expect(html).to include 'media.parent_file ANSP_Fish_180334_Head.jpg has invalid parent(s) (found in row 10).  Please check and make sure each parent_file is pointing to the correct row.'
+      end
+    end
+
   end
 
   describe 'valid_media_unit' do

@@ -28,8 +28,9 @@ module Hyrax
       @request = request
     end
 
+    # Don't use this method! Instead, use construct_page_title(@presenter.title.first). Left in for backwards compat with Hyrax
     def page_title
-      "#{human_readable_type} | #{title.first} | ID: #{id} | #{application_name}"
+      "#{human_readable_type} | #{title.first} | ID: #{id} | #{Hyrax.config.site_title}"
     end
 
     # CurationConcern methods

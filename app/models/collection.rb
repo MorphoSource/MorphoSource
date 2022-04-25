@@ -11,6 +11,7 @@ class Collection < ActiveFedora::Base
 
   before_create :add_date_uploaded
 
+  after_destroy :reindex_collection_members
   after_destroy :destroy_default_groups, if: :type_assigns_groups?
 
   # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
@@ -210,5 +211,11 @@ class Collection < ActiveFedora::Base
 
     def add_date_uploaded
       self.date_uploaded = date_uploaded.nil? ? Time.now : date_uploaded
+    end
+
+    # reindex child projects, media, and physical objects
+    def reindex_collection_members
+      members = ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id} OR media_member_of_team_ids_ssim:#{id} OR media_member_of_project_ids_ssim:#{id}")
+      members.each(&:update_index)
     end
 end

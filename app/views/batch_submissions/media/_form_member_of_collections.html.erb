@@ -1,16 +1,14 @@
 <div class="form-group" data-behavior="collection-relationships" data-param-key="<%= f.object.model_name.param_key %>" data-members="<%= f.object.member_of_collections_json %>">
 
   <div class="form-inline">
-    <div class="col-xs-10 pl-0">
+    <div class="col-xs-12 pl-0">
       <%= f.input_field :member_of_collection_ids,
                   prompt: :translate,
                   data: {
                     autocomplete: 'collection',
+                    autoadd: true,
                     'autocomplete-url' => Rails.application.routes.url_helpers.qa_path + '/search/collections?access=deposit'
                   } %>
-    </div>
-    <div class="col-xs-2 pl-0">
-      <a class="btn btn-primary" data-behavior="add-relationship">Add</a>
     </div>
   </div>
 

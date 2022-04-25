@@ -133,6 +133,24 @@ class User < ApplicationRecord
     groups.include? 'batch_submission_contributor'
   end
 
+  def make_batch_submission_contributor
+    if batch_submission_contributor?
+      puts "Can't add - #{display_name} is already a batch submission contributor"
+    else
+      batch_submission_contributor_group.users += [self]
+      puts "#{display_name} is now a batch submission contributor"
+    end
+  end
+
+  def remove_batch_submission_contributor
+    if !batch_submission_contributor?
+      puts "Can't remove - #{display_name} is not a batch submission contributor"
+    else
+      batch_submission_contributor_group.users -= [self]
+      puts "#{display_name} batch submission contributor status removed"
+    end
+  end
+
   def charge_api_user?
     groups.include? 'charge_api'
   end
@@ -246,7 +264,20 @@ class User < ApplicationRecord
   def standard_member_fund_codes
     fund_codes.joins(:fund_code_memberships).where(fund_code_memberships: { manager: false })
   end
-  
+
+  def batch_submission_jobs
+    BackgroundJob.where(user_id: self.id).where.not(status:nil)
+  end
+
+  def last_batch_submission_job
+    batch_submission_jobs.last
+  end
+
+  def can_submit_new_batch_submission?
+    return true unless batch_submission_jobs.present? 
+    return last_batch_submission_job.status == "completed" || last_batch_submission_job.status == "failed"
+  end
+
   private
 
   # Assigns a random string to be used as the user_key
@@ -263,6 +294,10 @@ class User < ApplicationRecord
 
   def contributor_group
     Role.find_by(name: 'contributor')
+  end
+
+  def batch_submission_contributor_group
+    Role.find_by(name: 'batch_submission_contributor')
   end
 
   def charge_api_group

@@ -111,9 +111,9 @@ $( document ).ready(function() {
           'click', '#organization-select-close', function(event){
             // Remove data values
             $("#submission_organization_search").select2('val', null);
-            $("#organization_search_form input.organization_id").val('');
-            $("#organization_search_form input.organization_title").val('');
-            $("#organization_search_form input.organization_label").val('');
+            $("input.organization_id").val('');
+            $("input.organization_title").val('');
+            $("input.organization_label").val('');
             $("#submission_organization_select_display .showcase-value").text('');
 
             // UI controls
@@ -134,12 +134,12 @@ $( document ).ready(function() {
         var setOrgData = function() {
           //event.preventDefault();
           console.log('set organization data');
-          var selectedOrganizationID = $('#organization_search_form input.organization_id').val();
+          var selectedOrganizationID = $('input.organization_id').val();
           if (selectedOrganizationID) {
             data.setOrganizationDefaults();
             data.organizationId = selectedOrganizationID;
-            data.organizationCollectionCode = $('#organization_search_form input.organization_collection_code').val().split(', ');
-            data.organizationInstitutionCode = $('#organization_search_form input.organization_institution_code').val().split(', ');
+            data.organizationCollectionCode = $('input.organization_collection_code').val().split(', ');
+            data.organizationInstitutionCode = $('input.organization_institution_code').val().split(', ');
             data.noOrganization = false;
             data.willCreateOrganization = false;
             data.savedStep = 4;
@@ -264,7 +264,7 @@ $( document ).ready(function() {
         // Organization utility function
 
         function clearList() {
-          $('form#submission_device_select_form select#batch_submission_device_id option').each(function () {
+          $('select#batch_submission_device_id option').each(function () {
             $("#batch_submission_device_id").select2('val', null);
             if ($(this).attr('value')) {
               $(this).remove();
@@ -279,13 +279,13 @@ $( document ).ready(function() {
         }
 
         function enableDeviceList() {
-          $('form#submission_device_select_form select#batch_submission_device_id').removeAttr('disabled');
-          $('form#submission_device_select_form div.batch_submission_device_id label').removeClass('disabled');
+          $('select#batch_submission_device_id').removeAttr('disabled');
+          $('div.batch_submission_device_id label').removeClass('disabled');
         }
 
         function listDevices(devices) {
           for (const device of devices) {
-            $('form#submission_device_select_form select#batch_submission_device_id')
+            $('select#batch_submission_device_id')
               .append($('<option></option>')
                 .attr('value', device.id)
                 .attr('data-modality', device.modality)
@@ -407,7 +407,7 @@ $( document ).ready(function() {
 
     var setSubmitStatus = function(){
       var okToSubmit = true;
-      var selectedOrganizationID = $('#organization_search_form input.organization_id').val();
+      var selectedOrganizationID = $('input.organization_id').val();
       if (selectedOrganizationID == "") {
         okToSubmit = false;
          if (showAlert) $(".select-organization").addClass('text-alert');

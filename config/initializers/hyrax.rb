@@ -81,7 +81,7 @@ Hyrax.config do |config|
 
   # The user who runs batch jobs.
   # Should be user key of site-wide admin user or dedicated batch job user
-  config.batch_user_key = ENV['BATCH_USER_KEY'] || '1'
+  config.batch_user_key = ENV['BATCH_USER_KEY'] || '614de0'
 
   # The user who runs fixity check jobs. Update this if you aren't using emails
   # Should be user key of site-wide admin user or dedicated audit job user
@@ -371,7 +371,7 @@ Hyrax.config do |config|
   # ingest files from the file system that are not part of the BrowseEverything
   # mount point.
   #
-  config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_ms1/', '/vagrant/downloads/', '/opt/morphosource/root/tmp/']
+  config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_ms1/', '/vagrant/downloads/', '/opt/morphosource/root/tmp/', '/vagrant/dropbox']
 
   config.index_related_works = true
 

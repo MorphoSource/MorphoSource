@@ -43,11 +43,11 @@ module Morphosource
       end
 
       mattr_accessor :photogrammetry_formats do
-        [".zip", ".tif", ".dng", ".nef", ".crw", ".cr2", ".cr3", ".iiq", ".arw", ".raw", ".rw2"]
+        [".zip", ".jp2", ".tif", ".dng", ".nef", ".crw", ".cr2", ".cr3", ".iiq", ".arw", ".raw", ".rw2"]
       end
 
       mattr_accessor :mesh_formats do
-        [".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".jp2", ".jpeg", ".jpg", ".mtl", ".obj", ".obj", ".ply", ".png", ".stl", ".svg", ".tif", ".tiff", ".wrl", ".x3d", ".zip"]
+        [".glb", ".gltf", ".obj", ".ply", ".stl",  ".wrl", ".x3d", ".zip"]
       end
 
       # Allowed formats for attachments (default for documents)

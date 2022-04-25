@@ -22,3 +22,9 @@
       <span class="fa fa-file" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.works') %></span>
     <% end %>
   <% end %>
+
+  <% if current_user.batch_submission_contributor? %>
+    <%= menu.nav_link(main_app.batch_submissions_path) do %>
+      <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
+    <% end %>
+  <% end %>

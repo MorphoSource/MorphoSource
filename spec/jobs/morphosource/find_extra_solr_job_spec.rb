@@ -69,6 +69,23 @@ RSpec.describe Morphosource::FindExtraSolrJob do
           expect(buffer.string).to include(id)
         end
       end
+
+      context 'Solr documents are deleted after the job has started to run' do
+        let(:ids_except_media) { ids.except(media.id) }
+
+        before do
+          ActiveFedora::SolrService.delete(media.id)
+        end
+
+        it 'skips checking those fedora objects' do
+          described_class.perform_now
+          expect(buffer.string).to include(text)
+          ids_except_media.each do |id, model|
+            expect(buffer.string).to include(id)
+          end
+          expect(buffer.string).not_to include(media.id)
+        end
+      end
     end
   end
 end

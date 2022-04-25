@@ -37,6 +37,7 @@ shared_examples 'a work with physical object metadata' do
                                                   "longitude",
                                                   "numeric_time",
                                                   "on_behalf_of",
+                                                  "original_location",
                                                   "organization_id",
                                                   "owner",
                                                   "periodic_time",

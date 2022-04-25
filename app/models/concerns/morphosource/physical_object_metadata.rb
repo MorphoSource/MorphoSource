@@ -47,6 +47,10 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
+      property :original_location, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/original_location") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
       property :provenance_name, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/provenanceName") do |index|
         index.as :stored_searchable, :facetable
       end

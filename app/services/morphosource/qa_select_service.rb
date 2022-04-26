@@ -7,7 +7,7 @@ module Morphosource
         opt = [element[:label], element[:id]]
         if value.present? 
           # as long as the value matches (case insensitive), the option will be selected 
-          if value.kind_of?(ActiveTriples::Relation)
+          if value.kind_of?(ActiveTriples::Relation) || value.kind_of?(Array)
             if value.first.downcase == element[:id].downcase              
               opt = [element[:label], value.first]
             end

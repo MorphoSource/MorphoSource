@@ -2,7 +2,7 @@
 module Morphosource
   # Provide select options for the resource_type field
 
-  class ResourceTypesService < Hyrax::QaSelectService
+  class ResourceTypesService < QaSelectService
     def initialize(_authority_name = nil)
       super('resource_types')
     end

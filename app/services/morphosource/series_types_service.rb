@@ -1,7 +1,7 @@
 # app/services/morphosource/series_types_service.rb
 module Morphosource
   # Provide select options for the series types field
-  class SeriesTypesService < Hyrax::QaSelectService
+  class SeriesTypesService < QaSelectService
     def initialize(_authority_name = nil)
       super('series_types')
     end

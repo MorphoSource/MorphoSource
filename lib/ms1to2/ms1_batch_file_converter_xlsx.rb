@@ -300,9 +300,9 @@ module Ms1to2
         'side' => side_filter,
         'use_for_preview' => boolean_filter,
         'file_type' => {
-          '1' => 'Raw',
-          'raw file of group' => 'Raw',
-          'raw' => 'Raw',
+          '1' => 'Derived',
+          'raw file of group' => 'Derived',
+          'raw' => 'Derived',
           '2' => 'Derived',
           'derivative file' => 'Derived',
           'derivative' => 'Derived'

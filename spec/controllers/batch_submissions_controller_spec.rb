@@ -140,7 +140,6 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'imaging_event.photography.light_source: Value should not be present when modality MicroNanoXRayComputedTomography is pre-selected.'
           expect(html).to include 'media.y_spacing: Value should be present for media type CTImageSeries.'
           expect(html).to include 'media.z_spacing: Please enter a valid number.'
-          expect(html).to include 'media.publication_status: Please enter a valid value: "Open", "RestrictedDownload", "Private"'
           expect(html).to include 'A value can be present in media.parent_file or media.parent_ms_id, but not in both.'
           expect(html).to include 'media.parent_ms_id: Existing media not_found not found.'
           expect(html).to include 'biological_specimen.ms_id: Existing biological specimen not_found not found.'
@@ -225,7 +224,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       it "displays invalid field message" do
         expect(response).to render_template 'validation_fail'
         html = response.body
-        expect(html).to include 'Invalid field name in row 7, column 55'
+        expect(html).to include 'expecting imaging_event.ct.pixel_spacing_calibration'
       end
     end
 

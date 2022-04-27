@@ -161,7 +161,7 @@ class BatchSubmissionsController < ApplicationController
 
   def initial_error_message
     # basic validation: check field names, column count
-    if @xlsx.last_column != 87
+    if @xlsx.last_column != 86
       return "The columns are invalid.  Please check the file or download the blank submission manifest again."
     end
     field_names.each_with_index do |fname, idx|
@@ -596,7 +596,6 @@ class BatchSubmissionsController < ApplicationController
     @field_types ||= {
       "media.media_file" => "text",
       "media.preview_file" => "text",
-      "media.publication_status" => "controlled_required",
       "media.media_type" => "controlled_required",
       "media.raw_or_derived" => "controlled_required",
       "media.parent_file" => "text",
@@ -690,10 +689,6 @@ class BatchSubmissionsController < ApplicationController
   def valid_values_for(field)
     method_name = "valid_" + field.gsub('.', '_')
     return send(method_name)
-  end
-
-  def valid_media_publication_status
-    @valid_media_publication_status ||= ['Open', 'RestrictedDownload', 'Private']
   end
 
   def valid_media_types

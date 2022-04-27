@@ -646,7 +646,7 @@ class BatchSubmissionsController < ApplicationController
       "imaging_event.date_created" => "text",
       "imaging_event.ct.exposure_time" => "number",
       "imaging_event.ct.flux_normalization" => "boolean",
-      "imaging_event.ct.geometric_calibration" => "boolean",
+      "imaging_event.ct.pixel_spacing_calibration" => "controlled",
       "imaging_event.ct.shading_correction" => "boolean",
       "imaging_event.ct.ie_filter" => "text",
       "imaging_event.ct.frame_averaging" => "text",
@@ -722,6 +722,10 @@ class BatchSubmissionsController < ApplicationController
 
   def valid_biological_specimen_sex
     @valid_biological_specimen_sex ||= ['Female', 'Male', 'Unknowable', 'Undetermined', 'Hermaphrodite', 'Gynandromorph']
+  end
+
+  def valid_imaging_event_ct_pixel_spacing_calibration
+    @valid_imaging_event_ct_pixel_spacing_calibration ||= ['Geometry', 'Fiducial']
   end
 
   def valid_imaging_event_ct_target_type

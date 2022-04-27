@@ -16,7 +16,6 @@ module Morphosource
               opt = [element[:label], value]
             end
           else
-byebug
             Rails.logger.debug "in select_all_options: unexpected class #{value.class} of value #{value}"
           end
         end

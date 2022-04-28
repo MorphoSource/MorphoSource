@@ -101,8 +101,8 @@ module Ms1to2
       new_row[:media][:media_file] = mf[:media]
       new_row[:media][:media_preview] = mf[:media_preview]
       new_row[:media][:parent_file] = mf[:parent_file]
-      new_row[:media][:side] = mf[:side]
-      new_row[:media][:published] = mf[:published]
+      new_row[:media][:side] = mf[:side].presence || mg[:side]
+      new_row[:media][:published] = mf[:published].presence || mg[:published]
       return new_row
     end
 
@@ -250,7 +250,7 @@ module Ms1to2
 
     def media_special_fields
       {
-        'visibility' => published_filter,
+        'published' => published_filter,
         'side' => side_filter,
         'is_copyrighted' => boolean_filter,
         'copyright_permission' => {

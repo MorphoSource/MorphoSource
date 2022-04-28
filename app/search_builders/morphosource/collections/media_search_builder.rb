@@ -37,6 +37,12 @@ module Morphosource
         subcollections.docs.map(&:id)
       end
 
+      private
+
+      def discovery_permissions
+        @discovery_permissions ||= ["edit","discover","download","read"]
+      end
+
     end
   end
 end

@@ -87,15 +87,15 @@ module Morphosource
       submission_url = "#{ENV['CROSSREF_DOI_URL']}/#{SUBMISSION_PATH}"
       login_id = ENV['CROSSREF_DOI_USERNAME']
       login_passwd = ENV['CROSSREF_DOI_PASSWORD']
-			deposit_xml = generate_metadata_deposit_xml(identifier, metadata_params)
+      deposit_xml = generate_metadata_deposit_xml(identifier, metadata_params)
       # See: https://www.crossref.org/education/member-setup/direct-deposit-xml/https-post/
-      submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
-      Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")
-      if submission_response.code == 200
-        return identifier_to_doi(identifier)
-      else
-        return nil
+      begin
+        submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
+        Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")
+      rescue RestClient::ExceptionWithResponse => exception
+        return exception
       end
+      return identifier_to_doi(identifier)
     end
   end
 end

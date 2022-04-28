@@ -1,6 +1,7 @@
 module Hyrax
   module Renderers
     class ShowcaseDefaultAttributeRenderer < AttributeRenderer
+      include ActionView::Helpers::NumberHelper
       include MorphosourceHelper
       
       def render
@@ -26,12 +27,8 @@ module Hyrax
           end
         else
           Array(values).each_with_index do |value, index|
-            if is_number_with_decimal?(value)
-              if options[:signif_digits].present?
-                value = value.to_f.signif(options[:signif_digits].to_i)
-              else
-                value = value.to_f.round(3)
-              end
+            if options[:number_with_precision].present?
+              value = number_with_precision(value, precision: options[:number_with_precision])
             end
             markup << '; ' unless index == 0
             markup << attribute_value_to_html(value.to_s)
@@ -46,11 +43,5 @@ module Hyrax
         values.blank? || (values.is_a?(Array) && values.all? { |x| x.blank? } )
       end
     end
-  end
-end
-
-class Float
-  def signif(digit_count)
-    Float("%.#{digit_count}g" % self)
   end
 end

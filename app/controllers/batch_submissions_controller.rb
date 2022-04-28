@@ -4,7 +4,8 @@ class BatchSubmissionsController < ApplicationController
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms, only: [:new]
-  before_action :check_sftp_share_connection, only: [:new]
+  before_action :check_batch_submission_access, only: [:index, :new, :submit]
+  before_action :check_new_submit_allowed, only: [:new, :submit]
   before_action :check_params, only: [:submit]
   after_action :create_manifest_object, only: [:submit]
 
@@ -15,7 +16,8 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def index
-    render 'index', locals: { row_count: nil }
+    job = current_user.last_batch_submission_job
+    render 'index', locals: { job: job }
   end
 
   def new
@@ -145,8 +147,6 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id, 
         device_id:device_id, 
         media_ownership_fields:media_ownership_fields).to_h
-        
-      #byebug # check manifest_object
       ingest
     else
 
@@ -155,8 +155,8 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def ingest
-    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object)
-    main_job = BackgroundJob.create({ main_job_id: job.job_id, user_id: current_user.id, created_objects: {} })
+    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object, current_user)
+    main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
 
   def initial_error_message
@@ -166,10 +166,19 @@ class BatchSubmissionsController < ApplicationController
     end
     field_names.each_with_index do |fname, idx|
       if fname != @xlsx.excelx_value(7, idx + 3) 
-        return "Invalid field in column " +  (idx + 3).to_s + " (expecting " + fname + ").  Please check the file or download the blank submission manifest again. <--" + @xlsx.excelx_value(7, idx + 3) + "-->"
+        return "Invalid field name in row 7, column " +  (idx + 3).to_s + " (expecting " + fname + ").  Please check the file or download the blank submission manifest again."
       end
     end
     return ""
+  end
+
+  def empty_row?(row)
+    row.each do |cell|
+      if cell.present? && cell.value.squish.length > 0
+        return false
+      end
+    end
+    return true
   end
 
   def parse_manifest
@@ -184,6 +193,7 @@ class BatchSubmissionsController < ApplicationController
     warn_messages = {}
     warn_cell_numbers = {}
     row_index = 8
+    skipped_row_count = 0
 
     @mo_idx = 0
     @media_order = { @mo_idx => [] }
@@ -202,37 +212,41 @@ class BatchSubmissionsController < ApplicationController
     else      
       @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
         data_row = row.drop(2) 
-        row_cell_errors = []
-        error_row_cell_numbers = []
-        row_cell_warnings = []
-        warn_row_cell_numbers = []
-        data_row.each_with_index do |cell, cell_index|
-          begin
-            error_msg, warn_msg = error_found(field_names[cell_index], cell, row_index)
-            if error_msg.present?
-              row_cell_errors << error_msg
-              error_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
-              error_row_cell_numbers << cell_index
-            elsif warn_msg.present?
-              row_cell_warnings << warn_msg
-              warn_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
-              warn_row_cell_numbers << cell_index
+        if empty_row?(data_row)
+          skipped_row_count += 1
+        else
+          row_cell_errors = []
+          error_row_cell_numbers = []
+          row_cell_warnings = []
+          warn_row_cell_numbers = []
+          data_row.each_with_index do |cell, cell_index|
+            begin
+              error_msg, warn_msg = error_found(field_names[cell_index], cell, row_index)
+              if error_msg.present?
+                row_cell_errors << error_msg
+                error_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
+                error_row_cell_numbers << cell_index
+              elsif warn_msg.present?
+                row_cell_warnings << warn_msg
+                warn_rows[row_index] = data_row.map { |c| c.present? ? c.value.to_s : "" }
+                warn_row_cell_numbers << cell_index
+              end
+            rescue => e
+              Rails.logger.debug "iN BatchSubmissionsController, Exception: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
+              general_error_msg = "ERROR: There are problems parsing some rows in the file.  Please check the details below."
+              row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
+              error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
+              break # skip the rest of the cells
             end
-          rescue => e
-            Rails.logger.debug "iN BatchSubmissionsController, Exception: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
-            general_error_msg = "ERROR: There are problems parsing some rows in the file.  Please check the details below."
-            row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
-            error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
-            break # skip the rest of the cells
-          end
-        end # /looping cells
-        error_messages[row_index] = row_cell_errors 
-        error_cell_numbers[row_index] = error_row_cell_numbers
-        warn_messages[row_index] = row_cell_warnings 
-        warn_cell_numbers[row_index] = warn_row_cell_numbers
+          end # /looping cells
+          error_messages[row_index] = row_cell_errors 
+          error_cell_numbers[row_index] = error_row_cell_numbers
+          warn_messages[row_index] = row_cell_warnings 
+          warn_cell_numbers[row_index] = warn_row_cell_numbers
+        end
         row_index = row_index + 1
       end # /lopping rows /xlsx.each_row_streaming
-      row_count = row_index - 8
+      row_count = row_index - 8 - skipped_row_count
       if error_rows.count > 0
         general_error_msg = "There are validation errors.  Please check the details below."
         render 'validation_fail', locals: { 
@@ -244,15 +258,17 @@ class BatchSubmissionsController < ApplicationController
           warn_messages: warn_messages, 
           warn_cell_numbers: warn_cell_numbers, 
           field_names: field_names, 
-          row_count: row_count }
+          row_count: row_count
+        }
         @manifest_is_valid = false
       else
-        render 'index', locals: { 
+        render 'validation_success', locals: { 
           warn_rows: warn_rows, 
           warn_messages: warn_messages, 
           warn_cell_numbers: warn_cell_numbers, 
           field_names: field_names, 
-          row_count: row_count }
+          row_count: row_count
+        }
         @manifest_is_valid = true
       end    
 
@@ -358,7 +374,7 @@ class BatchSubmissionsController < ApplicationController
                       this_row = next_parent_row 
                     end
                   else
-                    byebug # should not be here since parent file must exists in another column (check validation rule)
+                    #byebug # should not be here since parent file must exists in another column (check validation rule)
                   end
                 else
                   no_parent = true                  
@@ -546,7 +562,7 @@ class BatchSubmissionsController < ApplicationController
         error_msg = "#{field_name}: Please enter a valid integer."
       end
     when "date"
-      unless is_date? val
+      unless (is_date? val) || (val == '') 
         error_msg = "#{field_name}: Please enter a valid date in YYYY-MM-DD or MM-DD-YYYY format."
       end
     end
@@ -836,9 +852,17 @@ class BatchSubmissionsController < ApplicationController
       end
     end
 
-    def check_sftp_share_connection
-      if user_share_full_path == "NOT_FOUND"
-        render 'not_connected'      
+    def check_batch_submission_access
+      if !current_user.batch_submission_contributor? && !current_user.admin?
+        render 'not_allowed', locals: { message: 'Sorry, you do not have permission.', show_dashboard_link: false }
+      elsif user_share_full_path == "NOT_FOUND"
+        render 'not_allowed', locals: { message: 'Your SFTP share is not connected.  Please check your user profile.', show_dashboard_link: false }
+      end
+    end
+
+    def check_new_submit_allowed
+      if !current_user.can_submit_new_batch_submission?
+        render 'not_allowed', locals: { message: 'Sorry, you currently have a batch submission job running. ', show_dashboard_link: true }
       end
     end
 

@@ -392,9 +392,12 @@ class Media < Morphosource::Works::Base
                                                              'author_last' => depositor_user_name_components.drop(1).join(' '),
                                                              'url' => target_url,
                                                              'resource_type' => self.media_type.first} )
-      unless minted_doi.nil?
-        self.doi = [minted_doi]
-        self.save
+      if minted_doi.present?
+        # minted_doi may be an exception if mint_doi failed
+        unless minted_doi.respond_to?(:message)
+          self.doi = [minted_doi]
+          self.save
+        end
       end
       return minted_doi
     end

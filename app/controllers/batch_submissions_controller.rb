@@ -234,7 +234,7 @@ class BatchSubmissionsController < ApplicationController
             rescue => e
               Rails.logger.debug "iN BatchSubmissionsController, Exception: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
               general_error_msg = "ERROR: There are problems parsing some rows in the file.  Please check the details below."
-              row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row."]
+              row_cell_errors = ["This row is skipped.  If the row appears to be blank, please try deleting or clearing the row. (Exception: #{e.message})"]
               error_rows[row_index] = data_row.map { |c| c.present? ? c.value : "" }
               break # skip the rest of the cells
             end
@@ -307,7 +307,7 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def error_found(field_name, cell, current_row)
-    val = cell.present? ? cell.value.to_s : ""
+    val = cell.present? ? cell.value.to_s.strip : ""
     error_msg = ""
     warn_msg = ""
     case field_name
@@ -327,7 +327,8 @@ class BatchSubmissionsController < ApplicationController
         error_msg = "media.preview_file: File #{val} cannot be found. Please check your shared folder."
       end
     when "media.media_type"
-      if valid_media_types.include? val
+      if valid_media_types.ignore_case_include? val
+        val = valid_media_types.ignore_case_included_value val
         if val.downcase != "other" 
           # check if media_type value +  pre-selected modality is a permitted combination
           if @submission_yaml['status'][val][@modality_selected] == 'none'
@@ -340,9 +341,9 @@ class BatchSubmissionsController < ApplicationController
     when "media.parent_file"
       # IF value is present, another row must contain this value in media.media_file
       if val.present? 
-        if @xlsx.cell(current_row, field_column("media.parent_ms_id")).present?
+        if cell_value(current_row, field_column("media.parent_ms_id")).present?
           error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
-        elsif @xlsx.cell(current_row, field_column("media.raw_or_derived")) == "Raw"
+        elsif cell_value(current_row, field_column("media.raw_or_derived")) == "Raw"
           error_msg = "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
         elsif @parent_media_id.present?
           error_msg = "media.parent_file: Only one parent media should be present, but media.parent_ms_id is found in another row."
@@ -362,7 +363,7 @@ class BatchSubmissionsController < ApplicationController
               no_parent = false
               duplicate_found = false
               until no_parent || duplicate_found do
-                next_parent_file = @xlsx.cell(this_row, field_column("media.parent_file"))
+                next_parent_file = cell_value(this_row, field_column("media.parent_file"))
                 if next_parent_file.present?
                   next_parent_row = @xlsx.column(field_column("media.media_file")).index(next_parent_file) + 1
                   if next_parent_row.present?
@@ -387,14 +388,14 @@ class BatchSubmissionsController < ApplicationController
         end
       end
     when "media.parent_ms_id"
-      if @xlsx.cell(current_row, field_column("media.parent_file")).present?
+      if cell_value(current_row, field_column("media.parent_file")).present?
         # the error_msg should be set in the media.parent_file block already
         #error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
       else
         if val.present?
           if @parent_media_row.present?
             error_msg = "media.parent_ms_id: Only one parent media should be present, but media.parent_file is found in another row."
-          elsif @xlsx.cell(current_row, field_column("media.raw_or_derived")) == "Raw"
+          elsif cell_value(current_row, field_column("media.raw_or_derived")) == "Raw"
             error_msg = "A value cannot be present in media.parent_ms_id if media.raw_or_derived value is set to 'Raw'."
           elsif @parent_media_id.present? && (@parent_media_id != val)
             error_msg = "media.parent_ms_id: Only one parent media should be present, but multiple parent_ms_id are found."
@@ -410,11 +411,11 @@ class BatchSubmissionsController < ApplicationController
     when /^media\.(.*)$/
       # note that specific media.* fields (e.g. media.media_type) should be handled above already
       sub_field_name = $1
-      media_type = @xlsx.cell(current_row, field_column("media.media_type"))
-      if valid_media_types.include? media_type # no need to check unless media type is valid
-        @media_type = media_type
-        if val.present? && field_to_reject_for_media_type?(media_type, sub_field_name)
-          error_msg = "#{field_name}: Value should not be present for media type #{media_type}."
+      supplied_media_type = cell_value(current_row, field_column("media.media_type"))
+      if valid_media_types.ignore_case_include? supplied_media_type # no need to check unless media type is valid
+        @media_type = valid_media_types.ignore_case_included_value supplied_media_type
+        if val.present? && field_to_reject_for_media_type?(@media_type, sub_field_name)
+          error_msg = "#{field_name}: Value should not be present for media type #{@media_type}."
         else
           # value that is not rejected (accepted for the media type) can be validated here
           error_msg = error_by_type(field_name, val)
@@ -427,36 +428,36 @@ class BatchSubmissionsController < ApplicationController
           error_msg = "biological_specimen.ms_id: Existing biological specimen #{val} not found."
         end
         ignored_values = []
-        if @xlsx.cell(current_row, field_column("biological_specimen.idigbio_uuid")).present? 
+        if cell_value(current_row, field_column("biological_specimen.idigbio_uuid")).present? 
           ignored_values << "biological_specimen.idigbio_uuid"
         end
-        if @xlsx.cell(current_row, field_column("biological_specimen.occurrence_id")).present? 
+        if cell_value(current_row, field_column("biological_specimen.occurrence_id")).present? 
           ignored_values << "biological_specimen.occurrence_id"
         end
-        if @xlsx.cell(current_row, field_column("biological_specimen.institution_code")).present? 
+        if cell_value(current_row, field_column("biological_specimen.institution_code")).present? 
           ignored_values << "biological_specimen.institution_code"
         end
-        if @xlsx.cell(current_row, field_column("biological_specimen.collection_code")).present?
+        if cell_value(current_row, field_column("biological_specimen.collection_code")).present?
           ignored_values << "biological_specimen.collection_code"
         end
-        if @xlsx.cell(current_row, field_column("biological_specimen.catalog_number")).present?
+        if cell_value(current_row, field_column("biological_specimen.catalog_number")).present?
           ignored_values << "biological_specimen.catalog_number"
         end
         if ignored_values.present?
           warn_msg += "The following fields are ignored since biological_specimen.ms_id exists: " + ignored_values.join(', ')
         end
       else
-        if !@xlsx.cell(current_row, field_column("biological_specimen.idigbio_uuid")).present? &&
-           !@xlsx.cell(current_row, field_column("biological_specimen.occurrence_id")).present? &&
-           !@xlsx.cell(current_row, field_column("biological_specimen.institution_code")).present? &&
-           !@xlsx.cell(current_row, field_column("biological_specimen.collection_code")).present? &&
-           !@xlsx.cell(current_row, field_column("biological_specimen.catalog_number")).present?
+        if !cell_value(current_row, field_column("biological_specimen.idigbio_uuid")).present? &&
+           !cell_value(current_row, field_column("biological_specimen.occurrence_id")).present? &&
+           !cell_value(current_row, field_column("biological_specimen.institution_code")).present? &&
+           !cell_value(current_row, field_column("biological_specimen.collection_code")).present? &&
+           !cell_value(current_row, field_column("biological_specimen.catalog_number")).present?
         
           error_msg = "One of the following must have a value: biological_specimen.ms_id, biological_specimen.idigbio_uuid, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number."
         end
       end
     when "biological_specimen.idigbio_uuid"
-      if val.present? && !@xlsx.cell(current_row, field_column("biological_specimen.ms_id")).present?
+      if val.present? && !cell_value(current_row, field_column("biological_specimen.ms_id")).present?
         idb_result = Morphosource::IDigBioSearchService.call( { "idigbio_uuid" => val } )
         if idb_result.present?
           # If the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a 
@@ -484,7 +485,7 @@ class BatchSubmissionsController < ApplicationController
       end
     when "biological_specimen.institution_code"
       # If pre-selected organization has existing institution codes, value must match one of the institution codes from the pre-selected organization
-      if val.present? && !@xlsx.cell(current_row, field_column("biological_specimen.ms_id")).present?
+      if val.present? && !cell_value(current_row, field_column("biological_specimen.ms_id")).present?
         organization_institution_code = @params["organization_institution_code"]
         if organization_institution_code.present?
           unless organization_institution_code.upcase.split(', ').include? val.upcase
@@ -527,12 +528,12 @@ class BatchSubmissionsController < ApplicationController
           error_msg = "#{field_name}: Please enter a valid value."
         end
       else
-        unless valid_values_for(field_name).include? val
+        unless valid_values_for(field_name).ignore_case_include? val
           error_msg = "#{field_name}: Please enter a valid value: " + valid_values_for(field_name).to_s.gsub(/\[|\]/, '')
         end
       end
     when "boolean"
-      unless valid_boolean.include? val
+      unless valid_boolean.ignore_case_include? val
         error_msg = "#{field_name}: Please enter a valid value: " + valid_boolean.to_s.gsub(/\[|\]/, '')
       end
     when /^number(_RequiredByMediaType_.*)?$/
@@ -818,6 +819,10 @@ class BatchSubmissionsController < ApplicationController
   end
 
   private
+
+    def cell_value(row_num, col_num)
+      @xlsx.cell(row_num, col_num)&.strip
+    end
 
     def check_params
       @params = params

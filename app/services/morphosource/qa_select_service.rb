@@ -24,6 +24,25 @@ module Morphosource
       return options
     end
 
+    def controlled_value(value)
+      return_value = value
+      authority.all.map do |element|
+        # as long as the value matches (case insensitive), return the value in proper case
+        if value.kind_of?(ActiveTriples::Relation) || value.kind_of?(Array)
+          if value.first.downcase == element[:id].downcase              
+            return_value = element[:id]
+          end
+        elsif value.kind_of?(String)
+          if value.downcase == element[:id].downcase              
+            return_value = element[:id]
+          end
+        else
+          Rails.logger.debug "in controlled_value: unexpected class #{value.class} of value #{value}"
+        end
+      end
+      return return_value
+    end
+
     def active?(id)
       if authority.find(id).key?('active')
         authority.find(id).fetch('active')

@@ -7,7 +7,7 @@ class BatchSubmissionsController < ApplicationController
   before_action :check_batch_submission_access, only: [:index, :new, :submit]
   before_action :check_new_submit_allowed, only: [:new, :submit]
   before_action :check_params, only: [:submit]
-  after_action :create_manifest_object, only: [:submit]
+  after_action :start_ingest_job, only: [:ingest]
 
   attr_accessor :parent_media_row, :parent_media_id
 
@@ -116,7 +116,6 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def create_manifest_object
-    if @manifest_is_valid
       input_path = manifest.tempfile.path
       media_path = user_share_full_path
       admin_user = User.where(ms_id:Hyrax.config.batch_user_key).first
@@ -147,16 +146,34 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id, 
         device_id:device_id, 
         media_ownership_fields:media_ownership_fields).to_h
-      ingest
-    else
 
-    end
+
+#      session[:manifest_object] = @manifest_object
+#      ingest
+
+
 
   end
 
   def ingest
-    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object, current_user)
-    main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
+   render 'ingest_started'
+  end
+  
+  def start_ingest_job
+byebug
+    manifest_object = JSON.parse(request.params["manifest_object"])
+
+  # need to check if manifest_object is nil
+    if !manifest_object.present?
+      # redirect to dashboard?
+    else
+
+byebug
+  # need to check for current job status here (before action)
+
+      job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(manifest_object, current_user)
+      main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
+    end
   end
 
   def initial_error_message
@@ -262,14 +279,17 @@ class BatchSubmissionsController < ApplicationController
         }
         @manifest_is_valid = false
       else
+        create_manifest_object
+#byebug
         render 'validation_success', locals: { 
+          manifest_object: @manifest_object,
           warn_rows: warn_rows, 
           warn_messages: warn_messages, 
           warn_cell_numbers: warn_cell_numbers, 
           field_names: field_names, 
           row_count: row_count
         }
-        @manifest_is_valid = true
+#        @manifest_is_valid = true
       end    
 
     end

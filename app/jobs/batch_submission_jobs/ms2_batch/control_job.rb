@@ -39,7 +39,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
 
   def notify_user(user, status)
     subject = "Batch submission job has #{status}."
-    message = "Submission job #{@main_job_id} has #{status}.  Please contact MorphoSource team if you need assistence."
+    message = "Submission job #{@main_job_id} has #{status}.  Please check your Batch Submission Dashboard for details, or contact MorphoSource team if you need assistence."
     deliver_message(email_sender, user, message.html_safe, subject)
   end
 

@@ -1,25 +1,33 @@
 <%= render 'hyrax/users/user', user: @user %>
 
 <% if current_user.admin? %>
-  <div class="row collapse-button w-100">
-      <div class="panel-title w-100"><a data-toggle="collapse" href="#collapse-block-admin" class="btn collapse-block-admin collapsed" aria-label="collapse/expand" aria-expanded="false"><span class="glyphicon glyphicon-triangle-right"></span> User Administration </a></div>
-  </div>
-  <div id="collapse-block-admin" class="panel-collapse collapse collapse-block">
+  <div class="bg-light-gray" style="padding-top:10px">
+    <div class="text-center">USER ADMINISTRATION</div>
+    <% flash.each do |key, value| %>
+      <div class="alert alert-<%= key %>"><%= value %></div>
+    <% end %>
     <p id='contributor-buttons'>
       <% if @user.contributor? %>
-        <%= button_to 'Remove Contributor Status', main_app.remove_contributor_path(@user.ms_id), method: :post, class: "btn btn-sm btn-danger w-75" %>
+        <%= button_to 'Remove Contributor Status', main_app.remove_contributor_path(@user.ms_id), method: :post, class: "btn btn-xs btn-danger w-100" %>
       <% else %>
-        <%= button_to 'Grant Contributor Status', main_app.make_contributor_path(@user.ms_id), method: :post, class: "btn btn-sm btn-primary w-75" %>
+        <%= button_to 'Grant Contributor Status', main_app.make_contributor_path(@user.ms_id), method: :post, class: "btn btn-xs btn-primary w-100" %>
+      <% end %>
+    </p>
+    <p id='batch-contributor-buttons'>
+      <% if @user.batch_submission_contributor? %>
+        <%= button_to 'Remove Batch Submission Contributor Status', main_app.remove_batch_submission_contributor_path(@user.ms_id), method: :post, class: "btn btn-xs btn-danger w-100" %>
+      <% else %>
+        <%= button_to 'Grant Batch Submission Contributor Status', main_app.make_batch_submission_contributor_path(@user.ms_id), method: :post, class: "btn btn-xs btn-primary w-100" %>
       <% end %>
     </p>
     <p id='active-buttons'>
       <% if @user.active %>
-        <%= button_to 'Make Inactive (Ban)', main_app.make_inactive_path(@user.ms_id), method: :post, class: "btn btn-sm btn-danger w-75" %>
+        <%= button_to 'Make Inactive (Ban)', main_app.make_inactive_path(@user.ms_id), method: :post, class: "btn btn-xs btn-danger w-100" %>
       <% else %>
-        <%= button_to 'Make Active (Unban)', main_app.make_active_path(@user.ms_id), method: :post, class: "btn btn-sm btn-primary w-75" %>
+        <%= button_to 'Make Active (Unban)', main_app.make_active_path(@user.ms_id), method: :post, class: "btn btn-xs btn-primary w-100" %>
       <% end %>
     </p>
-    <p><a class="btn btn-sm btn-primary w-75" href="<%= main_app.profile_edit_path(@user.ms_id) %>">Edit User Profile</a></p>
-    <p><a class="btn btn-sm btn-primary w-75" href="<%= hyrax.users_path %>">View All Users</a></p>
+    <p><a class="btn btn-xs btn-primary w-100" href="<%= main_app.profile_edit_path(@user.ms_id) %>">Edit User Profile</a></p>
+    <p><a class="btn btn-xs btn-primary w-100" href="<%= hyrax.users_path %>">View All Users</a></p>
   </div>
 <% end %>

@@ -1,20 +1,20 @@
-class ContributorsController < ApplicationController
+class BatchSubmissionContributorsController < ApplicationController
 
   prepend_before_action :find_user
 
-  def make_contributor
+  def make_batch_submission_contributor
     return unless current_user.admin?
 
-    @user.make_contributor
-    flash[:info] = "Contributor access has been granted"
+    @user.make_batch_submission_contributor
+    flash[:info] = "Batch Submission Contributor access has been granted"
     redirect_to hyrax.user_path(@user)
   end
 
-  def remove_contributor
+  def remove_batch_submission_contributor
     return unless current_user.admin?
 
-    @user.remove_contributor
-    flash[:info] = "Contributor access has been removed"
+    @user.remove_batch_submission_contributor
+    flash[:info] = "Batch Submission Contributor access has been removed"
     redirect_to hyrax.user_path(@user)
   end
 

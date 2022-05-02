@@ -58,7 +58,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         ingest_index,
         @manifest['collection_ids'] || [],
         @manifest['fund_code_id'] || nil,
-        @manifest['organization_transfer_immediately'] || false,
         target_parent_id,
         main_job_id
       )

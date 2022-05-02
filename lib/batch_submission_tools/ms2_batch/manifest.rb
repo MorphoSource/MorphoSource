@@ -3,20 +3,18 @@ module BatchSubmissionTools
     class Manifest
       include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :on_behalf_of,
-        :organization_id, :organization_transfer_immediately, :device_id, :device_modality, 
-        :collection_ids, :fund_code_id,
+        :organization_id, :device_id, :device_modality, :collection_ids, :fund_code_id,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields,
         :skipped_row_count
 
-      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, organization_transfer_immediately: false, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:)
+      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:)
         @input_path = input_path
         @media_path = media_path
         @admin_user = admin_user.user_key
         @depositor = depositor.user_key
         @on_behalf_of = on_behalf_of.present? ? on_behalf_of.user_key : nil
         @organization_id = organization_id
-        @organization_transfer_immediately = organization_transfer_immediately
         @device_id = device_id
         @device_modality = Device.find(device_id).modality&.first
         @media_ownership_fields = media_ownership_fields
@@ -355,7 +353,6 @@ module BatchSubmissionTools
           media_ie_pe_ingests: media_ie_pe_ingests.map(&:to_h),
           collection_ids: collection_ids,
           fund_code_id: fund_code_id,
-          organization_transfer_immediately: organization_transfer_immediately,
           skipped_row_count: skipped_row_count
         }.deep_stringify_keys
       end

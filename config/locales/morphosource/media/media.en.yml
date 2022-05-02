@@ -14,4 +14,4 @@ en:
       alert:
         browse_everything: New media file is being downloaded from the cloud, this file will not be available until download and processing are complete.
       organization_transfer:
-        transfer_message: This is an organization media transfer. The receiving user is the selected data manager for the organization associated with the media. This media has been published or the depositor has decided to offer the transfer immediately on submission. The selected organization data manager has the option to transfer this media from the original depositor to themself. They are not required to accept data management. If there are questions about this transfer or the timing of the transfer decision, please contact the depositor or the organization data manager.
+        transfer_message: This is an organization media transfer from the original media contributor to the receiving organization data manager. For more details, see our <a href="https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers" target="_blank">documentation</a>.

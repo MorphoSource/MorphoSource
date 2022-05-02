@@ -367,11 +367,6 @@ class SubmissionForm {
     $('div#media_transfer_management').addClass('show').removeClass('hide');
     $('select#media_transfer_management').removeAttr('disabled');
 
-    // If no organization preferred download permission, set to private
-    if (!default_fields.download_permission) {
-      $('form.new_media input#media_visibility_restricted').trigger('click');
-    }
-
     this.updateOrganizationDataManagementInfo();
   }
 
@@ -384,8 +379,12 @@ class SubmissionForm {
   updateOrganizationDataManagementInfo() {
     if (
       $('select#media_transfer_management').val() == 'immediate' || 
-      ( $('select#media_transfer_management').val() == 'publication' && ( $('input#media_visibility_open').prop('checked') || $('input#media_visibility_restricted_download').prop('checked') ) ) 
-      ) {
+      ( $('select#media_transfer_management').val() == 'publication' && 
+        ( $('input#media_visibility_open, input#batch_submission_media_visibility_open').prop('checked') || 
+          $('input#media_visibility_restricted_download, input#batch_submission_media_visibility_restricted_download').prop('checked') 
+        ) 
+      ) 
+    ) {
       $('span#permissions-org-management-status').text('immediately when this media is submitted');
     } else {
       $('span#permissions-org-management-status').text('when this media is published in the future after submission');

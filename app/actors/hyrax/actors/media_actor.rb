@@ -9,10 +9,6 @@ module Hyrax
       def create(env)
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
-        env.attributes['organization_transfer_on_publish'] = 
-          ActiveModel::Type::Boolean.new.cast(
-            Array(env.attributes['organization_transfer_on_publish'])&.first
-          )
         add_team_access(env)
         super
       end
@@ -20,10 +16,6 @@ module Hyrax
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
-        env.attributes['organization_transfer_on_publish'] = 
-          ActiveModel::Type::Boolean.new.cast(
-            Array(env.attributes['organization_transfer_on_publish'])&.first
-          )
         super
       end
 

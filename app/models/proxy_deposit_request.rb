@@ -100,6 +100,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   def send_request_transfer_message
     if updated_at == created_at
       send_request_transfer_message_as_part_of_create
+      send_org_transfer_message_as_part_of_create if organization_transfer
     else
       send_request_transfer_message_as_part_of_update
     end
@@ -118,6 +119,11 @@ class ProxyDepositRequest < ActiveRecord::Base
       message = "Your request to transfer ownership of #{message_content} to #{user_email_link([receiving_user])} has been #{status}."
       message += "<p>Please contact #{user_email_link([receiving_user])} if you have a question related to this request.</p>"
       deliver_message(email_sender, sending_user, message.html_safe, "Media transfer request #{status}")
+    end
+
+    def send_org_transfer_message_as_part_of_create
+      message = "A request to transfer ownership of #{message_content} to organization data manager #{user_email_link([receiving_user])} has been generated. The organization data manager will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>."
+      deliver_message(email_sender, sending_user, message.html_safe, "Organization media transfer request generated")
     end
 
     def message_content

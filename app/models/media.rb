@@ -462,15 +462,18 @@ class Media < Morphosource::Works::Base
       (new_manager_id = org&.data_manager&.first).present? && 
       (new_manager = User.find_by_user_key(new_manager_id)).present?
     )
+      deposit_user = User.find_by_user_key(user_with_ownership)
+
+      return if new_manager.id == deposit_user.id
+
       # Cancel existing pending proxy deposit requests
       if (existing_transfers = ProxyDepositRequest.where(work_id: id, status: 'pending')).present?
         existing_transfers.each { |t| t.cancel! }
       end
 
-      # Create new proxy deposit request from depositor to organization
-      deposit_user = User.find_by_user_key(depositor)
-      message = I18n.t 'morphosource.media.organization_transfer.transfer_message'
-      ProxyDepositRequest.create!(work_id: id, receiving_user: new_manager, sending_user: deposit_user, sender_comment: message)
+      # Create new proxy deposit request from user with ownership to organization
+      message = I18n.t('morphosource.media.organization_transfer.transfer_message').html_safe
+      ProxyDepositRequest.create!(work_id: id, receiving_user: new_manager, sending_user: deposit_user, sender_comment: message, organization_transfer: true)
     else
       raise "Failed to transfer management of media #{id} to organization data manager"
     end

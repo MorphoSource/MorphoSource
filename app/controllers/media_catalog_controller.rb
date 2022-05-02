@@ -17,6 +17,9 @@ class MediaCatalogController < CatalogController
     config.add_facet_field solr_name("media_physical_object_type", :facetable), label: "Object Type", limit: 10
     # organization that owns the object
     config.add_facet_field solr_name("media_organization", :facetable), label: "Organization", limit: 10
+    # organization that manages the imaging device
+    config.add_facet_field solr_name("media_device_facility_organization", :symbol), label: "Imaging Facility", limit: 10
+
     # tags
     config.add_facet_field solr_name("keyword", :facetable), label: "Tag", limit: 10
     # collections
@@ -42,6 +45,7 @@ class MediaCatalogController < CatalogController
     config.add_show_field solr_name('map_type', :stored_searchable)
     config.add_show_field solr_name('media_modality', :stored_searchable)
     config.add_show_field solr_name('media_organization', :stored_searchable)
+    config.add_show_field solr_name('media_device_facility_organization', :stored_searchable)
     config.add_show_field solr_name('media_physical_object_type', :stored_searchable)
     config.add_show_field solr_name('media_type', :stored_searchable)
     config.add_show_field solr_name("member_of_collections", :symbol)

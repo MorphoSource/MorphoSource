@@ -100,8 +100,8 @@ module Ms1to2
       new_row[:media][:media_file] = mf[:media]
       new_row[:media][:media_preview] = mf[:media_preview]
       new_row[:media][:parent_file] = mf[:parent_file]
-      new_row[:media][:side] = mf[:side]
-      new_row[:media][:published] = mf[:published]
+      new_row[:media][:side] = mf[:side].presence || mg[:side]
+      new_row[:media][:published] = mf[:published].presence || mg[:published]
       new_row[:imaging_event][:pixel_spacing_calibration] = mg[:scanner_calibration_geometric_calibration]
       return new_row
     end
@@ -250,7 +250,7 @@ module Ms1to2
 
     def media_special_fields
       {
-        'visibility' => published_filter,
+        'published' => published_filter,
         'side' => side_filter,
         'is_copyrighted' => boolean_filter,
         'copyright_permission' => {
@@ -300,9 +300,9 @@ module Ms1to2
         'side' => side_filter,
         'use_for_preview' => boolean_filter,
         'file_type' => {
-          '1' => 'Raw',
-          'raw file of group' => 'Raw',
-          'raw' => 'Raw',
+          '1' => 'Derived',
+          'raw file of group' => 'Derived',
+          'raw' => 'Derived',
           '2' => 'Derived',
           'derivative file' => 'Derived',
           'derivative' => 'Derived'

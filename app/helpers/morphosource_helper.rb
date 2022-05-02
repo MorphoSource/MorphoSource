@@ -184,10 +184,6 @@ module MorphosourceHelper
     end
   end
 
-  def is_number_with_decimal? string
-    true if Float(string).to_f % 1 != 0 rescue false
-  end
-
   def publication_badge(value)
     Morphosource::PublicationBadge.new(value).render
   end

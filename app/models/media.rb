@@ -1,8 +1,9 @@
 class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
+  before_create :controlled_value_filter
   after_create :mint_ark
-  before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids
+  before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids, :controlled_value_filter
   before_validation :normalize_download_reviewer
   after_update :update_ark_status, :update_cartitem_reviewer
   before_destroy :record_original_objects
@@ -31,6 +32,7 @@ class Media < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
+
 
   def self.parent_works(work)
     if work.in_works.empty?
@@ -488,4 +490,15 @@ class Media < Morphosource::Works::Base
         UpdateWorkIndexJob.perform_later(obj.id)
       end
     end
+
+    def controlled_attributes
+      { 
+        :media_type => Morphosource::MediaTypesService.new,
+        :side => Morphosource::SidesService.new,
+        :series_type => Morphosource::SeriesTypesService.new,
+        :unit => Morphosource::UnitsService.new,
+        :map_type => Morphosource::MapTypesService.new
+      }
+    end
+
 end

@@ -53,6 +53,8 @@ end
 class ImagingEvent < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator, ImagingEventParentDeviceModalityValidator
+  before_create :controlled_value_filter
+  before_update :controlled_value_filter
   after_save :add_id_to_title
 
   self.work_requires_files = false
@@ -87,4 +89,17 @@ class ImagingEvent < Morphosource::Works::Base
         self.title.set("IE#{self.id.to_s}: #{self.title.first.to_s}")
       end
     end
+
+    def controlled_attributes
+      {
+        :pixel_spacing_calibration => Morphosource::PixelSpacingCalibrationService.new, 
+        :target_type => Morphosource::TargetTypesService.new, 
+        :detector_type => Morphosource::DetectorTypesService.new, 
+        :detector_configuration => Morphosource::DetectorConfigurationService.new, 
+        :acquisition_type => Morphosource::AcquisitionTypesService.new, 
+        :focal_length_type => Morphosource::FocalLengthTypesService.new, 
+        :light_source => Morphosource::LightSourceService.new
+      }
+    end
+
 end

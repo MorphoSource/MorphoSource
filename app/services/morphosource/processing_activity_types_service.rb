@@ -1,7 +1,7 @@
 # app/services/morphosource/processing_activity_types_service.rb
 module Morphosource
   # Provide select options for the series types field
-  class ProcessingActivityTypesService < Hyrax::QaSelectService
+  class ProcessingActivityTypesService < QaSelectService
     def initialize(_authority_name = nil)
       super('processing_activity_types')
     end

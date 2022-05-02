@@ -169,7 +169,7 @@ RSpec.describe Hyrax::MediaPresenter do
     let(:part)              {['Part 7']}
     let(:rights_holder)     {['Martha Stewart']}
     let(:scale_bar)         {['Type: Scale_bar_target_type, Distance: Scale_bar_distance, Units: Scale_bar_units']}
-    let(:side)              {['left']}
+    let(:side)              {['Left']}
     let(:unit)              {['inch']}
     let(:x_spacing)         {['5']}
     let(:y_spacing)         {['7']}

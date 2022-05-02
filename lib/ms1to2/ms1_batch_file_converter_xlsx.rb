@@ -44,7 +44,6 @@ module Ms1to2
 
     def finalize_row(row, index)
       new_row = {}
-
       # process initial whole-row metadata
       new_row[:metadata] = {
         original_index: row['metadata']['original_row'],
@@ -103,6 +102,7 @@ module Ms1to2
       new_row[:media][:parent_file] = mf[:parent_file]
       new_row[:media][:side] = mf[:side].presence || mg[:side]
       new_row[:media][:published] = mf[:published].presence || mg[:published]
+      new_row[:imaging_event][:pixel_spacing_calibration] = mg[:scanner_calibration_geometric_calibration]
       return new_row
     end
 
@@ -195,14 +195,14 @@ module Ms1to2
     def normalize_table(attrs, special_fields, idx, table_name)
       attrs.map do |field, val|
         if special_fields.key?(field) && val.present?
-          v = val&.first.to_s.downcase
-          if special_fields[field].key?(v)
-            new_val = [special_fields[field][v]] # filtered value
+          value = val&.first.to_s.downcase
+          if special_fields[field].key?(value)
+            new_val = [special_fields[field][value]] # filtered value
           else
             # special field value is not in our pre-determined filters, raise a warning but return original value
             response[:steps][:normalize][:status] = 'warnings'
             response[:steps][:normalize][:warnings] = [] if !response[:steps][:normalize].key?(:warnings)
-            warning_text = "Row #{idx} table #{table_name} has invalid value #{v} for field #{field}. Valid values are #{special_fields[field].keys.join('; ')}."
+            warning_text = "Row #{idx} table #{table_name} has invalid value #{value} for field #{field}. Valid values are #{special_fields[field].keys.join('; ')}."
             response[:steps][:normalize][:warnings] << warning_text
             warn(warning_text)
 
@@ -291,7 +291,7 @@ module Ms1to2
         },
         'scanner_calibration_shading_correction' => boolean_filter,
         'scanner_calibration_flux_normalization' => boolean_filter,
-        'scanner_calibration_geometric_calibration' => boolean_filter,
+        'scanner_calibration_geometric_calibration' => scanner_calibration_geometric_calibration_filter,
       }
     end
 
@@ -337,6 +337,13 @@ module Ms1to2
       {
         '1' => '1', 'true' => '1', 'yes' => '1',
         '0' => '0', 'false' => '0', 'no' => '0'
+      }
+    end
+
+    def scanner_calibration_geometric_calibration_filter
+      {
+        '1' => 'Geometric', 'true' => 'Geometric', 'yes' => 'Geometric',
+        '0' => '', 'false' => '', 'no' => ''
       }
     end
 
@@ -404,7 +411,6 @@ module Ms1to2
       @field_mapped ||= {
         "media.media_file" => "media.media_file",
         "media.preview_file" => "media.media_preview",
-        "media.publication_status" => "media.published", 
         "media.media_type" => "media.media_type",
         "media.raw_or_derived" => "metadata.raw_or_derived",
         "media.parent_file" => "media.parent_file",
@@ -454,7 +460,7 @@ module Ms1to2
         "imaging_event.date_created" => "",
         "imaging_event.ct.exposure_time" => "imaging_event.exposure_time",
         "imaging_event.ct.flux_normalization" => "imaging_event.flux_normalization",
-        "imaging_event.ct.geometric_calibration" => "imaging_event.geometric_calibration",
+        "imaging_event.ct.pixel_spacing_calibration" => "imaging_event.pixel_spacing_calibration",
         "imaging_event.ct.shading_correction" => "imaging_event.shading_correction",
         "imaging_event.ct.ie_filter" => "imaging_event.ie_filter",
         "imaging_event.ct.frame_averaging" => "imaging_event.frame_averaging",

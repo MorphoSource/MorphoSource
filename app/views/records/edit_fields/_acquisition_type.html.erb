@@ -1,9 +1,8 @@
 <% # app/views/records/edit_fields/_acquisition_type.html.erb %>
 <% acquisition_types_service = Morphosource::AcquisitionTypesService.new %>
 <%= f.input :acquisition_type, as: :select,
-    collection: acquisition_types_service.select_all_options,
+    collection: acquisition_types_service.select_all_options(f.object.acquisition_type),
     include_blank: true,
-    item_helper: acquisition_types_service.method(:include_current_value),
     input_html: { class: 'form-control' },
     wrapper_html: { class: 'ie_xray_ct' }
 %>

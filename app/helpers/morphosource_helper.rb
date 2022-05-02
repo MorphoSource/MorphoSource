@@ -465,6 +465,29 @@ module MorphosourceHelper
 end
 
 class Array 
+
+  def ignore_case_include?(value)
+    return false unless self.present? && value.present?
+    self.each do |e|
+      if e.downcase == value.downcase
+        return true
+        break
+      end
+    end
+    return false
+  end
+
+  def ignore_case_included_value(value)
+    return nil unless self.present? && value.present?
+    self.each do |e|
+      if e.downcase == value.downcase
+        return e
+        break
+      end
+    end
+    return nil
+  end
+
   def to_wrapped_html(tag, classes="")
     if classes.present?
       self.map { |c| "<#{tag} class='#{classes}'>#{c}</#{tag}>" }.join.html_safe
@@ -472,4 +495,5 @@ class Array
       self.map { |c| "<#{tag}>#{c}</#{tag}>" }.join.html_safe
     end
   end
+
 end

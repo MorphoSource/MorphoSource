@@ -1,7 +1,6 @@
+<% light_source_service = Morphosource::LightSourceService.new %>
 <%= f.input :light_source, as: :select,
-    collection: [
-            'Strobe', 'Static', 'Cross polarized', 'Patterned'
-        ],
+	collection: light_source_service.select_all_options(f.object.light_source),
     include_blank: true,
     input_html: { class: 'form-control' },
     wrapper_html: { class: 'ie_photogrammetry ie_photography' }

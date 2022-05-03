@@ -18,22 +18,11 @@
       <%= f.input :short_title, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :identifier, as: :multi_value %>
       <%= f.input :related_url, as: :multi_value %>
+      <%= f.input :bibliographic_citation, label: 'Bibliographic Citation', as: :multi_value %>
     </div>
 
     <div class="content-block">
-      <h2>GENERAL DETAILS</h2>
-
-      <%= f.input :description, label: 'Description' %>
-      <%= f.input :cho_type, label: 'Object Type', as: :multi_value %>
-      <%= f.input :material, as: :multi_value %>
-      <%# todo: render date_field in simple_form_bootstrap %>
-      <div class="row">
-        <div class="col-xs-6 showcase-label"><%= @presenter.date_created_label %></div>
-        <div class="col-xs-6 showcase-value">
-        <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
-          </div>
-      </div>
-      <%= @presenter.attribute_to_html(:date_uploaded, render_as: :showcase_date, include_empty: true, html_dl: false) %>
+      <h2>OBJECT DESCRIPTION</h2>
       <% if @presenter.parent_organization.present? %>
         <%= @presenter.attribute_to_html(
           :parent_organization_title,
@@ -45,16 +34,67 @@
       <% else %>
         <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
       <% end %>
-      <%= f.input :creator, label: @presenter.creator_label, as: :multi_value %>
-      <%= f.input :contributor, label: 'Object contributor', as: :multi_value %>
+      <%= f.input :description, label: 'Description', as: :text %>
+      <%= f.input :creator, label: 'Creator', as: :multi_value %>
+      <%= f.input :contributor, label: 'Collector/Contributor', as: :multi_value %>
       <%= f.input :publisher %>
+      <%= f.label 'Object Type', style: "padding-left: 8px;" %>
+      <div style='margin-bottom:10px;'>
+        <%= f.input :aat_type, label: 'AAT Type', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+        <%= f.input :cho_type, label: 'Custom Type', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+      </div>
+      <%= f.label 'Object Material', style: "padding-left: 8px;" %>
+      <div style='margin-bottom:10px;'>
+        <%= f.input :aat_material, label: 'AAT Material', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+        <%= f.input :material, label: 'Custom Material', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+      </div>
+      <%= f.label 'Object Attributes', style: "padding-left: 8px;" %>
+      <div style='margin-bottom:10px;'>
+        <%= f.input :aat_attributes, label: 'AAT Object Attributes', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+        <%= f.input :cho_attributes, label: 'Custom Object Attributes', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+      </div>
+      <%= f.input :dimensions, label: 'Object Dimensions/Measurements' %>
+      </div>
+      <div class="content-block">
+        <h2>OBJECT DATE</h2>
+      <%# todo: render date_field in simple_form_bootstrap %>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Date Created</div>
+        <div class="col-xs-6 showcase-value">
+        <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
+          </div>
+      </div>
+      <%= f.input :numeric_time, label: 'Absolute Age' %>
+      <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
+      <%= f.input :dating_method, label: 'Dating Method' %>
+      </div>
+      <div class="content-block">
+      <h2>OBJECT ORIGINAL LOCATION</h2>
+      <%= f.input :tgn, label: 'TGN Location' %>
+      <%= f.input :original_location, label: 'Locality' %>
+      <%= f.input :address, label: 'Address' %>
+      <%= f.input :city, label: 'City' %>
+      <%= f.input :state_province, label: 'State or Province' %>
+      <%= render 'records/edit_fields/country', f: f %>
+      <%= f.input 'Geographical Coordinates', value_wrapper: false %>
+      <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
+      <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
     </div>
 
     <div class="content-block">
-      <h2>TIME AND PLACE DETAILS</h2>
-      <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
-      <%= f.input :numeric_time, label: 'Absolute Age' %>
-      <%= f.input :original_location, label: 'Locality' %>
+      <h2>PROVENANCE INFORMATION</h2>
+      <%= f.input :context, label: 'Context' %>
+      <%= f.input :formation, label: 'Formation' %>
+      <%= f.input :provenance_name, label: 'Excavation Name' %>
+      <div class="row">
+        <div class="col-xs-6 showcase-label">Excavation/Collection Date</div>
+        <div class="col-xs-6 showcase-value">
+        <%= f.date_field :provenance_date, wrapper: :inline, value: f.object.provenance_date, class: 'datepicker form-control' %>
+          </div>
+      </div>
+      <%= f.input :provenance_location, label: 'Excavation/Collection Location' %>
+      <%= f.input :provenance_details, label: 'Excavation/Collection Details', as: :text %>
+      <%= f.input :current_location, label: 'Current Location' %>
       <!--  todo: the html below can be removed if simpleform config wrapper can be used.  In that case, we need to figure out pass the content for the tooltip
       <div class="form-group row">
           <div class="col-xs-12 showcase-label">
@@ -62,9 +102,6 @@
           </div>
       </div>
       -->
-      <%= f.input 'Locality Geographical Coordinates', value_wrapper: false %>
-      <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
-      <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
     </div>
 
   </div>

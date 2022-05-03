@@ -12,6 +12,20 @@ module Morphosource
                                                material
                                                short_title].freeze
 
+
+      # concatenates aat_attributes & cho_attributes
+      def object_attributes
+        self[Solrizer.solr_name('object_attributes', :symbol)]
+      end
+
+      def object_material
+        self[Solrizer.solr_name('object_material', :symbol)]
+      end
+
+      def object_type
+        self[Solrizer.solr_name('object_type', :symbol)]
+      end
+
     end
   end
 end

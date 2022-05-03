@@ -13,10 +13,6 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      property :address, predicate: ::RDF::Vocab::DWC.locality do |index|
-        index.as :stored_searchable
-      end
-
       property :postal_code, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/postalCode") do |index|
         index.as :stored_searchable
       end

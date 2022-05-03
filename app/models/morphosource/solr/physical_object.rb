@@ -16,7 +16,8 @@ module Morphosource
                                       organization_id
                                       original_location
                                       periodic_time
-                                      provenance_details
+                                      provenance_date
+                                      provenance_location
                                       provenance_name
                                       vouchered]
 
@@ -36,6 +37,10 @@ module Morphosource
 
       def related_media_ids
         self[Solrizer.solr_name('related_media_ids', :symbol)]
+      end
+
+      def provenance_details
+        self['provenance_details_tesim'] 
       end
 
     end

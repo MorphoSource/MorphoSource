@@ -12,4 +12,39 @@ en:
         short_title: Short description
     hints:
       cultural_heritage_object:
-        cho_type: Type, genre, classification, or category of the object
+        address: Street address where the object was created.
+        aat_attributes: "Terms for object attributes from the <a href='https://www.getty.edu/research/tools/vocabularies/aat/'>Art and Architecture Thesaurus</a>. Use of this controlled vocabulary is preferred over custom terms."
+        aat_material: "Terms for the material(s) from which the object is made from the <a href='https://www.getty.edu/research/tools/vocabularies/aat/'>Art and Architecture Thesaurus</a>. Use of this controlled vocabulary is preferred over custom terms."
+        aat_type: "Terms for the type, genre, classification, or category of the object from the <a href='https://www.getty.edu/research/tools/vocabularies/aat/'>Art and Architecture Thesaurus</a>. Use of this controlled vocabulary is preferred over custom terms."
+        bibliographic_citation: Citation information for the object.
+        catalog_number: Unique identifier for an object within a collection.
+        city: City where the object was created.
+        cho_type: Type, genre, classification, or category of the object.
+        collection_code: Code identifying a collection containing the object.
+        context: An identifier for the the location within a geological context. May be a global unique identifier or an identifier specific to the data set.
+        contributor: A person or entity responsible for making contributions to the object, or the object collector.
+        creator: The person or group responsible for creating the object.
+        current_location: Information about the current physical location of the object.
+        date_created: Date the object was created.
+        dating_method: Method used to determine the date the object was created.
+        description: Description or notes about the object.
+        dimensions: Dimensions or measurements of the object.
+        formation: The name of the lithostratigraphic formation from which the object was collected.
+        identifier: Organizational or other identifier for the object.
+        institution_code:
+        latitude:
+        longitude:
+        material: The material of the object.
+        numeric_time: Absolute or specific chronological age.
+        original_location: Information about the original location of the object.
+        periodic_time: "Terms from the <a href='https://www.getty.edu/research/tools/vocabularies/aat/'>Art and Architecture Thesaurus</a> describing the Artistic, cultural, historical, archaeological, geological or cosmological era or period of the object."
+        provenance_date: Date the object was excavated, discovered, or acquired.
+        provenance_details: Description or notes about the provenance history of the object.
+        provenance_location: Location where the object was excavated, discovered, or acquired.
+        provenance_name: Name of the Excavation or collection event.
+        publisher: Entity responsible for publishing the object.
+        related_url: URL pointing to authoritative metadata about the object.
+        short_title:
+        state_province:
+        tgn:
+        vouchered:

@@ -55,7 +55,15 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
+      property :provenance_date, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/provenanceDate") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
       property :provenance_details, predicate: ::RDF::Vocab::DC.provenance do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :provenance_location, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/provenanceLocation") do |index|
         index.as :stored_searchable, :facetable
       end
 

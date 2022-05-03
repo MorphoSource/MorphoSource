@@ -16,13 +16,19 @@
 
   <div class="col-sm-6 col-sm-pull-6">
     <div class="content-block">
-      <%= render @presenter.showcase_general_details_partial, presenter: @presenter %>
+      <%= render 'showcase_general_details', presenter: @presenter %>
     </div>
     <div class="content-block">
       <%= render @presenter.showcase_identifiers_and_external_links_partial, presenter: @presenter %>
     </div>
     <div class="content-block">
-      <%= render @presenter.showcase_time_and_place_details_partial, presenter: @presenter %>
+      <%= render 'showcase_object_description', presenter: @presenter %>
+    </div>
+    <div class="content-block">
+      <%= render 'showcase_time_details', presenter: @presenter %>
+    </div>
+    <div class="content-block">
+      <%= render 'showcase_location_details', presenter: @presenter %>
     </div>
     <div class="content-block">
       <%= render 'showcase_provenance', presenter: @presenter %>

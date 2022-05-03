@@ -23,13 +23,38 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
     end
 
     it 'has expected single valued metadata terms' do
-      expect(described_class.single_valued_fields).to match_array([ :catalog_number,
-                                                                    :collection_code, :institution_code, :date_created, :description,
-                                                                    :latitude, :longitude, :numeric_time,
-                                                                    :original_location, :publisher, :vouchered,
-                                                                    :idigbio_recordset_id, :idigbio_uuid,
-                                                                    :is_type_specimen, :occurrence_id, :sex, :canonical_taxonomy,
-                                                                    :organization_relationship ])
+      expect(described_class.single_valued_fields).to match_array([ :address,
+                                                                    :canonical_taxonomy,
+                                                                    :catalog_number,
+                                                                    :city,
+                                                                    :collection_code,
+                                                                    :context,
+                                                                    :country,
+                                                                    :current_location,
+                                                                    :date_created,
+                                                                    :dating_method,
+                                                                    :description,
+                                                                    :dimensions,
+                                                                    :formation,
+                                                                    :idigbio_recordset_id,
+                                                                    :idigbio_uuid,
+                                                                    :institution_code,
+                                                                    :is_type_specimen,
+                                                                    :latitude,
+                                                                    :longitude,
+                                                                    :numeric_time,
+                                                                    :occurrence_id,
+                                                                    :organization_relationship,
+                                                                    :original_location,
+                                                                    :provenance_date,
+                                                                    :provenance_details,
+                                                                    :provenance_location,
+                                                                    :provenance_name,
+                                                                    :publisher,
+                                                                    :sex,
+                                                                    :state_province,
+                                                                    :tgn,
+                                                                    :vouchered ])
     end
 
   end
@@ -43,10 +68,16 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
     subject { described_class.new(work, ability, controller)}
 
     it 'has the expected primary metadata terms' do
-      expect(subject.primary_terms).to match_array(required_fields + [ :bibliographic_citation, :based_near,
-                                                                       :catalog_number, :collection_code, :date_created,
-                                                                       :identifier, :related_url, :canonical_taxonomy,
-                                                                       :institution_code, :organization_relationship ])
+      expect(subject.primary_terms).to match_array(required_fields + [:based_near, 
+                                                                      :bibliographic_citation,
+                                                                      :canonical_taxonomy,
+                                                                      :catalog_number,
+                                                                      :collection_code,
+                                                                      :date_created,
+                                                                      :identifier,
+                                                                      :institution_code,
+                                                                      :organization_relationship,
+                                                                      :related_url])
     end
 
   end

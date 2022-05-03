@@ -1,0 +1,57 @@
+<div class="row">
+  <!-- left column  -->
+  <div class="col-sm-6">
+    <div class="content-block">
+      <h2>GENERAL INFORMATION</h2>
+      <%= @presenter.attribute_to_html(:work_id, label: "Object ID", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+      <% if @presenter.parent_organization.present? %>
+        <%= @presenter.attribute_to_html(
+          :parent_organization_title,
+          label: 'Organization',
+          link: Rails.application.routes.url_helpers.hyrax_organization_path(@presenter.parent_organization.id),
+          render_as: :showcase_organization_title,
+          html_dl: false)
+        %>
+      <% else %>
+        <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
+      <% end %>
+      <%= @presenter.attribute_to_html(:date_uploaded, render_as: :showcase_date, include_empty: true, html_dl: false) %>
+    </div>
+    <div class="content-block">
+      <h2>IDENTIFIERS AND EXTERNAL LINKS</h2>
+      <%= render 'hyrax/cultural_heritage_objects/edit/identifiers', f: f %>
+    </div>
+
+    <div class="content-block">
+      <h2>OBJECT DETAILS</h2>
+      <%= render 'hyrax/cultural_heritage_objects/edit/object_details', f: f %>
+      </div>
+      <div class="content-block">
+        <h2>OBJECT DATING</h2>
+      <%= render 'hyrax/cultural_heritage_objects/edit/object_dating', f: f %>
+      </div>
+      <div class="content-block">
+      <h2>OBJECT ORIGINAL LOCATION</h2>
+      <%= render 'hyrax/cultural_heritage_objects/edit/original_location', f: f %>
+    </div>
+
+    <div class="content-block">
+      <h2>PROVENANCE</h2>
+      <%= render 'hyrax/cultural_heritage_objects/edit/provenance', f: f %>
+    </div>
+  </div>
+  <!-- /left column  -->
+
+  <!-- right column  -->
+  <div class="col-sm-6">
+
+    <%= render 'edit_media_items', presenter: @presenter, f: f %>
+
+    <div class="content-block">
+      <%= render 'hyrax/cultural_heritage_objects/edit/form_member_of_collections', f: f %>
+    </div>
+
+  </div>
+  <!-- / right column -->
+
+</div>

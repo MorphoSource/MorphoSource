@@ -1,10 +1,6 @@
+<% detector_types_service = Morphosource::DetectorTypesService.new %>
 <%= f.input :detector_type, as: :select,
-    collection: [
-        'Direct (X-Ray photoconductor)', 
-        'Scintillator (Phosphor used)', 
-        'Storage (Storage Phosphor)', 
-        'Film (Scanned film/screen)'
-        ],
+	collection: detector_types_service.select_all_options(f.object.detector_type),
     include_blank: true,
     input_html: { class: 'form-control' },
     wrapper_html: { class: 'ie_xray_ct' }

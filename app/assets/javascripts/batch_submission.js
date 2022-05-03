@@ -176,6 +176,10 @@ $( document ).ready(function() {
           $('#submission_no_organization_display_section').addClass('hide').removeClass('show');
           console.log(data);
         });
+
+        $("select#media_transfer_management, input[name='batch_submission[media][visibility]']").change(function(event){
+          self.form.updateOrganizationDataManagementInfo();
+        });
       } // eventFuncs
 
       next() {

@@ -61,6 +61,12 @@ module Morphosource
       end
 
       # Download permission
+
+      # preferred data manager for published media
+      property :data_manager, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/dataManager") do |index|
+        index.as :stored_searchable
+      end
+
       # default publication settings
       # determins media visibility, fileset_visibility, fileset_accessibility settings
       property :download_permission, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/publicationStatus"), multiple: true do |index|

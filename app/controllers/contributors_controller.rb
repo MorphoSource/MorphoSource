@@ -6,6 +6,7 @@ class ContributorsController < ApplicationController
     return unless current_user.admin?
 
     @user.make_contributor
+    flash[:info] = "Contributor access has been granted"
     redirect_to hyrax.user_path(@user)
   end
 
@@ -13,6 +14,7 @@ class ContributorsController < ApplicationController
     return unless current_user.admin?
 
     @user.remove_contributor
+    flash[:info] = "Contributor access has been removed"
     redirect_to hyrax.user_path(@user)
   end
 

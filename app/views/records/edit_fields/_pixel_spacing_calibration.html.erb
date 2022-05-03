@@ -1,5 +1,6 @@
+<% pixel_spacing_calibration_service = Morphosource::PixelSpacingCalibrationService.new %>
 <%= f.input :pixel_spacing_calibration, as: :select,
-    collection: ['Geometry','Fiducial'],
+	collection: pixel_spacing_calibration_service.select_all_options(f.object.pixel_spacing_calibration),
     include_blank: true,
     input_html: { class: 'form-control' },
     wrapper_html: { class: 'ie_xray_ct' }

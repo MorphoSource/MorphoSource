@@ -1,7 +1,7 @@
 # app/services/morphosource/organization_types_service.rb
 module Morphosource
   # Provide select options for the organization types field
-  class OrganizationTypesService < Hyrax::QaSelectService
+  class OrganizationTypesService < QaSelectService
     def initialize(_authority_name = nil)
       super('organization_types')
     end

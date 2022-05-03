@@ -1,5 +1,5 @@
+<% sex_field_service = Morphosource::SexFieldService.new %>
 <%= f.input :sex, as: :select,
-    collection: ['Female','Male','Unknowable','Undetermined','Hermaphrodite','Gynandromorph'],
+	collection: sex_field_service.select_all_options(f.object.sex),
     include_blank: true,
-    selected: f.object.sex&.capitalize,
     input_html: { class: 'form-control select optional form-control' } %>

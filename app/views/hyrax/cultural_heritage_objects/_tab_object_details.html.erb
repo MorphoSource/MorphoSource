@@ -45,7 +45,7 @@
       </div>
       <%= f.label 'Object Material', style: "padding-left: 8px;" %>
       <div style='margin-bottom:10px;'>
-        <%= f.input :aat_material, label: 'AAT Material', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+        <%= render "records/edit_fields/aat_material", f: f, key: 'based_near' %>
         <%= f.input :material, label: 'Custom Material', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
       </div>
       <%= f.label 'Object Attributes', style: "padding-left: 8px;" %>
@@ -54,6 +54,7 @@
         <%= f.input :cho_attributes, label: 'Custom Object Attributes', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
       </div>
       <%= f.input :dimensions, label: 'Object Dimensions/Measurements' %>
+
       </div>
       <div class="content-block">
         <h2>OBJECT DATE</h2>

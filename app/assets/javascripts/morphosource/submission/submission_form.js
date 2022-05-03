@@ -311,6 +311,11 @@ class SubmissionForm {
 
       $('#organization-attachment-url').attr('href', defaultFields.attachment_url);
       $('#organization-attachment-url').addClass('show').removeClass('hide');
+      // set hidden form field on batch submission form
+      if ($('[class*="batch-submission-form"]').length) {
+        $('#batch_submission_media_agreement_uri').val(defaultFields.attachment_url);
+        $('#batch_submission_media_org_for_attachment').val(organizationID);
+      }
 
       $('#no-attachment').addClass('hide').removeClass('show');
 
@@ -329,6 +334,11 @@ class SubmissionForm {
 
       $('#organization-attachment-url').attr('href', '#');
       $('#organization-attachment-url').addClass('hide').removeClass('show');
+      // set hidden form field on batch submission form
+      if ($('[class*="batch-submission-form"]').length) {
+        $('#batch_submission_media_agreement_uri').val('');
+        $('#batch_submission_media_org_for_attachment').val('');
+      }
 
       $('#organization-agreement-help').addClass('show').removeClass('hide');
       $('#no-agreement-help').addClass('hide').removeClass('show');

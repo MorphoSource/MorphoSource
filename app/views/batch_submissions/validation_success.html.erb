@@ -18,7 +18,7 @@
 </p>
 
 <p>Your batch submission manifest successfully passed validation, and is ready for ingestion.</p>
-<% byebug %>
+
 <%= form_tag main_app.batch_submissions_ingest_path do %>
 	<%= hidden_field_tag "manifest_object", manifest_object.to_json %>
 	<%= submit_tag 'Proceed with ingestion', id: 'btn-submit', class: 'btn btn-primary btn-lg' %>

@@ -111,7 +111,6 @@ class BatchSubmissionsController < ApplicationController
     @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
     @xlsx = Roo::Excelx.new(manifest.tempfile.path)
     @modality_selected = @params["batch_submission"]["modality"]
-    @manifest_is_valid = false
     parse_manifest
   end
 
@@ -146,13 +145,6 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id, 
         device_id:device_id, 
         media_ownership_fields:media_ownership_fields).to_h
-
-
-#      session[:manifest_object] = @manifest_object
-#      ingest
-
-
-
   end
 
   def ingest
@@ -160,17 +152,14 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def start_ingest_job
-byebug
     manifest_object = JSON.parse(request.params["manifest_object"])
-
-  # need to check if manifest_object is nil
     if !manifest_object.present?
       # redirect to dashboard?
     else
+      # need to check for current job status here (before action)
 
-byebug
-  # need to check for current job status here (before action)
 
+#byebug
       job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(manifest_object, current_user)
       main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
     end
@@ -277,10 +266,8 @@ byebug
           field_names: field_names, 
           row_count: row_count
         }
-        @manifest_is_valid = false
       else
         create_manifest_object
-#byebug
         render 'validation_success', locals: { 
           manifest_object: @manifest_object,
           warn_rows: warn_rows, 
@@ -289,7 +276,6 @@ byebug
           field_names: field_names, 
           row_count: row_count
         }
-#        @manifest_is_valid = true
       end    
 
     end

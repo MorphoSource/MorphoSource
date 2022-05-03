@@ -115,6 +115,8 @@ $( document ).ready(function() {
             $("input.organization_title").val('');
             $("input.organization_label").val('');
             $("#submission_organization_select_display .showcase-value").text('');
+            $('input#batch_submission_media_agreement_uri').val('');
+            $('input#batch_submission_media_org_for_attachment').val('');
 
             // UI controls
             $('#submission_select_organization_section').addClass('show').removeClass('hide');

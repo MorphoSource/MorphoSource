@@ -99,6 +99,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             )
           end
 
+          org_for_attachment = parent['media']['media_ownership_fields']['org_for_attachment']
+          if org_for_attachment.present?
+            Morphosource::AttachmentService.create_copy(parent_media.id, 'agreement', org_for_attachment)
+          end
+
           media_file = parent['media']['initial_attrs']['media_file'].first
           created_objects[media_file] = parent_media.id
           Rails.logger.debug "iN MediaIePeIngestJob: parent media created: #{parent_media.id} "
@@ -151,6 +156,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             preview_file
           )
 
+          org_for_attachment = child['media']['media_ownership_fields']['org_for_attachment']
+          if org_for_attachment.present?
+            Morphosource::AttachmentService.create_copy(child_media.id, 'agreement', org_for_attachment)
+          end
+
           media_file = child['media']['initial_attrs']['media_file'].first
           created_objects[media_file] = child_media.id
           Rails.logger.debug "iN MediaIePeIngestJob: child media created: #{child_media.id} "
@@ -165,13 +175,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     else
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
-
-    # Add org agreement attachment fields
-    if all_media.present? && organization_permissions_fields.present? && organization_permissions_fields['organization_for_attachment'].present?
-      all_media.each do |media_work|
-        Morphosource::AttachmentService.create_copy(media_work.id, 'agreement', organization_permissions_fields['organization_for_attachment'])
-      end
-    end  
 
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)

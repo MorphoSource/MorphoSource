@@ -4,9 +4,10 @@ class BatchSubmissionsController < ApplicationController
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms, only: [:new]
-  before_action :check_batch_submission_access, only: [:index, :new, :submit]
-  before_action :check_new_submit_allowed, only: [:new, :submit]
+  before_action :check_batch_submission_access, only: [:index, :new, :submit, :ingest]
+  before_action :check_new_submit_allowed, only: [:new, :submit, :ingest]
   before_action :check_params, only: [:submit]
+  before_action :check_request_manifest_object, only: [:ingest]
   after_action :start_ingest_job, only: [:ingest]
 
   attr_accessor :parent_media_row, :parent_media_id
@@ -148,21 +149,12 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def ingest
-   render 'ingest_started'
+    render 'ingest_started'
   end
   
   def start_ingest_job
-    manifest_object = JSON.parse(request.params["manifest_object"])
-    if !manifest_object.present?
-      # redirect to dashboard?
-    else
-      # need to check for current job status here (before action)
-
-
-#byebug
-      job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(manifest_object, current_user)
-      main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
-    end
+    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
+    main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
 
   def initial_error_message
@@ -873,6 +865,14 @@ class BatchSubmissionsController < ApplicationController
     def check_new_submit_allowed
       if !current_user.can_submit_new_batch_submission?
         render 'not_allowed', locals: { message: 'Sorry, you currently have a batch submission job running. ', show_dashboard_link: true }
+      end
+    end
+
+    def check_request_manifest_object
+      @request_manifest_object = JSON.parse(request.params["manifest_object"])
+      if !@request_manifest_object.present?
+        flash[:error] = 'The manifest is missing.  Please submit the batch submission form again.'
+        return redirect_to main_app.new_batch_submission_path
       end
     end
 

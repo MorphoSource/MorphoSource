@@ -66,6 +66,15 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
       end
     end
+    context "proceed with ingest" do
+      render_views
+      let(:params) { {"manifest_object" => {}} }
+      it "returns" do
+        BackgroundJob.create({ main_job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
+        post 'ingest', :params => params 
+        expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
+      end
+    end
   end
 
   describe "GET #new for non-batch_submission_contributor" do

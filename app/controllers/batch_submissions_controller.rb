@@ -17,8 +17,37 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def index
-    job = current_user.last_batch_submission_job
-    render 'index', locals: { job: job }
+    last_job = current_user.last_batch_submission_job
+    check_job_failure(last_job)
+    render 'index', locals: { job: last_job }
+  end
+
+  def check_job_failure(last_job)
+    # check if the last job has actually failed without throwing an exception
+    failure_found_indexes = []
+    exceptions = []
+    1.upto(Resque::Failure.count) do |idx|
+      job = Resque::Failure.all(idx)
+      if job.present? 
+        begin
+          if job['payload']['args'][0]['job_id'] == last_job.main_job_id
+            failure_found_indexes << idx
+            exceptions << "Exception: #{job['exception']}, Error: #{job['error']}"
+          end
+        rescue => e
+          Rails.logger.debug "iN check_job_failure, Exception: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
+        end
+      end
+    end
+    if failure_found_indexes.present?
+      # update both ActiveJob and BackgroundJob
+      status = ActiveJob::Status.get(last_job.main_job_id)
+      status.update(status: :failed)
+      status.update(exception: exceptions.join('; '))
+      last_job.update_status("failed", exceptions.join('; '))
+      # remove failed jobs from Resque 
+      failure_found_indexes.map{ |idx| Resque::Failure.remove(idx) }
+    end
   end
 
   def new

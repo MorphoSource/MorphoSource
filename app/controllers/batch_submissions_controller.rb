@@ -1,6 +1,8 @@
 require 'roo'
 
 class BatchSubmissionsController < ApplicationController
+  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper  
+
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms, only: [:new]
@@ -47,6 +49,8 @@ class BatchSubmissionsController < ApplicationController
       last_job.update_status("failed", exceptions.join('; '))
       # remove failed jobs from Resque 
       failure_found_indexes.map{ |idx| Resque::Failure.remove(idx) }
+      # uncomment below if notification should be sent
+      # notify_user(current_user, "failed", last_job.main_job_id)
     end
   end
 

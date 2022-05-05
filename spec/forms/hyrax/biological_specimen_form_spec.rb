@@ -53,7 +53,6 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
                                                                     :publisher,
                                                                     :sex,
                                                                     :state_province,
-                                                                    :tgn,
                                                                     :vouchered ])
     end
 
@@ -68,7 +67,7 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
     subject { described_class.new(work, ability, controller)}
 
     it 'has the expected primary metadata terms' do
-      expect(subject.primary_terms).to match_array(required_fields + [:based_near, 
+      expect(subject.primary_terms).to match_array(required_fields + [:based_near,
                                                                       :bibliographic_citation,
                                                                       :canonical_taxonomy,
                                                                       :catalog_number,

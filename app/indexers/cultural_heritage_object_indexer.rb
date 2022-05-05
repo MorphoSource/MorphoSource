@@ -14,24 +14,6 @@ class CulturalHeritageObjectIndexer < Morphosource::PhysicalObjectIndexer
      solr_doc['material_si'] = object.material&.first&.downcase
      solr_doc['cho_type_si'] = object.cho_type&.first&.downcase
      solr_doc['vouchered_si'] = object.vouchered&.first&.downcase
-     solr_doc['object_attributes_ssim'] = object_attributes
-     solr_doc['object_attributes_tesim'] = object_attributes
-     solr_doc['object_material_ssim'] = object_material
-     solr_doc['object_material_tesim'] = object_material
-     solr_doc['object_type_ssim'] = object_type
-     solr_doc['object_type_tesim'] = object_type
    end
-  end
-
-  def object_attributes
-    object.aat_attributes + object.cho_attributes
-  end
-
-  def object_material
-    object.aat_material + object.material
-  end
-
-  def object_type
-    object.aat_type + object.cho_type
   end
 end

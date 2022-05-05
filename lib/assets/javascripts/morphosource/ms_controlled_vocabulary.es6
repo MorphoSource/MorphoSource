@@ -4,6 +4,7 @@
 import { FieldManager } from './field_manager'
 import Handlebars from 'handlebars'
 import Autocomplete from 'hyrax/autocomplete'
+import MorphosourceAutocomplete from 'morphosource/ms_autocomplete'
 
 export default class MorphosourceControlledVocabulary extends FieldManager {
 
@@ -108,7 +109,12 @@ export default class MorphosourceControlledVocabulary extends FieldManager {
   * @param {jQuery} input - The <input type="text"> tag
   */
   addAutocompleteToEditor(input) {
-    var autocomplete = new Autocomplete()
+    // TODO: matching on fieldName to avoid potentially breaking other autocomplete fields, but this might not be necessary
+    if (this.fieldName == 'aat_attribute' || this.fieldName == 'aat_material' || this.fieldName == 'aat_type' || this.fieldName == 'periodic_time' || this.fieldName == 'tgn') {
+      var autocomplete = new MorphosourceAutocomplete()
+    } else {
+      var autocomplete = new Autocomplete()
+    }
     autocomplete.setup(input, this.fieldName, this.searchUrl)
   }
 

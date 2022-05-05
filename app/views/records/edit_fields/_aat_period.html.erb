@@ -1,0 +1,13 @@
+<%# key is 'periodic_time' %>
+<%= f.input key,
+            as: :controlled_vocabulary,
+            label: 'Getty Period or Style',
+            placeholder: 'Search for a period or style',
+            input_html: {
+              class: 'form-control',
+              data: { 'autocomplete-url' => "/authorities/search/getty/aat/periods",
+                      'autocomplete' => key }
+            },
+            ### Required for the ControlledVocabulary javascript:
+            wrapper_html: { data: { 'autocomplete-url' => "/authorities/search/getty/aat/periods",
+                                    'field-name' => key }} %>

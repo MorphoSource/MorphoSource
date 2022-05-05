@@ -1,7 +1,7 @@
 # app/services/morphosource/required_archival_of_published_derivatives_types_service.rb
 module Morphosource
   # Provide select options for the series types field
-  class RequiredArchivalOfPublishedDerivativesTypesService < Hyrax::QaSelectService
+  class RequiredArchivalOfPublishedDerivativesTypesService < QaSelectService
     def initialize(_authority_name = nil)
       super('required_archival_of_published_derivatives_types')
     end

@@ -30,6 +30,7 @@
 
     <div class="content-block">
       <h2>OWNERSHIP AND PERMISSIONS</h2>
+      <%= render 'edit_media_organization_transfer', f: f %>
       <%= @presenter.attribute_to_html(:data_managed_by, render_as: :showcase_user_link, include_empty: true, html_dl: false) %>
       <%= @presenter.attribute_to_html(:data_uploaded_by, render_as: :showcase_user_link, include_empty: false, html_dl: false) %>
       <%= render 'edit_media_permissions', f: f %>

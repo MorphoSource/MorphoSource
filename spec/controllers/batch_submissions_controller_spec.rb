@@ -10,7 +10,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
   let(:image_file_path)             { fixture_path + '/images/duke.png' }
   let(:manifest_file_path)             { fixture_path + '/batch_submission_manifest_errors_test.xlsx' }
   let(:invalid_columns_file_path)             { fixture_path + '/batch_submission_manifest_errors_columns.xlsx' }
-  let(:invalid_fields_file_path)             { fixture_path + '/batch_submission_manifest_errors_fields.xlsx' }
+  let(:invalid_fields_file_path)             { fixture_path + '/batch_submission_manifest_errors_invalid_field.xlsx' }
   let(:invalid_parents_file_path)             { fixture_path + '/batch_submission_manifest_errors_parents.xlsx' }
   let(:invalid_file)         { Rack::Test::UploadedFile.new(image_file_path) }
   let(:valid_file)         { Rack::Test::UploadedFile.new(manifest_file_path) }
@@ -140,7 +140,6 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'imaging_event.photography.light_source: Value should not be present when modality MicroNanoXRayComputedTomography is pre-selected.'
           expect(html).to include 'media.y_spacing: Value should be present for media type CTImageSeries.'
           expect(html).to include 'media.z_spacing: Please enter a valid number.'
-          expect(html).to include 'media.publication_status: Please enter a valid value: "Open", "RestrictedDownload", "Private"'
           expect(html).to include 'A value can be present in media.parent_file or media.parent_ms_id, but not in both.'
           expect(html).to include 'media.parent_ms_id: Existing media not_found not found.'
           expect(html).to include 'biological_specimen.ms_id: Existing biological specimen not_found not found.'
@@ -152,6 +151,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'Specimen in iDigBio has recordset id 71b8ffab-444e-43f9-9a9c-5c42b0eaa5eb which does not match the pre-selected organization\'s recordset id: ' + organization_recordset_id
           expect(html).to include 'media.raw_or_derived: Please enter a valid value.'
           expect(html).to include "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
+          expect(html).to include 'imaging_event.ct.pixel_spacing_calibration: Please enter a valid value: "Geometry", "Fiducial"'
 
         end
       end
@@ -203,14 +203,28 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
-    context "column count not valid" do
+    context "columns count not valid" do
       render_views
-      let(:params) { {"manifest" => invalid_columns_file, "batch_submission" => {"modality" => "photography"}} }
-      it "displays column count invalid message" do
+      let(:params) { {"manifest" => invalid_columns_file, "batch_submission" => {"modality" => "CTImageSeries"}} }
+      before do
         post 'submit', :params => params 
+      end
+      it "displays column count invalid message" do
         expect(response).to render_template 'validation_fail'
         html = response.body
         expect(html).to include 'The columns are invalid.  Please check the file or download the blank submission manifest again.'
+      end
+    end
+    context "columns have invalid field name" do
+      render_views
+      let(:params) { {"manifest" => invalid_fields_file, "batch_submission" => {"modality" => "CTImageSeries"}} }
+      before do
+        post 'submit', :params => params 
+      end
+      it "displays invalid field message" do
+        expect(response).to render_template 'validation_fail'
+        html = response.body
+        expect(html).to include 'expecting imaging_event.ct.pixel_spacing_calibration'
       end
     end
 

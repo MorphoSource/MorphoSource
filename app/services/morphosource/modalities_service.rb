@@ -1,7 +1,7 @@
 # app/services/morphosource/modalities_service.rb
 module Morphosource
   # Provide select options for the modalities field
-  class ModalitiesService < Hyrax::QaSelectService
+  class ModalitiesService < QaSelectService
     def initialize(_authority_name = nil)
       super('modalities')
     end

@@ -19,7 +19,7 @@
         </relative-time>
       </td>
       <td><%= link_to req.sending_user.name, hyrax.user_path(req.sending_user) %></td>
-      <td><%= req.sender_comment %></td>
+      <td><%= req.organization_transfer ? req.sender_comment.html_safe : req.sender_comment %></td>
       <td>
         <% if req.pending? %>
         <div class="row">

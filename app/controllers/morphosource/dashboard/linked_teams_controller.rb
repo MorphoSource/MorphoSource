@@ -32,6 +32,15 @@ module Morphosource
       def update_permissions
         return unless current_user.can?(:edit, @team)
 
+        if (
+          params[:organization][:data_manager].present? && 
+          (u = User.find_by_user_key(params[:organization][:data_manager])) &&
+          !u.contributor?
+        )
+          flash[:error] = "Data manager selected for organization is not a contributor."
+          redirect_back_organization and return
+        end
+
         update_organization
         redirect_back_organization
       end

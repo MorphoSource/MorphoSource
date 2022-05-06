@@ -186,6 +186,7 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def start_ingest_job
+byebug
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
     main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
@@ -610,11 +611,19 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def is_date?(str)
+byebug
+# "7-22-2021"
+# "2022-02-04"
+# "2022-04-08"
+
     case str
-    when /^(\d{4})\-(\d{2})\-(\d{2})$/
+    when /^(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})$/
+byebug
       Date.valid_date? $1.to_i, $2.to_i, $3.to_i
-    when /^(\d{2})\-(\d{2})\-(\d{4})$/
-      Date.valid_date? $3.to_i, $2.to_i, $1.to_i
+    when /^(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})$/
+byebug
+byebug
+      Date.valid_date? $3.to_i, $1.to_i, $2.to_i
     else
       false
     end

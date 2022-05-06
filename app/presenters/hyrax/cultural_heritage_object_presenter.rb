@@ -4,21 +4,51 @@ module Hyrax
   class CulturalHeritageObjectPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :bibliographic_citation, :catalog_number, :collection_code, :numeric_time, :original_location,
-             :periodic_time, :vouchered, :cho_type, :material, :short_title, :geographic_coordinates, 
+    delegate :aat_attributes,
+             :aat_material,
+             :aat_type,
+             :address,
+             :bibliographic_citation,
+             :catalog_number,
+             :cho_attributes,
+             :cho_type,
+             :city,
+             :collection_code,
+             :context,
+             :country,
+             :current_location,
+             :dating_method,
+             :dimensions,
+             :formation,
+             :geographic_coordinates,
+             :institution_code,
+             :material,
+             :numeric_time,
+             :object_attributes,
+             :object_material,
+             :object_type,
+             :original_location,
+             :periodic_time,
+             :provenance_date,
+             :provenance_details,
+             :provenance_location,
+             :provenance_name,
+             :short_title,
+             :state_province,
+             :tgn,
+             :vouchered,
              :public_media_ids, to: :solr_document
 
-
-    def related_media_ids 
+    def related_media_ids
       ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
       return ids
     end
 
-    def viewable_related_media_ids 
+    def viewable_related_media_ids
       return related_media_ids if current_ability.current_user.admin?
       filtered_ids = []
       related_media_ids.each do |id|
-        if current_ability.can?(:read, id) 
+        if current_ability.can?(:read, id)
           filtered_ids << id
         end
       end

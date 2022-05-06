@@ -22,11 +22,32 @@ RSpec.describe Hyrax::CulturalHeritageObjectForm do
     end
 
     it 'has expected single valued metadata terms' do
-      expect(described_class.single_valued_fields).to match_array([ :catalog_number,
-                                                                    :collection_code, :date_created, :description, :institution_code,
-                                                                    :latitude, :longitude, :numeric_time,
-                                                                    :original_location, :publisher, :vouchered,
-                                                                    :short_title ])
+      expect(described_class.single_valued_fields).to match_array([:address,
+                                                                   :catalog_number, 
+                                                                   :city, 
+                                                                   :collection_code, 
+                                                                   :context, 
+                                                                   :country, 
+                                                                   :current_location, 
+                                                                   :date_created, 
+                                                                   :dating_method, 
+                                                                   :description, 
+                                                                   :dimensions, 
+                                                                   :formation, 
+                                                                   :institution_code, 
+                                                                   :latitude, 
+                                                                   :longitude, 
+                                                                   :numeric_time, 
+                                                                   :original_location, 
+                                                                   :provenance_date, 
+                                                                   :provenance_details, 
+                                                                   :provenance_location, 
+                                                                   :provenance_name, 
+                                                                   :publisher, 
+                                                                   :short_title, 
+                                                                   :state_province, 
+                                                                   :tgn, 
+                                                                   :vouchered])
     end
 
   end

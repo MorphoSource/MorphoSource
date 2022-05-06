@@ -13,45 +13,20 @@
 
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
-            <span class="h2">OBJECT IDENTIFIERS AND EXTERNAL LINKS</span>
+            <span class="h2">IDENTIFIERS AND EXTERNAL LINKS</span>
           </div>
-
           <div class="content-block">
-            <%= f.input :vouchered, as: :select,
-                collection: ['Yes','No'],
-                include_blank: true,
-                # item_helper: method(:include_current_value),
-                input_html: { class: 'form-control' },
-                label_wrapper_html: { class: 'required-flag' }
-            %>
-            <%= f.input :institution_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
-            <%= f.input :collection_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
-            <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
-            <%= f.input :short_title, label_wrapper_html: { class: 'recommended-flag' }  %>
-            <%= f.input :identifier, as: :multi_value %>
-            <%= f.input :related_url, as: :multi_value %>
+            <%= render 'hyrax/cultural_heritage_objects/edit/identifiers', f: f %>
           </div>
         </div>
 
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
-            <span class="h2">TIME AND PLACE DETAILS</span>
+            <span class="h2">OBJECT DETAILS</span>
           </div>
 
           <div class="content-block">
-            <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
-            <%= f.input :numeric_time, label: 'Absolute Age' %>
-            <%= f.input :original_location, label: 'Locality' %>
-            <!--  todo: the html below can be removed if simpleform config wrapper can be used.  In that case, we need to figure out pass the content for the tooltip
-            <div class="form-group row">
-                <div class="col-xs-12 showcase-label">
-                    <label class="control-label">Geographical coordinates</label><span class="glyphicon glyphicon-question-sign tooltip-icon" data-original-title="" title=""></span>
-                </div>
-            </div>
-            -->
-            <%= f.input 'Locality Geographical Coordinates', tooltip_wrapper: false, value_wrapper: false %>
-            <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
-            <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
+            <%= render 'hyrax/cultural_heritage_objects/edit/object_details', f: f %>
           </div>
         </div>
 
@@ -63,23 +38,31 @@
 
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
-            <span class="h2">GENERAL DETAILS</span>
+            <span class="h2">OBJECT DATING</span>
           </div>
 
           <div class="content-block">
-            <%= f.input :description, label: 'Description' %>
-            <%= f.input :cho_type, label: 'Object Type', as: :multi_value %>
-            <%= f.input :material, as: :multi_value %>
-            <%# todo: render date_field in simple_form_bootstrap %>
-            <div class="row">
-              <div class="col-xs-6 showcase-label">Object collection/creation date</div>
-              <div class="col-xs-6 showcase-value">
-              <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
-                </div>
-            </div>
-            <%= f.input :creator, label: 'Object collector/creator', as: :multi_value %>
-            <%= f.input :contributor, as: :multi_value %>
-            <%= f.input :publisher %>
+            <%= render 'hyrax/cultural_heritage_objects/edit/object_dating', f: f %>
+          </div>
+        </div>
+
+        <div class="block showcase-edit showcase-section">
+          <div class="row showcase-section-header">
+            <span class="h2">OBJECT ORIGINAL LOCATION</span>
+          </div>
+
+          <div class="content-block">
+            <%= render 'hyrax/cultural_heritage_objects/edit/original_location', f: f %>
+          </div>
+        </div>
+
+        <div class="block showcase-edit showcase-section">
+          <div class="row showcase-section-header">
+            <span class="h2">PROVENANCE</span>
+          </div>
+
+          <div class="content-block">
+            <%= render 'hyrax/cultural_heritage_objects/edit/provenance', f: f %>
           </div>
         </div>
 

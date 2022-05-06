@@ -20,7 +20,7 @@ class BatchSubmissionsController < ApplicationController
   
   def index
     last_job = current_user.last_batch_submission_job
-    check_job_failure(last_job)
+    check_job_failure(last_job) unless (last_job.status == "failed" ||  last_job.status == "completed")
     render 'index', locals: { job: last_job }
   end
 
@@ -47,10 +47,6 @@ class BatchSubmissionsController < ApplicationController
       status.update(status: :failed)
       status.update(exception: exceptions.join('; '))
       last_job.update_status("failed", exceptions.join('; '))
-      # remove failed jobs from Resque 
-      failure_found_indexes.map{ |idx| Resque::Failure.remove(idx) }
-      # uncomment below if notification should be sent
-      # notify_user(current_user, "failed", last_job.main_job_id)
     end
   end
 
@@ -186,7 +182,6 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def start_ingest_job
-byebug
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
     main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
@@ -611,18 +606,10 @@ byebug
   end
 
   def is_date?(str)
-byebug
-# "7-22-2021"
-# "2022-02-04"
-# "2022-04-08"
-
     case str
     when /^(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})$/
-byebug
       Date.valid_date? $1.to_i, $2.to_i, $3.to_i
     when /^(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})$/
-byebug
-byebug
       Date.valid_date? $3.to_i, $1.to_i, $2.to_i
     else
       false

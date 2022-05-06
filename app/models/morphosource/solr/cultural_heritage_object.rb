@@ -7,8 +7,6 @@ module Morphosource
                                                aat_type
                                                cho_attributes
                                                cho_type
-                                               collection_date
-                                               collection_location
                                                material
                                                short_title].freeze
 

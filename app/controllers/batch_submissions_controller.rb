@@ -164,6 +164,7 @@ class BatchSubmissionsController < ApplicationController
       end
       fund_code_id = request.params["batch_submission"]["fund_code"]
       media_ownership_fields = request.params["batch_submission"]["media"]
+      media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
       @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
         input_path:input_path, 
         media_path:media_path, 
@@ -172,7 +173,8 @@ class BatchSubmissionsController < ApplicationController
         on_behalf_of:on_behalf_of, 
         collection_ids:collection_ids, 
         fund_code_id:fund_code_id, 
-        organization_id:organization_id, 
+        organization_id:organization_id,
+        organization_transfer_immediately:( organization_media_transfer == :immediate ),
         device_id:device_id, 
         media_ownership_fields:media_ownership_fields).to_h
   end
@@ -843,6 +845,34 @@ class BatchSubmissionsController < ApplicationController
     else
       'Etc'
     end
+  end
+
+  # Methods related to transferring media to organization control
+
+  def organization_media_transfer
+    @organization_media_transfer ||= get_organization_media_transfer
+  end
+
+  def get_organization_media_transfer
+    if params[:media][:transfer_management].present?
+      if transfer_media_immediately?
+        :immediate
+      elsif params[:media][:transfer_management] == 'publication'
+        :publication
+      else
+        nil
+      end
+    else
+      nil
+    end
+  end
+
+  def transfer_media_immediately?
+    ( params[:media][:transfer_management] == 'immediate' ) ||
+    ( 
+      params[:media][:transfer_management] == 'publication' && 
+      ['open', 'restricted_download'].include?(params[:batch_submission][:media][:visibility]) 
+    )
   end
 
   private

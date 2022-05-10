@@ -1,15 +1,23 @@
+// Fundamentally similar to app/assets/javascripts/hyrax/user_search.js from Hyrax
+// Fixes some bugs relating to setting initial value
 (function( $ ){
 
-  $.fn.userSearchMultiple = function(initialData) {
+  $.fn.userSearchInitialValue = function() {
     return this.each(function() {
       $(this).select2( {
         minimumInputLength: 2,
         id: function(object) {
           return object.user_key;
         },
-        multiple: true,
         initSelection: function(element, callback) {
-          callback(initialData);
+          initialUser = element.data('initial-user');
+          console.log(initialUser);
+          var data = {
+            id: initialUser.id,
+            user_key: initialUser.user_key,
+            text: initialUser.text
+          };
+          callback(data);
         },
         ajax: { // Use the jQuery.ajax wrapper provided by Select2
           url: "/users.json",
@@ -23,10 +31,8 @@
             return { results: data.users };
           }
         },
-      }).select2(
-        'data', 
-        initialData
-      );
+      });
     });
+
   };
 })( jQuery );

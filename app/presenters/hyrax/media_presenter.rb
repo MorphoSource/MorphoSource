@@ -33,6 +33,7 @@ module Hyrax
       :direct_parent_members_raw_or_derived,
       :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list, :file_set_original_file_present,
       :fund_codes, :fund_code_associations, :active_fund_code_association,
+      :organization_transfer, :organization_transfer_on_publish,
       # Permissions
       :permits_commercial_use, :permits_3d_use, :required_archival_of_published_derivatives,
       :morphosource_use_agreement_type, :download_reviewer, :attachment_url,
@@ -304,7 +305,7 @@ module Hyrax
       if @file_size == 0
         @file_size = ""
       else
-        @file_size = @file_size.to_s(:delimited) + " bytes" # todo: convert to pretty format later
+        @file_size = number_to_human_size(@file_size)
       end
       if @point_count == 0
         @point_count = ""
@@ -541,10 +542,14 @@ module Hyrax
         imaging_event_exist = false
       end # end if imaging_event present?
 
+      # Fund code data
       @fund_code_associations = media.fund_code_associations.to_a
       @active_fund_code_association = media.active_fund_code_association
       @fund_codes = media.fund_codes.to_a
 
+      # Organization transfer request data
+      @organization_transfer_on_publish = media.organization_transfer_on_publish
+      @organization_transfer = ProxyDepositRequest.where(work_id: id, organization_transfer: true)&.first
     end
 
     def related_media_ids

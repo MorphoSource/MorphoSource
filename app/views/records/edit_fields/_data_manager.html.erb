@@ -1,0 +1,26 @@
+<div class="form-group row string optional organization_data_manager">
+  <div class="col-xs-6 showcase-label">
+    <label class="control-label string optional" for="organization_data_manager"><%= t('simple_form.labels.organization.data_manager') %></label>
+    <i class="material-icons tooltip-icon" data-original-title="" title="" style="margin-left: -1px;">
+      <p class="hint hide"><%= t('simple_form.hints.defaults.data_manager') %></p>
+    </i>
+  </div>
+  <div class="col-xs-6 showcase-value">
+    <%= f.text_field :data_manager,
+      id: 'organization_data_manager',
+      name: "#{f.object_name}[data_manager]",
+      placeholder: local_assigns[:placeholder],
+      'data-initial-user' => manager_data(f),
+      class: 'form-control string optional'
+    %>
+  </div>
+</div>
+
+<script>
+  $( document ).ready(function() {
+    managerSelect = $('#organization_data_manager');
+
+    // add search to data manager
+    managerSelect.userSearchInitialValue();
+  });
+</script>

@@ -1,0 +1,19 @@
+<!-- Modal used to warn user about organizational media transfer -->
+<div class="modal fade" id="organizationTransferModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Important: Organization Media Transfer
+        </h4>
+      </div>
+      <div class="modal-body">
+        <p><%= t("morphosource.submission.organization_data_management1").html_safe %></p>
+        <p><%= t("morphosource.submission.organization_data_management2").html_safe %></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="modal-okay" class="btn btn-primary" data-dismiss="modal">I Understand</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

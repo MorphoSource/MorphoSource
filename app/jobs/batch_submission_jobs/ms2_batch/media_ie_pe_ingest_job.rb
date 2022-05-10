@@ -4,7 +4,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
   queue_as Hyrax.config.mass_ingest_queue_name
   #queue_as Hyrax.config.batch_submission_queue_name
 
-  def perform(manifest, ingest, ingest_index, collection_ids, fund_code_id, target_parent_id, main_job_id)
+  def perform(manifest, ingest, ingest_index, collection_ids, fund_code_id, organization_transfer_immediately, target_parent_id, main_job_id)
     status.update(manifest: manifest)
     @manifest = manifest
     @main_job_id = main_job_id
@@ -178,6 +178,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
+    transfer_media_to_organization(all_media, organization_transfer_immediately)
     
     UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
   end
@@ -199,6 +200,13 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     return unless media.present? && fund_code_id.present? && (fc = FundCode.find(fund_code_id))
     media.each do |m|
       m.new_fund_code_association(fc)
+    end
+  end
+
+  def transfer_media_to_organization(media, organization_transfer_immediately)
+    return unless media.present? && organization_transfer_immediately == true
+    media.each do |m|
+      m.transfer_media_to_organization
     end
   end
 end

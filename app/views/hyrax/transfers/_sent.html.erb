@@ -21,9 +21,9 @@
 
           <td><%= link_to req.receiving_user.name, hyrax.user_path(req.receiving_user) %></td>
 
-          <td><%= req.sender_comment %></td>
+          <td><%= req.organization_transfer ? req.sender_comment.html_safe : req.sender_comment %></td>
           <td>
-            <% if req.pending? %>
+            <% if req.pending? && !req.organization_transfer %>
               <%= button_to "Cancel", hyrax.transfer_path(req), method: :delete, class:'btn btn-sm btn-danger', data: {confirm: "Are you sure you want to cancel this request?"} %>
             <% else %>
               <%= req.status.capitalize %>

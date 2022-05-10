@@ -506,7 +506,7 @@ class BatchSubmissionsController < ApplicationController
             end
           end
         else
-          error_msg = "Cannot found specimen in iDigBio."
+          error_msg = "Cannot find specimen in iDigBio."
         end
         error_msg = "biological_specimen.idigbio_uuid: " + error_msg if error_msg.present?
       end

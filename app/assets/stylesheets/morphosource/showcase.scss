@@ -30,6 +30,7 @@ html {
   }
 
 }
+
 .showcase.batch-submission {
   background-color: #fff;
   .error-list {
@@ -53,6 +54,14 @@ html {
       overflow: hidden;
       max-width: 200px;
     }
+  }
+  .upload-file {
+    margin: 30px auto;
+    text-align: center;
+    #manifest_file {
+      display: inline;
+      width:200px;
+    }    
   }
 }
 /*

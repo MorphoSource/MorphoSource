@@ -23,7 +23,7 @@ gem 'devise'
 gem 'devise-guests', '~> 0.6'
 gem 'bootstrap-sass', '~> 3.4'
 
-gem 'riiif', '~> 1.1'
+gem 'riiif', '~> 2.2'
 
 # pul_uv_rails fork upgraded for universal viewer aleph
 gem 'pul_uv_rails', :git => 'https://github.com/MorphoSource/pul_uv_rails.git', :branch => 'webpack-al'

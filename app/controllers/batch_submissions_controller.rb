@@ -827,10 +827,10 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def get_organization_media_transfer
-    if params[:media][:transfer_management].present?
+    if params.dig(:media, :transfer_management).present?
       if transfer_media_immediately?
         :immediate
-      elsif params[:media][:transfer_management] == 'publication'
+      elsif params.dig(:media, :transfer_management) == 'publication'
         :publication
       else
         nil
@@ -841,10 +841,10 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def transfer_media_immediately?
-    ( params[:media][:transfer_management] == 'immediate' ) ||
+    ( params.dig(:media, :transfer_management) == 'immediate' ) ||
     ( 
-      params[:media][:transfer_management] == 'publication' && 
-      ['open', 'restricted_download'].include?(params[:batch_submission][:media][:visibility]) 
+      params.dig(:media, :transfer_management) == 'publication' && 
+      ['open', 'restricted_download'].include?(params.dig(:batch_submission, :media, :visibility)) 
     )
   end
 

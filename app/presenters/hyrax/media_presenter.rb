@@ -626,6 +626,10 @@ module Hyrax
       'showcase_show_actions'
     end
 
+    def showcase_general_details_partial
+      'showcase_general_details'
+    end
+
     def showcase_file_object_details_partial
       'showcase_file_object_details'
     end

@@ -131,7 +131,13 @@ class MediaIndexer < Morphosource::WorkIndexer
       ie = object.imaging_event
       solr_doc['imaging_event_id_tesim'] = ie&.id
 
-      facility_org = ie&.device&.organization
+      device = ie&.device
+      device_title = "#{device&.creator&.first} #{device&.title&.first}"
+      solr_doc['media_device_tesim'] = device_title
+      solr_doc['media_device_ssim'] = device_title
+      solr_doc['media_device_id_tesim'] = device&.id
+      solr_doc['media_device_id_ssim'] = device&.id
+      facility_org = device&.organization
       facility_org_title = facility_org&.title&.first
       solr_doc['media_device_facility_organization_tesim'] = facility_org_title
       solr_doc['media_device_facility_organization_ssim'] = facility_org_title

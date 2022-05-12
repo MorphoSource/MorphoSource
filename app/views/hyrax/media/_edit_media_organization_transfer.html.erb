@@ -1,0 +1,18 @@
+<% if @presenter.organization_transfer || @presenter.organization_transfer_on_publish %>
+  <% msg_verb = @presenter.organization_transfer ? 'was' : 'will be' %>
+  <% transfer_trigger = @presenter.organization_transfer_on_publish ? 'publication' : 'media submission' %>
+  <% if @presenter.organization_transfer %>
+    <% transfer_date = @presenter.organization_transfer.created_at&.to_date&.to_formatted_s(:long) %>
+    <% decision_date = @presenter.organization_transfer.fulfillment_date&.to_date&.to_formatted_s(:long) %>
+    <% transfer_status_msg = " The request #{decision_date ? 'was' : 'is still' } #{@presenter.organization_transfer.status}#{decision_date ? " on #{decision_date}" : ""}." %>
+  <% else %>
+    <% transfer_date = nil %>
+    <% transfer_status_msg = "" %>
+  <% end %>
+  <% transfer_msg = "A request to transfer data management to physical object organization #{msg_verb} generated at #{transfer_trigger}#{transfer_date ? " on #{transfer_date}" : ""}.#{transfer_status_msg}" %>
+  <div class="row">
+    <div class="col-xs-12 alert-warning" style="padding-top: 5px; padding-bottom: 5px; border-radius: 4px;">
+      <span><%= transfer_msg %></span>
+    </div>
+  </div>
+<% end %>

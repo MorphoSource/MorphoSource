@@ -2,12 +2,11 @@ module Morphosource
   # Module to define core metadata properties for
   # physical object works
   module PhysicalObjectMetadata
-	  extend ActiveSupport::Concern
+    extend ActiveSupport::Concern
 
     included do
 
       # -- custom fields only --
-
       property :organization_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationID") do |index|
         index.as :stored_searchable
       end
@@ -24,9 +23,9 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      # property :current_location, predicate: ::RDF::Vocab::EDM.currentLocation do |index|
-      #   index.as :stored_searchable, :facetable
-      # end
+      property :current_location, predicate: ::RDF::Vocab::EDM.currentLocation do |index|
+        index.as :stored_searchable, :facetable
+      end
 
       property :latitude, predicate: RDF::Vocab::EXIF.gpsLatitude do |index|
         index.as :stored_searchable
@@ -40,20 +39,6 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      # TODO review predicates for original_location and periodic_time
-
-      # property :original_location, predicate: ::RDF::Vocab::DC.location do |index|
-      #   index.as :stored_searchable, :facetable
-      # end
-
-      property :original_location, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/original_location") do |index|
-        index.as :stored_searchable, :facetable
-      end
-      #
-      # property :periodic_time, predicate: ::RDF::Vocab::DC.period do |index|
-      #   index.as :stored_searchable, :facetable
-      # end
-
       property :periodic_time, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/period") do |index|
         index.as :stored_searchable, :facetable
       end
@@ -62,6 +47,41 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
+      property :original_location, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/original_location") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :provenance_name, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/provenanceName") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :provenance_date, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/provenanceDate") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :provenance_details, predicate: ::RDF::Vocab::DC.provenance do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :provenance_location, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/provenanceLocation") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :formation, predicate: ::RDF::Vocab::DWC.formation do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :context, predicate: ::RDF::Vocab::DWC.geologicalContextID do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :dating_method, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/datingMethod") do |index|
+        index.as :stored_searchable, :facetable
+      end
+
+      property :dimensions, predicate: ::RDF::Vocab::DC.format do |index|
+        index.as :stored_searchable, :facetable
+      end
     end
   end
 end

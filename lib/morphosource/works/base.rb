@@ -95,6 +95,19 @@ module Morphosource
         true
       end
 
+      def controlled_value_filter
+        # This method is used for values either ingested through batch submission, or
+        # sync'ed from external soource (iDigBio)
+        # Converts the attribute value by:
+        # - strips out leading and ending spaces
+        # - convert the case to match the controlled list value
+        controlled_attributes.each do |attr, service|
+          # if needed to check attribute changed?, call self.send(attr.to_s+"_changed?") here
+          self.send(attr.to_s+"=", self.send(attr).collect { |e| e ? service.controlled_value(e.strip) : e })
+        end
+      end
+
+
       private
 
       # if everything is working as it should be, the solr document should already have been deleted before this.

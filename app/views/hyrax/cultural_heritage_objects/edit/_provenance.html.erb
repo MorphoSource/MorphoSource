@@ -1,0 +1,12 @@
+<%= f.input :context, label: 'Stratigraphic Context' %>
+<%= f.input :formation, label: 'Stratigraphic Formation' %>
+<%= f.input :provenance_name, label: 'Excavation Name' %>
+<div class="row">
+  <div class="col-xs-6 showcase-label">Excavation/Collection Date</div>
+  <div class="col-xs-6 showcase-value">
+  <%= f.date_field :provenance_date, wrapper: :inline, value: f.object.provenance_date, class: 'datepicker form-control' %>
+    </div>
+</div>
+<%= f.input :provenance_location, label: 'Excavation/Collection Location' %>
+<%= f.input :provenance_details, label: 'Excavation/Collection Details', as: :text, input_html: { rows: 4, style: 'height: auto;' } %>
+<%= f.input :current_location, label: 'Current Location' %>

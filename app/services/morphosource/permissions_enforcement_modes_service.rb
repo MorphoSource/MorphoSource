@@ -1,7 +1,7 @@
 # app/services/morphosource/permissions_enforcement_modes_service.rb
 module Morphosource
   # Provide select options for the series types field
-  class PermissionsEnforcementModesService < Hyrax::QaSelectService
+  class PermissionsEnforcementModesService < QaSelectService
     def initialize(_authority_name = nil)
       super('permissions_enforcement_modes')
     end

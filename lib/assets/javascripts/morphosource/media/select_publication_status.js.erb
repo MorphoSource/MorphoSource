@@ -5,19 +5,14 @@ function set_initial_value() {
 }
 
 function set_visibility(val) {
-  let open = $('#media_visibility_open');
-  let restricted_download = $('#media_visibility_restricted_download');
-  let preview = $('#media_visibility_preview');
-  let hidden = $('#media_visibility_hidden');
+  let open = $('#media_visibility_open, #batch_submission_media_visibility_open').first();
+  let restricted_download = $('#media_visibility_restricted_download, #batch_submission_media_visibility_restricted_download').first();
+  let preview = $('#media_visibility_preview, #batch_submission_media_visibility_preview').first();
+  let hidden = $('#media_visibility_hidden, #batch_submission_media_visibility_hidden').first();
 
   let current_visibility_value = $('#current_visibility_value');
 
   switch (val) {
-    case 'new':
-      select_visibility(open);
-      display_value = "Publish with Open Download";
-      display_class = "label-success";
-      break;
     case 'open':
       select_visibility(open);
       display_value = "Publish with Open Download";

@@ -28,6 +28,5 @@
         initialData
       );
     });
-
   };
 })( jQuery );

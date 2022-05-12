@@ -1,7 +1,7 @@
 # app/services/morphosource/morphosource_use_agreement_types_service.rb
 module Morphosource
   # Provide select options for the series types field
-  class MorphosourceUseAgreementTypesService < Hyrax::QaSelectService
+  class MorphosourceUseAgreementTypesService < QaSelectService
     def initialize(_authority_name = nil)
       super('morphosource_use_agreement_types')
     end

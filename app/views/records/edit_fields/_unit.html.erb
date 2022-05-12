@@ -2,11 +2,11 @@
 
 <% units_service = Morphosource::UnitsService.new %>
 
+
 <%= f.input :unit, as: :select,
-    collection: units_service.select_all_options,
+    collection: units_service.select_all_options(f.object.unit),
     include_blank: true,
-    item_helper: units_service.method(:include_current_value),
     input_html: { class: 'form-control' },
-    wrapper_html: { class: 'CTImageSeries' },
+    wrapper_html: { class: 'Mesh CTImageSeries' },
     label: 'Pixel spacing units'
 %>

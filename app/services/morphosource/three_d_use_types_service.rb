@@ -3,7 +3,7 @@ module Morphosource
   # Provide select options for the permits_3d_use field
   # Yes, this is somewhat ridiculously named, but Ruby class names
   # cannot start with a number.
-  class ThreeDUseTypesService < Hyrax::QaSelectService
+  class ThreeDUseTypesService < QaSelectService
     def initialize(_authority_name = nil)
       super('3d_use_types')
     end

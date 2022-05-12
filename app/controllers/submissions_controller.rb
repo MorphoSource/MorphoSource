@@ -61,7 +61,8 @@ class SubmissionsController < ApplicationController
         postal_code: o['postal_code_tesim']&.first,
         description: o['description_tesim']&.first,
         contact_person: o['contact_person_tesim']&.first,
-        devices: o['member_ids_ssim']
+        devices: o['member_ids_ssim'],
+        data_manager: o['data_manager_tesim']&.first
       }
     end
 
@@ -175,6 +176,8 @@ class SubmissionsController < ApplicationController
       organization_title = organization.title
       organization_id = organization.id
       organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
+      organization_data_manager = organization.data_manager&.first
+      organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email
     else
       status = 'FAIL'
       message = 'Organization does not exist'
@@ -183,6 +186,8 @@ class SubmissionsController < ApplicationController
       organization_title = ''
       organization_id = nil
       organization_permissions_mode = nil
+      organization_data_manager = nil
+      organization_data_manager_name = nil
     end
     response_object = {
       status: status,
@@ -191,7 +196,9 @@ class SubmissionsController < ApplicationController
       organization_alert_message: organization_alert_message,
       organization_title: organization_title,
       organization_id: organization_id,
-      organization_permissions_mode: organization_permissions_mode
+      organization_permissions_mode: organization_permissions_mode,
+      organization_data_manager: organization_data_manager,
+      organization_data_manager_name: organization_data_manager_name
     }
     render :json => response_object
   end
@@ -264,7 +271,7 @@ byebug
     works.each do |work|
       if work == 'taxonomy' && @submission.taxonomy_params_array.present?
         @submission.taxonomy_params_array.each do |taxon_params|
-          new_taxon_id = prepare_and_create_work('taxonomy', { 'taxonomy' => taxon_params })
+          new_taxon_id = prepare_and_create_work('taxonomy', { 'taxonomy' => taxon_params })[0]
           @submission.taxonomy_id_array << new_taxon_id
           @submission.canonical_taxonomy_id = new_taxon_id if taxon_params[:canonical]
         end
@@ -290,7 +297,7 @@ byebug
   def new_organization_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      new_organization_id = prepare_and_create_work('organization', { 'organization' => params[:organization] })
+      new_organization_id = prepare_and_create_work('organization', { 'organization' => params[:organization] })[0]
     rescue
       new_organization_id = nil
     end
@@ -329,7 +336,7 @@ byebug
   def new_taxonomy_create(params)
     # this method is expected to be called from the backend
     begin
-      prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })
+      prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })[0]
     rescue
       nil
     end
@@ -338,7 +345,7 @@ byebug
   def new_taxonomy_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      new_taxonomy_id = prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })
+      new_taxonomy_id = prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })[0]
     rescue
       new_taxonomy_id = nil
     end
@@ -385,7 +392,7 @@ byebug
   def new_device_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      new_device_id = prepare_and_create_work('device', { 'device' => params[:device] })
+      new_device_id = prepare_and_create_work('device', { 'device' => params[:device] })[0]
     rescue Exception => ex
       new_device_id = nil
       exception_message = "Exception: #{ex.class}, #{ex.message}"
@@ -418,7 +425,7 @@ byebug
   def new_processing_event_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      new_processing_event_id = prepare_and_create_work('processing_event', { 'processing_event' => params[:processing_event] })
+      new_processing_event_id = prepare_and_create_work('processing_event', { 'processing_event' => params[:processing_event] })[0]
     rescue Exception => ex
       new_processing_event_id = nil
       exception_message = "Exception: #{ex.class}, #{ex.message}"
@@ -464,12 +471,15 @@ byebug
   def create_work_if_needed(work, params)
     if !@submission.public_send(to_id(work)).present? && params[work]
       puts("Creating #{work}")
-      new_work_id = prepare_and_create_work(work, params)
+      new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
       create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
       # Morphosource::CustomThumbnails
-      create_thumbnail if work == 'media'
-      set_new_fund_code if work == 'media' && @submission.fund_code.present?
+      if work == 'media'
+        create_thumbnail
+        set_new_fund_code if @submission.fund_code.present?
+        create_organization_transfer_request(new_work) if ( organization_media_transfer == :immediate )
+      end
     end
   end
 
@@ -485,6 +495,7 @@ byebug
       addl_params = { uploaded_files: params[:uploaded_files] }
       addl_params[:selected_files] = params[:selected_files] if params[:selected_files].present?
       addl_params[:collection_id] = params[:collection_id] if params[:collection_id].present?
+      addl_params[:organization_transfer_on_publish] = true if ( organization_media_transfer == :publication )
       finalize_model_params(work, model_params, addl_params)
     elsif work == 'imaging_event'
       addl_params = { device_id: [@submission.device_id] }
@@ -571,6 +582,9 @@ byebug
       end
       if addl_params[:selected_files].present?
         model_params.merge!({ selected_files: addl_params[:selected_files] })
+      end
+      if addl_params[:organization_transfer_on_publish].present?
+        model_params.merge!({ organization_transfer_on_publish: addl_params[:organization_transfer_on_publish] })
       end
       @media_create_params = model_params
 
@@ -659,6 +673,38 @@ byebug
       media: @submission.media_id,
       active: true
     ).save!
+  end
+
+  # Methods related to transferring media to organization control
+
+  def create_organization_transfer_request(work)
+    work.transfer_media_to_organization
+  end
+
+  def organization_media_transfer
+    @organization_media_transfer ||= get_organization_media_transfer
+  end
+
+  def get_organization_media_transfer
+    if params[:media][:transfer_management].present?
+      if transfer_media_immediately?
+        :immediate
+      elsif params[:media][:transfer_management] == 'publication'
+        :publication
+      else
+        nil
+      end
+    else
+      nil
+    end
+  end
+
+  def transfer_media_immediately?
+    ( params[:media][:transfer_management] == 'immediate' ) ||
+    ( 
+      params[:media][:transfer_management] == 'publication' && 
+      ['open', 'restricted_download'].include?(params[:media][:visibility]) 
+    )
   end
 
   # Utility functions
@@ -763,7 +809,7 @@ byebug
     curation_concern = model.new
     env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
     Hyrax::CurationConcern.actor.create(env)
-    curation_concern.id
+    return curation_concern.id, curation_concern
   end
 
   def instantiate_work_forms

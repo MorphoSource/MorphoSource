@@ -3,6 +3,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
+  before_create :controlled_value_filter
+  before_update :controlled_value_filter
   after_update :reindex_media
 
   self.indexer = BiologicalSpecimenIndexer
@@ -13,6 +15,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   include Morphosource::PhysicalObjectMetadata
   include Morphosource::BiologicalSpecimenMetadata
+  include Morphosource::LocationMetadata
 
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
@@ -90,6 +93,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   end
 
   def update_metadata_from_idigbio_occurrence_id(save_work=false)
+    sex_field_values = Morphosource::SexFieldService.new().option_values
     if occurrence_id_valid?
       idigbio_occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
       if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
@@ -156,9 +160,11 @@ class BiologicalSpecimen < Morphosource::Works::Base
         # sync bso metadata
         biospec_model_params = Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(idigbio_occurrence['uuid'])
         biospec_model_params.each do |key, value|
-          if (key == "sex") && (!['Female','Male','Unknowable','Undetermined','Hermaphrodite','Gynandromorph'].include? value.capitalize)
-            # do not update the value from iDigBio unless it matches MS control list
-            next
+          if key == "sex"
+            unless sex_field_values.include? value.capitalize
+              # do not update the value from iDigBio unless it matches MS control list
+              next
+            end
           end
           self.send("#{key}=", value.is_a?(Array) ? value : [value] )
           field_changed = self.send("#{key}_changed?")
@@ -199,6 +205,10 @@ class BiologicalSpecimen < Morphosource::Works::Base
       env = Hyrax::Actors::Environment.new(curation_concern, Ability.new(User.find_by_ms_id(self.depositor)), attributes_for_actor)
       Hyrax::CurationConcern.actor.create(env)
       return curation_concern.id
+    end
+
+    def controlled_attributes
+      { :sex => Morphosource::SexFieldService.new }
     end
 
 end

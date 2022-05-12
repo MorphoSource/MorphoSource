@@ -1,5 +1,6 @@
+<% target_types_service = Morphosource::TargetTypesService.new %>
 <%= f.input :target_type, as: :select,
-    collection: ['Reflection', 'Transmission'],
+	collection: target_types_service.select_all_options(f.object.target_type),
     include_blank: true,
     input_html: { class: 'form-control' },
     wrapper_html: { class: 'ie_xray_ct' }

@@ -13,12 +13,14 @@ Rails.application.configure do
   config.consider_all_requests_local = true
 
   # Enable/disable caching. By default caching is disabled.
-  if Rails.root.join('tmp/caching-dev.txt').exist?
+  if Rails.root.join('tmp', 'caching-dev.txt').exist?
     config.action_controller.perform_caching = true
 
-    config.cache_store = :memory_store
+    config.cache_store =
+      ENV['MEMCACHED_HOST'] ? [:mem_cache_store, ENV['MEMCACHED_HOST']] : :memory_store
+
     config.public_file_server.headers = {
-      'Cache-Control' => "public, max-age=#{2.days.seconds.to_i}"
+      'Cache-Control' => "public, max-age=#{2.days.to_i}"
     }
   else
     config.action_controller.perform_caching = false
@@ -27,7 +29,12 @@ Rails.application.configure do
   end
 
   # ActiveJob adapter as inline - disabled (using async as default) for now due to file characterization issue
-  # config.active_job.queue_adapter = :inline 
+  # config.active_job.queue_adapter = :inline
+
+  # Use resque in development if using docker
+  if ENV["IN_DOCKER"]
+    config.active_job.queue_adapter = :resque
+  end
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true

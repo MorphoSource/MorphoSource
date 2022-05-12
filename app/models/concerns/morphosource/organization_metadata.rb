@@ -13,24 +13,8 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      property :address, predicate: ::RDF::Vocab::DWC.locality do |index|
-        index.as :stored_searchable
-      end
-
-      property :city, predicate: ::RDF::Vocab::DWC.municipality do |index|
-        index.as :stored_searchable
-      end
-
-      property :state_province, predicate: ::RDF::Vocab::DWC.stateProvince do |index|
-        index.as :stored_searchable
-      end
-
       property :postal_code, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/postalCode") do |index|
         index.as :stored_searchable
-      end
-
-      property :country, predicate: ::RDF::Vocab::DWC.country do |index|
-        index.as :stored_searchable, :facetable
       end
 
       property :contact_person, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/contactUser") do |index|
@@ -61,6 +45,12 @@ module Morphosource
       end
 
       # Download permission
+
+      # preferred data manager for published media
+      property :data_manager, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/dataManager") do |index|
+        index.as :stored_searchable
+      end
+
       # default publication settings
       # determins media visibility, fileset_visibility, fileset_accessibility settings
       property :download_permission, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/publicationStatus"), multiple: true do |index|

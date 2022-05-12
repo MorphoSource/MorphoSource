@@ -23,7 +23,7 @@ gem 'devise'
 gem 'devise-guests', '~> 0.6'
 gem 'bootstrap-sass', '~> 3.4'
 
-gem 'riiif', '~> 1.1'
+gem 'riiif', '~> 2.2'
 
 # pul_uv_rails fork upgraded for universal viewer aleph
 gem 'pul_uv_rails', :git => 'https://github.com/MorphoSource/pul_uv_rails.git', :branch => 'webpack-al'
@@ -65,6 +65,10 @@ gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
 gem 'render_async'
 gem 'recaptcha'
 gem 'roo'
+gem 'zip-zip'
+gem 'axlsx'
+
+gem 'dalli' # mem_cache_store support
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
@@ -97,12 +101,6 @@ group :test do
   gem 'axe-matchers', '~> 2.3.0'
   gem 'rspec-json_expectations'
   gem 'vcr'
-end
-
-group :production do
-  gem 'passenger'
-  gem 'therubyracer', platforms: :ruby
-  gem 'dalli'
 end
 
 gem "ezid-client", "~> 1.8"

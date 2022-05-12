@@ -1,8 +1,6 @@
+<% detector_configuration_service = Morphosource::DetectorConfigurationService.new %>
 <%= f.input :detector_configuration, as: :select,
-    collection: [
-            'Area (single or tiled detector)', 
-            'Slot (scanned slot, slit, or spot)'
-        ],
+	collection: detector_configuration_service.select_all_options(f.object.detector_configuration),
     include_blank: true,
     input_html: { class: 'form-control' },
     wrapper_html: { class: 'ie_xray_ct' }

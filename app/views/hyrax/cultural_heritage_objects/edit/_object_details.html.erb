@@ -1,0 +1,27 @@
+<%= f.input :vouchered, as: :select,
+    collection: ['Yes','No'],
+    include_blank: true,
+    # item_helper: method(:include_current_value),
+    input_html: { class: 'form-control' },
+    label_wrapper_html: { class: 'required-flag' }
+%>
+<%= f.input :description, label: 'Object Description', as: :text, input_html: { rows: 4, style: 'height: auto;' } %>
+<%= f.input :creator, label: 'Object Collector/Creator', as: :multi_value %>
+<%= f.input :contributor, label: 'Object Contributor', as: :multi_value %>
+<%= f.input :publisher %>
+<%= f.label 'Object Type', style: "width: 100%; display: flex; padding-left: 8px;" %>
+<div style='margin-bottom:10px;'>
+  <%= f.input :aat_type, label: 'Getty Thesaurus Type', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+  <%= f.input :cho_type, label: 'Custom Type', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+</div>
+<%= f.label 'Object Material', style: "width: 100%; display: flex; padding-left: 8px;" %>
+<div style='margin-bottom:10px;'>
+  <%= f.input :aat_material, label: 'Getty Thesaurus Material', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+  <%= f.input :material, label: 'Custom Material', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+</div>
+<%= f.label 'Object Attributes', style: "width: 100%; display: flex; padding-left: 8px;" %>
+<div style='margin-bottom:10px;'>
+  <%= f.input :aat_attributes, label: 'Getty Thesaurus Attributes', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+  <%= f.input :cho_attributes, label: 'Custom Object Attributes', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
+</div>
+<%= f.input :dimensions, label: 'Object Dimensions/Measurements' %>

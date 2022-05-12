@@ -1,7 +1,7 @@
 # app/services/morphosource/series_types_service.rb
 module Morphosource
   # Provide select options for the acquisition types field
-  class AcquisitionTypesService < Hyrax::QaSelectService
+  class AcquisitionTypesService < QaSelectService
     def initialize(_authority_name = nil)
       super('acquisition_types')
     end

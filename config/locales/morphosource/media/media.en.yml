@@ -8,9 +8,10 @@ en:
         select_physical_object: Currently, physical objects can only be created during media submission. In the future, you will be able to create a new physical object without submitting media. In the meantime, if you can't find the correct physical object record using the search tools above, contact the <a href="mailto:morphosource@duke.edu">MorphoSource administrators</a> to have a new physical object record created.
         agreement_present: If an additional usage agreement is present and you did not expect one to be present, it may have been set by the physical object organization (museum, collection, etc.). If you need a customized additional usage agreement or if the existing agreement should not apply to your media, please <a href="mailto:morphosource@duke.edu">contact us</a>.
         agreement_absent: If you need a customized additional usage agreement, please <a href="mailto:morphosource@duke.edu">contact us</a>.
-
       new:
         agreement_initial: If you need a customized additional usage agreement, please <a href="mailto:morphosource@duke.edu">contact us</a> after media submission.
         agreement_organization: The organization (museum, collection, etc.) of the physical object represented by this media has required an additional usage agreement. If you need a customized additional usage agreement or if the existing agreement should not apply to your media, please <a href="mailto:morphosource@duke.edu">contact us</a> after media submission.
       alert:
         browse_everything: New media file is being downloaded from the cloud, this file will not be available until download and processing are complete.
+      organization_transfer:
+        transfer_message: This is an organization media transfer from the original media contributor to the receiving organization data manager. For more details, see our <a href="https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers" target="_blank">documentation</a>.

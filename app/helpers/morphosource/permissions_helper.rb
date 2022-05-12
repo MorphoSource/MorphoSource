@@ -25,6 +25,15 @@ module Morphosource
       user ? user.email : ''
     end
 
+    def manager_data(f)
+      if f.object.model.id.present? && f.object.model.data_manager&.first.present?
+        ms_id = f.object.model.data_manager&.first
+        { id: ms_id.to_i, user_key: ms_id, text: (u = User.where(ms_id: ms_id)&.first).present? ? u.name_or_email : '' }
+      else
+        {}
+      end.to_json
+    end
+
     def reviewer_data(f)
       if f.object.model.id.present?
         f.object.model.download_reviewer.map do |ms_id|

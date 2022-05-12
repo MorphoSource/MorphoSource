@@ -499,4 +499,6 @@ Rails.application.routes.draw do
   get 'fund_code_charges', to: 'fund_code_charges#index', as: 'fund_code_charges'
   get 'fund_code_charges.csv', to: 'fund_code_charges#index', as: 'fund_code_charges_csv', defaults: { format: 'csv' }
   get 'fund_code_charges.json', to: 'fund_code_charges#index', as: 'fund_code_charges_json', defaults: { format: 'json' }
+
+  get 'search_idigbio_ajax/:oid', to: 'morphosource/i_dig_bio_search#search_idigbio_ajax'
 end

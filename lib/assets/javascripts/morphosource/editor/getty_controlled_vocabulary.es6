@@ -1,12 +1,11 @@
 //= require handlebars-v4.0.5
 
-//import { FieldManager } from 'hydra-editor/field_manager'
-import { FieldManager } from './field_manager'
+import { FieldManager } from 'hydra-editor/field_manager'
 import Handlebars from 'handlebars'
 import Autocomplete from 'hyrax/autocomplete'
 import MorphosourceAutocomplete from 'morphosource/ms_autocomplete'
 
-export default class MorphosourceControlledVocabulary extends FieldManager {
+export default class GettyControlledVocabulary extends FieldManager {
 
   constructor(element, paramKey) {
       let options = {
@@ -21,48 +20,43 @@ export default class MorphosourceControlledVocabulary extends FieldManager {
         listClass:         '.listing',
         inputTypeClass:    '.controlled_vocabulary',
 
-        //addHtml:           '<button type=\"button\" class=\"btn btn-link add\"><i class=\"fa fa-plus-circle\"></i><span class="controls-add-text"></span></button>',
         addHtml:           '<button type=\"button\" class=\"btn btn-link add\"><i class=\"fa fa-plus-circle\"></i></button>',
         addText:           'Add another',
 
-        //removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i></span><span class="controls-remove-text"></span> <span class=\"sr-only\"> previous <span class="controls-field-name-text">field</span></span></button>',
-        removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i></button>',
+        // removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i></button>',
+
+        removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i><span class=\"sr-only\"> previous <span class="controls-field-name-text">field</span></span></button>',
         removeText:         'Remove',
 
         labelControls:      true,
       }
-      super(element, $.extend({}, options, $(element).data()))
+      super(element, options)
       this.paramKey = paramKey
       this.fieldName = this.element.data('fieldName')
       this.searchUrl = this.element.data('autocompleteUrl')
   }
 
   // Overrides FieldManager, because field manager uses the wrong selector
-  addToList( event ) {
-          event.preventDefault();
-          let $listing = $(event.target).closest('.multi_value').find(this.listClass)
-          let $activeField = $listing.children('li').last()
-
-          if (this.inputIsEmpty($activeField)) {
-              this.displayEmptyWarning();
-          } else {
-              this.clearEmptyWarning();
-              $listing.append(this._newField($activeField));
-          }
-
-          this._manageFocus()
-  }
+  // addToList( event ) {
+  //         event.preventDefault();
+  //         let $listing = $(event.target).closest('.multi_value').find(this.listClass)
+  //         let $activeField = $listing.children('li').last()
+  //
+  //         if (this.inputIsEmpty($activeField)) {
+  //             this.displayEmptyWarning();
+  //         } else {
+  //             this.clearEmptyWarning();
+  //             $listing.append(this._newField($activeField));
+  //         }
+  //
+  //         this._manageFocus()
+  // }
 
   // Overrides FieldManager in order to avoid doing a clone of the existing field
   createNewField($activeField) {
-    console.log($activeField)
       let $newField = this._newFieldTemplate()
-      console.log("$newField")
-      console.log($newField)
       this._addBehaviorsToInput($newField)
       this.element.trigger("managed_field:add", $newField);
-      console.log("this.element")
-      console.log(this.element)
       return $newField
   }
 
@@ -124,14 +118,8 @@ export default class MorphosourceControlledVocabulary extends FieldManager {
   removeFromList( event ) {
       event.preventDefault()
       let field = $(event.target).parents(this.fieldWrapperClass)
-      if (this.element.find("li:visible").length == 1) {
-        this.createNewField(field);
-      }
       field.find('[data-destroy]').val('true')
       field.hide()
       this.element.trigger("managed_field:remove", field)
-      // if (this.element.find("li:visible").length == 0) {
-      //   this.createNewField(field);
-      // }
   }
 }

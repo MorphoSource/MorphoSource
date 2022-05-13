@@ -46,3 +46,4 @@
 //= require morphosource/field_manager
 //= require morphosource/ms_autocomplete
 //= require morphosource/autocomplete/ms_resource
+//= require morphosource/submission

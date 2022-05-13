@@ -110,6 +110,7 @@ export default class MorphosourceControlledVocabulary extends FieldManager {
   */
   addAutocompleteToEditor(input) {
     // TODO: matching on fieldName to avoid potentially breaking other autocomplete fields, but this might not be necessary
+    console.log("addAutocompleteToEditor: " + this.fieldName)
     if (this.fieldName == 'aat_attribute' || this.fieldName == 'aat_material' || this.fieldName == 'aat_type' || this.fieldName == 'periodic_time' || this.fieldName == 'tgn') {
       var autocomplete = new MorphosourceAutocomplete()
     } else {

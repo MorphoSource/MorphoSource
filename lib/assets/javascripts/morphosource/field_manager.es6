@@ -1,3 +1,4 @@
+
 export class FieldManager {
     constructor(element, options) {
         this.element = $(element);

@@ -76,7 +76,9 @@ module Blacklight
           z_pixel_spacing: Solrizer.solr_name('z_spacing', :stored_searchable),
           slice_thickness: Solrizer.solr_name('slice_thickness', :stored_searchable),
           unit: Solrizer.solr_name('unit', :stored_searchable),
-          number_of_images_in_set: Solrizer.solr_name('number_of_images_in_set', :stored_searchable)
+          number_of_images_in_set: Solrizer.solr_name('number_of_images_in_set', :stored_searchable),
+          data_manager: Solrizer.solr_name('user_with_ownership', :stored_sortable),
+          data_depositor: Solrizer.solr_name('depositor', :stored_searchable),
         }
       end
 

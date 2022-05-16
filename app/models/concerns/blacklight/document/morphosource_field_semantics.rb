@@ -40,6 +40,7 @@ module Blacklight
           modality: Solrizer.solr_name('media_modality', :stored_searchable),
           device: Solrizer.solr_name('media_device', :stored_searchable),
           device_facility: Solrizer.solr_name('media_device_facility_organization', :stored_searchable),
+          media_parent_id: Solrizer.solr_name('media_parent_id', :symbol),
           physical_object_id: Solrizer.solr_name('physical_object_id', :symbol),
           physical_object_title: Solrizer.solr_name('physical_object_title', :stored_searchable),
           physical_object_organization: Solrizer.solr_name('media_organization', :stored_searchable),
@@ -48,7 +49,6 @@ module Blacklight
           part: Solrizer.solr_name('part', :stored_searchable),
           side: Solrizer.solr_name('side', :stored_searchable),
           creator: Solrizer.solr_name('creator', :stored_searchable),
-          description: Solrizer.solr_name('description', :stored_searchable),
           short_description: Solrizer.solr_name('short_description', :stored_searchable),
           description: Solrizer.solr_name('description', :stored_searchable),
           ip_holder: Solrizer.solr_name('rights_holder', :stored_searchable),
@@ -77,8 +77,8 @@ module Blacklight
           slice_thickness: Solrizer.solr_name('slice_thickness', :stored_searchable),
           unit: Solrizer.solr_name('unit', :stored_searchable),
           number_of_images_in_set: Solrizer.solr_name('number_of_images_in_set', :stored_searchable),
-          data_manager: Solrizer.solr_name('user_with_ownership', :stored_sortable),
-          data_depositor: Solrizer.solr_name('depositor', :stored_searchable),
+          data_manager: Solrizer.solr_name('user_with_ownership_name', :stored_searchable),
+          data_depositor: Solrizer.solr_name('depositor_name', :stored_searchable),
         }
       end
 

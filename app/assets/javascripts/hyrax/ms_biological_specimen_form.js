@@ -199,8 +199,32 @@ $( document ).ready(function() {
 				$('#in-collection-badge').text('Not in Collection');				
 		})
 
+
+    function search_idigbio(occurrence_id) {
+
+      $.ajax({
+        url: '/search_idigbio_by_occurrence_id_ajax/' + occurrence_id,
+        type: 'GET',
+        dataType: 'json',
+        complete: function (xhr, status) {
+          var results = $.parseJSON(xhr.responseText);
+          console.log(results);
+          if (results.idigbio_uuid != $('#existing_idigbio_uuid').val()) {
+            alert('idigbio_uuid not match');
+          }
+        }
+      });
+    }
+
 	  $(document).on("submit", 'form[data-param-key="biological_specimen"]', function() {
 			disablePage();
+      if ($('#biological_specimen_occurrence_id').val() != $('#existing_occurrence_id').val()) {
+        search_idigbio($('#biological_specimen_occurrence_id').val());
+
+      }
+
+event.preventDefault();
+
 		})
 
   }

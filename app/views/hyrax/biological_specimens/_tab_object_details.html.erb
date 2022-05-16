@@ -11,6 +11,7 @@
       <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :occurrence_id, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= hidden_field_tag "existing_occurrence_id", f.object.occurrence_id %>
+      <%= hidden_field_tag "existing_idigbio_uuid", f.object.idigbio_uuid %>
       <%= f.input :identifier, as: :multi_value %>
       <%= f.input :related_url, as: :multi_value %>
       <%#= f.input :idigbio_uuid %>

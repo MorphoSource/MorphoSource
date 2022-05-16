@@ -1,0 +1,41 @@
+<div class="modal fade" id="modal-idigbio-result" tabindex="-1" role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modal-label">Specimen found from iDigBio
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        </h5>
+      </div>
+      <div class="modal-body">
+
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Institution code</div>
+            <div class="col-xs-6 showcase-value" id="institution-code"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Collection code</div>
+            <div class="col-xs-6 showcase-value" id="collection-code"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Catalog number</div>
+            <div class="col-xs-6 showcase-value" id="catalog-number"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 showcase-label">Occurrence ID</div>
+            <div class="col-xs-6 showcase-value" id="occurrence-id"></div>
+        </div>
+
+        <div id='taxonomy_detail_rows'>
+          <%= render 'modal_taxonomy_detail_row', label: "GBIF" %>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onClick="window.open('/', '_blank');">OK</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

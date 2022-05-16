@@ -12,10 +12,6 @@ export default class MorphosourceEditor extends Editor {
     this.element.find('.controlled_vocabulary.form-group').each((_idx, controlled_field) =>
       new MorphosourceControlledVocabulary(controlled_field, this.paramKey)
     )
-    console.log("this.paramKey: ");
-    console.log(this.paramKey);
-    console.log("this:");
-    console.log(this);
   }
 
   relationshipsControl() {

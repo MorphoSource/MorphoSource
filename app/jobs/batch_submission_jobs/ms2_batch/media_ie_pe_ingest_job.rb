@@ -203,8 +203,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
   end
 
   def add_org_attachment_to_media(media, org_id)
-    media.each do |m|
-      Morphosource::AttachmentService.create_copy(m.id, 'agreement', org_id)
+    org = Organization.find(org_id)
+    if org.present? && org.agreement_attachment_url.present?
+      media.each do |m|
+        Morphosource::AttachmentService.create_copy(m.id, 'agreement', org_id)
+      end
     end
   end
 

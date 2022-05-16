@@ -123,6 +123,9 @@ $( document ).ready(function() {
             $('#submission_no_organization_section').addClass('show').removeClass('hide');
             $('#submission_organization_select_display').addClass('hide').removeClass('show');
             $('#submission_select_organization').attr('disabled', 'disabled');
+            $("#no-attachment").addClass('show').removeClass('hide');            
+            $("#organization-agreement-uri").addClass('hide').removeClass('show');
+            $("#organization-attachment-url").attr("href", "").addClass('hide').removeClass('show');
 
             $("#batch_submission_organization_search").select2('val', null);
             data.setOrganizationDefaults();

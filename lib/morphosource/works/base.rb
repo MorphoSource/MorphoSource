@@ -41,6 +41,11 @@ module Morphosource
         @ancestors.flatten.uniq
       end
 
+      def ancestor_find(cond_method)
+        objects = member_of
+        return find_parent(objects, cond_method)
+      end
+
       def specimen?
         self.class == BiologicalSpecimen
       end
@@ -107,7 +112,6 @@ module Morphosource
         end
       end
 
-
       private
 
       # if everything is working as it should be, the solr document should already have been deleted before this.
@@ -138,6 +142,18 @@ module Morphosource
           @ancestors << parents
           get_all_parents(parents)
         end
+      end
+
+      def find_parent(objects, cond_method)
+        objects.flatten.each do |object|
+          if object.send(cond_method)
+            return object
+          else
+            parent_result = find_parent(object.member_of, cond_method)
+            return parent_result if parent_result.present?
+          end
+        end
+        return nil
       end
     end
   end

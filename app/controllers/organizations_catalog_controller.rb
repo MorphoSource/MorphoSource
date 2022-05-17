@@ -65,6 +65,16 @@ class OrganizationsCatalogController < CatalogController
     end
   end
 
+  def show
+    @response, @document = fetch params[:id], { fq: 'has_model_ssim:Organization' }
+
+    respond_to do |format|
+      format.html { setup_next_and_previous_documents }
+      format.json { render json: { response: { @document.has_model.first.underscore => @document.to_semantic_values } } }
+      additional_export_formats(@document, format)
+    end
+  end
+
   def document_type
     'organization'
   end

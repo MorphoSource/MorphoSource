@@ -252,10 +252,6 @@ Rails.application.routes.draw do
   get 'catalog/all', to: 'all_catalog#index', as: 'all_search'
   get 'all_catalog/facet/:id', to: 'all_catalog#facet'
 
-  # API routes
-  get 'api/media', to: 'media_catalog#index', as: 'api_media_search', defaults: { format: 'json' }
-  get 'api/media/:id', to: 'catalog#show', as: 'api_media_show', defaults: { format: 'json' }
-
   devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'
 
@@ -499,4 +495,23 @@ Rails.application.routes.draw do
   get 'fund_code_charges', to: 'fund_code_charges#index', as: 'fund_code_charges'
   get 'fund_code_charges.csv', to: 'fund_code_charges#index', as: 'fund_code_charges_csv', defaults: { format: 'csv' }
   get 'fund_code_charges.json', to: 'fund_code_charges#index', as: 'fund_code_charges_json', defaults: { format: 'json' }
+
+  ### REST API routes ###
+
+  # Media
+  get 'api/media', to: 'media_catalog#index', as: 'api_media_search', defaults: { format: 'json' }
+  get 'api/media/:id', to: 'media_catalog#show', as: 'api_media_show', defaults: { format: 'json' } 
+
+  # Physical Objects
+  get 'api/physical-objects', to: 'physical_objects_catalog#index', as: 'api_physical_objects_search', defaults: { format: 'json' }
+  get 'api/physical-objects/:id', to: 'objects_catalog#show', as: 'api_physical_object_show', defaults: { format: 'json' }
+
+  # Organizations
+  get 'api/organizations', to: 'organizations_catalog#index', as: 'api_organizations_search', defaults: { format: 'json' }
+  get 'api/organizations/:id', to: 'organizations_catalog#show', as: 'api_organizations_show', defaults: { format: 'json' }
+
+  # Teams/Projects
+  get 'api/projects', to: 'collections_catalog#index', as: 'api_projects_search', defaults: { format: 'json' }
+  get 'api/projects/:id', to: 'collections_catalog#show', as: 'api_projects_show', defaults: { format: 'json' }
+  get 'api/projects/:id/media', to: 'collections_catalog#show', as: 'api_projects_show', defaults: { format: 'json' }
 end

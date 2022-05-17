@@ -77,6 +77,7 @@ module Hyrax
       end
     end
 
+
     private
 
     def create_gbif_taxonomies

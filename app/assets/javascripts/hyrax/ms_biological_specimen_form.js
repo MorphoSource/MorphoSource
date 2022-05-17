@@ -208,7 +208,6 @@ $( document ).ready(function() {
     }
 
     function search_idigbio(occurrence_id) {
-
       $.ajax({
         url: '/search_idigbio_by_occurrence_id_ajax/' + occurrence_id,
         type: 'GET',
@@ -229,6 +228,7 @@ $( document ).ready(function() {
             $('#modal-idigbio-result').modal();
             enablePage();
             $(document).on('click', '#modal-idigbio-result #btn-save', function(){
+              $('#modal-idigbio-result').modal('hide');
               saveSpecimen();
             });
 
@@ -242,13 +242,13 @@ $( document ).ready(function() {
       $('form[data-param-key="biological_specimen"]').submit();
     }
 	  
-    $(document).on("submit", 'form[data-param-key="biological_specimen"]', function() {
-      event.preventDefault();
+    $(document).on('click', '#btn-save-bso', function(){
 			disablePage();
+      // search iDigBio if occurrence_id has been changed
       if ($('#biological_specimen_occurrence_id').val() != $('#existing_occurrence_id').val()) {
         search_idigbio($('#biological_specimen_occurrence_id').val());
       } else {
-        alert('no change')
+        $('form[data-param-key="biological_specimen"]').submit();
       }
 //search_idigbio('MCZ:Mamm:44858');
 

@@ -226,26 +226,36 @@ $( document ).ready(function() {
               populate_taxonomy('GBIF', t);
             }
 
-            enablePage();
             $('#modal-idigbio-result').modal();
+            enablePage();
+            $(document).on('click', '#modal-idigbio-result #btn-save', function(){
+              saveSpecimen();
+            });
+
           }
         }
       });
     }
 
-	  $(document).on("submit", 'form[data-param-key="biological_specimen"]', function() {
+    function saveSpecimen() {
+      disablePage();
+      $('form[data-param-key="biological_specimen"]').submit();
+    }
+	  
+    $(document).on("submit", 'form[data-param-key="biological_specimen"]', function() {
+      event.preventDefault();
 			disablePage();
-//$('#biological_specimen_occurrence_id').val('MCZ:Mamm:44858');
       if ($('#biological_specimen_occurrence_id').val() != $('#existing_occurrence_id').val()) {
         search_idigbio($('#biological_specimen_occurrence_id').val());
-
       } else {
         alert('no change')
       }
+//search_idigbio('MCZ:Mamm:44858');
 
-event.preventDefault();
 
 		})
 
   }
+
+
 });

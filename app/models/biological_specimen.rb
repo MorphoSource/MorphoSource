@@ -4,7 +4,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter
-  before_update :controlled_value_filter
+  before_update :controlled_value_filter, :update_metadata_from_idigbio_occurrence_id
   after_update :reindex_media
 
   self.indexer = BiologicalSpecimenIndexer
@@ -173,7 +173,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
           end
         end
         self.idigbio_link_origin = ["system_generated"]
-        # normally saving work is done in a background job
+        # normally saving work is done separately (e.g. in a background job, form submit)
         # set save_work flag if needed for debugging in the console
         self.save if save_work 
       end # / if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)

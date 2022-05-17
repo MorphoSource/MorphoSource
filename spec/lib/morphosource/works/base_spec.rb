@@ -4,20 +4,21 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Works::Base do
   let(:organization)    { Organization.create(title: ['organization title']) }
-  let(:specimen1)       { BiologicalSpecimen.create(title: ['title'], vouchered: ["Yes"], organization_id: [organization.id], sex: ['female ']) }
+  let(:specimen1)       { BiologicalSpecimen.create(title: ['title'], vouchered: ["Yes"], organization_id: [organization.id], sex: ['female '], date_created:["07/11/2019"]) }
   let(:specimen2)       { BiologicalSpecimen.create(title: ['title'], vouchered: ["No"], organization_id: [organization.id]) }
-  let(:media1)          { Media.create(title: ['title'], side:[' left'], media_type:['ctimageseries '], unit:[' cm ']) }
+  let(:media1)          { Media.create(title: ['title'], side:[' left'], media_type:['ctimageseries '], unit:[' cm '], date_created:["7-11-2019"]) }
   let(:media2)          { Media.create(title: ['title']) }
   let(:media3)          { Media.create(title: ['title']) }
   let(:file_set1)       { FileSet.create }
   let(:file_set2)       { FileSet.create }
   let(:file_set3)       { FileSet.create }
   let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen1.id], ie_modality: device.modality, pixel_spacing_calibration:[' fiducial'], target_type: ['Reflection ']) }
+  let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen1.id], ie_modality: device.modality, pixel_spacing_calibration:[' fiducial'], target_type: ['Reflection '], date_created:["7/11/2019"]) }
   let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen2.id], ie_modality: device.modality) }
-  let(:processingEvent) { ProcessingEvent.create(title: ['title']) }
+  let(:processingEvent) { ProcessingEvent.create(title: ['title'], date_created:["07-11-2019"]) }
   let(:works)           { [media1, media2, media3, imagingEvent, imagingEvent2, processingEvent, file_set1, file_set2, file_set3] }
-  let(:works2)           { [media1, specimen1, imagingEvent] }
+  let(:works2)           { [media1, specimen1, imagingEvent, processingEvent] }
+  let(:expected_date)  { ["2019-07-11"] }
 
   describe '#descendants' do
     let(:media1_desc)    { [file_set1, processingEvent, media2, file_set2] }
@@ -160,7 +161,7 @@ RSpec.describe Morphosource::Works::Base do
     end
   end
 
-  describe '#controlled_value_filter' do
+  describe '#controlled_value_filter, #date_filter' do
     before do
       works2.each(&:save)
     end
@@ -172,7 +173,12 @@ RSpec.describe Morphosource::Works::Base do
       expect(imagingEvent.target_type).to eq(['Reflection'])
       expect(specimen1.sex).to eq(['Female'])
     end
+    it 'date_filter' do
+      expect(media1.date_created).to eq(expected_date)
+      expect(imagingEvent.date_created).to eq(expected_date)
+      expect(specimen1.date_created).to eq(expected_date)
+      expect(processingEvent.date_created).to eq(expected_date)
+    end
   end
-
 
 end

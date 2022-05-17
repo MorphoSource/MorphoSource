@@ -363,14 +363,14 @@ html {
     a {
       display: inline-block;
       width: 100%;
-      span {
-        display: inline-block;
-        font-weight: bold;
-        font-size: 10px;
-        width: 100%;
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
+    }
+    span {
+      display: inline-block;
+      font-weight: bold;
+      font-size: 8px !important;
+      width: 100%;
+      padding-top: 4px;
+      padding-bottom: 4px;
     }
   }
 

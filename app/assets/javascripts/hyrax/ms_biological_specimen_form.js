@@ -212,33 +212,38 @@ $( document ).ready(function() {
         url: '/search_idigbio_by_occurrence_id_ajax/' + occurrence_id,
         type: 'GET',
         dataType: 'json',
-        complete: function (xhr, status) {
-          var results = $.parseJSON(xhr.responseText);
-          if (jQuery.isEmptyObject(results)) {
-            console.log(" no match from IDB, saving... ");
+        timeout: 5000,
+        complete: function(xhr, status) {
+          if (status != "success") {
+            console.log(" status returned: " + status + ", saving... ");
             saveSpecimen();
-          } else if (results.idigbio_uuid == $('#existing_idigbio_uuid').val()) {
-            console.log(" idigbio_uuid is the same as existing, saving... ");
-            saveSpecimen();
-
           } else {
-            console.log("Match from IDB: ", results);
-            $('#modal-idigbio-result #institution-code').html(results.institution_code);
-            $('#modal-idigbio-result #collection-code').html(results.collection_code);
-            $('#modal-idigbio-result #catalog-number').html(results.catalog_number);
-            
-            if (results.taxonomy.gbif != null) {
-              t = results.taxonomy.gbif;
-              populate_taxonomy('GBIF', t);
-            }
-
-            $('#modal-idigbio-result').modal();
-            enablePage();
-            $(document).on('click', '#modal-idigbio-result #btn-save', function(){
-              $('#modal-idigbio-result').modal('hide');
+            var results = $.parseJSON(xhr.responseText);
+            if (jQuery.isEmptyObject(results)) {
+              console.log(" no match from IDB, saving... ");
               saveSpecimen();
-            });
+            } else if (results.idigbio_uuid == $('#existing_idigbio_uuid').val()) {
+              console.log(" idigbio_uuid is the same as existing, saving... ");
+              saveSpecimen();
+            } else {
+              console.log("Match from IDB: ", results);
+              $('#modal-idigbio-result #institution-code').html(results.institution_code);
+              $('#modal-idigbio-result #collection-code').html(results.collection_code);
+              $('#modal-idigbio-result #catalog-number').html(results.catalog_number);
+              $('#modal-idigbio-result #idb-link').attr("href", "//www.idigbio.org/portal/records/" + results.idigbio_uuid);
+              
+              if (results.taxonomy.gbif != null) {
+                t = results.taxonomy.gbif;
+                populate_taxonomy('GBIF', t);
+              }
 
+              $('#modal-idigbio-result').modal();
+              enablePage();
+              $(document).on('click', '#modal-idigbio-result #btn-save', function(){
+                $('#modal-idigbio-result').modal('hide');
+                saveSpecimen();
+              });
+            }
           }
         }
       });
@@ -252,14 +257,13 @@ $( document ).ready(function() {
     $(document).on('click', '#btn-save-bso', function(){
 			disablePage();
       // search iDigBio if occurrence_id has been changed
-      if ($('#biological_specimen_occurrence_id').val() != $('#existing_occurrence_id').val()) {
-        search_idigbio($('#biological_specimen_occurrence_id').val());
-      } else {
-        $('form[data-param-key="biological_specimen"]').submit();
-      }
-//search_idigbio('MCZ:Mamm:44858');
+//      if ($('#biological_specimen_occurrence_id').val() != $('#existing_occurrence_id').val()) {
+//        search_idigbio($('#biological_specimen_occurrence_id').val());
+//      } else {
+//        $('form[data-param-key="biological_specimen"]').submit();
+//      }
 
-
+      search_idigbio('urn:catalog:IHNE:CZRMA:53:b560a0ec0accd229cd05d8c89d76d5ca')
 		})
 
   }

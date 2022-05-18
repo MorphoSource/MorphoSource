@@ -23,3 +23,5 @@
 	<%= hidden_field_tag "manifest_object", manifest_object.to_json %>
 	<%= submit_tag 'Proceed with ingestion', id: 'btn-submit', class: 'btn btn-primary btn-lg' %>
 <% end %>
+
+<div class="mt-1"><i class="fa fa-hand-point-right" aria-hidden="true"></i> <%= link_to "Submit again", main_app.new_batch_submission_path %></div>

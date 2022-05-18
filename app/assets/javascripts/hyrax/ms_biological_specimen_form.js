@@ -214,8 +214,15 @@ $( document ).ready(function() {
         dataType: 'json',
         complete: function (xhr, status) {
           var results = $.parseJSON(xhr.responseText);
-          console.log(results);
-          if (results.idigbio_uuid != $('#existing_idigbio_uuid').val()) {
+          if (jQuery.isEmptyObject(results)) {
+            console.log(" no match from IDB, saving... ");
+            saveSpecimen();
+          } else if (results.idigbio_uuid == $('#existing_idigbio_uuid').val()) {
+            console.log(" idigbio_uuid is the same as existing, saving... ");
+            saveSpecimen();
+
+          } else {
+            console.log("Match from IDB: ", results);
             $('#modal-idigbio-result #institution-code').html(results.institution_code);
             $('#modal-idigbio-result #collection-code').html(results.collection_code);
             $('#modal-idigbio-result #catalog-number').html(results.catalog_number);

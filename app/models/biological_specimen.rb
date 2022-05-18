@@ -92,10 +92,14 @@ class BiologicalSpecimen < Morphosource::Works::Base
       occurrence_id.first.count("0-9") > 0 && occurrence_id.first.count("a-zA-Z") > 0
   end
 
+  def idigbio_occurrence_id_results
+    @idigbio_occurrence_id_results ||= Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
+  end
+
   def update_metadata_from_idigbio_occurrence_id(save_work=false)
     sex_field_values = Morphosource::SexFieldService.new().option_values
     if occurrence_id_valid?
-      idigbio_occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
+      #idigbio_occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
       if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
         idigbio_occurrence = idigbio_occurrence_id_results.first
 

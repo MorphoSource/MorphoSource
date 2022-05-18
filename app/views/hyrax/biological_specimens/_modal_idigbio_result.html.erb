@@ -7,24 +7,29 @@
           <span aria-hidden="true">&times;</span>
         </button>
         </h5>
-        <p>An iDigBio record with the occurrence ID has been found.  Please check the details below, or the <a href="" target="_blank" id="idb-link">iDigBio record</a> <span class="glyphicon glyphicon-new-window"></span> page.  If you click Save, the specimen will be updated to match the iDigBio record.  Otherwise, you can click Cancel and return to the edit page.</p>
       </div>
       <div class="modal-body">
+        <p>An iDigBio record with the occurrence ID has been found.  Please check the details below, or the <a href="#" target="_blank" id="idb-link">iDigBio record</a> <span class="glyphicon glyphicon-new-window"></span> page.  If you click Save, the specimen will be updated to match the iDigBio record.  Otherwise, you can click Cancel and return to the edit page.</p>
 
-        <div class="row">
+        <div>
+          <h2>Specimen Identifiers</h2>
+          <div class="row">
             <div class="col-xs-6 showcase-label">Institution code</div>
             <div class="col-xs-6 showcase-value" id="institution-code"></div>
-        </div>
-        <div class="row">
+          </div>
+          <div class="row">
             <div class="col-xs-6 showcase-label">Collection code</div>
             <div class="col-xs-6 showcase-value" id="collection-code"></div>
-        </div>
-        <div class="row">
+          </div>
+          <div class="row">
             <div class="col-xs-6 showcase-label">Catalog number</div>
             <div class="col-xs-6 showcase-value" id="catalog-number"></div>
+          </div>
         </div>
 
         <div id='taxonomy_detail_rows'>
+          <h2>Taxonomy</h2>
+          <%= render 'modal_taxonomy_detail_row', label: "Provider" %>
           <%= render 'modal_taxonomy_detail_row', label: "GBIF" %>
         </div>
 

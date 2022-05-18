@@ -215,7 +215,6 @@ class SubmissionsController < ApplicationController
     @submission.taxonomy_id_array = @submission.taxonomy_id_array.present? ? @submission.taxonomy_id_array.split(',') : []
     @submission.taxonomy_gbif_key_array = @submission.taxonomy_gbif_key_array.present? ? @submission.taxonomy_gbif_key_array.split(',') : []
 
-byebug
     if @submission.idigbio_id.present?
       # What taxonomy does this specimen have? Do they exist in MS2 or create them?
       idb_taxonomy_param_sets = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(@submission.idigbio_id)

@@ -794,14 +794,6 @@ class BatchSubmissionsController < ApplicationController
     end
   end
   
-  def pad(id)
-    if id.length < 9
-      ("0" * (9 - id.length)) + id
-    else
-      id
-    end
-  end
-
   def modality_mapped(m)
     case m
     when 'MicroNanoXRayComputedTomography'

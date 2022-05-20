@@ -6,7 +6,8 @@ module Morphosource
     include Blacklight::AccessControls::Catalog
     include Blacklight::Base
     include Hyrax::CollectionsControllerBehavior
-
+    include Morphosource::CollectionsControllerExportBehavior
+    
     included do
       # This is needed as of BL 3.7
       copy_blacklight_config_from(::CatalogController)
@@ -38,12 +39,6 @@ module Morphosource
         format.html { store_preferred_view }
         format.rss  { render :layout => false }
         format.atom { render :layout => false }
-        format.csv  do
-          redirect_to '/' unless current_ability.can?(:edit, @collection)
-          (_, @csv_document_list) = query_solr_all_results
-          @new_document_list = @csv_document_list.map { |d| d.to_semantic_values }
-          csv_response_headers('Query')
-        end
       end
     end
 

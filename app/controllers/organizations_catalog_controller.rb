@@ -1,5 +1,6 @@
 # catalog/organizations
 class OrganizationsCatalogController < CatalogController
+  include CatalogControllerRestApiBehavior
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::OrganizationsCatalogSearchBuilder

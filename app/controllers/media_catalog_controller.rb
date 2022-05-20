@@ -2,6 +2,7 @@
 # default catalog view
 # catalog/all redirects here for non-admins
 class MediaCatalogController < CatalogController
+  include CatalogControllerRestApiBehavior
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder

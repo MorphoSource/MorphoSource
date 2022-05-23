@@ -47,7 +47,7 @@ module Morphosource
     end
 
     def prepare_all_files
-      @all_files ||= files + standard_agreement_files + media_agreement_files
+      @all_files ||= files + standard_agreement_files + media_agreement_files + csv_manifest
     end
 
     def create_interval_sequence
@@ -236,6 +236,33 @@ module Morphosource
       def media_agreement_file_name(file_path, index)
         "Media_Contributor_Usage_Agreement_#{index}#{File.extname(file_path).downcase}"
       end
+
+
+
+      def csv_manifest
+        file_name = "tempcsv.csv"
+        tmp_csv = File.join(Rails.root, %w{app assets documents}, file_name)
+byebug
+
+        CSV.open(tmp_csv, "wb") do |csv|
+          csv << ["row", "of", "CSV", "data"]
+          csv << ["another", "row"]
+        end
+
+        file = File.open(tmp_csv)
+
+        [{
+          name: file_name,
+          size: file.size,
+          crc32: crc32_from_io(file),
+          file: file
+        }]
+
+# cleanup: delete temp csv 
+
+      end
+      
+
 
       # MorphoSource standard agreement file methods
 

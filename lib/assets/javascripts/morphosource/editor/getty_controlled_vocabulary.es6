@@ -20,7 +20,7 @@ export default class GettyControlledVocabulary extends FieldManager {
         listClass:         '.listing',
         inputTypeClass:    '.controlled_vocabulary',
 
-        addHtml:           '<button type=\"button\" class=\"btn btn-link add\"><i class=\"fa fa-plus-circle\"></i></button>',
+        addHtml:           '<div style="width:100%; display:flex; justify-content:flex-end; top:-15px; position:relative"><button type=\"button\" class=\"btn btn-link add\"><i class=\"fa fa-plus-circle\"></i></button></div>',
         addText:           'Add another',
 
         // removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i></button>',
@@ -83,7 +83,7 @@ export default class GettyControlledVocabulary extends FieldManager {
   }
 
   get _source() {
-      return "<li class=\"field-wrapper input-group input-append\">" +
+      return "<li class=\"field-wrapper input-group input-append\" style='max-width:95%;'>" +
         "<input class=\"string {{class}} optional form-control {{paramKey}}_{{name}} form-control multi-text-field\" name=\"{{paramKey}}[{{name}}_attributes][{{index}}][hidden_label]\" value=\"\" id=\"{{paramKey}}_{{name}}_attributes_{{index}}_hidden_label\" data-attribute=\"{{name}}\" type=\"text\">" +
         "<input name=\"{{paramKey}}[{{name}}_attributes][{{index}}][id]\" value=\"\" id=\"{{paramKey}}_{{name}}_attributes_{{index}}_id\" type=\"hidden\" data-id=\"remote\">" +
         "<input name=\"{{paramKey}}[{{name}}_attributes][{{index}}][_destroy]\" id=\"{{paramKey}}_{{name}}_attributes_{{index}}__destroy\" value=\"\" data-destroy=\"true\" type=\"hidden\"></li>"
@@ -121,5 +121,12 @@ export default class GettyControlledVocabulary extends FieldManager {
       field.find('[data-destroy]').val('true')
       field.hide()
       this.element.trigger("managed_field:remove", field)
+  }
+
+  // customization: overriding _createAddControl
+  _createAddControl() {
+    console.log("createAddControl")
+      this.element.find(this.listClass).after(this.adder)
+      // this.element.find(this.listClass + ' ' + this.removeSelector).after(this.adder)
   }
 }

@@ -281,9 +281,8 @@ module BatchSubmissionTools
           else
             # if parent_ms_id exists, get the existing parent 
             if rows[mg[:children].first][:media][:parent_ms_id].present?
-
               media_attrs = { 
-                ms_id: rows[mg[:children].first][:media][:parent_ms_id].first
+                ms_id: pad(rows[mg[:children].first][:media][:parent_ms_id].first)
               }
               parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
                 initial_attrs: media_attrs

@@ -1,4 +1,5 @@
 class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::ApplicationJobWithStatus
+  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper  
   attr_accessor :manifest, :main_job_id
 
   queue_as Hyrax.config.mass_ingest_queue_name
@@ -48,7 +49,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
         if parent['media']['id'].present? 
           # parent media is existing.  get the obj and skip (no need to create)
-          parent_media = Media.find(parent['media']['id'])
+          parent_media = Media.find(pad(parent['media']['id']))
           next
         end
         if parent['media']['initial_attrs']['raw_or_derived']&.first == "Raw"

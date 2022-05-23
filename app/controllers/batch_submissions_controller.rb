@@ -429,11 +429,19 @@ class BatchSubmissionsController < ApplicationController
           elsif @parent_media_id.present? && (@parent_media_id != val)
             error_msg = "media.parent_ms_id: Only one parent media should be present, but multiple parent_ms_id are found."
           else
-            if Media.where(id:pad(val.to_s)).present?
-              @parent_media_id = val
+            ms_parent_media = Media.where(id:pad(val.to_s))&.first
+            if ms_parent_media.present?
+              if (bso_ms_id = pad(cell_value(current_row, field_column("biological_specimen.ms_id")))).present?
+                if (ms_parent_media.specimens.present?) && (ms_parent_media.specimens.first.id != bso_ms_id)
+                  error_msg = "media.parent_ms_id: parent media's specimen id #{ms_parent_media.specimens.first.id} does not match the biological_specimen.ms_id #{bso_ms_id}"
+                end
+              end
             else
               error_msg = "media.parent_ms_id: Existing media #{val} not found."
             end
+          end
+          unless error_msg.present?
+            @parent_media_id = val
           end
         end
       end
@@ -794,14 +802,6 @@ class BatchSubmissionsController < ApplicationController
     end
   end
   
-  def pad(id)
-    if id.length < 9
-      ("0" * (9 - id.length)) + id
-    else
-      id
-    end
-  end
-
   def modality_mapped(m)
     case m
     when 'MicroNanoXRayComputedTomography'
@@ -878,7 +878,12 @@ class BatchSubmissionsController < ApplicationController
   private
 
     def cell_value(row_num, col_num)
-      @xlsx.cell(row_num, col_num)&.strip
+      val = @xlsx.cell(row_num, col_num)
+      if val.nil?
+        return nil
+      else
+        return val.to_s.strip
+      end
     end
 
     def check_params

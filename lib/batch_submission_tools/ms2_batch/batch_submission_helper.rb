@@ -4,6 +4,15 @@ module BatchSubmissionTools
 
       include Morphosource::MessageHelper
  
+      def pad(id)
+        return id unless id.present?
+        if id.length < 9
+          ("0" * (9 - id.length)) + id
+        else
+          id
+        end
+      end
+
       def empty_row?(row)
         row.each do |cell|
           if cell[1].present?

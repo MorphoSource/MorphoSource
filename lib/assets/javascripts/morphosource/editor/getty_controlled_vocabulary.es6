@@ -20,12 +20,12 @@ export default class GettyControlledVocabulary extends FieldManager {
         listClass:         '.listing',
         inputTypeClass:    '.controlled_vocabulary',
 
-        addHtml:           '<button type=\"button\" class=\"btn btn-link add\"><i class=\"fa fa-plus-circle\"></i></button>',
+        addHtml:           '<button type=\"button\" class=\"btn btn-link getty add\" style="display: flex; width: 100%; justify-content: end; text-decoration: none;"><i class="fa fa-plus-circle" aria-hidden="true" style="position: relative; bottom: 6px;"></i></i></button>',
         addText:           'Add another',
 
         // removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i></button>',
 
-        removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i><span class=\"sr-only\"> previous <span class="controls-field-name-text">field</span></span></button>',
+        removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\" ><i class=\"fa fa-times-circle\"></i><span class=\"sr-only\"> previous <span class="controls-field-name-text">field</span></span></button>',
         removeText:         'Remove',
 
         labelControls:      true,
@@ -35,22 +35,6 @@ export default class GettyControlledVocabulary extends FieldManager {
       this.fieldName = this.element.data('fieldName')
       this.searchUrl = this.element.data('autocompleteUrl')
   }
-
-  // Overrides FieldManager, because field manager uses the wrong selector
-  // addToList( event ) {
-  //         event.preventDefault();
-  //         let $listing = $(event.target).closest('.multi_value').find(this.listClass)
-  //         let $activeField = $listing.children('li').last()
-  //
-  //         if (this.inputIsEmpty($activeField)) {
-  //             this.displayEmptyWarning();
-  //         } else {
-  //             this.clearEmptyWarning();
-  //             $listing.append(this._newField($activeField));
-  //         }
-  //
-  //         this._manageFocus()
-  // }
 
   // Overrides FieldManager in order to avoid doing a clone of the existing field
   createNewField($activeField) {

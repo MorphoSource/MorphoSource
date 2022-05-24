@@ -20,12 +20,10 @@ export default class GettyControlledVocabulary extends FieldManager {
         listClass:         '.listing',
         inputTypeClass:    '.controlled_vocabulary',
 
-        addHtml:           '<button type=\"button\" class=\"btn btn-link add\"><i class=\"fa fa-plus-circle\"></i></button>',
+        addHtml:           '<button type=\"button\" class=\"btn btn-link getty add\" style=\"visibility: hidden;\"><i class="fa fa-plus-circle" aria-hidden="true" style="position: relative; bottom: 6px;"></i></i></button>',
         addText:           'Add another',
 
-        // removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i></button>',
-
-        removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\"><i class=\"fa fa-times-circle\"></i><span class=\"sr-only\"> previous <span class="controls-field-name-text">field</span></span></button>',
+        removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\" style=\"visibility: hidden;\"><i class=\"fa fa-times-circle\"></i><span class=\"sr-only\"> previous <span class="controls-field-name-text">field</span></span></button>',
         removeText:         'Remove',
 
         labelControls:      true,
@@ -36,21 +34,41 @@ export default class GettyControlledVocabulary extends FieldManager {
       this.searchUrl = this.element.data('autocompleteUrl')
   }
 
-  // Overrides FieldManager, because field manager uses the wrong selector
-  // addToList( event ) {
-  //         event.preventDefault();
-  //         let $listing = $(event.target).closest('.multi_value').find(this.listClass)
-  //         let $activeField = $listing.children('li').last()
-  //
-  //         if (this.inputIsEmpty($activeField)) {
-  //             this.displayEmptyWarning();
-  //         } else {
-  //             this.clearEmptyWarning();
-  //             $listing.append(this._newField($activeField));
-  //         }
-  //
-  //         this._manageFocus()
-  // }
+  init() {
+       this._addInitialClasses();
+       this._addAriaLiveRegions();
+       this._appendControls();
+       this._attachEvents();
+       this._addCallbacks();
+   }
+
+   _attachEvents() {
+        this.element.on('click', this.removeSelector, (e) => this.removeFromList(e))
+        this.element.on('click', this.addSelector, (e) => this.addSearchToList(this.element))
+
+        let $search = $(this.element).children('input').first()
+         $(this.element).on('change', $search, (e) => {
+           this.addSearchToList(this.element)
+         })
+    }
+
+
+  _createRemoveControl() {
+     $(this.fieldWrapperClass + ' .field-controls', this.element).append(this.remover)
+     $(this.fieldWrapperClass + ' .field-controls', this.element).each ((_idx, element) => {
+       if ($(element).siblings('.select2-container-disabled').length) {
+        let button = $(element).find('button').first()
+        $(button).css("visibility", "visible")
+       }
+     })
+   }
+
+  createRemoveHtml(options) {
+        var $removeHtml = $(options.removeHtml);
+        $removeHtml.find('.controls-remove-text').html(options.removeText);
+        $removeHtml.find('.controls-field-name-text').html(options.label);
+        return $removeHtml;
+    }
 
   // Overrides FieldManager in order to avoid doing a clone of the existing field
   createNewField($activeField) {
@@ -65,6 +83,63 @@ export default class GettyControlledVocabulary extends FieldManager {
       return $(this.fieldWrapperClass, this.element).length
   }
 
+  // addToList( event ) {
+  //      event.preventDefault();
+  //      let $listing = $(event.target).closest(this.inputTypeClass).find(this.listClass)
+  //      let $activeField = $listing.children('li').first()
+  //
+  //      if (this.inputIsEmpty($activeField)) {
+  //          this.displayEmptyWarning();
+  //      } else {
+  //          this.clearEmptyWarning();
+  //          $listing.prepend(this._newField($activeField));
+  //      }
+  //
+  //      this._manageFocus()
+  //  }
+
+   // _attachEvents() {
+   //      this.element.on('click', this.removeSelector, (e) => this.removeFromList(e))
+   //      this.element.on('click', this.addSelector, (e) => this.AddToList(e))
+   //
+   //      let $search = $(this.element).children('input').first()
+   //      $(this.element).on('change', $search, (e) => {
+   //        // console.log('e')
+   //        // console.log(e)
+   //        this.addSearchToList(this.element)
+   //      })
+   //
+   //      $(document).on( "ready", this.addSearchToList(this.element) )
+   //      // $(this.element).on('ready', this.addSearchToList(this.element))
+   //      // $(document).on( "ready", handler )
+   //  }
+
+    // when a value is selected, create a new search box at the top
+    addSearchToList( element ) {
+
+       let $listing = $(element).closest(this.inputTypeClass).find(this.listClass)
+       let $activeField = $listing.children('li').first()
+
+       let $newField = $(this._newField($activeField))
+       console.log($newField)
+       $newField.attr("placeholder", "Type your answer here");
+
+       $listing.prepend($newField);
+
+       $(element).find('button').each((_idx, button) => {
+         if (_idx == 0) {
+           $(button).css("visibility", "hidden")
+         } else if ($(button).hasClass("add")) {
+           $(button).css("visibility", "hidden")
+         } else {
+           $(button).css("visibility", "visible");
+         }
+       });
+
+       this._manageFocus()
+
+     }
+
   // Overridden because we always want to permit adding another row
   inputIsEmpty(activeField) {
       return false
@@ -74,6 +149,7 @@ export default class GettyControlledVocabulary extends FieldManager {
       let index = this._maxIndex()
       let rowTemplate = this._template()
       let controls = this.controls.clone()//.append(this.remover)
+
       let row =  $(rowTemplate({ "paramKey": this.paramKey,
                                  "name": this.fieldName,
                                  "index": index,
@@ -102,6 +178,22 @@ export default class GettyControlledVocabulary extends FieldManager {
       this.addAutocompleteToEditor($newInput)
       this.element.trigger("managed_field:add", $newInput)
   }
+
+    // _createAddControl() {
+    //   // console.log("createAddControl this.element:");
+    //   // console.log(this.element);
+    //   this.element.find(this.listClass).after(this.adder)
+    //   // let $listing = $(this.element).closest(this.inputTypeClass).find(this.listClass)
+    //   // let $activeField = $listing.children('li').first()
+    //   // $listing.prepend(this._newField($activeField));
+    // }
+
+     // createAddHtml(options) {
+     //    // var $addHtml  = $(options.addHtml);
+     //    // $addHtml.find('.controls-add-text').html(options.addText + options.label);
+     //    // return $addHtml;
+     //
+     //  }
 
   /**
   * Make new element have autocomplete behavior

@@ -1,3 +1,5 @@
+require 'axlsx'
+
 # DrainableIO and RemoteInclusion help smooth out IntervalResponse and ZipTricks functionality
 
 class DrainableIO < StringIO
@@ -47,7 +49,7 @@ module Morphosource
     end
 
     def prepare_all_files
-      @all_files ||= files + standard_agreement_files + media_agreement_files + csv_manifest
+      @all_files ||= files + standard_agreement_files + media_agreement_files + csv_manifest + xlsx_manifest
     end
 
     def create_interval_sequence
@@ -242,7 +244,7 @@ module Morphosource
       def csv_manifest
         file_name = "tempcsv.csv"
         tmp_csv = File.join(Rails.root, %w{app assets documents}, file_name)
-byebug
+#byebug
 
         CSV.open(tmp_csv, "wb") do |csv|
           csv << ["row", "of", "CSV", "data"]
@@ -262,7 +264,70 @@ byebug
 
       end
       
+      def xlsx_manifest
+        file_name = "tempxlsx.xlsx"
+        xlsx_path = File.join(Rails.root, %w{app assets documents}, file_name)
+        p = Axlsx::Package.new
+        wb = p.workbook
+        date_time_format = wb.styles.add_style :format_code => 'YYYY-MM-DD'
+        headers = media_solr_doc_hashes.first.keys.flatten.map{ |s| s.to_s }
+        wb.add_worksheet(:name => "xlsx manifest") do |sheet|
+          sheet.add_row headers
+          media_solr_doc_hashes.each do |solr_doc_hash|
+            sheet.add_row solr_doc_hash.values.map{ |v| v.first }, 
+              :types => xlsx_column_types(headers), 
+              :style => xlsx_column_styles(headers, date_time_format)
+          end
+        end
 
+        p.serialize xlsx_path
+
+        file = File.open(xlsx_path)
+
+        [{
+          name: file_name,
+          size: file.size,
+          crc32: crc32_from_io(file),
+          file: file
+        }]
+
+# cleanup: delete temp xlsx
+      end
+
+      def xlsx_column_types(headers)
+        types = []
+        headers.each do |header|
+          case header
+          when 'date_uploaded', 'date_modified'
+            types << nil
+          else
+            types << :string
+          end
+        end
+        return types
+      end
+
+      def xlsx_column_styles(headers, date_time_format)
+        styles = []
+        headers.each do |header|
+          case header
+          when 'date_uploaded', 'date_modified'
+            styles << date_time_format
+          else
+            styles << nil
+          end
+        end
+        return styles
+      end
+
+      def media_solr_doc_hashes
+        media.map do |m|
+          doc = SolrDocument.find(m.id)
+          if doc.present?
+            doc.to_semantic_values
+          end
+        end
+      end
 
       # MorphoSource standard agreement file methods
 

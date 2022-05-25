@@ -36,6 +36,29 @@ export default class GettyControlledVocabulary extends FieldManager {
       this.searchUrl = this.element.data('autocompleteUrl')
   }
 
+  _attachEvents() {
+        this.element.on('click', this.removeSelector, (e) => this.removeFromList(e))
+        this.element.on('click', this.addSelector, (e) => this.addToList(e))
+        $(document).on('ready', $(this.addSelector).trigger( "click" ));
+    }
+
+
+    addToList( event ) {
+        event.preventDefault();
+        let $listing = $(event.target).closest(this.inputTypeClass).find(this.listClass)
+        let $activeField = $listing.children('li').prepend()
+
+        if (this.inputIsEmpty($activeField)) {
+            this.displayEmptyWarning();
+        } else {
+            this.clearEmptyWarning();
+            $listing.prepend(this._newField($activeField));
+        }
+
+        this._manageFocus()
+    }
+
+
   // Overrides FieldManager in order to avoid doing a clone of the existing field
   createNewField($activeField) {
       let $newField = this._newFieldTemplate()

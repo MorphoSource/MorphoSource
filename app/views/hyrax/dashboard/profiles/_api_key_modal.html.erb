@@ -1,0 +1,19 @@
+<!-- Modal used to provide API key to user -->
+<div class="modal fade" id="apiKeyModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          User API Key
+        </h4>
+      </div>
+      <div class="modal-body">
+        <p><%= t("morphosource.dashboard.profiles.api_key_explanation") %></p>
+        <p id="api-key" style="font-size: larger"><b><%= @user.token %></b></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="modal-okay" class="btn btn-primary" data-dismiss="modal">OK</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

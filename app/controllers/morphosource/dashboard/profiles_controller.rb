@@ -7,9 +7,9 @@ module Morphosource
 
       before_action :strip_empty_values, only: [:update]
 
-      before_action :find_user, except: [:edit_password, :update_password]
+      before_action :find_user, except: [:edit_password, :update_password, :generate_new_api_key]
 
-      skip_authorize_resource only: [:edit_password, :update_password]
+      skip_authorize_resource only: [:edit_password, :update_password, :generate_new_api_key]
       
       def edit
         authenticate_user!
@@ -37,6 +37,13 @@ module Morphosource
         else
           redirect_to main_app.profile_edit_password_path(@user), alert: @user.errors.full_messages
         end
+      end
+
+      def generate_new_api_key
+        authenticate_user!
+        @user = current_user
+        @user.regenerate_token
+        redirect_to main_app.profile_show_path, notice: "New API key has been generated."
       end
 
       private

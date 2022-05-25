@@ -220,7 +220,8 @@ Rails.application.routes.draw do
   # override ProfilesController
   scope module: :morphosource do
     get 'dashboard/profiles/:id/edit', to: 'dashboard/profiles#edit'
-    get 'dashboard/profiles/:id', to: 'dashboard/profiles#show'
+    get 'dashboard/profiles/:id', to: 'dashboard/profiles#show', as: 'profile_show'
+    get 'dashboard/profiles/:id/generate_new_api_key', to: 'dashboard/profiles#generate_new_api_key', as: 'profile_generate_new_api_key'
     put 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
     patch 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
   end

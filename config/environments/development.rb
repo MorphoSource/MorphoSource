@@ -31,8 +31,8 @@ Rails.application.configure do
   # ActiveJob adapter as inline - disabled (using async as default) for now due to file characterization issue
   # config.active_job.queue_adapter = :inline
 
-  # Use resque in development if using docker
-  if ENV["IN_DOCKER"]
+  # Use resque in development if using docker or USE_RESQUE flag is set
+  if ENV["IN_DOCKER"] || ENV["USE_RESQUE"]
     config.active_job.queue_adapter = :resque
   end
 

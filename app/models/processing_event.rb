@@ -1,6 +1,8 @@
 class ProcessingEvent < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
+  before_create :date_filter
+  before_update :date_filter
   after_save :add_id_to_title
 
   self.indexer = ProcessingEventIndexer
@@ -32,5 +34,9 @@ class ProcessingEvent < Morphosource::Works::Base
       unless self.title && self.id && self.title.first.to_s.start_with?("PE#{self.id.to_s}: ")
         self.title.set("PE#{self.id.to_s}: #{self.title.first.to_s}")
       end
+    end
+
+    def date_attributes_for_filter
+      [ :date_created ]
     end
 end

@@ -1484,7 +1484,9 @@ $( document ).ready(function() {
           }
 
           // Re-enable media permission fields possibly disabled by org mandate
-          $('form#new_media div#submission-media-ownership div#media-ownership-fields input,select,textarea').prop('disabled', false); 
+          $('form#new_media div#submission-media-ownership div#media-ownership-fields input,select,textarea')
+            .not('select#media_transfer_management')
+            .prop('disabled', false); 
 
           return true;
         });

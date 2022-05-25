@@ -14,6 +14,7 @@ class MediaIndexer < Morphosource::WorkIndexer
   def generate_solr_document
     super.tap do |solr_doc|
       solr_doc['file_set_visibilities_ssim'] = object.file_set_visibilities
+      solr_doc['file_set_formats_tesim'] = object.file_set_formats
       solr_doc['fileset_accessibility_ssim'] = object.fileset_accessibility
       solr_doc['download_access_group_ssim'] = object.download_groups
       solr_doc['download_access_person_ssim'] = object.download_users

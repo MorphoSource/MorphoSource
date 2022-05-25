@@ -134,6 +134,12 @@ class Media < Morphosource::Works::Base
     all_visibilities & file_visibilities
   end
 
+  def file_set_formats
+    file_sets.map do |file|
+      file.format_label
+    end
+  end
+
   def restricted?
     publication_status == "restricted"
   end

@@ -49,7 +49,8 @@ module Morphosource
     end
 
     def prepare_all_files
-      @all_files ||= files + standard_agreement_files + media_agreement_files + csv_manifest + xlsx_manifest
+      @temp_files = []
+      @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest
     end
 
     def create_interval_sequence
@@ -240,33 +241,11 @@ module Morphosource
       end
 
 
-
-      def csv_manifest
-        file_name = "tempcsv.csv"
-        tmp_csv = File.join(Rails.root, %w{app assets documents}, file_name)
-#byebug
-
-        CSV.open(tmp_csv, "wb") do |csv|
-          csv << ["row", "of", "CSV", "data"]
-          csv << ["another", "row"]
-        end
-
-        file = File.open(tmp_csv)
-
-        [{
-          name: file_name,
-          size: file.size,
-          crc32: crc32_from_io(file),
-          file: file
-        }]
-
-# cleanup: delete temp csv 
-
-      end
       
-      def xlsx_manifest
-        file_name = "tempxlsx.xlsx"
-        xlsx_path = File.join(Rails.root, %w{app assets documents}, file_name)
+      def xlsx_manifest 
+        file_name = "dl-media-manifest-#{current_user.id}-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}.xlsx"
+        xlsx_path = File.join(Dir.tmpdir(), file_name)
+ 
         p = Axlsx::Package.new
         wb = p.workbook
         date_time_format = wb.styles.add_style :format_code => 'YYYY-MM-DD'
@@ -279,19 +258,16 @@ module Morphosource
               :style => xlsx_column_styles(headers, date_time_format)
           end
         end
-
         p.serialize xlsx_path
 
         file = File.open(xlsx_path)
-
+        crc32 = crc32_from_io(file)
         [{
           name: file_name,
           size: file.size,
-          crc32: crc32_from_io(file),
+          crc32: crc32,
           file: file
         }]
-
-# cleanup: delete temp xlsx
       end
 
       def xlsx_column_types(headers)
@@ -437,5 +413,6 @@ module Morphosource
       def output_filename(file_name, media_id)
         File.basename(file_name, File.extname(file_name)) + "-#{media_id}" + File.extname(file_name)
       end
+
   end
 end

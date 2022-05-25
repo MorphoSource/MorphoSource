@@ -6,6 +6,8 @@ module Morphosource
                                                aat_attribute_label
                                                aat_material
                                                aat_material_label
+                                               aat_period
+                                               aat_period_label
                                                aat_type
                                                aat_type_label
                                                cho_attribute

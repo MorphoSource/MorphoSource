@@ -34,111 +34,66 @@ export default class GettyControlledVocabulary extends FieldManager {
       this.searchUrl = this.element.data('autocompleteUrl')
   }
 
-  init() {
-       this._addInitialClasses();
-       this._addAriaLiveRegions();
-       this._appendControls();
-       this._attachEvents();
-       this._addCallbacks();
-   }
+  _attachEvents() {
+    this.element.on('click', this.removeSelector, (e) => this.removeFromList(e))
+    this.element.on('click', this.addSelector, (e) => this.addSearchToList(this.element))
 
-   _attachEvents() {
-        this.element.on('click', this.removeSelector, (e) => this.removeFromList(e))
-        this.element.on('click', this.addSelector, (e) => this.addSearchToList(this.element))
-
-        let $search = $(this.element).children('input').first()
-         $(this.element).on('change', $search, (e) => {
-           this.addSearchToList(this.element)
-         })
-    }
-
+    // when a value is selected in the search box, create a new search box at the top of the list of values.
+    let $search = $(this.element).children('input').first()
+     $(this.element).on('change', $search, (e) => {
+       this.addSearchToList(this.element)
+     })
+  }
 
   _createRemoveControl() {
-     $(this.fieldWrapperClass + ' .field-controls', this.element).append(this.remover)
-     $(this.fieldWrapperClass + ' .field-controls', this.element).each ((_idx, element) => {
-       if ($(element).siblings('.select2-container-disabled').length) {
+    $(this.fieldWrapperClass + ' .field-controls', this.element).append(this.remover)
+    $(this.fieldWrapperClass + ' .field-controls', this.element).each ((_idx, element) => {
+      if ($(element).siblings('.select2-container-disabled').length) {
         let button = $(element).find('button').first()
         $(button).css("visibility", "visible")
-       }
-     })
-   }
+      }
+    })
+  }
 
   createRemoveHtml(options) {
-        var $removeHtml = $(options.removeHtml);
-        $removeHtml.find('.controls-remove-text').html(options.removeText);
-        $removeHtml.find('.controls-field-name-text').html(options.label);
-        return $removeHtml;
+    var $removeHtml = $(options.removeHtml);
+    $removeHtml.find('.controls-remove-text').html(options.removeText);
+    $removeHtml.find('.controls-field-name-text').html(options.label);
+    return $removeHtml;
     }
 
   // Overrides FieldManager in order to avoid doing a clone of the existing field
   createNewField($activeField) {
-      let $newField = this._newFieldTemplate()
-      this._addBehaviorsToInput($newField)
-      this.element.trigger("managed_field:add", $newField);
-      return $newField
+    let $newField = this._newFieldTemplate()
+    this._addBehaviorsToInput($newField)
+    this.element.trigger("managed_field:add", $newField);
+    return $newField
   }
 
   /* This gives the index for the editor */
   _maxIndex() {
-      return $(this.fieldWrapperClass, this.element).length
+    return $(this.fieldWrapperClass, this.element).length
   }
 
-  // addToList( event ) {
-  //      event.preventDefault();
-  //      let $listing = $(event.target).closest(this.inputTypeClass).find(this.listClass)
-  //      let $activeField = $listing.children('li').first()
-  //
-  //      if (this.inputIsEmpty($activeField)) {
-  //          this.displayEmptyWarning();
-  //      } else {
-  //          this.clearEmptyWarning();
-  //          $listing.prepend(this._newField($activeField));
-  //      }
-  //
-  //      this._manageFocus()
-  //  }
+  // when a value is selected, create a new search box at the top
+  addSearchToList( element ) {
+    let $listing = $(element).closest(this.inputTypeClass).find(this.listClass)
+    let $activeField = $listing.children('li').first()
+    let $newField = $(this._newField($activeField))
 
-   // _attachEvents() {
-   //      this.element.on('click', this.removeSelector, (e) => this.removeFromList(e))
-   //      this.element.on('click', this.addSelector, (e) => this.AddToList(e))
-   //
-   //      let $search = $(this.element).children('input').first()
-   //      $(this.element).on('change', $search, (e) => {
-   //        // console.log('e')
-   //        // console.log(e)
-   //        this.addSearchToList(this.element)
-   //      })
-   //
-   //      $(document).on( "ready", this.addSearchToList(this.element) )
-   //      // $(this.element).on('ready', this.addSearchToList(this.element))
-   //      // $(document).on( "ready", handler )
-   //  }
+    $listing.prepend($newField);
 
-    // when a value is selected, create a new search box at the top
-    addSearchToList( element ) {
-
-       let $listing = $(element).closest(this.inputTypeClass).find(this.listClass)
-       let $activeField = $listing.children('li').first()
-
-       let $newField = $(this._newField($activeField))
-       console.log($newField)
-       $newField.attr("placeholder", "Type your answer here");
-
-       $listing.prepend($newField);
-
-       $(element).find('button').each((_idx, button) => {
-         if (_idx == 0) {
-           $(button).css("visibility", "hidden")
-         } else if ($(button).hasClass("add")) {
-           $(button).css("visibility", "hidden")
-         } else {
-           $(button).css("visibility", "visible");
-         }
-       });
-
-       this._manageFocus()
-
-     }
+    $(element).find('button').each((_idx, button) => {
+      if (_idx == 0) {
+        $(button).css("visibility", "hidden")
+      } else if ($(button).hasClass("add")) {
+        $(button).css("visibility", "hidden")
+      } else {
+        $(button).css("visibility", "visible");
+      }
+    });
+   this._manageFocus()
+  }
 
   // Overridden because we always want to permit adding another row
   inputIsEmpty(activeField) {
@@ -146,27 +101,27 @@ export default class GettyControlledVocabulary extends FieldManager {
   }
 
   _newFieldTemplate() {
-      let index = this._maxIndex()
-      let rowTemplate = this._template()
-      let controls = this.controls.clone()//.append(this.remover)
+    let index = this._maxIndex()
+    let rowTemplate = this._template()
+    let controls = this.controls.clone()//.append(this.remover)
 
-      let row =  $(rowTemplate({ "paramKey": this.paramKey,
-                                 "name": this.fieldName,
-                                 "index": index,
-                                 "class": "controlled_vocabulary" }))
-                  .append(controls)
-      return row
+    let row =  $(rowTemplate({ "paramKey": this.paramKey,
+                               "name": this.fieldName,
+                               "index": index,
+                               "class": "controlled_vocabulary" }))
+                .append(controls)
+    return row
   }
 
   get _source() {
-      return "<li class=\"field-wrapper input-group input-append\">" +
-        "<input class=\"string {{class}} optional form-control {{paramKey}}_{{name}} form-control multi-text-field\" name=\"{{paramKey}}[{{name}}_attributes][{{index}}][hidden_label]\" value=\"\" id=\"{{paramKey}}_{{name}}_attributes_{{index}}_hidden_label\" data-attribute=\"{{name}}\" type=\"text\">" +
-        "<input name=\"{{paramKey}}[{{name}}_attributes][{{index}}][id]\" value=\"\" id=\"{{paramKey}}_{{name}}_attributes_{{index}}_id\" type=\"hidden\" data-id=\"remote\">" +
-        "<input name=\"{{paramKey}}[{{name}}_attributes][{{index}}][_destroy]\" id=\"{{paramKey}}_{{name}}_attributes_{{index}}__destroy\" value=\"\" data-destroy=\"true\" type=\"hidden\"></li>"
+    return "<li class=\"field-wrapper input-group input-append\">" +
+      "<input class=\"string {{class}} optional form-control {{paramKey}}_{{name}} form-control multi-text-field\" name=\"{{paramKey}}[{{name}}_attributes][{{index}}][hidden_label]\" value=\"\" id=\"{{paramKey}}_{{name}}_attributes_{{index}}_hidden_label\" data-attribute=\"{{name}}\" type=\"text\">" +
+      "<input name=\"{{paramKey}}[{{name}}_attributes][{{index}}][id]\" value=\"\" id=\"{{paramKey}}_{{name}}_attributes_{{index}}_id\" type=\"hidden\" data-id=\"remote\">" +
+      "<input name=\"{{paramKey}}[{{name}}_attributes][{{index}}][_destroy]\" id=\"{{paramKey}}_{{name}}_attributes_{{index}}__destroy\" value=\"\" data-destroy=\"true\" type=\"hidden\"></li>"
   }
 
   _template() {
-      return Handlebars.compile(this._source)
+    return Handlebars.compile(this._source)
   }
 
   /**
@@ -178,22 +133,6 @@ export default class GettyControlledVocabulary extends FieldManager {
       this.addAutocompleteToEditor($newInput)
       this.element.trigger("managed_field:add", $newInput)
   }
-
-    // _createAddControl() {
-    //   // console.log("createAddControl this.element:");
-    //   // console.log(this.element);
-    //   this.element.find(this.listClass).after(this.adder)
-    //   // let $listing = $(this.element).closest(this.inputTypeClass).find(this.listClass)
-    //   // let $activeField = $listing.children('li').first()
-    //   // $listing.prepend(this._newField($activeField));
-    // }
-
-     // createAddHtml(options) {
-     //    // var $addHtml  = $(options.addHtml);
-     //    // $addHtml.find('.controls-add-text').html(options.addText + options.label);
-     //    // return $addHtml;
-     //
-     //  }
 
   /**
   * Make new element have autocomplete behavior
@@ -208,10 +147,10 @@ export default class GettyControlledVocabulary extends FieldManager {
   // Instead of removing the line, we override this method to add a
   // '_destroy' hidden parameter
   removeFromList( event ) {
-      event.preventDefault()
-      let field = $(event.target).parents(this.fieldWrapperClass)
-      field.find('[data-destroy]').val('true')
-      field.hide()
-      this.element.trigger("managed_field:remove", field)
+    event.preventDefault()
+    let field = $(event.target).parents(this.fieldWrapperClass)
+    field.find('[data-destroy]').val('true')
+    field.hide()
+    this.element.trigger("managed_field:remove", field)
   }
 }

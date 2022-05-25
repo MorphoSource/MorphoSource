@@ -36,10 +36,6 @@ module Morphosource
       property :tgn, predicate: ::RDF::URI.new("http://purl.org/dc/terms/TGN"), class_name: Morphosource::ControlledVocabularies::Getty::Tgn do |index|
         index.as :stored_searchable
       end
-
-      property :periodic_time, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/period") do |index|
-        index.as :stored_searchable, :facetable
-      end
     end
 
   end

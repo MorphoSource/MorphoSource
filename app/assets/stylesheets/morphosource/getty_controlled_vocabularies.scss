@@ -1,19 +1,11 @@
-// button.getty:focus{
-//   outline: none !important;
-// }
-//
-// button.getty:active{
-//   outline: none !important;
-// }
-//
-// button.getty:link{
-//   outline: none !important;
-// }
-//
-// button.getty:hover{
-//   outline: none !important;
-// }
+// selected values should have a width of 100%
+div[data-autocomplete-url*='getty'] {
 
-div[data-autocomplete-url*='getty'] input {
-  width: 100% !important;
+  li {
+    margin-bottom: 5px !important;
+  }
+
+  input {
+    width: 100% !important;
+  }
 }

@@ -4,7 +4,6 @@
 import { FieldManager } from './field_manager'
 import Handlebars from 'handlebars'
 import Autocomplete from 'hyrax/autocomplete'
-import MorphosourceAutocomplete from 'morphosource/ms_autocomplete'
 
 export default class MorphosourceControlledVocabulary extends FieldManager {
 
@@ -38,31 +37,26 @@ export default class MorphosourceControlledVocabulary extends FieldManager {
   }
 
   // Overrides FieldManager, because field manager uses the wrong selector
-  addToList( event ) {
-          event.preventDefault();
-          let $listing = $(event.target).closest('.multi_value').find(this.listClass)
-          let $activeField = $listing.children('li').last()
-
-          if (this.inputIsEmpty($activeField)) {
-              this.displayEmptyWarning();
-          } else {
-              this.clearEmptyWarning();
-              $listing.append(this._newField($activeField));
-          }
-
-          this._manageFocus()
-  }
+  // addToList( event ) {
+  //         event.preventDefault();
+  //         let $listing = $(event.target).closest('.multi_value').find(this.listClass)
+  //         let $activeField = $listing.children('li').last()
+  //
+  //         if (this.inputIsEmpty($activeField)) {
+  //             this.displayEmptyWarning();
+  //         } else {
+  //             this.clearEmptyWarning();
+  //             $listing.append(this._newField($activeField));
+  //         }
+  //
+  //         this._manageFocus()
+  // }
 
   // Overrides FieldManager in order to avoid doing a clone of the existing field
   createNewField($activeField) {
-    console.log($activeField)
       let $newField = this._newFieldTemplate()
-      console.log("$newField")
-      console.log($newField)
       this._addBehaviorsToInput($newField)
       this.element.trigger("managed_field:add", $newField);
-      console.log("this.element")
-      console.log(this.element)
       return $newField
   }
 
@@ -114,7 +108,7 @@ export default class MorphosourceControlledVocabulary extends FieldManager {
   * @param {jQuery} input - The <input type="text"> tag
   */
   addAutocompleteToEditor(input) {
-    var autocomplete = new MorphosourceAutocomplete()
+    var autocomplete = new Autocomplete()
     autocomplete.setup(input, this.fieldName, this.searchUrl)
   }
 
@@ -124,14 +118,8 @@ export default class MorphosourceControlledVocabulary extends FieldManager {
   removeFromList( event ) {
       event.preventDefault()
       let field = $(event.target).parents(this.fieldWrapperClass)
-      if (this.element.find("li:visible").length == 1) {
-        this.createNewField(field);
-      }
       field.find('[data-destroy]').val('true')
       field.hide()
       this.element.trigger("managed_field:remove", field)
-      // if (this.element.find("li:visible").length == 0) {
-      //   this.createNewField(field);
-      // }
   }
 }

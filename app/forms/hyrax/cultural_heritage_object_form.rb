@@ -5,6 +5,7 @@ module Hyrax
 
     self.terms += [:aat_attribute,
                    :aat_material,
+                   :aat_period,
                    :aat_type,
                    :cho_attribute,
                    :cho_type,
@@ -23,8 +24,8 @@ module Hyrax
     def self.build_permitted_params
       super + [ { aat_attribute_attributes: [:id, :_destroy] },
                 { aat_material_attributes: [:id, :_destroy] },
-                { aat_type_attributes: [:id, :_destroy] },
-                { periodic_time_attributes: [:id, :_destroy] } ]
+                { aat_period_attributes: [:id, :_destroy] },
+                { aat_type_attributes: [:id, :_destroy] } ]
     end
 
   end

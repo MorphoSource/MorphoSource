@@ -15,9 +15,10 @@ class CulturalHeritageObject < Morphosource::Works::Base
   include Morphosource::LocationMetadata
   include ::Morphosource::BasicMetadata
 
-  include Morphosource::CulturalHeritageObjectMetadata
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
+  include Morphosource::CulturalHeritageObjectMetadata
+
 
 
   def taxonomies # TODO remove later after refactoring media_indexer

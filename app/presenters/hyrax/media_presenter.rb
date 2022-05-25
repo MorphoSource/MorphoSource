@@ -474,9 +474,9 @@ module Hyrax
           @device_description = device.description&.first
           @device_modality = device.modality&.join(', ')
           device_modality_list = []
-          # device.modality.each do |dm|
-          #   device_modality_list << Morphosource::ModalitiesService.new.label(dm)
-          # end
+          device.modality.each do |dm|
+            device_modality_list << Morphosource::ModalitiesService.new.label(dm)
+          end
           @device_modality_term = device_modality_list.join(', ')
         end
 

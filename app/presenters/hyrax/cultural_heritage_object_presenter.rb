@@ -8,6 +8,8 @@ module Hyrax
              :aat_attribute_label,
              :aat_material,
              :aat_material_label,
+             :aat_period,
+             :aat_period_label,
              :aat_type,
              :aat_type_label,
              :address,
@@ -118,6 +120,12 @@ module Hyrax
       aat = aat_material_label.present? ? aat_material_label : []
       custom = material.present? ? material : []
       aat + custom
+    end
+
+    def object_period
+      aat = aat_period_label.present? ? aat_period_label : []
+      periodic_time = periodic_time.present? ? periodic_time : []
+      aat + periodic_time
     end
 
     def object_type

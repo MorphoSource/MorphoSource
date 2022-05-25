@@ -30,13 +30,13 @@ export default class MorphosourceAutocomplete extends Autocomplete {
       case 'aat_material':
         new LinkedData(element, url)
         break
+      case 'aat_period':
+        new LinkedData(element, url)
+        break
       case 'aat_type':
         new LinkedData(element, url)
         break
       case 'based_near':
-        new LinkedData(element, url)
-        break
-      case 'periodic_time':
         new LinkedData(element, url)
         break
       case 'tgn':

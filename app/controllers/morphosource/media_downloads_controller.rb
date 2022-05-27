@@ -240,11 +240,13 @@ module Morphosource
         "Media_Contributor_Usage_Agreement_#{index}#{File.extname(file_path).downcase}"
       end
 
-
+      # Methods for creating the XLSX media manifest file
       
       def xlsx_manifest 
-        file_name = "dl-media-manifest-#{current_user.id}-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}.xlsx"
-        xlsx_path = File.join(Dir.tmpdir(), file_name)
+        directory_name = Dir.tmpdir() + "/download-media-manifest"
+        Dir.mkdir(directory_name) unless File.exists?(directory_name)
+        file_name = "media-manifest-#{current_user.id}-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}.xlsx"
+        xlsx_path = File.join(directory_name, file_name)
  
         p = Axlsx::Package.new
         wb = p.workbook

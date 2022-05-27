@@ -24,8 +24,24 @@ export default class MorphosourceAutocomplete extends Autocomplete {
           element,
           url)
         break
+      case 'aat_attribute':
+        new LinkedData(element, url)
+        break
+      case 'aat_material':
+        new LinkedData(element, url)
+        break
+      case 'aat_period':
+        new LinkedData(element, url)
+        break
+      case 'aat_type':
+        new LinkedData(element, url)
+        break
       case 'based_near':
         new LinkedData(element, url)
+        break
+      case 'tgn':
+        new LinkedData(element, url)
+        break
       default:
         new Default(element, url)
         break

@@ -1,0 +1,13 @@
+<%# key is 'tgn' %>
+<%= f.input key,
+            as: :controlled_vocabulary,
+            label: 'Getty Location',
+            placeholder: 'Search for a location',
+            input_html: {
+              class: 'form-control',
+              data: { 'autocomplete-url' => "/authorities/search/getty/tgn",
+                      'autocomplete' => key }
+            },
+            ### Required for the ControlledVocabulary javascript:
+            wrapper_html: { data: { 'autocomplete-url' => "/authorities/search/getty/tgn",
+                                    'field-name' => key }} %>

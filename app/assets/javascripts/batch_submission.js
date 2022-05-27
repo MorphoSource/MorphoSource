@@ -393,18 +393,18 @@ $( document ).ready(function() {
     }
 
     var data = new BatchSubmissionData();
-    var batchSubmissionForm = new SubmissionForm(data);
+    var batchSubmissionFormData = new SubmissionForm(data);
 
-    batchSubmissionForm.views = [
-      new OrganizationView(batchSubmissionForm),
-      new DeviceView(batchSubmissionForm),
+    batchSubmissionFormData.views = [
+      new OrganizationView(batchSubmissionFormData),
+      new DeviceView(batchSubmissionFormData),
     ];
-    batchSubmissionForm.initializeForm();
+    batchSubmissionFormData.initializeForm();
 
     $('#submission_organization_select_display_container').on('click', '#organization-select-close', function(event) {
         // user click close button to remove selected org
         console.log("removing selected org");
-        batchSubmissionForm.resetFormFromOrg(batchSubmissionForm.organizationDefaultMediaFields);
+        batchSubmissionFormData.resetFormFromOrg(batchSubmissionFormData.organizationDefaultMediaFields);
     });
       
     $('#manifest_file, #batch_submission_modality').on('change', function(){ setSubmitStatus() });
@@ -450,6 +450,42 @@ $( document ).ready(function() {
         $("#btn-submit").prop('disabled', true);
       }
     };
+
+    bsFormData = localStorage.getItem("batchSubmissionFormData");
+    if (bsFormData != null) {
+
+      //console.log("GETTING :",bsFormData);
+//      $(JSON.parse(bsFormData)).each(function(h){
+//        var name = h.name;
+//        console.log( name);
+//        console.log( value);
+//      })
+
+     var formData = {};
+      $.each(JSON.parse(bsFormData), function(i, field){
+        if(field.value.trim() != ""){
+          if(formData[field.name] != undefined){
+            var val = formData[field.name];
+            if(!Array.isArray(val)){
+               arr = [val];
+            }
+            arr.push(field.value.trim());
+            formData[field.name] = arr;
+          }else{
+            formData[field.name] = field.value;
+          }
+          }
+      });
+      console.log(formData );
+
+      //$('input.organization_id').val('000200000');
+      //$("#batch_submission_organization_search").select2('val', '000200000').trigger('select2-selecting'); 
+    }
+
+    $('#batch_submission_form').submit(function(){
+      var values = $('#batch_submission_form').serializeArray();
+      localStorage.setItem("batchSubmissionFormData", JSON.stringify(values));
+    });
 
   } // end if the page is submission flow page
 });

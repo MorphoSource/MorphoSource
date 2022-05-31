@@ -12,13 +12,13 @@ module Morphosource
         def authority_by_facet
           case params["facet"]
           when "attributes"
-            Morphosource::Qa::Authorities::Getty::AAT::Attributes.new
+            ::Morphosource::Qa::Authorities::Getty::AAT::Attributes.new
           when "materials"
-            Morphosource::Qa::Authorities::Getty::AAT::Materials.new
-          when "periods" 
-            Morphosource::Qa::Authorities::Getty::AAT::Periods.new
+            ::Morphosource::Qa::Authorities::Getty::AAT::Materials.new
+          when "periods"
+            ::Morphosource::Qa::Authorities::Getty::AAT::Periods.new
           when "types"
-            Morphosource::Qa::Authorities::Getty::AAT::Types.new
+            ::Morphosource::Qa::Authorities::Getty::AAT::Types.new
           else
             ::Qa::Authorities::Getty::AAT.new
           end

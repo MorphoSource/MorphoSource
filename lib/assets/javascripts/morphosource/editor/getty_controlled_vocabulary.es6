@@ -149,7 +149,14 @@ export default class GettyControlledVocabulary extends FieldManager {
   removeFromList( event ) {
     event.preventDefault()
     let field = $(event.target).parents(this.fieldWrapperClass)
-    field.find('[data-destroy]').val('true')
+    // if the value is not an already existing attribute (the user has selected a new value and then removed it)
+    // remove the getty uri, do not set '_destroy'
+    // otherwise, set _destroy on the already existing attribute
+    if (!field.find(('input[id^="s2id"]')).length){
+      field.find('[data-id]').val('')
+    } else {
+      field.find('[data-destroy]').val('true')
+    }
     field.hide()
     this.element.trigger("managed_field:remove", field)
   }

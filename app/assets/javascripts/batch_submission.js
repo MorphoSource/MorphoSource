@@ -499,6 +499,28 @@ $( document ).ready(function() {
             } else {
                 switch(ctrl.attr("type")) {
                     case "text":
+                      if (ctrl.hasClass('multi-text-field')) {
+                        if (Array.isArray(value)) {
+                          // array w/ more than 1 value
+
+                          btnAdd = ctrl.closest('.form-group').find('.btn.add');
+                          btnAdd.trigger('click');
+
+                        }
+
+                      } else if (ctrl.hasClass('input-for-select2')) {
+                        if (Array.isArray(value)) {
+                          value = value[0];
+                        }
+                        //alert(ctrl.attr())
+                        //alert(key);
+                        // (ctrl.closest('.select2-container') != 0)
+//                        alert('select2')
+//      $("#batch_submission_organization_search").select2('val', '000200000').trigger('select2-selecting'); 
+
+                        // select2 control
+                        ctrl.select2('val', value).trigger('select2-selecting'); 
+                      }
                     case "hidden":
                         ctrl.val(value);   
                         break;
@@ -519,8 +541,7 @@ $( document ).ready(function() {
     $('#batch_submission_form').submit(function(){
       var values = $('#batch_submission_form').serializeArray();
       localStorage.setItem("batchSubmissionFormData", JSON.stringify(values));
-      console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));
-//event.preventDefault();
+      //console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));
     });
 
   } // end if the page is submission flow page

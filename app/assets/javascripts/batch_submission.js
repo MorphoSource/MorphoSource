@@ -453,15 +453,15 @@ $( document ).ready(function() {
 
     bsFormData = localStorage.getItem("batchSubmissionFormData");
     if (bsFormData != null) {
+      console.log("GETTING :",bsFormData);
 
-      //console.log("GETTING :",bsFormData);
 //      $(JSON.parse(bsFormData)).each(function(h){
 //        var name = h.name;
 //        console.log( name);
 //        console.log( value);
 //      })
 
-     var formData = {};
+      var formData = {};
       $.each(JSON.parse(bsFormData), function(i, field){
         if(field.value.trim() != ""){
           if(formData[field.name] != undefined){
@@ -474,17 +474,53 @@ $( document ).ready(function() {
           }else{
             formData[field.name] = field.value;
           }
-          }
+        }
       });
       console.log(formData );
-
+      populateForm($('#batch_submission_form'), formData);
+      
+      //$('[name="batch_submission[media][rights_statement]"]').val("http://rightsstatements.org/vocab/InC-OW-EU/1.0/");
       //$('input.organization_id').val('000200000');
       //$("#batch_submission_organization_search").select2('val', '000200000').trigger('select2-selecting'); 
     }
 
+    function populateForm(fm, data) {
+//        resetForm(fm);
+        $.each(data, function(key, value) {
+          try {
+            var ctrl = fm.find('[name="'+key+'"]');
+            if (ctrl.is('select')){
+                $('option', ctrl).each(function() {
+                    if (this.value == value)
+                        this.selected = true;
+                });
+            } else if (ctrl.is('textarea')) {
+                ctrl.val(value);
+            } else {
+                switch(ctrl.attr("type")) {
+                    case "text":
+                    case "hidden":
+                        ctrl.val(value);   
+                        break;
+                    case "checkbox":
+                        if (value == '1')
+                            ctrl.prop('checked', true);
+                        else
+                            ctrl.prop('checked', false);
+                        break;
+                } 
+            }
+          } catch (e) {
+            console.log('error ', e);        
+          }
+        });
+    };
+
     $('#batch_submission_form').submit(function(){
       var values = $('#batch_submission_form').serializeArray();
       localStorage.setItem("batchSubmissionFormData", JSON.stringify(values));
+      console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));
+//event.preventDefault();
     });
 
   } // end if the page is submission flow page

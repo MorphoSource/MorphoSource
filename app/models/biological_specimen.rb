@@ -3,8 +3,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
-  before_create :controlled_value_filter
-  before_update :controlled_value_filter, :update_metadata_from_idigbio_occurrence_id
+  before_create :controlled_value_filter, :date_filter
+  before_update :controlled_value_filter, :date_filter, :update_metadata_from_idigbio_occurrence_id
   after_update :reindex_media
 
   self.indexer = BiologicalSpecimenIndexer
@@ -209,6 +209,10 @@ class BiologicalSpecimen < Morphosource::Works::Base
       env = Hyrax::Actors::Environment.new(curation_concern, Ability.new(User.find_by_ms_id(self.depositor)), attributes_for_actor)
       Hyrax::CurationConcern.actor.create(env)
       return curation_concern.id
+    end
+    
+    def date_attributes_for_filter
+      [ :date_created ]
     end
 
     def controlled_attributes

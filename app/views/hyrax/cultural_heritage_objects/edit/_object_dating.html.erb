@@ -5,5 +5,5 @@
     </div>
 </div>
 <%= f.input :numeric_time, label: 'Absolute Age' %>
-<%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
+<%= render "records/edit_fields/aat_period", f: f, key: 'aat_period' %>
 <%= f.input :dating_method, label: 'Dating Method' %>

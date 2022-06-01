@@ -4,13 +4,18 @@ module Hyrax
   class CulturalHeritageObjectPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :aat_attributes,
+    delegate :aat_attribute,
+             :aat_attribute_label,
              :aat_material,
+             :aat_material_label,
+             :aat_period,
+             :aat_period_label,
              :aat_type,
+             :aat_type_label,
              :address,
              :bibliographic_citation,
              :catalog_number,
-             :cho_attributes,
+             :cho_attribute,
              :cho_type,
              :city,
              :collection_code,
@@ -24,11 +29,9 @@ module Hyrax
              :institution_code,
              :material,
              :numeric_time,
-             :object_attributes,
-             :object_material,
-             :object_type,
              :original_location,
              :periodic_time,
+             :periodic_time_label,
              :provenance_date,
              :provenance_details,
              :provenance_location,
@@ -36,6 +39,7 @@ module Hyrax
              :short_title,
              :state_province,
              :tgn,
+             :tgn_label,
              :vouchered,
              :public_media_ids, to: :solr_document
 
@@ -110,6 +114,30 @@ module Hyrax
 
     def showcase_citation_and_download_partial
       '/hyrax/physical_objects/showcase_citation_and_download'
+    end
+
+    def object_material
+      aat = aat_material_label.present? ? aat_material_label : []
+      custom = material.present? ? material : []
+      aat + custom
+    end
+
+    def object_period
+      aat = aat_period_label.present? ? aat_period_label : []
+      periodic_time = periodic_time.present? ? periodic_time : []
+      aat + periodic_time
+    end
+
+    def object_type
+      aat = aat_type_label.present? ? aat_type_label : []
+      custom = cho_type.present? ? cho_type : []
+      aat + custom
+    end
+
+    def object_attributes
+      aat = aat_attribute_label.present? ? aat_attribute_label : []
+      custom = cho_attribute.present? ? cho_attribute : []
+      aat + custom
     end
 
   end

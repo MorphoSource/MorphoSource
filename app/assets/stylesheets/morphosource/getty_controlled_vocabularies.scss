@@ -1,0 +1,11 @@
+// selected values should have a width of 100%
+div[data-autocomplete-url*='getty'] {
+
+  li {
+    margin-bottom: 5px !important;
+  }
+
+  input {
+    width: 100% !important;
+  }
+}

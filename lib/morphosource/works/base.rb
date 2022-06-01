@@ -107,6 +107,26 @@ module Morphosource
         end
       end
 
+      def date_filter
+        # Convert date strings ingested through batch submission (or manual update)
+        # Acceptable system date format is YYYY-MM-DD with leading zero's, e.g.
+        #  5-6-2019 or 5/6/2019 or 2019/5/6  to 2019-05-06
+        date_attributes_for_filter.each do |attr|
+          if self.send(attr.to_s+"_changed?")
+            str = self.send(attr)&.first
+            case str
+            when /^(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})$/
+              str = $1 + "-" + $2.rjust(2, "0") + "-" + $3.rjust(2, "0") if Date.valid_date? $1.to_i, $2.to_i, $3.to_i
+            when /^(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})$/
+              str = $3 + "-" + $1.rjust(2, "0") + "-" + $2.rjust(2, "0") if Date.valid_date? $3.to_i, $1.to_i, $2.to_i
+            else
+              # leave str as it is
+            end
+            self.send(attr.to_s+"=", [str])
+          end
+        end
+      end
+
 
       private
 

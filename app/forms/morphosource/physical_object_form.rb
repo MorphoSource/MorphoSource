@@ -66,7 +66,6 @@ module Morphosource
                                  :provenance_name,
                                  :publisher,
                                  :state_province,
-                                 :tgn,
                                  :vouchered]
 
     def primary_terms
@@ -84,7 +83,7 @@ module Morphosource
     end
 
     def self.build_permitted_params
-      super + [:organization_id]
+      super + [ :organization_id, { tgn_attributes: [:id, :_destroy] } ]
     end
 
   end

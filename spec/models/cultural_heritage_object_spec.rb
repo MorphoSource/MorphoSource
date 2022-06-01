@@ -13,10 +13,11 @@ RSpec.describe CulturalHeritageObject do
 
     # attributes unique to chos
     it 'has cultural heritage object metadata' do
-      expect(subject.attributes.keys).to include( "aat_attributes",
+      expect(subject.attributes.keys).to include( "aat_attribute",
                                                   "aat_material",
+                                                  "aat_period",
                                                   "aat_type",
-                                                  "cho_attributes",
+                                                  "cho_attribute",
                                                   "cho_type",
                                                   "material",
                                                   "short_title" )

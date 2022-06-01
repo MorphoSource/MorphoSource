@@ -5,14 +5,21 @@ import MorphosourceSaveWorkControl from './ms_save_work_control'
 //import MorphosourceControlledVocabulary from 'hyrax/editor/controlled_vocabulary'
 import MorphosourceControlledVocabulary from './ms_controlled_vocabulary'
 import MorphosourceAutocomplete from './ms_autocomplete'
+import GettyControlledVocabulary from 'morphosource/editor/getty_controlled_vocabulary'
 
 export default class MorphosourceEditor extends Editor {
 
   controlledVocabularies() {
-    this.element.find('.controlled_vocabulary.form-group').each((_idx, controlled_field) =>
-      new MorphosourceControlledVocabulary(controlled_field, this.paramKey)
-    )
-  }
+    this.element.find('.controlled_vocabulary.form-group').each((_idx, controlled_field) => {
+      let gettyFields = ".cultural_heritage_object_aat_type, .cultural_heritage_object_aat_material, .cultural_heritage_object_aat_attribute, .cultural_heritage_object_tgn, .cultural_heritage_object_aat_period"
+      if (controlled_field.matches(gettyFields)) {
+          new GettyControlledVocabulary(controlled_field, this.paramKey)
+      }
+      else {
+        new MorphosourceControlledVocabulary(controlled_field, this.paramKey)
+      }
+    }
+  )}
 
   relationshipsControl() {
     let collections = this.element.find('[data-behavior="collection-relationships"]')

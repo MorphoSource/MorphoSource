@@ -3,8 +3,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
-  before_create :controlled_value_filter
-  before_update :controlled_value_filter
+  before_create :controlled_value_filter, :date_filter
+  before_update :controlled_value_filter, :date_filter
   after_update :reindex_media
 
   self.indexer = BiologicalSpecimenIndexer
@@ -15,6 +15,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   include Morphosource::PhysicalObjectMetadata
   include Morphosource::BiologicalSpecimenMetadata
+  include Morphosource::LocationMetadata
 
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
@@ -128,6 +129,10 @@ class BiologicalSpecimen < Morphosource::Works::Base
           UpdateWorkIndexJob.perform_later(media.id)
         end
       end
+    end
+
+    def date_attributes_for_filter
+      [ :date_created ]
     end
 
     def controlled_attributes

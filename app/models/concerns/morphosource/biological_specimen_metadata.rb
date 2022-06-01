@@ -32,6 +32,10 @@ module Morphosource
       property :canonical_taxonomy, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/canonicalTaxonomy") do |index|
         index.as :stored_searchable
       end
+
+      property :tgn, predicate: ::RDF::URI.new("http://purl.org/dc/terms/TGN"), class_name: Morphosource::ControlledVocabularies::Getty::Tgn do |index|
+        index.as :stored_searchable
+      end
     end
 
   end

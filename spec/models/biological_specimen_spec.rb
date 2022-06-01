@@ -8,11 +8,18 @@ RSpec.describe BiologicalSpecimen do
 
     it_behaves_like 'a Morphosource work'
 
+    # attributes shared between specimens and chos
     it_behaves_like 'a work with physical object metadata'
 
+    # attributes unique to specimens
     it 'has biological specimen descriptive metadata' do
-      expect(subject.attributes.keys).to include('idigbio_recordset_id', 'idigbio_uuid', 'is_type_specimen',
-                                                 'occurrence_id', 'sex')
+      expect(subject.attributes.keys).to include( "canonical_taxonomy",
+                                                  "idigbio_recordset_id",
+                                                  "idigbio_uuid",
+                                                  "is_type_specimen",
+                                                  "occurrence_id",
+                                                  "sex",
+                                                  "taxonomy_id" )
     end
   end
 

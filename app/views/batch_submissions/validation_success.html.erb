@@ -10,17 +10,6 @@
 	<div id="collapse-block-warnings" class="collapse-block collapse out" aria-expanded="true">
 		<% warn_rows.map do |row_number, row| %>
 			<ul class="warn-list">Row <%= row_number %>: <%= warn_messages[row_number].to_wrapped_html('li') %></ul>
-			<%# todo: remove the table later if not needed
-			table class="table warn-rows">
-			<tr>
-				<%# field_names.each_with_index do |field_name, index| % >
-					<th><%#= field_name % ></th>
-				<% end % >
-			</tr>
-			<tr>
-				<%= row.to_wrapped_html('td')% >
-			</tr>
-			</table -- %>
 		<% end %>
 	</div>
 <% else %>
@@ -28,4 +17,11 @@
 <% end %>
 </p>
 
-<p>Your submission job has started.  You can check the job status in the <%= link_to "Batch Submission Dashboard", main_app.batch_submissions_path %>.</p>
+<p>Your batch submission manifest successfully passed validation, and is ready for ingestion.</p>
+
+<%= form_tag main_app.batch_submissions_ingest_path do %>
+	<%= hidden_field_tag "manifest_object", manifest_object.to_json %>
+	<%= submit_tag 'Proceed with ingestion', id: 'btn-submit', class: 'btn btn-primary btn-lg' %>
+<% end %>
+
+<div class="mt-1"><i class="fa fa-hand-point-right" aria-hidden="true"></i> <%= link_to "Submit again", main_app.new_batch_submission_path %></div>

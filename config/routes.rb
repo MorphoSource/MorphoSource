@@ -261,6 +261,8 @@ Rails.application.routes.draw do
 
   mount Qa::Engine => '/authorities'
 
+  get 'authorities/search/:vocab/:subauthority/:facet', to: 'morphosource/qa/terms#search'
+
   mount BrowseEverything::Engine => '/browse' # this is needed after updating Hyrax to 2.7
 
   scope module: :morphosource do
@@ -333,6 +335,7 @@ Rails.application.routes.draw do
 
   resources :batch_submissions, only: [ :index, :new, :submit, :result ]
   post '/batch_submissions', to: 'batch_submissions#submit'
+  post '/batch_submissions/ingest', to: 'batch_submissions#ingest'
   get '/batch_submissions/result', to: 'batch_submissions#result', as: 'batch_submissions_result'
 
   resources :docs do

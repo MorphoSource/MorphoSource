@@ -66,6 +66,15 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
       end
     end
+    context "proceed with ingest" do
+      render_views
+      let(:params) { {"manifest_object" => {}} }
+      it "returns" do
+        BackgroundJob.create({ main_job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
+        post 'ingest', :params => params 
+        expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
+      end
+    end
   end
 
   describe "GET #new for non-batch_submission_contributor" do
@@ -143,7 +152,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'A value can be present in media.parent_file or media.parent_ms_id, but not in both.'
           expect(html).to include 'media.parent_ms_id: Existing media not_found not found.'
           expect(html).to include 'biological_specimen.ms_id: Existing biological specimen not_found not found.'
-          expect(html).to include 'biological_specimen.idigbio_uuid: Cannot found specimen in iDigBio.'
+          expect(html).to include 'biological_specimen.idigbio_uuid: Cannot find specimen in iDigBio.'
           expect(html).to include 'biological_specimen.institution_code: It does not match the institution code from the pre-selected organization: ' + organization_institution_code
           expect(html).to include 'media.parent_file parent_file_not_found.zip not found in another row.'
           expect(html).to include 'media.parent_file ANSP_Fish_193352_Head.zip cannot be media.media_file in the same row.'

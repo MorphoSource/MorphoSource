@@ -173,16 +173,11 @@ Hyrax.config do |config|
   # if blender is not in PATH, get the path from BLENDER_PATH variable
   # note that tool_path (e.g. used in blender.rb) is by default set to config.blender_path, but can
   # be overridden by an argument
-  begin
-    blender_in_path = ENV.fetch("PATH").split(':').select{|path| path.include?('blender')}
-    if blender_in_path.present?
-      config.blender_path = blender_in_path.first
-    else
-      config.blender_path = ENV.fetch("BLENDER_PATH")
-    end
-  rescue
-    puts 'Error: unable to get Blender path from PATH or BLENDER_PATH'
-    exit
+  blender_in_path = ENV.fetch("PATH").split(':').select{|path| path.include?('blender')}
+  if blender_in_path.present?
+    config.blender_path = blender_in_path.first
+  else
+    config.blender_path = ENV.fetch("BLENDER_PATH")
   end
 
   config.fiji_path = ENV.fetch("FIJI_PATH", "fiji")

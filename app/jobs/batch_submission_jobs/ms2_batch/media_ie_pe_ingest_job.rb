@@ -1,4 +1,5 @@
 class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::ApplicationJobWithStatus
+  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper  
   attr_accessor :manifest, :main_job_id
 
   queue_as Hyrax.config.mass_ingest_queue_name
@@ -8,6 +9,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     status.update(manifest: manifest)
     @manifest = manifest
     @main_job_id = main_job_id
+    @organization_id = @manifest["biological_specimen_ingests"].first["organization_id"]
 
     if !ingest['physical_object_id'].present?
       raise "Physical object ID not present for ingest. Ingest: #{ingest}"
@@ -47,7 +49,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
         if parent['media']['id'].present? 
           # parent media is existing.  get the obj and skip (no need to create)
-          parent_media = Media.find(parent['media']['id'])
+          parent_media = Media.find(pad(parent['media']['id']))
           next
         end
         if parent['media']['initial_attrs']['raw_or_derived']&.first == "Raw"
@@ -166,16 +168,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
 
-    # Add org agreement attachment fields
-    if all_media.present? && organization_permissions_fields.present? && organization_permissions_fields['organization_for_attachment'].present?
-      all_media.each do |media_work|
-        Morphosource::AttachmentService.create_copy(media_work.id, 'agreement', organization_permissions_fields['organization_for_attachment'])
-      end
-    end  
-
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
     transfer_media_to_organization(all_media, organization_transfer_immediately)
+    add_org_attachment_to_media(all_media, @organization_id) if @organization_id.present?
     
     UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
   end
@@ -206,4 +202,14 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       m.transfer_media_to_organization
     end
   end
+
+  def add_org_attachment_to_media(media, org_id)
+    org = Organization.find(org_id)
+    if org.present? && org.agreement_attachment_url.present?
+      media.each do |m|
+        Morphosource::AttachmentService.create_copy(m.id, 'agreement', org_id)
+      end
+    end
+  end
+
 end

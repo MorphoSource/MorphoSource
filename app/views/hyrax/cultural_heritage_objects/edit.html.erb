@@ -1,8 +1,8 @@
-<% content_for :body_css_classes do %>showcase showcase-edit<% end %> 
-<% content_for :content_css_classes do %>fixed-width<% end %> 
+<% content_for :body_css_classes do %>showcase showcase-edit<% end %>
+<% content_for :content_css_classes do %>fixed-width<% end %>
 <% provide :page_title, curation_concern_page_title(curation_concern) %>
 <% provide :page_header do %>
   <h1><span class="fa fa-edit"></span><%= t("hyrax.works.update.header") %></h1>
 <% end %>
 
-<%= render 'form_cho_edit' %>
+<%= render 'hyrax/cultural_heritage_objects/edit/form_cho_edit' %>

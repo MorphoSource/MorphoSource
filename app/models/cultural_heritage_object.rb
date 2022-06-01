@@ -12,11 +12,14 @@ class CulturalHeritageObject < Morphosource::Works::Base
   validates :vouchered, presence: { message: I18n.t('morphosource.validation.missing.vouchered')}
 
   include Morphosource::PhysicalObjectMetadata
-  include Morphosource::CulturalHeritageObjectMetadata
+  include Morphosource::LocationMetadata
+  include ::Morphosource::BasicMetadata
 
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
-  include ::Hyrax::BasicMetadata
+  include Morphosource::CulturalHeritageObjectMetadata
+
+
 
   def taxonomies # TODO remove later after refactoring media_indexer
     []

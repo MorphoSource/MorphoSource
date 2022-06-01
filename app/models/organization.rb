@@ -14,6 +14,7 @@ class Organization < Morphosource::Works::Base
 
   include Morphosource::OrganizationMetadata
   include Morphosource::PermissionsDefaultsMetadata
+  include Morphosource::LocationMetadata
 
   # TODO: investigate why this doesn't work w/ index_related_works
   before_update :record_original_team
@@ -117,7 +118,7 @@ class Organization < Morphosource::Works::Base
   def is_intentionally_blank(field)
     blank_fields = [:license, :rights_holder, :rights_statement]
 
-    blank_fields.include?(field) && 
+    blank_fields.include?(field) &&
       ActiveModel::Type::Boolean.new.cast(send("#{field.to_s}_blank")&.first)
   end
 

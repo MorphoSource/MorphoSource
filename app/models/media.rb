@@ -232,6 +232,18 @@ class Media < Morphosource::Works::Base
     ancestors.find(&:processing_event?)
   end
 
+  def media_parent
+    ancestor_find(:media?)
+  end
+
+  def media_parents
+    ancestors.select(&:media?)
+  end
+
+  def media_children
+    descendants.select(&:media?)
+  end
+
   def is_raw?
     processing_event.nil?
   end

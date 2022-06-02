@@ -629,4 +629,54 @@ namespace :morphosource do
     Morphosource::FindExtraSolrJob.perform_later
     puts "Checking for extra solr docs. When complete, results will be written to extra_solr_docs.txt"
   end
+
+  desc "Update specimens from IDigbio"
+  task :update_bso_from_idigbio, [:update, :project_id] => :environment do |task, args|
+    if args[:update].present? && args[:update] == 'true'
+      update = true
+    else
+      update = false
+    end
+    if args[:project_id].present?
+      # update bso associated with the project
+      project_id = args[:project_id]
+      qry = "media_member_of_project_ids_ssim:#{project_id} AND has_model_ssim:BiologicalSpecimen"
+      result = ActiveFedora::SolrService.query(qry, rows: 999999)
+      puts "#{result.count} specimens found for #{project_id}..."
+      result.each do |hit|
+        o = BiologicalSpecimen.find(hit.id)
+        if o.present?
+          puts "Updating specimen #{o.id} of project #{project_id} from IDigbio"
+          UpdateBsoFromIdigbioJob.perform_later(o, update)
+        else
+          puts "Specimen #{o.id} not found"
+        end
+      end
+    else
+      # update all bso
+      BiologicalSpecimen.find_each do |o|
+        puts "Updating specimen #{o.id} from IDigbio"
+        UpdateBsoFromIdigbioJob.perform_later(o, update)
+      end
+    end
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 end

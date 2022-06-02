@@ -451,32 +451,42 @@ $( document ).ready(function() {
       }
     };
 
-    bsFormData = localStorage.getItem("batchSubmissionFormData");
-    if (bsFormData != null) {
-      console.log("GETTING :",bsFormData);
-
-//      $(JSON.parse(bsFormData)).each(function(h){
-//        var name = h.name;
-//        console.log( name);
-//        console.log( value);
-//      })
-
+    function previousSubmissionData() {
+      var bsObj = localStorage.getItem("batchSubmissionFormData");
+      if (bsObj != null) {
+        var bsFormData = JSON.parse(bsObj);
+        var now = new Date().getTime();
+        var minOld = Math.floor((now - bsFormData.timestamp)/1000/60);
+        if (minOld > 300) {
+          console.log("expiring old form data...")
+          localStorage.removeItem("batchSubmissionFormData");
+          return null;
+        } else {
+          return bsFormData.data;
+        }
+      }    
+    }
+    
+    // re-fill the form if needed
+    previousData = previousSubmissionData();
+    if (previousData != null) {
+      //console.log("loading previousData :", previousData);
       var formData = {};
-      $.each(JSON.parse(bsFormData), function(i, field){
-        if(field.value.trim() != ""){
-          if(formData[field.name] != undefined){
+      $.each(previousData, function(i, field) {
+        if (field.value.trim() != "") {
+          if (formData[field.name] != undefined) {
             var val = formData[field.name];
-            if(!Array.isArray(val)){
+            if (!Array.isArray(val)) {
                arr = [val];
             }
             arr.push(field.value.trim());
             formData[field.name] = arr;
-          }else{
+          } else {
             formData[field.name] = field.value;
           }
         }
       });
-      console.log(formData );
+      console.log("formData :", formData);
       populateForm($('#batch_submission_form'), formData);
       
       //$('[name="batch_submission[media][rights_statement]"]').val("http://rightsstatements.org/vocab/InC-OW-EU/1.0/");
@@ -539,9 +549,10 @@ $( document ).ready(function() {
     };
 
     $('#batch_submission_form').submit(function(){
-      var values = $('#batch_submission_form').serializeArray();
-      localStorage.setItem("batchSubmissionFormData", JSON.stringify(values));
+      var obj = {data: $('#batch_submission_form').serializeArray(), timestamp: new Date().getTime()}
+      localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
       //console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));
+//event.preventDefault();      
     });
 
   } // end if the page is submission flow page

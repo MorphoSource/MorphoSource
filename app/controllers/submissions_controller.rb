@@ -247,8 +247,6 @@ class SubmissionsController < ApplicationController
       params[:biological_specimen] = ActionController::Parameters.new(
         Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(
           @submission.idigbio_id))
-      # track how the specimen is linked
-      params[:biological_specimen]["idigbio_link_origin"] = "user"
     else
       # Manual physical object creation, may need to do extra steps
       if @submission.will_create_taxonomy

@@ -3,7 +3,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
-  before_create :controlled_value_filter, :date_filter
+  before_create :controlled_value_filter, :date_filter, :set_idigbio_link_origin_when_create
   before_update do
     controlled_value_filter
     date_filter
@@ -24,6 +24,13 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
+
+  def set_idigbio_link_origin_when_create
+byebug
+    if self.idigbio_uuid.present?
+      self.idigbio_link_origin = ["user"]
+    end
+  end
 
   # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
   # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API

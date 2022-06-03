@@ -304,9 +304,17 @@ module Morphosource
           doc = SolrDocument.find(m.id)
           if doc.present?
             file_set, original_file = get_and_validate_fileset(m)
-byebug
-            media_list << { 
-              :file_size => file_set.file_size
+#byebug
+            media_list << {
+              :file_name => [file_set.label], 
+              :file_size => file_set.file_size,
+              :mime_type => [file_set.mime_type],
+              :points => file_set.point_count,
+              :polygons => file_set.face_count,
+              :vertex_color => file_set.vertex_color,
+              :UV_coordinates => file_set.has_uv_space,
+              :bounding_box_dimensions => [[file_set.bounding_box_x&.first, file_set.bounding_box_y&.first, file_set.bounding_box_z&.first].join(', ')],
+              :units_of_coordinates => [''] 
             }.merge(doc.to_semantic_values)
           end
 

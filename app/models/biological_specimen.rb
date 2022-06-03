@@ -26,7 +26,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::BasicMetadata
 
   def set_idigbio_link_origin_when_create
-byebug
     if self.idigbio_uuid.present?
       self.idigbio_link_origin = ["user"]
     end

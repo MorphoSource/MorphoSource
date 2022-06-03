@@ -4,7 +4,11 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include Morphosource::PhysicalObjectBehavior
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter
-  before_update :controlled_value_filter, :date_filter, :update_metadata_from_idigbio_occurrence_id
+  before_update do
+    controlled_value_filter
+    date_filter
+    update_metadata_from_idigbio_occurrence_id(false, false)
+  end
   after_update :reindex_media
 
   self.indexer = BiologicalSpecimenIndexer
@@ -96,10 +100,9 @@ class BiologicalSpecimen < Morphosource::Works::Base
     @idigbio_occurrence_id_results ||= Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
   end
 
-  def update_metadata_from_idigbio_occurrence_id(save_work=false)
+  def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=true)
     sex_field_values = Morphosource::SexFieldService.new().option_values
     if occurrence_id_valid?
-      #idigbio_occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
       if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
         idigbio_occurrence = idigbio_occurrence_id_results.first
 
@@ -176,7 +179,13 @@ class BiologicalSpecimen < Morphosource::Works::Base
             Rails.logger.debug "UpdateBsoFromIdigbio: BSO #{id} : #{key} field will be updated to '#{value}'"
           end
         end
-        self.idigbio_link_origin = ["system_generated"]
+        if self.idigbio_uuid_changed?
+          if system_update == true
+            self.idigbio_link_origin = ["system_generated"]
+          else
+            self.idigbio_link_origin = ["user"]
+          end
+        end
         # normally saving work is done separately (e.g. in a background job, form submit)
         # set save_work flag if needed for debugging in the console
         self.save if save_work 

@@ -299,12 +299,20 @@ module Morphosource
       end
 
       def media_solr_doc_hashes
-        media.map do |m|
+        media_list = []
+        media.each do |m|
           doc = SolrDocument.find(m.id)
           if doc.present?
-            doc.to_semantic_values
+            file_set, original_file = get_and_validate_fileset(m)
+byebug
+            media_list << { 
+              :file_size => file_set.file_size
+            }.merge(doc.to_semantic_values)
           end
+
         end
+byebug
+        return media_list
       end
 
       # MorphoSource standard agreement file methods

@@ -3,6 +3,7 @@
 $( document ).ready(function() {
 
   if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
+    prevBsData = {};
     showAlert = false;
     selectedDeviceModality = "";
 
@@ -80,9 +81,14 @@ $( document ).ready(function() {
         });
 
         $('#batch_submission_organization_search').on('select2-selecting', function (e) {
-          console.log("org selected ", JSON.stringify(e.choice));
-          var item = e.choice;
-          if (e.choice && e.choice.id) {
+          if (e.choice) {
+            console.log("org selected >>", JSON.stringify(e.choice));
+            var item = e.choice;          
+          } else if (prevBsData != {}) {
+            console.log('getting prevBsData >>', prevBsData);
+            var item = prevBsData.organization;
+          }
+          if (item && item.id) {
             $("input.organization_id").val(item.id);
             $("input.organization_title").val(item.title);
             $("input.organization_label").val(item.text);
@@ -137,8 +143,8 @@ $( document ).ready(function() {
         //$('#submission_select_organization').click(function(event){
         var setOrgData = function() {
           //event.preventDefault();
-          console.log('set organization data');
           var selectedOrganizationID = $('input.organization_id').val();
+          console.log('selectedOrganizationID: ', selectedOrganizationID);
           if (selectedOrganizationID) {
             data.setOrganizationDefaults();
             data.organizationId = selectedOrganizationID;
@@ -184,6 +190,7 @@ $( document ).ready(function() {
         $("select#media_transfer_management, input[name='batch_submission[media][visibility]']").change(function(event){
           self.form.updateOrganizationDataManagementInfo();
         });
+
       } // eventFuncs
 
       next() {
@@ -230,11 +237,11 @@ $( document ).ready(function() {
         });
 
         $('#submission_device_select_organization_search').on('select2-selecting', function (e) {
-          console.log(JSON.stringify(e.choice));
+          console.log("device org selected: ", JSON.stringify(e.choice));
           var item = e.choice;
 
           if (e.choice && e.choice.id) {
-            console.log(e.choice);
+            console.log("e.choice ", e.choice);
             clearList();
             removePreviousSelection();
 
@@ -517,19 +524,6 @@ $( document ).ready(function() {
                           btnAdd.trigger('click');
 
                         }
-
-                      } else if (ctrl.hasClass('input-for-select2')) {
-                        if (Array.isArray(value)) {
-                          value = value[0];
-                        }
-                        //alert(ctrl.attr())
-                        //alert(key);
-                        // (ctrl.closest('.select2-container') != 0)
-//                        alert('select2')
-//      $("#batch_submission_organization_search").select2('val', '000200000').trigger('select2-selecting'); 
-
-                        // select2 control
-                        ctrl.select2('val', value).trigger('select2-selecting'); 
                       }
                     case "hidden":
                         ctrl.val(value);   
@@ -546,6 +540,22 @@ $( document ).ready(function() {
             console.log('error ', e);        
           }
         });
+
+        // popuplate the select2 dropdowns
+        // get the organization details using the ID
+        console.log('orgData ', orgData)
+        var orgId = data["batch_submission[organization_search]"];
+        var orgIndex = orgData.findIndex(item => item.id === orgId);
+        prevBsData = { 
+          organization: orgData[orgIndex]          
+        }
+        $("#batch_submission_organization_search").select2('val', orgId).trigger('select2-selecting'); 
+//        $("#submission_device_select_organization_search").select2('val', data["batch_submission[device_organization_search]"]).trigger('select2-selecting'); 
+
+//device id not set?
+
+//        $("#batch_submission_device_id").select2('val', data["batch_submission[device_id]"]).trigger('select2-selecting'); 
+
     };
 
     $('#batch_submission_form').submit(function(){
@@ -554,6 +564,11 @@ $( document ).ready(function() {
       //console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));
 //event.preventDefault();      
     });
+
+//setTimeout(function() {
+//    $("#batch_submission_organization_search").trigger('select2-selecting'); 
+//}, 5000);
+//
 
   } // end if the page is submission flow page
 });

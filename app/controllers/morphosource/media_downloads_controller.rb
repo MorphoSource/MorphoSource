@@ -246,6 +246,7 @@ module Morphosource
         @temp_manifest_directory ||= begin
           directory_name = Dir.tmpdir() + "/download-media-manifest"
           Dir.mkdir(directory_name) unless File.exists?(directory_name)
+          directory_name
         end
       end
 
@@ -254,8 +255,10 @@ module Morphosource
         csv_path = File.join(temp_manifest_directory, file_name)
 
         CSV.open(csv_path, "wb") do |csv|
-          csv << ["row", "of", "CSV", "data"]
-          csv << ["another", "row"]
+          csv << manifest_headers
+          media_hashes.each do |h|
+            csv << h.values.map{ |v| v.first }
+          end
         end
         file = File.open(csv_path)
         crc32 = crc32_from_io(file)
@@ -274,13 +277,13 @@ module Morphosource
         p = Axlsx::Package.new
         wb = p.workbook
         date_time_format = wb.styles.add_style :format_code => 'YYYY-MM-DD'
-        headers = media_hashes.first.keys.flatten.map{ |s| s.to_s }
+        manifest_headers = media_hashes.first.keys.flatten.map{ |s| s.to_s }
         wb.add_worksheet(:name => "xlsx manifest") do |sheet|
-          sheet.add_row headers
+          sheet.add_row manifest_headers
           media_hashes.each do |h|
             sheet.add_row h.values.map{ |v| v.first }, 
-              :types => xlsx_column_types(headers), 
-              :style => xlsx_column_styles(headers, date_time_format)
+              :types => xlsx_column_types(manifest_headers), 
+              :style => xlsx_column_styles(manifest_headers, date_time_format)
           end
         end
         p.serialize xlsx_path
@@ -321,31 +324,37 @@ module Morphosource
         return styles
       end
 
+      def manifest_headers
+        @manifest_headers ||= media_hashes.first.keys.flatten.map{ |s| s.to_s }
+      end
+
       def media_hashes
-        media_list = []
-        media.each do |m|
-          doc = SolrDocument.find(m.id)
-          if doc.present?
-            file_set, original_file = get_and_validate_fileset(m)
-            media_list << {
-              :id => [m.id],
-              :title => [m.title.first],
-              :file_name => [file_set.label], 
-              :file_size => file_set.file_size,
-              :media_type => m.media_type,
-              :mime_type => [file_set.mime_type]
-            }.merge(doc.to_semantic_values).merge({
-              :points => file_set.point_count,
-              :polygons => file_set.face_count,
-              :vertex_color => file_set.vertex_color,
-              :uv_coordinates => file_set.has_uv_space,
-              :bounding_box_x => file_set.bounding_box_x,
-              :bounding_box_y => file_set.bounding_box_y,
-              :bounding_box_z => file_set.bounding_box_z
-           })
+        @media_hashes ||= begin
+          media_list = []
+          media.each do |m|
+            doc = SolrDocument.find(m.id)
+            if doc.present?
+              file_set, original_file = get_and_validate_fileset(m)
+              media_list << {
+                :id => [m.id],
+                :title => [m.title.first],
+                :file_name => [file_set.label], 
+                :file_size => file_set.file_size,
+                :media_type => m.media_type,
+                :mime_type => [file_set.mime_type]
+              }.merge(doc.to_semantic_values).merge({
+                :points => file_set.point_count,
+                :polygons => file_set.face_count,
+                :vertex_color => file_set.vertex_color,
+                :uv_coordinates => file_set.has_uv_space,
+                :bounding_box_x => file_set.bounding_box_x,
+                :bounding_box_y => file_set.bounding_box_y,
+                :bounding_box_z => file_set.bounding_box_z
+             })
+            end
           end
+          media_list
         end
-        return media_list
       end
 
       # MorphoSource standard agreement file methods

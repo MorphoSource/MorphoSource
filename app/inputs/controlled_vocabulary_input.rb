@@ -64,12 +64,18 @@ class ControlledVocabularyInput < MultiValueInput
       options[:value] = ''
     end
 
+    # def build_options_for_existing_row(_attribute_name, _index, value, options)
+    #   if getty_vocabulary?(value)
+    #     options[:value] = value.english_label || "Unable to fetch label for #{value.rdf_subject}"
+    #   else
+    #     options[:value] = value.rdf_label.first || "Unable to fetch label for #{value.rdf_subject}"
+    #   end
+    #   options[:readonly] = true
+    # end
+
     def build_options_for_existing_row(_attribute_name, _index, value, options)
-      if getty_vocabulary?(value)
-        options[:value] = value.label || "Unable to fetch label for #{value.rdf_subject}"
-      else
-        options[:value] = value.rdf_label.first || "Unable to fetch label for #{value.rdf_subject}"
-      end
+      options[:value] = value.rdf_label.first || "Unable to fetch label for #{value.rdf_subject}"
+      options[:data][:label] = value.full_label || value.rdf_label
       options[:readonly] = true
     end
 

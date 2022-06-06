@@ -50,7 +50,7 @@ module Morphosource
 
     def prepare_all_files
       @temp_files = []
-      @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest
+      @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest
     end
 
     def create_interval_sequence
@@ -240,22 +240,45 @@ module Morphosource
         "Media_Contributor_Usage_Agreement_#{index}#{File.extname(file_path).downcase}"
       end
 
-      # Methods for creating the XLSX media manifest file
+      # Methods for creating the CSV and XLSX media manifest file
+
+      def temp_manifest_directory
+        @temp_manifest_directory ||= begin
+          directory_name = Dir.tmpdir() + "/download-media-manifest"
+          Dir.mkdir(directory_name) unless File.exists?(directory_name)
+        end
+      end
+
+      def csv_manifest
+        file_name = "media-manifest-#{current_user.id}-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}.csv"
+        csv_path = File.join(temp_manifest_directory, file_name)
+
+        CSV.open(csv_path, "wb") do |csv|
+          csv << ["row", "of", "CSV", "data"]
+          csv << ["another", "row"]
+        end
+        file = File.open(csv_path)
+        crc32 = crc32_from_io(file)
+        [{
+          name: file_name,
+          size: file.size,
+          crc32: crc32,
+          file: file
+        }]
+      end
       
       def xlsx_manifest 
-        directory_name = Dir.tmpdir() + "/download-media-manifest"
-        Dir.mkdir(directory_name) unless File.exists?(directory_name)
         file_name = "media-manifest-#{current_user.id}-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}.xlsx"
-        xlsx_path = File.join(directory_name, file_name)
+        xlsx_path = File.join(temp_manifest_directory, file_name)
  
         p = Axlsx::Package.new
         wb = p.workbook
         date_time_format = wb.styles.add_style :format_code => 'YYYY-MM-DD'
-        headers = media_solr_doc_hashes.first.keys.flatten.map{ |s| s.to_s }
+        headers = media_hashes.first.keys.flatten.map{ |s| s.to_s }
         wb.add_worksheet(:name => "xlsx manifest") do |sheet|
           sheet.add_row headers
-          media_solr_doc_hashes.each do |solr_doc_hash|
-            sheet.add_row solr_doc_hash.values.map{ |v| v.first }, 
+          media_hashes.each do |h|
+            sheet.add_row h.values.map{ |v| v.first }, 
               :types => xlsx_column_types(headers), 
               :style => xlsx_column_styles(headers, date_time_format)
           end
@@ -298,7 +321,7 @@ module Morphosource
         return styles
       end
 
-      def media_solr_doc_hashes
+      def media_hashes
         media_list = []
         media.each do |m|
           doc = SolrDocument.find(m.id)

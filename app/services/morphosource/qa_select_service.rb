@@ -1,6 +1,10 @@
 module Morphosource
   class QaSelectService < Hyrax::QaSelectService
 
+    def option_values
+      select_all_options.map{ |o| o[1] }
+    end
+
     def select_all_options(value=nil)
       options = []
       authority.all.map do |element|

@@ -29,7 +29,7 @@ module Morphosource
     remove_bookmarks
 
     def media_downloads
-      redirect_to '/' unless current_user&.admin?
+      redirect_to '/' unless current_ability.can?(:edit, @collection)
 
       repository.blacklight_config.max_per_page = 9999999
       (@response, @document_list) = query_solr_all_results
@@ -45,7 +45,7 @@ module Morphosource
     end
 
     def media_download_counts
-      redirect_to '/' unless current_user&.admin?
+      redirect_to '/' unless current_ability.can?(:edit, @collection)
 
       repository.blacklight_config.max_per_page = 9999999
       (@response, @document_list) = query_solr_all_results
@@ -75,7 +75,7 @@ module Morphosource
     end
 
     def media_requests
-      redirect_to '/' unless current_user&.admin?
+      redirect_to '/' unless current_ability.can?(:edit, @collection)
 
       repository.blacklight_config.max_per_page = 9999999
       (@response, @document_list) = query_solr_all_results

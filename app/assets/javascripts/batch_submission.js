@@ -326,8 +326,7 @@ $( document ).ready(function() {
             console.log('getting device from prevBsData >>', prevBsData);
             var item = prevBsData.device;
           }
-
-          var deviceObj = item;
+          var deviceObj = deviceData[item.id];
           selectedDeviceModality = deviceObj["modality"]
           console.log('selected device modality : ' + selectedDeviceModality);
           self.toggleSelectDeviceVisibility(deviceObj);
@@ -561,6 +560,7 @@ $( document ).ready(function() {
           device_organization: orgData[deviceOrgIndex],
           device: deviceData[deviceId]
         }
+debugger;
         $("#batch_submission_organization_search").select2('val', orgId).trigger('select2-selecting'); 
         $("#submission_device_select_organization_search").select2('val', deviceOrgId).trigger('select2-selecting'); 
         $("#batch_submission_device_id").select2('val', deviceId).trigger('select2-selecting'); 

@@ -85,7 +85,7 @@ $( document ).ready(function() {
             console.log("org selected >>", JSON.stringify(e.choice));
             var item = e.choice;          
           } else if (prevBsData != {}) {
-            console.log('getting prevBsData >>', prevBsData);
+            console.log('getting org from prevBsData >>', prevBsData);
             var item = prevBsData.organization;
           }
           if (item && item.id) {
@@ -237,15 +237,17 @@ $( document ).ready(function() {
         });
 
         $('#submission_device_select_organization_search').on('select2-selecting', function (e) {
-          console.log("device org selected: ", JSON.stringify(e.choice));
-          var item = e.choice;
-
-          if (e.choice && e.choice.id) {
-            console.log("e.choice ", e.choice);
+          if (e.choice) {
+            console.log("device org selected >>", JSON.stringify(e.choice));
+            var item = e.choice;          
+          } else if (prevBsData != {}) {
+            console.log('getting device org from prevBsData >>', prevBsData);
+            var item = prevBsData.device_organization;
+          }
+          if (item && item.id) {
             clearList();
             removePreviousSelection();
-
-            var devices = $.map(e.choice.devices, function( val, i ) {
+            var devices = $.map(item.devices, function( val, i ) {
               return deviceData[val];
             });
             if (devices) {
@@ -317,10 +319,15 @@ $( document ).ready(function() {
         });
 
         $('#batch_submission_device_id').on('select2-selecting', function (e) {
-          console.log('device selected ' + JSON.stringify(e.choice));
-          var item = e.choice;
+          if (e.choice) {
+            console.log("device selected >>", JSON.stringify(e.choice));
+            var item = e.choice;          
+          } else if (prevBsData != {}) {
+            console.log('getting device from prevBsData >>', prevBsData);
+            var item = prevBsData.device;
+          }
 
-          var deviceObj = deviceData[e.choice.id]
+          var deviceObj = item;
           selectedDeviceModality = deviceObj["modality"]
           console.log('selected device modality : ' + selectedDeviceModality);
           self.toggleSelectDeviceVisibility(deviceObj);
@@ -542,33 +549,28 @@ $( document ).ready(function() {
         });
 
         // popuplate the select2 dropdowns
-        // get the organization details using the ID
-        console.log('orgData ', orgData)
+        // get the org, device org, and device details from orgData and deviceData objects, 
+        // then set the details in prevBsData to be used for select2-selecting event
         var orgId = data["batch_submission[organization_search]"];
         var orgIndex = orgData.findIndex(item => item.id === orgId);
+        var deviceOrgId = data["batch_submission[device_organization_search]"];
+        var deviceOrgIndex = orgData.findIndex(item => item.id === deviceOrgId);
+        var deviceId = data["batch_submission[device_id]"];
         prevBsData = { 
-          organization: orgData[orgIndex]          
+          organization: orgData[orgIndex],
+          device_organization: orgData[deviceOrgIndex],
+          device: deviceData[deviceId]
         }
         $("#batch_submission_organization_search").select2('val', orgId).trigger('select2-selecting'); 
-//        $("#submission_device_select_organization_search").select2('val', data["batch_submission[device_organization_search]"]).trigger('select2-selecting'); 
-
-//device id not set?
-
-//        $("#batch_submission_device_id").select2('val', data["batch_submission[device_id]"]).trigger('select2-selecting'); 
-
+        $("#submission_device_select_organization_search").select2('val', deviceOrgId).trigger('select2-selecting'); 
+        $("#batch_submission_device_id").select2('val', deviceId).trigger('select2-selecting'); 
     };
 
     $('#batch_submission_form').submit(function(){
       var obj = {data: $('#batch_submission_form').serializeArray(), timestamp: new Date().getTime()}
       localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
       //console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));
-//event.preventDefault();      
     });
-
-//setTimeout(function() {
-//    $("#batch_submission_organization_search").trigger('select2-selecting'); 
-//}, 5000);
-//
 
   } // end if the page is submission flow page
 });

@@ -57,7 +57,7 @@ $( document ).ready(function() {
        $('form[id*="new_media"]').length || 
        $('form[id="batch_submission_form"]').length ) { 
 
-    if (previousData == null) {
+    if (previousBatchSubmissionData == null) {
       set_initial_value();
     }    
     $('input[name="media[visibility]"], input[name="batch_submission[media][visibility]"]').change(function(event){

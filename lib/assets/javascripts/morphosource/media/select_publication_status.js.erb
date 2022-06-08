@@ -57,7 +57,9 @@ $( document ).ready(function() {
        $('form[id*="new_media"]').length || 
        $('form[id="batch_submission_form"]').length ) { 
 
-    set_initial_value();
+    if (previousData == null) {
+      set_initial_value();
+    }    
     $('input[name="media[visibility]"], input[name="batch_submission[media][visibility]"]').change(function(event){
       console.log('Radio visibility changed');
 

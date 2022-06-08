@@ -3,6 +3,7 @@
 $( document ).ready(function() {
 
   if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
+    previousData = previousSubmissionData();
     prevBsData = {};
     showAlert = false;
     selectedDeviceModality = "";
@@ -140,9 +141,7 @@ $( document ).ready(function() {
             setSubmitStatus();
         });
 
-        //$('#submission_select_organization').click(function(event){
         var setOrgData = function() {
-          //event.preventDefault();
           var selectedOrganizationID = $('input.organization_id').val();
           console.log('selectedOrganizationID: ', selectedOrganizationID);
           if (selectedOrganizationID) {
@@ -155,7 +154,11 @@ $( document ).ready(function() {
             data.savedStep = 4;
 
             console.log(data);
-            self.form.setDefaultMediaPermissionFields();
+            if (previousData == null) {
+              // set permission fields from org only if no data from local storage
+              self.form.setDefaultMediaPermissionFields();  
+            }
+            
           }
           setSubmitStatus();
         }
@@ -453,7 +456,7 @@ $( document ).ready(function() {
       }
       if ($("#manifest_file").val() == "") {
         okToSubmit = false;
-         if (showAlert) $(".select-manifest b").addClass('text-alert');
+        if (showAlert) $(".select-manifest b").addClass('text-alert');
       } else {
         $(".select-manifest b").removeClass('text-alert');        
       }
@@ -481,7 +484,6 @@ $( document ).ready(function() {
     }
     
     // re-fill the form if needed
-    previousData = previousSubmissionData();
     if (previousData != null) {
       //console.log("loading previousData :", previousData);
       var formData = {};
@@ -499,16 +501,32 @@ $( document ).ready(function() {
           }
         }
       });
-      console.log("formData :", formData);
-      populateForm($('#batch_submission_form'), formData);
-      
-      //$('[name="batch_submission[media][rights_statement]"]').val("http://rightsstatements.org/vocab/InC-OW-EU/1.0/");
-      //$('input.organization_id').val('000200000');
-      //$("#batch_submission_organization_search").select2('val', '000200000').trigger('select2-selecting'); 
+      //console.log("formData :", formData);
+      populateForm($('#batch_submission_form'), formData);      
     }
 
     function populateForm(fm, data) {
-//        resetForm(fm);
+        // popuplate the select2 dropdowns
+        // get the org, device org, and device details from orgData and deviceData objects, 
+        // then set the details in prevBsData to be used for select2-selecting event
+        var orgId = data["batch_submission[organization_search]"];
+        var orgIndex = orgData.findIndex(item => item.id === orgId);
+        var deviceOrgId = data["batch_submission[device_organization_search]"];
+        var deviceOrgIndex = orgData.findIndex(item => item.id === deviceOrgId);
+        var deviceId = data["batch_submission[device_id]"];
+        prevBsData = { 
+          organization: orgData[orgIndex],
+          device_organization: orgData[deviceOrgIndex],
+          device: deviceData[deviceId]
+        }
+        $("#batch_submission_organization_search").select2('val', orgId).trigger('select2-selecting'); 
+        $("#submission_device_select_organization_search").select2('val', deviceOrgId).trigger('select2-selecting'); 
+        $("#batch_submission_device_id").select2('val', deviceId).trigger('select2-selecting'); 
+        // refill download permission
+        var visibility = data["batch_submission[media][visibility]"];
+        $('[value="' + visibility + '"]').prop('checked', true);
+        set_visibility(visibility);
+        // refill the rest
         $.each(data, function(key, value) {
           try {
             var ctrl = fm.find('[name="'+key+'"]');
@@ -532,14 +550,14 @@ $( document ).ready(function() {
                         }
                       }
                     case "hidden":
-                        ctrl.val(value);   
-                        break;
+                      ctrl.val(value);   
+                      break;
                     case "checkbox":
-                        if (value == '1')
-                            ctrl.prop('checked', true);
-                        else
-                            ctrl.prop('checked', false);
-                        break;
+                      if (value == '1')
+                        ctrl.prop('checked', true);
+                      else
+                        ctrl.prop('checked', false);
+                      break;
                 } 
             }
           } catch (e) {
@@ -547,23 +565,6 @@ $( document ).ready(function() {
           }
         });
 
-        // popuplate the select2 dropdowns
-        // get the org, device org, and device details from orgData and deviceData objects, 
-        // then set the details in prevBsData to be used for select2-selecting event
-        var orgId = data["batch_submission[organization_search]"];
-        var orgIndex = orgData.findIndex(item => item.id === orgId);
-        var deviceOrgId = data["batch_submission[device_organization_search]"];
-        var deviceOrgIndex = orgData.findIndex(item => item.id === deviceOrgId);
-        var deviceId = data["batch_submission[device_id]"];
-        prevBsData = { 
-          organization: orgData[orgIndex],
-          device_organization: orgData[deviceOrgIndex],
-          device: deviceData[deviceId]
-        }
-debugger;
-        $("#batch_submission_organization_search").select2('val', orgId).trigger('select2-selecting'); 
-        $("#submission_device_select_organization_search").select2('val', deviceOrgId).trigger('select2-selecting'); 
-        $("#batch_submission_device_id").select2('val', deviceId).trigger('select2-selecting'); 
     };
 
     $('#batch_submission_form').submit(function(){

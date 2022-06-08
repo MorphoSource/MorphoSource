@@ -3,7 +3,7 @@
 $( document ).ready(function() {
 
   if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
-    previousData = previousSubmissionData();
+    previousBatchSubmissionData = previousSubmissionData();
     prevBsData = {};
     showAlert = false;
     selectedDeviceModality = "";
@@ -154,11 +154,7 @@ $( document ).ready(function() {
             data.savedStep = 4;
 
             console.log(data);
-            if (previousData == null) {
-              // set permission fields from org only if no data from local storage
-              self.form.setDefaultMediaPermissionFields();  
-            }
-            
+            self.form.setDefaultMediaPermissionFields((previousBatchSubmissionData != null));              
           }
           setSubmitStatus();
         }
@@ -473,8 +469,8 @@ $( document ).ready(function() {
         var bsFormData = JSON.parse(bsObj);
         var now = new Date().getTime();
         var minOld = Math.floor((now - bsFormData.timestamp)/1000/60);
-        if (minOld > 300) {
-          console.log("expiring old form data...")
+        if (minOld > 1440) {
+          console.log("expiring form data after 1 day...")
           localStorage.removeItem("batchSubmissionFormData");
           return null;
         } else {
@@ -484,10 +480,10 @@ $( document ).ready(function() {
     }
     
     // re-fill the form if needed
-    if (previousData != null) {
-      //console.log("loading previousData :", previousData);
+    if (previousBatchSubmissionData != null) {
+      //console.log("loading previousBatchSubmissionData :", previousBatchSubmissionData);
       var formData = {};
-      $.each(previousData, function(i, field) {
+      $.each(previousBatchSubmissionData, function(i, field) {
         if (field.value.trim() != "") {
           if (formData[field.name] != undefined) {
             var val = formData[field.name];
@@ -501,7 +497,6 @@ $( document ).ready(function() {
           }
         }
       });
-      //console.log("formData :", formData);
       populateForm($('#batch_submission_form'), formData);      
     }
 
@@ -509,6 +504,7 @@ $( document ).ready(function() {
         // popuplate the select2 dropdowns
         // get the org, device org, and device details from orgData and deviceData objects, 
         // then set the details in prevBsData to be used for select2-selecting event
+        console.log("popuplating data :", data);
         var orgId = data["batch_submission[organization_search]"];
         var orgIndex = orgData.findIndex(item => item.id === orgId);
         var deviceOrgId = data["batch_submission[device_organization_search]"];
@@ -526,6 +522,7 @@ $( document ).ready(function() {
         var visibility = data["batch_submission[media][visibility]"];
         $('[value="' + visibility + '"]').prop('checked', true);
         set_visibility(visibility);
+
         // refill the rest
         $.each(data, function(key, value) {
           try {

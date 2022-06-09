@@ -484,16 +484,20 @@ $( document ).ready(function() {
       //console.log("loading previousBatchSubmissionData :", previousBatchSubmissionData);
       var formData = {};
       $.each(previousBatchSubmissionData, function(i, field) {
-        if (field.value.trim() != "") {
-          if (formData[field.name] != undefined) {
-            var val = formData[field.name];
-            if (!Array.isArray(val)) {
-               arr = [val];
+        if (field.name == "projects") {
+          formData["projects"] = field.value;
+        } else {
+          if (field.value.trim() != "") {
+            if (formData[field.name] != undefined) {
+              var val = formData[field.name];
+              if (!Array.isArray(val)) {
+                 arr = [val];
+              }
+              arr.push(field.value.trim());
+              formData[field.name] = arr;
+            } else {
+              formData[field.name] = field.value;
             }
-            arr.push(field.value.trim());
-            formData[field.name] = arr;
-          } else {
-            formData[field.name] = field.value;
           }
         }
       });
@@ -523,10 +527,23 @@ $( document ).ready(function() {
         $('[value="' + visibility + '"]').prop('checked', true);
         set_visibility(visibility);
 
+//        var projects = [];
+//        var projects_destroy = [];
+  
         // refill the rest
         $.each(data, function(key, value) {
           try {
             var ctrl = fm.find('[name="'+key+'"]');
+//            if (key.indexOf('member_of_collections_attributes') != -1) {//
+//              if (key.indexOf('[id]') != -1) {//
+//                projects = ($.merge( projects, value.f//ilter(function(e) { return (e !== 'false') && (e !== 'true') }) )).uniq();//
+//              } else if (key.indexOf('[_destroy]') != //-1) {//
+//                if (value[value.length-1] == 'true') {//
+//                  projects_destroy = ($.merge( projects_destroy, value.filter(function(e) { return (e !== 'false') && (e !== 'true') }) )).uniq()//;
+//                }
+//              }
+//            } else 
+
             if (ctrl.is('select')){
                 $('option', ctrl).each(function() {
                     if (this.value == value)
@@ -562,10 +579,24 @@ $( document ).ready(function() {
           }
         });
 
+//        var projects_to_add = projects.diff(projects_destroy);
+
+        var projects_to_add = data["projects"];
+debugger          
+        $.each(projects_to_add, function( index, id ) {
+          $('#batch_submission_media_member_of_collection_ids').val(id).trigger('change'); 
+        })        
     };
 
     $('#batch_submission_form').submit(function(){
-      var obj = {data: $('#batch_submission_form').serializeArray(), timestamp: new Date().getTime()}
+      var formData = $('#batch_submission_form').serializeArray();
+      var projects = []
+      $('.select-projects table').find('tr').not('.hidden').find('.collection-title').each(function( index ) {
+        projects.push({ id: $(this).data("id"), name: $(this).html() });
+      })
+      formData.push({ name: "projects", value: projects }); 
+      var obj = {data: formData, timestamp: new Date().getTime()}
+debugger
       localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
       //console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));
     });

@@ -525,25 +525,11 @@ $( document ).ready(function() {
         // refill download permission
         var visibility = data["batch_submission[media][visibility]"];
         $('[value="' + visibility + '"]').prop('checked', true);
-        set_visibility(visibility);
-
-//        var projects = [];
-//        var projects_destroy = [];
-  
+        set_visibility(visibility);  
         // refill the rest
         $.each(data, function(key, value) {
           try {
             var ctrl = fm.find('[name="'+key+'"]');
-//            if (key.indexOf('member_of_collections_attributes') != -1) {//
-//              if (key.indexOf('[id]') != -1) {//
-//                projects = ($.merge( projects, value.f//ilter(function(e) { return (e !== 'false') && (e !== 'true') }) )).uniq();//
-//              } else if (key.indexOf('[_destroy]') != //-1) {//
-//                if (value[value.length-1] == 'true') {//
-//                  projects_destroy = ($.merge( projects_destroy, value.filter(function(e) { return (e !== 'false') && (e !== 'true') }) )).uniq()//;
-//                }
-//              }
-//            } else 
-
             if (ctrl.is('select')){
                 $('option', ctrl).each(function() {
                     if (this.value == value)
@@ -579,12 +565,10 @@ $( document ).ready(function() {
           }
         });
 
-//        var projects_to_add = projects.diff(projects_destroy);
-
         var projects_to_add = data["projects"];
-debugger          
-        $.each(projects_to_add, function( index, id ) {
-          $('#batch_submission_media_member_of_collection_ids').val(id).trigger('change'); 
+        $.each(projects_to_add, function( id, proj ) {
+          $('#batch_submission_media_member_of_collection_ids').val(proj.id).trigger('change'); 
+          $('[data-id="' + proj.id + '"]').text(proj.name);
         })        
     };
 
@@ -596,7 +580,6 @@ debugger
       })
       formData.push({ name: "projects", value: projects }); 
       var obj = {data: formData, timestamp: new Date().getTime()}
-debugger
       localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
       //console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));
     });

@@ -541,14 +541,23 @@ $( document ).ready(function() {
                 switch(ctrl.attr("type")) {
                     case "text":
                       if (ctrl.hasClass('multi-text-field')) {
-                        if (Array.isArray(value)) {
-                          // array w/ more than 1 value
-
-                          btnAdd = ctrl.closest('.form-group').find('.btn.add');
-                          btnAdd.trigger('click');
-
+                        if ($.isArray(value)) {
+                          var value_ary = value
+                        } else {
+                          var value_ary = value.split(',');
                         }
+                        var input = ctrl;
+                        $.each(value_ary, function( idx, v ) {
+                          $(input).val(v);
+                          if (idx != value_ary.length-1) {
+                            ctrl.closest('.form-group').find('.btn.add').last().trigger('click');
+                            input = ctrl.closest('.form-group').find('input')[idx+1];
+                          }
+                        })
+                      } else {
+                        ctrl.val(value);   
                       }
+                      break;                        
                     case "hidden":
                       ctrl.val(value);   
                       break;

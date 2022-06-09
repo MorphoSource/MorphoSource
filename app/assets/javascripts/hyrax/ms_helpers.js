@@ -7,6 +7,13 @@ Array.prototype.uniq = function(){
   );
 }
 
+// subtract self with array a
+Array.prototype.diff = function(a) {
+  return this.filter(
+    function(i) {return a.indexOf(i) < 0;}
+  );
+};
+
 function pluralize(noun, count) {
   if (count != 1) 
     suffix = 's' 

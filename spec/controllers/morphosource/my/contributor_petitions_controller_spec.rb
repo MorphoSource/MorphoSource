@@ -22,7 +22,7 @@ RSpec.describe Morphosource::My::ContributorPetitionsController, :type => :contr
       contributor_petition: {
         reason: 'Application reason',
         user_affiliation: 'Test Org',
-        user_demographics_other: 'Volunteer',
+        user_demographics_other: 'Volunteer'
       }
     }
   }
@@ -45,7 +45,7 @@ RSpec.describe Morphosource::My::ContributorPetitionsController, :type => :contr
       contributor_petition: {
         reason: 'New application reason',
         user_affiliation: 'New Test Org',
-        user_demographics_other: 'Volunteer',
+        user_demographics_other: 'Volunteer'
       }
     }
   }

@@ -10,7 +10,7 @@ module Hyrax
     #
     # @see Hyrax::DeepIndexingService
     module ResourceLabelCaching
-      CACHE_KEY_PREFIX = "hy_label-v1-"
+      # CACHE_KEY_PREFIX = "hy_label-v1-"
 
       ##
       # @note uses the Rails cache to avoid repeated lookups.
@@ -35,10 +35,10 @@ module Hyrax
 
       private
 
-      def cache_key
-        byebug
-        "#{CACHE_KEY_PREFIX}#{to_uri.canonicalize.pname}"
-      end
+      # def cache_key
+      #   byebug
+      #   "#{CACHE_KEY_PREFIX}#{to_uri.canonicalize.pname}"
+      # end
     end
   end
 end

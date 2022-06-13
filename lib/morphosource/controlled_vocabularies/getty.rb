@@ -1,7 +1,9 @@
 module Morphosource
   module ControlledVocabularies
     module Getty
-      include ::Hyrax::ControlledVocabularies::ResourceLabelCaching
+      include ::Morphosource::ControlledVocabularies::ResourceLabelCaching
+
+      # include Morphosource::GettyService
 
 
       # Return a tuple of url & label
@@ -29,7 +31,7 @@ module Morphosource
       # end
       # alias label full_label
 
-      CACHE_KEY_PREFIX = 'morphosourcce_getty_label-v1-'
+      CACHE_KEY_PREFIX = 'morphosource_getty_label-v1-'
       CACHE_EXPIRATION = 1.week
 
       def full_label
@@ -43,8 +45,20 @@ module Morphosource
       alias english_label full_label
 
       def find(id)
-      json(find_url(id))
-    end
+        json(find_url(id))
+      end
+
+      ##
+      # @note uses the Rails cache to avoid repeated lookups.
+      # @see ActiveTriples::Resource#rdf_label
+      def rdf_label
+        # only cache if this rdf source is represented by a URI;
+        # i.e. don't cache for blank nodes
+        return super unless uri?
+
+        byebug
+        Rails.cache.fetch(cache_key(id)) { super }
+      end
 
 
 
@@ -55,6 +69,7 @@ module Morphosource
       end
 
       def cache_key(id)
+        byebug
         "#{CACHE_KEY_PREFIX}#{id}"
       end
 

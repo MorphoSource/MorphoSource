@@ -4,6 +4,7 @@ module Hyrax
     extend ActiveSupport::Autoload
 
     eager_autoload do
+      autoload :WebServiceBase
       autoload :Location
       autoload :ResourceLabelCaching
     end

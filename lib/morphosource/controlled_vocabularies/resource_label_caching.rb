@@ -10,7 +10,7 @@ module Morphosource
     #
     # @see Hyrax::DeepIndexingService
     module ResourceLabelCaching
-      CACHE_KEY_PREFIX = "hy_label-v1-"
+      # CACHE_KEY_PREFIX = "hy_label-v1-"
 
       ##
       # @note uses the Rails cache to avoid repeated lookups.
@@ -21,7 +21,7 @@ module Morphosource
         return super unless uri?
 
         byebug
-        Rails.cache.fetch(cache_key) { super }
+        Rails.cache.fetch(cache_key(id)) { super }
       end
 
       ##
@@ -29,16 +29,16 @@ module Morphosource
       #   is performed.
       # @see ActiveTriples::Resource#fetch
       def fetch(*)
-        Rails.cache.delete(cache_key)
+        Rails.cache.delete(cache_key(id))
         super
       end
 
       private
 
-      def cache_key
-        byebug
-        "#{CACHE_KEY_PREFIX}#{to_uri.canonicalize.pname}"
-      end
+      # def cache_key
+      #   byebug
+      #   "#{CACHE_KEY_PREFIX}#{to_uri.canonicalize.pname}"
+      # end
     end
   end
 end

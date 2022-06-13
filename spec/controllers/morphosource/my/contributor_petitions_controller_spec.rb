@@ -4,7 +4,7 @@ include ActionDispatch::TestProcess
 RSpec.describe Morphosource::My::ContributorPetitionsController, :type => :controller do
   let(:user)  { User.create(email: 'user@email.com', password: 'password') }
   let(:create_params) {
-    { 
+    {
       contributor_petition: {
         reason: 'Application reason',
         user_affiliation: 'Test Org',
@@ -18,10 +18,11 @@ RSpec.describe Morphosource::My::ContributorPetitionsController, :type => :contr
     }
   }
   let(:create_params_missing_some) {
-    { 
+    {
       contributor_petition: {
         reason: 'Application reason',
-        user_affiliation: 'Test Org'
+        user_affiliation: 'Test Org',
+        user_demographics_other: 'Volunteer',
       }
     }
   }
@@ -43,7 +44,8 @@ RSpec.describe Morphosource::My::ContributorPetitionsController, :type => :contr
     {
       contributor_petition: {
         reason: 'New application reason',
-        user_affiliation: 'New Test Org'
+        user_affiliation: 'New Test Org',
+        user_demographics_other: 'Volunteer',
       }
     }
   }
@@ -63,7 +65,7 @@ RSpec.describe Morphosource::My::ContributorPetitionsController, :type => :contr
       petition = ContributorPetition.last
       create_params[:contributor_petition].each do |attr, val|
         if attr == :user_demographics
-          val = create_params[:contributor_petition][:user_demographics] + 
+          val = create_params[:contributor_petition][:user_demographics] +
             Array(create_params[:contributor_petition][:user_demographics_other])
         end
         expect(petition.send(attr)).to eq(val)
@@ -88,7 +90,7 @@ RSpec.describe Morphosource::My::ContributorPetitionsController, :type => :contr
   describe 'PATCH #update' do
     let(:petition) { ContributorPetition.new(create_params[:contributor_petition].merge(user: user))}
 
-    before do 
+    before do
       allow(controller).to receive(:current_user) { user }
       petition.save!
     end

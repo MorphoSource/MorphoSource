@@ -95,8 +95,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
     def update_metadata_from_idigbio_occurrence_id
       idigbio_occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
-      if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
-        idigbio_occurrence = idigbio_occurrence_id_results.first
+      if (idigbio_occurrence_id_results[:status] == :success) && (idigbio_occurrence_id_results[:data].length > 0)
+        idigbio_occurrence = idigbio_occurrence_id_results[:data].first
         idb_taxonomy_params = Morphosource::IDigBioSearchService.taxonomy_params_from_idigbio(idigbio_occurrence['uuid'])
         existing_bso = Morphosource::PhysicalObjectsSearchService.call(BiologicalSpecimen, idb_taxonomy_params.clone)
         if (!existing_bso.nil?) && existing_bso.any?

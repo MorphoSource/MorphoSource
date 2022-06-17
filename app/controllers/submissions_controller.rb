@@ -119,7 +119,7 @@ class SubmissionsController < ApplicationController
       @idigbio = search_idigbio
     elsif @po_type == 'cho'
       @docs = search_cho
-      @idigbio = []
+      @idigbio = {}
     end
     respond_to do |format|
       format.js

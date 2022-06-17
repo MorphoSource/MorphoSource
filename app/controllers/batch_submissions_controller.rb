@@ -460,28 +460,31 @@ class BatchSubmissionsController < ApplicationController
       end
     when "biological_specimen.idigbio_uuid"
       if val.present? && !cell_value(current_row, field_column("biological_specimen.ms_id")).present?
-        idb_result = Morphosource::IDigBioSearchService.call( { "idigbio_uuid" => val } )
-        if idb_result.present?
+        idb_result = Morphosource::IDigBio.view(val)
+        if idb_result[:status] == :success && idb_result[:data].present?
+          idb = idb_result[:data]
+
           # If the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a 
           # recordset_id matching the recordset_id of the pre-selected organization
           organization_recordset_id = @params["organization_recordset_id"]
           if organization_recordset_id.present?
-            idb_recordset = idb_result.first["indexTerms"]["recordset"] # todo: might need to check if this will return multiple values
+            idb_recordset = idb["indexTerms"]["recordset"] # todo: might need to check if this will return multiple values
             unless organization_recordset_id.upcase.split(', ').include? idb_recordset.upcase
               error_msg += "Specimen in iDigBio has recordset id #{idb_recordset} which does not match the pre-selected organization's recordset id: #{organization_recordset_id}. "
             end
-          end        
+          end 
+
           # If the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API 
           # must have iDigBio-supplied institution code matching pre-selected organization (case-insensitive)
           organization_institution_code = @params["organization_institution_code"]
           if organization_institution_code.present?
-            idb_institution_code = idb_result.first["indexTerms"]["institutioncode"] # todo: might need to check if this will return multiple values
+            idb_institution_code = idb["indexTerms"]["institutioncode"] # todo: might need to check if this will return multiple values
             unless organization_institution_code.upcase.split(', ').include? idb_institution_code.upcase
               error_msg += "Specimen in iDigBio has institution code #{idb_institution_code} which does not match the pre-selected organization's institution code: #{organization_institution_code}"
             end
           end
         else
-          error_msg = "Cannot found specimen in iDigBio."
+          error_msg = "Cannot find specimen in iDigBio."
         end
         error_msg = "biological_specimen.idigbio_uuid: " + error_msg if error_msg.present?
       end

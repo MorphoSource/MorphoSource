@@ -8,7 +8,7 @@
           <i id="po-search-results-close" class="fas fa-times clickable" style='float: right;'></i>
         </div>
         <div class="row">
-          <% if (docs.nil? || docs.empty?) && (idigbio.try(:default_message).present? || idigbio.nil? || idigbio.empty?) %>
+          <% if (docs.nil? || docs.empty?) && ( ( idigbio[:status] == :error ) || idigbio[:data].nil? || idigbio[:data].empty? ) %>
             <div id="empty_search_results">
                 <%= t('morphosource.submission.po_empty_search_results') %>
             </div>
@@ -67,29 +67,33 @@
             <% end %>
 
             <% if po_type == 'bso' %>
-              <% if idigbio.try(:default_message).present? %>
+              <% if idigbio[:status] == :error %>
                 <div id="empty_search_results">
-                  iDigBio search returned the message:
-                  <br>
-                  <%= idigbio.default_message %>
+                  <% if idigbio[:message].present? %>
+                    An error occurred searching specimens from iDigBio:
+                    <br/><br/>
+                    <%= idigbio[:message] %>
+                  <% else %>
+                    An error occurred searching specimens from iDigBio.
+                  <% end %>
                 </div>
-              <% elsif (idigbio.nil? || idigbio.empty?) %>
+              <% elsif (idigbio[:data].nil? || idigbio[:data].empty?) %>
                 <div id="empty_search_results">
                   <%= t('morphosource.submission.idigbio_empty_search_results') %>
                 </div>
               <% else %>
                 <div id="submission_link_idigbio" class="col-xs-12 col-md-6" style='margin-bottom: 2em;'>
                   <div class="row list-item">
-                    <b><%= t('morphosource.submission.idigbio_search_results') %>  (<%= idigbio.count %>)</b>
+                    <b><%= t('morphosource.submission.idigbio_search_results') %>  (<%= idigbio[:data].count %>)</b>
                   </div>
 
-                  <% if idigbio.count >= 100 %>
+                  <% if idigbio[:data].count >= 100 %>
                     <div class="row vertical-align list-item object-search-result row-striped" style="font-size: smaller; text-align: left;">
                       <i>You have reached the maximum number of search results for biological specimens in iDigBio. You may find additional results if you narrow your search further.</i>
                     </div>
                   <% end %>
 
-                  <% idigbio.each do |idb| %>
+                  <% idigbio[:data].each do |idb| %>
                     <div class="row vertical-align list-item object-search-result row-striped">
                       <div class="col-sm-9 text-left">
                         <div><span><%= "#{idb['data']['dwc:institutionCode']}:" %><wbr><%= "#{idb['data']['dwc:collectionCode']}:" %><wbr><%= "#{idb['data']['dwc:catalogNumber']}" %></span></div>

@@ -109,8 +109,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
   def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=true)
     sex_field_values = Morphosource::SexFieldService.new().option_values
     if occurrence_id_valid?
-      if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
-        idigbio_occurrence = idigbio_occurrence_id_results.first
+      if (idigbio_occurrence_id_results[:status] == :success) && (idigbio_occurrence_id_results[:data].length > 0)
+        idigbio_occurrence = idigbio_occurrence_id_results[:data].first
 
         taxonomy_params_array = []
         taxonomy_id_array = []
@@ -195,7 +195,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
         # normally saving work is done separately (e.g. in a background job, form submit)
         # set save_work flag if needed for debugging in the console
         self.save if save_work 
-      end # / if idigbio_occurrence_id_results && (idigbio_occurrence_id_results.length > 0)
+      end # / if (idigbio_occurrence_id_results[:status] == :success) && (idigbio_occurrence_id_results[:data].length > 0)
     end # / if occurrence_id_valid?
   end
 

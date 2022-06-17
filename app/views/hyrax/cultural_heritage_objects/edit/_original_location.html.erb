@@ -1,0 +1,9 @@
+<%= render "records/edit_fields/tgn", f: f, key: 'tgn' %>
+<%= f.input :original_location, label: 'Locality' %>
+<%= f.input :address, label: 'Address' %>
+<%= f.input :city, label: 'City' %>
+<%= f.input :state_province, label: 'State or Province' %>
+<%= render 'records/edit_fields/country', f: f %>
+<%= f.input 'Geographic Coordinates', value_wrapper: false %>
+<%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
+<%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>

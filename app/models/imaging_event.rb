@@ -53,8 +53,8 @@ end
 class ImagingEvent < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator, ImagingEventParentDeviceModalityValidator
-  before_create :controlled_value_filter
-  before_update :controlled_value_filter
+  before_create :controlled_value_filter, :date_filter
+  before_update :controlled_value_filter, :date_filter
   after_save :add_id_to_title
 
   self.work_requires_files = false
@@ -88,6 +88,10 @@ class ImagingEvent < Morphosource::Works::Base
       unless self.title && self.id && self.title.first.to_s.start_with?("IE#{self.id.to_s}: ")
         self.title.set("IE#{self.id.to_s}: #{self.title.first.to_s}")
       end
+    end
+
+    def date_attributes_for_filter
+      [ :date_created ]
     end
 
     def controlled_attributes

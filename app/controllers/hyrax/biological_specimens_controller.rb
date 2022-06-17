@@ -14,8 +14,11 @@ module Hyrax
     self.show_presenter = Hyrax::BiologicalSpecimenPresenter
 
     before_action :record_original_organizations, only: :update
+    after_action :idigbio_update_notice, only: :update
 
     skip_authorize_resource only: :showcase
+
+    attr_accessor :idigbio_occurrence_id_results
 
     # override the layout from WorksControllerBehavior
     def decide_layout
@@ -74,6 +77,12 @@ module Hyrax
           end
           wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
         end
+      end
+    end
+
+    def idigbio_update_notice
+      if curation_concern.idigbio_occurrence_id_results.present?
+        flash[:notice] = "The specimen has been updated to match the iDigBio record."
       end
     end
 

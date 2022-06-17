@@ -19,6 +19,8 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['download_access_person_ssim'] = object.download_users
       solr_doc['owner_ssim'] = object.owner
       solr_doc['user_with_ownership_ssi'] = object.user_with_ownership
+      solr_doc['user_with_ownership_name_tesim'] = User.find_by_user_key(object.user_with_ownership)&.name_and_email
+      solr_doc['depositor_name_tesim'] = User.find_by_user_key(object.depositor)&.name_and_email
       solr_doc['download_reviewer_ssim'] = object.download_reviewer
       solr_doc['ark_ssim'] = object.ark
       solr_doc['doi_ssim'] = object.doi
@@ -36,7 +38,8 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['media_modality_sim'] = modality
       solr_doc['media_modality_ssim'] = modality
 
-      # data processing for subsequent fields
+      solr_doc['media_parent_id_ssim'] = object.media_parent&.id
+
       physical_objects = object.physical_objects
 
       if physical_objects.present? && are_physical_objects(physical_objects)
@@ -127,11 +130,16 @@ class MediaIndexer < Morphosource::WorkIndexer
       pub_status = publication_status
       solr_doc['publication_status_ssi'] = pub_status
 
-      # related media ids
       ie = object.imaging_event
       solr_doc['imaging_event_id_tesim'] = ie&.id
 
-      facility_org = ie&.device&.organization
+      device = ie&.device
+      device_title = "#{device&.creator&.first} #{device&.title&.first}"
+      solr_doc['media_device_tesim'] = device_title
+      solr_doc['media_device_ssim'] = device_title
+      solr_doc['media_device_id_tesim'] = device&.id
+      solr_doc['media_device_id_ssim'] = device&.id
+      facility_org = device&.organization
       facility_org_title = facility_org&.title&.first
       solr_doc['media_device_facility_organization_tesim'] = facility_org_title
       solr_doc['media_device_facility_organization_ssim'] = facility_org_title

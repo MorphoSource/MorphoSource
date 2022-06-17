@@ -48,6 +48,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
     subject.instance_variable_set(:@organization, organization)
     subject.instance_variable_set(:@user, user)
     subject.instance_variable_set(:@team, team)
+    subject.instance_variable_set(:@remove_previous_reviewers, false)
   end
 
   describe 'perform' do
@@ -57,7 +58,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
       expect_any_instance_of(described_class).to receive(:update_data_manager)
       expect_any_instance_of(described_class).to receive(:update_permissions)
       expect_any_instance_of(described_class).to receive(:add_media_to_team)
-      described_class.perform_now(media_id: media.id, organization_id: organization.id, user_email: user.email, update_publication_status: 'all')
+      described_class.perform_now(media_id: media.id, organization_id: organization.id, remove_previous_reviewers: 'true', user_email: user.email, update_publication_status: 'all')
     end
   end
 
@@ -77,9 +78,21 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
       before do
         media_is_restricted_download
       end
-      it 'updates the download reviewer to the media reviewer + organization download reviewer' do
-        subject.send(:update_download_reviewer)
-        expect(media.download_reviewer).to match_array([depositor.ms_id] + organization.download_reviewer.to_a)
+
+      context 'remove_previous_reviewers is true' do
+        before do
+          subject.instance_variable_set(:@remove_previous_reviewers, "true")
+        end
+        it 'updates the download reviewer to the organization download reviewer' do
+          subject.send(:update_download_reviewer)
+          expect(media.download_reviewer).to match_array(organization.download_reviewer)
+        end
+      end
+      context 'remove_previous_reviewers is false' do
+        it 'updates the download reviewer to the media reviewer + organization download reviewer' do
+          subject.send(:update_download_reviewer)
+          expect(media.download_reviewer).to match_array([depositor.ms_id] + organization.download_reviewer.to_a)
+        end
       end
     end
 
@@ -87,6 +100,15 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
       before do
         media.download_reviewer = [user.ms_id]
         media_is_private
+      end
+      context 'remove_previous_reviewers is true' do
+        before do
+          subject.instance_variable_set(:@remove_previous_reviewers, "true")
+        end
+        it 'updates the download reviewer to the organization download reviewer' do
+          subject.send(:update_download_reviewer)
+          expect(media.download_reviewer).to match_array(organization.download_reviewer)
+        end
       end
       it 'updates the download reviewer to the media download reviewer + organization download reviewer' do
         subject.send(:update_download_reviewer)

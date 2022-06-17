@@ -1,9 +1,9 @@
 class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
-  before_create :controlled_value_filter
+  before_create :controlled_value_filter, :date_filter
   after_create :mint_ark
-  before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids, :controlled_value_filter
+  before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids, :controlled_value_filter, :date_filter
   before_validation :normalize_download_reviewer
   after_update :update_ark_status, :update_cartitem_reviewer, :check_for_organization_transfer
   before_destroy :record_original_objects
@@ -230,6 +230,18 @@ class Media < Morphosource::Works::Base
 
   def processing_event
     ancestors.find(&:processing_event?)
+  end
+
+  def media_parent
+    ancestor_find(:media?)
+  end
+
+  def media_parents
+    ancestors.select(&:media?)
+  end
+
+  def media_children
+    descendants.select(&:media?)
   end
 
   def is_raw?
@@ -517,6 +529,10 @@ class Media < Morphosource::Works::Base
       @objects.each do |obj|
         UpdateWorkIndexJob.perform_later(obj.id)
       end
+    end
+
+    def date_attributes_for_filter
+      [ :date_created ]
     end
 
     def controlled_attributes

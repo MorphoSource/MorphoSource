@@ -32,5 +32,13 @@ module Morphosource
     def id_badge
       content_tag(:span, "ID: #{id}", class: "label label-info")
     end
+
+    def organization_badge
+      content_tag(:span, "Organization", class: "label label-success")
+    end
+
+    def team_managed_badge
+      content_tag(:span, "Team Managed", class: "label", style: "background-color: #FF861F;")
+    end
   end
 end

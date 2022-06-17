@@ -41,6 +41,11 @@ module Morphosource
         @ancestors.flatten.uniq
       end
 
+      def ancestor_find(cond_method)
+        objects = member_of
+        return find_parent(objects, cond_method)
+      end
+
       def specimen?
         self.class == BiologicalSpecimen
       end
@@ -107,7 +112,26 @@ module Morphosource
         end
       end
 
-
+      def date_filter
+        # Convert date strings ingested through batch submission (or manual update)
+        # Acceptable system date format is YYYY-MM-DD with leading zero's, e.g.
+        #  5-6-2019 or 5/6/2019 or 2019/5/6  to 2019-05-06
+        date_attributes_for_filter.each do |attr|
+          if self.send(attr.to_s+"_changed?")
+            str = self.send(attr)&.first
+            case str
+            when /^(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})$/
+              str = $1 + "-" + $2.rjust(2, "0") + "-" + $3.rjust(2, "0") if Date.valid_date? $1.to_i, $2.to_i, $3.to_i
+            when /^(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})$/
+              str = $3 + "-" + $1.rjust(2, "0") + "-" + $2.rjust(2, "0") if Date.valid_date? $3.to_i, $1.to_i, $2.to_i
+            else
+              # leave str as it is
+            end
+            self.send(attr.to_s+"=", [str])
+          end
+        end
+      end
+      
       private
 
       # if everything is working as it should be, the solr document should already have been deleted before this.
@@ -138,6 +162,18 @@ module Morphosource
           @ancestors << parents
           get_all_parents(parents)
         end
+      end
+
+      def find_parent(objects, cond_method)
+        objects.flatten.each do |object|
+          if object.send(cond_method)
+            return object
+          else
+            parent_result = find_parent(object.member_of, cond_method)
+            return parent_result if parent_result.present?
+          end
+        end
+        return nil
       end
     end
   end

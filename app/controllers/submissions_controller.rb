@@ -262,6 +262,7 @@ class SubmissionsController < ApplicationController
             Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key))
         end
       end
+
     end
 
     works.each do |work|

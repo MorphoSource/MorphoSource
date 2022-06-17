@@ -7,7 +7,7 @@
     <div class="col-md-12">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h2 class="panel-title h2">Normalize Organization Media By Collection</h2>
+          <h2 class="panel-title h2">Normalize Organization Media By Collection and/or Data Manager</h2>
         </div>
         <div class="panel-body">
           <div class="summary">
@@ -21,32 +21,54 @@
           <div style="display:flex; flex-direction:row;">
             <div class="data-curation-form">
             <%= form_with url: admin_apply_permission_template_path, method: :post, local: true do |form| %>
-
-              <div class="input-field">
-                <div>
-                  <%= form.label :team_id, "Org-Linked Team ID" %>
+              <div style="border:3px solid black; border-radius:5px; padding:5px; margin-bottom: 10px;">
+                <div class="input-field">
+                  <div>
+                    <%= form.label :team_id, "Org-Linked Team ID" %>
+                  </div>
+                  <p>Ex: 000345596</p>
+                  <div>
+                    <%= form.text_field :team_id, required: true %>
+                  </div>
                 </div>
-                <p>Ex: 000345596</p>
-                <div>
-                  <%= form.text_field :team_id, required: true %>
+                <p style="width:100%; text-align:center"><strong>AND</strong></p>
+                <div style="border:2px solid black; border-radius:5px; padding:5px;">
+                  <div class="input-field">
+                    <div>
+                      <%= form.label :collection_id, "Media Collection ID" %>
+                    </div>
+                    <p>Ex: 000778565</p>
+                    <div>
+                      <%= form.text_field :collection_id %>
+                    </div>
+                  </div>
+                  <p style="width:100%; text-align:center"><strong>AND / OR</strong></p>
+                  <div class="input-field">
+                    <div>
+                      <%= form.label :old_manager_email, "Old Data Manager Email" %>
+                    </div>
+                    <p>Ex: user@email.com</p>
+                    <div>
+                      <%= form.text_field :old_manager_email %>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="input-field">
                 <div>
-                  <%= form.label :collection_id, "Media Collection ID" %>
-                </div>
-                <p>Ex: 000778565</p>
-                <div>
-                  <%= form.text_field :collection_id %>
-                </div>
-              </div>
-              <div class="input-field">
-                <div>
-                  <%= form.label :email, "Data Manager Email" %>
+                  <%= form.label :email, "New Data Manager Email" %>
                 </div>
                 <p>Ex: user@email.com</p>
                 <div>
                   <%= form.text_field :email %>
+                </div>
+              </div>
+              <div class="input-field">
+                <div>
+                  <%= form.label :remove_previous_reviewers, "Remove Previous Download Reviewers?" %>
+                </div>
+                <div>
+                  <%= form.select_tag(:remove_previous_reviewers, options_for_select([['No', false], ['Yes', true]])) %>
                 </div>
               </div>
               <div class="input-field">
@@ -84,7 +106,8 @@
                 <h4>Notes:</h4>
                 <p>To normalize all organizational media already in a team, use the team id for both the Team ID and the Collection ID.</p>
                 <p>It is safe to run this update even if media in the project are already in the team, it will still update permissions metadata for those media.</p>
-                <p>Media download reviewers will be updated to the following, based on the original publication status:
+                <p>If 'Remove Previous Download Reviewers' is set to 'Yes', all media download reviewers will be set to whatever is in the organizational template.</p>
+                <p>If 'Remove Previous Download Reviewers' is set to 'No', media download reviewers will be updated to the following, based on the original publication status:
                   <ul>
                     <li>Open: Organization Reviewers</li>
                     <li>Restricted Download: Organization Reviewers + Previous Reviewers (default or designated)</li>
@@ -93,7 +116,7 @@
                 </p>
                 <h4>For developers:</h4>
                 <p>To run this service from the console:</p>
-                <p>Morphosource::DataCuration::OrganizationNormalizationService.call(team_id: team_id, project_id: project_id, email: email, update_publication_status: 'none'/'all'/'published')
+                <p>Morphosource::DataCuration::OrganizationNormalizationService.call(team_id: team_id, project_id: project_id, old_manager_email: email, email: email, remove_previous_reviewers: 'true'/'false', update_publication_status: 'none'/'all'/'published')
               </div>
             </div>
           </div>

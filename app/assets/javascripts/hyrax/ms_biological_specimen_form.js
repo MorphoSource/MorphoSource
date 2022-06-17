@@ -199,8 +199,95 @@ $( document ).ready(function() {
 				$('#in-collection-badge').text('Not in Collection');				
 		})
 
-	  $(document).on("submit", 'form[data-param-key="biological_specimen"]', function() {
+    function taxonomy_short_title(t) {
+      ranks = [t.taxonomy_genus, t.taxonomy_subgenus, t.taxonomy_species, t.taxonomy_subspecies];
+      title = ranks.join(' ');
+      if (title.replace(/\s/g,'') != '')
+        return title;
+      else
+        return "(no title)";
+    }
+
+    function populate_taxonomy(label, t) {
+      //console.log(label, t);
+      var labelClass = "#modal-idigbio-result ." + label;
+      $(labelClass + ' .taxonomy-title').html(taxonomy_short_title(t));
+      $(labelClass + ' .taxonomy-domain').html(t.taxonomy_domain);
+      $(labelClass + ' .taxonomy-kingdom').html(t.taxonomy_kingdom);
+      $(labelClass + ' .taxonomy-phylum').html(t.taxonomy_phylum);
+      $(labelClass + ' .taxonomy-superclass').html(t.taxonomy_superclass);
+      $(labelClass + ' .taxonomy-class').html(t.taxonomy_class);
+      $(labelClass + ' .taxonomy-subclass').html(t.taxonomy_subclass);
+      $(labelClass + ' .taxonomy-superorder').html(t.taxonomy_superorder);
+      $(labelClass + ' .taxonomy-order').html(t.taxonomy_order);
+      $(labelClass + ' .taxonomy-suborder').html(t.taxonomy_suborder);
+      $(labelClass + ' .taxonomy-superfamily').html(t.taxonomy_superfamily);
+      $(labelClass + ' .taxonomy-family').html(t.taxonomy_family);
+      $(labelClass + ' .taxonomy-subfamily').html(t.taxonomy_subfamily);
+      $(labelClass + ' .taxonomy-tribe').html(t.taxonomy_tribe);
+      $(labelClass + ' .taxonomy-genus').html(t.taxonomy_genus);
+      $(labelClass + ' .taxonomy-subgenus').html(t.taxonomy_subgenus);
+      $(labelClass + ' .taxonomy-species').html(t.taxonomy_species);
+      $(labelClass + ' .taxonomy-subspecies').html(t.taxonomy_subspecies);
+    }
+
+    function search_idigbio(occurrence_id) {
+      $.ajax({
+        url: '/search_idigbio_by_occurrence_id_ajax/' + occurrence_id,
+        type: 'GET',
+        dataType: 'json',
+        timeout: 5000,
+        complete: function(xhr, status) {
+          if (status != "success") {
+            console.log(" status returned: " + status + ", saving... ");
+            saveSpecimen();
+          } else {
+            var results = $.parseJSON(xhr.responseText);
+            if (jQuery.isEmptyObject(results)) {
+              console.log(" no match from IDB, saving... ");
+              saveSpecimen();
+            } else if (results.idigbio_uuid == $('#existing_idigbio_uuid').val()) {
+              console.log(" idigbio_uuid is the same as existing, saving... ");
+              saveSpecimen();
+            } else {
+              console.log("Match from IDB: ", results);
+              $('#modal-idigbio-result #institution-code').html(results.institution_code);
+              $('#modal-idigbio-result #collection-code').html(results.collection_code);
+              $('#modal-idigbio-result #catalog-number').html(results.catalog_number);
+              $('#modal-idigbio-result #idb-link').attr("href", "//www.idigbio.org/portal/records/" + results.idigbio_uuid);
+              
+              if (results.taxonomy.provider != null) {
+                populate_taxonomy('Provider', results.taxonomy.provider);
+              }
+              if (results.taxonomy.gbif != null) {
+                populate_taxonomy('GBIF', results.taxonomy.gbif);
+              }
+
+              $('#modal-idigbio-result').modal();
+              enablePage();
+              $(document).on('click', '#modal-idigbio-result #btn-save', function(){
+                $('#modal-idigbio-result').modal('hide');
+                saveSpecimen();
+              });
+            }
+          }
+        }
+      });
+    }
+
+    function saveSpecimen() {
+      disablePage();
+      $('form[data-param-key="biological_specimen"]').submit();
+    }
+	  
+    $(document).on('click', '#btn-save-bso', function(){
 			disablePage();
+      // search iDigBio if occurrence_id has been changed
+      if ($('#biological_specimen_occurrence_id').val() != $('#existing_occurrence_id').val()) {
+        search_idigbio($('#biological_specimen_occurrence_id').val());
+      } else {
+        $('form[data-param-key="biological_specimen"]').submit();
+      }
 		})
 
   }

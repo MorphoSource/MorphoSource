@@ -4,21 +4,55 @@ module Hyrax
   class CulturalHeritageObjectPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :bibliographic_citation, :catalog_number, :collection_code, :numeric_time, :original_location,
-             :periodic_time, :vouchered, :cho_type, :material, :short_title, :geographic_coordinates, 
+    delegate :aat_attribute,
+             :aat_attribute_label,
+             :aat_material,
+             :aat_material_label,
+             :aat_period,
+             :aat_period_label,
+             :aat_type,
+             :aat_type_label,
+             :address,
+             :bibliographic_citation,
+             :catalog_number,
+             :cho_attribute,
+             :cho_type,
+             :city,
+             :collection_code,
+             :context,
+             :country,
+             :current_location,
+             :dating_method,
+             :dimensions,
+             :formation,
+             :geographic_coordinates,
+             :institution_code,
+             :material,
+             :numeric_time,
+             :original_location,
+             :periodic_time,
+             :periodic_time_label,
+             :provenance_date,
+             :provenance_details,
+             :provenance_location,
+             :provenance_name,
+             :short_title,
+             :state_province,
+             :tgn,
+             :tgn_label,
+             :vouchered,
              :public_media_ids, to: :solr_document
 
-
-    def related_media_ids 
+    def related_media_ids
       ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
       return ids
     end
 
-    def viewable_related_media_ids 
+    def viewable_related_media_ids
       return related_media_ids if current_ability.current_user.admin?
       filtered_ids = []
       related_media_ids.each do |id|
-        if current_ability.can?(:read, id) 
+        if current_ability.can?(:read, id)
           filtered_ids << id
         end
       end
@@ -80,6 +114,30 @@ module Hyrax
 
     def showcase_citation_and_download_partial
       '/hyrax/physical_objects/showcase_citation_and_download'
+    end
+
+    def object_material
+      aat = aat_material_label.present? ? aat_material_label : []
+      custom = material.present? ? material : []
+      aat + custom
+    end
+
+    def object_period
+      aat = aat_period_label.present? ? aat_period_label : []
+      periodic_time = periodic_time.present? ? periodic_time : []
+      aat + periodic_time
+    end
+
+    def object_type
+      aat = aat_type_label.present? ? aat_type_label : []
+      custom = cho_type.present? ? cho_type : []
+      aat + custom
+    end
+
+    def object_attributes
+      aat = aat_attribute_label.present? ? aat_attribute_label : []
+      custom = cho_attribute.present? ? cho_attribute : []
+      aat + custom
     end
 
   end

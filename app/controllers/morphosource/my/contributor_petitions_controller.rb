@@ -33,7 +33,7 @@ module Morphosource
         ( redirect_to main_app.root_url and return ) unless validate_create
         @petition = ContributorPetition.new(petition_params)
         require_petition_decision
-        
+
         if @petition.save
           update_user
           redirect_to main_app.user_contributor_petition_path and return
@@ -83,8 +83,9 @@ module Morphosource
       def prepare_params
         p = params[:contributor_petition]
         p[:user_id] = current_user.id
+        p[:user_demographics] ||= []
         if (
-          p[:user_demographics_other].present? && 
+          p[:user_demographics_other].present? &&
           !p[:user_demographics].include?(p[:user_demographics_other])
         )
           p[:user_demographics] = ( p[:user_demographics].presence || [] ) + Array(p[:user_demographics_other])
@@ -131,8 +132,8 @@ module Morphosource
 
       def petition_params
         @petition_params ||= params.fetch(:contributor_petition, {}).permit(
-          :user_id, :reason, :user_affiliation, :user_department, 
-          :user_demographics_other,:user_advisor, :contribution_amount, 
+          :user_id, :reason, :user_affiliation, :user_department,
+          :user_demographics_other,:user_advisor, :contribution_amount,
           :terms_agree, :user_demographics => []
         )
       end

@@ -35,7 +35,7 @@ po_taxonomy = media_extra['po_taxonomy']
     <td><%= media_extra["origin"] %></td>
   <% end %>
   <td><%= document.date_uploaded %></td>
-  <td class='long-badge'><%= render_view_link_publication_status_badge(document) %></td>
+  <td class='long-badge'><%= render_publication_status_badge(document) %></td>
   <td class="text-center">
     <%
       # todo: below code does not work since source_of_result is no longer available

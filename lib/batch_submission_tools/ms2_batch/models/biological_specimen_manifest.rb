@@ -37,7 +37,8 @@ module BatchSubmissionTools
               organization_id: [@organization_id],
               depositor: @depositor,
               on_behalf_of: @on_behalf_of,
-              description: description(imported_attrs)
+              description: description(imported_attrs),
+              idigbio_link_origin: ["user"]
             )
             @work_imported = true
             @occurrence_id = @attrs['occurrence_id']

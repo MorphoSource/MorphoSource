@@ -1,13 +1,16 @@
 require 'roo'
 
 class BatchSubmissionsController < ApplicationController
+  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper  
+
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms, only: [:new]
-  before_action :check_batch_submission_access, only: [:index, :new, :submit]
-  before_action :check_new_submit_allowed, only: [:new, :submit]
+  before_action :check_batch_submission_access, only: [:index, :new, :submit, :ingest]
+  before_action :check_new_submit_allowed, only: [:new, :submit, :ingest]
   before_action :check_params, only: [:submit]
-  after_action :create_manifest_object, only: [:submit]
+  before_action :check_request_manifest_object, only: [:ingest]
+  after_action :start_ingest_job, only: [:ingest]
 
   attr_accessor :parent_media_row, :parent_media_id
 
@@ -16,8 +19,35 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def index
-    job = current_user.last_batch_submission_job
-    render 'index', locals: { job: job }
+    last_job = current_user.last_batch_submission_job
+    check_job_failure(last_job) unless (last_job.status == "failed" ||  last_job.status == "completed")
+    render 'index', locals: { job: last_job }
+  end
+
+  def check_job_failure(last_job)
+    # check if the last job has actually failed without throwing an exception
+    failure_found_indexes = []
+    exceptions = []
+    1.upto(Resque::Failure.count) do |idx|
+      job = Resque::Failure.all(idx)
+      if job.present? 
+        begin
+          if job['payload']['args'][0]['job_id'] == last_job.main_job_id
+            failure_found_indexes << idx
+            exceptions << "Exception: #{job['exception']}, Error: #{job['error']}"
+          end
+        rescue => e
+          Rails.logger.debug "iN check_job_failure, Exception: #{e.message} -- #{e.inspect} -- #{e.backtrace}"
+        end
+      end
+    end
+    if failure_found_indexes.present?
+      # update both ActiveJob and BackgroundJob
+      status = ActiveJob::Status.get(last_job.main_job_id)
+      status.update(status: :failed)
+      status.update(exception: exceptions.join('; '))
+      last_job.update_status("failed", exceptions.join('; '))
+    end
   end
 
   def new
@@ -111,12 +141,10 @@ class BatchSubmissionsController < ApplicationController
     @submission_yaml = YAML.load_file(Rails.root.join('config','submission.yml'))
     @xlsx = Roo::Excelx.new(manifest.tempfile.path)
     @modality_selected = @params["batch_submission"]["modality"]
-    @manifest_is_valid = false
     parse_manifest
   end
 
   def create_manifest_object
-    if @manifest_is_valid
       input_path = manifest.tempfile.path
       media_path = user_share_full_path
       admin_user = User.where(ms_id:Hyrax.config.batch_user_key).first
@@ -149,15 +177,14 @@ class BatchSubmissionsController < ApplicationController
         organization_transfer_immediately:( organization_media_transfer == :immediate ),
         device_id:device_id, 
         media_ownership_fields:media_ownership_fields).to_h
-      ingest
-    else
-
-    end
-
   end
 
   def ingest
-    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@manifest_object, current_user)
+    render 'ingest_started'
+  end
+  
+  def start_ingest_job
+    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
     main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
 
@@ -262,16 +289,16 @@ class BatchSubmissionsController < ApplicationController
           field_names: field_names, 
           row_count: row_count
         }
-        @manifest_is_valid = false
       else
+        create_manifest_object
         render 'validation_success', locals: { 
+          manifest_object: @manifest_object,
           warn_rows: warn_rows, 
           warn_messages: warn_messages, 
           warn_cell_numbers: warn_cell_numbers, 
           field_names: field_names, 
           row_count: row_count
         }
-        @manifest_is_valid = true
       end    
 
     end
@@ -402,11 +429,19 @@ class BatchSubmissionsController < ApplicationController
           elsif @parent_media_id.present? && (@parent_media_id != val)
             error_msg = "media.parent_ms_id: Only one parent media should be present, but multiple parent_ms_id are found."
           else
-            if Media.where(id:pad(val.to_s)).present?
-              @parent_media_id = val
+            ms_parent_media = Media.where(id:pad(val.to_s))&.first
+            if ms_parent_media.present?
+              if (bso_ms_id = pad(cell_value(current_row, field_column("biological_specimen.ms_id")))).present?
+                if (ms_parent_media.specimens.present?) && (ms_parent_media.specimens.first.id != bso_ms_id)
+                  error_msg = "media.parent_ms_id: parent media's specimen id #{ms_parent_media.specimens.first.id} does not match the biological_specimen.ms_id #{bso_ms_id}"
+                end
+              end
             else
               error_msg = "media.parent_ms_id: Existing media #{val} not found."
             end
+          end
+          unless error_msg.present?
+            @parent_media_id = val
           end
         end
       end
@@ -481,7 +516,7 @@ class BatchSubmissionsController < ApplicationController
             end
           end
         else
-          error_msg = "Cannot found specimen in iDigBio."
+          error_msg = "Cannot find specimen in iDigBio."
         end
         error_msg = "biological_specimen.idigbio_uuid: " + error_msg if error_msg.present?
       end
@@ -582,10 +617,10 @@ class BatchSubmissionsController < ApplicationController
 
   def is_date?(str)
     case str
-    when /^(\d{4})\-(\d{2})\-(\d{2})$/
+    when /^(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})$/
       Date.valid_date? $1.to_i, $2.to_i, $3.to_i
-    when /^(\d{2})\-(\d{2})\-(\d{4})$/
-      Date.valid_date? $3.to_i, $2.to_i, $1.to_i
+    when /^(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})$/
+      Date.valid_date? $3.to_i, $1.to_i, $2.to_i
     else
       false
     end
@@ -767,14 +802,6 @@ class BatchSubmissionsController < ApplicationController
     end
   end
   
-  def pad(id)
-    if id.length < 9
-      ("0" * (9 - id.length)) + id
-    else
-      id
-    end
-  end
-
   def modality_mapped(m)
     case m
     when 'MicroNanoXRayComputedTomography'
@@ -827,10 +854,10 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def get_organization_media_transfer
-    if params[:media][:transfer_management].present?
+    if params.dig(:media, :transfer_management).present?
       if transfer_media_immediately?
         :immediate
-      elsif params[:media][:transfer_management] == 'publication'
+      elsif params.dig(:media, :transfer_management) == 'publication'
         :publication
       else
         nil
@@ -841,17 +868,22 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def transfer_media_immediately?
-    ( params[:media][:transfer_management] == 'immediate' ) ||
+    ( params.dig(:media, :transfer_management) == 'immediate' ) ||
     ( 
-      params[:media][:transfer_management] == 'publication' && 
-      ['open', 'restricted_download'].include?(params[:batch_submission][:media][:visibility]) 
+      params.dig(:media, :transfer_management) == 'publication' && 
+      ['open', 'restricted_download'].include?(params.dig(:batch_submission, :media, :visibility)) 
     )
   end
 
   private
 
     def cell_value(row_num, col_num)
-      @xlsx.cell(row_num, col_num)&.strip
+      val = @xlsx.cell(row_num, col_num)
+      if val.nil?
+        return nil
+      else
+        return val.to_s.strip
+      end
     end
 
     def check_params
@@ -897,6 +929,14 @@ class BatchSubmissionsController < ApplicationController
     def check_new_submit_allowed
       if !current_user.can_submit_new_batch_submission?
         render 'not_allowed', locals: { message: 'Sorry, you currently have a batch submission job running. ', show_dashboard_link: true }
+      end
+    end
+
+    def check_request_manifest_object
+      @request_manifest_object = JSON.parse(request.params["manifest_object"])
+      if !@request_manifest_object.present?
+        flash[:error] = 'The manifest is missing.  Please submit the batch submission form again.'
+        return redirect_to main_app.new_batch_submission_path
       end
     end
 

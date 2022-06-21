@@ -20,10 +20,6 @@ module Morphosource
       property :country, predicate: ::RDF::Vocab::DWC.country do |index|
         index.as :stored_searchable, :facetable
       end
-
-      property :tgn, predicate: ::RDF::URI.new("http://purl.org/dc/terms/TGN") do |index|
-        index.as :stored_searchable, :facetable
-      end    
     end
   end
 end

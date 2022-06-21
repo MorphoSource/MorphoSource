@@ -3,12 +3,13 @@ module Morphosource
 
     queue_as Hyrax.config.update_slow_queue_name
 
-    def perform(media_id: nil, organization_id: nil, user_email: nil, update_publication_status: nil)
-      return false if [media_id, organization_id, user_email, update_publication_status].any?(&:nil?)
+    def perform(media_id: nil, organization_id: nil, user_email: nil, remove_previous_reviewers: false, update_publication_status: nil)
+      return false if [media_id, organization_id, user_email, remove_previous_reviewers, update_publication_status].any?(&:blank?)
       @media = Media.find(media_id)
       @organization = Organization.find(organization_id)
       @team = Collection.find(@organization.team_id.first)
       @user = User.find_by(email: user_email)
+      @remove_previous_reviewers = remove_previous_reviewers
       @update_publication_status = update_publication_status
       update_download_reviewer
       update_media_publication_status
@@ -19,14 +20,13 @@ module Morphosource
     end
 
     def update_download_reviewer
-      # only organization download reviewers will be reviewers (kind of irrelevant, since it's open download)
-      if @media.open?
+      if @media.open? || @remove_previous_reviewers == "true"
         @media.download_reviewer = @organization.download_reviewer
-      # if a download reviewer has been designated, include them along with the organization download reviewers
       elsif @media.private?
+        # if a download reviewer has been designated, include them along with the organization download reviewers
         @media.download_reviewer = (@media.download_reviewer + @organization.download_reviewer).uniq
-      # if media is restricted download, include the default reviewer (regardless of whether one has been explicitly desginated) along with the organization download reviewers
       else
+        # if media is restricted download, include the default reviewer (regardless of whether one has been explicitly desginated) along with the organization download reviewers
         @media.download_reviewer = (@media.reviewer + @organization.download_reviewer.to_a).uniq
       end
     end

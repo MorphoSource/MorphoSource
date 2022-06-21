@@ -115,6 +115,7 @@ $( document ).ready(function() {
             $("input.organization_title").val('');
             $("input.organization_label").val('');
             $("#submission_organization_select_display .showcase-value").text('');
+            $('input#batch_submission_media_agreement_uri').val('');
 
             // UI controls
             $('#submission_select_organization_section').addClass('show').removeClass('hide');
@@ -122,6 +123,9 @@ $( document ).ready(function() {
             $('#submission_no_organization_section').addClass('show').removeClass('hide');
             $('#submission_organization_select_display').addClass('hide').removeClass('show');
             $('#submission_select_organization').attr('disabled', 'disabled');
+            $("#no-attachment").addClass('show').removeClass('hide');            
+            $("#organization-agreement-uri").addClass('hide').removeClass('show');
+            $("#organization-attachment-url").attr("href", "").addClass('hide').removeClass('show');
 
             $("#batch_submission_organization_search").select2('val', null);
             data.setOrganizationDefaults();

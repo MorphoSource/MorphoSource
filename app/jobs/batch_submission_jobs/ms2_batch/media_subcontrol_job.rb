@@ -1,4 +1,5 @@
 class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
+  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper  
   attr_accessor :manifest, :main_job_id
 
   queue_as Hyrax.config.ingest_queue_name
@@ -31,7 +32,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       elsif !bso['id'].present?
         raise "A supposedly ingested biological specimen does not have ID. Provided BSO: #{bso}"
       end
-      i['physical_object_id'] = bso['id']
+      i['physical_object_id'] = pad(bso['id'])
 
       # check if the ingest depends on a derived parent
       derived_parent_file = ""

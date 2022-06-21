@@ -30,6 +30,7 @@ html {
   }
 
 }
+
 .showcase.batch-submission {
   background-color: #fff;
   .error-list {
@@ -53,6 +54,14 @@ html {
       overflow: hidden;
       max-width: 200px;
     }
+  }
+  .upload-file {
+    margin: 30px auto;
+    text-align: center;
+    #manifest_file {
+      display: inline;
+      width:200px;
+    }    
   }
 }
 /*
@@ -354,14 +363,14 @@ html {
     a {
       display: inline-block;
       width: 100%;
-      span {
-        display: inline-block;
-        font-weight: bold;
-        font-size: 10px;
-        width: 100%;
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
+    }
+    span {
+      display: inline-block;
+      font-weight: bold;
+      font-size: 8px !important;
+      width: 100%;
+      padding-top: 4px;
+      padding-bottom: 4px;
     }
   }
 

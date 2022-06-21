@@ -61,19 +61,35 @@ module Morphosource
       # set idigbio_recordset_id to indexTerms['recordset']
       # set idigbio_uuid to uuid
       # set original_location to whichever of dwc:locality, dwc:verbatimLocality, dwc:country occurs first
-      idb = Morphosource::IDigBio.view(idigbio_uuid)
-      return self.biological_specimen_params_from_idigbio_result(idb)
+      if !idigbio_uuid.present?
+        Rails.logger.error("Did not query iDigBio API, must provide an iDigBio UUID")
+        return {}
+      end
+
+      idb_result = Morphosource::IDigBio.view(idigbio_uuid)
+      if idb_result[:status] == :success && idb_result[:data].present?
+        idb = idb_result[:data]
+        return self.biological_specimen_params_from_idigbio_result(idb)
+      else
+        Rails.logger.error("An error occurred querying the iDigBio API: #{idb_result[:message]}")
+        return {}
+      end
     end
 
     def self.biological_specimen_params_from_occurrence_id(occurrence_id)
       occurrence_id = Array(occurrence_id)&.first&.strip
-      return {} unless occurrence_id.present?
+
+      if !occurrence_id.present?
+        Rails.logger.error("Did not query iDigBio API, must provide an occurrence ID")
+        return {}
+      end
       
       results = self.call({ 'occurrence_id' => occurrence_id })
-      if results.present? && (results&.first&.dig('data', 'dwc:occurrenceID').downcase == occurrence_id.downcase)
-        idb = results.first
+      if results[:status] == :success && results[:data].present? && (results[:data]&.first&.dig('data', 'dwc:occurrenceID').downcase == occurrence_id.downcase)
+        idb = results[:data].first
         return self.biological_specimen_params_from_idigbio_result(idb)
       else
+        Rails.logger.error("An error occurred querying the iDigBio API: #{results[:message]}")
         return {}
       end
     end
@@ -101,9 +117,21 @@ module Morphosource
     # params. The first is based on the data provider supplied 'data' taxonomy.
     # The second is based on iDigBio-corrected 'indexTerms' taxonomies with GBIF links.
     def self.taxonomy_param_sets_from_idigbio(idigbio_uuid)
-      idb = Morphosource::IDigBio.view(idigbio_uuid)
       taxonomy_param_sets = { provider: {}, gbif: {} }
 
+      if !idigbio_uuid.present?
+        Rails.logger.error("Did not query iDigBio API, must provide an iDigBio UUID")
+        return taxonomy_param_sets
+      end
+
+      idb_result = Morphosource::IDigBio.view(idigbio_uuid)
+      if idb_result[:status] == :success && idb_result[:data].present?
+        idb = idb_result[:data]
+      else
+        Rails.logger.error("An error occurred querying the iDigBio API: #{idb_result[:message]}")
+        return taxonomy_param_sets
+      end
+      
       # Construct provider params
       IDIGBIO_TAXONOMY_MAPPING.each do |key, value|
         if idb['data'].has_key?(key)
@@ -126,7 +154,7 @@ module Morphosource
     def call
       query = assemble_query
       if query.empty?
-        return []
+        return { status: :fail, data: 'Query parameters must be provided' }
       else
         return Morphosource::IDigBio.search(query)
       end

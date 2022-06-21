@@ -11,16 +11,33 @@ module Morphosource
     def self.search(search_query, limit = 100, fields = nil)
       begin
         response = RestClient.post "#{API_ENDPOINT}/search/records/", {rq: search_query, limit: limit }.to_json, {content_type: :json, accept: :json}
-      rescue RestClient::ExceptionWithResponse => exception
-        exception
+      rescue RestClient::Exception => exception
+        {
+          status: :error,
+          message: exception.message || exception.default_message || nil
+        }
       else
-        JSON.parse(response.body)['items']
+        {
+          status: :success,
+          data: JSON.parse(response.body)['items']
+        }
       end
     end
 
     def self.view(uuid)
-      response = RestClient.get "#{API_ENDPOINT}/view/records/#{uuid}"
-      JSON.parse(response.body) if response
+      begin
+        response = RestClient.get "#{API_ENDPOINT}/view/records/#{uuid}"
+      rescue RestClient::Exception => exception
+        {
+          status: :error,
+          message: exception.message || exception.default_message || nil
+        }
+      else
+        {
+          status: :success,
+          data: JSON.parse(response.body)
+        }
+      end
     end
   end
 end

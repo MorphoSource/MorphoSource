@@ -18,18 +18,21 @@ RSpec.describe Morphosource::IDigBioSearchService, :vcr do
     describe 'no search params' do
       it 'returns an empty array' do
         results = subject.call
-        expect(results).to be_a(Array)
-        expect(results).to match_array([])
+        expect(results).to be_a(Hash)
+        expect(results).to include(
+          :status => :fail, 
+          :data => 'Query parameters must be provided'
+        )
       end
     end
     describe 'some search params' do
       let(:params) { { 'taxonomy_genus' => 'parvisipho', 'taxonomy_species' => 'lewisiana' } }
       it 'returns results that match search params' do
         results = subject.call
-        expect(results).to be_a(Array)
-        expect(results).not_to be_empty
-        expect(results.first['data']['dwc:genus']).to eq('Parvisipho')
-        expect(results.first['data']['dwc:specificEpithet']).to eq('lewisiana')
+        expect(results).to be_a(Hash)
+        expect(results[:data]).not_to be_empty
+        expect(results[:data].first['data']['dwc:genus']).to eq('Parvisipho')
+        expect(results[:data].first['data']['dwc:specificEpithet']).to eq('lewisiana')
       end
     end
   end

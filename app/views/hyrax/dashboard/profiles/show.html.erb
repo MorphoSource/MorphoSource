@@ -1,4 +1,5 @@
 <% content_for :body_css_classes do %>showcase profile<% end %>
+
 <% provide :page_header do %>
   <h1><span class="fa fa-id-card" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.profile") %></h1>
   <% if can? :edit, current_user %>
@@ -17,6 +18,10 @@
   <% end %>
 <% end %>
 
+<div class="col-xs-12 flash-wrapper">
+  <%= render "/flash_msg" %>
+</div>
+
 <div class="panel panel-default">
   <div class="panel-body">
     <div class="list-group">
@@ -34,3 +39,40 @@
     </div>
   </div>
 </div>
+
+<% if can? :edit, current_user %>
+  <div class="landing panel" style="border: none;">
+    <div class="panel-body">
+      <div class="list-group">
+        <div class="list-group-item">
+          <div><h2>Advanced User Functions</h2></div>
+          <div class="action-section">
+            <div class="list-item">
+              <%= link_to 'View API Key', main_app.profile_show_path, id: "view-api-key", style: "font-size: 16px;" %>
+              <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.view_api_key") %></p></i> 
+            </div>
+            <div class="list-item">
+              <%= link_to 'Generate New API Key', main_app.profile_generate_new_api_key_path, style: "font-size: 16px;" %>
+              <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.generate_new_api_key") %></p></i> 
+            </div>
+            <div class="list-item">
+              <%= link_to 'API Documentation', 'https://morphosource.stoplight.io/docs/morphosource-api', style: "font-size: 16px;", target: :_blank %>
+              <i class="fas fa-external-link-alt fa-sm" style="margin-left: 5px;"></i> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <div>
+
+  <%= render(partial: 'api_key_modal') %>
+<% end %>
+
+<script>
+  $(document).ready(function() {
+    $('a#view-api-key').click(function(event){
+      event.preventDefault();
+      $('#apiKeyModal').modal();
+    });
+  });
+</script>

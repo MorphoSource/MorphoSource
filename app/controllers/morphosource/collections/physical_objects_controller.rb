@@ -4,7 +4,7 @@ module Morphosource
       include Morphosource::Collections::LinkedTeamsControllerBehavior
 
       before_action :load_organization, only: [:show]
-      before_action :get_object_ids, only: [:facet]
+      before_action :get_object_ids, only: [:facet, :objects_export]
 
       def search_builder
         search_builder_class.new(self)

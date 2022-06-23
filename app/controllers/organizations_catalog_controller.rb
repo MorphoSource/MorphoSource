@@ -1,5 +1,6 @@
 # catalog/organizations
 class OrganizationsCatalogController < CatalogController
+  include CatalogControllerRestApiBehavior
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::OrganizationsCatalogSearchBuilder
@@ -62,6 +63,16 @@ class OrganizationsCatalogController < CatalogController
         qf: "#{all_names} file_format_tesim all_text_timv id",
         pf: title_name.to_s
       }
+    end
+  end
+
+  def show
+    @response, @document = fetch params[:id], { fq: 'has_model_ssim:Organization' }
+
+    respond_to do |format|
+      format.html { setup_next_and_previous_documents }
+      format.json { render json: { response: { @document.has_model.first.underscore => @document.to_semantic_values } } }
+      additional_export_formats(@document, format)
     end
   end
 

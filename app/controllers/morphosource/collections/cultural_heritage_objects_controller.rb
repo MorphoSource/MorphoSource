@@ -2,7 +2,7 @@ module Morphosource
   module Collections
     class CulturalHeritageObjectsController < Morphosource::Collections::PhysicalObjectsController
 
-      skip_load_and_authorize_resource only: [:show, :about, :facet], instance_name: :collection
+      skip_load_and_authorize_resource only: [:show, :about, :facet, :objects_export], instance_name: :collection
 
       def search_builder_class
         Morphosource::Collections::ChosSearchBuilder

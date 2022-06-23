@@ -58,7 +58,7 @@ module Morphosource
       # Returns collections containing media of organization specimens not owned by team
       # Filtered by user access
       def query_organization_media_collections
-        return unless current_user&.admin?
+        return unless current_user.can?(:edit, @collection)
         
         repository.blacklight_config.max_per_page = 999999
         repository.blacklight_config.facet_fields = {}
@@ -71,7 +71,7 @@ module Morphosource
       end
  
       def organization_media_collection_ids
-        return [] unless current_user.admin?
+        return unless current_user.can?(:edit, @collection)
         search_builder = Morphosource::Collections::MediaProjectsSearchBuilder.new(
           scope: self, collection: @collection
         ).with(params)
@@ -80,7 +80,7 @@ module Morphosource
       end
 
       def organization_media_collections
-        return [] unless current_user.admin?
+        return unless current_user.can?(:edit, @collection)
         collection_search_builder = Morphosource::Collections::Teams::OrganizationCollectionsSearchBuilder.new(self)
         response = repository.search(collection_search_builder.rows(999999))
         response.docs

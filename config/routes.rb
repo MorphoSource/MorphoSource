@@ -79,6 +79,8 @@ Rails.application.routes.draw do
     get 'collections/:id/facet/:id', to: 'collections#facet'
 
     # csv exports
+    get 'projects/:id/media_export', to: 'collections#media_export', as: 'project_media_export'
+    get 'teams/:id/media_export', to: 'collections#media_export', as: 'team_media_export'
     get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
     get 'teams/:id/media_downloads', to: 'collections#media_downloads', as: 'team_media_downloads'
     get 'projects/:id/media_download_counts', to: 'collections#media_download_counts', as: 'project_media_download_counts'
@@ -94,7 +96,9 @@ Rails.application.routes.draw do
       # projects
       get 'projects/:id', to: 'projects#show', as: 'project_media'
       get 'projects/:id/biological_specimens', to: 'biological_specimens#show', as: 'project_specimens'
+      get 'projects/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'project_specimens_export'
       get 'projects/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'project_chos'
+      get 'projects/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'project_chos_export'
       get 'projects/:id/about', to: 'projects#about', as: 'project_about'
       get 'projects/:collection_id/facet/:id', to: 'projects#facet', as: 'project_media_facet'
       get 'projects/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'project_specimens_facet'
@@ -107,7 +111,9 @@ Rails.application.routes.draw do
       # teams
       get 'teams/:id', to: 'teams#show', as: 'team_media'
       get 'teams/:id/biological_specimens', to: 'biological_specimens#show', as: 'team_specimens'
+      get 'teams/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'team_specimens_export'
       get 'teams/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'team_chos'
+      get 'teams/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'team_chos_export'
       get 'teams/:id/about', to: 'teams#about', as: 'team_about'
       get 'teams/:collection_id/facet/:id', to: 'teams#facet', as: 'team_media_facet'
       get 'teams/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'team_specimens_facet'
@@ -214,7 +220,8 @@ Rails.application.routes.draw do
   # override ProfilesController
   scope module: :morphosource do
     get 'dashboard/profiles/:id/edit', to: 'dashboard/profiles#edit'
-    get 'dashboard/profiles/:id', to: 'dashboard/profiles#show'
+    get 'dashboard/profiles/:id', to: 'dashboard/profiles#show', as: 'profile_show'
+    get 'dashboard/profiles/:id/generate_new_api_key', to: 'dashboard/profiles#generate_new_api_key', as: 'profile_generate_new_api_key'
     put 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
     patch 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
   end
@@ -251,10 +258,6 @@ Rails.application.routes.draw do
   # all
   get 'catalog/all', to: 'all_catalog#index', as: 'all_search'
   get 'all_catalog/facet/:id', to: 'all_catalog#facet'
-
-  # API routes
-  get 'api/media', to: 'media_catalog#index', as: 'api_media_search', defaults: { format: 'json' }
-  get 'api/media/:id', to: 'catalog#show', as: 'api_media_show', defaults: { format: 'json' }
 
   devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'
@@ -504,4 +507,35 @@ Rails.application.routes.draw do
   get 'fund_code_charges.json', to: 'fund_code_charges#index', as: 'fund_code_charges_json', defaults: { format: 'json' }
 
   get 'search_idigbio_by_occurrence_id_ajax/:oid', to: 'morphosource/i_dig_bio_search#search_idigbio_by_occurrence_id_ajax'
+
+  ### REST API routes ###
+
+  # Media
+  get 'api/media', to: 'media_catalog#index', as: 'api_media_search', defaults: { format: 'json' }
+  get 'api/media/:id', to: 'media_catalog#show', as: 'api_media_show', defaults: { format: 'json' } 
+
+  # Physical Objects
+  get 'api/physical-objects', to: 'objects_catalog#index', as: 'api_physical_objects_search', defaults: { format: 'json' }
+  get 'api/physical-objects/:id', to: 'objects_catalog#show', as: 'api_physical_object_show', defaults: { format: 'json' }
+
+  # Organizations
+  get 'api/organizations', to: 'organizations_catalog#index', as: 'api_organizations_search', defaults: { format: 'json' }
+  get 'api/organizations/:id', to: 'organizations_catalog#show', as: 'api_organizations_show', defaults: { format: 'json' }
+
+  # Teams/Projects
+  get 'api/projects', to: 'collections_catalog#index', as: 'api_projects_search', defaults: { format: 'json' }
+  get 'api/projects/:id', to: 'collections_catalog#show', as: 'api_projects_show', defaults: { format: 'json' }
+
+  # Team/Projects Media Related Exports
+  get 'api/projects/:id/media', to: 'morphosource/collections#media_export', as: 'api_projects_media', defaults: { format: 'json' }
+  get 'api/projects/:id/media-download-counts', to: 'morphosource/collections#media_download_counts', as: 'api_projects_media_download_counts', defaults: { format: 'json' }
+  get 'api/projects/:id/media-downloads', to: 'morphosource/collections#media_downloads', as: 'api_projects_media_downloads', defaults: { format: 'json' }
+  get 'api/projects/:id/media-requests', to: 'morphosource/collections#media_requests', as: 'api_projects_media_requests', defaults: { format: 'json' }
+
+  # Team/Projects Object Exports
+  get 'api/projects/:id/biological-specimens', to: 'morphosource/collections/biological_specimens#objects_export', as: 'api_projects_specimens', defaults: { format: 'json' }
+  get 'api/projects/:id/cultural-heritage-objects', to: 'morphosource/collections/cultural_heritage_objects#objects_export', as: 'api_projects_chos', defaults: { format: 'json' }
+
+  # Team Projects with Media Not Owned by Team Export
+  get 'api/projects/:id/view-only-media-projects', to: 'morphosource/collections/teams#media_projects', as: 'api_teams_media_projects', defaults: { format: 'json' }
 end

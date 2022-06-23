@@ -1,5 +1,6 @@
 # catalog/teams_projects
 class CollectionsCatalogController < CatalogController
+  include CatalogControllerRestApiBehavior
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::CollectionsCatalogSearchBuilder
@@ -43,6 +44,18 @@ class CollectionsCatalogController < CatalogController
         qf: "#{all_names} file_format_tesim all_text_timv id",
         pf: title_name.to_s
       }
+    end
+  end
+
+  # get a single document from the index
+  # to add responses for formats other than html or json see _Blacklight::Document::Export_
+  def show
+    @response, @document = fetch params[:id], { fq: 'has_model_ssim:Collection' }
+
+    respond_to do |format|
+      format.html { setup_next_and_previous_documents }
+      format.json { render json: { response: { @document.has_model.first.underscore => @document.to_semantic_values } } }
+      additional_export_formats(@document, format)
     end
   end
 

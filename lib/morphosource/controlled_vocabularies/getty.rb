@@ -3,6 +3,17 @@ module Morphosource
     module Getty
       include ::Morphosource::ControlledVocabularies::ResourceLabelCaching
 
+      CACHE_KEY_PREFIX = 'morphosource_getty_label-v1-'
+      CACHE_EXPIRATION = 1.week
+
+      # Return a tuple of url & label
+      def solrize
+        byebug
+        label = rdf_label || rdf_subject.first.to_s
+        return [rdf_subject.to_s] if label.blank? || label == rdf_subject.to_s
+        [rdf_subject.to_s, { label: "#{label}$#{rdf_subject}" }]
+      end
+
       # include Morphosource::GettyService
 
 
@@ -12,13 +23,7 @@ module Morphosource
       #   [rdf_subject.to_s, { label: "#{label}$#{rdf_subject}" }]
       # end
 
-      # Return a tuple of url & label
-      def solrize
-        byebug
-        getty_label = full_label || rdf_subject.first.to_s
-        return [rdf_subject.to_s] if label.blank? || label == rdf_subject.to_s
-        [rdf_subject.to_s, { label: "#{label}$#{rdf_subject}" }]
-      end
+
 
       # def label_english
       #   fetch.rdf_label.select{|l| l.language == :en}.first || rdf_subject.to_s
@@ -31,8 +36,7 @@ module Morphosource
       # end
       # alias label full_label
 
-      CACHE_KEY_PREFIX = 'morphosource_getty_label-v1-'
-      CACHE_EXPIRATION = 1.week
+
 
       def full_label
         return if rdf_subject.to_s.blank?

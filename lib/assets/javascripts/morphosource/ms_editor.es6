@@ -18,8 +18,17 @@ export default class MorphosourceEditor extends Editor {
       else {
         new MorphosourceControlledVocabulary(controlled_field, this.paramKey)
       }
-    }
-  )}
+    })
+    this.element.find('.getty_controlled_vocabulary.form-group').each((_idx, controlled_field) => {
+      let gettyFields = ".cultural_heritage_object_aat_type, .cultural_heritage_object_aat_material, .cultural_heritage_object_aat_attribute, .cultural_heritage_object_tgn, .cultural_heritage_object_aat_period"
+      if (controlled_field.matches(gettyFields)) {
+          new GettyControlledVocabulary(controlled_field, this.paramKey)
+      }
+      else {
+        new MorphosourceControlledVocabulary(controlled_field, this.paramKey)
+      }
+    })
+  }
 
   relationshipsControl() {
     let collections = this.element.find('[data-behavior="collection-relationships"]')

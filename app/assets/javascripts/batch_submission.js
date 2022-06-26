@@ -554,6 +554,14 @@ $( document ).ready(function() {
                             input = ctrl.closest('.form-group').find('input')[idx+1];
                           }
                         })
+                      } else if (ctrl.hasClass('multi-search-field')) {
+//                        debugger
+
+// check if this is a select2 control and how to refill multiple values
+
+                      ctrl.val(value);   
+  
+
                       } else {
                         ctrl.val(value);   
                       }

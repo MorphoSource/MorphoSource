@@ -89,6 +89,7 @@ This repo ([MorphoSource_SF](https://github.com/morphosource/MorphoSource_SF)) i
     then run
 
     `rake morphosource:setup`
+    `rake morphosource:dev_cache_on`
 
     (you can close the session when it's done)
 

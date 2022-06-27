@@ -250,8 +250,12 @@ module Morphosource
         end
       end
 
+      def manifest_filename
+        "media-manifest-#{SecureRandom.uuid}"
+      end
+
       def csv_manifest
-        file_name = "media-manifest-#{current_user.id}-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}.csv"
+        file_name = "#{manifest_filename}.csv"
         csv_path = File.join(temp_manifest_directory, file_name)
 
         CSV.open(csv_path, "wb") do |csv|
@@ -271,7 +275,7 @@ module Morphosource
       end
       
       def xlsx_manifest 
-        file_name = "media-manifest-#{current_user.id}-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}.xlsx"
+        file_name = "#{manifest_filename}.xlsx"
         xlsx_path = File.join(temp_manifest_directory, file_name)
  
         p = Axlsx::Package.new

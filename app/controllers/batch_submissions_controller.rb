@@ -20,7 +20,9 @@ class BatchSubmissionsController < ApplicationController
   
   def index
     last_job = current_user.last_batch_submission_job
-    check_job_failure(last_job) unless (last_job.status == "failed" ||  last_job.status == "completed")
+    if last_job.present?
+      check_job_failure(last_job) unless (last_job.status == "failed" ||  last_job.status == "completed")
+    end
     render 'index', locals: { job: last_job }
   end
 

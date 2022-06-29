@@ -81,7 +81,7 @@ module Hyrax
     end
 
     def idigbio_update_notice
-      if curation_concern.idigbio_occurrence_id_results.present?
+      if curation_concern.idigbio_match_found?
         flash[:notice] = "The specimen has been updated to match the iDigBio record."
       end
     end

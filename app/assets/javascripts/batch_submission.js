@@ -556,14 +556,6 @@ $( document ).ready(function() {
                             input = ctrl.closest('.form-group').find('input')[idx+1];
                           }
                         })
-//                       } else if (ctrl.hasClass('multi-search-field')) {
-// //debugger
-// 
-// // check if this is a select2 control and how to refill multiple values
-// 
-//                       ctrl.val(value);   // check value for reviewers here 
-  
-
                       } else {
                         ctrl.val(value);   
                       }
@@ -590,23 +582,26 @@ $( document ).ready(function() {
           $('[data-id="' + proj.id + '"]').text(proj.name);
         })
 
-        var reviewers_to_add = data['reviewers'];
-        var reviewers_array = []
-        $.each(reviewers_to_add, function( id, reviewer ) {
-          reviewers_array.push({ "id":id, "user_key":reviewer.id, "text":reviewer.name }); 
-        })
-//debugger
-
         reviewerSelect = $('#media_download_reviewer');
-        reviewerSelect.data("reviewers", reviewers_array);
-
-        // add search to download reviewer
-        reviewerSelect.userSearchMultiple(reviewerSelect.data('reviewers'));
-
+        var reviewers_to_add = data['reviewers'];
+        if (reviewers_to_add.length > 0) {
+          var reviewers_array = []
+          $.each(reviewers_to_add, function( id, reviewer ) {
+            reviewers_array.push({ "id":id, "user_key":reviewer.id, "text":reviewer.name }); 
+          })
+          reviewerSelect.data("reviewers", reviewers_array);
+          // add search to download reviewer
+          reviewerSelect.userSearchMultiple(reviewerSelect.data('reviewers'));          
+        } else {
+          // remove the default reviewer
+          reviewerSelect.data('reviewers', '');
+          reviewerSelect.select2('destroy').empty().userSearchMultiple('');
+        }
     };
 
     $('#batch_submission_form').submit(function(){
       var formData = $('#batch_submission_form').serializeArray();
+
       var projects = []
       $('.select-projects table').find('tr').not('.hidden').find('.collection-title').each(function( index ) {
         projects.push({ id: $(this).data("id"), name: $(this).html() });
@@ -614,18 +609,15 @@ $( document ).ready(function() {
       formData.push({ name: "projects", value: projects }); 
 
       var reviewers = []
-      var reviewerIDs = $('#media_download_reviewer').val().split(',');
-      $.each(reviewerIDs, function(index, item) {
+      var choices = $('.media_download_reviewer').find('.select2-search-choice > div');
+      if ((choices.length > 0) && ($('#media_download_reviewer').val() != '')) {
+        var reviewerIDs = $('#media_download_reviewer').val().split(',');
+        $.each(reviewerIDs, function(index, item) {
+          reviewers.push({ id:item , name:$(choices[index]).text() });
+        })
+      }
+      formData.push({ name: "reviewers", value: reviewers });         
 
-
-//get the review name here 
-
-
-        reviewers.push({ id:item , name: item });
-      })
-      console.log("reviewers: ", reviewers)
-      formData.push({ name: "reviewers", value: reviewers }); 
-debugger
       var obj = {data: formData, timestamp: new Date().getTime()}
       localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
       //console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));

@@ -478,6 +478,13 @@ $( document ).ready(function() {
         }
       }    
     }
+
+    $('#start-over').click(function(){
+      if (confirm('Clear the form and start over?')) {
+        localStorage.removeItem("batchSubmissionFormData");
+        location.reload();
+      }
+    })
     
     // re-fill the form if needed
     if (previousBatchSubmissionData != null) {

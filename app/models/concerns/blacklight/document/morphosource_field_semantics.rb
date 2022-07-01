@@ -78,7 +78,7 @@ module Blacklight
           unit: Solrizer.solr_name('unit', :stored_searchable),
           number_of_images_in_set: Solrizer.solr_name('number_of_images_in_set', :stored_searchable),
           data_manager: Solrizer.solr_name('user_with_ownership_name', :stored_searchable),
-          data_depositor: Solrizer.solr_name('depositor_name', :stored_searchable),
+          data_depositor: Solrizer.solr_name('depositor_name', :stored_searchable)
         }
       end
 

@@ -2,7 +2,14 @@
 
 $( document ).ready(function() {
 
-  if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
+  if ($('body[class*="batch-submission"]').length) { // check if the page is batch submission index page
+    $('.clear-bs-form').click(function(event){
+      // clear previous submitted data before loading the form
+      localStorage.removeItem("batchSubmissionFormData");
+    })
+  }
+
+  if ($('[class*="batch-submission-form"]').length) { // check if the page is batch submission form
     previousBatchSubmissionData = previousSubmissionData();
     prevBsData = {};
     showAlert = false;

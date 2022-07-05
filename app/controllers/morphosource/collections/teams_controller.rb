@@ -3,11 +3,15 @@ module Morphosource
     class TeamsController < Morphosource::CollectionsController
       include Morphosource::Collections::LinkedTeamsControllerBehavior
 
-      skip_load_and_authorize_resource only: [:show, :about, :facet, :media_projects], instance_name: :collection
+      skip_load_and_authorize_resource only: [:show, :about, :facet, 
+        :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet
+      ], instance_name: :collection
 
       before_action :authenticate_api_key_optional, only: :media_projects
-      before_action :load_organization, only: [:show, :facet, :about, :media_projects]
-      before_action :create_intersections_facet, only: [:show, :facet, :media_projects]
+      before_action :load_organization, only: [:show, :facet, :about, 
+        :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
+      before_action :create_intersections_facet, only: [:show, :facet, 
+        :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
 
       self.presenter_class = Morphosource::Collections::TeamPresenter
 
@@ -28,6 +32,14 @@ module Morphosource
         end
       end
       configure_facets
+
+      def media_export_with_intersections_facet
+        media_export
+      end
+
+      def media_download_counts_with_intersections_facet
+        media_download_counts
+      end
 
       # Outputs CSV of projects containing org media not owned by linked team
       def media_projects

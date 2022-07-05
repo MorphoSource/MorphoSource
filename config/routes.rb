@@ -80,15 +80,13 @@ Rails.application.routes.draw do
 
     # csv exports
     get 'projects/:id/media_export', to: 'collections#media_export', as: 'project_media_export'
-    get 'teams/:id/media_export', to: 'collections#media_export', as: 'team_media_export'
     get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
     get 'teams/:id/media_downloads', to: 'collections#media_downloads', as: 'team_media_downloads'
     get 'projects/:id/media_download_counts', to: 'collections#media_download_counts', as: 'project_media_download_counts'
-    get 'teams/:id/media_download_counts', to: 'collections#media_download_counts', as: 'team_media_download_counts'
     get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
     get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
 
-    scope module: :collections do
+    scope module: :collections do    
       # these get redirected to projects/teams
       get 'collections/:id/biological_specimens', to: 'biological_specimens#show'
       get 'collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show'
@@ -124,6 +122,8 @@ Rails.application.routes.draw do
       get 'teams/chos/:id', to: redirect('teams/%{id}/cultural_heritage_objects')
 
       # linked teams csv
+      get 'teams/:id/media_export', to: 'teams#media_export_with_intersections_facet', as: 'team_media_export'
+      get 'teams/:id/media_download_counts', to: 'teams#media_download_counts_with_intersections_facet', as: 'team_media_download_counts'
       get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
     end
   end

@@ -45,25 +45,25 @@ module Morphosource
 
     def chos_export_csv_url(collection)
       if collection.project?
-        project_chos_export_path(id: collection.id, :format => :csv, :per_page => 1000000)
+        project_chos_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       elsif collection.team?
-        team_chos_export_path(id: collection.id, :format => :csv, :per_page => 1000000)
+        team_chos_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       end
     end
     
     def specimens_export_csv_url(collection)
       if collection.project?
-        project_specimens_export_path(id: collection.id, :format => :csv, :per_page => 1000000)
+        project_specimens_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       elsif collection.team?
-        team_specimens_export_path(id: collection.id, :format => :csv, :per_page => 1000000)
+        team_specimens_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       end
     end
 
     def media_export_csv_url(collection)
       if collection.project?
-        project_media_export_path(id: collection.id, :format => :csv, :per_page => 1000000)
+        project_media_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       elsif collection.team?
-        team_media_export_path(id: collection.id, :format => :csv, :per_page => 1000000)
+        team_media_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       end
     end
 
@@ -77,9 +77,9 @@ module Morphosource
 
     def media_download_counts_csv_url(collection)
       if collection.project?
-        project_media_download_counts_path(id: collection.id, :format => :csv, :per_page => 1000000)
+        project_media_download_counts_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       elsif collection.team?
-        team_media_download_counts_path(id: collection.id, :format => :csv, :per_page => 1000000)
+        team_media_download_counts_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       end
     end
 

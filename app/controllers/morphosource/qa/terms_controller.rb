@@ -6,7 +6,11 @@ module Morphosource
       private
 
         def init_authority
-          @authority = authority_by_facet
+          if params["facet"].present?
+            @authority = authority_by_facet
+          else
+            @authority = authority_class.constantize.new
+          end
         end
 
         def authority_by_facet
@@ -21,6 +25,14 @@ module Morphosource
             ::Morphosource::Qa::Authorities::Getty::AAT::Types.new
           else
             ::Qa::Authorities::Getty::AAT.new
+          end
+        end
+
+        def authority_class
+          if params[:subauthority] == "tgn"
+            "::Morphosource::Qa::Authorities::Getty::TGN"
+          else
+            super
           end
         end
     end

@@ -859,7 +859,13 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def get_organization_media_transfer
-    if params.dig(:media, :transfer_management).present?
+    if (
+      params.dig(:media, :transfer_management).present? && 
+      params['organization_id'].present? && 
+      Organization.exists?(params['organization_id']) && 
+      (org = Organization.find(params['organization_id'])).present? &&
+      org.data_manager.present?
+    )
       if transfer_media_immediately?
         :immediate
       elsif params.dig(:media, :transfer_management) == 'publication'

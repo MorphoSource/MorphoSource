@@ -62,7 +62,7 @@ module Morphosource
 
       def filtered_collection_title_by_id(id)
         @collection_titles ||= collection_titles
-        @collection_titles[id]
+        @collection_titles[id] || "Collection #{id} Not Found"
       end
 
       # returns a hash of collection ids and titles:

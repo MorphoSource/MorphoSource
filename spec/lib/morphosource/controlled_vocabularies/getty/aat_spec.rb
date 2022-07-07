@@ -22,11 +22,12 @@ RSpec.describe Morphosource::ControlledVocabularies::Getty::Aat do
       end
     end
     context 'Faraday response is not an error' do
-      let(:preferred_label_value) { 'getty english label' }
+      let(:preferred_label_uri)   { 'http://vocab.getty.edu/aat/term/1000459437-en' }
+      let(:preferred_label_value) { "dog's-paw feet" }
       let(:item) { { :status => :success,
                      :data => {
                        "results" => {
-                         "bindings" => [{"Subject"=> {"type"=>"uri", "value"=>"http://vocab.getty.edu/aat/300438369"}, "Predicate"=> {"type"=>"uri", "value"=>"http://www.w3.org/2004/02/skos/core#prefLabel"}, "Object"=> {"xml:lang"=>"en", "type"=>"literal", "value"=>"#{preferred_label_value}"}}]
+                         "bindings" => [{"Subject"=> {"type"=>"uri", "value"=>"http://vocab.getty.edu/aat/300438369"}, "Predicate"=> {"type"=>"uri", "value"=>"http://vocab.getty.edu/ontology#prefLabelGVP"}, "Object"=> {"type"=>"uri", "value"=>"#{preferred_label_uri}"}}]
                         }
                       }
                     } }

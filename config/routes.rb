@@ -262,6 +262,8 @@ Rails.application.routes.draw do
   devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'
 
+  get 'authorities/search/:vocab/:subauthority', to: 'morphosource/qa/terms#search'
+
   mount Qa::Engine => '/authorities'
 
   get 'authorities/search/:vocab/:subauthority/:facet', to: 'morphosource/qa/terms#search'
@@ -512,7 +514,7 @@ Rails.application.routes.draw do
 
   # Media
   get 'api/media', to: 'media_catalog#index', as: 'api_media_search', defaults: { format: 'json' }
-  get 'api/media/:id', to: 'media_catalog#show', as: 'api_media_show', defaults: { format: 'json' } 
+  get 'api/media/:id', to: 'media_catalog#show', as: 'api_media_show', defaults: { format: 'json' }
 
   # Physical Objects
   get 'api/physical-objects', to: 'objects_catalog#index', as: 'api_physical_objects_search', defaults: { format: 'json' }

@@ -4,20 +4,20 @@ module Hyrax
   class BiologicalSpecimenPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :bibliographic_citation, :catalog_number,  :collection_code, :institution_code, :numeric_time, :original_location, :periodic_time, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, to: :solr_document
+    delegate :address, :bibliographic_citation, :catalog_number, :city, :collection_code, :context, :country, :dating_method, :dimensions, :formation, :institution_code, :numeric_time, :original_location, :periodic_time, :provenance_details, :provenance_name, :state_province, :tgn_label, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, to: :solr_document
 
     delegate :taxonomies, :taxonomies_titles, :canonical_taxonomy_object, :trusted_taxonomies, :gbif_taxonomies, :user_taxonomies, to: :work
 
-    def related_media_ids 
+    def related_media_ids
       ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
       return ids
     end
 
-    def viewable_related_media_ids 
+    def viewable_related_media_ids
       return related_media_ids if current_ability.current_user.admin?
       filtered_ids = []
       related_media_ids.each do |id|
-        if current_ability.can?(:read, id) 
+        if current_ability.can?(:read, id)
           filtered_ids << id
         end
       end
@@ -74,8 +74,16 @@ module Hyrax
       'showcase_identifiers_and_external_links'
     end
 
-    def showcase_time_and_place_details_partial
-      'showcase_time_and_place_details'
+    def showcase_time_details_partial
+      'showcase_time_details'
+    end
+
+    def showcase_location_details_partial
+      'showcase_location_details'
+    end
+
+    def showcase_provenance_partial
+      'showcase_provenance'
     end
 
     def showcase_bibliographic_citations_partial

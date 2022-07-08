@@ -908,9 +908,9 @@ class BatchSubmissionsController < ApplicationController
         if !user_set_path.present?
           "NOT_FOUND"
         elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
-          Hyrax.config.sftp_share_root + user_set_path + '/' unless user_set_path.end_with?('/')
+          File.join(Hyrax.config.sftp_share_root, user_set_path, '/')
         elsif Dir.exist?(user_set_path)
-          user_set_path + '/' unless user_set_path.end_with?('/')
+          File.join(user_set_path, '/')
         else
           "NOT_FOUND"
         end

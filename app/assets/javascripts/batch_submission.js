@@ -412,18 +412,18 @@ $( document ).ready(function() {
     }
 
     var data = new BatchSubmissionData();
-    var batchSubmissionFormData = new SubmissionForm(data);
+    var batchSubmissionForm = new SubmissionForm(data);
 
-    batchSubmissionFormData.views = [
-      new OrganizationView(batchSubmissionFormData),
-      new DeviceView(batchSubmissionFormData),
+    batchSubmissionForm.views = [
+      new OrganizationView(batchSubmissionForm),
+      new DeviceView(batchSubmissionForm),
     ];
-    batchSubmissionFormData.initializeForm();
+    batchSubmissionForm.initializeForm();
 
     $('#submission_organization_select_display_container').on('click', '#organization-select-close', function(event) {
         // user click close button to remove selected org
         console.log("removing selected org");
-        batchSubmissionFormData.resetFormFromOrg(batchSubmissionFormData.organizationDefaultMediaFields);
+        batchSubmissionForm.resetFormFromOrg(batchSubmissionForm.organizationDefaultMediaFields);
     });
       
     $('#manifest_file, #batch_submission_modality').on('change', function(){ setSubmitStatus() });

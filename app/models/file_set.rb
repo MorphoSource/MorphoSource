@@ -114,10 +114,4 @@ class FileSet < ActiveFedora::Base
   def processing_event?
     false
   end
-
-  def self.model_name(name_class: Hyrax::Name)
-    @_model_name ||= begin
-      name_class.new(self, nil, 'FileSet')
-    end
-  end
 end

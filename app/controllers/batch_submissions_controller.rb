@@ -376,8 +376,6 @@ class BatchSubmissionsController < ApplicationController
           error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
         elsif cell_value(current_row, field_column("media.raw_or_derived")) == "Raw"
           error_msg = "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
-        elsif @parent_media_id.present?
-          error_msg = "media.parent_file: Only one parent media should be present, but media.parent_ms_id is found in another row."
         else
           # look for the val in the media_file column
           parent_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
@@ -424,12 +422,8 @@ class BatchSubmissionsController < ApplicationController
         #error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
       else
         if val.present?
-          if @parent_media_row.present?
-            error_msg = "media.parent_ms_id: Only one parent media should be present, but media.parent_file is found in another row."
-          elsif cell_value(current_row, field_column("media.raw_or_derived")) == "Raw"
+          if cell_value(current_row, field_column("media.raw_or_derived")) == "Raw"
             error_msg = "A value cannot be present in media.parent_ms_id if media.raw_or_derived value is set to 'Raw'."
-          elsif @parent_media_id.present? && (@parent_media_id != val)
-            error_msg = "media.parent_ms_id: Only one parent media should be present, but multiple parent_ms_id are found."
           else
             ms_parent_media = Media.where(id:pad(val.to_s))&.first
             if ms_parent_media.present?
@@ -914,9 +908,9 @@ class BatchSubmissionsController < ApplicationController
         if !user_set_path.present?
           "NOT_FOUND"
         elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
-          Hyrax.config.sftp_share_root + user_set_path + '/' unless user_set_path.end_with?('/')
+          File.join(Hyrax.config.sftp_share_root, user_set_path, '/')
         elsif Dir.exist?(user_set_path)
-          user_set_path + '/' unless user_set_path.end_with?('/')
+          File.join(user_set_path, '/')
         else
           "NOT_FOUND"
         end

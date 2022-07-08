@@ -339,22 +339,30 @@ module Morphosource
             doc = SolrDocument.find(m.id)
             if doc.present?
               file_set, original_file = get_and_validate_fileset(m)
-              media_list << {
-                :id => [m.id],
-                :title => [m.title.first],
-                :file_name => [file_set.label], 
-                :file_size => file_set.file_size,
-                :media_type => m.media_type,
-                :mime_type => [file_set.mime_type]
-              }.merge(doc.to_semantic_values).merge({
-                :points => file_set.point_count,
-                :polygons => file_set.face_count,
-                :vertex_color => file_set.vertex_color,
-                :uv_coordinates => file_set.has_uv_space,
-                :bounding_box_x => file_set.bounding_box_x,
-                :bounding_box_y => file_set.bounding_box_y,
-                :bounding_box_z => file_set.bounding_box_z
-             })
+              if file_set.present?
+                media_list << {
+                  :id => [m.id],
+                  :title => [m.title.first],
+                  :file_name => [file_set.label], 
+                  :file_size => file_set.file_size,
+                  :media_type => m.media_type,
+                  :mime_type => [file_set.mime_type]
+                }.merge(doc.to_semantic_values).merge({
+                  :points => file_set.point_count,
+                  :polygons => file_set.face_count,
+                  :vertex_color => file_set.vertex_color,
+                  :uv_coordinates => file_set.has_uv_space,
+                  :bounding_box_x => file_set.bounding_box_x,
+                  :bounding_box_y => file_set.bounding_box_y,
+                  :bounding_box_z => file_set.bounding_box_z
+                })
+              else
+                media_list << {
+                  :id => [m.id],
+                  :title => [m.title.first],
+                  :media_type => m.media_type
+                }
+              end
             end
           end
           media_list

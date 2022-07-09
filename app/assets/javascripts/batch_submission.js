@@ -161,7 +161,11 @@ $( document ).ready(function() {
             data.savedStep = 4;
 
             console.log(data);
-            self.form.setDefaultMediaPermissionFields((previousBatchSubmissionData != null));              
+            if (previousBatchSubmissionData == null) {
+              self.form.setDefaultMediaPermissionFields();
+            } else {
+              self.form.setOrgAgreement();
+            }
           }
           setSubmitStatus();
         }
@@ -412,7 +416,7 @@ $( document ).ready(function() {
     }
 
     var data = new BatchSubmissionData();
-    var batchSubmissionForm = new SubmissionForm(data);
+    var batchSubmissionForm = new RestoreableSubmissionForm(data, previousSubmissionData);
 
     batchSubmissionForm.views = [
       new OrganizationView(batchSubmissionForm),
@@ -469,6 +473,12 @@ $( document ).ready(function() {
         $("#btn-submit").prop('disabled', true);
       }
     };
+
+
+
+
+
+
 
     function previousSubmissionData() {
       var bsObj = localStorage.getItem("batchSubmissionFormData");

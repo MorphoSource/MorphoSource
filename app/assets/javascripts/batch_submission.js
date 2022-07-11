@@ -161,10 +161,18 @@ $( document ).ready(function() {
             data.savedStep = 4;
 
             console.log(data);
-            if (previousBatchSubmissionData == null) {
+            if (previousBatchSubmissionData == null || self.form.orgChanged) {
+              // new submission, or user has previously changed the org selection
               self.form.setDefaultMediaPermissionFields();
             } else {
-              self.form.setOrgAgreement();
+              if (data.organizationId != formData['organization_id']) {
+                // user selects a different org on a restored form
+                self.form.setDefaultMediaPermissionFields();
+                self.form.orgChanged = true;
+              } else {
+                // set org when loading a restored form
+                self.form.setPreviousOrgAgreement();
+              }
             }
           }
           setSubmitStatus();
@@ -512,6 +520,8 @@ $( document ).ready(function() {
           formData["projects"] = field.value;
         } else if (field.name == "reviewers") {
           formData["reviewers"] = field.value;
+        } else if (field.name == "orgData") {
+          batchSubmissionForm.orgData = field.value;
         } else {
           if (field.value.trim() != "") {
             if (formData[field.name] != undefined) {
@@ -630,7 +640,7 @@ $( document ).ready(function() {
       $('.select-projects table').find('tr').not('.hidden').find('.collection-title').each(function( index ) {
         projects.push({ id: $(this).data("id"), name: $(this).html() });
       })
-      formData.push({ name: "projects", value: projects }); 
+      formData.push({ name: "projects", value: projects });
 
       var reviewers = []
       var choices = $('.media_download_reviewer').find('.select2-search-choice > div');
@@ -640,9 +650,9 @@ $( document ).ready(function() {
           reviewers.push({ id:item , name:$(choices[index]).text() });
         })
       }
-      formData.push({ name: "reviewers", value: reviewers });         
+      formData.push({ name: "reviewers", value: reviewers });
 
-debugger
+      formData.push({ name: "orgData", value: batchSubmissionForm.orgData });
 
       var obj = {data: formData, timestamp: new Date().getTime()}
       localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));

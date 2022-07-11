@@ -642,6 +642,8 @@ $( document ).ready(function() {
       }
       formData.push({ name: "reviewers", value: reviewers });         
 
+debugger
+
       var obj = {data: formData, timestamp: new Date().getTime()}
       localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
       //console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));

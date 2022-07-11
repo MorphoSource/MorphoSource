@@ -1,3 +1,5 @@
+require 'axlsx'
+
 # DrainableIO and RemoteInclusion help smooth out IntervalResponse and ZipTricks functionality
 
 class DrainableIO < StringIO
@@ -47,7 +49,8 @@ module Morphosource
     end
 
     def prepare_all_files
-      @all_files ||= files + standard_agreement_files + media_agreement_files
+      @temp_files = []
+      @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest
     end
 
     def create_interval_sequence
@@ -237,6 +240,135 @@ module Morphosource
         "Media_Contributor_Usage_Agreement_#{index}#{File.extname(file_path).downcase}"
       end
 
+      # Methods for creating the CSV and XLSX media manifest file
+
+      def temp_manifest_directory
+        @temp_manifest_directory ||= begin
+          directory_name = Dir.tmpdir() + "/download-media-manifest"
+          Dir.mkdir(directory_name) unless File.exists?(directory_name)
+          directory_name
+        end
+      end
+
+      def manifest_filename
+        "media-manifest-#{SecureRandom.uuid}"
+      end
+
+      def csv_manifest
+        file_name = "#{manifest_filename}.csv"
+        csv_path = File.join(temp_manifest_directory, file_name)
+
+        CSV.open(csv_path, "wb") do |csv|
+          csv << manifest_headers
+          media_hashes.each do |h|
+            csv << h.values.map{ |v| v.first }
+          end
+        end
+        file = File.open(csv_path)
+        crc32 = crc32_from_io(file)
+        [{
+          name: file_name,
+          size: file.size,
+          crc32: crc32,
+          file: file
+        }]
+      end
+      
+      def xlsx_manifest 
+        file_name = "#{manifest_filename}.xlsx"
+        xlsx_path = File.join(temp_manifest_directory, file_name)
+ 
+        p = Axlsx::Package.new
+        wb = p.workbook
+        date_time_format = wb.styles.add_style :format_code => 'YYYY-MM-DD'
+        manifest_headers = media_hashes.first.keys.flatten.map{ |s| s.to_s }
+        wb.add_worksheet(:name => "xlsx manifest") do |sheet|
+          sheet.add_row manifest_headers
+          media_hashes.each do |h|
+            sheet.add_row h.values.map{ |v| v.first }, 
+              :types => xlsx_column_types(manifest_headers), 
+              :style => xlsx_column_styles(manifest_headers, date_time_format)
+          end
+        end
+        p.serialize xlsx_path
+
+        file = File.open(xlsx_path)
+        crc32 = crc32_from_io(file)
+        [{
+          name: file_name,
+          size: file.size,
+          crc32: crc32,
+          file: file
+        }]
+      end
+
+      def xlsx_column_types(headers)
+        types = []
+        headers.each do |header|
+          case header
+          when 'date_uploaded', 'date_modified'
+            types << nil
+          else
+            types << :string
+          end
+        end
+        return types
+      end
+
+      def xlsx_column_styles(headers, date_time_format)
+        styles = []
+        headers.each do |header|
+          case header
+          when 'date_uploaded', 'date_modified'
+            styles << date_time_format
+          else
+            styles << nil
+          end
+        end
+        return styles
+      end
+
+      def manifest_headers
+        @manifest_headers ||= media_hashes.first.keys.flatten.map{ |s| s.to_s }
+      end
+
+      def media_hashes
+        @media_hashes ||= begin
+          media_list = []
+          media.each do |m|
+            doc = SolrDocument.find(m.id)
+            if doc.present?
+              file_set, original_file = get_and_validate_fileset(m)
+              if file_set.present?
+                media_list << {
+                  :id => [m.id],
+                  :title => [m.title.first],
+                  :file_name => [file_set.label], 
+                  :file_size => file_set.file_size,
+                  :media_type => m.media_type,
+                  :mime_type => [file_set.mime_type]
+                }.merge(doc.to_semantic_values).merge({
+                  :points => file_set.point_count,
+                  :polygons => file_set.face_count,
+                  :vertex_color => file_set.vertex_color,
+                  :uv_coordinates => file_set.has_uv_space,
+                  :bounding_box_x => file_set.bounding_box_x,
+                  :bounding_box_y => file_set.bounding_box_y,
+                  :bounding_box_z => file_set.bounding_box_z
+                })
+              else
+                media_list << {
+                  :id => [m.id],
+                  :title => [m.title.first],
+                  :media_type => m.media_type
+                }
+              end
+            end
+          end
+          media_list
+        end
+      end
+
       # MorphoSource standard agreement file methods
 
       def standard_agreement_files
@@ -345,5 +477,6 @@ module Morphosource
       def output_filename(file_name, media_id)
         File.basename(file_name, File.extname(file_name)) + "-#{media_id}" + File.extname(file_name)
       end
+
   end
 end

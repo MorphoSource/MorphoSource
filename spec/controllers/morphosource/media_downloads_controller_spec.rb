@@ -69,14 +69,14 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
             work.save
           end
         end
-        it "returns a zip for a single work" do
+        it "returns a csv manifest for a single work" do
           get :show, params: { key: [work1.access_control_id], token: user.token }
           expect(response.status).to eq(200)
           expect(response.headers["Content-Type"]).to eq("application/zip")
           expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
           expect(response.headers["Content-Disposition"]).to end_with('.zip"')
         end
-
+        
         it "returns a zip for multiple works" do
           get :show, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token }
           expect(response.status).to eq(200)

@@ -6,7 +6,7 @@ git_source(:github) do |repo_name|
 end
 
 #gem 'rails', '~> 5.2'
-gem 'rails', '~> 5.2.4', '>= 5.2.4.3'
+gem 'rails', '5.2.8'
 gem 'rdf-vocab', '3.1.4'
 
 # Use postgresql for all environments, not just production

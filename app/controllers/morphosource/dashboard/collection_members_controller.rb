@@ -1,6 +1,8 @@
 module Morphosource
   module Dashboard
     class CollectionMembersController < Hyrax::Dashboard::CollectionMembersController
+      include Morphosource::CollectionHelper
+
       before_action :filter_docs_with_read_access!, except: [:update_members]
       before_action :filter_docs_with_edit_access!, only: [:update_members]
 
@@ -35,6 +37,11 @@ module Morphosource
           ActiveFedora::Base.where(id: object_id).first.try(:update_index)
         end
       end
+
+      def success_return_path
+        collection_media_path(@collection)
+      end
+
 
     end
   end

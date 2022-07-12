@@ -278,7 +278,10 @@ module Hyrax
         end
 
         def update_referer
+          return collection_media_path(@collection) if params[:showcase]
+
           return edit_dashboard_collection_path(@collection) + (params[:referer_anchor] || '') if params[:stay_on_edit]
+          
           dashboard_collection_path(@collection)
         end
 

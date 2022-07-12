@@ -50,7 +50,7 @@ module Morphosource
         team_chos_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       end
     end
-    
+
     def specimens_export_csv_url(collection)
       if collection.project?
         project_specimens_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
@@ -473,6 +473,14 @@ module Morphosource
                                  Morphosource::Collections::CulturalHeritageObjectsController]
 
       collection_controllers.include? controller.class
+    end
+
+    def collection_media_path(collection)
+      if collection.project?
+        main_app.project_media_path(collection)
+      else
+        main_app.team_media_path(collection)
+      end
     end
 
 

@@ -443,6 +443,42 @@ html {
   }
 
   .collection-manage-buttons {
+    display: flex;
+    flex-direction: column;
+
+    .collection-manage-button-wrapper {
+      margin-bottom: 3px;
+
+      .btn {
+        width: 100%;
+        max-width: 200px;
+      }
+
+      .dropdown-menu {
+        top: unset;
+
+        .btn {
+          text-align: left;
+          max-width: 100%;
+        }
+        .btn:hover {
+          color: $button-hover-font-color;
+          background-color: $button-hover-color;
+          border-color: $button-hover-border-color;
+        }
+      }
+
+      a {
+        font-size: 14px;
+      }
+
+      li {
+        width: 290px;
+      }
+
+
+    }
+
     @media (max-width: 768px) {
       text-align: center;
 
@@ -455,17 +491,6 @@ html {
 
     @media (min-width: 768px) {
       text-align: right;
-    }
-
-    .dropdown-menu {
-      .btn {
-        text-align: left;
-      }
-      .btn:hover {
-        color: $button-hover-font-color;
-        background-color: $button-hover-color;
-        border-color: $button-hover-border-color;
-      }
     }
   }
 

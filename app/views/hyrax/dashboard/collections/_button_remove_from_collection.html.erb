@@ -1,0 +1,5 @@
+<%= form_for collection, url: hyrax.dashboard_collection_path(collection), method: :put, as: 'collection' do |f| %>
+  <%= single_item_action_remove_form_fields(f, document) %>
+  <%= hidden_field_tag(:showcase, 'true') %>
+  <%= f.submit label, class: "btn collection-remove #{btn_class}" %>
+<% end %>

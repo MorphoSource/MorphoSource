@@ -18,6 +18,8 @@
   <td><%= document.date_uploaded %></td>
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>
   <td class="text-center">
-      &nbsp;
+    <form></form>
+    <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
   </td>
+
 </tr>

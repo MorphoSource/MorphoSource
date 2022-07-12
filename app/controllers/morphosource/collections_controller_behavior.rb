@@ -7,7 +7,7 @@ module Morphosource
     include Blacklight::Base
     include Hyrax::CollectionsControllerBehavior
     include Morphosource::CollectionsControllerExportBehavior
-    
+
     included do
       # This is needed as of BL 3.7
       copy_blacklight_config_from(::CatalogController)
@@ -34,7 +34,7 @@ module Morphosource
       publication_settings_nag
       query_collection_counts
       query_collection_members
-      
+
       respond_to do |format|
         format.html { store_preferred_view }
         format.rss  { render :layout => false }
@@ -163,6 +163,44 @@ module Morphosource
       def tab
         :media
       end
+
+      def create_data_manager_facet
+        return  unless current_user&.can? :edit, @collection
+
+        config = repository.blacklight_config
+        config.add_facet_field "user_with_ownership_ssi", label: "Data Manager", limit: 10, helper_method: :user_name_by_id
+      end
+
+      def create_access_facet
+        return  unless current_user&.can? :edit, @collection
+
+        manage_groups = current_user.manager_groups.present? ? current_user.manager_groups : ['none']
+        edit_groups = current_user.editor_groups.present? ? current_user.editor_groups : ['none']
+        deposit_groups = current_user.depositor_groups.present? ? current_user.depositor_groups : ['none']
+        download_groups = current_user.downloader_groups.present? ? current_user.downloader_groups : ['none']
+        view_groups = current_user.viewer_groups.present? ? current_user.viewer_groups : ['none']
+
+        config = repository.blacklight_config
+        config.add_facet_field 'access_level', label: 'Access', query: {
+          # media where current user is user with ownership
+          manage: {
+            label: 'Media I Manage',
+            fq: "user_with_ownership_ssi:#{current_user.ms_id}" },
+          # media where current user has edit access but is not the user with ownership
+          edit: {
+            label: 'Media I Can Edit',
+            fq: "(edit_access_group_ssim:(#{(current_user.manager_groups + current_user.editor_groups).join(' OR ')}) OR (edit_access_person_ssim:#{current_user.ms_id}) NOT user_with_ownership_ssi:#{current_user.ms_id})" },
+          # media where current user has download access only
+          download: {
+            label: 'Media I Can Download',
+            fq: "(download_access_group_ssim:(#{(download_groups).join(' OR ')}) OR (download_access_person_ssim:#{current_user.ms_id}) NOT edit_access_person_ssim:#{current_user.ms_id} NOT edit_access_group_ssim:(#{(manage_groups + edit_groups).join(' OR ')}))" },
+          # media where current user has read access only
+          view: {
+            label: 'Media I Can View',
+            fq: "(read_access_group_ssim:(#{(view_groups).join(' OR ')}) OR (read_access_person_ssim:#{current_user.ms_id}) NOT edit_access_person_ssim:#{current_user.ms_id} NOT edit_access_group_ssim:(#{(manage_groups + edit_groups).join(' OR ')}) NOT download_access_group_ssim:(#{(download_groups).join(' OR ')}) NOT download_access_person_ssim:#{current_user.ms_id})"}
+          }
+        end
+
 
   end
 end

@@ -62,44 +62,6 @@ $( document ).ready(function() {
 
       } 
 
-      setSubmitStatus() {
-        let okToSubmit = true;
-        let selectedOrganizationID = $('input.organization_id').val();
-        if (selectedOrganizationID == "") {
-          okToSubmit = false;
-           if (showAlert) $(".select-organization").addClass('text-alert');
-        } else {
-          $(".select-organization").removeClass('text-alert');        
-        }
-        if ($('#submission_device_select_display').hasClass('hide')) {
-          okToSubmit = false;
-          if (showAlert) $(".select-device").addClass('text-alert');
-        } else {
-          $(".select-device").removeClass('text-alert');        
-        }
-        if ($('select[name="batch_submission[modality]"]').val() == "") {
-          okToSubmit = false;
-          if (showAlert) $(".select-modality").addClass('text-alert');
-        } else if (selectedDeviceModality.indexOf( $('select[name="batch_submission[modality]"]').val() ) == -1) {
-          okToSubmit = false;
-          if (showAlert) $(".select-modality").addClass('text-alert');
-          console.log('modality not match');
-        } else {
-          $(".select-modality").removeClass('text-alert');        
-        }
-        if ($("#manifest_file").val() == "") {
-          okToSubmit = false;
-          if (showAlert) $(".select-manifest b").addClass('text-alert');
-        } else {
-          $(".select-manifest b").removeClass('text-alert');        
-        }
-        if (okToSubmit) {
-          $("#btn-submit").prop('disabled', false);
-        } else {
-          $("#btn-submit").prop('disabled', true);
-        }
-      }
-
     } //RestoreableSubmissionForm
 
     class BatchSubmissionData {
@@ -185,12 +147,12 @@ $( document ).ready(function() {
         });
           
         self.form.find('#manifest_file, #batch_submission_modality').on('change', function(){ 
-          batchSubmissionForm.setSubmitStatus();
+          self.setSubmitStatus();
         });
         
         self.form.find(".btn-submit-wrapper").on('mouseover', function(){ 
           showAlert = true;
-          batchSubmissionForm.setSubmitStatus();
+          self.setSubmitStatus();
         });
 
       }
@@ -204,6 +166,44 @@ $( document ).ready(function() {
         list = list.split(',');
         list.splice(list.indexOf(value), 1);
         return list.join(',');
+      }
+
+      setSubmitStatus() {
+        let okToSubmit = true;
+        let selectedOrganizationID = $('input.organization_id').val();
+        if (selectedOrganizationID == "") {
+          okToSubmit = false;
+           if (showAlert) $(".select-organization").addClass('text-alert');
+        } else {
+          $(".select-organization").removeClass('text-alert');        
+        }
+        if ($('#submission_device_select_display').hasClass('hide')) {
+          okToSubmit = false;
+          if (showAlert) $(".select-device").addClass('text-alert');
+        } else {
+          $(".select-device").removeClass('text-alert');        
+        }
+        if ($('select[name="batch_submission[modality]"]').val() == "") {
+          okToSubmit = false;
+          if (showAlert) $(".select-modality").addClass('text-alert');
+        } else if (selectedDeviceModality.indexOf( $('select[name="batch_submission[modality]"]').val() ) == -1) {
+          okToSubmit = false;
+          if (showAlert) $(".select-modality").addClass('text-alert');
+          console.log('modality not match');
+        } else {
+          $(".select-modality").removeClass('text-alert');        
+        }
+        if ($("#manifest_file").val() == "") {
+          okToSubmit = false;
+          if (showAlert) $(".select-manifest b").addClass('text-alert');
+        } else {
+          $(".select-manifest b").removeClass('text-alert');        
+        }
+        if (okToSubmit) {
+          $("#btn-submit").prop('disabled', false);
+        } else {
+          $("#btn-submit").prop('disabled', true);
+        }
       }
 
       populateForm(previousBatchSubmissionData) {
@@ -401,7 +401,7 @@ $( document ).ready(function() {
             data.setOrganizationDefaults();
             data.noOrganization = true;
 
-            batchSubmissionForm.setSubmitStatus();
+            batchSubmissionForm.view.setSubmitStatus();
         });
 
         let setOrgData = function() {
@@ -431,7 +431,7 @@ $( document ).ready(function() {
               }
             }
           }
-          batchSubmissionForm.setSubmitStatus();
+          batchSubmissionForm.view.setSubmitStatus();
         }
 
         // No Organization Event
@@ -613,7 +613,7 @@ $( document ).ready(function() {
 
           data.setDeviceDefaults();
           data.deviceId = $('select[name="submission[device_id]"]').val();
-          batchSubmissionForm.setSubmitStatus();
+          batchSubmissionForm.view.setSubmitStatus();
         });
 
         $('#submission_device_select_display_container').on(
@@ -623,7 +623,7 @@ $( document ).ready(function() {
             $('#submission_select_device_section').addClass('show').removeClass('hide');
             $('#submission_create_device_button_section').addClass('show').removeClass('hide');
             $('#submission_device_select_display').addClass('hide').removeClass('show');
-            batchSubmissionForm.setSubmitStatus();
+            batchSubmissionForm.view.setSubmitStatus();
         });
 
       }

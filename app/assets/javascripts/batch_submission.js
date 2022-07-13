@@ -21,7 +21,7 @@ $( document ).ready(function() {
         $('.required').addClass('required-flag');
         this.setMediaPermissionFieldEvent();
 
-        this.view = new BatchSubmissionView('batch_submission_form', $('#batch_submission_form'));
+        this.view = new BatchSubmissionView($('#batch_submission_form'));
         this.previousSubmissionData = this.setPreviousSubmissionData();
         if (this.previousSubmissionData != null) {
           this.view.populateForm(this.previousSubmissionData);
@@ -29,11 +29,11 @@ $( document ).ready(function() {
       }
 
       setPreviousSubmissionData() {
-        var bsObj = localStorage.getItem("batchSubmissionFormData");
+        let bsObj = localStorage.getItem("batchSubmissionFormData");
         if (bsObj != null) {
-          var bsFormData = JSON.parse(bsObj);
-          var now = new Date().getTime();
-          var minOld = Math.floor((now - bsFormData.timestamp)/1000/60);
+          let bsFormData = JSON.parse(bsObj);
+          let now = new Date().getTime();
+          let minOld = Math.floor((now - bsFormData.timestamp)/1000/60);
           if (minOld > 1440) {
             console.log("expiring form data after 1 day...")
             localStorage.removeItem("batchSubmissionFormData");
@@ -48,8 +48,8 @@ $( document ).ready(function() {
 
       setPreviousOrgAgreement() {
         let self = this;
-        var organization_id = $('[name=organization_id]').val();
-        var orgData = self.orgData;
+        let organization_id = $('[name=organization_id]').val();
+        let orgData = self.orgData;
         if (orgData.default_fields && organization_id) {
           if (Object.keys(orgData.default_fields).length) {
             if ( orgData.organization_id && ( orgData.default_fields.attachment_url || orgData.default_fields.agreement_uri ) ) {
@@ -63,8 +63,8 @@ $( document ).ready(function() {
       } 
 
       setSubmitStatus() {
-        var okToSubmit = true;
-        var selectedOrganizationID = $('input.organization_id').val();
+        let okToSubmit = true;
+        let selectedOrganizationID = $('input.organization_id').val();
         if (selectedOrganizationID == "") {
           okToSubmit = false;
            if (showAlert) $(".select-organization").addClass('text-alert');
@@ -135,9 +135,9 @@ $( document ).ready(function() {
     } // BatchSubmissionData
 
     class BatchSubmissionView {
-      constructor(id, form) {
-        this.id = id;
+      constructor(form) {
         this.form = form;
+        this.eventFuncs();
       }
 
       init() {
@@ -145,7 +145,54 @@ $( document ).ready(function() {
       }
 
       eventFuncs() {
-        // overwrite this to provide jquery event listeners
+        let self = this;
+
+        self.form.submit(function(){
+          let formData = self.form.serializeArray();
+
+          let projects = []
+          $('.select-projects table').find('tr').not('.hidden').find('.collection-title').each(function( index ) {
+            projects.push({ id: $(this).data("id"), name: $(this).html() });
+          })
+          formData.push({ name: "projects", value: projects });
+
+          let reviewers = []
+          let choices = $('.media_download_reviewer').find('.select2-search-choice > div');
+          if ((choices.length > 0) && ($('#media_download_reviewer').val() != '')) {
+            let reviewerIDs = $('#media_download_reviewer').val().split(',');
+            $.each(reviewerIDs, function(index, item) {
+              reviewers.push({ id:item , name:$(choices[index]).text() });
+            })
+          }
+          formData.push({ name: "reviewers", value: reviewers });
+
+          formData.push({ name: "orgData", value: batchSubmissionForm.orgData });
+
+          let obj = {data: formData, timestamp: new Date().getTime()}
+          localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
+        });
+
+        self.form.find('#start-over').click(function(){
+          if (confirm('Clear the form and start over?')) {
+            localStorage.removeItem("batchSubmissionFormData");
+            location.reload();
+          }
+        })
+
+        self.form.find('#submission_organization_select_display_container').on('click', '#organization-select-close', function(event) {
+          // user click close button to remove selected org
+          batchSubmissionForm.resetFormFromOrg(batchSubmissionForm.organizationDefaultMediaFields);
+        });
+          
+        self.form.find('#manifest_file, #batch_submission_modality').on('change', function(){ 
+          batchSubmissionForm.setSubmitStatus();
+        });
+        
+        self.form.find(".btn-submit-wrapper").on('mouseover', function(){ 
+          showAlert = true;
+          batchSubmissionForm.setSubmitStatus();
+        });
+
       }
 
       triggerChangeVal(selector, v) {
@@ -161,7 +208,7 @@ $( document ).ready(function() {
 
       populateForm(previousBatchSubmissionData) {
         // re-fill the form if needed
-        var formData = {};
+        let formData = {};
         $.each(previousBatchSubmissionData, function(i, field) {
           if (field.name == "projects") {
             formData["projects"] = field.value;
@@ -190,12 +237,11 @@ $( document ).ready(function() {
         // popuplate the select2 dropdowns
         // get the org, device org, and device details from orgData and deviceData objects, 
         // then set the details in prevBsData to be used for select2-selecting event
-        console.log("popuplating formData :", formData);
-        var orgId = formData["batch_submission[organization_search]"];
-        var orgIndex = orgData.findIndex(item => item.id === orgId);
-        var deviceOrgId = formData["batch_submission[device_organization_search]"];
-        var deviceOrgIndex = orgData.findIndex(item => item.id === deviceOrgId);
-        var deviceId = formData["batch_submission[device_id]"];
+        let orgId = formData["batch_submission[organization_search]"];
+        let orgIndex = orgData.findIndex(item => item.id === orgId);
+        let deviceOrgId = formData["batch_submission[device_organization_search]"];
+        let deviceOrgIndex = orgData.findIndex(item => item.id === deviceOrgId);
+        let deviceId = formData["batch_submission[device_id]"];
         prevBsData = { 
           organization: orgData[orgIndex],
           device_organization: orgData[deviceOrgIndex],
@@ -205,49 +251,49 @@ $( document ).ready(function() {
         $("#submission_device_select_organization_search").select2('val', deviceOrgId).trigger('select2-selecting'); 
         $("#batch_submission_device_id").select2('val', deviceId).trigger('select2-selecting'); 
 
-        // refill the rest
         $.each(formData, function(key, value) {
           try {
-            var ctrl = fm.find('[name="'+key+'"]');
+            let ctrl = fm.find('[name="'+key+'"]');
 
             if (ctrl.is('select')){
-                $('option', ctrl).each(function() {
-                    if (this.value == value)
-                        this.selected = true;
-                });
+              $('option', ctrl).each(function() {
+                if (this.value == value) {
+                  this.selected = true;
+                }
+              });
             } else if (ctrl.is('textarea')) {
-                ctrl.val(value);
+              ctrl.val(value);
             } else {
-                switch(ctrl.attr("type")) {
-                    case "text":
-                      if (ctrl.hasClass('multi-text-field')) {
-                        if ($.isArray(value)) {
-                          var value_ary = value
-                        } else {
-                          var value_ary = value.split(',');
-                        }
-                        var input = ctrl;
-                        $.each(value_ary, function( idx, v ) {
-                          $(input).val(v);
-                          if (idx != value_ary.length-1) {
-                            ctrl.closest('.form-group').find('.btn.add').last().trigger('click');
-                            input = ctrl.closest('.form-group').find('input')[idx+1];
-                          }
-                        })
-                      } else {
-                        ctrl.val(value);   
+              switch(ctrl.attr("type")) {
+                case "text":
+                  if (ctrl.hasClass('multi-text-field')) {
+                    if ($.isArray(value)) {
+                      var value_ary = value
+                    } else {
+                      var value_ary = value.split(',');
+                    }
+                    var input = ctrl;
+                    $.each(value_ary, function( idx, v ) {
+                      $(input).val(v);
+                      if (idx != value_ary.length-1) {
+                        ctrl.closest('.form-group').find('.btn.add').last().trigger('click');
+                        input = ctrl.closest('.form-group').find('input')[idx+1];
                       }
-                      break;                        
-                    case "hidden":
-                      ctrl.val(value);   
-                      break;
-                    case "checkbox":
-                      if (value == '1')
-                        ctrl.prop('checked', true);
-                      else
-                        ctrl.prop('checked', false);
-                      break;
-                } 
+                    })
+                  } else {
+                    ctrl.val(value);   
+                  }
+                  break;                        
+                case "hidden":
+                  ctrl.val(value);   
+                  break;
+                case "checkbox":
+                  if (value == '1')
+                    ctrl.prop('checked', true);
+                  else
+                    ctrl.prop('checked', false);
+                  break;
+              } 
             }
           } catch (e) {
             console.log('error ', e);        
@@ -255,20 +301,20 @@ $( document ).ready(function() {
         });
 
         // refill download permission
-        var visibility = formData["batch_submission[media][visibility]"];
+        let visibility = formData["batch_submission[media][visibility]"];
         $('[value="' + visibility + '"]').prop('checked', true);
         set_visibility(visibility);  
 
-        var projects_to_add = formData["projects"];
+        let projects_to_add = formData["projects"];
         $.each(projects_to_add, function( id, proj ) {
           $('#batch_submission_media_member_of_collection_ids').val(proj.id).trigger('change'); 
           $('[data-id="' + proj.id + '"]').text(proj.name);
         })
 
-        var reviewerSelect = $('#media_download_reviewer');
-        var reviewers_to_add = formData['reviewers'];
+        let reviewerSelect = $('#media_download_reviewer');
+        let reviewers_to_add = formData['reviewers'];
         if (reviewers_to_add.length > 0) {
-          var reviewers_array = []
+          let reviewers_array = []
           $.each(reviewers_to_add, function( id, reviewer ) {
             reviewers_array.push({ "id":id, "user_key":reviewer.id, "text":reviewer.name }); 
           })
@@ -286,8 +332,7 @@ $( document ).ready(function() {
 
     class OrganizationView extends BatchSubmissionView {
       constructor(form) {
-        super(4, form);
-        this.eventFuncs();
+        super(form);
       }
 
       eventFuncs() {
@@ -359,8 +404,8 @@ $( document ).ready(function() {
             batchSubmissionForm.setSubmitStatus();
         });
 
-        var setOrgData = function() {
-          var selectedOrganizationID = $('input.organization_id').val();
+        let setOrgData = function() {
+          let selectedOrganizationID = $('input.organization_id').val();
           console.log('selectedOrganizationID: ', selectedOrganizationID);
           if (selectedOrganizationID) {
             data.setOrganizationDefaults();
@@ -451,8 +496,7 @@ $( document ).ready(function() {
 
     class DeviceView extends BatchSubmissionView {
       constructor(form) {
-        super(7, form);
-        this.eventFuncs();
+        super(form);
       }
 
       eventFuncs() {
@@ -497,7 +541,7 @@ $( document ).ready(function() {
 
             $("#submission_device_select_organization_search").select2('data', nullOrg);
 
-            var devices = $.map(nullOrg.devices, function( val, i ) {
+            let devices = $.map(nullOrg.devices, function( val, i ) {
               return deviceData[val];
             });
             if (devices) {
@@ -634,22 +678,12 @@ $( document ).ready(function() {
       }
     }
 
-
-
-
-
-
-
-
-
     prevBsData = {};
     showAlert = false;
     selectedDeviceModality = "";
 
-
     data = new BatchSubmissionData();
     batchSubmissionForm = new RestoreableSubmissionForm(data);
-
   
     batchSubmissionForm.views = [
       new OrganizationView(batchSubmissionForm),
@@ -657,55 +691,5 @@ $( document ).ready(function() {
     ];
     batchSubmissionForm.initializeForm();
 
-
-    $('#submission_organization_select_display_container').on('click', '#organization-select-close', function(event) {
-        // user click close button to remove selected org
-        console.log("removing selected org");
-        batchSubmissionForm.resetFormFromOrg(batchSubmissionForm.organizationDefaultMediaFields);
-    });
-      
-    $('#manifest_file, #batch_submission_modality').on('change', function(){ batchSubmissionForm.setSubmitStatus() });
-    $(".btn-submit-wrapper").on('mouseover', function(){ 
-      showAlert = true;
-      batchSubmissionForm.setSubmitStatus();
-    });
-
-
-
-    $('#start-over').click(function(){
-      if (confirm('Clear the form and start over?')) {
-        localStorage.removeItem("batchSubmissionFormData");
-        location.reload();
-      }
-    })
-    
-
-
-    $('#batch_submission_form').submit(function(){
-      var formData = $('#batch_submission_form').serializeArray();
-
-      var projects = []
-      $('.select-projects table').find('tr').not('.hidden').find('.collection-title').each(function( index ) {
-        projects.push({ id: $(this).data("id"), name: $(this).html() });
-      })
-      formData.push({ name: "projects", value: projects });
-
-      var reviewers = []
-      var choices = $('.media_download_reviewer').find('.select2-search-choice > div');
-      if ((choices.length > 0) && ($('#media_download_reviewer').val() != '')) {
-        var reviewerIDs = $('#media_download_reviewer').val().split(',');
-        $.each(reviewerIDs, function(index, item) {
-          reviewers.push({ id:item , name:$(choices[index]).text() });
-        })
-      }
-      formData.push({ name: "reviewers", value: reviewers });
-
-      formData.push({ name: "orgData", value: batchSubmissionForm.orgData });
-
-      var obj = {data: formData, timestamp: new Date().getTime()}
-      localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
-      //console.log("saved to localStorage... ", localStorage.getItem("batchSubmissionFormData"));
-    });
-
-  } // end if the page is submission flow page
+  } // check if the page is batch submission form
 });

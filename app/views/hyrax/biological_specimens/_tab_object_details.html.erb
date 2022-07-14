@@ -28,7 +28,7 @@
         <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
       <% end %>
       <%= f.input :creator, label: @presenter.creator_label, as: :multi_value, required: false %>
-      <%= f.input :dimensions, label: 'Object Dimensions/Measurements' %>
+      <%= f.input :dimensions, label: 'Specimen Measurements' %>
     </div>
 
     <div class="content-block">
@@ -59,6 +59,17 @@
       <%= f.input :numeric_time, label: 'Absolute Age' %>
       <%= f.input :dating_method, label: 'Dating Method' %>
     </div>
+  </div>
+  <!-- /left column  -->
+
+  <!-- right column  -->
+  <div class="col-sm-6">
+
+    <%= render 'edit_media_items', presenter: @presenter, f: f %>
+
+    <div class="content-block">
+      <%= render 'form_member_of_collections', f: f %>
+    </div>
 
     <div class="content-block">
       <h2>SPECIMEN ORIGINAL LOCATION</h2>
@@ -74,22 +85,11 @@
     </div>
 
     <div class="content-block">
-      <h2>EXCAVATION DETAILS</h2>
-      <%= f.input :provenance_name, label: 'Excavation Name' %>
+      <h2>EXCAVATION/COLLECTION DETAILS</h2>
+      <%= f.input :provenance_name, label: 'Excavation/Collection Name' %>
       <%= f.input :provenance_details, label: 'Excavation/Collection Details', as: :text, input_html: { rows: 4, style: 'height: auto;' } %>
       <%= f.input :formation, label: 'Stratigraphic Formation' %>
       <%= f.input :context, label: 'Stratigraphic Context' %>
-    </div>
-  </div>
-  <!-- /left column  -->
-
-  <!-- right column  -->
-  <div class="col-sm-6">
-
-    <%= render 'edit_media_items', presenter: @presenter, f: f %>
-
-    <div class="content-block">
-      <%= render 'form_member_of_collections', f: f %>
     </div>
 
   </div>

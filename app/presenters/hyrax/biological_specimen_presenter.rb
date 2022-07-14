@@ -25,7 +25,7 @@ module Hyrax
     end
 
     def date_created_label
-      'Object collection date'
+      'Date Collected'
     end
 
     def creator_label

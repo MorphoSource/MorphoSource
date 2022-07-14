@@ -18,13 +18,20 @@ module Morphosource
         update_linked_team_access
       end
 
-      # called from media actor
+      # this is also called from media actor
       def add_organization_team_access(works)
         works = Array(works)
         team_ids = linked_team_ids(new_orgs)
         return if team_ids.blank?
         get_groups(team_ids)
         works.each { |w| add_read_access(w) }
+      end
+
+      def add_organization_team_access_for_po
+        team_ids = linked_team_ids(new_orgs)
+        return if team_ids.blank?
+        get_groups_for_po(team_ids)
+        add_edit_access_for_po(@curation_concern)
       end
 
       # called from submissions controller
@@ -88,8 +95,14 @@ module Morphosource
 
       def update_linked_team_access
         find_all_media
-        remove_organization_team_access unless old_orgs.blank?
+        unless old_orgs.blank?
+          remove_organization_team_access
+          remove_organization_team_access_for_po
+        end
         add_organization_team_access(@media)
+        if @curation_concern.physical_object?        
+          add_organization_team_access_for_po
+        end
       end
 
       def find_all_media
@@ -109,6 +122,14 @@ module Morphosource
         @media.each { |m| remove_read_access(m) }
       end
 
+      def remove_organization_team_access_for_po
+        team_ids = linked_team_ids(old_orgs)
+        return if team_ids.blank?
+
+        get_groups_for_po(team_ids)
+        remove_edit_access_for_po(@curation_concern)
+      end
+
       def linked_team_ids(organizations)
         organizations.map { |o| o.team_id.first }.compact
       end
@@ -123,13 +144,33 @@ module Morphosource
         end
       end
 
+      def get_groups_for_po(team_ids)
+        roles = Collection::PHYSICAL_OBJECT_EDIT_GROUP_ROLES
+        @po_edit_groups = []
+        team_ids.each do |id|
+          roles.each do |role|
+            @po_edit_groups.push(id + '_' + role)
+          end
+        end
+      end
+
       def remove_read_access(work)
         work.read_groups -= @groups
         work.save
       end
 
+      def remove_edit_access_for_po(work)
+        work.edit_groups -= @po_edit_groups
+        work.save
+      end
+
       def add_read_access(work)
         work.read_groups += @groups
+        work.save
+      end
+
+      def add_edit_access_for_po(work)
+        work.edit_groups += @po_edit_groups
         work.save
       end
     end

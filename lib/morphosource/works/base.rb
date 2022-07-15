@@ -124,6 +124,8 @@ module Morphosource
               str = $1 + "-" + $2.rjust(2, "0") + "-" + $3.rjust(2, "0") if Date.valid_date? $1.to_i, $2.to_i, $3.to_i
             when /^(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})$/
               str = $3 + "-" + $1.rjust(2, "0") + "-" + $2.rjust(2, "0") if Date.valid_date? $3.to_i, $1.to_i, $2.to_i
+            when nil
+              str = ''
             else
               # leave str as it is
             end

@@ -465,31 +465,33 @@ class Media < Morphosource::Works::Base
   end
 
   def check_for_organization_transfer
-    if self.visibility_changed? && self.visibility == 'open' && self.organization_transfer_on_publish
+    if ( self.visibility_changed? &&
+         self.visibility == 'open' &&
+         self.organization_transfer_on_publish )
       transfer_media_to_organization
     end
   end
 
   def transfer_media_to_organization
-    if (
-      (org = organizations&.first).present? && 
-      (new_manager_id = org&.data_manager&.first).present? && 
-      (new_manager = User.find_by_user_key(new_manager_id)).present?
-    )
+    org = organizations&.first
+    if ( org.present? &&
+         (new_manager_id = org&.data_manager&.first).present? &&
+         (new_manager = User.find_by_user_key(new_manager_id)).present? )
       deposit_user = User.find_by_user_key(user_with_ownership)
-
       return if new_manager.id == deposit_user.id
 
       # Cancel existing pending proxy deposit requests
       if (existing_transfers = ProxyDepositRequest.where(work_id: id, status: 'pending')).present?
         existing_transfers.each { |t| t.cancel! }
       end
-
       # Create new proxy deposit request from user with ownership to organization
       message = I18n.t('morphosource.media.organization_transfer.transfer_message').html_safe
       ProxyDepositRequest.create!(work_id: id, receiving_user: new_manager, sending_user: deposit_user, sender_comment: message, organization_transfer: true)
     else
-      raise "Failed to transfer management of media #{id} to organization data manager"
+      message = "Failed to transfer management of media #{id} to organization #{org&.id} with data manager #{org&.data_manager}"
+
+      Rails.logger.fatal message
+      raise message
     end
   end
 
@@ -536,7 +538,7 @@ class Media < Morphosource::Works::Base
     end
 
     def controlled_attributes
-      { 
+      {
         :media_type => Morphosource::MediaTypesService.new,
         :side => Morphosource::SidesService.new,
         :series_type => Morphosource::SeriesTypesService.new,

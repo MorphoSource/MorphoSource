@@ -2,9 +2,67 @@
 
 $( document ).ready(function() {
 
-  if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
-    showAlert = false;
-    selectedDeviceModality = "";
+  if ($('body[class*="batch-submission"]').length) { // check if the page is batch submission index page
+    $('.clear-bs-form').click(function(event){
+      // clear previous submitted data before loading the form
+      localStorage.removeItem("batchSubmissionFormData");
+    })
+  }
+
+  if ($('[class*="batch-submission-form"]').length) { // check if the page is batch submission form
+
+    class RestoreableSubmissionForm extends SubmissionForm {
+
+      constructor(submissionData) {
+        super(submissionData);
+      }
+
+      initializeForm() {
+        $('.required').addClass('required-flag');
+        this.setMediaPermissionFieldEvent();
+
+        this.view = new BatchSubmissionView($('#batch_submission_form'));
+        this.previousSubmissionData = this.setPreviousSubmissionData();
+        if (this.previousSubmissionData != null) {
+          this.view.populateForm(this.previousSubmissionData);
+        } 
+      }
+
+      setPreviousSubmissionData() {
+        let bsObj = localStorage.getItem("batchSubmissionFormData");
+        if (bsObj != null) {
+          let bsFormData = JSON.parse(bsObj);
+          let now = new Date().getTime();
+          let minOld = Math.floor((now - bsFormData.timestamp)/1000/60);
+          if (minOld > 1440) {
+            console.log("expiring form data after 1 day...")
+            localStorage.removeItem("batchSubmissionFormData");
+            return null;
+          } else {
+            return bsFormData.data;
+          }
+        } else {
+          return null;
+        }
+      }
+
+      setPreviousOrgAgreement() {
+        let self = this;
+        let organization_id = $('[name=organization_id]').val();
+        let orgData = self.orgData;
+        if (orgData.default_fields && organization_id) {
+          if (Object.keys(orgData.default_fields).length) {
+            if ( orgData.organization_id && ( orgData.default_fields.attachment_url || orgData.default_fields.agreement_uri ) ) {
+              self.setOrganizationAgreement(orgData.default_fields, orgData.organization_id);
+            } else {
+              self.setNoOrganizationAgreement();
+            }
+          }
+        }
+
+      } 
+
+    } //RestoreableSubmissionForm
 
     class BatchSubmissionData {
       constructor(sessionState=null) {
@@ -39,9 +97,9 @@ $( document ).ready(function() {
     } // BatchSubmissionData
 
     class BatchSubmissionView {
-      constructor(id, form) {
-        this.id = id;
+      constructor(form) {
         this.form = form;
+        this.eventFuncs();
       }
 
       init() {
@@ -49,7 +107,54 @@ $( document ).ready(function() {
       }
 
       eventFuncs() {
-        // overwrite this to provide jquery event listeners
+        let self = this;
+
+        self.form.submit(function(){
+          let formData = self.form.serializeArray();
+
+          let projects = []
+          $('.select-projects table').find('tr').not('.hidden').find('.collection-title').each(function( index ) {
+            projects.push({ id: $(this).data("id"), name: $(this).html() });
+          })
+          formData.push({ name: "projects", value: projects });
+
+          let reviewers = []
+          let choices = $('.media_download_reviewer').find('.select2-search-choice > div');
+          if ((choices.length > 0) && ($('#media_download_reviewer').val() != '')) {
+            let reviewerIDs = $('#media_download_reviewer').val().split(',');
+            $.each(reviewerIDs, function(index, item) {
+              reviewers.push({ id:item , name:$(choices[index]).text() });
+            })
+          }
+          formData.push({ name: "reviewers", value: reviewers });
+
+          formData.push({ name: "orgData", value: batchSubmissionForm.orgData });
+
+          let obj = {data: formData, timestamp: new Date().getTime()}
+          localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
+        });
+
+        self.form.find('#start-over').click(function(){
+          if (confirm('Clear the form and start over?')) {
+            localStorage.removeItem("batchSubmissionFormData");
+            location.reload();
+          }
+        })
+
+        self.form.find('#submission_organization_select_display_container').on('click', '#organization-select-close', function(event) {
+          // user click close button to remove selected org
+          batchSubmissionForm.resetFormFromOrg(batchSubmissionForm.organizationDefaultMediaFields);
+        });
+          
+        self.form.find('#manifest_file, #batch_submission_modality').on('change', function(){ 
+          self.setSubmitStatus();
+        });
+        
+        self.form.find(".btn-submit-wrapper").on('mouseover', function(){ 
+          showAlert = true;
+          self.setSubmitStatus();
+        });
+
       }
 
       triggerChangeVal(selector, v) {
@@ -62,12 +167,172 @@ $( document ).ready(function() {
         list.splice(list.indexOf(value), 1);
         return list.join(',');
       }
+
+      setSubmitStatus() {
+        let okToSubmit = true;
+        let selectedOrganizationID = $('input.organization_id').val();
+        if (selectedOrganizationID == "") {
+          okToSubmit = false;
+           if (showAlert) $(".select-organization").addClass('text-alert');
+        } else {
+          $(".select-organization").removeClass('text-alert');        
+        }
+        if ($('#submission_device_select_display').hasClass('hide')) {
+          okToSubmit = false;
+          if (showAlert) $(".select-device").addClass('text-alert');
+        } else {
+          $(".select-device").removeClass('text-alert');        
+        }
+        if ($('select[name="batch_submission[modality]"]').val() == "") {
+          okToSubmit = false;
+          if (showAlert) $(".select-modality").addClass('text-alert');
+        } else if (selectedDeviceModality.indexOf( $('select[name="batch_submission[modality]"]').val() ) == -1) {
+          okToSubmit = false;
+          if (showAlert) $(".select-modality").addClass('text-alert');
+          console.log('modality not match');
+        } else {
+          $(".select-modality").removeClass('text-alert');        
+        }
+        if ($("#manifest_file").val() == "") {
+          okToSubmit = false;
+          if (showAlert) $(".select-manifest b").addClass('text-alert');
+        } else {
+          $(".select-manifest b").removeClass('text-alert');        
+        }
+        if (okToSubmit) {
+          $("#btn-submit").prop('disabled', false);
+        } else {
+          $("#btn-submit").prop('disabled', true);
+        }
+      }
+
+      populateForm(previousBatchSubmissionData) {
+        // re-fill the form if needed
+        let formData = {};
+        $.each(previousBatchSubmissionData, function(i, field) {
+          if (field.name == "projects") {
+            formData["projects"] = field.value;
+          } else if (field.name == "reviewers") {
+            formData["reviewers"] = field.value;
+          } else if (field.name == "orgData") {
+            batchSubmissionForm.orgData = field.value;
+          } else {
+            if (field.value.trim() != "") {
+              if (formData[field.name] != undefined) {
+                var val = formData[field.name];
+                if (!Array.isArray(val)) {
+                   var arr = [val];
+                }
+                arr.push(field.value.trim());
+                formData[field.name] = arr;
+              } else {
+                formData[field.name] = field.value;
+              }
+            }
+          }
+        });
+        batchSubmissionForm.restoredFormData = formData;
+
+        let fm = this.form;
+        // popuplate the select2 dropdowns
+        // get the org, device org, and device details from orgData and deviceData objects, 
+        // then set the details in prevBsData to be used for select2-selecting event
+        let orgId = formData["batch_submission[organization_search]"];
+        let orgIndex = orgData.findIndex(item => item.id === orgId);
+        let deviceOrgId = formData["batch_submission[device_organization_search]"];
+        let deviceOrgIndex = orgData.findIndex(item => item.id === deviceOrgId);
+        let deviceId = formData["batch_submission[device_id]"];
+        prevBsData = { 
+          organization: orgData[orgIndex],
+          device_organization: orgData[deviceOrgIndex],
+          device: deviceData[deviceId]
+        }
+        $("#batch_submission_organization_search").select2('val', orgId).trigger('select2-selecting'); 
+        $("#submission_device_select_organization_search").select2('val', deviceOrgId).trigger('select2-selecting'); 
+        $("#batch_submission_device_id").select2('val', deviceId).trigger('select2-selecting'); 
+
+        $.each(formData, function(key, value) {
+          try {
+            let ctrl = fm.find('[name="'+key+'"]');
+
+            if (ctrl.is('select')){
+              $('option', ctrl).each(function() {
+                if (this.value == value) {
+                  this.selected = true;
+                }
+              });
+            } else if (ctrl.is('textarea')) {
+              ctrl.val(value);
+            } else {
+              switch(ctrl.attr("type")) {
+                case "text":
+                  if (ctrl.hasClass('multi-text-field')) {
+                    if ($.isArray(value)) {
+                      var value_ary = value
+                    } else {
+                      var value_ary = value.split(',');
+                    }
+                    var input = ctrl;
+                    $.each(value_ary, function( idx, v ) {
+                      $(input).val(v);
+                      if (idx != value_ary.length-1) {
+                        ctrl.closest('.form-group').find('.btn.add').last().trigger('click');
+                        input = ctrl.closest('.form-group').find('input')[idx+1];
+                      }
+                    })
+                  } else {
+                    ctrl.val(value);   
+                  }
+                  break;                        
+                case "hidden":
+                  ctrl.val(value);   
+                  break;
+                case "checkbox":
+                  if (value == '1')
+                    ctrl.prop('checked', true);
+                  else
+                    ctrl.prop('checked', false);
+                  break;
+              } 
+            }
+          } catch (e) {
+            console.log('error ', e);        
+          }
+        });
+
+        // refill download permission
+        let visibility = formData["batch_submission[media][visibility]"];
+        $('[value="' + visibility + '"]').prop('checked', true);
+        set_visibility(visibility);  
+
+        let projects_to_add = formData["projects"];
+        $.each(projects_to_add, function( id, proj ) {
+          $('#batch_submission_media_member_of_collection_ids').val(proj.id).trigger('change'); 
+          $('[data-id="' + proj.id + '"]').text(proj.name);
+        })
+
+        let reviewerSelect = $('#media_download_reviewer');
+        let reviewers_to_add = formData['reviewers'];
+        if (reviewers_to_add.length > 0) {
+          let reviewers_array = []
+          $.each(reviewers_to_add, function( id, reviewer ) {
+            reviewers_array.push({ "id":id, "user_key":reviewer.id, "text":reviewer.name }); 
+          })
+          reviewerSelect.data("reviewers", reviewers_array);
+          // add search to download reviewer
+          reviewerSelect.userSearchMultiple(reviewerSelect.data('reviewers'));          
+        } else {
+          // remove the default reviewer
+          reviewerSelect.data('reviewers', '');
+          reviewerSelect.select2('destroy').empty().userSearchMultiple('');
+        }
+        window.scrollTo(0,0);
+      };
     }
 
     class OrganizationView extends BatchSubmissionView {
       constructor(form) {
-        super(4, form);
-        this.eventFuncs();
+        super(form);
       }
 
       eventFuncs() {
@@ -80,9 +345,14 @@ $( document ).ready(function() {
         });
 
         $('#batch_submission_organization_search').on('select2-selecting', function (e) {
-          console.log("org selected ", JSON.stringify(e.choice));
-          var item = e.choice;
-          if (e.choice && e.choice.id) {
+          if (e.choice) {
+            console.log("org selected >>", JSON.stringify(e.choice));
+            var item = e.choice;          
+          } else if (prevBsData != {}) {
+            console.log('getting org from prevBsData >>', prevBsData);
+            var item = prevBsData.organization;
+          }
+          if (item && item.id) {
             $("input.organization_id").val(item.id);
             $("input.organization_title").val(item.title);
             $("input.organization_label").val(item.text);
@@ -131,14 +401,12 @@ $( document ).ready(function() {
             data.setOrganizationDefaults();
             data.noOrganization = true;
 
-            setSubmitStatus();
+            batchSubmissionForm.view.setSubmitStatus();
         });
 
-        //$('#submission_select_organization').click(function(event){
-        var setOrgData = function() {
-          //event.preventDefault();
-          console.log('set organization data');
-          var selectedOrganizationID = $('input.organization_id').val();
+        let setOrgData = function() {
+          let selectedOrganizationID = $('input.organization_id').val();
+          console.log('selectedOrganizationID: ', selectedOrganizationID);
           if (selectedOrganizationID) {
             data.setOrganizationDefaults();
             data.organizationId = selectedOrganizationID;
@@ -149,9 +417,21 @@ $( document ).ready(function() {
             data.savedStep = 4;
 
             console.log(data);
-            self.form.setDefaultMediaPermissionFields();
+            if (batchSubmissionForm.previousSubmissionData == null || self.form.orgChanged) {
+              // new submission, or user has previously changed the org selection
+              self.form.setDefaultMediaPermissionFields();
+            } else {
+              if (data.organizationId != batchSubmissionForm.restoredFormData['organization_id']) {
+                // user selects a different org on a restored form
+                self.form.setDefaultMediaPermissionFields();
+                self.form.orgChanged = true;
+              } else {
+                // set org when loading a restored form
+                self.form.setPreviousOrgAgreement();
+              }
+            }
           }
-          setSubmitStatus();
+          batchSubmissionForm.view.setSubmitStatus();
         }
 
         // No Organization Event
@@ -184,6 +464,7 @@ $( document ).ready(function() {
         $("select#media_transfer_management, input[name='batch_submission[media][visibility]']").change(function(event){
           self.form.updateOrganizationDataManagementInfo();
         });
+
       } // eventFuncs
 
       next() {
@@ -215,8 +496,7 @@ $( document ).ready(function() {
 
     class DeviceView extends BatchSubmissionView {
       constructor(form) {
-        super(7, form);
-        this.eventFuncs();
+        super(form);
       }
 
       eventFuncs() {
@@ -230,15 +510,17 @@ $( document ).ready(function() {
         });
 
         $('#submission_device_select_organization_search').on('select2-selecting', function (e) {
-          console.log(JSON.stringify(e.choice));
-          var item = e.choice;
-
-          if (e.choice && e.choice.id) {
-            console.log(e.choice);
+          if (e.choice) {
+            console.log("device org selected >>", JSON.stringify(e.choice));
+            var item = e.choice;          
+          } else if (prevBsData != {}) {
+            console.log('getting device org from prevBsData >>', prevBsData);
+            var item = prevBsData.device_organization;
+          }
+          if (item && item.id) {
             clearList();
             removePreviousSelection();
-
-            var devices = $.map(e.choice.devices, function( val, i ) {
+            var devices = $.map(item.devices, function( val, i ) {
               return deviceData[val];
             });
             if (devices) {
@@ -259,7 +541,7 @@ $( document ).ready(function() {
 
             $("#submission_device_select_organization_search").select2('data', nullOrg);
 
-            var devices = $.map(nullOrg.devices, function( val, i ) {
+            let devices = $.map(nullOrg.devices, function( val, i ) {
               return deviceData[val];
             });
             if (devices) {
@@ -310,10 +592,14 @@ $( document ).ready(function() {
         });
 
         $('#batch_submission_device_id').on('select2-selecting', function (e) {
-          console.log('device selected ' + JSON.stringify(e.choice));
-          var item = e.choice;
-
-          var deviceObj = deviceData[e.choice.id]
+          if (e.choice) {
+            console.log("device selected >>", JSON.stringify(e.choice));
+            var item = e.choice;          
+          } else if (prevBsData != {}) {
+            console.log('getting device from prevBsData >>', prevBsData);
+            var item = prevBsData.device;
+          }
+          var deviceObj = deviceData[item.id];
           selectedDeviceModality = deviceObj["modality"]
           console.log('selected device modality : ' + selectedDeviceModality);
           self.toggleSelectDeviceVisibility(deviceObj);
@@ -327,7 +613,7 @@ $( document ).ready(function() {
 
           data.setDeviceDefaults();
           data.deviceId = $('select[name="submission[device_id]"]').val();
-          setSubmitStatus();
+          batchSubmissionForm.view.setSubmitStatus();
         });
 
         $('#submission_device_select_display_container').on(
@@ -337,7 +623,7 @@ $( document ).ready(function() {
             $('#submission_select_device_section').addClass('show').removeClass('hide');
             $('#submission_create_device_button_section').addClass('show').removeClass('hide');
             $('#submission_device_select_display').addClass('hide').removeClass('show');
-            setSubmitStatus();
+            batchSubmissionForm.view.setSubmitStatus();
         });
 
       }
@@ -392,64 +678,18 @@ $( document ).ready(function() {
       }
     }
 
-    var data = new BatchSubmissionData();
-    var batchSubmissionForm = new SubmissionForm(data);
+    prevBsData = {};
+    showAlert = false;
+    selectedDeviceModality = "";
 
+    data = new BatchSubmissionData();
+    batchSubmissionForm = new RestoreableSubmissionForm(data);
+  
     batchSubmissionForm.views = [
       new OrganizationView(batchSubmissionForm),
       new DeviceView(batchSubmissionForm),
     ];
     batchSubmissionForm.initializeForm();
 
-    $('#submission_organization_select_display_container').on('click', '#organization-select-close', function(event) {
-        // user click close button to remove selected org
-        console.log("removing selected org");
-        batchSubmissionForm.resetFormFromOrg(batchSubmissionForm.organizationDefaultMediaFields);
-    });
-      
-    $('#manifest_file, #batch_submission_modality').on('change', function(){ setSubmitStatus() });
-    $(".btn-submit-wrapper").on('mouseover', function(){ 
-      showAlert = true;
-      setSubmitStatus();
-    });
-
-    var setSubmitStatus = function(){
-      var okToSubmit = true;
-      var selectedOrganizationID = $('input.organization_id').val();
-      if (selectedOrganizationID == "") {
-        okToSubmit = false;
-         if (showAlert) $(".select-organization").addClass('text-alert');
-      } else {
-        $(".select-organization").removeClass('text-alert');        
-      }
-      if ($('#submission_device_select_display').hasClass('hide')) {
-        okToSubmit = false;
-        if (showAlert) $(".select-device").addClass('text-alert');
-      } else {
-        $(".select-device").removeClass('text-alert');        
-      }
-      if ($('select[name="batch_submission[modality]"]').val() == "") {
-        okToSubmit = false;
-        if (showAlert) $(".select-modality").addClass('text-alert');
-      } else if (selectedDeviceModality.indexOf( $('select[name="batch_submission[modality]"]').val() ) == -1) {
-        okToSubmit = false;
-        if (showAlert) $(".select-modality").addClass('text-alert');
-        console.log('modality not match');
-      } else {
-        $(".select-modality").removeClass('text-alert');        
-      }
-      if ($("#manifest_file").val() == "") {
-        okToSubmit = false;
-         if (showAlert) $(".select-manifest b").addClass('text-alert');
-      } else {
-        $(".select-manifest b").removeClass('text-alert');        
-      }
-      if (okToSubmit) {
-        $("#btn-submit").prop('disabled', false);
-      } else {
-        $("#btn-submit").prop('disabled', true);
-      }
-    };
-
-  } // end if the page is submission flow page
+  } // check if the page is batch submission form
 });

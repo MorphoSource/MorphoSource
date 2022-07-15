@@ -2,14 +2,35 @@
   <%= simple_form_for @biological_specimen_form, wrapper: :showcase_default do |f| %>
     <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
       <div class="hide">
-      <%= f.input :on_behalf_of, 
-        collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
+      <%= f.input :on_behalf_of,
+        collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] },
         prompt: "Myself" %>
       </div>
     <% end %>
     <div class="row">
       <!-- left column  -->
       <div class="col-xs-12 col-md-6">
+
+        <div class="block showcase-edit showcase-section">
+          <div class="row showcase-section-header">
+            <span class="h2">GENERAL DETAILS</span>
+          </div>
+
+          <div class="content-block">
+            <%= f.input :vouchered, as: :select,
+                collection: ['Yes','No'],
+                include_blank: true,
+                input_html: { class: 'form-control' },
+                label_wrapper_html: { class: 'required-flag' }
+            %>
+            <%= f.input :description %>
+            <%= render_edit_field_partial('sex', f: f) %>
+            <%= render_edit_field_partial('is_type_specimen', f: f) %>
+            <%# todo: render date_field in simple_form_bootstrap %>
+
+            <%= f.input :creator, label: 'Object collector', as: :multi_value, required: false %>
+          </div>
+        </div>
 
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
@@ -23,23 +44,48 @@
             <%= f.input :occurrence_id, label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :identifier, as: :multi_value %>
             <%= f.input :related_url, as: :multi_value %>
+            <%= f.input :bibliographic_citation, label: 'Bibliographic Citation', as: :multi_value %>
           </div>
         </div>
 
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
-            <span class="h2">TIME AND PLACE DETAILS</span>
+            <span class="h2">SPECIMEN DATING</span>
           </div>
 
           <div class="content-block">
-            <%= f.input :vouchered, as: :select,
-                collection: ['Yes','No'],
-                include_blank: true,
-                input_html: { class: 'form-control' }
-            %>
+            <div class="row">
+              <div class="col-xs-6 showcase-label">Object collection date</div>
+              <div class="col-xs-6 showcase-value">
+              <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
+                </div>
+            </div>
             <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
             <%= f.input :numeric_time, label: 'Absolute Age' %>
+            <%= f.input :dating_method, label: 'Dating Method' %>
+        </div>
+      </div>
+
+
+
+      </div>
+      <!-- /left column  -->
+
+      <!-- right column  -->
+      <div class="col-xs-12 col-md-6">
+        <div class="block showcase-edit showcase-section">
+          <div class="row showcase-section-header">
+            <span class="h2">SPECIMEN ORIGINAL LOCATION</span>
+          </div>
+
+          <div class="content-block">
+            <div class="row">
             <%= f.input :original_location, label: 'Locality' %>
+            <%= f.input :address, label: 'Address' %>
+            <%= f.input :city, label: 'City' %>
+            <%= f.input :state_province, label: 'State or Province' %>
+            <%= render 'records/edit_fields/country', f: f %>
+            <%= render "records/edit_fields/tgn", f: f, key: 'tgn' %>
             <!--  todo: the html below can be removed if simpleform config wrapper can be used.  In that case, we need to figure out pass the content for the tooltip
             <div class="form-group row">
                 <div class="col-xs-12 showcase-label">
@@ -52,37 +98,23 @@
             <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
             </div>
         </div>
-
       </div>
-      <!-- /left column  -->
-
-      <!-- right column  -->
-      <div class="col-xs-12 col-md-6">
-
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
-            <span class="h2">GENERAL DETAILS</span>
+            <span class="h2">EXCAVATION DETAILS</span>
           </div>
 
           <div class="content-block">
-            <%= f.input :description %>
-            <%= render_edit_field_partial('sex', f: f) %>
-            <%= render_edit_field_partial('is_type_specimen', f: f) %>
-            <%# todo: render date_field in simple_form_bootstrap %>
-            <div class="row">
-              <div class="col-xs-6 showcase-label">Object collection date</div>
-              <div class="col-xs-6 showcase-value">
-              <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
-                </div>
-            </div>
-            <%= f.input :creator, label: 'Object collector', as: :multi_value, required: false %>
+            <%= f.input :provenance_name, label: 'Excavation Name' %>
+            <%= f.input :provenance_details, label: 'Excavation/Collection Details', as: :text, input_html: { rows: 4, style: 'height: auto;' } %>
+            <%= f.input :formation, label: 'Stratigraphic Formation' %>
+            <%= f.input :context, label: 'Stratigraphic Context' %>
           </div>
         </div>
 
       </div>
       <!-- / right column -->
     </div>
-
     <div class="row">
       <%= f.submit t('morphosource.submission.continue'),
         class: "btn btn-primary btn-continue",

@@ -82,6 +82,10 @@ module Morphosource
       property :dimensions, predicate: ::RDF::Vocab::DC.format do |index|
         index.as :stored_searchable, :facetable
       end
+
+      property :tgn, predicate: ::RDF::URI.new("http://purl.org/dc/terms/TGN"), class_name: Morphosource::ControlledVocabularies::Getty::Tgn do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

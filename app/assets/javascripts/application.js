@@ -48,4 +48,4 @@
 //= require morphosource/autocomplete/ms_resource
 //= require morphosource/editor/getty_controlled_vocabulary
 //= require morphosource/submission
-//= require morphosource/cultural_heritage_object
+//= require morphosource/getty_fields

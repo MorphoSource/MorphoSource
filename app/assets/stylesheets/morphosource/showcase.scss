@@ -1,5 +1,5 @@
 @import 'shared';
- 
+
 /* set box sizing for the circles and line in between */
 html {
   box-sizing: border-box !important;
@@ -36,12 +36,12 @@ html {
   .error-list {
     li {
       color: red;
-    }    
+    }
   }
   .warn-list {
     li {
       color: #000;
-    }    
+    }
   }
   .error-rows, .warn-rows {
     th, td {
@@ -61,19 +61,19 @@ html {
     #manifest_file {
       display: inline;
       width:200px;
-    }    
+    }
   }
 }
 /*
-.showcase.teams, 
-.showcase.media-works, 
-.showcase.browse, 
-.showcase.organizations, 
-.showcase.dl-request, 
+.showcase.teams,
+.showcase.media-works,
+.showcase.browse,
+.showcase.organizations,
+.showcase.dl-request,
 .showcase.cart,
 .showcase.transfer
 */
-.showcase { 
+.showcase {
 
   ul.error-list, ul.warn-list {
     margin-left: 0;
@@ -124,7 +124,7 @@ html {
     }
     label.cb {
       font-size: 12px;
-    }    
+    }
   }
   label.cb {
     display: block;
@@ -148,9 +148,9 @@ html {
         font-size: 44px;
         vertical-align: top;
         float: left;
-        margin-right: 12px;        
+        margin-right: 12px;
       }
-      .counts { 
+      .counts {
         font-weight: normal;
         font-size: 14px;
       }
@@ -173,25 +173,25 @@ html {
         font-size: 33px;
         vertical-align: top;
         float: left;
-        margin-right: 8px;        
+        margin-right: 8px;
       }
       [class^="ms2-icon-"] {
         font-size: 41px;
         vertical-align: top;
         float: left;
-        margin-right: 8px;        
+        margin-right: 8px;
       }
       .po-image {
         width: auto;
         float: left;
         margin-right: 12px;
       }
-      .counts { 
+      .counts {
         font-weight: normal;
         font-size: 14px;
       }
     }
-    @media (max-width: 460px) { 
+    @media (max-width: 460px) {
       h1 {
         font-size: 20px;
       }
@@ -430,7 +430,7 @@ html {
       cursor: not-allowed;
       color: $button-disabled-font-color;
       background-color: $button-disabled-color;
-      border-color: $button-disabled-border-color;      
+      border-color: $button-disabled-border-color;
     }
     .dropdown-menu {
       .btn {
@@ -483,7 +483,7 @@ html {
       }
     }
   }
-  
+
   #add-selected-to-cart {
     font-size: 11px;
     @media (min-width: 768px) {
@@ -513,11 +513,11 @@ html {
       width: max-content;
     }
     .remove-filter-all {
-      font-size: 11px;      
+      font-size: 11px;
       color: $font-color;
     }
   }
-  
+
   .dropdown-toggle {
     @media (min-width: 768px) {
       max-width: 100px;
@@ -567,7 +567,7 @@ html {
       font-size: 11px;
       margin-right: 4px;
     }
-  } 
+  }
 
 } /* / .showcase.teams, .showcase.media-works, .showcase.browse, .showcase.organizations {  */
 
@@ -591,7 +591,7 @@ html {
       padding-top: 0;
       padding-bottom: 18px;
       ul {
-        margin-left: 35px;        
+        margin-left: 35px;
       }
       li {
         padding: 0.1em 0;
@@ -624,8 +624,8 @@ html {
   }
 
   .modal-content {
-    h2 { 
-      font-size: 15px; 
+    h2 {
+      font-size: 15px;
     }
     .add-works {
       font-size: 14px;
@@ -652,7 +652,7 @@ html {
   }
 
   .navbar {
-    min-height: 30px !important;    
+    min-height: 30px !important;
   }
 
   .navbar-inverse-dark {
@@ -664,7 +664,7 @@ html {
       background-color: transparent;
       height: 30px !important;
       margin-bottom: 0;
-    }    
+    }
     .navbar-nav > li > a {
       color: #fff;
       height: 30px;
@@ -726,13 +726,13 @@ html {
       display: inline-block;
       vertical-align: top;
     }
-    .sidebar {      
+    .sidebar {
       .nav > li {
         display: block;
       }
     }
     .dropdown-menu li {
-      margin-left: -12px;      
+      margin-left: -12px;
     }
     #top-navbar-collapse {
       margin-left: 20px;
@@ -802,7 +802,7 @@ html {
   }
   .btn-wrapper.col-xs-12 {
     padding: 16px;
-  } 
+  }
 
   .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big,
   .btn-primary:hover, .btn-default:hover, .btn-sm:hover, .btn-xs:hover, .btn-big:hover {
@@ -1329,9 +1329,9 @@ html {
               max-width: 250px;
               margin: auto;
             }
-            @media 
-            (-webkit-min-device-pixel-ratio: 2), 
-            (min-resolution: 192dpi) { 
+            @media
+            (-webkit-min-device-pixel-ratio: 2),
+            (min-resolution: 192dpi) {
               /* Retina-specific */
               img {
                 max-width: 500px;
@@ -1403,6 +1403,50 @@ html {
 
     span.glyphicon-sort-by-attributes,span.glyphicon-sort-by-attributes-alt {
       opacity:  0.7;
+    }
+  }
+}
+
+/* specimen and cho specific */
+.showcase {
+  .object-showcase {
+
+    @media (min-width: 768px) {
+      .object-content-blocks-wrapper {
+        column-count: 2;
+        column-width: 200px;
+      }
+      
+      .content-block-wrapper {
+        width: 100%;
+        padding-left: 15px;
+        padding-right: 15px;
+        break-inside: avoid;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .object-content-blocks-wrapper {
+        display: flex;
+        flex-direction: column;
+
+        .content-block-wrapper {
+          padding: 0px;
+        }
+
+        .media-order-1 {
+          order: 1;
+        }
+        .media-order-2 {
+          order: 2;
+        }
+        .media-order-3 {
+          order: 3;
+        }
+        .media-order-4 {
+          order: 4;
+        }
+      }
     }
   }
 }

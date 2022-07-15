@@ -45,7 +45,7 @@ en:
           remove: Remove
         attach_new_work: Deposit new organization as parent of this work
         caption: Current organization
-        confirm: 
+        confirm:
           cancel: Cancel
           remove: Remove
           text: Removing this organization will not remove it from the repository, only its relationship to the biological specimen you are editing. Are you sure you want to remove this organization?
@@ -68,3 +68,17 @@ en:
     labels:
       biological_specimen:
         occurrence_id: Occurrence ID
+    hints:
+      biological_specimen:
+        address: Street address where the object was created.
+        bibliographic_citation: Citation information for the object.
+        city: City where the object was created.
+        context: An identifier for the the location within a geological context. May be a global unique identifier or an identifier specific to the data set.
+        country: Country
+        dating_method: Method used to determine the date the object was created.
+        dimensions: Dimensions or measurements of the object.
+        formation: The name of the lithostratigraphic formation from which the object was collected.
+        provenance_details: Description or notes about the provenance history of the object.
+        provenance_name: Name of the Excavation or collection event.
+        state_province: State or Province
+        tgn: "Controlled vocabulary for the location of the object from the <a href='https://www.getty.edu/research/tools/vocabularies/tgn/'>Thesaurus of Geographic Names</a>."

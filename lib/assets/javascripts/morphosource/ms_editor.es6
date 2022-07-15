@@ -11,7 +11,7 @@ export default class MorphosourceEditor extends Editor {
 
   controlledVocabularies() {
     this.element.find('.controlled_vocabulary.form-group').each((_idx, controlled_field) => {
-      let gettyFields = ".cultural_heritage_object_aat_type, .cultural_heritage_object_aat_material, .cultural_heritage_object_aat_attribute, .cultural_heritage_object_tgn, .cultural_heritage_object_aat_period"
+      let gettyFields = ".cultural_heritage_object_aat_type, .cultural_heritage_object_aat_material, .cultural_heritage_object_aat_attribute, .biological_specimen_tgn, .cultural_heritage_object_tgn, .cultural_heritage_object_aat_period"
       if (controlled_field.matches(gettyFields)) {
           new GettyControlledVocabulary(controlled_field, this.paramKey)
       }

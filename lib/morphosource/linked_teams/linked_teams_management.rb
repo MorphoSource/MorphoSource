@@ -145,7 +145,7 @@ module Morphosource
       end
 
       def get_groups_for_po(team_ids)
-        roles = Collection::PHYSICAL_OBJECT_EDIT_GROUP_ROLES
+        roles = Collection::EDIT_GROUP_ROLES
         @po_edit_groups = []
         team_ids.each do |id|
           roles.each do |role|
@@ -160,6 +160,7 @@ module Morphosource
       end
 
       def remove_edit_access_for_po(work)
+        work.read_groups -= @po_edit_groups
         work.edit_groups -= @po_edit_groups
         work.save
       end
@@ -170,6 +171,7 @@ module Morphosource
       end
 
       def add_edit_access_for_po(work)
+        work.read_groups += @po_edit_groups
         work.edit_groups += @po_edit_groups
         work.save
       end

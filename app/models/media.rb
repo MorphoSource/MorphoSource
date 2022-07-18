@@ -478,7 +478,7 @@ class Media < Morphosource::Works::Base
          (new_manager_id = org&.data_manager&.first).present? &&
          (new_manager = User.find_by_user_key(new_manager_id)).present? )
       deposit_user = User.find_by_user_key(user_with_ownership)
-      return if new_manager.id == deposit_user.id
+      return if ( new_manager.user_key == deposit_user.user_key || new_manager.user_key == on_behalf_of )
 
       # Cancel existing pending proxy deposit requests
       if (existing_transfers = ProxyDepositRequest.where(work_id: id, status: 'pending')).present?
@@ -492,6 +492,12 @@ class Media < Morphosource::Works::Base
 
       Rails.logger.fatal message
       raise message
+    end
+  end
+
+  def add_to_organization_team
+    if (org = organizations&.first).present? && (team = org.team).present?
+      AddCollectionMembersJob.perform_later(team.id, id)
     end
   end
 

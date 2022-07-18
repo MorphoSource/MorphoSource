@@ -632,38 +632,28 @@ namespace :morphosource do
 
   desc "Update access to physical objects for org-linked teams"
   task :update_org_linked_po_access, [:team_id] => :environment do |task, args|
-    if args[:team_id].present?
-      # update PO associated with the team org
-      team_id = args[:team_id]
-      team = Collection.find(team_id)
-      if team.present?
-        org_id = team.organization&.id
-        if org_id.present?
-          qry = "organization_id_ssim:#{org_id} AND (has_model_ssim:BiologicalSpecimen OR has_model_ssim:CulturalHeritageObject)"
-          result = ActiveFedora::SolrService.query(qry, rows: 999999)
-          puts "#{result.count} physical objects found for org #{org_id}..."
-          result.each do |hit|
-            o = ActiveFedora::Base.find(hit.id)
-            if o.present? and (o.class == BiologicalSpecimen or o.class == CulturalHeritageObject)
-              puts "Updating physical object #{o.id} ..."
+#    if args[:team_id].present?
+#      # update PO associated with the team org
+#      team_id = args[:team_id]
+#      team = Collection.find(team_id)
+#      if team.present?
+#          UpdateOrgLinkedTeamPoEachAccessJob.perform_now(o, team_id)
+#      end
+#
+#    else
+      # update all bso and cho with org linked team
+      qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection"
+      result = ActiveFedora::SolrService.query(qry, rows: 999999)
+      puts "#{result.count} linked org teams found "
 byebug
-
-              UpdateOrgLinkedPoAccessJob.perform_now(o, team_id)
-            else
-              puts "object #{o.id} not found"
-            end
-          end
-
+      result.each do |hit|
+        team = Collection.find(hit.id)
+        if team.present?
+          UpdateOrgLinkedTeamPoAccessJob.perform_now(team)          
         end
       end
 
-    else
-      # update all bso
- #     BiologicalSpecimen.find_each do |o|
- #       puts "Updating specimen #{o.id} from IDigbio"
- #       UpdateBsoFromIdigbioJob.perform_later(o, update)
- #     end
-    end
+#    end
   end
 
   desc "Update specimens from IDigbio"

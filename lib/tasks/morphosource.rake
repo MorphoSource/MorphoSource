@@ -630,6 +630,42 @@ namespace :morphosource do
     puts "Checking for extra solr docs. When complete, results will be written to extra_solr_docs.txt"
   end
 
+  desc "Update access to physical objects for org-linked teams"
+  task :update_org_linked_po_access, [:team_id] => :environment do |task, args|
+    if args[:team_id].present?
+      # update PO associated with the team org
+      team_id = args[:team_id]
+      team = Collection.find(team_id)
+      if team.present?
+        org_id = team.organization&.id
+        if org_id.present?
+          qry = "organization_id_ssim:#{org_id} AND (has_model_ssim:BiologicalSpecimen OR has_model_ssim:CulturalHeritageObject)"
+          result = ActiveFedora::SolrService.query(qry, rows: 999999)
+          puts "#{result.count} physical objects found for org #{org_id}..."
+          result.each do |hit|
+            o = ActiveFedora::Base.find(hit.id)
+            if o.present? and (o.class == BiologicalSpecimen or o.class == CulturalHeritageObject)
+              puts "Updating physical object #{o.id} ..."
+byebug
+
+              UpdateOrgLinkedPoAccessJob.perform_now(o, team_id)
+            else
+              puts "object #{o.id} not found"
+            end
+          end
+
+        end
+      end
+
+    else
+      # update all bso
+ #     BiologicalSpecimen.find_each do |o|
+ #       puts "Updating specimen #{o.id} from IDigbio"
+ #       UpdateBsoFromIdigbioJob.perform_later(o, update)
+ #     end
+    end
+  end
+
   desc "Update specimens from IDigbio"
   task :update_bso_from_idigbio, [:update, :project_id] => :environment do |task, args|
     if args[:update].present? && args[:update] == 'true'
@@ -660,23 +696,5 @@ namespace :morphosource do
       end
     end
   end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 end

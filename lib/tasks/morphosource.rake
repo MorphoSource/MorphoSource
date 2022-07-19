@@ -631,29 +631,17 @@ namespace :morphosource do
   end
 
   desc "Update access to physical objects for org-linked teams"
-  task :update_org_linked_po_access, [:team_id] => :environment do |task, args|
-#    if args[:team_id].present?
-#      # update PO associated with the team org
-#      team_id = args[:team_id]
-#      team = Collection.find(team_id)
-#      if team.present?
-#          UpdateOrgLinkedTeamPoEachAccessJob.perform_now(o, team_id)
-#      end
-#
-#    else
-      # update all bso and cho with org linked team
-      qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection"
-      result = ActiveFedora::SolrService.query(qry, rows: 999999)
-      puts "#{result.count} linked org teams found "
-byebug
-      result.each do |hit|
-        team = Collection.find(hit.id)
-        if team.present?
-          UpdateOrgLinkedTeamPoAccessJob.perform_now(team)          
-        end
+  task :update_org_linked_po_access => :environment do 
+    # update all bso and cho with org linked team
+    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection"
+    result = ActiveFedora::SolrService.query(qry, rows: 999999)
+    puts "#{result.count} org-linked teams found "
+    result.each do |hit|
+      team = Collection.find(hit.id)
+      if team.present?
+        UpdateOrgLinkedTeamPoJob.perform_now(team)          
       end
-
-#    end
+    end
   end
 
   desc "Update specimens from IDigbio"

@@ -2,6 +2,13 @@ module Morphosource
   module Dashboard
     class CollectionsController < Hyrax::Dashboard::CollectionsController
 
+      self.presenter_class = Hyrax::TeamPresenter
+
+      def edit
+        presenter
+        super
+      end
+
       def after_create
         form
         set_default_permissions

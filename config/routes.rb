@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id', controller: :collection_members, action: :update_members, as: 'update_members'
+      get 'dashboard/collections/:id/edit', controller: :collections, action: :edit, as: 'edit_collection'
     end
   end
 

@@ -100,6 +100,7 @@ module Hyrax
       end
 
       def edit
+        byebug
         # this is called when user save the collection form on the show action
         # if needed, redirect show to edit if user has permission to save
         presenter
@@ -281,7 +282,7 @@ module Hyrax
           return collection_media_path(@collection) if params[:showcase]
 
           return edit_dashboard_collection_path(@collection) + (params[:referer_anchor] || '') if params[:stay_on_edit]
-          
+
           dashboard_collection_path(@collection)
         end
 

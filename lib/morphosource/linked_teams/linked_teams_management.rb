@@ -31,8 +31,20 @@ module Morphosource
         works.each { |w| add_read_access(w) }
       end
 
-      def add_organization_team_access_for_po
-        team_ids = linked_team_ids(new_orgs)
+      def add_organization_team_access_for_po(env=nil)
+        if env.present?
+          # env passed from new submission (called from creating PO)
+          @curation_concern = env.curation_concern
+          org = Organization.find(env.attributes[:organization_id].first) 
+          if org.present?
+            team_ids = linked_team_ids([org])
+          else
+            team_ids = [] 
+          end
+        else
+          # called from editing PO
+          team_ids = linked_team_ids(new_orgs)
+        end
         return if team_ids.blank?
         get_groups_for_po(team_ids)
         add_edit_access_for_po(@curation_concern)

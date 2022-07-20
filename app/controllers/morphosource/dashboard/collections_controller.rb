@@ -2,10 +2,13 @@ module Morphosource
   module Dashboard
     class CollectionsController < Hyrax::Dashboard::CollectionsController
 
+      with_themed_layout 'morphosource_dashboard'
+
       self.presenter_class = Hyrax::TeamPresenter
 
       def edit
         presenter
+        @media_count = collection_media.count
         super
       end
 
@@ -36,6 +39,12 @@ module Morphosource
         @collection.copy_parent_membership(params[:parent_id]) unless params[:parent_id].nil?
         Morphosource::Collections::PermissionsCreateService.create_default(collection: @collection)
       end
+
+      private
+
+        def collection_media
+          Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}")
+        end
     end
   end
 end

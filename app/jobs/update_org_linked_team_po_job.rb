@@ -2,7 +2,7 @@ class UpdateOrgLinkedTeamPoJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_fast_queue_name
 
-  def perform(team)
+  def perform(team, update)
     org_id = team.organization&.id
     puts "Team #{team.id} Org #{org_id}..."
     if org_id.present?
@@ -15,7 +15,7 @@ class UpdateOrgLinkedTeamPoJob < Hyrax::ApplicationJob
           o = ActiveFedora::Base.find(id)
           if o.present? and (o.class == BiologicalSpecimen or o.class == CulturalHeritageObject)
             puts "Updating physical object #{id} ..."
-            UpdateOrgLinkedTeamPoAccessJob.perform_now(o, team.id)
+            UpdateOrgLinkedTeamPoAccessJob.perform_later(o, team.id) if update
             count += 1
           else
             puts "object #{id} not found"

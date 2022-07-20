@@ -631,7 +631,12 @@ namespace :morphosource do
   end
 
   desc "Update access to physical objects for org-linked teams"
-  task :update_org_linked_po_access => :environment do 
+  task :update_org_linked_po_access, [:update] => :environment do |task, args|
+    if args[:update].present? && args[:update] == 'true'
+      update = true
+    else
+      update = false
+    end
     # update all bso and cho with org linked team
     qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection"
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
@@ -639,7 +644,7 @@ namespace :morphosource do
     result.each do |hit|
       team = Collection.find(hit.id)
       if team.present?
-        UpdateOrgLinkedTeamPoJob.perform_now(team)          
+        UpdateOrgLinkedTeamPoJob.perform_now(team, update)
       end
     end
   end

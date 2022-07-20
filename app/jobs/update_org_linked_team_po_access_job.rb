@@ -21,10 +21,19 @@ class UpdateOrgLinkedTeamPoAccessJob < Hyrax::ApplicationJob
   end
 
   def add_edit_access_for_po(work)
-    work.read_groups += @po_edit_groups
-    work.edit_groups += @po_edit_groups
-    puts "adding read_groups and edit_groups: #{@po_edit_groups} to physical object #{work.id}"
-    work.save
+    work_changed = false
+    unless (@po_edit_groups - work.read_groups).empty?
+      work.read_groups += @po_edit_groups
+      work_changed = true
+    end
+    unless (@po_edit_groups - work.edit_groups).empty?
+      work.edit_groups += @po_edit_groups
+      work_changed = true
+    end
+    if work_changed 
+      puts "adding groups: #{@po_edit_groups} to physical object #{work.id}"
+      work.save
+    end
   end
 
 end

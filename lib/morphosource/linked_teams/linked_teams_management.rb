@@ -11,11 +11,15 @@ module Morphosource
           return if organization_id_param.nil?
         else
           return if parents_attributes.nil?
-        end
-        
+        end   
         return if organizations_unchanged?
-
         update_linked_team_access
+      end
+
+      def update_media_team_access_for_po
+        return if organization_id_param.nil?
+        return if organizations_unchanged?
+        update_linked_team_access_for_po
       end
 
       # this is also called from media actor
@@ -97,9 +101,14 @@ module Morphosource
         find_all_media
         unless old_orgs.blank?
           remove_organization_team_access
-          remove_organization_team_access_for_po
         end
         add_organization_team_access(@media)
+      end
+
+      def update_linked_team_access_for_po
+        unless old_orgs.blank?
+          remove_organization_team_access_for_po
+        end
         if @curation_concern.physical_object?        
           add_organization_team_access_for_po
         end

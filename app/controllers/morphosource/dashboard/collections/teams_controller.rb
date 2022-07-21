@@ -3,6 +3,9 @@ module Morphosource
     module Collections
       class TeamsController < Morphosource::Dashboard::CollectionsController
 
+        before_action :redirect_to_collection_type, only: []
+
+
         def edit
           # byebug
           @subcollections = []

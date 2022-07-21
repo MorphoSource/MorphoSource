@@ -12,12 +12,10 @@ module Morphosource
 
       copy_blacklight_config_from(CatalogController)
 
-
       with_themed_layout 'morphosource_dashboard'
 
-      # skip_load_and_authorize_resource instance_name: :collection
-
       before_action :load_collection
+      before_action :redirect_to_collection_type, only: [:edit]
 
       self.presenter_class = Hyrax::TeamPresenter
       # The search builder to find the collection
@@ -30,7 +28,6 @@ module Morphosource
         presenter
         @media_count = collection_media.count
         form
-        # super
       end
 
       def presenter
@@ -42,7 +39,7 @@ module Morphosource
           raise CanCan::AccessDenied unless curation_concern
           presenter_class.new(curation_concern, current_ability)
         end
-        end
+      end
 
 
       def after_create
@@ -94,6 +91,14 @@ module Morphosource
 
         def single_item_search_builder
          single_item_search_builder_class.new(self).with(params.except(:q, :page))
+       end
+
+       def redirect_to_collection_type
+         if @collection.team?
+           redirect_to team_edit_path(@collection)
+         elsif @collection.project?
+           redirect_to project_edit_path(@collection)
+         end
        end
     end
   end

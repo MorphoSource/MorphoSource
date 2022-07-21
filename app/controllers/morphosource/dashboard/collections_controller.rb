@@ -1,45 +1,46 @@
 module Morphosource
   module Dashboard
     class CollectionsController < ApplicationController
+      include Morphosource::Dashboard::CollectionsControllerBehavior
       # include Blacklight::AccessControls::Catalog
-      include Blacklight::Base
+      # include Blacklight::Base
       # include Hyrax::BreadcrumbsForCollections
       # include Morphosource::CollectionHelper
 
-      class_attribute :presenter_class,
-                      :form_class,
-                      :single_item_search_builder_class
-
-      copy_blacklight_config_from(CatalogController)
+      # class_attribute :presenter_class,
+      #                 :form_class,
+      #                 :single_item_search_builder_class
+      #
+      # copy_blacklight_config_from(CatalogController)
 
       with_themed_layout 'morphosource_dashboard'
 
       before_action :load_collection
       before_action :redirect_to_collection_type, only: [:edit]
 
-      self.presenter_class = Hyrax::TeamPresenter
+      # self.presenter_class = Hyrax::TeamPresenter
       # The search builder to find the collection
-      self.single_item_search_builder_class = Hyrax::SingleCollectionSearchBuilder
+      # self.single_item_search_builder_class = Hyrax::SingleCollectionSearchBuilder
 
       self.form_class = Hyrax::Forms::CollectionForm
 
 
       def edit
         presenter
-        @media_count = collection_media.count
+        @media_count, @object_count = collection_media
         form
       end
 
-      def presenter
-        @presenter ||= begin
-          # Query Solr for the collection.
-          # run the solr query to find the collection members
-          response = repository.search(single_item_search_builder.query)
-          curation_concern = response.documents.first
-          raise CanCan::AccessDenied unless curation_concern
-          presenter_class.new(curation_concern, current_ability)
-        end
-      end
+      # def presenter
+      #   @presenter ||= begin
+      #     # Query Solr for the collection.
+      #     # run the solr query to find the collection members
+      #     response = repository.search(single_item_search_builder.query)
+      #     curation_concern = response.documents.first
+      #     raise CanCan::AccessDenied unless curation_concern
+      #     presenter_class.new(curation_concern, current_ability)
+      #   end
+      # end
 
 
       def after_create
@@ -72,18 +73,18 @@ module Morphosource
 
       private
 
-       def load_collection
-          @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
-          @collection ||= @curation_concern
-          authorize! :edit, @collection
-          rescue CanCan::AccessDenied
-            redirect_to root_url, alert: 'You are not authorized to access this collection.'
-        end
+       # def load_collection
+       #    @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
+       #    @collection ||= @curation_concern
+       #    authorize! :edit, @collection
+       #    rescue CanCan::AccessDenied
+       #      redirect_to root_url, alert: 'You are not authorized to access this collection.'
+       #  end
 
 
-        def collection_media
-          Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}")
-        end
+        # def collection_media
+        #   Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}")
+        # end
 
         def form
           @form ||= form_class.new(@collection, current_ability, repository)
@@ -93,13 +94,7 @@ module Morphosource
          single_item_search_builder_class.new(self).with(params.except(:q, :page))
        end
 
-       def redirect_to_collection_type
-         if @collection.team?
-           redirect_to team_edit_path(@collection)
-         elsif @collection.project?
-           redirect_to project_edit_path(@collection)
-         end
-       end
+       #
     end
   end
 end

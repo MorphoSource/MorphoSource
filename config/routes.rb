@@ -68,7 +68,6 @@ Rails.application.routes.draw do
         get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
         get '/specimens/facet/:id', to: 'biological_specimens#facet', as: 'dashboard_specimens_facet'
         get '/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'dashboard_chos_facet'
-
       end
     end
   end
@@ -126,6 +125,13 @@ Rails.application.routes.draw do
       get 'teams/:id/media_export', to: 'teams#media_export_with_intersections_facet', as: 'team_media_export'
       get 'teams/:id/media_download_counts', to: 'teams#media_download_counts_with_intersections_facet', as: 'team_media_download_counts'
       get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
+    end
+
+    scope module: :dashboard do
+      scope module: :collections do
+        get 'dashboard/projects/:id', to: 'projects#edit', as: 'project_edit'
+        get 'dashboard/teams/:id', to: 'teams#edit', as: 'team_edit'
+      end
     end
   end
 
@@ -452,6 +458,12 @@ Rails.application.routes.draw do
       post 'dashboard/collections/:id/unlink_organization', action: :unlink_organization, controller: :linked_teams, as: 'dashboard_collection_unlink_organization'
 
       patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
+    end
+  end
+
+  scope module: :morphosource do
+    scope module: :dashboard do
+
     end
   end
 

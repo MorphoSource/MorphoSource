@@ -1,9 +1,8 @@
 <% provide :page_title, construct_page_title( t('hyrax.dashboard.collections.edit.header', type_title: @collection.collection_type.title, title: @form.title.first) ) %>
 
-
   <div class="row">
     <div class="col-md-12">
-      <%= render 'flash_msg' %>
-      <%= render 'form' %>
+      <%= render 'hyrax/base/flash_msg' %>
+      <%= render 'morphosource/dashboard/collections/form' %>
     </div>
   </div>

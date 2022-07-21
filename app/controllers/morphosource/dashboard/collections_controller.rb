@@ -1,16 +1,49 @@
 module Morphosource
   module Dashboard
-    class CollectionsController < Hyrax::Dashboard::CollectionsController
+    class CollectionsController < ApplicationController
+      # include Blacklight::AccessControls::Catalog
+      include Blacklight::Base
+      # include Hyrax::BreadcrumbsForCollections
+      # include Morphosource::CollectionHelper
+
+      class_attribute :presenter_class,
+                      :form_class,
+                      :single_item_search_builder_class
+
+      copy_blacklight_config_from(CatalogController)
+
 
       with_themed_layout 'morphosource_dashboard'
 
+      # skip_load_and_authorize_resource instance_name: :collection
+
+      before_action :load_collection
+
       self.presenter_class = Hyrax::TeamPresenter
+      # The search builder to find the collection
+      self.single_item_search_builder_class = Hyrax::SingleCollectionSearchBuilder
+
+      self.form_class = Hyrax::Forms::CollectionForm
+
 
       def edit
         presenter
         @media_count = collection_media.count
-        super
+        form
+        # super
       end
+
+      def presenter
+        @presenter ||= begin
+          # Query Solr for the collection.
+          # run the solr query to find the collection members
+          response = repository.search(single_item_search_builder.query)
+          curation_concern = response.documents.first
+          raise CanCan::AccessDenied unless curation_concern
+          presenter_class.new(curation_concern, current_ability)
+        end
+        end
+
 
       def after_create
         form
@@ -42,9 +75,26 @@ module Morphosource
 
       private
 
+       def load_collection
+          @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
+          @collection ||= @curation_concern
+          authorize! :edit, @collection
+          rescue CanCan::AccessDenied
+            redirect_to root_url, alert: 'You are not authorized to access this collection.'
+        end
+
+
         def collection_media
           Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}")
         end
+
+        def form
+          @form ||= form_class.new(@collection, current_ability, repository)
+        end
+
+        def single_item_search_builder
+         single_item_search_builder_class.new(self).with(params.except(:q, :page))
+       end
     end
   end
 end

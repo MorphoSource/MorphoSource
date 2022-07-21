@@ -7,9 +7,12 @@ module Hyrax
     include Hyrax::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
+    include Morphosource::LinkedTeams::LinkedTeamsManagement
     self.curation_concern_type = ::CulturalHeritageObject
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::CulturalHeritageObjectPresenter
+
+    before_action :record_original_organizations, only: :update
 
     skip_authorize_resource only: :showcase
 
@@ -50,6 +53,32 @@ module Hyrax
       build_form
       render '/hyrax/base/new'
     end
+
+    def update
+      if actor.update(actor_environment)
+#        update_media_team_access
+        update_po_team_access
+        after_update_response
+      else
+        respond_to do |wants|
+          wants.html do
+            build_form
+            render 'edit', status: :unprocessable_entity
+          end
+          wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: curation_concern.errors }) }
+        end
+      end
+    end
+
+    private
+
+    def old_orgs
+      @original_organizations
+    end
+
+    def new_orgs
+      Organization.find(Array(@curation_concern.organization_id))
+    end    
 
   end
 end

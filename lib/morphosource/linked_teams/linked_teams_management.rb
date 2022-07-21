@@ -16,7 +16,7 @@ module Morphosource
         update_linked_team_access
       end
 
-      def update_media_team_access_for_po
+      def update_po_team_access
         return if organization_id_param.nil?
         return if organizations_unchanged?
         update_linked_team_access_for_po

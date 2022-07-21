@@ -55,11 +55,6 @@ module Hyrax
         add_organization_team_access_for_po(env)
       end
 
-      def find_parent(env)
-        parent_id = env.attributes[:work_parents_attributes].values.first['id']
-        @parent = ActiveFedora::Base.find(parent_id)
-      end
-
       def collection_catalog_generated_title(institution_code='', collection_code='', catalog_number='')
         [institution_code, collection_code, catalog_number].keep_if { |x| x.presence } .join(':')
       end

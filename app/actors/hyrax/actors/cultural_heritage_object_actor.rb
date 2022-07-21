@@ -1,9 +1,11 @@
 module Hyrax
   module Actors
     class CulturalHeritageObjectActor < Hyrax::Actors::BaseActor
+      include Morphosource::LinkedTeams::LinkedTeamsManagement
 
       def create(env)
         env.attributes['title'] = [ generated_title(env) ]
+        add_team_access_for_po(env)
         super
       end
 
@@ -51,6 +53,11 @@ module Hyrax
       end
 
       private
+
+      def add_team_access_for_po(env)
+        return unless env.attributes[:organization_id] && env.attributes[:organization_id].present?
+        add_organization_team_access_for_po(env)
+      end
 
       def preferred_generated_title(institution_code, collection_code, catalog_number, short_title)
         [

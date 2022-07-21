@@ -9,6 +9,8 @@ module Morphosource
       def update_media_team_access
         if @curation_concern.physical_object?        
           return if organization_id_param.nil?
+        elsif @curation_concern.imaging_event?
+          # called from media edit. 
         else
           return if parents_attributes.nil?
         end   

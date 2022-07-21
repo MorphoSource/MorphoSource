@@ -56,7 +56,7 @@ module Hyrax
 
     def update
       if actor.update(actor_environment)
-#        update_media_team_access
+        update_media_team_access
         update_po_team_access
         after_update_response
       else

@@ -16,6 +16,7 @@ module Hyrax
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
+        add_team_access(env)
         super
       end
 

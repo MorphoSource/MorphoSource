@@ -17,9 +17,11 @@ module Hyrax
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::ImagingEventPresenter
 
-    before_action :record_original_objects, only: :update
 
     def update
+      if po_changed = (curation_concern.physical_object_id != params[:imaging_event][:physical_object_id])
+        record_original_objects
+      end
       # Handle possible attachment upload
       if params[:ie_description] && Morphosource.attachment_formats.include?(File.extname(params[:ie_description].original_filename))
         Morphosource::AttachmentService.delete(curation_concern.id, 'ie_description')
@@ -40,7 +42,10 @@ module Hyrax
       end
 
       if actor.update(actor_environment)
-        update_media_team_access
+        if po_changed
+          # if PO changed (from media edit page), update media access if PO is associated with org-linked team 
+          update_media_team_access
+        end
         after_update_response
       else
         respond_to do |wants|

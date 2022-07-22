@@ -76,11 +76,11 @@ module Hyrax
 
     private
 
-    def old_specimens
-      select_specimens(@original_objects)
+    def old_physical_objects
+      select_physical_objects(@original_objects)
     end
 
-    def new_specimens
+    def new_physical_objects
       ActiveFedora::Base.find(Array(@curation_concern.physical_object_id))
     end
   end

@@ -60,8 +60,8 @@ module Morphosource
 
       def get_processing_event_values(media)
         @curation_concern = media
-        new_specimens = media.objects
-        @new_orgs = specimen_organizations(new_specimens)
+        new_physical_objects = media.objects
+        @new_orgs = specimen_organizations(new_physical_objects)
         find_all_media
       end
 
@@ -96,11 +96,11 @@ module Morphosource
       end
 
       def old_orgs
-        @old_orgs ||= specimen_organizations(old_specimens)
+        @old_orgs ||= specimen_organizations(old_physical_objects)
       end
 
       def new_orgs
-        @new_orgs ||= specimen_organizations(new_specimens)
+        @new_orgs ||= specimen_organizations(new_physical_objects)
       end
 
       def specimen_organizations(specimens)

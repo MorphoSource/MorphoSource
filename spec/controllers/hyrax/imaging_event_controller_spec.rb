@@ -64,7 +64,7 @@ RSpec.describe Hyrax::ImagingEventsController do
 
         before do
           # this will get updated by the actor
-          allow(subject).to receive(:new_specimens).and_return([old_specimen])
+          allow(subject).to receive(:new_physical_objects).and_return([old_specimen])
         end
 
         it 'does not update the media permissions' do
@@ -86,7 +86,7 @@ RSpec.describe Hyrax::ImagingEventsController do
 
         before do
           # this will be updated by the actor
-          allow(subject).to receive(:new_specimens).and_return([new_specimen])
+          allow(subject).to receive(:new_physical_objects).and_return([new_specimen])
         end
 
         context 'and the new organization does not have a linked team' do

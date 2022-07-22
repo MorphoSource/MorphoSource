@@ -16,6 +16,10 @@ module Morphosource
       works.select(&:specimen?)
     end
 
+    def select_physical_objects(works)
+      works.select(&:physical_object?)
+    end
+
     def select_organizations(works)
       works.select(&:organization?)
     end

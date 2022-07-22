@@ -88,14 +88,14 @@ module Hyrax
       end
     end
 
-    # old_specimens, new_specimens, old_parent_ancestors, new_parent_ancestors methods used by update_media_team_access
-    def old_specimens
+    # old_physical_objects, new_physical_objects, old_parent_ancestors, new_parent_ancestors methods used by update_media_team_access
+    def old_physical_objects
       orig_parents = @original_parents || []
-      select_specimens((orig_parents + old_parent_ancestors).uniq.select(&:imaging_event?).map(&:objects).flatten)
+      select_physical_objects((orig_parents + old_parent_ancestors).uniq.select(&:imaging_event?).map(&:objects).flatten)
     end
 
-    def new_specimens
-      select_specimens((new_parents + new_parent_ancestors).uniq.select(&:imaging_event?).map(&:objects).flatten)
+    def new_physical_objects
+      select_physical_objects((new_parents + new_parent_ancestors).uniq.select(&:imaging_event?).map(&:objects).flatten)
     end
 
     def old_parent_ancestors

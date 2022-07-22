@@ -43,18 +43,17 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
       expect(subject.instance_variable_get(:@biological_specimen_ingests).count).to eq(2)
       expect(subject.instance_variable_get(:@biological_specimen_ingests).first.to_h[:attrs]).to include(
         "idigbio_uuid"=>"92cb764f-9c2b-485e-adec-4d19e81c520f",
-         "description"=>"Imported from iDigBio. UUID: 92cb764f-9c2b-485e-adec-4d19e81c520f Occurrence ID: urn:uuid:21f5b097-ffb7-4821-9a79-deb3656d8b28",
-         "idigbio_recordset_id"=>"0220907a-0463-4ae0-8a0b-77f5e80fff40",
-         "vouchered"=>"Yes",
-         "institution_code"=>"YPM",
-         "collection_code"=>"VP",
-         "catalog_number"=>"YPM VP 033191",
-         "occurrence_id"=>"urn:uuid:21f5b097-ffb7-4821-9a79-deb3656d8b28",
-         "related_url"=>["http://collections.peabody.yale.edu/search/Record/YPM-VP-033191"],
-         "creator"=>["Louis S. Leakey, Mary D. Leakey"],
-         "periodic_time"=>["Lower Pleistocene"],
-         "original_location"=>"Tanzania",
-         :organization_id=>["000200000"]
+        "idigbio_recordset_id"=>"0220907a-0463-4ae0-8a0b-77f5e80fff40",
+        "vouchered"=>"Yes",
+        "institution_code"=>"YPM",
+        "collection_code"=>"VP",
+        "catalog_number"=>"YPM VP 033191",
+        "occurrence_id"=>"urn:uuid:21f5b097-ffb7-4821-9a79-deb3656d8b28",
+        "related_url"=>["http://collections.peabody.yale.edu/search/Record/YPM-VP-033191"],
+        "creator"=>["Louis S. Leakey, Mary D. Leakey"],
+        "periodic_time"=>["Lower Pleistocene"],
+        "original_location"=>"Tanzania",
+        :organization_id=>["000200000"]
       )
       expect(subject.instance_variable_get(:@rows_to_bso)).to eq({0=>0, 1=>1, 2=>1})
     end

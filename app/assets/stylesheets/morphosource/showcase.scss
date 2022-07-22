@@ -63,6 +63,9 @@ html {
       width:200px;
     }
   }
+  #btn-submit {
+    margin: auto 6px;
+  }
 }
 /*
 .showcase.teams,
@@ -1416,12 +1419,16 @@ html {
         column-count: 2;
         column-width: 200px;
       }
-      
+
       .content-block-wrapper {
         width: 100%;
         padding-left: 15px;
         padding-right: 15px;
         break-inside: avoid;
+      }
+
+      .media-order-1 {
+        overflow: auto;
       }
     }
 
@@ -1429,6 +1436,7 @@ html {
       .object-content-blocks-wrapper {
         display: flex;
         flex-direction: column;
+        max-width: 100%;
 
         .content-block-wrapper {
           padding: 0px;

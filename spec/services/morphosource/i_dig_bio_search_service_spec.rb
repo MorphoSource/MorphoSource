@@ -44,7 +44,6 @@ RSpec.describe Morphosource::IDigBioSearchService, :vcr do
         results = described_class.biological_specimen_params_from_idigbio(uuid)
         expect(results).to be_a(Hash)
         expect(results['idigbio_uuid']).to eq(uuid)
-        expect(results).to have_key('description')
         expect(results).to have_key('idigbio_recordset_id')
         expect(results['vouchered']).to eq('Yes')
       end

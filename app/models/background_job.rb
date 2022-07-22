@@ -35,4 +35,8 @@ class BackgroundJob < ApplicationRecord
   	self.status == "queued" || self.status == "working"
   end
 
+  def successful?
+    self.status == "completed"
+  end
+
 end

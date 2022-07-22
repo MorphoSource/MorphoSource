@@ -172,7 +172,7 @@ function buildProcessingActivity() {
     // no need to validate if there is no processingActivity
     return true;
   } else if (!stepsValid(steps.sort())) {
-    alert('Please select the steps in sequence.');
+    alert('Please select the processing steps in sequence.');
     return false;
   } else {
     return true;
@@ -216,7 +216,7 @@ var processingActivityStepChanged = function() {
   }
   // validate the step values
   if (!stepsValid(steps.sort())) {
-    alert('Please select the steps in sequence.');
+    alert('Please select the processing steps in sequence.');
     $('input[type="submit"], button[type="submit"]').attr("disabled", true);
   } else {
     $('input[type="submit"], button[type="submit"]').attr("disabled", false);

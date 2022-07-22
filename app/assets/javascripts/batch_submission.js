@@ -1,42 +1,13 @@
+//= require morphosource/submission/submission_data
 //= require morphosource/submission/submission_form
+
+/*jshint esversion: 6 */
 
 $( document ).ready(function() {
 
   if ($('[class*="batch-submission-form"]').length) { // check if the page is submission form
     showAlert = false;
     selectedDeviceModality = "";
-
-    class BatchSubmissionData {
-      constructor(sessionState=null) {
-        if (sessionState) {
-          this.constructSubmissionParams(sessionState);
-          this.constructCreateParams(sessionState);
-        }
-      }
-
-      setOrganizationDefaults() {
-        this.organizationId = null;
-        this.organizationCollectionCode = null;
-        this.organizationInstitutionCode = null;
-        this.noOrganization =  null;
-        this.willCreateOrganization = null;
-        this.organizationCreateParams = null;
-      }
-
-      setDeviceDefaults() {
-        this.deviceId = null;
-        this.willCreateDevice = null;
-        this.deviceCreateParams = null;
-      }
-
-      setDeviceOrganizationDefaults() {
-        this.deviceOrganizationId = null;
-        this.deviceNoOrganization = null;
-        this.willCreateDeviceOrganization = null;
-        this.deviceOrganizationCreateParams = null;
-      }
-
-    } // BatchSubmissionData
 
     class BatchSubmissionView {
       constructor(id, form) {
@@ -392,7 +363,11 @@ $( document ).ready(function() {
       }
     }
 
-    var data = new BatchSubmissionData();
+    if (typeof depositor !== 'undefined') {
+      var data = new SubmissionData(depositor);
+    } else {
+      var data = new SubmissionData();
+    }
     var batchSubmissionForm = new SubmissionForm(data);
 
     batchSubmissionForm.views = [
@@ -411,6 +386,18 @@ $( document ).ready(function() {
     $(".btn-submit-wrapper").on('mouseover', function(){ 
       showAlert = true;
       setSubmitStatus();
+    });
+
+    // Proxy user select
+    $("select[name='batch_submission[on_behalf_of]']").change(function() {
+      batchSubmissionForm.data.onBehalfOf = $(this).val();
+      // set the reviewer
+      var reviewer = {
+        "id": $(this).val(),
+        "user_key": $(this).val(),
+        "text": $("select[name='batch_submission[on_behalf_of]'] option:selected").text()
+      }
+      $('#media_download_reviewer').userSearchMultiple(reviewer);
     });
 
     var setSubmitStatus = function(){

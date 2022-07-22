@@ -473,6 +473,8 @@ class Media < Morphosource::Works::Base
   end
 
   # Create request to transfer ownership of media and/or move media to organization team
+  # generally, don't use this for where media data manager == org data manager,
+  # but the method can handle this circumstance for use in developer console, etc
   def transfer_media_to_organization
     org = organizations&.first
     if ( 

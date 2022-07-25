@@ -686,7 +686,13 @@ class SubmissionsController < ApplicationController
   end
 
   def get_organization_media_transfer
-    if params.dig(:media, :transfer_management).present?
+    if (
+      params.dig(:media, :transfer_management).present? && 
+      @submission.organization_id.present? && 
+      Organization.exists?(@submission.organization_id) && 
+      (org = Organization.find(@submission.organization_id)).present? &&
+      org.data_manager.present?
+    )
       if transfer_media_immediately?
         :immediate
       elsif params.dig(:media, :transfer_management) == 'publication'

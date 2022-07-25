@@ -81,7 +81,7 @@ module Hyrax
     end
 
     def idigbio_update_notice
-      if curation_concern.idigbio_match_found?
+      if occurrence_id_changed? && curation_concern.idigbio_match_found?
         flash[:notice] = "The specimen has been updated to match the iDigBio record."
       end
     end
@@ -115,5 +115,9 @@ module Hyrax
     def new_orgs
       Organization.find(Array(@curation_concern.organization_id))
     end    
+
+    def occurrence_id_changed?
+      params[:existing_occurrence_id] != curation_concern.occurrence_id&.first
+    end
   end
 end

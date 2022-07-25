@@ -1,0 +1,18 @@
+<!-- Modal used to inform organization data manager user about addition of media to org team -->
+<div class="modal fade" id="organizationDataManagerModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          Organization Media Will Be Placed In Team
+        </h4>
+      </div>
+      <div class="modal-body">
+        <p><%= t("morphosource.submission.organization_data_manager_submission").html_safe %></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="modal-okay" class="btn btn-primary" data-dismiss="modal">I Understand</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

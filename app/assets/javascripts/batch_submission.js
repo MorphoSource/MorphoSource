@@ -1,4 +1,7 @@
+//= require morphosource/submission/submission_data
 //= require morphosource/submission/submission_form
+
+/*jshint esversion: 6 */
 
 $( document ).ready(function() {
 
@@ -63,38 +66,6 @@ $( document ).ready(function() {
       } 
 
     } //RestoreableSubmissionForm
-
-    class BatchSubmissionData {
-      constructor(sessionState=null) {
-        if (sessionState) {
-          this.constructSubmissionParams(sessionState);
-          this.constructCreateParams(sessionState);
-        }
-      }
-
-      setOrganizationDefaults() {
-        this.organizationId = null;
-        this.organizationCollectionCode = null;
-        this.organizationInstitutionCode = null;
-        this.noOrganization =  null;
-        this.willCreateOrganization = null;
-        this.organizationCreateParams = null;
-      }
-
-      setDeviceDefaults() {
-        this.deviceId = null;
-        this.willCreateDevice = null;
-        this.deviceCreateParams = null;
-      }
-
-      setDeviceOrganizationDefaults() {
-        this.deviceOrganizationId = null;
-        this.deviceNoOrganization = null;
-        this.willCreateDeviceOrganization = null;
-        this.deviceOrganizationCreateParams = null;
-      }
-
-    } // BatchSubmissionData
 
     class BatchSubmissionView {
       constructor(form) {
@@ -677,12 +648,16 @@ $( document ).ready(function() {
       next() {
       }
     }
-
+    
     prevBsData = {};
     showAlert = false;
     selectedDeviceModality = "";
 
-    data = new BatchSubmissionData();
+    if (typeof depositor !== 'undefined') {
+      var data = new SubmissionData(depositor);
+    } else {
+      var data = new SubmissionData();
+    }
     batchSubmissionForm = new RestoreableSubmissionForm(data);
   
     batchSubmissionForm.views = [
@@ -690,6 +665,17 @@ $( document ).ready(function() {
       new DeviceView(batchSubmissionForm),
     ];
     batchSubmissionForm.initializeForm();
-
+    
+    // Proxy user select
+    $("select[name='batch_submission[on_behalf_of]']").change(function() {
+      batchSubmissionForm.data.onBehalfOf = $(this).val();
+      // set the reviewer
+      var reviewer = {
+        "id": $(this).val(),
+        "user_key": $(this).val(),
+        "text": $("select[name='batch_submission[on_behalf_of]'] option:selected").text()
+      }
+      $('#media_download_reviewer').userSearchMultiple(reviewer);
+    });
   } // check if the page is batch submission form
 });

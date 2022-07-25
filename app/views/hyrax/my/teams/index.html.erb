@@ -8,8 +8,13 @@
   </div>
   <div class="col-xs-3 show-actions text-right">
     <% if can?(:create_any, Collection) && @collection_type_list_presenter.any? %>
+    <% byebug %>
+    <% if @collection_list_type == 'team' %>
+      <%= link_to('New Team', main_app.new_team_path, class: 'btn btn-primary') %>
+    <% else %>
       <% # link directly to create collection form with type %>
       <%= link_to(t('helpers.action.' + @collection_list_type + '.new'), append_collection_type_url(new_dashboard_collection_path, @collection_list_type_id), class: 'btn btn-primary') %>
+    <% end %>
     <% end %>
   </div>
 
@@ -29,7 +34,7 @@
     </div>
   </div>
 
-  <!-- Render Modals 
+  <!-- Render Modals
     todo: some of the modals might not be needed and can be removed from here
   -->
   <%#= render 'modal_add_to_collection', source: "my" %>

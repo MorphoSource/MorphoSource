@@ -3,7 +3,7 @@ module Morphosource
     module Collections
       class TeamsController < Morphosource::Dashboard::CollectionsController
 
-        skip_load_and_authorize_resource only: [:edit, :update], instance_name: :collection
+        skip_load_and_authorize_resource only: [:edit, :update, :new], instance_name: :collection
 
         before_action :redirect_to_collection_type, only: []
         before_action :load_collection
@@ -25,6 +25,10 @@ module Morphosource
               media_count = Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{doc['id']}").count
               doc.merge!({"media_count" => media_count})
             end
+          end
+
+          def default_collection_type
+            Hyrax::CollectionType.find_by(title: "Team")
           end
 
       end

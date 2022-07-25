@@ -4,7 +4,7 @@ module Morphosource
       include Morphosource::Dashboard::CollectionsControllerBehavior
       include Morphosource::CollectionHelper
 
-      skip_load_and_authorize_resource only: [:edit, :update], instance_name: :collection
+      skip_load_and_authorize_resource only: [:edit, :update, :new], instance_name: :collection
 
       with_themed_layout 'morphosource_dashboard'
 
@@ -19,6 +19,10 @@ module Morphosource
       def edit
         presenter
         @media_count, @object_count = collection_media
+        super
+      end
+
+      def new
         super
       end
 
@@ -69,6 +73,7 @@ module Morphosource
 
 
        def load_collection
+          @curation_concern = Collection.new if action_name == 'new'
           @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
           @collection ||= @curation_concern
           authorize! :edit, @collection

@@ -133,7 +133,11 @@ Rails.application.routes.draw do
         get 'dashboard/projects/:id/edit', to: 'projects#edit', as: 'project_edit'
         get 'dashboard/teams/:id/edit', to: 'teams#edit', as: 'team_edit'
         get "dashboard/teams/:id/files", to: 'teams#files'
+        put "dashboard/teams", to: 'teams#update'
         patch 'dashboard/teams/:id', to: 'teams#update'
+        get "dashboard/teams/new", to: 'teams#new', as: 'new_team'
+        get "dashboard/projects/new", to: 'projects#new', as: 'new_project'
+        post 'dashboard/teams', to: 'teams#create'
       end
     end
   end

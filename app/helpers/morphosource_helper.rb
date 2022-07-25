@@ -188,7 +188,7 @@ module MorphosourceHelper
     Morphosource::PublicationBadge.new(value).render
   end
 
-  def render_publication_status_badge(document)    
+  def render_publication_status_badge(document)
     return if document["fileset_accessibility_ssim"].nil?
     publication_status = document[ "fileset_accessibility_ssim"].first
     return publication_badge(publication_status)
@@ -364,7 +364,8 @@ module MorphosourceHelper
   end
 
   def collection_form_url(form)
-    form.persisted? ? [hyrax, :dashboard, form] : [main_app, form]
+    byebug
+    form.persisted? ? url_for(action: 'update') : url_for(action: 'create')
   end
 
   # used when editing team projects, populates select list of projects that can be added to the team
@@ -457,7 +458,7 @@ module MorphosourceHelper
 
 end
 
-class Array 
+class Array
 
   def ignore_case_include?(value)
     return false unless self.present? && value.present?

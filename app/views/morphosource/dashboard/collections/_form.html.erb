@@ -1,5 +1,6 @@
 <% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
-<%= simple_form_for @form, url: url_for(action: 'update'), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+<% byebug %>
+<%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
   <div class="col-xs-9 title team-title">
     <span class="fa fa-edit" aria-hidden="true"></span>

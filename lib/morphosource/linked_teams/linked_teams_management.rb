@@ -8,10 +8,12 @@ module Morphosource
       # called from imaging event and processing event controllers
       def update_media_team_access
         if @curation_concern.physical_object?        
-          return if organization_id_param.nil?
+          return if organization_id_param.nil?         
         elsif @curation_concern.imaging_event?
-          # called from media edit. 
+          # e.g. called from IE form of media edit. 
+          return if parents_attributes.nil? and !@po_changed
         else
+          # e.g. call from processing event
           return if parents_attributes.nil?
         end   
         return if organizations_unchanged?

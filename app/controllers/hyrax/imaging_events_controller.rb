@@ -17,9 +17,10 @@ module Hyrax
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::ImagingEventPresenter
 
+    before_action :record_original_objects, only: :update
 
     def update
-      if po_changed = (curation_concern.physical_object_id != params[:imaging_event][:physical_object_id])
+      if po_changed
         record_original_objects
       end
       # Handle possible attachment upload
@@ -42,10 +43,7 @@ module Hyrax
       end
 
       if actor.update(actor_environment)
-        if po_changed
-          # if PO changed (from media edit page), update media access if PO is associated with org-linked team 
-          update_media_team_access
-        end
+        update_media_team_access
         after_update_response
       else
         respond_to do |wants|
@@ -70,6 +68,16 @@ module Hyrax
         respond_to do |wants|
           wants.html { redirect_to main_app.root_url, alert: "Unauthorized." }
           wants.json { render_json_response(response_type: :forbidden) }
+        end
+      end
+    end
+
+    def po_changed
+      @po_changed ||= begin
+        if params[:imaging_event] && params[:imaging_event][:physical_object_id]
+          (curation_concern.physical_object_id != params[:imaging_event][:physical_object_id])
+        else
+          false
         end
       end
     end

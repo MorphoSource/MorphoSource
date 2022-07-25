@@ -47,6 +47,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
       context 'when it successfully updates' do
         it 'calls #update_media_team_access' do
           expect(subject).to receive(:update_media_team_access)
+          expect(subject).to receive(:update_po_team_access)
           patch :update, params: { id: specimen.id }
         end
       end
@@ -55,7 +56,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
     describe '#update_media_team_access' do
       context "when the specimen's params don't include parent organization_id" do
         it 'returns nil for organization_id_param' do
-          expect(subject).to receive(:organization_id_param).and_return(nil)
+          expect(subject).to receive(:organization_id_param).twice.and_return(nil)
           patch :update, params: { id: specimen.id }
         end
       end
@@ -72,6 +73,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
         let(:old_team_manager)      { User.create(email: 'oldmanager@test.com', password: 'password') }
         let(:old_team_depositor)    { User.create(email: 'olddepositor@test.com', password: 'password') }
         let(:old_team_viewer)       { User.create(email: 'oldviewer@test.com', password: 'password') }
+        let(:old_team_editor)       { User.create(email: 'oldeditor@test.com', password: 'password') }
         let(:params)                { { id: specimen.id, 'biological_specimen' => { 'organization_id' => parent_organization_id } } }
 
         before do
@@ -131,7 +133,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
           context 'and the new organization does not have a linked team' do
             it 'removes read access for the old organization' do
               patch :update, params: params
-              [media, media2].each(&:reload)
+              [media, media2, specimen].each(&:reload)
               # media
               expect(old_team_manager.can?(:read, media)).to be(false)
               expect(old_team_depositor.can?(:read, media)).to be(false)
@@ -140,6 +142,12 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
               expect(old_team_manager.can?(:read, media2)).to be(false)
               expect(old_team_depositor.can?(:read, media2)).to be(false)
               expect(old_team_viewer.can?(:read, media2)).to be(false)
+              # po read
+              expect(old_team_manager.can?(:read, specimen)).to be(false)
+              expect(old_team_editor.can?(:read, specimen)).to be(false)
+              # po edit
+              expect(old_team_manager.can?(:edit, specimen)).to be(false)
+              expect(old_team_editor.can?(:edit, specimen)).to be(false)
             end
           end
 
@@ -148,6 +156,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
             let(:new_team_manager)   { User.create(email: 'newmanager@test.com', password: 'password') }
             let(:new_team_depositor) { User.create(email: 'newdepositor@test.com', password: 'password') }
             let(:new_team_viewer)    { User.create(email: 'newviewer@test.com', password: 'password') }
+            let(:new_team_editor)   { User.create(email: 'neweditor@test.com', password: 'password') }
 
             before do
               new_organization.team_id = [new_team.id]
@@ -158,12 +167,13 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
               new_team.managers << new_team_manager
               new_team.depositors << new_team_depositor
               new_team.viewers << new_team_viewer
+              new_team.editors << new_team_editor
               new_team.user_groups.each(&:save)
             end
 
-            it 'removes read access for the old team, and adds read access for the new team' do
+            it 'removes read and edit access for the old team, and adds read and edit access for the new team' do
               patch :update, params: params
-              [media, media2].each(&:reload)
+              [media, media2, specimen].each(&:reload)
               # media
               expect(old_team_manager.can?(:read, media)).to be(false)
               expect(old_team_depositor.can?(:read, media)).to be(false)
@@ -178,6 +188,20 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
               expect(new_team_manager.can?(:read, media2)).to be(true)
               expect(new_team_depositor.can?(:read, media2)).to be(true)
               expect(new_team_viewer.can?(:read, media2)).to be(true)
+              # po read
+              expect(old_team_manager.can?(:read, specimen)).to be(false)
+              expect(old_team_editor.can?(:read, specimen)).to be(false)
+              expect(new_team_manager.can?(:read, specimen)).to be(true)
+              expect(new_team_editor.can?(:read, specimen)).to be(true)
+              expect(new_team_depositor.can?(:read, specimen)).to be(false)
+              expect(new_team_viewer.can?(:read, specimen)).to be(false)
+              # po edit
+              expect(old_team_manager.can?(:edit, specimen)).to be(false)
+              expect(old_team_editor.can?(:edit, specimen)).to be(false)
+              expect(new_team_manager.can?(:edit, specimen)).to be(true)
+              expect(new_team_editor.can?(:edit, specimen)).to be(true)
+              expect(new_team_depositor.can?(:edit, specimen)).to be(false)
+              expect(new_team_viewer.can?(:edit, specimen)).to be(false)
             end
           end
         end

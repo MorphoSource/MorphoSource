@@ -128,9 +128,12 @@ Rails.application.routes.draw do
     end
 
     scope module: :dashboard do
+      get 'dashboard/collections/:id', to: 'collections#edit'
       scope module: :collections do
-        get 'dashboard/projects/:id', to: 'projects#edit', as: 'project_edit'
-        get 'dashboard/teams/:id', to: 'teams#edit', as: 'team_edit'
+        get 'dashboard/projects/:id/edit', to: 'projects#edit', as: 'project_edit'
+        get 'dashboard/teams/:id/edit', to: 'teams#edit', as: 'team_edit'
+        get "dashboard/teams/:id/files", to: 'teams#files'
+        patch 'dashboard/teams/:id', to: 'teams#update'
       end
     end
   end

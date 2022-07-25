@@ -1,0 +1,29 @@
+<% id = document["id"] %>
+<tr id="document_<%= id %>"
+    data-id="<%= id %>"
+    data-parent-id="<%= parent_id %>"
+    data-post-url="<%= hyrax.dashboard_remove_child_relationship_under_path(parent_id, id) %>"
+    data-subcollection-label="<%= document["title_tesim"].first %>">
+  <td>
+    <!-- logo here -->
+  </td>
+  <td>
+    <%= link_to document["title_tesim"].first, project_media_path(id), target: "_blank", id: "src_copy_link_#id}" %>
+  </td>
+  <% byebug %>
+  <td><%= document["media_count"] %></td>
+  <td><%= display_date(document["system_modified_dtsi"]) %></td>
+  <td><%= permission_badge_by_value(document["visibility_ssi"]) %></td>
+  <td>
+    <% if can? :edit, parent_id %>
+      <button type="button" class="btn btn-xs btn-danger remove-subcollection-button"
+      data-id="<%= id %>"
+      data-parent-id="<%= parent_id %>"
+      data-post-url="<%= hyrax.dashboard_remove_child_relationship_under_path(parent_id, id) %>"><%= t('hyrax.collections.show.buttons.remove_this_sub_collection') %></button>
+    <% end %>
+  </td>
+</tr>
+
+<% if can? :edit, @collection.id %>
+<%= render 'modal_remove_sub_collection' %>
+<% end %>

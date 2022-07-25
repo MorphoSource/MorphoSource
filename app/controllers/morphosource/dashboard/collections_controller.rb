@@ -1,58 +1,40 @@
 module Morphosource
   module Dashboard
-    class CollectionsController < ApplicationController
+    class CollectionsController < Hyrax::Dashboard::CollectionsController
       include Morphosource::Dashboard::CollectionsControllerBehavior
-      # include Blacklight::AccessControls::Catalog
-      # include Blacklight::Base
-      # include Hyrax::BreadcrumbsForCollections
-      # include Morphosource::CollectionHelper
+      include Morphosource::CollectionHelper
 
-      # class_attribute :presenter_class,
-      #                 :form_class,
-      #                 :single_item_search_builder_class
-      #
-      # copy_blacklight_config_from(CatalogController)
+      skip_load_and_authorize_resource only: [:edit, :update], instance_name: :collection
 
       with_themed_layout 'morphosource_dashboard'
 
+      before_action :filter_docs_with_read_access!, only: []
       before_action :load_collection
-      before_action :redirect_to_collection_type, only: [:edit]
+      before_action :redirect_to_collection_type, only: [:edit, :update]
 
-      # self.presenter_class = Hyrax::TeamPresenter
-      # The search builder to find the collection
-      # self.single_item_search_builder_class = Hyrax::SingleCollectionSearchBuilder
+      self.presenter_class = presenter_class
 
       self.form_class = Hyrax::Forms::CollectionForm
-
 
       def edit
         presenter
         @media_count, @object_count = collection_media
-        form
+        super
       end
 
-      # def presenter
-      #   @presenter ||= begin
-      #     # Query Solr for the collection.
-      #     # run the solr query to find the collection members
-      #     response = repository.search(single_item_search_builder.query)
-      #     curation_concern = response.documents.first
-      #     raise CanCan::AccessDenied unless curation_concern
-      #     presenter_class.new(curation_concern, current_ability)
-      #   end
-      # end
+      def update
+        update_thumbnail
+        super
+      end
 
-
-      def after_create
-        form
-        set_default_permissions
-        # if we are creating the new collection as a subcollection (via the nested collections controller),
-        # we pass the parent_id through a hidden field in the form and link the two after the create.
-        link_parent_collection(params[:parent_id]) unless params[:parent_id].nil?
+      def after_destroy(_id)
+        # leaving id to avoid changing the method's parameters prior to release
         respond_to do |format|
-          ActiveFedora::SolrService.commit
-          format.html { redirect_to hyrax.edit_dashboard_collection_path(@collection), notice: t('hyrax.dashboard.my.action.collection_create_success') }
-          format.json { render json: @collection, status: :created, location: hyrax.dashboard_collection_path(@collection) }
+          format.js {render :js => "location.reload()"}
+          format.html do
+            redirect_to request.referrer
+          end
+          format.json { head :no_content, location: '/dashboard/my/collections' }
         end
       end
 
@@ -73,28 +55,57 @@ module Morphosource
 
       private
 
-       # def load_collection
-       #    @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
-       #    @collection ||= @curation_concern
-       #    authorize! :edit, @collection
-       #    rescue CanCan::AccessDenied
-       #      redirect_to root_url, alert: 'You are not authorized to access this collection.'
-       #  end
+      def update_referer
+        return collection_media_path(@collection) if params[:showcase]
+
+        return edit_dashboard_collection_path(@collection) + (params[:referer_anchor] || '') if params[:stay_on_edit]
+
+        dashboard_collection_path(@collection)
+      end
+
+      # def remove_members_from_collection
+      #   @collection.remove_member_objects(batch)
+      # end
+
+
+       def load_collection
+          @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
+          @collection ||= @curation_concern
+          authorize! :edit, @collection
+          rescue CanCan::AccessDenied
+            redirect_to root_url, alert: 'You are not authorized to access this collection.'
+        end
 
 
         # def collection_media
         #   Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}")
         # end
 
-        def form
-          @form ||= form_class.new(@collection, current_ability, repository)
-        end
 
-        def single_item_search_builder
-         single_item_search_builder_class.new(self).with(params.except(:q, :page))
-       end
+
+       #  def single_item_search_builder
+       #   single_item_search_builder_class.new(self).with(params.except(:q, :page))
+       # end
 
        #
+
+       def update_thumbnail
+         media = Media.where(id: params[:collection][:representative_id]).first
+         @collection.thumbnail_id = media.try(:thumbnail_id)
+       end
+
+       # def update_physical_object_index
+       #   return if params["batch_document_ids"].blank?
+       #
+       #   member_ids = params["batch_document_ids"]
+       #   member_ids.each do |id|
+       #     member = Media.find(id)
+       #     object_id = member.physical_object_id
+       #     next if object_id.blank?
+       #
+       #     ActiveFedora::Base.where(id: object_id).first.try(:update_index)
+       #   end
+       # end
     end
   end
 end

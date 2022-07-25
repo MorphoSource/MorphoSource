@@ -35,19 +35,6 @@
             </div>
 
             <!-- Add group form -->
-            <!-- Disable for admins - taking too long to load -->
-            <% if current_user.admin? %>
-              <div class="form-add-group-sharing-wrapper">
-                <div class="row form-inline sharing-row-form add-groups">
-                  <div class="col-sm-6 col-md-3 col-lg-3">
-                    <label><%= t('.add_users_from_project_or_team') %>:</label>
-                  </div>
-                  <div class="col-sm-6 col-md-3 col-lg-3">
-                    <p>Adding projects and teams disabled for admin accounts</p>
-                  </div>
-                </div><!-- /.form-inline -->
-              </div>
-            <% else %>
               <div class="form-add-group-sharing-wrapper" data-id="<%= @form.id %>">
                 <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'group-participants-form'}) do |f| %>
                   <div class="row form-inline sharing-row-form add-groups">
@@ -68,7 +55,6 @@
                   </div><!-- /.form-inline -->
                 <% end %>
               </div>
-            <% end %>
 
           </section>
 

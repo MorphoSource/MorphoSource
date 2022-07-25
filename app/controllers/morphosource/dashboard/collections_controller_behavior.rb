@@ -1,12 +1,12 @@
 module Morphosource
   module Dashboard
     module CollectionsControllerBehavior
-      # extend ActiveSupport::Concern
+      extend ActiveSupport::Concern
       # needed for some faceting behavior
       # include Hydra::Catalog
       # include Blacklight::AccessControls::Catalog
-      include Blacklight::Base
-      include Hyrax::CollectionsControllerBehavior
+      # include Blacklight::Base
+      # include Hyrax::CollectionsControllerBehavior
       # include Morphosource::CollectionsControllerExportBehavior
 
       included do
@@ -24,6 +24,39 @@ module Morphosource
         # The search builder to find the collections' members
         # self.membership_service_class = Morphosource::Collections::CollectionMemberService
       end
+
+      # def update
+      #   unless params[:update_collection].nil?
+      #     process_banner_input
+      #     process_logo_input
+      #   end
+      #   update_thumbnail
+      #   process_member_changes
+      #   update_physical_object_index
+      #   @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
+      #   # we don't have to reindex the full graph when updating collection
+      #   @collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+      #   if @collection.update(collection_params.except(:members))
+      #     after_update
+      #   else
+      #     after_update_error
+      #   end
+      # end
+
+      # def after_update
+      #   respond_to do |format|
+      #     format.html { redirect_to update_referer, notice: t('hyrax.dashboard.my.action.collection_update_success') }
+      #     format.json { render json: @collection, status: :updated, location: dashboard_collection_path(@collection) }
+      #   end
+      # end
+      #
+      # def after_update_error
+      #   form
+      #   respond_to do |format|
+      #     format.html { render action: 'edit' }
+      #     format.json { render json: @collection.errors, status: :unprocessable_entity }
+      #   end
+      # end
 
       # def show
       #   @tab = tab
@@ -52,13 +85,13 @@ module Morphosource
 
       private
 
-        def presenter
-          @presenter ||= begin
-            curation_concern = @curation_concern.present? ? SolrDocument.find(@curation_concern.id) : SolrDocument.find(params[:id])
-            raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
-            presenter_class.new(curation_concern, current_ability)
-          end
-        end
+        # def presenter
+        #   @presenter ||= begin
+        #     curation_concern = @curation_concern.present? ? SolrDocument.find(@curation_concern.id) : SolrDocument.find(params[:id])
+        #     raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
+        #     presenter_class.new(curation_concern, current_ability)
+        #   end
+        # end
 
         # def publication_settings_nag
         #   flash[:alert] = "Your project or team is not published, but you have one or more media that are published. Publishing this project will increase the visibility of your published media, and will not affect the visibility of any private media you may have in the project or team. Select Edit to control publication settings." if private_project_published_media?
@@ -75,13 +108,13 @@ module Morphosource
         #     }.count >  0)
         # end
 
-        def load_collection
-          @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
-          @collection ||= @curation_concern
-          authorize! :read, @collection
-          rescue CanCan::AccessDenied
-            redirect_to root_url, alert: 'You are not authorized to access this collection.'
-        end
+        # def load_collection
+        #   @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
+        #   @collection ||= @curation_concern
+        #   authorize! :read, @collection
+        #   rescue CanCan::AccessDenied
+        #     redirect_to root_url, alert: 'You are not authorized to access this collection.'
+        # end
 
         def redirect_to_collection_type
           return unless @_request.fullpath.include? '/collections/'

@@ -1,6 +1,5 @@
 <% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
-
-<%= simple_form_for @form, url: [hyrax, :dashboard, @form], wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+<%= simple_form_for @form, url: url_for(action: 'update'), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
   <div class="col-xs-9 title team-title">
     <span class="fa fa-edit" aria-hidden="true"></span>
@@ -137,7 +136,7 @@
               <% end %>
 
               <!-- render 'project_filters' -->
-              <!-- render 'tab_project_list', id: @presenter.id, collection: filter_projects(@subcollection_docs, request.params) -->
+              <%= render 'tab_project_list', id: @presenter.id, collection: @projects %>
 
           </div>
         </div>

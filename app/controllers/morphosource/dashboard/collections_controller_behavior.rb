@@ -2,6 +2,9 @@ module Morphosource
   module Dashboard
     module CollectionsControllerBehavior
       extend ActiveSupport::Concern
+
+      include Morphosource::CollectionsControllerBehavior
+
       # needed for some faceting behavior
       # include Hydra::Catalog
       # include Blacklight::AccessControls::Catalog

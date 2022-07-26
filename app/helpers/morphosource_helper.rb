@@ -364,7 +364,6 @@ module MorphosourceHelper
   end
 
   def collection_form_url(form)
-    byebug
     form.persisted? ? url_for(action: 'update') : url_for(action: 'create')
   end
 

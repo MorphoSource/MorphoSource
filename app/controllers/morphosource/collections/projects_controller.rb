@@ -6,7 +6,6 @@ module Morphosource
       before_action :create_data_manager_facet, only: [:show, :facet, :media_projects]
       before_action :create_access_facet, only: [:show, :facet, :media_projects]
 
-
       self.presenter_class = Morphosource::Collections::ProjectPresenter
 
       copy_blacklight_config_from(::MediaCatalogController)

@@ -9,6 +9,7 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'
 
       before_action :filter_docs_with_read_access!, only: []
+      before_action :build_breadcrumbs, only: []
       before_action :load_collection
       before_action :redirect_to_collection_type, only: [:edit, :update]
 
@@ -19,10 +20,7 @@ module Morphosource
       def edit
         presenter
         @media_count, @object_count = collection_media
-        super
-      end
-
-      def new
+        query_collection_counts # @specimen_count, @cho_count
         super
       end
 
@@ -43,12 +41,7 @@ module Morphosource
       end
 
       def set_default_permissions
-        if @collection.type_assigns_groups?
-          set_morphosource_permissions
-        else
-          additional_grants = @participants # Grants converted from older versions (< Hyrax 2.1.0) where share was edit or read access instead of managers, depositors, and viewers
-          Hyrax::Collections::PermissionsCreateService.create_default(collection: @collection, creating_user: current_user, grants: additional_grants)
-        end
+        set_morphosource_permissions
       end
 
       def set_morphosource_permissions
@@ -73,12 +66,15 @@ module Morphosource
 
 
        def load_collection
-          @curation_concern = Collection.new if action_name == 'new'
-          @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
-          @collection ||= @curation_concern
-          authorize! :edit, @collection
-          rescue CanCan::AccessDenied
-            redirect_to root_url, alert: 'You are not authorized to access this collection.'
+         if params[:id] || params[:collection_id]
+           @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
+         else
+          @curation_concern ||= Collection.new
+         end
+         @collection ||= @curation_concern
+         authorize! :edit, @collection
+         rescue CanCan::AccessDenied
+          redirect_to root_url, alert: 'You are not authorized to access this collection.'
         end
 
 

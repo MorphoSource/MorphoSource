@@ -6,7 +6,7 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
   subject { described_class.new(next_actor) }
 
   describe '#create' do
-    let(:work) { CulturalHeritageObject.new }
+    let(:work) { CulturalHeritageObject.new(title: ['private cho'], visibility: 'restricted', vouchered: ['Yes']) }
     let(:ability) { Ability.new(User.new) }
     let(:attrs) { {} }
     let(:env) { Hyrax::Actors::Environment.new(work, ability, attrs) }
@@ -17,6 +17,76 @@ RSpec.describe Hyrax::Actors::CulturalHeritageObjectActor do
     end
     it 'changes the title attribute' do
       expect { subject.create(env) }.to change{env.attributes['title']}.to([ 'Spiffy Generated Title' ])
+    end
+
+    describe 'adding view and edit access to linked teams' do
+
+      context 'cho is created without organization' do
+        before do
+          env.attributes[:organization_id] = nil
+        end
+        it 'does not call #add_organization_team_access_for_po' do
+          expect(subject).not_to receive(:add_organization_team_access_for_po).with(env)
+          subject.create(env)
+        end
+      end
+
+      context 'cho is created with organization through the submission process' do
+        let(:organization) { Organization.new(title: ['org'], team_id: []) }
+        
+        before do
+          organization.save
+          env.attributes[:organization_id] = [organization.id]
+        end
+
+        context 'and organization without a linked team' do
+          it 'does not call #get_groups' do
+            expect(subject).to receive(:add_organization_team_access_for_po).with(env).and_call_original
+            expect(subject).not_to receive(:get_groups)
+            subject.create(env)
+          end
+        end
+
+        context 'and organization with a linked team' do
+          let(:user)      { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
+          let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+          let(:team)           { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+          let(:team_manager)   { User.create(email: 'newmanager@test.com', password: 'password') }
+          let(:team_depositor) { User.create(email: 'newdepositor@test.com', password: 'password') }
+          let(:team_viewer)    { User.create(email: 'newviewer@test.com', password: 'password') }
+          let(:team_editor)   { User.create(email: 'neweditor@test.com', password: 'password') }
+          let(:team_downloader)   { User.create(email: 'downloader@test.com', password: 'password') }
+          before do
+            organization.team_id = [team.id]
+            organization.save
+            organization.reload
+
+            team.create_collection_groups
+            team.managers << team_manager
+            team.depositors << team_depositor
+            team.viewers << team_viewer
+            team.editors << team_editor
+            team.downloaders << team_downloader
+            team.user_groups.each(&:save)
+
+            subject.create(env)
+            work.save
+            work.reload
+          end
+          it 'updates the cho permissions' do
+            expect(team_manager.can?(:read, work)).to be(true)
+            expect(team_editor.can?(:read, work)).to be(true)
+            expect(team_depositor.can?(:read, work)).to be(false)
+            expect(team_viewer.can?(:read, work)).to be(false)
+            expect(team_downloader.can?(:read, work)).to be(false)
+            expect(team_manager.can?(:edit, work)).to be(true)
+            expect(team_editor.can?(:edit, work)).to be(true)
+            expect(team_depositor.can?(:edit, work)).to be(false)
+            expect(team_viewer.can?(:edit, work)).to be(false)
+            expect(team_downloader.can?(:edit, work)).to be(false)
+          end
+        end
+      end
     end
   end
 

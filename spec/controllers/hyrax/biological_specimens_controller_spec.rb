@@ -34,7 +34,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
 
   describe 'instance methods' do
     let(:actor)     { double(update: true) }
-    let(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], vouchered: ["Yes"]) }
+    let(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], visibility: 'restricted', vouchered: ["Yes"]) }
     let(:user)      { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
     before do
@@ -145,9 +145,13 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
               # po read
               expect(old_team_manager.can?(:read, specimen)).to be(false)
               expect(old_team_editor.can?(:read, specimen)).to be(false)
+              expect(old_team_depositor.can?(:read, specimen)).to be(false)
+              expect(old_team_viewer.can?(:read, specimen)).to be(false)
               # po edit
               expect(old_team_manager.can?(:edit, specimen)).to be(false)
               expect(old_team_editor.can?(:edit, specimen)).to be(false)
+              expect(old_team_depositor.can?(:edit, specimen)).to be(false)
+              expect(old_team_viewer.can?(:edit, specimen)).to be(false)
             end
           end
 

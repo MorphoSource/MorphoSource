@@ -248,6 +248,24 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       end
     end
 
+    context "Existing bso not valid" do
+      render_views
+      let(:org) { Organization.create(title: ['org']) }
+      let(:org2) { Organization.create(title: ['org2']) }
+      let(:bso) { BiologicalSpecimen.create(title: ['public specimen'], visibility: 'open', vouchered: ['Yes'], organization_id: [org.id]) }
+      let(:params) { {"manifest" => invalid_parents_file, "organization_id" => org2.id, "batch_submission" => {"modality" => "photography"}} }
+      before do
+        allow(subject).to receive(:existing_bso_by_id) { bso }
+      end
+      it "displays bso message" do
+        post 'submit', :params => params 
+        expect(response).to render_template 'validation_fail'
+        html = response.body
+        expect(html).to include 'media.parent_file ANSP_Fish_180334_Head.jpg has invalid parent(s) (found in row 10).  Please check and make sure each parent_file is pointing to the correct row.'
+        expect(html).to include 'biological_specimen.ms_id: Existing biological specimen TESTBSO123 is associated with an organization different from the one you have selected.'
+      end
+    end
+
   end
 
   describe 'valid_media_unit' do

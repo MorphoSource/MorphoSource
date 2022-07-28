@@ -23,7 +23,7 @@
 <% end %>
 
 <% if current_user.can_submit_new_batch_submission? %>
-	<p><i class="fa fa-hand-point-right" aria-hidden="true"></i> <%= link_to "Create a new batch upload submission", main_app.new_batch_submission_path, :class => job.successful? ? "clear-bs-form" : nil %></p>
+	<p><i class="fa fa-hand-point-right" aria-hidden="true"></i> <%= link_to "Create a new batch upload submission", main_app.new_batch_submission_path, :class => job&.successful? ? "clear-bs-form" : nil %></p>
 <% else %>
 	<p>Only one batch submission job is allowed at a time.  Please contact MorphoSource team if you need assistence.</p>
 <% end %>

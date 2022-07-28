@@ -649,6 +649,33 @@ namespace :morphosource do
     end
   end
 
+  desc "Update access to media for org-linked teams"
+  task :update_org_linked_media_access, [:po_type, :update] => :environment do |task, args|
+    po_type = args[:po_type]
+    if po_type == 'BSO'
+      po_type_qs = "Biological Specimen"
+    elsif po_type == 'CHO'
+      po_type_qs = "Cultural Heritage Object"
+    else
+      po_type_qs = nil
+    end
+    if args[:update].present? && args[:update] == 'true'
+      update = true
+    else
+      update = false
+    end
+    # update all bso and cho with org linked team
+    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection"
+    result = ActiveFedora::SolrService.query(qry, rows: 999999)
+    puts "#{result.count} org-linked teams found "
+    result.each do |hit|
+      team = Collection.find(hit.id)
+      if team.present?
+        UpdateOrgLinkedTeamMediaJob.perform_now(po_type_qs, team, update)
+      end
+    end
+  end
+
   desc "Update specimens from IDigbio"
   task :update_bso_from_idigbio, [:update, :project_id] => :environment do |task, args|
     if args[:update].present? && args[:update] == 'true'

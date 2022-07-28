@@ -676,6 +676,8 @@ $( document ).ready(function() {
         "text": $("select[name='batch_submission[on_behalf_of]'] option:selected").text()
       }
       $('#media_download_reviewer').userSearchMultiple(reviewer);
+      // Unset org transfer settings and reset (in case on behalf of is chosen after org)
+      batchSubmissionForm.setDefaultMediaPermissionFields();
     });
   } // check if the page is batch submission form
 });

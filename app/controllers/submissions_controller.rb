@@ -175,6 +175,7 @@ class SubmissionsController < ApplicationController
       organization_alert_message = alert(organization)
       organization_title = organization.title
       organization_id = organization.id
+      organization_team_id = organization.team&.id
       organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
       organization_data_manager = organization.data_manager&.first
       organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email
@@ -185,6 +186,7 @@ class SubmissionsController < ApplicationController
       organization_alert_message = ''
       organization_title = ''
       organization_id = nil
+      organization_team_id = nil
       organization_permissions_mode = nil
       organization_data_manager = nil
       organization_data_manager_name = nil
@@ -196,6 +198,7 @@ class SubmissionsController < ApplicationController
       organization_alert_message: organization_alert_message,
       organization_title: organization_title,
       organization_id: organization_id,
+      organization_team_id: organization_team_id,
       organization_permissions_mode: organization_permissions_mode,
       organization_data_manager: organization_data_manager,
       organization_data_manager_name: organization_data_manager_name

@@ -37,10 +37,11 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      property :tgn, predicate: ::RDF::URI.new("http://purl.org/dc/terms/TGN"), class_name: Morphosource::ControlledVocabularies::Getty::Tgn do |index|
-        index.as :stored_searchable
-      end
-    end
+      id_blank = proc { |attributes| attributes[:id].blank? }
 
+      class_attribute :controlled_properties
+      self.controlled_properties = [:tgn]
+      accepts_nested_attributes_for :tgn, reject_if: id_blank, allow_destroy: true
+    end
   end
 end

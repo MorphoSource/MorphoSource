@@ -465,32 +465,65 @@ class Media < Morphosource::Works::Base
   end
 
   def check_for_organization_transfer
-    if self.visibility_changed? && self.visibility == 'open' && self.organization_transfer_on_publish
+    if ( self.visibility_changed? &&
+         self.visibility == 'open' &&
+         self.organization_transfer_on_publish )
       transfer_media_to_organization
     end
   end
 
+  # Create request to transfer ownership of media and/or move media to organization team
+  # generally, don't use this for where media data manager == org data manager,
+  # but the method can handle this circumstance for use in developer console, etc
   def transfer_media_to_organization
-    if (
-      (org = organizations&.first).present? && 
-      (new_manager_id = org&.data_manager&.first).present? && 
+    org = organizations&.first
+    if ( 
+      org.present? &&
+      (new_manager_id = org&.data_manager&.first).present? &&
       (new_manager = User.find_by_user_key(new_manager_id)).present?
     )
-      deposit_user = User.find_by_user_key(user_with_ownership)
-
-      return if new_manager.id == deposit_user.id
-
-      # Cancel existing pending proxy deposit requests
-      if (existing_transfers = ProxyDepositRequest.where(work_id: id, status: 'pending')).present?
-        existing_transfers.each { |t| t.cancel! }
+      # First, is media manager user the same as the new org data manager?
+      if ( new_manager.user_key == user_with_ownership || new_manager.user_key == on_behalf_of )
+        # don't create transfer, but add media to team and ensure no further transfers are created
+        add_to_organization_team
+        if self.organization_transfer_on_publish
+          self.organization_transfer_on_publish = false
+          self.save!
+        end
+      else
+        # create transfer, when accepted it will move media to team
+        create_new_organization_transfer_request(new_manager)
       end
 
-      # Create new proxy deposit request from user with ownership to organization
-      message = I18n.t('morphosource.media.organization_transfer.transfer_message').html_safe
-      ProxyDepositRequest.create!(work_id: id, receiving_user: new_manager, sending_user: deposit_user, sender_comment: message, organization_transfer: true)
+      
     else
-      raise "Failed to transfer management of media #{id} to organization data manager"
+      message = "Failed to transfer management of media #{id} to organization #{org&.id} with data manager #{org&.data_manager}"
+
+      Rails.logger.fatal message
+      raise message
     end
+  end
+
+  def add_to_organization_team
+    if (org = organizations&.first).present? && (team = org.team).present?
+      AddCollectionMembersJob.perform_later(team.id, id)
+    end
+  end
+
+  def create_new_organization_transfer_request(org_data_manager)
+    # Cancel existing pending proxy deposit requests
+    if (existing_transfers = ProxyDepositRequest.where(work_id: id, status: 'pending')).present?
+      existing_transfers.each { |t| t.cancel! }
+    end
+    # Create new proxy deposit request from user with ownership to organization
+    message = I18n.t('morphosource.media.organization_transfer.transfer_message').html_safe
+    ProxyDepositRequest.create!(
+      work_id: id, 
+      receiving_user: org_data_manager, 
+      sending_user: User.find_by_user_key(user_with_ownership), 
+      sender_comment: message, 
+      organization_transfer: true
+    )
   end
 
   private
@@ -536,7 +569,7 @@ class Media < Morphosource::Works::Base
     end
 
     def controlled_attributes
-      { 
+      {
         :media_type => Morphosource::MediaTypesService.new,
         :side => Morphosource::SidesService.new,
         :series_type => Morphosource::SeriesTypesService.new,

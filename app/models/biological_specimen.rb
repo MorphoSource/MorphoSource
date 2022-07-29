@@ -17,12 +17,12 @@ class BiologicalSpecimen < Morphosource::Works::Base
   validates :title, presence: { message: I18n.t('morphosource.validation.missing.title') }
 
   include Morphosource::PhysicalObjectMetadata
-  include Morphosource::BiologicalSpecimenMetadata
   include Morphosource::LocationMetadata
+  include ::Morphosource::BasicMetadata
 
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
-  include ::Hyrax::BasicMetadata
+  include Morphosource::BiologicalSpecimenMetadata
 
   def set_idigbio_link_origin_when_create
     if self.idigbio_uuid.present?
@@ -94,9 +94,9 @@ class BiologicalSpecimen < Morphosource::Works::Base
     end
   end
 
-  def occurrence_id_valid? 
+  def occurrence_id_valid?
     # valid if 8 characters minimum AND has both a letter and a number
-    occurrence_id.present? && occurrence_id.first.length >= 8 && 
+    occurrence_id.present? && occurrence_id.first.length >= 8 &&
       occurrence_id.first.count("0-9") > 0 && occurrence_id.first.count("a-zA-Z") > 0
   end
 
@@ -126,10 +126,10 @@ class BiologicalSpecimen < Morphosource::Works::Base
         prov = Morphosource::TaxonomySearchService.call(provider_params)
         if prov.present?
           # Exists, link as canonical
-          canonical_taxonomy_id = prov.first.id 
+          canonical_taxonomy_id = prov.first.id
           taxonomy_id_array << prov.first.id
         else
-          # Is new, must create            
+          # Is new, must create
           provider_params[:canonical] = true # to be hooked in later to set canonical taxonomy ID
           taxonomy_params_array << ActionController::Parameters.new(provider_params)
         end
@@ -138,7 +138,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
       if gbif_params.present?
         gbif = Morphosource::TaxonomySearchService.call(gbif_params)
         if gbif.present?
-          taxonomy_id_array << gbif.first.id 
+          taxonomy_id_array << gbif.first.id
         else
           taxonomy_params_array << ActionController::Parameters.new(gbif_params)
         end
@@ -149,18 +149,18 @@ class BiologicalSpecimen < Morphosource::Works::Base
         new_taxon_id = prepare_and_create_taxonomy(taxon_params)
         taxonomy_id_array << new_taxon_id
         if taxon_params[:canonical]
-          canonical_taxonomy_id = new_taxon_id 
+          canonical_taxonomy_id = new_taxon_id
         end
       end
 
-      # now link taxonomy (new or existing) to the bso  
+      # now link taxonomy (new or existing) to the bso
       if taxonomy_id_array.present?
         old_taxonomy_id = self.taxonomy_id.to_a
         self.taxonomy_id = (self.taxonomy_id + taxonomy_id_array).uniq
       end
       if canonical_taxonomy_id.present?
         old_canonical_taxonomy = self.canonical_taxonomy.to_a
-        self.canonical_taxonomy_will_change! unless old_canonical_taxonomy.include? canonical_taxonomy_id 
+        self.canonical_taxonomy_will_change! unless old_canonical_taxonomy.include? canonical_taxonomy_id
         self.canonical_taxonomy = (self.canonical_taxonomy << canonical_taxonomy_id).uniq
       end
 
@@ -196,8 +196,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
       self.title = [generated_title]
       # normally saving work is done separately (e.g. in a background job, form submit)
       # set save_work flag if needed for debugging in the console
-      self.save if save_work 
-    end 
+      self.save if save_work
+    end
   end
 
 
@@ -206,7 +206,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
     def generated_title
       inst = self.institution_code&.first.presence || ''
       coll = self.collection_code&.first.presence || ''
-      cnum = self.catalog_number&.first.presence || ''    
+      cnum = self.catalog_number&.first.presence || ''
       case
       when inst.present? || coll.present? || cnum.present?
         collection_catalog_generated_title(inst, coll, cnum)
@@ -227,7 +227,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
     def fallback_generated_title(vouchered, user)
       if vouchered.present? && vouchered.first == 'Yes'
-        voucher_term = 'Vouchered' 
+        voucher_term = 'Vouchered'
       else
         voucher_term = 'Unvouchered'
       end
@@ -258,7 +258,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
       Hyrax::CurationConcern.actor.create(env)
       return curation_concern.id
     end
-    
+
     def date_attributes_for_filter
       [ :date_created ]
     end

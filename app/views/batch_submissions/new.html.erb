@@ -2,6 +2,7 @@
 <% provide :page_title, "Batch Submission || MorphoSource" %>
 
 <script type="text/javascript">
+  var depositor = <%= current_user&.user_key.to_json.html_safe %>;
   var orgData = <%= @organizations_select2.to_json.html_safe %>;
   var nullOrg = <%= @null_organization.to_json.html_safe %>;
   var deviceData = <%= @devices_with_ids.to_json.html_safe %>;
@@ -87,10 +88,14 @@
         <%= f.file_field_tag :manifest, id: 'manifest_file', :accept => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
       </div>
       <div class="mt-2 text-center btn-submit-wrapper">
-        <%= f.submit 'Submit', id: 'btn-submit', class: 'btn btn-primary btn-lg', disabled: 'disabled' %>
+        <%= f.submit 'Next Step', id: 'btn-submit', class: 'btn btn-primary btn-lg', disabled: 'disabled' %>
+        <a href="javascript:void(0)" id='start-over' class='small'>Start Over</a>
       </div>
     </div>
   </div>
 </div>
 
 <% end # /simple_form_for @batch_submission %>
+
+<%= render(partial: 'submissions/media/organization_transfer_modal') %>
+<%= render(partial: 'submissions/media/organization_data_manager_modal') %>

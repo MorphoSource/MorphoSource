@@ -523,5 +523,57 @@ RSpec.describe Media do
       end
 
     end
+
+    describe 'check_for_organization_transfer' do
+      let!(:media)        { Media.create(title: ['media'], visibility: 'restricted', organization_transfer_on_publish: true) }
+      let!(:organization) { Organization.create(title: ['organization'], permissions_enforcement_mode: []) }
+
+      before do
+        allow(media).to receive(:visibility_changed?).and_return(true)
+        allow(media).to receive(:visibility).and_return('open')
+        allow(media).to receive(:organizations).and_return([organization])
+      end
+
+      it 'calls transfer_media_to_organization' do
+        expect(media).to receive(:transfer_media_to_organization)
+        media.check_for_organization_transfer
+      end
+    end
+
+    describe 'transfer_media_to_organization' do
+      let(:data_manager)          { User.create(email: 'email@email.com', password: 'password') }
+      let(:depositor)             { User.create(email: 'depositor@email.com', password: 'password') }
+      let!(:contributor_role)     { Role.create(name: 'contributor') }
+      let!(:organization)          { Organization.create(title: ['organization'], permissions_enforcement_mode: nil, data_manager: [data_manager.ms_id]) }
+      let(:media)                 { Media.create(title: ['media'], depositor: depositor.ms_id, visibility: 'restricted', fileset_accessibility: ['private'], organization_transfer_on_publish: true) }
+
+      before do
+        data_manager.make_contributor
+        allow(media).to receive(:visibility_changed?).and_return(true)
+        allow(media).to receive(:visibility).and_return('open')
+        allow(media).to receive(:organizations).and_return([organization])
+      end
+
+      context 'conditions are met for transferring media' do
+        before do
+          media.transfer_media_to_organization
+        end
+        it 'creates a new ProxyDepositRequest' do
+          expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: data_manager.id, sending_user: depositor.id, organization_transfer: true).count).to eq(1)
+        end
+      end
+
+      context 'organization does not have a data manager set' do
+        before do
+          organization.data_manager = []
+          organization.save
+        end
+        it 'raises an error and logs the details' do
+          message = "Failed to transfer management of media #{media.id} to organization #{organization.id} with data manager #{organization.data_manager}"
+          expect(Rails.logger).to receive(:fatal).with(message)
+          expect { media.transfer_media_to_organization }.to raise_error
+        end
+      end
+    end
   end
 end

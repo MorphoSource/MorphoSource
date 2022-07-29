@@ -4,27 +4,50 @@
   <div class="col-sm-6">
 
     <div class="content-block">
-      <h2>SPECIMEN IDENTIFIERS AND EXTERNAL LINKS</h2>
+      <h2>GENERAL DETAILS</h2>
       <%= @presenter.attribute_to_html(:work_id, label: "Specimen ID", render_as: :showcase_default, include_empty: true, html_dl: false) %>
+      <%= f.input :vouchered, as: :select,
+          collection: ['Yes','No'],
+          include_blank: true,
+          input_html: { class: 'form-control' }
+      %>
+      <%= f.input :description, label: 'Description' %>
+      <%= render_edit_field_partial('sex', f: f) %>
+      <%= render_edit_field_partial('is_type_specimen', f: f) %>
+      <%= @presenter.attribute_to_html(:source_of_record, render_as: :showcase_idigbio_link, include_empty: true, html_dl: false) %>
+      <%= @presenter.attribute_to_html(:date_uploaded, render_as: :showcase_date, include_empty: true, html_dl: false) %>
+      <% if @presenter.parent_organization.present? %>
+        <%= @presenter.attribute_to_html(
+          :parent_organization_title,
+          label: 'Organization',
+          link: Rails.application.routes.url_helpers.hyrax_organization_path(@presenter.parent_organization.id),
+          render_as: :showcase_organization_title,
+          html_dl: false)
+        %>
+      <% else %>
+        <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
+      <% end %>
+      <%= f.input :creator, label: @presenter.creator_label, as: :multi_value, required: false %>
+      <%= f.input :dimensions, label: 'Specimen Measurements' %>
+    </div>
+
+    <div class="content-block">
+      <h2>IDENTIFIERS AND EXTERNAL LINKS</h2>
       <%= f.input :institution_code, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :collection_code, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :catalog_number, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= f.input :occurrence_id, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= hidden_field_tag "existing_occurrence_id", f.object.occurrence_id %>
       <%= hidden_field_tag "existing_idigbio_uuid", f.object.idigbio_uuid %>
-      <%= f.input :identifier, as: :multi_value %>
-      <%= f.input :related_url, as: :multi_value %>
+      <%= f.input :identifier, label: 'External Identifier', as: :multi_value %>
+      <%= f.input :related_url, label: 'External URL', as: :multi_value %>
       <%#= f.input :idigbio_uuid %>
       <%#= f.input :idigbio_recordset_id %>
+      <%= f.input :bibliographic_citation, label: 'Bibliographic Citation', as: :multi_value %>
     </div>
 
     <div class="content-block">
-      <h2>GENERAL DETAILS</h2>
-
-      <%= f.input :description, label: 'Description' %>
-      <%= render_edit_field_partial('sex', f: f) %>
-      <%= render_edit_field_partial('is_type_specimen', f: f) %>
-      <%= @presenter.attribute_to_html(:source_of_record, render_as: :showcase_idigbio_link, include_empty: true, html_dl: false) %>
+      <h2>SPECIMEN DATING</h2>
       <%# todo: render date_field in simple_form_bootstrap %>
       <div class="row">
         <div class="col-xs-6 showcase-label"><%= @presenter.date_created_label %></div>
@@ -32,43 +55,10 @@
         <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
           </div>
       </div>
-      <%= @presenter.attribute_to_html(:date_uploaded, render_as: :showcase_date, include_empty: true, html_dl: false) %>
-      <% if @presenter.parent_organization.present? %>
-        <%= @presenter.attribute_to_html(
-          :parent_organization_title, 
-          label: 'Organization', 
-          link: Rails.application.routes.url_helpers.hyrax_organization_path(@presenter.parent_organization.id), 
-          render_as: :showcase_organization_title, 
-          html_dl: false) 
-        %>
-      <% else %>
-        <%= @presenter.attribute_to_html(:parent_organization_title, label: 'Organization', render_as: :showcase_organization_title, html_dl: false) %>
-      <% end %>
-      <%= f.input :creator, label: @presenter.creator_label, as: :multi_value, required: false %>
-    </div>
-
-    <div class="content-block">
-      <h2>TIME AND PLACE DETAILS</h2>
-      <%= f.input :vouchered, as: :select,
-          collection: ['Yes','No'],
-          include_blank: true,
-          input_html: { class: 'form-control' }
-      %>
       <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
-      <%= f.input :original_location, label: 'Locality' %>
-      <!--  todo: the html below can be removed if simpleform config wrapper can be used.  In that case, we need to figure out pass the content for the tooltip
-      <div class="form-group row">
-          <div class="col-xs-12 showcase-label">
-              <label class="control-label">Geographical coordinates</label><span class="glyphicon glyphicon-question-sign tooltip-icon" data-original-title="" title=""></span>
-          </div>
-      </div>
-      -->
-      <%= f.input 'Locality Geographical Coordinates', value_wrapper: false %>
-      <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
-      <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
       <%= f.input :numeric_time, label: 'Absolute Age' %>
+      <%= f.input :dating_method, label: 'Dating Method' %>
     </div>
-
   </div>
   <!-- /left column  -->
 
@@ -79,6 +69,27 @@
 
     <div class="content-block">
       <%= render 'form_member_of_collections', f: f %>
+    </div>
+
+    <div class="content-block">
+      <h2>SPECIMEN ORIGINAL LOCATION</h2>
+      <%= f.input :original_location, label: 'Locality' %>
+      <%= f.input :address, label: 'Address' %>
+      <%= f.input :city, label: 'City' %>
+      <%= f.input :state_province, label: 'State or Province' %>
+      <%= render 'records/edit_fields/country', f: f %>
+      <%= render "records/edit_fields/tgn", f: f, key: 'tgn' %>
+      <%= f.input 'Locality Geographical Coordinates', value_wrapper: false %>
+      <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
+      <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
+    </div>
+
+    <div class="content-block">
+      <h2>EXCAVATION/COLLECTION DETAILS</h2>
+      <%= f.input :provenance_name, label: 'Excavation/Collection Name' %>
+      <%= f.input :provenance_details, label: 'Excavation/Collection Details', as: :text, input_html: { rows: 4, style: 'height: auto;' } %>
+      <%= f.input :formation, label: 'Stratigraphic Formation' %>
+      <%= f.input :context, label: 'Stratigraphic Context' %>
     </div>
 
   </div>

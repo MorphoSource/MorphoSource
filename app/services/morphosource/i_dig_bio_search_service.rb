@@ -57,7 +57,6 @@ module Morphosource
     # using the resulting mapped metadata
     def self.biological_specimen_params_from_idigbio(idigbio_uuid)
       # set vouchered to true
-      # set description to: "Imported from iDigBio. UUID: {#uuid} Occurrence ID: {#data.occurrence_id}"
       # set idigbio_recordset_id to indexTerms['recordset']
       # set idigbio_uuid to uuid
       # set original_location to whichever of dwc:locality, dwc:verbatimLocality, dwc:country occurs first
@@ -97,7 +96,6 @@ module Morphosource
     def self.biological_specimen_params_from_idigbio_result(idb)
       bso_params = {
         'idigbio_uuid' => idb['uuid'],
-        'description' => "Imported from iDigBio. UUID: #{idb['uuid']} Occurrence ID: #{idb['data']['dwc:occurrenceID']}",
         'idigbio_recordset_id' => idb['indexTerms']['recordset'],
         'vouchered' => "Yes"
       }

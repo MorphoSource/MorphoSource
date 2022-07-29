@@ -1,31 +1,47 @@
-<% content_for :body_css_classes do %>showcase<% end %> 
-<% content_for :content_css_classes do %>fixed-width<% end %> 
+<% content_for :body_css_classes do %>showcase<% end %>
+<% content_for :content_css_classes do %>fixed-width<% end %>
 
-<%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
+<div class="object-showcase">
+  <%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
-<div class="row">
-	<div class="col-sm-6 col-sm-push-6">
-		<div class="content-block">
-			<%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
-		</div>
+  <!-- .media-order-# determines flexbox column order when screen width is less than 768px -->
+  <div class="row object-content-blocks-wrapper">
 
-		<div class="content-block">
-			<%= render @presenter.showcase_collections_partial, presenter: @presenter %>
-		</div>
-	</div>
+    <div class="media-order-2 content-block-wrapper">
+      <div class="content-block">
+        <%= render @presenter.showcase_general_details_partial, presenter: @presenter %>
+      </div>
+    </div>
 
-	<div class="col-sm-6 col-sm-pull-6">
-		<div class="content-block">
-			<%= render @presenter.showcase_general_details_partial, presenter: @presenter %>
-		</div>
-		<div class="content-block">
-			<%= render @presenter.showcase_taxonomy_partial, presenter: @presenter %>
-		</div>
-		<div class="content-block">
-			<%= render @presenter.showcase_identifiers_and_external_links_partial, presenter: @presenter %>
-		</div>
-		<div class="content-block">
-			<%= render @presenter.showcase_time_and_place_details_partial, presenter: @presenter %>
-		</div>
-	</div>
-</div>
+    <div class="media-order-3 content-block-wrapper" style="break-after:column;">
+      <div class="content-block">
+        <%= render @presenter.showcase_taxonomy_partial, presenter: @presenter %>
+      </div>
+      <div class="content-block">
+        <%= render @presenter.showcase_identifiers_and_external_links_partial, presenter: @presenter %>
+      </div>
+      <div class="content-block">
+        <%= render @presenter.showcase_time_details_partial, presenter: @presenter %>
+      </div>
+    </div>
+
+    <!-- second column start -->
+    <div class="media-order-1 content-block-wrapper">
+      <div class="content-block">
+        <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
+      </div>
+      <div class="content-block">
+        <%= render @presenter.showcase_collections_partial, presenter: @presenter %>
+      </div>
+    </div>
+
+    <div class="media-order-4 content-block-wrapper">
+      <div class="content-block">
+        <%= render @presenter.showcase_location_details_partial, presenter: @presenter %>
+      </div>
+      <div class="content-block">
+        <%= render @presenter.showcase_provenance_partial, presenter: @presenter %>
+      </div>
+    </div>
+  </div> <!-- object-content-blocks-wrapper -->
+</div> <!--object-showcase -->

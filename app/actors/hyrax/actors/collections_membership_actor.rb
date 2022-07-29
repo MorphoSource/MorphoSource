@@ -108,7 +108,7 @@ module Hyrax
           collection = Collection.find(id)
           collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
 
-          return unless env.current_ability.can?(:deposit, collection)
+          return unless can_deposit_to_collection?(env, collection)
 
           env.curation_concern.member_of_collections << collection
 
@@ -118,6 +118,25 @@ module Hyrax
           if env.curation_concern.persisted?
             Hyrax::PermissionTemplateApplicator.apply(collection.permission_template).to(model: env.curation_concern)
           end
+        end
+
+        # MorphoSource custom methods to allow collections membership in special cases
+        def can_deposit_to_collection?(env, collection)
+          env.current_ability.can?(:deposit, collection) ||
+            proxy_can_deposit_to_collection?(env, collection) ||
+            proxy_is_team_org_manager?(env, collection)
+        end
+
+        def proxy_can_deposit_to_collection?(env, collection)
+          ( proxy = env.attributes[:on_behalf_of] || env.curation_concern.on_behalf_of ).present? &&
+            ( proxy_user = ::User.find_by_user_key(proxy) ).present? &&
+            ( proxy_user.can?(:deposit, collection) )
+        end
+
+        def proxy_is_team_org_manager?(env, collection)
+          ( proxy = env.attributes[:on_behalf_of] || env.curation_concern.on_behalf_of ).present? &&
+            ( org = collection.organization ).present? &&
+            ( org.data_manager&.first == proxy )
         end
 
         # Remove the object from the members set and the ordered members list

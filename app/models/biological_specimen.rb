@@ -123,7 +123,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
       gbif_params = idb_taxonomy_param_sets[:gbif]
 
       if provider_params.present?
-        prov = Morphosource::TaxonomySearchService.call(provider_params)
+        prov = Morphosource::TaxonomySearchService.match_taxonomies_strict(provider_params)
         if prov.present?
           # Exists, link as canonical
           canonical_taxonomy_id = prov.first.id
@@ -136,7 +136,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
       end
 
       if gbif_params.present?
-        gbif = Morphosource::TaxonomySearchService.call(gbif_params)
+        gbif = Morphosource::TaxonomySearchService.call({ gbif_key: gbif_params['gbif_key'] })
         if gbif.present?
           taxonomy_id_array << gbif.first.id
         else

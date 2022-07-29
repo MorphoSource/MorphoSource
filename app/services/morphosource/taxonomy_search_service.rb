@@ -14,18 +14,19 @@ module Morphosource
       'taxonomy_order',
       'taxonomy_family',
       'taxonomy_genus',
-      'taxonomy_species'
+      'taxonomy_species',
+      'taxonomy_subspecies'
     ]
 
     def self.call(params={})
       new(params).call
     end
 
-    # Find taxonomies that match taxonomic rank values occurring to specific rules
-    def self.find_valid_taxonomies(taxonomic_rank_params={})
+    # Find taxonomies that match taxonomic rank values occurring to strict scientific name rules
+    def self.match_taxonomies_strict(taxonomic_rank_params={})
       new(
         taxonomic_rank_params.slice(*TAXONOMIC_RANKS).select { |k, v| v.present? }
-      ).find_valid_taxonomies
+      ).match_taxonomies_strict
     end
 
 
@@ -40,7 +41,7 @@ module Morphosource
       hits.map { |hit| SolrDocument.new(hit) }
     end
 
-    def find_valid_taxonomies
+    def match_taxonomies_strict
       return [] unless params.present?
       qry = assemble_strict_taxonomy_query
       hits = search_solr(qry)
@@ -59,14 +60,26 @@ module Morphosource
 
       def assemble_strict_taxonomy_query
         if params['taxonomy_genus'].present? && params['taxonomy_species'].present? 
-          query_clauses = [ model_clause ] + param_clauses
+          query_clauses = [ model_clause ] + assemble_strict_scientific_name_param_clauses
         else
-          query_clauses = [ model_clause ] + assemble_strict_query_higher_taxonomy
+          query_clauses = [ model_clause ] + assemble_strict_higher_taxonomy_param_clauses
         end
         query_clauses.join(' AND ')
       end
 
-      def assemble_strict_query_higher_taxonomy
+      def assemble_strict_scientific_name_param_clauses
+        return nil unless params['taxonomy_genus'].present? && params['taxonomy_species'].present?
+
+        if params['taxonomy_subspecies'].present?
+          # Must match all params provided, which includes genus, species, and subspecies
+          param_clauses
+        else
+          # Must match genus, species, and NO subspecies + any other params provided
+          param_clauses << "-#{Solrizer.solr_name('taxonomy_subspecies', :stored_searchable)}:*"
+        end
+      end
+
+      def assemble_strict_higher_taxonomy_param_clauses
         positive_clauses = params.map { |k,v| "#{Solrizer.solr_name(k, :stored_searchable)}:#{prepare_value(v)}" }
         negative_clauses = (TAXONOMIC_RANKS - params.keys).map { |k| "-#{Solrizer.solr_name(k, :stored_searchable)}:*" }
         positive_clauses + negative_clauses

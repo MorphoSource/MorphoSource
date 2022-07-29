@@ -7,7 +7,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
   before_update do
     controlled_value_filter
     date_filter
-    update_metadata_from_idigbio_occurrence_id(false, false)
   end
   after_update :reindex_media
 
@@ -33,8 +32,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
   # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
-  # Temporarily removing this because we're not sure if we want specimens to auto-update on change
-  # before_update :update_metadata_from_idigbio_occurrence_id, if: :occurrence_id_changed?
+  before_update :update_metadata_from_idigbio_occurrence_id, if: :occurrence_id_changed?
 
   def best_taxonomy
     if canonical_taxonomy.present?
@@ -111,7 +109,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
     return ((idigbio_occurrence_id_results[:status] == :success) && (idigbio_occurrence_id_results[:data].length > 0))
   end
 
-  def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=true)
+  def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false)
     if idigbio_match_found?
       idigbio_occurrence = idigbio_occurrence_id_results[:data].first
       taxonomy_params_array = []

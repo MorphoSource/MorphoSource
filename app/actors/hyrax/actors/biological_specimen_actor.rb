@@ -67,13 +67,14 @@ module Hyrax
       end
 
       def check_canonical_taxonomy(env)
-        canonical_taxonomy = env.attributes["canonical_taxonomy"]
-        return '' if !canonical_taxonomy || canonical_taxonomy.empty?
-        canonical_id = canonical_taxonomy.first
-        if env.attributes.key?("taxonomy_id") && !env.attributes["taxonomy_id"].include?(canonical_id)
+        canonical_taxonomy = env.attributes["canonical_taxonomy"] || env.curation_concern.canonical_taxonomy
+        taxonomy_id = env.attributes["taxonomy_id"] || env.curation_concern.taxonomy_id
+
+        return '' if !canonical_taxonomy.present? || canonical_taxonomy.empty?
+        if !taxonomy_id.include?(canonical_taxonomy.first)
           return ''
         else
-          return canonical_id
+          return canonical_taxonomy.first
         end
       end
     end

@@ -647,7 +647,7 @@ namespace :morphosource do
         o = BiologicalSpecimen.find(hit.id)
         if o.present?
           puts "Updating specimen #{o.id} of project #{project_id} from IDigbio"
-          UpdateBsoFromIdigbioJob.perform_later(o, update)
+          UpdateBsoFromIdigbioJob.perform_later(o, update, true)
         else
           puts "Specimen #{o.id} not found"
         end
@@ -656,7 +656,7 @@ namespace :morphosource do
       # update all bso
       BiologicalSpecimen.find_each do |o|
         puts "Updating specimen #{o.id} from IDigbio"
-        UpdateBsoFromIdigbioJob.perform_later(o, update)
+        UpdateBsoFromIdigbioJob.perform_later(o, update, true)
       end
     end
   end

@@ -26,7 +26,6 @@ module Morphosource
           render 'show'
         end
         format.csv do
-          repository.blacklight_config.max_per_page = 9999999
           csv_response_headers(csv_response_header)
           render 'show'
         end
@@ -49,6 +48,9 @@ module Morphosource
       deny_access_unauthorized and return unless current_user.present?
       deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
 
+      if request.format == 'csv'
+        repository.blacklight_config.max_per_page = 9999999
+      end
       (@response, @document_list) = query_solr_all_results
       @document_list.map! { |d| d.to_semantic_values }
       export_render("#{@document_type.titleize.pluralize} Query")
@@ -74,6 +76,9 @@ module Morphosource
       deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
 
       @document_type = 'media_with_download_count'
+      if request.format == 'csv'
+        repository.blacklight_config.max_per_page = 9999999
+      end
       (@response, @media_document_list) = query_solr_all_results
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq 
       downloads = Morphosource::Reports::DownloadsReportService.call(media_ids)
@@ -105,6 +110,7 @@ module Morphosource
       deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
 
       @document_type = 'media_request'
+      repository.blacklight_config.max_per_page = 9999999
       (_, @media_document_list) = query_solr_all_results
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq 
       @document_list = Morphosource::Reports::RequestsReportService.call(media_ids)

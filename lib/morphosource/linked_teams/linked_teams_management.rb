@@ -34,6 +34,12 @@ module Morphosource
         works.each { |w| add_read_access(w) }
       end
 
+      def re_apply_organization_team_access(works, team_id)
+        works = Array(works)
+        get_groups([team_id])
+        works.each { |w| add_read_access(w) }
+      end
+
       def add_organization_team_access_for_po(env=nil)
         if env.present?
           # env passed from new submission (called from creating PO)

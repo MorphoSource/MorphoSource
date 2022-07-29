@@ -5,6 +5,7 @@ class Collection < ActiveFedora::Base
   include ::Hyrax::CollectionBehavior
   # You can replace these metadata if they're not suitable
   include Hyrax::BasicMetadata
+  include Morphosource::LinkedTeams::LinkedTeamsManagement
   self.indexer = Hyrax::CollectionWithBasicMetadataIndexer
 
   attr_accessor :organization_id
@@ -174,6 +175,14 @@ class Collection < ActiveFedora::Base
     work.edit_groups -= [managers_group.name, editors_group.name]
     work.read_groups -= [viewers_group.name]
     work.download_groups -= [downloaders_group.name]
+    reapply_org_team_access(work)
+  end
+
+  def reapply_org_team_access(work)
+    # re-apply org-link team access if the media belongs to the same org-linked team
+    return unless self.organization.present?
+    return unless work.organizations_team_ids.include? self.id
+    re_apply_organization_team_access(work, self.id)
   end
 
   def membership_of(user)

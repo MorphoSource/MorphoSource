@@ -249,14 +249,14 @@ RSpec.describe BatchSubmissionsController, type: :controller do
     end
 
     context "Existing bso not valid" do
-      render_views
       let(:org) { Organization.create(title: ['org']) }
       let(:org2) { Organization.create(title: ['org2']) }
-      let(:bso) { BiologicalSpecimen.create(title: ['public specimen'], visibility: 'open', vouchered: ['Yes'], organization_id: [org.id]) }
+      let(:bso) { BiologicalSpecimen.create(id: 'TESTBSO123', title: ['public specimen'], visibility: 'open', vouchered: ['Yes'], organization_id: [org.id]) }
       let(:params) { {"manifest" => invalid_parents_file, "organization_id" => org2.id, "batch_submission" => {"modality" => "photography"}} }
       before do
-        allow(subject).to receive(:existing_bso_by_id) { bso }
+        bso.reload
       end
+      render_views
       it "displays bso message" do
         post 'submit', :params => params 
         expect(response).to render_template 'validation_fail'

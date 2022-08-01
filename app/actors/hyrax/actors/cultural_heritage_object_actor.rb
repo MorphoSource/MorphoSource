@@ -5,7 +5,7 @@ module Hyrax
 
       def create(env)
         env.attributes['title'] = [ generated_title(env) ]
-        add_team_access_for_po(env)
+        add_team_access(env)
         super
       end
 
@@ -54,7 +54,7 @@ module Hyrax
 
       private
 
-      def add_team_access_for_po(env)
+      def add_team_access(env)
         return unless env.attributes[:organization_id] && env.attributes[:organization_id].present?
         add_organization_team_access_for_po(env)
       end

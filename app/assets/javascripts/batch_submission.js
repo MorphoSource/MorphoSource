@@ -5,11 +5,9 @@
 
 $( document ).ready(function() {
 
-  if ($('body[class*="batch-submission"]').length) { // check if the page is batch submission index page
-    $('.clear-bs-form').click(function(event){
-      // clear previous submitted data before loading the form
-      localStorage.removeItem("batchSubmissionFormData");
-    })
+  if ($('body[class*="batch-submission-dashboard"]').length) { // check if the page is batch submission index page
+    // clear previous submitted data 
+    localStorage.removeItem("batchSubmissionFormData");
   }
 
   if ($('[class*="batch-submission-form"]').length) { // check if the page is batch submission form
@@ -679,5 +677,11 @@ $( document ).ready(function() {
       // Unset org transfer settings and reset (in case on behalf of is chosen after org)
       batchSubmissionForm.setDefaultMediaPermissionFields();
     });
+
+    $(window).bind('beforeunload',function(){
+      // clear previous submitted data when reloading the form
+      localStorage.removeItem("batchSubmissinFormData");
+    });
+
   } // check if the page is batch submission form
 });

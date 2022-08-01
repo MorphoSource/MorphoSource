@@ -3,21 +3,15 @@ module Morphosource
     class TeamsController < Morphosource::CollectionsController
       include Morphosource::Collections::LinkedTeamsControllerBehavior
 
-      skip_load_and_authorize_resource only: [:show, :about, :facet, 
+      skip_load_and_authorize_resource only: [:show, :about, :facet,
         :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet
       ], instance_name: :collection
 
       before_action :authenticate_api_key_optional, only: :media_projects
-<<<<<<< HEAD
-      before_action :load_organization, only: [:show, :facet, :about, 
+      before_action :load_organization, only: [:show, :facet, :about,
         :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
-      before_action :create_intersections_facet, only: [:show, :facet, 
+      before_action :create_intersections_facet, only: [:show, :facet,
         :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
-=======
-      before_action :load_organization, only: [:show, :facet, :about, :media_projects]
-      before_action :create_intersections_facet, only: [:show, :facet, :media_projects]
-      before_action :create_data_manager_facet, only: [:show, :facet, :media_projects]
->>>>>>> 8398f0dd... Update collection show page with edit abilities
 
       self.presenter_class = Morphosource::Collections::TeamPresenter
 

@@ -86,7 +86,7 @@ Rails.application.routes.draw do
     get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
     get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
 
-    scope module: :collections do    
+    scope module: :collections do
       # these get redirected to projects/teams
       get 'collections/:id/biological_specimens', to: 'biological_specimens#show'
       get 'collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show'
@@ -128,7 +128,10 @@ Rails.application.routes.draw do
     end
 
     scope module: :dashboard do
+      get 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
+
       get 'dashboard/collections/:id', to: 'collections#edit'
+      get 'dashboard/collections/new', to: 'collections#new'
       put 'dashboard/collections', to: 'collections#update'
       patch 'dashboard/collections/:id', to: 'collections#update'
 
@@ -206,13 +209,6 @@ Rails.application.routes.draw do
     get 'browse_projects_paging/browse/teams', to: redirect { |params, request| "/browse/projects/?#{request.params.to_query}" }
     get 'browse_teams_paging/browse/teams', to: redirect { |params, request| "/browse/teams/?#{request.params.to_query}" }
 
-    
-    namespace :dashboard do
-      resources :collections, controller: 'collections'
-
-      # Note: the following route might effect pagination links
-      get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
-    end
 
     #get 'dashboard/my/teams', controller: 'my/teams', action: :index
     #get 'dashboard/my/projects', controller: 'my/teams', action: :index
@@ -225,7 +221,7 @@ Rails.application.routes.draw do
         # resources :media, only: [:index], controller: 'morphosource/my/media'
       end
 
-      namespace :transfers do 
+      namespace :transfers do
         put 'decide', action: :batch_decide_transfers, as: 'batch_decide'
       end
     end

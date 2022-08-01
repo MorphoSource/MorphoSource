@@ -11,7 +11,7 @@ module Morphosource
       before_action :filter_docs_with_read_access!, only: []
       before_action :build_breadcrumbs, only: []
       before_action :load_collection
-      before_action :redirect_to_collection_type, only: [:edit, :update]
+      before_action :redirect_to_collection_type, only: [:edit, :update, :new]
 
       self.presenter_class = presenter_class
 

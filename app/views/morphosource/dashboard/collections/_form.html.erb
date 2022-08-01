@@ -104,44 +104,10 @@
 
       <%# the following forms needs to be outside of the edit collection form %>
 
-      <% if @collection.team? && @presenter.collection_type_is_nestable? %>
-        <div id="team_projects" role="tabpanel" class="tab-pane">
-          <div class="form-tab-content">
+      <% if @collection.team? %>
+      <%= render 'tab_project' %>
 
-              <% unless has_collection_search_parameters? %>
-                <div class="row tab-action-buttons sub-collections-wrapper">
-                    <!-- The user should have deposit access to the parent (the collection we are showing) and read access to the child -->
-                    <% if @presenter.user_can_nest_collection? %>
-
-                    <%= button_tag t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
-                          type: 'button',
-                          class: 'btn btn-primary add-subcollection',
-                          title: t('hyrax.dashboard.collections.actions.add_project_to_' + @presenter.collection_type_title + '.label'),
-                          data: { nestable: true,
-                                  hasaccess: true,
-                                  presenter_id: @presenter.id } %>
-
-                      <!-- The user must have the ability to create a new collection of parent's type -->
-                      <%# pass the collection type id for Projects so it will redirect user to a new Project form %>
-                      <% if @presenter.user_can_create_new_nest_collection? %>
-                        <%= link_to t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
-                          hyrax.dashboard_create_subcollection_under_path(parent_id: @presenter.id, target_collection_type_id: Hyrax::CollectionType.find_by(machine_id: "project").id),
-                          title: t('hyrax.dashboard.collections.actions.create_new_project_in_' + @presenter.collection_type_title + '.label'),
-                          class: 'btn btn-primary' %>
-                      <% end %>
-
-                    <% end %>
-
-                </div>
-              <% end %>
-
-              <!-- render 'project_filters' -->
-              <%= render 'tab_project_list', id: @presenter.id, collection: @projects %>
-
-          </div>
-        </div>
-      <% end %>
-
+<% end %>
 
     </div> <!-- end tab-content -->
 

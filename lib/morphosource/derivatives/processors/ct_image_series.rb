@@ -85,10 +85,6 @@ module Morphosource::Derivatives::Processors
       end
     end
 
-    def derivatives_tmp_path
-      @derivatives_tmp_path = Hyrax.config.derivatives_tmp_path
-    end
-
     def correct_spacing_scale
       unit_factors = { 'Cm' => 10.0, 'M' => 1000.0, 'Km' => 1e6, 'In' => 25.4, 'Ft' => 304.8, 'Mi' => 1.609e+6, 'Um' => 0.001 }
       uf = unit_factors[unit]

@@ -11,6 +11,10 @@ module Morphosource::Derivatives::Processors
       dicom_image_formats + ['.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg']
     end
 
+    def derivatives_tmp_path
+      @derivatives_tmp_path = Hyrax.config.derivatives_tmp_path
+    end
+
     def locate_images
       # get all image files and locations in zip
       img_locs = {}

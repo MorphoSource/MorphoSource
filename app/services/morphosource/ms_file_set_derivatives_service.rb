@@ -57,28 +57,45 @@ module Morphosource
 
       def create_archive_derivatives(filename)
         if file_set.member_of.first.media_type.first == 'CTImageSeries'
-          # Pull out a single image as 2D thumbnail
-          Morphosource::Derivatives::CTImageSeriesCroppedImageDerivatives.create(
-            filename,
-            outputs: [ { 
-              label: :thumbnail, 
-              url: derivative_url('thumbnail') 
-            } ]
-          )
-          # Create 3D derivative asset
-          Morphosource::Derivatives::CTImageSeriesDerivatives.create(
-            filename,
-            outputs: [ { 
-              label: :dcm,
-              format: 'dcm',
-              slice_thickness: file_set.member_of.first.slice_thickness.first,
-              unit: file_set.member_of.first.unit.first,
-              url: derivative_url('dcm'),
-              x_spacing: file_set.member_of.first.x_spacing.first,
-              y_spacing: file_set.member_of.first.y_spacing.first,
-              z_spacing: file_set.member_of.first.z_spacing.first
-            } ]
-          )
+          errors = []
+
+          begin
+            # Pull out a single image as 2D thumbnail
+            Morphosource::Derivatives::CTImageSeriesCroppedImageDerivatives.create(
+              filename,
+              outputs: [ { 
+                label: :thumbnail, 
+                url: derivative_url('thumbnail') 
+              } ]
+            )
+          rescue StandardError => e
+            errors << e
+          end
+
+          begin
+            # Create 3D derivative asset
+            Morphosource::Derivatives::CTImageSeriesDerivatives.create(
+              filename,
+              outputs: [ { 
+                label: :dcm,
+                format: 'dcm',
+                slice_thickness: file_set.member_of.first.slice_thickness.first,
+                unit: file_set.member_of.first.unit.first,
+                url: derivative_url('dcm'),
+                x_spacing: file_set.member_of.first.x_spacing.first,
+                y_spacing: file_set.member_of.first.y_spacing.first,
+                z_spacing: file_set.member_of.first.z_spacing.first
+              } ]
+            )
+          rescue StandardError => e
+            errors << e
+          end
+
+          if errors.count == 1
+            raise errors.first
+          elsif errors.count > 1
+            raise "Two errors were encountered generating derivatives for CT image series. Error 1 from 2D thumbnail derivative generation: #{errors[0].message}. Error 2 from 3D asset derivative generation: #{errors[1].message}."
+          end
         elsif file_set.member_of.first.media_type.first == 'Mesh'
           Morphosource::Derivatives::MeshDerivatives.create(
             filename,

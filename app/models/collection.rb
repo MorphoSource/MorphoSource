@@ -16,6 +16,7 @@ class Collection < ActiveFedora::Base
 
   # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
   DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
+  EDIT_GROUP_ROLES = %w[managers editors].freeze
 
   # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
   def permission_template_read_groups

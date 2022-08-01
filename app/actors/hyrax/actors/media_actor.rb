@@ -16,6 +16,7 @@ module Hyrax
       def update(env)
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
+        add_team_access(env)
         super
       end
 
@@ -98,7 +99,7 @@ module Hyrax
         tags.split(',')
       end
 
-      def new_specimens
+      def new_physical_objects
         @parent.objects
       end
     end

@@ -57,6 +57,15 @@ module Morphosource
 
       def create_archive_derivatives(filename)
         if file_set.member_of.first.media_type.first == 'CTImageSeries'
+          # Pull out a single image as 2D thumbnail
+          Morphosource::Derivatives::CTImageSeriesCroppedImageDerivatives.create(
+            filename,
+            outputs: [ { 
+              label: :thumbnail, 
+              url: derivative_url('thumbnail') 
+            } ]
+          )
+          # Create 3D derivative asset
           Morphosource::Derivatives::CTImageSeriesDerivatives.create(
             filename,
             outputs: [ { 

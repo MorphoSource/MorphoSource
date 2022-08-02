@@ -15,7 +15,13 @@
     <b>Create New Batch Submission</b>
     <p><i class="fa fa-hand-point-right"></i> <%= link_to "Download blank submission manifest Excel file (XLSX) <i class='fa fa-file-alt'></i>".html_safe, asset_path("ingest_manifest_template.xlsx"), target: "_blank" %></p>
     <p class="mt-2"><i class="fa fa-hand-point-right"></i> <b>Fill out the required and optional fields below as appropriate and then upload your completed blank submission manifest.</b></p>
+  </div>
+</div>
 
+<div class="row flash-wrapper restored-message hide">
+  <div class="alert alert-info alert-dismissable" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+    Your batch submission form has been restored.  If you are submitting media associated with an organization that has recommended permission settings, some settings have been restored to the organization’s recommendations.  Please review and make changes as needed.
   </div>
 </div>
 

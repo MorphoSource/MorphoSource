@@ -44,19 +44,22 @@ module Morphosource
       end
 
       def create_mesh_derivatives(filename)
+        parent_work = file_set.member_of&.first
         Morphosource::Derivatives::MeshDerivatives.create(
           filename,
           outputs: [ {
             label: :glb, 
             format: 'glb', 
-            unit: file_set.member_of&.first&.unit&.first, 
+            unit: parent_work&.unit&.first, 
             url: derivative_url('glb')
           } ]
         )
       end
 
       def create_archive_derivatives(filename)
-        if file_set.member_of.first.media_type.first == 'CTImageSeries'
+        parent_work = file_set.member_of&.first
+
+        if parent_work&.media_type&.first == 'CTImageSeries'
           errors = []
 
           begin
@@ -79,12 +82,12 @@ module Morphosource
               outputs: [ { 
                 label: :dcm,
                 format: 'dcm',
-                slice_thickness: file_set.member_of.first.slice_thickness.first,
-                unit: file_set.member_of.first.unit.first,
+                slice_thickness: parent_work&.slice_thickness&.first,
+                unit: parent_work&.unit&.first,
                 url: derivative_url('dcm'),
-                x_spacing: file_set.member_of.first.x_spacing.first,
-                y_spacing: file_set.member_of.first.y_spacing.first,
-                z_spacing: file_set.member_of.first.z_spacing.first
+                x_spacing: parent_work&.x_spacing&.first,
+                y_spacing: parent_work&.y_spacing&.first,
+                z_spacing: parent_work&.z_spacing&.first
               } ]
             )
           rescue StandardError => e
@@ -96,13 +99,13 @@ module Morphosource
           elsif errors.count > 1
             raise "Two errors were encountered generating derivatives for CT image series. Error 1 from 2D thumbnail derivative generation: #{errors[0].message}. Error 2 from 3D asset derivative generation: #{errors[1].message}."
           end
-        elsif file_set.member_of.first.media_type.first == 'Mesh'
+        elsif parent_work&.media_type&.first == 'Mesh'
           Morphosource::Derivatives::MeshDerivatives.create(
             filename,
             outputs: [ { 
               label: :glb,
               format: 'glb',
-              unit: file_set.member_of.first.unit.first,
+              unit: parent_work&.unit&.first,
               url: derivative_url('glb')
             }]
           )

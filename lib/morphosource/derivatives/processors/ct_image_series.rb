@@ -6,6 +6,8 @@ module Morphosource::Derivatives::Processors
   end
 
   class CTImageSeries < Hydra::Derivatives::Processors::Processor
+    include Morphosource::Derivatives::Processors::CTImageSeriesUtil
+
     attr_accessor :tmp_dir_path, :img_coll, :ext
     attr_accessor :input_path, :scaled_path, :raw_dcm_path, :output_path, :manifest_path
     attr_accessor :raw_dcm_file_path, :output_file_path
@@ -14,14 +16,6 @@ module Morphosource::Derivatives::Processors
     attr_accessor :derivatives_tmp_path
 
     class_attribute :timeout
-
-    def dicom_image_formats
-      ['.dcm', '.dicom', '.ima', '']
-    end
-
-    def acceptable_image_formats
-      dicom_image_formats + ['.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg']
-    end
 
     def process
       timeout ? process_with_timeout : create_ct_image_series_derivative
@@ -35,64 +29,60 @@ module Morphosource::Derivatives::Processors
 
     protected
 
-      def create_ct_image_series_derivative
-        @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
-        Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
-        @input_path = File.join(tmp_dir_path, 'input')
-        Dir.mkdir input_path unless File.exist? input_path
-        @scaled_path = File.join(tmp_dir_path, 'scaled')
-        Dir.mkdir scaled_path unless File.exist? scaled_path
-        @raw_dcm_path = File.join(tmp_dir_path, 'raw_dcm')
-        Dir.mkdir raw_dcm_path unless File.exist? raw_dcm_path
-        @raw_dcm_file_path = File.join(raw_dcm_path, 'derivative.dcm')
-        @output_path = File.join(tmp_dir_path, 'output')
-        Dir.mkdir output_path unless File.exist? output_path
-        @output_file_path = File.join(output_path, 'derivative.dcm')
+    def create_ct_image_series_derivative
+      @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
+      Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
+      @input_path = File.join(tmp_dir_path, 'input')
+      Dir.mkdir input_path unless File.exist? input_path
+      @scaled_path = File.join(tmp_dir_path, 'scaled')
+      Dir.mkdir scaled_path unless File.exist? scaled_path
+      @raw_dcm_path = File.join(tmp_dir_path, 'raw_dcm')
+      Dir.mkdir raw_dcm_path unless File.exist? raw_dcm_path
+      @raw_dcm_file_path = File.join(raw_dcm_path, 'derivative.dcm')
+      @output_path = File.join(tmp_dir_path, 'output')
+      Dir.mkdir output_path unless File.exist? output_path
+      @output_file_path = File.join(output_path, 'derivative.dcm')
 
 
-        @x_spacing = (directives.fetch(:x_spacing, 1).presence || 1).to_f
-        @y_spacing = (directives.fetch(:y_spacing, 1).presence || 1).to_f
-        @z_spacing = (directives.fetch(:z_spacing, 0).presence || 0).to_f
-        @slice_thickness = (directives.fetch(:slice_thickness, 0).presence || 0).to_f
-        if z_spacing == 0 && slice_thickness == 0
-          puts('first if hit')
-          if x_spacing && y_spacing
-            puts('second if')
-            @z_spacing = x_spacing
-          else
-            @z_spacing = 1
-          end
-        end
-        # @z_spacing = 1 if z_spacing == 0 && slice_thickness == 0
-
-        # If unit is not Mm, must convert spacing values to Mm
-        @unit = directives.fetch(:unit, 'Mm').presence || 'Mm'
-        correct_spacing_scale if unit != 'Mm'
-        begin
-          locate_images
-          if !img_coll
-            return
-          end
-
-          # extract and process images
-          extract_images
-          uncompress_dcm if dicom_image_formats.include?(ext)
-          extract_image_metadata
-          scale_images
-          tif_to_raw_dcm
-          compress_dcm
-
-          # place files
-          write_files
-        rescue StandardError => e
-          raise e
-        ensure
-          cleanup_tmp_files
+      @x_spacing = (directives.fetch(:x_spacing, 1).presence || 1).to_f
+      @y_spacing = (directives.fetch(:y_spacing, 1).presence || 1).to_f
+      @z_spacing = (directives.fetch(:z_spacing, 0).presence || 0).to_f
+      @slice_thickness = (directives.fetch(:slice_thickness, 0).presence || 0).to_f
+      if z_spacing == 0 && slice_thickness == 0
+        puts('first if hit')
+        if x_spacing && y_spacing
+          puts('second if')
+          @z_spacing = x_spacing
+        else
+          @z_spacing = 1
         end
       end
+      # @z_spacing = 1 if z_spacing == 0 && slice_thickness == 0
 
-    def derivatives_tmp_path
-      @derivatives_tmp_path = Hyrax.config.derivatives_tmp_path
+      # If unit is not Mm, must convert spacing values to Mm
+      @unit = directives.fetch(:unit, 'Mm').presence || 'Mm'
+      correct_spacing_scale if unit != 'Mm'
+      begin
+        locate_images
+        if !img_coll
+          return
+        end
+
+        # extract and process images
+        extract_images
+        uncompress_dcm if dicom_image_formats.include?(ext)
+        extract_image_metadata
+        scale_images
+        tif_to_raw_dcm
+        compress_dcm
+
+        # place files
+        write_files
+      rescue StandardError => e
+        raise e
+      ensure
+        cleanup_tmp_files
+      end
     end
 
     def correct_spacing_scale
@@ -103,43 +93,6 @@ module Morphosource::Derivatives::Processors
       @y_spacing*= uf
       @z_spacing*= uf
       @slice_thickness*= uf
-    end
-
-    def locate_images
-      # get all image files and locations in zip
-      img_locs = {}
-      Zip::File.open(source_path) do |zip_file|
-        zip_file.each do |f|
-          next if File.basename(f.name).start_with?('.')
-          ext = File.extname(f.name).downcase
-          if acceptable_image_formats.include? ext
-            loc = File.dirname(f.name)
-            if !img_locs.key?(ext)
-              img_locs[ext] = {}
-            end
-            if !img_locs[ext].key?(loc)
-              img_locs[ext][loc] = []
-            end
-            img_locs[ext][loc] << f.name
-          end
-        end
-      end
-
-      # sort image collections by extension and location
-      coll_by_ext = {}
-      img_locs.each do |k, v|
-        max = v.max_by { |sub_k, sub_v| sub_v.length }
-        coll_by_ext[k] = max[1] if (max[1].length > 19 || k.downcase == '.dcm' || k.downcase == '.dicom')
-      end
-
-      # return largest group of most preferred file type
-      acceptable_image_formats.each do |ext|
-        if coll_by_ext.key?(ext)
-          @img_coll = coll_by_ext[ext]
-          @ext = ext
-          return
-        end
-      end
     end
 
     def extract_images
@@ -190,20 +143,6 @@ module Morphosource::Derivatives::Processors
       end
     end
 
-    # def extract_image_metadata
-    #   x = []
-    #   y = []
-    #   z = 0
-    #   Dir.foreach(input_path) do |f|
-    #     next if f == '.' or f == '..'
-    #     x_dim, y_dim = image_dims(File.join(input_path, File.basename(f)))
-    #     x << x_dim if x_dim
-    #     y << y_dim if y_dim
-    #     z += 1 if x_dim && y_dim
-    #   end
-    #   set_series_metadata(x, y, z)
-    # end
-
     def image_dims(f)
       w = nil
       h = nil
@@ -215,17 +154,6 @@ module Morphosource::Derivatives::Processors
       img.destroy!
       return w, h
     end
-
-    # def set_series_metadata(x, y, z)
-    #   if x.uniq.length != 1 || y.uniq.length != 1 || z == 0
-    #     raise "No images or different types of images located in image series archive"
-    #   else
-    #     @x = x.first
-    #     @y = y.first
-    #     @z = z
-    #     @linear_scale_factor = linear_scale_factor
-    #   end
-    # end
 
     def vf # voxel volume factor, i.e. approx. length on a side in pixels
       400.0

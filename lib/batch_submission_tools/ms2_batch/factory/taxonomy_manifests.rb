@@ -43,7 +43,7 @@ module BatchSubmissionTools
           new_work_attrs if !provider_attrs.present? && !gbif_attrs.present?
 
           if provider_attrs.present?
-            existing_provider_work = Morphosource::TaxonomySearchService.call(provider_attrs)
+            existing_provider_work = Morphosource::TaxonomySearchService.match_taxonomies_strict(provider_attrs)
             if existing_provider_work&.first.present?
               # Taxonomy matching provider taxon exists, create ingest as matching and canonical
               new_ingest(ingest_attrs: { id: [existing_provider_work&.first.id] } , depositor: admin_user, canonical: true)
@@ -54,7 +54,7 @@ module BatchSubmissionTools
           end
 
           if gbif_attrs.present?
-            existing_gbif_work = Morphosource::TaxonomySearchService.call(gbif_attrs)
+            existing_gbif_work = Morphosource::TaxonomySearchService.call({ gbif_key: gbif_attrs[:gbif_key] })
             if existing_gbif_work&.first.present?
               # Taxonomy matching GBIF taxon exists, create ingest as matching
               new_ingest(ingest_attrs: { id: [existing_gbif_work&.first.id] } , depositor: admin_user)

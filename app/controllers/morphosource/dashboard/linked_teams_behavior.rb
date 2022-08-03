@@ -30,7 +30,7 @@ module Morphosource
         @organization.physical_objects.each do |po|
           final_read_groups = po.read_groups + @po_edit_groups
           final_edit_groups = po.edit_groups + @po_edit_groups
-          UpdateWorkAccessGroupsJob.perform_now(po, final_read_groups, final_edit_groups) 
+          UpdateWorkAccessGroupsJob.perform_later(po, final_read_groups, final_edit_groups) 
         end
       end
 
@@ -62,7 +62,7 @@ module Morphosource
         physical_objects.each do |po|
           final_read_groups = po.read_groups - @po_edit_groups
           final_edit_groups = po.edit_groups - @po_edit_groups
-          UpdateWorkAccessGroupsJob.perform_now(po, final_read_groups, final_edit_groups)
+          UpdateWorkAccessGroupsJob.perform_later(po, final_read_groups, final_edit_groups)
         end
       end
 

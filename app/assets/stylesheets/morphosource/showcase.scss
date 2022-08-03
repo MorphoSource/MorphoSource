@@ -250,6 +250,91 @@ html {
     }
   }
 
+  .team-header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-right: 0px;
+
+    @media (max-width: 767px) {
+      flex-wrap: wrap;
+
+      .title-wrapper {
+        width: 100%;
+      }
+
+      .btn-wrapper {
+        max-width: 100% !important;
+      }
+
+      .collection-manage-buttons {
+        width: 100% !important;
+        justify-content: space-around !important;
+        margin: 0px !important;
+      }
+
+      .collection-manage-button-wrapper {
+        width: 30%;
+      }
+
+      .btn {
+        width: 100% !important;
+        font-size: 14px !important;
+        margin: 0px !important;
+      }
+
+      .dropdown-menu {
+        left: 0px;
+      }
+
+      li {
+        margin: 0px !important;
+      }
+    }
+
+    .title-wrapper {
+      min-width: 67%;
+      flex-grow: 1;
+    }
+
+    .btn-wrapper {
+      max-width: 225px;
+      flex-grow: 0;
+    }
+
+    .collection-manage-buttons {
+      display: flex;
+      width: 225px;
+      flex-grow: 0;
+      justify-content: end;
+
+      .dropdown-menu {
+        min-width: 320px !important;
+        right: 0px !important;
+        top: unset !important;
+
+        .btn {
+          width: 100%;
+          text-align: left;
+          padding: 5px 5px 5px 10px;
+        }
+
+        .btn:hover {
+          color: $button-hover-font-color;
+          background-color: $button-hover-color;
+          border-color: $button-hover-border-color;
+        }
+      }
+
+      .btn {
+        width: 75px;
+        border-radius: 3px;
+        margin-left: 3px;
+        font-size: 14px;
+      }
+    }
+  }
+
   .team-logo img {
     width: 60px;
     margin-right:16px;
@@ -271,6 +356,7 @@ html {
     }
 
   }
+
   h1 {
     margin-top:0;
   }
@@ -442,57 +528,34 @@ html {
     }
   }
 
-  .collection-manage-buttons {
-    display: flex;
-    flex-direction: column;
-
-    .collection-manage-button-wrapper {
-      margin-bottom: 3px;
-
-      .btn {
-        width: 100%;
-        max-width: 200px;
-      }
-
-      .dropdown-menu {
-        top: unset;
-
-        .btn {
-          text-align: left;
-          max-width: 100%;
-        }
-        .btn:hover {
-          color: $button-hover-font-color;
-          background-color: $button-hover-color;
-          border-color: $button-hover-border-color;
-        }
-      }
-
-      a {
-        font-size: 14px;
-      }
-
-      li {
-        width: 290px;
-      }
 
 
-    }
-
-    @media (max-width: 768px) {
-      text-align: center;
-
-      .dropdown-menu {
-        li {
-          margin-left: unset;
-        }
-      }
-    }
-
-    @media (min-width: 768px) {
-      text-align: right;
-    }
-  }
+  // .collection-manage-buttons {
+  //   @media (max-width: 768px) {
+  //     text-align: center;
+  //
+  //     .dropdown-menu {
+  //       li {
+  //         margin-left: unset;
+  //       }
+  //     }
+  //   }
+  //
+  //   @media (min-width: 768px) {
+  //     text-align: right;
+  //   }
+  //
+  //   .dropdown-menu {
+  //     .btn {
+  //       text-align: left;
+  //     }
+  //     .btn:hover {
+  //       color: $button-hover-font-color;
+  //       background-color: $button-hover-color;
+  //       border-color: $button-hover-border-color;
+  //     }
+  //   }
+  // }
 
   .batch-action-buttons {
     .btn {

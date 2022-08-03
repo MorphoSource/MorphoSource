@@ -16,7 +16,7 @@ provide :page_title, construct_page_title(@presenter.title)
   </div>
 
   <div class="row team-header">
-    <div class="col-xs-12 col-sm-8 col-md-8">
+    <div class="col-xs-12 col-sm-8 col-md-8 title-wrapper">
       <div class="col-sm-12 col-md-12 flex">
         <div class="team-logo">
           <% unless @presenter.logo_record.blank? %>
@@ -54,78 +54,8 @@ provide :page_title, construct_page_title(@presenter.title)
 
     <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
       <% if can?(:edit, @presenter.solr_document) %>
-        <div class="row collection-manage-buttons">
-          <div class="collection-manage-button-wrapper">
-            <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary' %>
-          </div>
-            <div class="collection-manage-button-wrapper">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              CSV export <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-              <li>
-                <% if @tab == :specimens %>
-                  <% query_link_title = 'Specimen metadata with facets' %>
-                  <% query_link_url = specimens_export_csv_url(@collection) %>
-                <% elsif @tab == :chos %>
-                  <% query_link_title = 'Object metadata with facets' %>
-                  <% query_link_url = chos_export_csv_url(@collection) %>
-                <% else %>
-                  <% query_link_title = 'Media metadata with facets' %>
-                  <% query_link_url = media_export_csv_url(@collection) %>
-                <% end %>
-                <%= link_to query_link_title,
-                  query_link_url,
-                  class: 'btn btn-primary'
-                %>
-              </li>
-
-              <% if @tab == :media %>
-                <li>
-                  <%= link_to 'Media metadata with download counts',
-                    media_download_counts_csv_url(@collection),
-                    class: 'btn btn-primary'
-                  %>
-                </li>
-
-                <li>
-                  <%= link_to 'Individual media downloads',
-                    media_downloads_csv_url(@collection),
-                    class: 'btn btn-primary'
-                  %>
-                </li>
-
-                <li>
-                  <%= link_to 'Individual media download requests',
-                    media_requests_csv_url(@collection),
-                    class: 'btn btn-primary'
-                  %>
-                </li>
-
-                <% if @presenter.team? && @presenter.organization.present? %>
-                  <li>
-                    <%= link_to 'Projects with media not managed by team',
-                      main_app.team_media_projects_path(id: @presenter.id, :format => :csv, :per_page => 1000000, 'f[intersections][]' => 'organization_not_team' ),
-                      class: 'btn btn-primary'
-                    %>
-                  </li>
-                <% end %>
-              <% end %>
-            </ul>
-            </div>
-          <% end %>
-          <% if can? :deposit, @collection %>
-          <div class="collection-manage-button-wrapper">
-              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Add Media <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                <li> <%= link_to t('hyrax.dashboard.collections.actions.add_media_to.label'), Rails.application.routes.url_helpers.my_add_media_index_path(@presenter.id), class: 'btn btn-sm btn-primary' %> </li>
-                <li> <%= render 'hyrax/dashboard/collections/buttons/create_through_collection', presenter: @presenter, class: 'btn btn-primary' %></li>
-              </ul>
-              </div>
-          <% end %>
-        </div>
+        <%= render 'collection_manage_buttons' %>
+      <% end %>
     </div>
   </div><!-- /row -->
 

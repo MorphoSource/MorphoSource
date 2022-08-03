@@ -21,7 +21,8 @@ module Morphosource
       end
 
       def update_po_team_access
-        return if organization_id_param.nil?
+#byebug
+#        return if organization_id_param.nil?
         return if organizations_unchanged?
         update_linked_team_access_for_po
       end
@@ -46,7 +47,9 @@ module Morphosource
             team_ids = [] 
           end
         else
-          # called from editing PO
+          # this should be only called from editing PO
+byebug
+#          return if organization_id_param.nil?
           team_ids = linked_team_ids(new_orgs)
         end
         return if team_ids.blank?
@@ -90,7 +93,7 @@ module Morphosource
       end
 
       def organization_id_param
-        params[work_type].present? ? params[work_type][:organization_id] : nil
+        params[work_type].present? ? params[work_type][:organization_id].reject { |e| e.empty? } : nil
       end
 
       def organizations_unchanged?
@@ -122,11 +125,25 @@ module Morphosource
       end
 
       def update_linked_team_access_for_po
-        unless old_orgs.blank?
-          remove_organization_team_access_for_po
-        end
         if @curation_concern.physical_object?        
-          add_organization_team_access_for_po
+          remove_organization_team_access_for_po
+        else
+byebug
+# *****  need to check, if this will be called from other pages besides edit PO, is it ok to call remove_organization_team_access_for_po w/o checking old_orgs.blank?
+
+          unless old_orgs.blank?
+            remove_organization_team_access_for_po
+          end
+
+
+        end
+        if @curation_concern.physical_object? 
+          if organization_id_param.present?
+            add_organization_team_access_for_po
+          end
+        else
+byebug
+# where else is this being called?
         end
       end
 
@@ -150,7 +167,6 @@ module Morphosource
       def remove_organization_team_access_for_po
         team_ids = linked_team_ids(old_orgs)
         return if team_ids.blank?
-
         get_groups_for_po(team_ids)
         remove_edit_access_for_po(@curation_concern)
       end

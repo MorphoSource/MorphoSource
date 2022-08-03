@@ -12,7 +12,7 @@ module Morphosource
         return unless current_user.admin?
 
         if team_has_view_access_to_another_organization?
-          flash[:error] = "This team has view access to #{@rogue_orgs} media. If the team has recently been unlinked from that organization, check back later. Otherwise, check the following media: #{@rogue_ids}."
+          flash[:error] = "This team has view access to #{@rogue_orgs} media and/or physical objects. If the team has recently been unlinked from that organization, check back later. Otherwise, check the following media and/or physical objects: #{@rogue_ids}."
         else
           LinkOrganizationJob.perform_later(@team.id, @organization.id)
           flash[:notice] = 'Link organization job has been submitted for background processing. Return to team page later.'
@@ -46,6 +46,7 @@ module Morphosource
       end
 
       def team_has_view_access_to_another_organization?
+        # todo: might need to check for edit access, and possibly separate media and PO
         docs = Morphosource::SolrService.new.get_docs("read_access_group_ssim:#{@team.id}_managers")
         if docs.count > 0
           @rogue_ids = docs.map{|d| d["id"]}.join(', ')

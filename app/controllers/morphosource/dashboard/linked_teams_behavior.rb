@@ -10,17 +10,27 @@ module Morphosource
         @organization.team_id = [@team.id]
         @organization.save
         add_read_permissions
+        add_permissions_for_po
       end
 
       def add_read_permissions
         media = @organization.outside_media
         media.each do |m|
           media_read_groups = m.read_groups + @groups
-          UpdateWorkReadGroupsJob.perform_later(m, media_read_groups)
+          UpdateWorkAccessGroupsJob.perform_later(m, media_read_groups)
           m.file_sets.each do |f|
             f_read_groups = f.read_groups + @groups
-            UpdateWorkReadGroupsJob.perform_later(f, f_read_groups)
+            UpdateWorkAccessGroupsJob.perform_later(f, f_read_groups)
           end
+        end
+      end
+
+      def add_permissions_for_po        
+        @po_edit_groups = groups_for_po(@team.id)
+        @organization.physical_objects.each do |po|
+          final_read_groups = po.read_groups + @po_edit_groups
+          final_edit_groups = po.edit_groups + @po_edit_groups
+          UpdateWorkAccessGroupsJob.perform_now(po, final_read_groups, final_edit_groups) 
         end
       end
 
@@ -29,6 +39,7 @@ module Morphosource
 
         @old_org = @team.organization
         remove_read_permissions
+        remove_permissions_for_po
         @old_org.team_id = []
         @old_org.save
       end
@@ -37,11 +48,21 @@ module Morphosource
         media = @old_org.outside_media
         media.each do |m|
           media_read_groups = m.read_groups - @groups
-          UpdateWorkReadGroupsJob.perform_later(m, media_read_groups)
+          UpdateWorkAccessGroupsJob.perform_later(m, media_read_groups)
           m.file_sets.each do |f|
             f_read_groups = f.read_groups - @groups
-            UpdateWorkReadGroupsJob.perform_later(f, f_read_groups)
+            UpdateWorkAccessGroupsJob.perform_later(f, f_read_groups)
           end
+        end
+      end
+
+      def remove_permissions_for_po
+        @po_edit_groups = groups_for_po(@team.id)
+        physical_objects = @old_org.physical_objects
+        physical_objects.each do |po|
+          final_read_groups = po.read_groups - @po_edit_groups
+          final_edit_groups = po.edit_groups - @po_edit_groups
+          UpdateWorkAccessGroupsJob.perform_now(po, final_read_groups, final_edit_groups)
         end
       end
 
@@ -49,6 +70,16 @@ module Morphosource
         @team = Collection.find(params[:id])
         @organization = find_organization
         @groups = @team.user_groups.map(&:name)
+        @po_edit_groups = groups_for_po(@team.id)
+      end
+
+      def groups_for_po(team_id)
+        roles = Collection::EDIT_GROUP_ROLES
+        groups = []
+        roles.each do |role|
+          groups.push(team_id + '_' + role)
+        end
+        return groups
       end
 
       def find_organization

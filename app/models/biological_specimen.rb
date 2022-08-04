@@ -104,13 +104,19 @@ class BiologicalSpecimen < Morphosource::Works::Base
     @idigbio_occurrence_id_results ||= Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
   end
 
-  def idigbio_match_found?
-    return false unless occurrence_id_valid?
-    return ((idigbio_occurrence_id_results[:status] == :success) && (idigbio_occurrence_id_results[:data].length > 0))
+  def idigbio_match_found
+    return -1 unless occurrence_id_valid?
+    return -1 unless (idigbio_occurrence_id_results[:status] == :success) && (idigbio_occurrence_id_results[:data].length > 0)
+    return idigbio_occurrence_id_results[:data].length 
   end
 
   def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false)
-    if idigbio_match_found?
+    if idigbio_match_found > 1
+      byebug
+      Rails.logger.debug "UpdateBsoFromIdigbio: BSO #{id} : more than one record found on iDigBio based on occurrence_id"
+
+
+    elsif idigbio_match_found == 1
       idigbio_occurrence = idigbio_occurrence_id_results[:data].first
       taxonomy_params_array = []
       taxonomy_id_array = []
@@ -173,6 +179,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
       # sync bso metadata
       biospec_model_params = Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(idigbio_occurrence['uuid'])
+byebug
       biospec_model_params.each do |key, value|
         if key == "sex"
           unless sex_field_values.include? value.capitalize

@@ -69,6 +69,8 @@ module Morphosource
               rogue_orgs << d["organization_ssim"]
             end
           end
+        end
+        if (media_ids.present? || po_ids.present?)
           @view_access_message = "<p>This team has view access to #{rogue_orgs.uniq.join(', ')} media and/or physical objects.  If the team has recently been unlinked from that organization, check back later. Otherwise, check the following: </p>"
           if media_ids.present?
             @view_access_message += "<p>media " + media_ids.uniq.join(', ') + "</p>"
@@ -77,8 +79,9 @@ module Morphosource
             @view_access_message += "<p>physical objects " + po_ids.uniq.join(', ') + "</p>"
           end
           return true
+        else
+          return false
         end
-        false
       end
 
       def team_has_edit_access_to_another_organization?
@@ -97,6 +100,8 @@ module Morphosource
               rogue_orgs << d["organization_ssim"]
             end
           end
+        end
+        if (media_ids.present? || po_ids.present?)
           @edit_access_message = "<p>This team has edit access to #{rogue_orgs.uniq.join(', ')} media and/or physical objects.  If the team has recently been unlinked from that organization, check back later. Otherwise, check the following: </p>"
           if media_ids.present?
             @edit_access_message += "<p>media " + media_ids.uniq.join(', ') + "</p>"
@@ -105,8 +110,9 @@ module Morphosource
             @edit_access_message += "<p>physical objects " + po_ids.uniq.join(', ') + "</p>"
           end
           return true
+        else
+          return false
         end
-        false
       end
 
     end

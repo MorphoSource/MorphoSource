@@ -179,7 +179,11 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
       # sync bso metadata
       biospec_model_params = Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(idigbio_occurrence['uuid'])
-byebug
+
+
+byebug # verify biospec_model_params
+
+
       biospec_model_params.each do |key, value|
         if key == "sex"
           unless sex_field_values.include? value.capitalize

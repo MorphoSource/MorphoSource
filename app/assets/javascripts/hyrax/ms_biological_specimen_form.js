@@ -243,9 +243,13 @@ $( document ).ready(function() {
             saveSpecimen();
           } else {
             var results = $.parseJSON(xhr.responseText);
-            if (jQuery.isEmptyObject(results)) {
+            if (jQuery.isEmptyObject(results) || results.count == 0) {
               console.log(" no match from IDB, saving... ");
               saveSpecimen();
+            } else if (results.count > 1) {
+//debugger
+
+
             } else if (results.idigbio_uuid == $('#existing_idigbio_uuid').val()) {
               console.log(" idigbio_uuid is the same as existing, saving... ");
               saveSpecimen();

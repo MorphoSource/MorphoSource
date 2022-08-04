@@ -106,7 +106,8 @@ module BatchSubmissionTools
         end
 
         def import_work
-          ::Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(initial_attrs[:occurrence_id])
+          result, count = ::Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(initial_attrs[:occurrence_id])
+          return result
         end
 
         def create_new_attributes

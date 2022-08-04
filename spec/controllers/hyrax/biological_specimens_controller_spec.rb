@@ -56,7 +56,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
     describe '#update_media_team_access' do
       context "when the specimen's params don't include parent organization_id" do
         it 'returns nil for organization_id_param' do
-          expect(subject).to receive(:organization_id_param).twice.and_return(nil)
+          expect(subject).to receive(:organization_id_param).and_return(nil)
           patch :update, params: { id: specimen.id }
         end
       end
@@ -74,7 +74,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
         let(:old_team_depositor)    { User.create(email: 'olddepositor@test.com', password: 'password') }
         let(:old_team_viewer)       { User.create(email: 'oldviewer@test.com', password: 'password') }
         let(:old_team_editor)       { User.create(email: 'oldeditor@test.com', password: 'password') }
-        let(:params)                { { id: specimen.id, 'biological_specimen' => { 'organization_id' => parent_organization_id } } }
+        let(:params)                { { id: specimen.id, 'biological_specimen' => { 'organization_id' => [parent_organization_id] } } }
 
         before do
           imaging_event.ordered_members << media

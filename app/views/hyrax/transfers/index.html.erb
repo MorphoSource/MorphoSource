@@ -4,7 +4,7 @@
   <h1><%= t("hyrax.dashboard.transfer_of_ownership") %></h1>
 <% end %>
 
-<div class="col-md-12">
+<div class="col-md-12 ownership-transfer">
   <div class="panel panel-default tabs" role="main">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
@@ -29,14 +29,37 @@
           <div class="row">
             <div class="col-md-12">
               <div class="panel panel-default">
-                <div class="pull-right">
-                  <%= form_tag '', method: :get, :id => 'number_of_days' do %>
-                      <label>Show transfers for <%= select_tag :days, options_for_select(Hyrax.config.select_number_of_days, selected: params[:days] || 30), onchange: "$('#number_of_days').submit();" %> days</label>
-                  <% end %>
+                <div class="row">
+                  <div class="pull-left" style="padding-left: 30px;">
+                    <button type="button" class="btn btn-sm btn-primary dropdown-toggle" id="batch-decision-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled="disabled" style="max-width: unset;">
+                      Decide selected transfers <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" style="right: unset; top: 35px; left: 45px;">
+                      <li>
+                        <%= link_to 'Accept and allow depositor to retain edit access', main_app.transfers_batch_decide_path, method: :put, class: 'batch-decide accept accept-retain', title: 'Accept the file and allow the original depositor to retain access to edit the file and metadata' %>
+                      </li>
+                      <li>
+                        <%= link_to 'Accept and remove depositor access', main_app.transfers_batch_decide_path, method: :put, class: 'batch-decide accept accept-reset', title: 'Accept the file remove access from the original depositor' %>
+                      </li>
+                      <li>
+                        <%= link_to 'Accept and authorize depositor as proxy', main_app.transfers_batch_decide_path, method: :put, class: 'batch-decide accept accept-stick', title: 'Accept the file and allow the original depositor to retain access and authorize the original depositor as a proxy to deposit file on your behalf' %>
+                      </li>
+                      <li>
+                        <%= link_to 'Reject', main_app.transfers_batch_decide_path, method: :put, id: 'reject', class: 'batch-decide reject', data: {confirm: "Are you sure you want to reject one or more selected requests?"}, title: 'Reject the transfer, the original depositor will remain the data manager', style: 'color: red; opacity: 60%;' %>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="pull-right">
+                    <%= form_tag '', method: :get, :id => 'number_of_days' do %>
+                        <span style="font-size: 12px">Show transfers for <%= select_tag :days, options_for_select(Hyrax.config.select_number_of_days, selected: params[:days] || 30), onchange: "$('#number_of_days').submit();" %> days</span>
+                    <% end %>
+                  </div>
                 </div>
-                <div class="panel-body">
-                  <%= @presenter.render_received_transfers %>
-                </div>
+                <%= form_tag main_app.transfers_batch_decide_path, method: :put, id: 'batch-transfer-decide', style: 'max-width: unset;' do %>
+                  <div class="panel-body">
+                    <%= @presenter.render_received_transfers %>
+                  </div>
+                <% end %>
               </div>
             </div>
           </div>
@@ -52,7 +75,7 @@
               <div class="panel panel-default">
                 <div class="pull-right">
                   <%= form_tag '', method: :get, :id => 's_number_of_days' do %>
-                      <label>Show transfers for <%= select_tag :sdays, options_for_select(Hyrax.config.select_number_of_days, selected: params[:sdays] || 30), onchange: "$('#s_number_of_days').submit();" %> days</label>
+                      <span style="font-size: 12px">Show transfers for <%= select_tag :sdays, options_for_select(Hyrax.config.select_number_of_days, selected: params[:sdays] || 30), onchange: "$('#s_number_of_days').submit();" %> days</span>
                   <% end %>
                 </div>
                 <div class="panel-body">

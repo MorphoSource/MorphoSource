@@ -12,7 +12,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def derivatives_tmp_path
-      @derivatives_tmp_path = Hyrax.config.derivatives_tmp_path
+      Hyrax.config.derivatives_tmp_path
     end
 
     def locate_images
@@ -45,9 +45,7 @@ module Morphosource::Derivatives::Processors
       # return largest group of most preferred file type
       acceptable_image_formats.each do |ext|
         if coll_by_ext.key?(ext)
-          @img_coll = coll_by_ext[ext]
-          @ext = ext
-          return
+          return coll_by_ext[ext], ext
         end
       end
     end

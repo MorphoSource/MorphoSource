@@ -30,7 +30,7 @@ module Morphosource::Derivatives::Processors
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
 
       begin
-        locate_images
+        @img_coll, @ext = locate_images
         return unless img_coll.present?
 
         extract_image_for_thumbnail

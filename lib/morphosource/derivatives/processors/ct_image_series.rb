@@ -63,9 +63,7 @@ module Morphosource::Derivatives::Processors
       correct_spacing_scale if unit != 'Mm'
       begin
         @img_coll, @ext = locate_images
-        if !img_coll
-          return
-        end
+        return unless img_coll.present?
 
         # extract and process images
         extract_images

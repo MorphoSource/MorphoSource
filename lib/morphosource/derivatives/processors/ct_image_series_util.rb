@@ -48,6 +48,9 @@ module Morphosource::Derivatives::Processors
           return coll_by_ext[ext], ext
         end
       end
+
+      # case where acceptable image collection not found
+      return [], nil
     end
   end
 end

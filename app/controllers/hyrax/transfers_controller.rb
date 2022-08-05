@@ -69,7 +69,7 @@ module Hyrax
 
     def batch_decide_transfers
       unless @proxy_deposit_requests.present?
-        redirect_to hyrax.transfers_path, alert: 'No transfers were selected for deciding.'
+        redirect_to hyrax.transfers_path, alert: 'No transfers were selected.'
       end
 
       notice = ""

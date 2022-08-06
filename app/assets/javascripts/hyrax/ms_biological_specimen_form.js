@@ -247,9 +247,13 @@ $( document ).ready(function() {
               console.log(" no match from IDB, saving... ");
               saveSpecimen();
             } else if (results.count > 1) {
-//debugger
-
-
+debugger
+              $('#modal-idigbio-multi-result').modal();
+              enablePage();
+              $(document).on('click', '#modal-multi-idigbio-result #btn-save', function(){
+                $('#modal-idigbio-multi-result').modal('hide');
+                saveSpecimen();
+              });
             } else if (results.idigbio_uuid == $('#existing_idigbio_uuid').val()) {
               console.log(" idigbio_uuid is the same as existing, saving... ");
               saveSpecimen();

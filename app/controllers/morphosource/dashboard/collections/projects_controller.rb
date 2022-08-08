@@ -3,7 +3,7 @@ module Morphosource
     module Collections
       class ProjectsController < Morphosource::Dashboard::CollectionsController
 
-        skip_load_and_authorize_resource only: [:edit, :update, :new], instance_name: :collection
+        skip_load_and_authorize_resource only: [:edit, :update, :new, :members], instance_name: :collection
 
         before_action :redirect_to_collection_type, only: []
         before_action :build_breadcrumbs, only: []

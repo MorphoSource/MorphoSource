@@ -121,10 +121,22 @@ module Morphosource
 
         def redirect_to_collection_type
           return unless @_request.fullpath.include? '/collections/'
+
+          action = @_params["action"]
           if @collection.team?
-            redirect_to team_edit_path(@collection)
+            case action
+            when "update"
+              redirect_to team_update_path(@collection), status: 303
+            when "edit"
+              redirect_to team_edit_path(@collection)
+            end
           elsif @collection.project?
-            redirect_to project_edit_path(@collection)
+            case action
+            when "update"
+              redirect_to project_update_path(@collection)
+            when "edit"
+              redirect_to project_edit_path(@collection)
+            end
           end
         end
 

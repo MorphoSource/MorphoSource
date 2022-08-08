@@ -4,7 +4,7 @@ module Morphosource
       include Morphosource::Dashboard::CollectionsControllerBehavior
       include Morphosource::CollectionHelper
 
-      skip_load_and_authorize_resource only: [:edit, :update, :new], instance_name: :collection
+      skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :projects, :organization], instance_name: :collection
 
       with_themed_layout 'morphosource_dashboard'
 
@@ -27,6 +27,13 @@ module Morphosource
       def update
         update_thumbnail
         super
+      end
+
+      def members
+        @tab = :members
+        presenter
+        form
+        # byebug
       end
 
       def after_destroy(_id)

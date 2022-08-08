@@ -12,7 +12,14 @@ $(document).ready(function() {
     });
 
     $('.btn-remove-media').on('click', function (e) {
-      if (confirm('Remove this media?') == false) {
+
+      if ($('.team-remove-media').length) {
+        var collectionType = 'team'
+      } else {
+        var collectionType = 'project'
+      }
+
+      if (confirm(`Removing this work will not remove it from MorphoSource, only from this ${collectionType}. Are you sure you want to remove this work from the ${collectionType}?`) == false) {
         e.preventDefault();
         return false;
       } else {

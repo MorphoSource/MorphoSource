@@ -133,21 +133,28 @@ Rails.application.routes.draw do
       get 'dashboard/collections/:id', to: 'collections#edit'
       get 'dashboard/collections/new', to: 'collections#new'
       put 'dashboard/collections', to: 'collections#update'
+      put 'dashboard/collections/:id', to: 'collections#update'
       patch 'dashboard/collections/:id', to: 'collections#update'
 
       scope module: :collections do
         get 'dashboard/projects/:id/edit', to: 'projects#edit', as: 'project_edit'
         get "dashboard/projects/:id/files", to: 'projects#files'
         put "dashboard/projects", to: 'projects#update'
+        put 'dashboard/projects/:id', to: 'projects#update', as: 'update_project'
         patch 'dashboard/projects/:id', to: 'projects#update'
         get "dashboard/projects/new", to: 'projects#new', as: 'new_project'
         post 'dashboard/projects', to: 'projects#create'
+        get 'dashboard/projects/:id/members', to: 'projects#members', as: 'project_members'
 
         get 'dashboard/teams/:id/edit', to: 'teams#edit', as: 'team_edit'
         get "dashboard/teams/:id/files", to: 'teams#files'
         put "dashboard/teams", to: 'teams#update'
+        put "dashboard/teams/:id", to: 'teams#update', as: 'update_team'
         patch 'dashboard/teams/:id', to: 'teams#update'
         get "dashboard/teams/new", to: 'teams#new', as: 'new_team'
+        get 'dashboard/teams/:id/organization', to: 'teams#organization'
+        get 'dashboard/teams/:id/projects', to: 'teams#projects'
+        get 'dashboard/teams/:id/members', to: 'teams#members', as: 'team_members'
 
         post 'dashboard/teams', to: 'teams#create'
       end

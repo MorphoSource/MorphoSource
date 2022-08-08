@@ -18,8 +18,14 @@
   <td><%= document.date_uploaded %></td>
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>
   <td class="text-center">
-    <form></form>
-    <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
+    <% if member_ids.include? document.id %>
+      <form></form>
+      <%= form_for @collection, url: update_team_path(@collection), method: :put, as: 'collection' do |f| %>
+        <%= single_item_action_remove_form_fields(f, document) %>
+        <%= hidden_field_tag(:showcase, 'true') %>
+        <%= f.submit "Remove", class: "btn collection-remove btn-remove-media #{@collection.collection_type.title.downcase}-remove-media", style: "color: rgb(211, 58, 53); background: transparent; font-weight: bold;" %>
+      <% end %>
+    <% end %>
   </td>
 
 </tr>

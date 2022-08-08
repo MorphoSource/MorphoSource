@@ -30,7 +30,6 @@
 <% if @presenter.collection_type.machine_id == 'team' %>
   <h2>ORGANIZATION</h2>
   <% if @organization_presenter %>
-    <% byebug %>
     <%= @organization_presenter.attribute_to_html(:title, label: 'Name', render_as: :showcase_default, include_empty: true, html_dl: false) %>
     <%= @organization_presenter.attribute_to_html(:institution_name, label: 'Institution', render_as: :showcase_default, include_empty: false, html_dl: false) %>
     <%= @organization_presenter.attribute_to_html(:institution_code, label: 'Institution code', render_as: :showcase_default, include_empty: false, html_dl: false) %>

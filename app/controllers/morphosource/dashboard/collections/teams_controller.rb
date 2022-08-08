@@ -3,12 +3,11 @@ module Morphosource
     module Collections
       class TeamsController < Morphosource::Dashboard::CollectionsController
 
-        skip_load_and_authorize_resource only: [:edit, :update, :new], instance_name: :collection
+        skip_load_and_authorize_resource only: [:edit, :update, :new, :projects, :organization, :members], instance_name: :collection
 
         before_action :redirect_to_collection_type, only: []
         before_action :build_breadcrumbs, only: []
         before_action :load_collection
-
 
         self.presenter_class = Morphosource::Collections::TeamPresenter
 

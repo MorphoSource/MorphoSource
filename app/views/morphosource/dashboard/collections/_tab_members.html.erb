@@ -10,8 +10,8 @@
             <div>
               <form></form>
             </div>
-
-
+            <% byebug %>
+            <%= simple_form_for @form, url: main_app.team_members_path(@collection), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
             <div class="form-add-user-sharing-wrapper" data-id="<%= @form.id %>">
               <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'user-participants-form' }) do |f| %>
 
@@ -55,7 +55,7 @@
                   </div><!-- /.form-inline -->
                 <% end %>
               </div>
-
+<% end %>
           </section>
 
           <section class="section-collection-sharing">

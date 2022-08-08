@@ -1,0 +1,84 @@
+<% provide :page_title, construct_page_title( t('hyrax.dashboard.collections.edit.header', type_title: @collection.collection_type.title, title: @collection.title.first) ) %>
+
+  <div class="row" style="margin-top:30px;">
+    <div class="col-md-12">
+      <%= render 'hyrax/base/flash_msg' %>
+      <% content_for :body_css_classes do %>showcase showcase-edit teams<% end %>
+
+        <div class="col-xs-9 title team-title">
+          <span class="fa fa-edit" aria-hidden="true"></span>
+          <h1><%= @collection.title.first %>
+            <%= @presenter.collection_type_badge %>
+            <%= @presenter.id_badge %>
+            <%= @presenter.permission_badge %>
+          </h1>
+          <span>
+            <%= @media_count %> Media
+          </span>
+        </div>
+        <div class="col-xs-3 show-actions text-right">
+          <div class="row tab-action-buttons">
+
+          </div>
+        </div>
+
+
+        <div class="panel panel-default tabs teams" id="collection-edit-controls">
+          <ul class="nav nav-tabs" role="tablist">
+            <% if @current_user.can?(:edit, @collection) %>
+              <li role="presentation" class="active">
+                <a href="#details" aria-controls="details" role="tab" data-toggle="tab" aria-expanded="true">
+                  <i class="fas fa-newspaper" aria-hidden="true"></i> DETAILS
+                </a>
+              </li>
+            <% end %>
+
+            <% if @collection.team? && @presenter.collection_type_is_nestable? %>
+              <li role="presentation">
+                <a href="#team_projects" aria-controls="team_projects" role="tab" data-toggle="tab" aria-expanded="true">
+                  <i class="fas fa-folder-open" aria-hidden="true"></i> TEAM PROJECTS
+                </a>
+              </li>
+            <% end %>
+
+
+              <% if @collection.team? && @current_user.can?(:edit, @collection) %>
+                <li role="presentation">
+                  <a href="#organization" aria-controls="organization" role="tab" data-toggle="tab" aria-expanded="true">
+                    <i class="fas fa-university" aria-hidden="true"></i> ORGANIZATION
+                  </a>
+                </li>
+                <% end %>
+
+
+              <% if @collection.sharable? && @current_user.can?(:edit, @collection) %>
+              <li role="presentation">
+                <a href="#members" aria-controls="members" role="tab" data-toggle="tab" aria-expanded="true">
+                  <i class="fas fa-users-cog" aria-hidden="true"></i> MEMBERS
+                </a>
+              </li>
+              <% end %>
+          </ul>
+
+          <div class="tab-content">
+
+            <%# media, bso, cho tabs are outside of the edit form %>
+
+              <% if @current_user.can?(:edit, @collection) %>
+                <div id="members" class="tab-pane">
+                  <div class="panel panel-default labels" id="collection_permissions">
+                    <div class="panel-body">
+                      <%= render 'tab_members'%>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+
+            <%# the following forms needs to be outside of the edit collection form %>
+
+          </div> <!-- end tab-content -->
+
+        </div> <!-- end collection-controls -->
+
+    </div>
+  </div>

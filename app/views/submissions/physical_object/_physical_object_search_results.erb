@@ -35,7 +35,7 @@
                     <div class="col-sm-9 text-left">
                       <div><span><%= doc.sortable_title %></span></div>
                       <% if po_type == 'bso' %>
-                        <div><em><%= "#{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_genus.first unless BiologicalSpecimen.find(doc.id).taxonomies.first.nil?} #{BiologicalSpecimen.find(doc.id).taxonomies.first.taxonomy_species.first unless BiologicalSpecimen.find(doc.id).taxonomies.first.nil?}" %></em></div>
+                        <div><em><%= doc['taxonomy_tesim']&.first %></em></div>
                         <% obj_url = Rails.application.routes.url_helpers.hyrax_biological_specimen_path(doc.id) %>
                       <% else %>
                         <% obj_url = Rails.application.routes.url_helpers.hyrax_cultural_heritage_object_path(doc.id)%>
@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="col-sm-3 no-padding">
-                      <a href="#" id="<%= doc.id %>" class="btn btn-primary use-morphosource-object">Use</a>
+                      <a href="#" id="<%= doc.id %>" data-organization-id="<%= doc['organization_id_tesim']&.first || '' %>" class="btn btn-primary use-morphosource-object">Use</a>
                     </div>
                   </div>
                 <% end %>

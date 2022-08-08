@@ -1,5 +1,5 @@
 module Morphosource
-  module BiologicalSpecimeniDigBioUpdateBehavior
+  module BiologicalSpecimenIDigBioUpdateBehavior
     def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false, force_update=false)
       if idigbio_match_found?
         @idigbio_occurrence = idigbio_occurrence_id_results[:data].first
@@ -53,7 +53,7 @@ module Morphosource
         biological_specimen_params_from_idigbio(idigbio_occurrence['uuid']).
         select do |key, value|
           # filter out invalid sex values
-          key != "sex" || sex_field_values.include? value.capitalize
+          key != "sex" || sex_field_values.include?(value.capitalize)
         end  
     end
   

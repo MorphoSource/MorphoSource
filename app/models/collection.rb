@@ -186,7 +186,6 @@ class Collection < ActiveFedora::Base
       groups.push(self.id + '_' + role)
     end
     work.read_groups = (work.read_groups + groups).uniq
-    work.save
   end
 
   def membership_of(user)

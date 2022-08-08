@@ -174,6 +174,18 @@ class Collection < ActiveFedora::Base
     work.edit_groups -= [managers_group.name, editors_group.name]
     work.read_groups -= [viewers_group.name]
     work.download_groups -= [downloaders_group.name]
+    reapply_org_team_access(work)
+  end
+
+  def reapply_org_team_access(work)
+    # re-apply org-link team access if the media belongs to the same org-linked team
+    return unless self.organization.present?
+    return unless work.organizations_team_ids.include? self.id
+    groups = []
+    DEFAULT_GROUP_ROLES.each do |role|
+      groups.push(self.id + '_' + role)
+    end
+    work.read_groups = (work.read_groups + groups).uniq
   end
 
   def membership_of(user)

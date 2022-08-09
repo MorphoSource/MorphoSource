@@ -89,7 +89,7 @@ module Morphosource
       end
 
       def organization_id_param
-        params[work_type].present? ? params[work_type][:organization_id].reject { |e| e.empty? } : nil
+        params[work_type].present? ? params[work_type][:organization_id]&.reject { |e| e.empty? } : nil
       end
 
       def organizations_unchanged?

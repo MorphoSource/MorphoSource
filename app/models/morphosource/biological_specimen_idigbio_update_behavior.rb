@@ -50,7 +50,7 @@ module Morphosource
     def get_idigbio_metadata
       sex_field_values = Morphosource::SexFieldService.new().option_values
       @biospec_model_params = Morphosource::IDigBioSearchService.
-        biological_specimen_params_from_idigbio(idigbio_occurrence['uuid']).
+        biological_specimen_params_from_idigbio(@idigbio_occurrence['uuid']).
         select do |key, value|
           # filter out invalid sex values
           ( key != "sex" ) || sex_field_values.include?(value.capitalize)
@@ -58,8 +58,8 @@ module Morphosource
     end
   
     def idigbio_record_different_from_specimen?
-      @canonical_taxonomy_id != self.canonical_taxonomy_id ||
-      @taxonomy_id_array != self.taxonomy_id_array ||
+      @canonical_taxonomy_id != self.canonical_taxonomy_ids&.first ||
+      @taxonomy_id_array != self.taxonomy_id ||
       @taxonomy_params_array.present? ||
       @biospec_model_params.any? do |key, value|
         Array(value) != self.send(key)
@@ -91,8 +91,8 @@ module Morphosource
       end
       if @canonical_taxonomy_id.present?
         old_canonical_taxonomy = self.canonical_taxonomy.to_a
-        self.canonical_taxonomy_will_change! unless old_canonical_taxonomy.include? canonical_taxonomy_id
-        self.canonical_taxonomy = (self.canonical_taxonomy << canonical_taxonomy_id).uniq
+        self.canonical_taxonomy_will_change! unless old_canonical_taxonomy.include? @canonical_taxonomy_id
+        self.canonical_taxonomy = (self.canonical_taxonomy << @canonical_taxonomy_id).uniq
       end
   
       if self.taxonomy_id_changed?

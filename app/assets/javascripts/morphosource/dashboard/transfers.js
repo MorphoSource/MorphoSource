@@ -1,6 +1,6 @@
 $( document ).ready(function() {
   if ( $('div.ownership-transfer').length ) { // if contributor application form
-    $(document).click(function (e) {
+    $('input#select-all-for-decision').click(function (e) {
       var checkedStatus = this.checked;
       $('.batch_transfers').each(function() {
         $(this).prop('checked', checkedStatus);

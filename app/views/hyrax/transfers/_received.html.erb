@@ -13,7 +13,7 @@
   <% incoming_proxy_deposits.each do |req| %>
     <% unless req.sending_user.blank? %>
     <tr>
-      <td><%= check_box_tag "batch_transfers[]", req.id, false, class: "batch_transfers", id: "batch_transfers_#{req.id}" %></td>
+      <td><%= req.pending? ? check_box_tag("batch_transfers[]", req.id, false, class: "batch_transfers", id: "batch_transfers_#{req.id}") : '' %></td>
       <td> <%= show_transfer_request_title(req) %> </td>
       <td data-sort="<%= req.created_at.getutc.iso8601(5) %>">
         <relative-time datetime="<%= req.created_at.getutc.iso8601 %>" title="<%= req.created_at.to_formatted_s(:standard) %>">
@@ -43,7 +43,7 @@
           </div>
 
           <div class="col-xs-12">
-            <%= button_to "Reject", hyrax.reject_transfer_path(req), method: :put, class: 'btn btn-sm btn-danger', data: {confirm: "Are you sure you want to reject this request?"}, style: "width: 100%" %>
+            <%= link_to "Reject", hyrax.reject_transfer_path(req), method: :put, class: 'btn btn-sm btn-danger', data: {confirm: "Are you sure you want to reject this request?"}, style: "width: 100%" %>
           </div>
         </div>
         <% else %>

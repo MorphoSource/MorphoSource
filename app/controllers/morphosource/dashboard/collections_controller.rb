@@ -18,6 +18,7 @@ module Morphosource
       self.form_class = Hyrax::Forms::CollectionForm
 
       def edit
+        @tab = :details
         presenter
         @media_count, @object_count = collection_media
         query_collection_counts # @specimen_count, @cho_count
@@ -33,7 +34,7 @@ module Morphosource
         @tab = :members
         presenter
         form
-        # byebug
+        render 'edit'
       end
 
       def after_destroy(_id)

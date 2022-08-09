@@ -10,7 +10,6 @@
   <td>
     <%= link_to document["title_tesim"].first, project_media_path(id), target: "_blank", id: "src_copy_link_#id}" %>
   </td>
-  <% byebug %>
   <td><%= document["media_count"] %></td>
   <td><%= display_date(document["system_modified_dtsi"]) %></td>
   <td><%= permission_badge_by_value(document["visibility_ssi"]) %></td>

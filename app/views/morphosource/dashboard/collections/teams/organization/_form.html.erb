@@ -1,0 +1,24 @@
+<%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+
+<div id="organization" class="tab-pane">
+  <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
+    <div class="panel-body">
+
+      <%# taken from _ms_linked_organization.html %>
+
+      <!-- TODO: removing form tags below makes add group form hit the collections controller - needs more investigation -->
+      <form></form>
+      <% if @collection.organization %>
+        <%= render 'morphosource/dashboard/collections/teams/organization/ms_form_organization' %>
+      <% else %>
+        <div class="alert alert-warning" role="alert">
+          <%= t('morphosource.dashboard.collections.organization.info').html_safe %>
+        </div>
+        <% if current_user.admin? %>
+          <%= render 'morphosource/dashboard/collections/teams/organization/link_organization' %>
+        <% end %>    
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>

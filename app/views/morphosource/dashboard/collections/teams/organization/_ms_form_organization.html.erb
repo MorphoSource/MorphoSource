@@ -7,6 +7,22 @@
     multipart: true
   } do |f|
 %>
+
+<div class="row tab-action-buttons">
+  <%= f.submit 'Save Default Permissions', class: 'btn btn-primary' %>
+</div>
+
+<div class="col-sm-12">
+<h2 style="margin-top: 0px;"><%= @organization.title.first %> PERMISSION DEFAULTS</h2>
+</div>
+<div class="col-sm-6">
+<% if @organization_presenter %>
+  <%= @organization_presenter.attribute_to_html(:title, label: 'Organization', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+  <%= @organization_presenter.attribute_to_html(:institution_name, label: 'Institution', render_as: :showcase_default, include_empty: false, html_dl: false) %>
+<% else %>
+  <p>No organization linked</p>
+<% end %>
+<br>
   <div id="organization-permissions">
     <div class="mb-2" style="padding-left: 8px;">
       <span>Use these fields to specify default recommended permissions settings for newly contributed media. For more details on these fields and how they should be used, consult our documentation on <a href="https://wiki.duke.edu/display/MD/Media+Ownership%2C+Management%2C+and+Reuse+Permissions" target="_blank">Media Ownership, Management, and Reuse Permissions</a>.</span>
@@ -50,10 +66,14 @@
       <%= render_edit_field_partial('permits_3d_use', f: f, placeholder: 'No preference') %>
       <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f, placeholder: 'No preference') %>
     </div>
-
-    <div class="mb-2">
-      <%= render_edit_field_partial('agreement_uri', f: f, placeholder: 'No preference') %>
     </div>
+    </div>
+    <!-- second column -->
+    <div class="col-sm-6" style="padding-left:25px;">
+
+      <div class="mb-2">
+        <%= render_edit_field_partial('agreement_uri', f: f, placeholder: 'No preference') %>
+      </div>
 
     <!-- Media preview non-interactive -->
     <div class="form-group row mt-2">
@@ -111,10 +131,7 @@
         <%= render_edit_field_partial('preview_mode', f: f, blank_label: 'No preference') %>
         <%= render_edit_field_partial('permissions_enforcement_mode', f: f) %>
       </div>
-    <% end %>
-
-    <div class="form-group row text-center" style="margin-top: 20px;">
-      <%= f.submit 'Save Default Permissions' %>
-    </div>
+      <%= render 'morphosource/dashboard/collections/teams/organization/unlink_organization'%>
+      <% end %>
   </div>
 <% end %>

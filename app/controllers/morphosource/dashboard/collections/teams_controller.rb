@@ -12,9 +12,24 @@ module Morphosource
         self.presenter_class = Morphosource::Collections::TeamPresenter
 
         def edit
-          @projects = member_subcollections
           organization_presenter
           super
+        end
+
+        def projects
+          @tab = :projects
+          @projects = member_subcollections
+          presenter
+          render 'edit'
+        end
+
+        def organization
+          @tab = :organization
+          @organization = @collection.organization
+          @organization_presenter = Hyrax::OrganizationPresenter.new(@collection.organization, current_ability, nil)
+          presenter
+          form
+          render 'edit'
         end
 
         private

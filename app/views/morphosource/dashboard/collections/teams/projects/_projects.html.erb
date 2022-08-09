@@ -1,4 +1,4 @@
-<div id="team_projects" role="tabpanel" class="tab-pane">
+<div id="team_projects" role="tabpanel" class="tab-pane active">
   <div class="form-tab-content">
     <div class="row tab-action-buttons sub-collections-wrapper">
       <%= button_tag t('hyrax.dashboard.collections.actions.add_project_to_Team.label'),type: 'button',
@@ -12,6 +12,6 @@
         title: t('hyrax.dashboard.collections.actions.create_new_project_in_Team.label'),
         class: 'btn btn-primary' %>
     </div>
-    <%= render 'tab_project_list', id: @presenter.id, collection: @projects %>
+    <%= render 'morphosource/dashboard/collections/teams/projects/tab_project_list', id: @presenter.id, collection: @projects %>
   </div>
 </div>

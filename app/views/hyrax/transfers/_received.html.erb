@@ -1,17 +1,19 @@
 <table class="table table-striped" id="incoming-transfers">
   <thead>
     <tr>
-      <th class="title">Media</th>
+      <th style="width: 40px;"><input type="checkbox" id="select-all-for-decision" /></th>
+      <th>Media</th>
       <th>Date</th>
       <th>From</th>
       <th class="comment">Comments</th>
-      <th>Status</th>
+      <th style="text-align: center;">Status</th>
     </tr>
   </thead>
   <tbody>
   <% incoming_proxy_deposits.each do |req| %>
     <% unless req.sending_user.blank? %>
     <tr>
+      <td><%= check_box_tag "batch_transfers[]", req.id, false, class: "batch_transfers", id: "batch_transfers_#{req.id}" %></td>
       <td> <%= show_transfer_request_title(req) %> </td>
       <td data-sort="<%= req.created_at.getutc.iso8601(5) %>">
         <relative-time datetime="<%= req.created_at.getutc.iso8601 %>" title="<%= req.created_at.to_formatted_s(:standard) %>">
@@ -23,8 +25,8 @@
       <td>
         <% if req.pending? %>
         <div class="row">
-          <div class="col-md-12 col-lg-4">
-            <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <div class="col-xs-12">
+            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%; max-width: 100%">
               Accept <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
@@ -40,11 +42,8 @@
             </ul>
           </div>
 
-            <%# = button_to "Accept and allow depositor to retain edit access", hyrax.accept_transfer_path(req), method: :put, class: 'btn btn-primary' %>
-            <%# = button_to "Accept and reset access", hyrax.accept_transfer_path(req, reset: true), method: :put, class: 'btn btn-primary' %>
-            <%# = button_to "Accept & Authorize Proxy", hyrax.accept_transfer_path(req, sticky: true), method: :put, class: 'btn btn-primary' %>
-          <div class="col-md-12 col-lg-4">
-            <%= button_to "Reject", hyrax.reject_transfer_path(req), method: :put, class: 'btn btn-xs btn-danger', data: {confirm: "Are you sure you want to reject this request?"} %>
+          <div class="col-xs-12">
+            <%= button_to "Reject", hyrax.reject_transfer_path(req), method: :put, class: 'btn btn-sm btn-danger', data: {confirm: "Are you sure you want to reject this request?"}, style: "width: 100%" %>
           </div>
         </div>
         <% else %>

@@ -73,7 +73,7 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
     describe '#update_media_team_access' do
       context "when the cho's params don't include parent organization_id" do
         it 'returns nil for organization_id_param' do
-          expect(subject).to receive(:organization_id_param).twice.and_return(nil)
+          expect(subject).to receive(:organization_id_param).and_return(nil)
           patch :update, params: { id: cho.id }
         end
       end
@@ -91,7 +91,7 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
         let(:old_team_depositor)    { User.create(email: 'olddepositor@test.com', password: 'password') }
         let(:old_team_viewer)       { User.create(email: 'oldviewer@test.com', password: 'password') }
         let(:old_team_editor)       { User.create(email: 'oldeditor@test.com', password: 'password') }
-        let(:params)                { { id: cho.id, 'cultural_heritage_object' => { 'organization_id' => parent_organization_id } } }
+        let(:params)                { { id: cho.id, 'cultural_heritage_object' => { 'organization_id' => [parent_organization_id] } } }
 
         before do
           imaging_event.ordered_members << media

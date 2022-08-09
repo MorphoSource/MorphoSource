@@ -21,7 +21,6 @@ module Morphosource
       end
 
       def update_po_team_access
-        return if organization_id_param.nil?
         return if organizations_unchanged?
         update_linked_team_access_for_po
       end
@@ -46,7 +45,7 @@ module Morphosource
             team_ids = [] 
           end
         else
-          # called from editing PO
+          # this should be only called from editing PO
           team_ids = linked_team_ids(new_orgs)
         end
         return if team_ids.blank?
@@ -90,7 +89,7 @@ module Morphosource
       end
 
       def organization_id_param
-        params[work_type].present? ? params[work_type][:organization_id] : nil
+        params[work_type].present? ? params[work_type][:organization_id]&.reject { |e| e.empty? } : nil
       end
 
       def organizations_unchanged?
@@ -122,10 +121,9 @@ module Morphosource
       end
 
       def update_linked_team_access_for_po
-        unless old_orgs.blank?
-          remove_organization_team_access_for_po
-        end
-        if @curation_concern.physical_object?        
+        return unless @curation_concern.physical_object?        
+        remove_organization_team_access_for_po
+        if organization_id_param.present?
           add_organization_team_access_for_po
         end
       end
@@ -150,7 +148,6 @@ module Morphosource
       def remove_organization_team_access_for_po
         team_ids = linked_team_ids(old_orgs)
         return if team_ids.blank?
-
         get_groups_for_po(team_ids)
         remove_edit_access_for_po(@curation_concern)
       end

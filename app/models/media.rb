@@ -296,6 +296,10 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def organizations_team_ids
+    organizations.map { |org| org.team_id&.first }.compact
+  end
+
   def taxonomies
     physical_objects.select {|po| po.class == BiologicalSpecimen }.map(&:taxonomies).flatten
   end

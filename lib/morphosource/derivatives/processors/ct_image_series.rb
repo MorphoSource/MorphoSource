@@ -13,7 +13,6 @@ module Morphosource::Derivatives::Processors
     attr_accessor :raw_dcm_file_path, :output_file_path
     attr_accessor :x, :y, :z, :linear_scale_factor
     attr_accessor :slice_thickness, :unit, :x_spacing, :y_spacing, :z_spacing
-    attr_accessor :derivatives_tmp_path
 
     class_attribute :timeout
 
@@ -63,10 +62,8 @@ module Morphosource::Derivatives::Processors
       @unit = directives.fetch(:unit, 'Mm').presence || 'Mm'
       correct_spacing_scale if unit != 'Mm'
       begin
-        locate_images
-        if !img_coll
-          return
-        end
+        @img_coll, @ext = locate_images
+        return unless img_coll.present?
 
         # extract and process images
         extract_images

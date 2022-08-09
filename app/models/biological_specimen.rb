@@ -2,7 +2,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
-  include Morphosource::BiologicalSpecimeniDigBioUpdateBehavior
+  include Morphosource::BiologicalSpecimenIdigbioUpdateBehavior
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter, :set_idigbio_link_origin_when_create
   before_update do

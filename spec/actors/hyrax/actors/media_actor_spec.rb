@@ -111,6 +111,79 @@ RSpec.describe Hyrax::Actors::MediaActor do
           end
         end
       end
+
+      context 'media is created through the submission process for CHO' do
+        let(:device)              { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+        let(:cho)                 { CulturalHeritageObject.create(title: ['private cho'], visibility: 'restricted', vouchered: ['Yes']) }
+        let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [cho.id]) }
+        let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }        
+
+        before do
+          imaging_event.ordered_members << processing_event
+          [processing_event, imaging_event].each(&:save)
+
+          env.attributes[:work_parents_attributes] = { '1' => { 'id' => processing_event.id, '_destroy' => 'false' } }
+        end
+
+        context 'media is associated with a CHO that does not belong to an organization' do
+          it 'does not call #add_organization_team_access' do
+            expect(subject).to receive(:add_team_access).with(env).and_call_original
+            expect(subject).to receive(:find_parent).with(env).and_call_original
+            expect(subject).not_to receive(:add_organization_team_access)
+            subject.create(env)
+          end
+        end
+
+        context 'media is created with an organization ancestor' do
+          let(:organization) { Organization.create(title: ['organization'], team_id: []) }
+
+          before do
+            cho.organization_id = [organization.id]
+            [cho].each(&:save)
+          end
+
+          context 'the organization does not have a linked team' do
+            it 'does not call #add_access' do
+              expect(subject).to receive(:add_team_access).with(env).and_call_original
+              expect(subject).to receive(:add_organization_team_access).and_call_original
+              expect(subject).not_to receive(:get_groups)
+              subject.create(env)
+            end
+          end
+
+          context 'the organization has a linked team' do
+            let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+            let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: team_creator.ms_id) }
+            let(:team_creator)          { User.create(email: 'creator@test.com', password: 'password') }
+            let(:team_manager)          { User.create(email: 'manager@test.com', password: 'password') }
+            let(:team_depositor)        { User.create(email: 'depositor@test.com', password: 'password') }
+            let(:team_viewer)           { User.create(email: 'viewer@test.com', password: 'password') }
+
+            before do
+              organization.team_id = [team.id]
+              organization.save
+
+              team.create_collection_groups
+
+              team.managers << team_manager
+              team.depositors << team_depositor
+              team.viewers << team_viewer
+              team.user_groups.each(&:save)
+
+              subject.create(env)
+              work.save
+              work.reload
+            end
+
+            it 'gives view access to the linked team members' do
+              expect(work.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+              expect(team_manager.can?(:read, work)).to be(true)
+              expect(team_depositor.can?(:read, work)).to be(true)
+              expect(team_viewer.can?(:read, work)).to be(true)
+            end
+          end
+        end
+      end
     end
   end
 

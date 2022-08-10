@@ -16,6 +16,7 @@ class Collection < ActiveFedora::Base
 
   # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
   DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
+  EDIT_GROUP_ROLES = %w[managers editors].freeze
 
   # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
   def permission_template_read_groups
@@ -173,6 +174,18 @@ class Collection < ActiveFedora::Base
     work.edit_groups -= [managers_group.name, editors_group.name]
     work.read_groups -= [viewers_group.name]
     work.download_groups -= [downloaders_group.name]
+    reapply_org_team_access(work)
+  end
+
+  def reapply_org_team_access(work)
+    # re-apply org-link team access if the media belongs to the same org-linked team
+    return unless self.organization.present?
+    return unless work.organizations_team_ids.include? self.id
+    groups = []
+    DEFAULT_GROUP_ROLES.each do |role|
+      groups.push(self.id + '_' + role)
+    end
+    work.read_groups = (work.read_groups + groups).uniq
   end
 
   def membership_of(user)

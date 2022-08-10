@@ -68,6 +68,7 @@ module Hyrax
       create_gbif_taxonomies
       if actor.update(actor_environment)
         update_media_team_access
+        update_po_team_access
         after_update_response
       else
         respond_to do |wants|

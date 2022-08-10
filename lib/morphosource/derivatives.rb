@@ -5,6 +5,7 @@ module Morphosource
     extend Hydra::Derivatives
 
     autoload :CroppedImageDerivatives
+    autoload :CTImageSeriesCroppedImageDerivatives
     autoload :CTImageSeriesDerivatives
     autoload :MeshDerivatives
     autoload :VideoDerivatives
@@ -15,6 +16,7 @@ module Morphosource
     autoload :Blender
     autoload :Dcmcjpeg
     autoload :Dcmdjpeg
+    autoload :Dcmj2pnm
     autoload :DerivativeTool
     autoload :Fiji
     autoload :GltfPipeline

@@ -20,6 +20,9 @@ module Hyrax
     before_action :record_original_objects, only: :update
 
     def update
+      if po_changed
+        record_original_objects
+      end
       # Handle possible attachment upload
       if params[:ie_description] && Morphosource.attachment_formats.include?(File.extname(params[:ie_description].original_filename))
         Morphosource::AttachmentService.delete(curation_concern.id, 'ie_description')
@@ -69,13 +72,23 @@ module Hyrax
       end
     end
 
-    private
-
-    def old_specimens
-      select_specimens(@original_objects)
+    def po_changed
+      @po_changed ||= begin
+        if params[:imaging_event] && params[:imaging_event][:physical_object_id]
+          (curation_concern.physical_object_id != params[:imaging_event][:physical_object_id])
+        else
+          false
+        end
+      end
     end
 
-    def new_specimens
+    private
+
+    def old_physical_objects
+      select_physical_objects(@original_objects)
+    end
+
+    def new_physical_objects
       ActiveFedora::Base.find(Array(@curation_concern.physical_object_id))
     end
   end

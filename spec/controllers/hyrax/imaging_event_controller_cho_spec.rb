@@ -7,9 +7,9 @@ RSpec.describe Hyrax::ImagingEventsController do
   let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
-  let(:old_specimen)          { BiologicalSpecimen.create(title: ['old specimen'], vouchered: ["Yes"], organization_id: [old_organization.id]) }
+  let(:old_cho)               { CulturalHeritageObject.create(title: ['private cho 1'], visibility: 'restricted', vouchered: ['Yes'], organization_id: [old_organization.id]) }
   let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry'])}
-  let!(:imaging_event)        { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [old_specimen.id], ie_modality: device.modality) }
+  let!(:imaging_event)        { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [old_cho.id], ie_modality: device.modality) }
   let(:user)                  { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
   before do
@@ -59,12 +59,12 @@ RSpec.describe Hyrax::ImagingEventsController do
         works.each(&:reload)
       end
 
-      context 'and the parent specimen is not changed' do
-        let(:parent_attributes) { { '1' => { 'id' => old_specimen.id, '_destroy' => 'false' } } }
+      context 'and the parent cho is not changed' do
+        let(:parent_attributes) { { '1' => { 'id' => old_cho.id, '_destroy' => 'false' } } }
 
         before do
           # this will get updated by the actor
-          allow(subject).to receive(:new_physical_objects).and_return([old_specimen])
+          allow(subject).to receive(:new_physical_objects).and_return([old_cho])
         end
 
         it 'does not update the media permissions' do
@@ -79,14 +79,14 @@ RSpec.describe Hyrax::ImagingEventsController do
 
       context 'and the parents are changed' do
         let(:new_organization) { Organization.create(title: ['new org'], team_id: []) }
-        let(:new_specimen)     { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ["Yes"], organization_id: [new_organization.id]) }
+        let(:new_cho)     { CulturalHeritageObject.create(title: ['private cho 2'], visibility: 'restricted', vouchered: ['Yes'], organization_id: [new_organization.id]) }
         let(:new_team)         { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
 
-        let(:parent_attributes) { { '0' => { 'id' => old_specimen.id, '_destroy' => 'true' }, '1' => { 'id' => new_specimen.id, '_destroy' => 'false' } } }
+        let(:parent_attributes) { { '0' => { 'id' => old_cho.id, '_destroy' => 'true' }, '1' => { 'id' => new_cho.id, '_destroy' => 'false' } } }
 
         before do
           # this will be updated by the actor
-          allow(subject).to receive(:new_physical_objects).and_return([new_specimen])
+          allow(subject).to receive(:new_physical_objects).and_return([new_cho])
         end
 
         context 'and the new organization does not have a linked team' do

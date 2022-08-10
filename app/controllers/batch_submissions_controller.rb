@@ -457,7 +457,11 @@ class BatchSubmissionsController < ApplicationController
     when "biological_specimen.ms_id"
       if val.present?
         val = pad(val.to_s)
-        unless BiologicalSpecimen.where(id:val).present?
+        if (b = BiologicalSpecimen.where(id:val)&.first).present?
+          if b.organization_id&.first != request.params["organization_id"]
+            error_msg = "biological_specimen.ms_id: Existing biological specimen #{val} is associated with an organization different from the one you have selected."
+          end
+        else
           error_msg = "biological_specimen.ms_id: Existing biological specimen #{val} not found."
         end
         ignored_values = []
@@ -869,6 +873,7 @@ class BatchSubmissionsController < ApplicationController
     ( params.dig(:media, :transfer_management) == 'immediate' ) ||     
       ['open', 'restricted_download'].include?(params.dig(:batch_submission, :media, :visibility)) 
   end
+
 
   private
 

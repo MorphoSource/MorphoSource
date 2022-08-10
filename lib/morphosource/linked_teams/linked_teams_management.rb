@@ -8,23 +8,49 @@ module Morphosource
       # called from imaging event and processing event controllers
       def update_media_team_access
         if @curation_concern.physical_object?        
-          return if organization_id_param.nil?
+          return if organization_id_param.nil?         
+        elsif @curation_concern.imaging_event?
+          # e.g. called from IE form of media edit. 
+          return if parents_attributes.nil? and !@po_changed
         else
+          # e.g. call from processing event
           return if parents_attributes.nil?
-        end
-        
+        end   
         return if organizations_unchanged?
-
         update_linked_team_access
       end
 
-      # called from media actor
+      def update_po_team_access
+        return if organizations_unchanged?
+        update_linked_team_access_for_po
+      end
+
+      # this is also called from media actor
       def add_organization_team_access(works)
         works = Array(works)
         team_ids = linked_team_ids(new_orgs)
         return if team_ids.blank?
         get_groups(team_ids)
         works.each { |w| add_read_access(w) }
+      end
+
+      def add_organization_team_access_for_po(env=nil)
+        if env.present?
+          # env passed from new submission (called from creating PO)
+          @curation_concern = env.curation_concern
+          org = Organization.find(env.attributes[:organization_id].first) 
+          if org.present?
+            team_ids = linked_team_ids([org])
+          else
+            team_ids = [] 
+          end
+        else
+          # this should be only called from editing PO
+          team_ids = linked_team_ids(new_orgs)
+        end
+        return if team_ids.blank?
+        get_groups_for_po(team_ids)
+        add_edit_access_for_po(@curation_concern)
       end
 
       # called from submissions controller
@@ -35,8 +61,8 @@ module Morphosource
 
       def get_processing_event_values(media)
         @curation_concern = media
-        new_specimens = media.objects
-        @new_orgs = specimen_organizations(new_specimens)
+        new_physical_objects = media.objects
+        @new_orgs = specimen_organizations(new_physical_objects)
         find_all_media
       end
 
@@ -63,7 +89,7 @@ module Morphosource
       end
 
       def organization_id_param
-        params[work_type].present? ? params[work_type][:organization_id] : nil
+        params[work_type].present? ? params[work_type][:organization_id]&.reject { |e| e.empty? } : nil
       end
 
       def organizations_unchanged?
@@ -71,11 +97,11 @@ module Morphosource
       end
 
       def old_orgs
-        @old_orgs ||= specimen_organizations(old_specimens)
+        @old_orgs ||= specimen_organizations(old_physical_objects)
       end
 
       def new_orgs
-        @new_orgs ||= specimen_organizations(new_specimens)
+        @new_orgs ||= specimen_organizations(new_physical_objects)
       end
 
       def specimen_organizations(specimens)
@@ -88,8 +114,18 @@ module Morphosource
 
       def update_linked_team_access
         find_all_media
-        remove_organization_team_access unless old_orgs.blank?
+        unless old_orgs.blank?
+          remove_organization_team_access
+        end
         add_organization_team_access(@media)
+      end
+
+      def update_linked_team_access_for_po
+        return unless @curation_concern.physical_object?        
+        remove_organization_team_access_for_po
+        if organization_id_param.present?
+          add_organization_team_access_for_po
+        end
       end
 
       def find_all_media
@@ -109,6 +145,13 @@ module Morphosource
         @media.each { |m| remove_read_access(m) }
       end
 
+      def remove_organization_team_access_for_po
+        team_ids = linked_team_ids(old_orgs)
+        return if team_ids.blank?
+        get_groups_for_po(team_ids)
+        remove_edit_access_for_po(@curation_concern)
+      end
+
       def linked_team_ids(organizations)
         organizations.map { |o| o.team_id.first }.compact
       end
@@ -123,13 +166,35 @@ module Morphosource
         end
       end
 
+      def get_groups_for_po(team_ids)
+        roles = Collection::EDIT_GROUP_ROLES
+        @po_edit_groups = []
+        team_ids.each do |id|
+          roles.each do |role|
+            @po_edit_groups.push(id + '_' + role)
+          end
+        end
+      end
+
       def remove_read_access(work)
         work.read_groups -= @groups
         work.save
       end
 
+      def remove_edit_access_for_po(work)
+        work.read_groups -= @po_edit_groups
+        work.edit_groups -= @po_edit_groups
+        work.save
+      end
+
       def add_read_access(work)
         work.read_groups += @groups
+        work.save
+      end
+
+      def add_edit_access_for_po(work)
+        work.read_groups += @po_edit_groups
+        work.edit_groups += @po_edit_groups
         work.save
       end
     end

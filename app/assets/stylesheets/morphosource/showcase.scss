@@ -1368,9 +1368,11 @@ html {
   }
   table {
     table-layout: fixed;
+    min-width: 600px;
   }
   th, td {
     font-size: 12px;
+    overflow-wrap: break-word;
     .btn {
       min-width: 60px;
       margin-right: 2px;

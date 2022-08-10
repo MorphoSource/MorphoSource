@@ -5,11 +5,9 @@
 
 $( document ).ready(function() {
 
-  if ($('body[class*="batch-submission"]').length) { // check if the page is batch submission index page
-    $('.clear-bs-form').click(function(event){
-      // clear previous submitted data before loading the form
-      localStorage.removeItem("batchSubmissionFormData");
-    })
+  if ($('body[class*="batch-submission-dashboard"]').length) { // check if the page is batch submission index page
+    // clear previous submitted data 
+    localStorage.removeItem("batchSubmissionFormData");
   }
 
   if ($('[class*="batch-submission-form"]').length) { // check if the page is batch submission form
@@ -28,6 +26,9 @@ $( document ).ready(function() {
         this.previousSubmissionData = this.setPreviousSubmissionData();
         if (this.previousSubmissionData != null) {
           this.view.populateForm(this.previousSubmissionData);
+          $('.restored-message').addClass('show').removeClass('hide');
+          // clear stored data to start fresh when reloading the page
+          localStorage.removeItem("batchSubmissionFormData");
         } 
       }
 
@@ -397,8 +398,8 @@ $( document ).ready(function() {
                 self.form.setDefaultMediaPermissionFields();
                 self.form.orgChanged = true;
               } else {
-                // set org when loading a restored form
-                self.form.setPreviousOrgAgreement();
+                // restored org default permissions when loading a restored form
+                self.form.setDefaultMediaPermissionFields();
               }
             }
           }
@@ -679,5 +680,6 @@ $( document ).ready(function() {
       // Unset org transfer settings and reset (in case on behalf of is chosen after org)
       batchSubmissionForm.setDefaultMediaPermissionFields();
     });
+
   } // check if the page is batch submission form
 });

@@ -1,6 +1,5 @@
 variables:
   SKIP_TESTS: "false"
-  BUNDLER_VERSION: "2.0.2"
 
 stages:
   - build
@@ -11,13 +10,13 @@ build_job:
   stage: build
   before_script:
     - ruby -v
-    - gem install bundler -N -v 2.0.2
+    - gem install bundler -v 2.0.2
     - bundle version
   script:
     - cp $RAILS_DEPLOY_PATH/etc/database.yml config/
     - cp $RAILS_DEPLOY_PATH/etc/analytics.yml config/
     - cp $RAILS_DEPLOY_PATH/etc/browse_everything_providers.yml config/
-    - bundle install --path=vendor/bundle --without=development --binstubs=bin --no-cache
+    - bundle _2.0.2_ install --path=vendor/bundle --without=development --binstubs=bin --no-cache
     - bundle binstubs bundler --force
     - bundle exec rake assets:precompile
   artifacts:

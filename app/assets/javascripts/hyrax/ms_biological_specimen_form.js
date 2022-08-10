@@ -249,14 +249,9 @@ $( document ).ready(function() {
             } else if (results.idb_records.length > 1) {
               idb_records = results.idb_records;
               $(idb_records).each(function() {
-debugger
-                $('#idb-records').append($(this)[0].uuid);
-//                <a href="#" target="_blank" id="idb-link">iDigBio specimen</a> <span class="glyphicon glyphicon-new-window"></span>
-
-// $('#modal-idigbio-multi-result #idb-link').attr("href", "//www.idigbio.org/portal/records/" + idb_records[0].uuid);
-
+                var li = '<li><a href="//www.idigbio.org/portal/records/' + $(this)[0].uuid + '" target="_blank" id="idb-link">iDigBio UUID ' + $(this)[0].uuid + '</a> <span class="glyphicon glyphicon-new-window"></span></li>';
+                $('#idb-records').append(li);
               });
-
               $('#modal-idigbio-multi-result').modal();
               enablePage();
               $(document).on('click', '#modal-idigbio-multi-result #btn-save', function(){

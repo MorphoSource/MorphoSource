@@ -10,6 +10,10 @@ module Morphosource
         get_idigbio_metadata
   
         apply_idigbio_update if force_update || idigbio_record_different_from_specimen?
+      elsif idigbio_match_found > 1
+        if system_update
+          puts "IDigBio sync: Specimen #{id} not synced because multiple records found for OID: #{occurrence_id.first}"
+        end
       end
     end
   

@@ -1,5 +1,6 @@
 variables:
   SKIP_TESTS: "false"
+  BUNDLER_VERSION: "2.0.2"
 
 stages:
   - build
@@ -10,7 +11,7 @@ build_job:
   stage: build
   before_script:
     - ruby -v
-    - gem install bundler -N
+    - gem install bundler -N -v 2.0.2
     - bundle version
   script:
     - cp $RAILS_DEPLOY_PATH/etc/database.yml config/

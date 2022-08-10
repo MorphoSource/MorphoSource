@@ -104,7 +104,7 @@ module BatchSubmissionTools
         end
 
         def import_work
-          result, count = ::Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(initial_attrs[:occurrence_id])
+          result, idb_records = ::Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(initial_attrs[:occurrence_id])
           return result
         end
 

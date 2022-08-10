@@ -2,15 +2,15 @@ class Morphosource::IDigBioSearchController < ApplicationController
 
 	def search_idigbio_by_occurrence_id_ajax
     if occurrence_id_valid? 
-    	result, count = search_idigbio_by_occurrence_id(request.params["oid"])
+    	result, idb_records = search_idigbio_by_occurrence_id(request.params["oid"])
     else
     	result = {}
-    	count = 0
+    	idb_records = []
     end
 	  if result.present? && result["idigbio_uuid"].present?
 	  	result.merge!("taxonomy" => taxonomy_param_sets(result["idigbio_uuid"]))
 	  end
-	  result.merge!("count" => count)
+	  result.merge!("idb_records" => idb_records)
 	  respond_to do |wants|
 	    wants.json { render json: result }
 	    wants.html { render json: result }
@@ -18,8 +18,8 @@ class Morphosource::IDigBioSearchController < ApplicationController
 	end
 
 	def search_idigbio_by_occurrence_id(oid)
-	  result, count = Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(oid)
-		return result, count
+	  result, idb_records = Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(oid)
+		return result, idb_records
 	end
 
 	def taxonomy_param_sets(idigbio_uuid)

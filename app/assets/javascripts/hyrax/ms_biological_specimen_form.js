@@ -243,14 +243,23 @@ $( document ).ready(function() {
             saveSpecimen();
           } else {
             var results = $.parseJSON(xhr.responseText);
-            if (jQuery.isEmptyObject(results) || results.count == 0) {
+            if (jQuery.isEmptyObject(results) || results.idb_records.length == 0) {
               console.log(" no match from IDB, saving... ");
               saveSpecimen();
-            } else if (results.count > 1) {
+            } else if (results.idb_records.length > 1) {
+              idb_records = results.idb_records;
+              $(idb_records).each(function() {
 debugger
+                $('#idb-records').append($(this)[0].uuid);
+//                <a href="#" target="_blank" id="idb-link">iDigBio specimen</a> <span class="glyphicon glyphicon-new-window"></span>
+
+// $('#modal-idigbio-multi-result #idb-link').attr("href", "//www.idigbio.org/portal/records/" + idb_records[0].uuid);
+
+              });
+
               $('#modal-idigbio-multi-result').modal();
               enablePage();
-              $(document).on('click', '#modal-multi-idigbio-result #btn-save', function(){
+              $(document).on('click', '#modal-idigbio-multi-result #btn-save', function(){
                 $('#modal-idigbio-multi-result').modal('hide');
                 saveSpecimen();
               });

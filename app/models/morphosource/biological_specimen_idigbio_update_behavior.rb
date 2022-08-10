@@ -1,11 +1,7 @@
 module Morphosource
   module BiologicalSpecimenIdigbioUpdateBehavior
     def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false, force_update=false)
-      if idigbio_match_found > 1
-
-byebug # won't sync idb
-
-      else
+      if idigbio_match_found == 1
         @idigbio_occurrence = idigbio_occurrence_id_results[:data].first
         @save_work = save_work
         @system_update = system_update

@@ -109,7 +109,8 @@ module BatchSubmissionsImporter
             .merge(collection_membership_attributes)
             .merge(id_attributes)
             .merge(nesting_attributes_direct_id)
-            .merge(date_uploaded_attributes(date_uploaded_values))
+            .merge(date_uploaded_attributes(date_uploaded_values)
+            .merge(tags_attributes))
       end
 
       def sanitized_attributes
@@ -146,6 +147,10 @@ module BatchSubmissionsImporter
 
       def id_attributes
         attributes[:id].present? ? { :id => attributes[:id]&.first } : {}
+      end
+
+      def tags_attributes
+        attributes[:keyword].present? ? { :tags => attributes[:keyword]&.first } : {}
       end
 
       def location_attributes(based_near_values)

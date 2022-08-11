@@ -13,17 +13,27 @@
 </div>
 
 <div class="col-sm-12">
-<h2 style="margin-top: 0px;"><%= @organization.title.first %> PERMISSION DEFAULTS</h2>
+<h2 style="margin-top: 0px;">ORGANIZATION PERMISSION DEFAULTS</h2>
 </div>
 <div class="col-sm-6">
-<% if @organization_presenter %>
-  <%= @organization_presenter.attribute_to_html(:title, label: 'Organization', render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= @organization_presenter.attribute_to_html(:institution_name, label: 'Institution', render_as: :showcase_default, include_empty: false, html_dl: false) %>
-<% else %>
-  <p>No organization linked</p>
-<% end %>
-<br>
   <div id="organization-permissions">
+    <div class="form-group row">
+      <div class="col-xs-6 showcase-label">
+        <label class="control-label" for="">Organization</label>
+      </div>
+      <% byebug %>
+      <div class="col-xs-6 showcase-value">
+        <%= link_to(@organization.title.first, team_about_path(@collection)) %>
+      </div>
+      </div>
+      <div class="form-group row">
+      <div class="col-xs-6 showcase-label">
+        <label class="control-label" for="">Institution</label>
+      </div>
+      <div class="col-xs-6 showcase-value">
+        <%= @organization.institution_name.first %>
+      </div>
+      </div>
     <div class="mb-2" style="padding-left: 8px;">
       <span>Use these fields to specify default recommended permissions settings for newly contributed media. For more details on these fields and how they should be used, consult our documentation on <a href="https://wiki.duke.edu/display/MD/Media+Ownership%2C+Management%2C+and+Reuse+Permissions" target="_blank">Media Ownership, Management, and Reuse Permissions</a>.</span>
     </div>
@@ -132,6 +142,6 @@
         <%= render_edit_field_partial('permissions_enforcement_mode', f: f) %>
       </div>
       <%= render 'morphosource/dashboard/collections/teams/organization/unlink_organization'%>
-      <% end %>
+    <% end %>
   </div>
 <% end %>

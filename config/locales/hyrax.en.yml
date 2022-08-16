@@ -313,6 +313,8 @@ en:
       valid_work_types: Valid Types
   simple_form:
     hints:
+      collection:
+        based_near: A place name related to the collection, such as its site of publication, or the city, state, or country the collection contents are about.
       defaults:
         agreement_uri: Additional terms and conditions that users must agree to in order to download media.
         data_manager: The user who should control most or all media representing organization objects. They will receive requests to transfer ownership of newly published or submitted media from original contributors to data manager. Contact admins to change.

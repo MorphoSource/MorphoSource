@@ -42,6 +42,11 @@ module Morphosource
           main_app.project_media_facet_path(@collection.id, args)
         end
 
+        # get project or team URL for collection
+        def collection_url(coll_hash)
+          main_app.project_media_url(coll_hash[:id])
+        end
+
     end
   end
 end

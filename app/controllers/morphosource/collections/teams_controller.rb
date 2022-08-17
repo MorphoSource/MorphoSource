@@ -12,6 +12,8 @@ module Morphosource
         :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
       before_action :create_intersections_facet, only: [:show, :facet,
         :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
+      before_action :create_data_manager_facet, only: [:show, :facet, :media_projects]
+      before_action :create_access_facet, only: [:show, :facet, :media_projects]
 
       self.presenter_class = Morphosource::Collections::TeamPresenter
 

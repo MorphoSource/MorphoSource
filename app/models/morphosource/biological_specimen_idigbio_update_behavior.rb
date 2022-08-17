@@ -1,7 +1,7 @@
 module Morphosource
   module BiologicalSpecimenIdigbioUpdateBehavior
     def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false, force_update=false)
-      if idigbio_match_found?
+      if idigbio_match_found == 1
         @idigbio_occurrence = idigbio_occurrence_id_results[:data].first
         @save_work = save_work
         @system_update = system_update
@@ -10,6 +10,10 @@ module Morphosource
         get_idigbio_metadata
   
         apply_idigbio_update if force_update || idigbio_record_different_from_specimen?
+      elsif idigbio_match_found > 1
+        if system_update
+          puts "IDigBio sync: Specimen #{id} not synced because multiple records found for OID: #{occurrence_id.first}"
+        end
       end
     end
   

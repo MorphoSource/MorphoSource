@@ -23,7 +23,7 @@
       <%= form_for @collection, url: update_team_path(@collection), method: :put, as: 'collection' do |f| %>
         <%= single_item_action_remove_form_fields(f, document) %>
         <%= hidden_field_tag(:showcase, 'true') %>
-        <%= f.submit "Remove", class: "btn collection-remove btn-remove-media #{@collection.collection_type.title.downcase}-remove-media", style: "color: rgb(211, 58, 53); background: transparent; font-weight: bold;" %>
+        <%= f.submit "Remove", class: "btn collection-remove btn-remove-media #{@collection.collection_type.title.downcase}-remove-media", style: "color: #2e74b2;; background: transparent; text-decoration: underline; padding-top: 0px; border-top: 0px; font-size: 12px;" %>
       <% end %>
     <% end %>
   </td>

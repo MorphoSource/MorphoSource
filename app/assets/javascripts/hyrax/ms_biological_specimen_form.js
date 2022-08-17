@@ -268,6 +268,10 @@ $( document ).ready(function() {
             } else if ( ($('#organization-recordset-id').val() != '') && (results.idigbio_recordset_id != $('#organization-recordset-id').val()) ) {
               $('#modal-idigbio-recordset-not-match').modal();
               enablePage();
+              $(document).on('click', '#modal-idigbio-recordset-not-match #btn-save', function(){
+                $('#modal-idigbio-recordset-not-match').modal('hide');
+                saveSpecimen();
+              });
             } else {
               console.log("Match from IDB: ", results);
               $('#modal-idigbio-result #institution-code').html(results.institution_code);

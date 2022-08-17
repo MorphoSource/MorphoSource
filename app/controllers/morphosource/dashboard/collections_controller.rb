@@ -20,8 +20,6 @@ module Morphosource
       def edit
         @tab = :details
         presenter
-        @media_count, @object_count = collection_media
-        query_collection_counts # @specimen_count, @cho_count
         super
       end
 
@@ -52,12 +50,6 @@ module Morphosource
         set_morphosource_permissions
       end
 
-      def set_morphosource_permissions
-        @collection.create_collection_groups
-        @collection.copy_parent_membership(params[:parent_id]) unless params[:parent_id].nil?
-        Morphosource::Collections::PermissionsCreateService.create_default(collection: @collection)
-      end
-
       private
 
       def update_referer
@@ -68,53 +60,29 @@ module Morphosource
         dashboard_collection_path(@collection)
       end
 
-      # def remove_members_from_collection
-      #   @collection.remove_member_objects(batch)
-      # end
+      def set_morphosource_permissions
+        @collection.create_collection_groups
+        @collection.copy_parent_membership(params[:parent_id]) unless params[:parent_id].nil?
+        Morphosource::Collections::PermissionsCreateService.create_default(collection: @collection)
+      end
 
-
-       def load_collection
-         if params[:id] || params[:collection_id]
-           @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
-         else
+      def load_collection
+        if params[:id] || params[:collection_id]
+          @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
+        else
           @curation_concern ||= Collection.new
-         end
-         @collection ||= @curation_concern
-         authorize! :edit, @collection
-         rescue CanCan::AccessDenied
-          redirect_to root_url, alert: 'You are not authorized to access this collection.'
         end
-
-
-        # def collection_media
-        #   Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}")
-        # end
-
-
-
-       #  def single_item_search_builder
-       #   single_item_search_builder_class.new(self).with(params.except(:q, :page))
-       # end
-
-       #
+        @collection ||= @curation_concern
+        authorize! :edit, @collection
+        rescue CanCan::AccessDenied
+        redirect_to root_url, alert: 'You are not authorized to access this collection.'
+      end
 
        def update_thumbnail
          media = Media.where(id: params[:collection][:representative_id]).first
          @collection.thumbnail_id = media.try(:thumbnail_id)
        end
 
-       # def update_physical_object_index
-       #   return if params["batch_document_ids"].blank?
-       #
-       #   member_ids = params["batch_document_ids"]
-       #   member_ids.each do |id|
-       #     member = Media.find(id)
-       #     object_id = member.physical_object_id
-       #     next if object_id.blank?
-       #
-       #     ActiveFedora::Base.where(id: object_id).first.try(:update_index)
-       #   end
-       # end
     end
   end
 end

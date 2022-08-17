@@ -172,7 +172,7 @@ module Morphosource
       end
 
       def create_access_facet
-        # return  unless current_user&.can? :edit, @collection
+        return  unless current_user&.can? :edit, @collection
 
         manage_groups = current_user.manager_groups.present? ? current_user.manager_groups - ['admin'] : ['none']
         edit_groups = current_user.editor_groups.present? ? current_user.editor_groups - ['admin'] : ['none']
@@ -181,13 +181,7 @@ module Morphosource
         view_groups = current_user.viewer_groups.present? ? current_user.viewer_groups - ['admin'] : ['none']
 
         config = repository.blacklight_config
-        # byebug
         config.add_facet_field 'access_level', label: 'Access', query: {
-          # media where current user is user with ownership
-          # manage: {
-          #   label: 'Manage',
-          #   fq: "user_with_ownership_ssi:#{current_user.ms_id}" },
-          # media where current user has edit access but is not the user with ownership
           edit: {
             label: 'Edit',
             fq: "(edit_access_group_ssim:(#{(manage_groups + edit_groups).join(' OR ')}) OR (edit_access_person_ssim:#{current_user.ms_id}))" },

@@ -26,7 +26,7 @@ module Morphosource
         def organization
           @tab = :organization
           @organization = @collection.organization
-          @organization_presenter = Hyrax::OrganizationPresenter.new(@collection.organization, current_ability, nil)
+          organization_presenter
           presenter
           form
           render 'edit'
@@ -50,7 +50,7 @@ module Morphosource
             @organization ||= @collection.organization
             return nil unless @organization
 
-            @organization_presenter = Hyrax::OrganizationPresenter.new(@organization, current_ability, nil)
+            Hyrax::OrganizationPresenter.new(@organization, current_ability, nil)
           end
 
       end

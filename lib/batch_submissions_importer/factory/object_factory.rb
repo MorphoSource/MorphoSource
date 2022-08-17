@@ -109,8 +109,8 @@ module BatchSubmissionsImporter
             .merge(collection_membership_attributes)
             .merge(id_attributes)
             .merge(nesting_attributes_direct_id)
-            .merge(date_uploaded_attributes(date_uploaded_values)
-            .merge(tags_attributes))
+            .merge(date_uploaded_attributes(date_uploaded_values))
+            .merge(tags_attributes)
       end
 
       def sanitized_attributes

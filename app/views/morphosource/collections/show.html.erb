@@ -103,6 +103,15 @@ provide :page_title, construct_page_title(@presenter.title)
                       class: 'btn btn-primary' 
                     %>
                   </li>
+
+                  <% if @presenter.organization.data_manager.present? %>
+                    <li>
+                      <%= link_to 'Organization transfer status per media',
+                        main_app.team_media_organization_transfer_status_path(request.parameters.merge(id: @presenter.id, :format => :csv, :per_page => 1000000)),
+                        class: 'btn btn-primary' 
+                      %>
+                    </li>
+                  <% end %>
                 <% end %>
               <% end %>
             </ul>

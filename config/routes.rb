@@ -125,6 +125,7 @@ Rails.application.routes.draw do
       get 'teams/:id/media_export', to: 'teams#media_export_with_intersections_facet', as: 'team_media_export'
       get 'teams/:id/media_download_counts', to: 'teams#media_download_counts_with_intersections_facet', as: 'team_media_download_counts'
       get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
+      get 'teams/:id/media_organization_transfer_status', to: 'teams#media_organization_transfer_status', as: 'team_media_organization_transfer_status'
     end
   end
 

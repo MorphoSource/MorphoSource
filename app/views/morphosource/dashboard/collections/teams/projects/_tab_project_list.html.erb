@@ -1,0 +1,29 @@
+
+<% if @projects.nil? || @projects.empty? %>
+  <div class="alert alert-warning" role="alert"><%= t('hyrax.collections.show.no_visible_subcollections') %></div>
+<% else %>
+
+  <section id="sub-collections-wrapper" class="sub-collections-wrapper">
+    <table id="datatable-project-list" class="table table-striped teams-projects">
+      <caption class="sr-only">List of projects in this team</caption>
+      <thead>
+      <tr>
+        <th class="no-sort">&nbsp;<!-- thumbnail column --></th>
+        <th>Title</th>
+        <th>Media</th>
+        <th>Last modified</th>
+        <th>Visibility</th>
+        <th><!-- remove button column --></th>
+      </tr>
+      </thead>
+      <tbody>
+        <%= render partial: 'morphosource/dashboard/collections/teams/projects/tab_project_list_row', collection: @projects, as: :document, locals: { parent_id: id } %>
+      </tbody>
+    </table>
+  </section>
+
+  <% if can? :edit, id %>
+  <%= render 'modal_remove_project' %>
+  <% end %>
+
+<% end %>

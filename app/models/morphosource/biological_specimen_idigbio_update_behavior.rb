@@ -1,22 +1,43 @@
 module Morphosource
   module BiologicalSpecimenIdigbioUpdateBehavior
+    include Morphosource::MessageHelper
+
     def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false, force_update=false)
       if idigbio_match_found == 1
         @idigbio_occurrence = idigbio_occurrence_id_results[:data].first
-        @save_work = save_work
-        @system_update = system_update
-        
-        get_idigbio_taxonomy
-        get_idigbio_metadata
-  
-        apply_idigbio_update if force_update || idigbio_record_different_from_specimen?
+        if idigbio_recordset_different_from_org?
+          notify_admin_recordset_not_match
+        else
+          @save_work = save_work
+          @system_update = system_update
+          
+          get_idigbio_taxonomy
+          get_idigbio_metadata
+    
+          apply_idigbio_update if force_update || idigbio_record_different_from_specimen?
+        end
       elsif idigbio_match_found > 1
         if system_update
           puts "IDigBio sync: Specimen #{id} not synced because multiple records found for OID: #{occurrence_id.first}"
         end
       end
     end
-  
+
+    def notify_admin_recordset_not_match
+      recipient = User.where(email:Hyrax.config.ms_admin_email).first
+      subject = "Biological Specimen #{self.id} auto update failed"
+      message = "Specimen #{self.id} has failed to be updated to match the iDigBio record.  The organization (#{self.organization_id.first}) has a recordset ID and it is different from the iDigBio-supplied ID."
+      deliver_message(email_sender, recipient, message.html_safe, subject)
+    end
+
+    def idigbio_recordset_different_from_org?
+      if (@org_recordset_ids = self.organizations&.first&.recordset_id).present? &&
+        (@idb_recordset_id = @idigbio_occurrence.dig("indexTerms", "recordset")).present?
+        return !(@org_recordset_ids.include? @idb_recordset_id)
+      end
+      return false
+    end
+
     def get_idigbio_taxonomy
       @canonical_taxonomy_id = nil
       @taxonomy_id_array = []

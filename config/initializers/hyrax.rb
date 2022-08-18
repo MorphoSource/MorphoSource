@@ -79,6 +79,9 @@ Hyrax.config do |config|
   # Rake task create_production_users will create a user account corresponding to this email
   config.contact_email = ENV['CONTACT_EMAIL'] || "do.not.reply@morphosource.org"
 
+  # Email address for messages sent to MorphoSource administrators
+  config.ms_admin_email = ENV['MS_ADMIN_EMAIL'] || "morphosource@duke.edu"
+
   # The user who runs batch jobs.
   # Should be user key of site-wide admin user or dedicated batch job user
   config.batch_user_key = ENV['BATCH_USER_KEY'] || '614de0'

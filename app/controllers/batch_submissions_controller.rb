@@ -443,7 +443,7 @@ class BatchSubmissionsController < ApplicationController
       end
     when "media.keyword"
       unless /^[A-Za-zÀ-ÖØ-öø-ÿ0-9 ,]*$/.match(val)
-        error_msg = "media.keyword: Value(s) must be letters, accented letters, numbers, and spaces. Use comma has separator."
+        error_msg = "media.keyword: Value(s) must be letters, accented letters, numbers, and spaces. Use comma as separator."
       end
     when /^media\.(.*)$/
       # note that specific media.* fields (e.g. media.media_type) should be handled above already

@@ -14,23 +14,18 @@ module Morphosource
           'aat'
         end
 
-        self.label = lambda do |item|
+        self.label = lambda do |id, item|
           return if item[:status] == :error
 
-          preferred_term = getty_preferred_term_uri(item)
-
-          begin
-            response = RestClient.get(preferred_term + '.json')
-            body = JSON.parse(response.body)
-            body[preferred_term]["http://vocab.getty.edu/ontology#term"].first["value"]
-          rescue
-            return
-          end
+          getty_preferred_term(item, id)
         end
 
-        def self.getty_preferred_term_uri(item)
-          bindings = item[:data]["results"]["bindings"]
-          bindings.select{ |triple| triple["Predicate"]["value"] == "http://vocab.getty.edu/ontology#prefLabelGVP"}&.first["Object"]["value"]
+        def self.getty_preferred_term(item, id)
+          item[:data][getty_preferred_term_uri(item, id)]["http://vocab.getty.edu/ontology#term"]&.first["value"]
+        end
+
+        def self.getty_preferred_term_uri(item, id)
+          item[:data][id]["http://vocab.getty.edu/ontology#prefLabelGVP"]&.first["value"]
         end
 
     end

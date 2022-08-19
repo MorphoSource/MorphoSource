@@ -21,7 +21,7 @@ module Morphosource
         return super unless uri?
 
         Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRATION) do
-          preferred_label = self.label.call(id, find(id))
+          preferred_label = label.call(id, find(id))
           if preferred_label.nil?
             Rails.cache.delete(cache_key)
             return ["Error fetching #{extract_id(self.id)}"]

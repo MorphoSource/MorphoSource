@@ -430,6 +430,12 @@ Rails.application.routes.draw do
       get 'admin/data_curation', action: :index, controller: :data_curation, as: 'admin_data_curation'
       post 'admin/data_curation/apply_permission_template', action: :apply_permission_template, controller: :data_curation, as: 'admin_apply_permission_template'
     end
+
+    # ARK and DOI resolving routes
+    get '/*ark_tag/*identifier', action: :resolve_ark, controller: :identifier_resolver, constraints: { ark_tag: 'ark:' }
+    if ENV['CROSSREF_DOI_SHOULDER'].present? && ENV['CROSSREF_DOI_SHOULDER'].split('/')[0].present?
+      get '/*doi_tag/*identifier', action: :resolve_doi, controller: :identifier_resolver, constraints: { doi_tag: ENV['CROSSREF_DOI_SHOULDER'].split('/')[0] }
+    end
   end
 
   # when creating a collection, use the morphosource collections controller

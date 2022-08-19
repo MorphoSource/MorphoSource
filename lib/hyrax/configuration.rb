@@ -636,11 +636,6 @@ module Hyrax
       @contact_email ||= "repo-admin@example.org"
     end
 
-    attr_writer :ms_admin_email
-    def ms_admin_email
-      @ms_admin_email
-    end
-
     attr_writer :subject_prefix
     def subject_prefix
       @subject_prefix ||= "Contact form:"

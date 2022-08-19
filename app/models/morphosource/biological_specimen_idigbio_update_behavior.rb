@@ -6,7 +6,7 @@ module Morphosource
       if idigbio_match_found == 1
         @idigbio_occurrence = idigbio_occurrence_id_results[:data].first
         if idigbio_recordset_different_from_org?
-          notify_admin_recordset_not_match
+          puts "iDigBio sync: Specimen #{self.id} not synced because the organization (#{self.organization_id.first}) has a recordset ID #{@org_recordset_id} and it is different from the iDigBio-supplied ID #{@idb_recordset_id}."
         else
           @save_work = save_work
           @system_update = system_update
@@ -23,17 +23,10 @@ module Morphosource
       end
     end
 
-    def notify_admin_recordset_not_match
-      recipient = User.where(email:Hyrax.config.ms_admin_email).first
-      subject = "Biological Specimen #{self.id} auto update failed"
-      message = "Specimen #{self.id} has failed to be updated to match the iDigBio record.  The organization (#{self.organization_id.first}) has a recordset ID and it is different from the iDigBio-supplied ID."
-      deliver_message(email_sender, recipient, message.html_safe, subject)
-    end
-
     def idigbio_recordset_different_from_org?
-      if (@org_recordset_ids = self.organizations&.first&.recordset_id).present? &&
+      if (@org_recordset_id = self.organizations&.first&.recordset_id&.first).present? &&
         (@idb_recordset_id = @idigbio_occurrence.dig("indexTerms", "recordset")).present?
-        return !(@org_recordset_ids.include? @idb_recordset_id)
+        return @org_recordset_id != @idb_recordset_id
       end
       return false
     end

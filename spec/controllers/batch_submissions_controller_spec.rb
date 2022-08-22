@@ -161,7 +161,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'media.raw_or_derived: Please enter a valid value.'
           expect(html).to include "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
           expect(html).to include 'imaging_event.ct.pixel_spacing_calibration: Please enter a valid value: "Geometry", "Fiducial"'
-
+          expect(html).to include 'media.keyword: Value(s) must be letters, accented letters, numbers, and spaces. Use comma as separator.'
         end
       end
 

@@ -4,14 +4,17 @@ module Morphosource
       include Morphosource::Collections::LinkedTeamsControllerBehavior
 
       skip_load_and_authorize_resource only: [:show, :about, :facet, 
-        :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet
+        :media_projects, :media_organization_transfer_status,
+        :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet
       ], instance_name: :collection
 
       before_action :authenticate_api_key_optional, only: :media_projects
       before_action :load_organization, only: [:show, :facet, :about, 
-        :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
+        :media_projects, :media_organization_transfer_status,
+        :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
       before_action :create_intersections_facet, only: [:show, :facet, 
-        :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
+        :media_projects, :media_organization_transfer_status,
+        :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
 
       self.presenter_class = Morphosource::Collections::TeamPresenter
 
@@ -41,7 +44,7 @@ module Morphosource
         media_download_counts
       end
 
-      # Outputs CSV of projects containing org media not owned by linked team
+      # Exports CSV of projects containing org media not owned by linked team
       def media_projects
         deny_access_unauthorized and return unless current_user.present?
         deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
@@ -70,6 +73,30 @@ module Morphosource
         @render_only_document_list = true
 
         export_render('Projects%20With%20Media%20Not%20Managed%20By%20Team')
+      end
+
+      # Exports CSV of media metadata (with facets) including org transfer status
+      def media_organization_transfer_status
+        deny_access_unauthorized and return unless current_user.present?
+        deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+
+        if request.format == 'csv'
+          repository.blacklight_config.max_per_page = 9999999
+        end
+        (@response, @document_list) = query_solr_all_results
+        @document_list.map! do |d|  
+          # Derive organization transfer status
+          status = ''
+          if (req = ProxyDepositRequest.find_by(work_id: d.id, organization_transfer: true)).present?
+            status = req.status
+          elsif d['organization_transfer_on_publish_bsi']
+            status = 'transfer_on_publication'
+          end
+
+          d.to_semantic_values.merge('organization_transfer_status' => status)
+        end
+
+        export_render("Media Organization Transfer Status Query")
       end
 
       private

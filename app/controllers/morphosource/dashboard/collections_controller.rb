@@ -4,14 +4,14 @@ module Morphosource
       include Morphosource::Dashboard::CollectionsControllerBehavior
       include Morphosource::CollectionHelper
 
-      skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :projects, :organization], instance_name: :collection
+      skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :projects, :organization, :create], instance_name: :collection
 
       with_themed_layout 'morphosource_dashboard'
 
       before_action :filter_docs_with_read_access!, only: []
       before_action :build_breadcrumbs, only: []
-      before_action :load_collection
-      before_action :redirect_to_collection_type, only: [:edit, :update, :new]
+      before_action :load_collection, except: [:create]
+      before_action :redirect_to_collection_type, only: [:edit, :update, :new, :create]
 
       self.presenter_class = presenter_class
 
@@ -44,6 +44,13 @@ module Morphosource
           end
           format.json { head :no_content, location: '/dashboard/my/collections' }
         end
+      end
+
+      def create
+        unless current_user.can?(:create_any, Collection)
+          redirect_to root_url, alert: 'You are not authorized to create this collection.' and return
+        end
+        super
       end
 
       def set_default_permissions

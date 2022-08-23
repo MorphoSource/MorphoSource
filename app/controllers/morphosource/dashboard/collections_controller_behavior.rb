@@ -28,7 +28,7 @@ module Morphosource
           if @collection.team?
             case action
             when "update"
-              redirect_to team_update_path(@collection), status: 303
+              redirect_to team_update_path(@collection)
             when "edit"
               redirect_to team_edit_path(@collection)
             end

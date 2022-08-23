@@ -32,12 +32,14 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
   end
 
   describe '#collection_options' do
-    let(:user) { User.new(email: 'email@email.com', password: 'password') }
-    let(:collection1) { double('collection1', id: 'abc123', title: ['Collection1']) }
-    let(:collection2) { double('collection2', id: 'def456', title: ['Collection2']) }
-    let(:collection3) { double('collection3', id: 'ghi678', title: ['Collection3']) }
+    let!(:user) { User.create(email: 'email@email.com', password: 'password') }
+    let!(:project_type) { Hyrax::CollectionType.create(title: "Project") }
+    let!(:collection1) { Collection.create(title: ['Collection1'], collection_type_gid: project_type.gid, depositor: user.ms_id) }
+    let!(:collection2) { Collection.create(title: ['Collection2'], collection_type_gid: project_type.gid, depositor: user.ms_id) }
+    let!(:collection3) { Collection.create(title: ['Collection3'], collection_type_gid: project_type.gid, depositor: user.ms_id) }
+    let(:collections) { [collection1, collection2, collection3] }
     before do
-      allow(user).to receive(:collections_managed).and_return([collection1, collection2, collection3])
+      collections.each { |c| c.create_collection_groups }
       helper.instance_variable_set(:@current_user, user)
       helper.instance_variable_set(:@collection, collection1)
     end

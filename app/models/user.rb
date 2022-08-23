@@ -298,10 +298,6 @@ class User < ApplicationRecord
     groups.select{|g| g.include?("_viewers")}
   end
 
-  def groups
-    @groups ||= super
-  end
-
   private
 
   # Assigns a random string to be used as the user_key

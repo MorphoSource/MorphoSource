@@ -84,28 +84,28 @@ deploy_dev:
   extends: .deploy
   environment:
     name: development
-    url: https://morphosource-dev.lib.duke.edu/
+    url: https://morphosource-dev.oit.duke.edu/
   only:
     - dev
   tags:
     - development
 
-deploy_demo:
-  extends: .deploy
-  environment:
-    name: demo
-    url: https://morphosource-demo.lib.duke.edu/
-  only:
-    - master
-  tags:
-    - demo
+# deploy_demo:
+#   extends: .deploy
+#   environment:
+#     name: demo
+#     url: https://morphosource-demo.lib.duke.edu/
+#   only:
+#     - master
+#   tags:
+#     - demo
 
-deploy_prod:
-  extends: .deploy
-  environment:
-    name: production
-    url: https://morphosource.lib.duke.edu/
-  only:
-    - master
-  tags:
-    - production
+# deploy_prod:
+#   extends: .deploy
+#   environment:
+#     name: production
+#     url: https://morphosource.lib.duke.edu/
+#   only:
+#     - master
+#   tags:
+#     - production

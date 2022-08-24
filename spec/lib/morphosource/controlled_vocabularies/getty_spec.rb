@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Morphosource::ControlledVocabularies::Getty do
   let(:aat_id)   { '300172528' }
   let(:aat_term) { Morphosource::ControlledVocabularies::Getty::Aat.new(::RDF::URI("http://vocab.getty.edu/aat/#{aat_id}")) }
+  let(:non_id)  { '000000' }
+  let(:non_term) { Morphosource::ControlledVocabularies::Getty::Aat.new(::RDF::URI("http://vocab.getty.edu/aat/#{non_id}")) }
 
   before(:each) do
     Rails.cache.clear
@@ -16,12 +18,8 @@ RSpec.describe Morphosource::ControlledVocabularies::Getty do
       end
     end
     context 'fetching label is not successful' do
-      before do
-        allow(aat_term).to receive_message_chain(:label,:call).with(any_args).and_return(nil)
-      end
-
       it 'returns an error message' do
-        expect(aat_term.rdf_label).to eq(["Error fetching #{aat_id}"])
+        expect(non_term.rdf_label).to eq(["Error fetching #{non_id}"])
       end
     end
   end

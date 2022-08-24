@@ -21,12 +21,12 @@ module Morphosource
         return super unless uri?
 
         Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRATION) do
-          preferred_label = label.call(id, find(id))
-          if preferred_label.nil?
+          item = getty_json(id)
+          if item.nil?
             Rails.cache.delete(cache_key)
             return ["Error fetching #{extract_id(self.id)}"]
           else
-            [preferred_label]
+            [item["_label"]]
           end
         end
       end
@@ -50,9 +50,13 @@ module Morphosource
           "#{cache_key_prefix}#{id}"
         end
 
-        def find_url(id)
-          id = extract_id(self.id) #ex: 500207610
-          "http://vocab.getty.edu/download/json?uri=http://vocab.getty.edu/#{service_name}/#{id}.json"
+        def getty_json(id)
+          begin
+            response = RestClient.get(id + ".json")
+            JSON.parse(response.body)
+          rescue
+            nil
+          end
         end
     end
   end

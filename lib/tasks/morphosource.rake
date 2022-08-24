@@ -676,6 +676,27 @@ namespace :morphosource do
     end
   end
 
+  desc "Merge duplicate specimens"
+  task :merge_bso, [:update] => :environment do |task, args|
+    if args[:update].present? && args[:update] == 'true'
+      update = true
+    else
+      update = false
+    end
+    bso_list = []
+    BiologicalSpecimen.find_each do |o| 
+      if o.occurrence_id.present? && o.idigbio_uuid.present?
+        bso_list << { "id" => o.id, "occurrence_id" => o.occurrence_id.first, "idigbio_uuid" => o.idigbio_uuid.first } 
+      end
+    end
+    grouped = bso_list.group_by{|b| [ b["occurrence_id"], b["idigbio_uuid"] ]}
+    filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id"], b["idigbio_uuid"] ] }
+    puts "merge_bso: #{filtered.count} duplicate groups found. "
+    filtered.each do |key, dups|
+      puts "Group #{key} with specimens #{dups.map{|x| x['id']}}"
+    end
+  end
+
   desc "Update specimens from IDigbio"
   task :update_bso_from_idigbio, [:update, :project_id] => :environment do |task, args|
     if args[:update].present? && args[:update] == 'true'

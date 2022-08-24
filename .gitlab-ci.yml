@@ -86,7 +86,7 @@ deploy_dev:
     name: development
     url: https://morphosource-dev.oit.duke.edu/
   only:
-    - dev
+    - dev-oit-app-server
   tags:
     - development
 

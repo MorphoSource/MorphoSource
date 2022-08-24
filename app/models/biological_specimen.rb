@@ -105,10 +105,12 @@ class BiologicalSpecimen < Morphosource::Works::Base
     @idigbio_occurrence_id_results ||= Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
   end
 
-  def idigbio_match_found?
-    return false unless occurrence_id_valid?
-    return ((idigbio_occurrence_id_results[:status] == :success) && (idigbio_occurrence_id_results[:data].length > 0))
+  def idigbio_match_found
+    return -1 unless occurrence_id_valid?
+    return -1 unless (idigbio_occurrence_id_results[:status] == :success) && (idigbio_occurrence_id_results[:data].length > 0)
+    return idigbio_occurrence_id_results[:data].length 
   end
+
 
   private
     def add_id_to_title # this is non-functional!!

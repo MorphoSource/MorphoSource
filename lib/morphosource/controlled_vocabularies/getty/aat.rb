@@ -13,21 +13,6 @@ module Morphosource
         def service_name
           'aat'
         end
-
-        self.label = lambda do |id, item|
-          return if item[:status] == :error
-
-          getty_preferred_term(item, id)
-        end
-
-        def self.getty_preferred_term(item, id)
-          item[:data][getty_preferred_term_uri(item, id)]["http://vocab.getty.edu/ontology#term"]&.first["value"]
-        end
-
-        def self.getty_preferred_term_uri(item, id)
-          item[:data][id]["http://vocab.getty.edu/ontology#prefLabelGVP"]&.first["value"]
-        end
-
     end
   end
 end

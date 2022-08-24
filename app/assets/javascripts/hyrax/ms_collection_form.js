@@ -74,6 +74,8 @@ $(document).ready(function() {
   }
 
   function addDataAttributesToModal(modalId, dataAttributes, $dataEl) {
+    console.log(dataAttributes);
+    console.log($dataEl);
     // Remove and add new data attributes
     dataAttributes.forEach(function(attribute) {
       $(modalId).removeAttr('data-' + attribute).attr('data-' + attribute, $dataEl.data(attribute));

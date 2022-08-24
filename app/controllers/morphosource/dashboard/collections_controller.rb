@@ -10,7 +10,7 @@ module Morphosource
 
       before_action :filter_docs_with_read_access!, only: []
       before_action :build_breadcrumbs, only: []
-      before_action :load_collection, except: [:create]
+      before_action :load_collection, except: [:create, :new]
       before_action :redirect_to_collection_type, only: [:edit, :update, :new, :create]
 
       self.presenter_class = presenter_class
@@ -28,6 +28,13 @@ module Morphosource
         super
       end
 
+      def after_update
+        respond_to do |format|
+          format.html { redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success') }
+          format.json { render json: @collection, status: :updated, location: dashboard_collection_path(@collection) }
+        end
+      end
+
       def members
         @tab = :members
         presenter
@@ -40,7 +47,11 @@ module Morphosource
         respond_to do |format|
           format.js {render :js => "location.reload()"}
           format.html do
-            redirect_to request.referrer
+            if @collection.team?
+              redirect_to main_app.my_teams_path
+            else
+              redirect_to main_app.my_projects_path
+            end
           end
           format.json { head :no_content, location: '/dashboard/my/collections' }
         end
@@ -51,6 +62,18 @@ module Morphosource
           redirect_to root_url, alert: 'You are not authorized to create this collection.' and return
         end
         super
+      end
+
+      def after_create
+        set_default_permissions
+        # if we are creating the new collection as a subcollection (via the nested collections controller),
+        # we pass the parent_id through a hidden field in the form and link the two after the create.
+        link_parent_collection(params[:parent_id]) unless params[:parent_id].nil?
+        respond_to do |format|
+          ActiveFedora::SolrService.instance.conn.commit
+          format.html { redirect_to collection_edit_path(@collection), notice: t('hyrax.dashboard.my.action.collection_create_success') }
+          format.json { render json: @collection, status: :created, location: dashboard_collection_path(@collection) }
+        end
       end
 
       def set_default_permissions

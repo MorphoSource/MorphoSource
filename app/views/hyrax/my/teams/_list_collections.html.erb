@@ -7,7 +7,7 @@ todo: data-colls-hash takes additional time and might not be needed.  Can be rem
   data-id="<%= id %>"
   data-colls-hash="<%#= collection_presenter.available_parent_collections(scope: controller) %>"
   data-post-url="<%#= hyrax.dashboard_create_nest_collection_within_path(id) %>"
-  data-post-delete-url="<%= hyrax.dashboard_collection_path(id) %>">
+  data-post-delete-url="<%= main_app.destroy_collection_path(id) %>">
 
   <td>
       <div class="team-logo">

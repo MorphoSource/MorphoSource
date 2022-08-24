@@ -62,11 +62,12 @@
                 </section>
 
                 <section class="section-collection-sharing">
-                  <%= render 'tab_members_table', access: 'managers', filter: :manage? %>
-                  <%= render 'tab_members_table', access: 'editors', filter: :edit_works? %>
-                  <%= render 'tab_members_table', access: 'depositors', filter: :deposit? %>
-                  <%= render 'tab_members_table', access: 'downloaders', filter: :download_works? %>
-                  <%= render 'tab_members_table', access: 'viewers', filter: :view? %>
+                  <% members_table = 'morphosource/dashboard/collections/members/tab_members_table.html.erb' %>
+                  <%= render members_table, access: 'managers', filter: :manage? %>
+                  <%= render members_table, access: 'editors', filter: :edit_works? %>
+                  <%= render members_table, access: 'depositors', filter: :deposit? %>
+                  <%= render members_table, access: 'downloaders', filter: :download_works? %>
+                  <%= render members_table, access: 'viewers', filter: :view? %>
                 </section>
               </div>
             </div>

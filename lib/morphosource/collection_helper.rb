@@ -135,6 +135,34 @@ module Morphosource
       end
     end
 
+    def hidden_params_for_filters(prefix)
+      hidden_params = {}
+      params = request_params
+      hidden_params.merge!({'view' => params['view']}) if params['view'].present?
+      hidden_params.merge!({'rows' => params['rows']}) if params['rows'].present?
+      hidden_params.merge!({'brows' => params['brows']}) if params['brows'].present?
+      hidden_params.merge!({'crows' => params['crows']}) if params['crows'].present?
+      html = ''
+      hidden_params.map do |k,v|
+        html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
+      end
+      html.html_safe
+    end
+
+    def hidden_params_for_pagination(prefix)
+      hidden_params = {}
+      params = request_params
+      hidden_params.merge!({'view' => params['view']}) if params['view'].present?
+      html = ''
+      hidden_params.map do |k,v|
+        html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
+      end
+      params.map do |k,v|
+        html += '<input type="hidden" name="' + k + '" value="' + v + '" />' if k.include? prefix
+      end
+      html.html_safe
+    end
+
     def request_params
       request.params
     end
@@ -379,6 +407,14 @@ module Morphosource
         main_app.project_media_path(collection)
       else
         main_app.team_media_path(collection)
+      end
+    end
+
+    def collection_edit_path(collection)
+      if collection.project?
+        main_app.project_edit_path(collection)
+      else
+        main_app.team_edit_path(collection)
       end
     end
 

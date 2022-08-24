@@ -136,6 +136,8 @@ Rails.application.routes.draw do
       put 'dashboard/collections', to: 'collections#update'
       put 'dashboard/collections/:id', to: 'collections#update'
       patch 'dashboard/collections/:id', to: 'collections#update'
+      delete 'dashboard/collections/:id', to: 'collections#destroy', as: 'destroy_collection'
+      get 'dashboard/collections/new', to: 'collections#new', as: 'new_collection'
 
       scope module: :collections do
         get 'dashboard/teams/new', to: 'teams#new', as: 'new_team'

@@ -684,16 +684,14 @@ namespace :morphosource do
       update = false
     end
     bso_list = []
-    BiologicalSpecimen.find_each do |o| 
-      if o.occurrence_id.present? && o.idigbio_uuid.present?
-        bso_list << { "id" => o.id, "occurrence_id" => o.occurrence_id.first, "idigbio_uuid" => o.idigbio_uuid.first } 
-      end
-    end
-    grouped = bso_list.group_by{|b| [ b["occurrence_id"], b["idigbio_uuid"] ]}
-    filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id"], b["idigbio_uuid"] ] }
+    qry = "has_model_ssim:BiologicalSpecimen AND occurrence_id_tesim:[* TO *] AND idigbio_uuid_tesim:[* TO *]"
+    bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
+    puts "merge_bso: #{bso_list.count} specimens with occurrence_id and idigbio_uuid"
+    grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
+    filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
     puts "merge_bso: #{filtered.count} duplicate groups found. "
     filtered.each do |key, dups|
-      puts "Group #{key} with specimens #{dups.map{|x| x['id']}}"
+      puts "merge_bso: Group #{key} with specimens #{dups.map{|x| x['id']}}"
     end
   end
 

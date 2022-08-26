@@ -83,6 +83,11 @@ module Morphosource
        parent_organization.collection_code
     end
 
+    def parent_organization_recordset_id
+       return [] unless parent_organization.present?
+       parent_organization.recordset_id&.first
+    end
+
     def parent_organization_related_url
        return [] unless parent_organization.present?
        parent_organization.related_url

@@ -4,7 +4,7 @@ module Morphosource
 
       rescue_from ActiveFedora::ObjectNotFoundError, with: :collection_not_found
 
-      before_action :authorize_collection_access
+      before_action :authorize_collection_access, except: [:facet]
 
       def search_builder_class
         Morphosource::Users::EditMediaSearchBuilder

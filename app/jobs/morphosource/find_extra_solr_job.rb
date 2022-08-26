@@ -1,7 +1,7 @@
 module Morphosource
   class FindExtraSolrJob < Hyrax::ApplicationJob
 
-    queue_as Hyrax.config.update_slow_queue_name
+    queue_as Hyrax.config.update_medium_queue_name
 
     def perform
       extra_docs = ids.each_with_object([]) do |id, docs|

@@ -223,6 +223,13 @@ module Hyrax
       @update_fast_queue_name ||= :update_fast
     end
 
+    # @!attribute [w] update_medium_queue_name
+    #   ActiveJob queue to handle background work or collection update jobs that can be run with medium priority. 
+    attr_writer :update_medium_queue_name
+    def update_medium_queue_name
+      @update_medium_queue_name ||= :update_medium
+    end
+
     # @!attribute [w] update_slow_queue_name
     #   ActiveJob queue to handle background work or collection update jobs that can be run relatively slowly. 
     attr_writer :update_slow_queue_name

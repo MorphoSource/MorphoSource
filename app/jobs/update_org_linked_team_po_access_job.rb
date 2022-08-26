@@ -1,6 +1,6 @@
 class UpdateOrgLinkedTeamPoAccessJob < Hyrax::ApplicationJob
 
-  queue_as Hyrax.config.update_slow_queue_name
+  queue_as Hyrax.config.update_medium_queue_name
 
   def perform(work, team_id)
     get_groups_for_po(team_id)

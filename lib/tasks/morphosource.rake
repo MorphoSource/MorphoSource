@@ -421,7 +421,7 @@ namespace :morphosource do
       else
         model.find_each do |o|
           Rails.logger.warn ("Re-indexing begin: #{args[:model]} id:#{o.id}")
-          UpdateWorkIndexJob.perform_later(o.id)
+          UpdateWorkIndexSlowJob.perform_later(o.id)
           Rails.logger.warn ("Re-indexing done: #{args[:model]} id:#{o.id}")
         end
       end

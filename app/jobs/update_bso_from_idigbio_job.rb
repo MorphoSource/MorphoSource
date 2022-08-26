@@ -1,6 +1,6 @@
 class UpdateBsoFromIdigbioJob < Hyrax::ApplicationJob
 
-  queue_as Hyrax.config.update_slow_queue_name
+  queue_as Hyrax.config.update_medium_queue_name
 
   def perform(o, save_work=false, system_update=false)
 	Rails.logger.debug "UpdateBsoFromIdigbio: Updating BiologicalSpecimen #{o.id}"

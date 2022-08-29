@@ -122,6 +122,7 @@ module Morphosource
       end
 
       def query_solr_all_results
+        byebug
         search_results(params.merge(return_all_fields: true))
       end
 

@@ -15,8 +15,12 @@ module Morphosource
       before_action :create_intersections_facet, only: [:show, :facet,
         :media_projects, :media_organization_transfer_status,
         :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
-      before_action :create_data_manager_facet, only: [:show, :facet, :media_projects]
-      before_action :create_access_facet, only: [:show, :facet, :media_projects]
+      before_action :create_data_manager_facet, only: [:show, :facet,
+        :media_projects, :media_organization_transfer_status,
+        :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
+      before_action :create_access_facet, only: [:show, :facet,
+        :media_projects, :media_organization_transfer_status,
+        :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
 
       self.presenter_class = Morphosource::Collections::TeamPresenter
 
@@ -37,14 +41,6 @@ module Morphosource
         end
       end
       configure_facets
-
-      def media_export_with_intersections_facet
-        media_export
-      end
-
-      def media_download_counts_with_intersections_facet
-        media_download_counts
-      end
 
       # Exports CSV of projects containing org media not owned by linked team
       def media_projects

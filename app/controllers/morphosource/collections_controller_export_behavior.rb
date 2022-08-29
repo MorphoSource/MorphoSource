@@ -65,7 +65,7 @@ module Morphosource
       @document_type = 'media_download'
       repository.blacklight_config.max_per_page = 9999999
       (_, @media_document_list) = query_solr_all_results
-      media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq 
+      media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
       @document_list = Morphosource::Reports::DownloadsReportService.call(media_ids)
 
       export_render('Media%20Downloads')
@@ -80,9 +80,10 @@ module Morphosource
         repository.blacklight_config.max_per_page = 9999999
       end
       (@response, @media_document_list) = query_solr_all_results
-      media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq 
+      byebug
+      media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
       downloads = Morphosource::Reports::DownloadsReportService.call(media_ids)
-      
+
       user_demographics = downloads.pluck('download_user_id').uniq.map do |user_id|
         [user_id, User.find_by_user_key(user_id)&.demographics ]
       end.to_h
@@ -91,7 +92,7 @@ module Morphosource
         [ media_id, download_counts_hash(dls, user_demographics, request.format) ]
       end.to_h
 
-      @document_list = @media_document_list.map do |doc| 
+      @document_list = @media_document_list.map do |doc|
         dl_counts = download_counts_by_media[doc['id']] || download_counts_hash([], [], request.format)
         doc_semantic = doc.to_semantic_values
 
@@ -112,7 +113,7 @@ module Morphosource
       @document_type = 'media_request'
       repository.blacklight_config.max_per_page = 9999999
       (_, @media_document_list) = query_solr_all_results
-      media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq 
+      media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
       @document_list = Morphosource::Reports::RequestsReportService.call(media_ids)
 
       export_render('Media%20Requests')

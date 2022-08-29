@@ -2,9 +2,14 @@ module Morphosource
   module Collections
     class ProjectsController < Morphosource::CollectionsController
 
-      skip_load_and_authorize_resource only: [:show, :about, :facet], instance_name: :collection
-      before_action :create_data_manager_facet, only: [:show, :facet, :media_projects]
-      before_action :create_access_facet, only: [:show, :facet, :media_projects]
+      skip_load_and_authorize_resource only: [:show, :about, :facet, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet], instance_name: :collection
+      # before_action :create_data_manager_facet, only: [:show, :facet, :media_projects]
+      # before_action :create_access_facet, only: [:show, :facet, :media_projects]
+
+      before_action :create_data_manager_facet, only: [:show, :facet,
+        :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
+      before_action :create_access_facet, only: [:show, :facet,
+        :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
 
       self.presenter_class = Morphosource::Collections::ProjectPresenter
 

@@ -79,13 +79,11 @@ Rails.application.routes.draw do
     get 'collections/:id/about', to: 'collections#about'
     get 'collections/:id/facet/:id', to: 'collections#facet'
 
-    # csv exports
-    get 'projects/:id/media_export', to: 'collections#media_export', as: 'project_media_export'
-    get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
     get 'teams/:id/media_downloads', to: 'collections#media_downloads', as: 'team_media_downloads'
-    get 'projects/:id/media_download_counts', to: 'collections#media_download_counts', as: 'project_media_download_counts'
-    get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
     get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
+    get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
+    get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
+
 
     scope module: :collections do
       # these get redirected to projects/teams
@@ -102,6 +100,10 @@ Rails.application.routes.draw do
       get 'projects/:collection_id/facet/:id', to: 'projects#facet', as: 'project_media_facet'
       get 'projects/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'project_specimens_facet'
       get 'projects/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'project_chos_facet'
+
+      # csv exports
+      get 'projects/:id/media_export', to: 'projects#media_export_with_intersections_facet', as: 'project_media_export'
+      get 'projects/:id/media_download_counts', to: 'projects#media_download_counts_with_intersections_facet', as: 'project_media_download_counts'
 
       # projects redirects
       get 'projects/specimens/:id', to: redirect('projects/%{id}/biological_specimens')

@@ -678,6 +678,8 @@ namespace :morphosource do
 
   desc "Update specimens from IDigbio"
   task :update_bso_from_idigbio, [:update, :project_id] => :environment do |task, args|
+    log_file = 'log/idigbio_update_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
+    log = Logger.new(log_file)
     if args[:update].present? && args[:update] == 'true'
       update = true
     else
@@ -688,21 +690,21 @@ namespace :morphosource do
       project_id = args[:project_id]
       qry = "media_member_of_project_ids_ssim:#{project_id} AND has_model_ssim:BiologicalSpecimen"
       result = ActiveFedora::SolrService.query(qry, rows: 999999)
-      puts "#{result.count} specimens found for #{project_id}..."
+      log.debug "#{result.count} specimens found for #{project_id}..."
       result.each do |hit|
         o = BiologicalSpecimen.find(hit.id)
         if o.present?
-          puts "Updating specimen #{o.id} of project #{project_id} from IDigbio"
-          UpdateBsoFromIdigbioJob.perform_later(o, update, true)
+          log.debug "Updating specimen #{o.id} of project #{project_id} from IDigbio"
+          UpdateBsoFromIdigbioJob.perform_later(o, update, true, log)
         else
-          puts "Specimen #{o.id} not found"
+          log.debug "Specimen #{o.id} not found"
         end
       end
     else
       # update all bso
       BiologicalSpecimen.find_each do |o|
-        puts "Updating specimen #{o.id} from IDigbio"
-        UpdateBsoFromIdigbioJob.perform_later(o, update, true)
+        log.debug "Updating specimen #{o.id} from IDigbio"
+        UpdateBsoFromIdigbioJob.perform_later(o, update, true, log_file)
       end
     end
   end

@@ -4,6 +4,7 @@ module Morphosource
 
     def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false, force_update=false, log_file=nil)
       log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
+
       if idigbio_match_found == 1
         @idigbio_occurrence = idigbio_occurrence_id_results[:data].first
         if idigbio_recordset_different_from_org?

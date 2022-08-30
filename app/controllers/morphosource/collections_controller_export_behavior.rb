@@ -80,7 +80,6 @@ module Morphosource
         repository.blacklight_config.max_per_page = 9999999
       end
       (@response, @media_document_list) = query_solr_all_results
-      byebug
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
       downloads = Morphosource::Reports::DownloadsReportService.call(media_ids)
 

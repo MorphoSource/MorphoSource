@@ -41,21 +41,43 @@ module Morphosource
 
       private
 
-        def media_ids
-          if !@old_manager.present?
-            Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_collection_ids_ssim:#{@collection_id}", fl:"id").map{|m| m["id"]}
-          elsif !@collection_id.present?
-            Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND user_with_ownership_ssi:#{@old_manager.ms_id}", fl:"id").map{|m| m["id"]}
-          else
-            Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_collection_ids_ssim:#{@collection_id} AND user_with_ownership_ssi:#{@old_manager.ms_id}", fl:"id").map{|m| m["id"]}
-          end
-        end
-
         def update_media(media_ids)
           media_ids.each do |id|
             OrganizationNormalizationJob.perform_later(media_id: id, organization_id: @organization.id, user_email: @user_email, remove_previous_reviewers: @remove_previous_reviewers, update_publication_status: @update_publication_status)
           end
         end
+
+        def media_ids
+          ids = media.map{ |m| m["id"] }
+          data_manager = User.find_by(ms_id: @organization.data_manager.first)
+          # remove ids where transfer request has been generated
+          ids.reject do |id|
+            ProxyDepositRequest.where(work_id: id, organization_transfer: true, receiving_user_id: data_manager.id).present?
+          end
+        end
+
+        def media
+          if !@old_manager.present?
+            organization_media_in_collection
+          elsif !@collection_id.present?
+            organization_media_with_old_manager
+          else
+            organization_media_in_collection_with_old_manager
+          end
+        end
+
+        def organization_media_in_collection
+          Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_collection_ids_ssim:#{@collection_id} NOT organization_transfer_on_publish_bsi:true", fl:"id")
+        end
+
+        def organization_media_with_old_manager
+          Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND user_with_ownership_ssi:#{@old_manager.ms_id} NOT organization_transfer_on_publish_bsi:true", fl:"id")
+        end
+
+        def organization_media_in_collection_with_old_manager
+          Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_collection_ids_ssim:#{@collection_id} AND user_with_ownership_ssi:#{@old_manager.ms_id} NOT organization_transfer_on_publish_bsi:true", fl:"id")
+        end
+
     end
   end
 end

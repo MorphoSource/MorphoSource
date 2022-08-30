@@ -12,6 +12,9 @@ module Morphosource
         ie = m.imaging_event
         ie_list << ie.id
         ie.physical_object_id = [bso_to.id]
+
+# might have to send ie.save to a job??
+
 #        ie.save
 		  end
 		  if media_list.present?

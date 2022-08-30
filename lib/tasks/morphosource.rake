@@ -690,18 +690,15 @@ namespace :morphosource do
     filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
     puts "find_and_merge_duplicate_bso: #{filtered.count} duplicate groups found"
     filtered.each do |key, dups|
-      puts "find_and_merge_duplicate_bso: Duplicate group #{key} with specimens #{dups.map{|x| x['id']}}"
+      # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
+      sorted_dups = dups.sort_by { |dup| -(dup['related_media_ids_ssim']&.count || 0) }
+      puts "Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
       if merge == true
-
-
-        # To minimize the merging time, find and keep the specimen with the most media 
-
-
-        merge_to = dups.first['id']
-        dups.drop(1).each do |dup|
+        merge_to = sorted_dups.first['id']
+        sorted_dups.drop(1).each do |dup|
           merge_from = dup['id']
           puts "merging specimen #{merge_from} to #{merge_to}..."
-          Morphosource::MergeBsoService.call(merge_to, merge_from,            false) # set to true later to delete dup
+ Morphosource::MergeBsoService.call(merge_to, merge_from,            false) # set to true later to delete dup
         end
       end
     end

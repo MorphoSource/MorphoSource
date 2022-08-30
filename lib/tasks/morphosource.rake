@@ -695,7 +695,7 @@ namespace :morphosource do
         o = BiologicalSpecimen.find(hit.id)
         if o.present?
           log.debug "Updating specimen #{o.id} of project #{project_id} from IDigbio"
-          UpdateBsoFromIdigbioJob.perform_later(o, update, true, log)
+          UpdateBsoFromIdigbioJob.perform_later(o, update, true, log_file)
         else
           log.debug "Specimen #{o.id} not found"
         end

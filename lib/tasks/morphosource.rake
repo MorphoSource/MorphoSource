@@ -677,21 +677,33 @@ namespace :morphosource do
   end
 
   desc "Merge duplicate specimens"
-  task :merge_bso, [:update] => :environment do |task, args|
-    if args[:update].present? && args[:update] == 'true'
-      update = true
+  task :find_and_merge_duplicate_bso, [:merge] => :environment do |task, args|
+    if args[:merge].present? && args[:merge] == 'true'
+      merge = true
     else
-      update = false
+      merge = false
     end
     bso_list = []
     qry = "has_model_ssim:BiologicalSpecimen AND occurrence_id_tesim:[* TO *] AND idigbio_uuid_tesim:[* TO *]"
     bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
-    puts "merge_bso: #{bso_list.count} specimens with occurrence_id and idigbio_uuid"
     grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
     filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
-    puts "merge_bso: #{filtered.count} duplicate groups found. "
+    puts "find_and_merge_duplicate_bso: #{filtered.count} duplicate groups found"
     filtered.each do |key, dups|
-      puts "merge_bso: Group #{key} with specimens #{dups.map{|x| x['id']}}"
+      puts "find_and_merge_duplicate_bso: Duplicate group #{key} with specimens #{dups.map{|x| x['id']}}"
+      if merge == true
+
+
+        # To minimize the merging time, find and keep the specimen with the most media 
+
+
+        merge_to = dups.first['id']
+        dups.drop(1).each do |dup|
+          merge_from = dup['id']
+          puts "merging specimen #{merge_from} to #{merge_to}..."
+          Morphosource::MergeBsoService.call(merge_to, merge_from,            false) # set to true later to delete dup
+        end
+      end
     end
   end
 

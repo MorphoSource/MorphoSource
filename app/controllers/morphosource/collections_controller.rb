@@ -32,12 +32,10 @@ module Morphosource
     remove_bookmarks
 
     def media_export_with_intersections_facet
-      byebug
       media_export
     end
 
     def media_download_counts_with_intersections_facet
-      byebug
       media_download_counts
     end
 

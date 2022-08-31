@@ -1,7 +1,7 @@
 module Morphosource
   class MergeBiologicalSpecimenService
 
-    def self.call(merge_to=nil, merge_from=nil, delete_dup=true, report_only=false)
+    def call(merge_to=nil, merge_from=nil, delete_dup=true, report_only=false)
       bso_to = BiologicalSpecimen.find(merge_to)
       bso_from = BiologicalSpecimen.find(merge_from)
 		  ie_list = []

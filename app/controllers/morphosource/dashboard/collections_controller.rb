@@ -35,6 +35,34 @@ module Morphosource
         end
       end
 
+      def process_member_changes
+          case params[:collection][:members]
+          when 'add' then add_members_to_collection
+          when 'remove' then remove_members_from_collection
+          when 'move' then move_members_between_collections
+          end
+        end
+
+        def add_members_to_collection(collection = nil)
+          collection ||= @collection
+          collection.add_member_objects batch
+        end
+
+        def remove_members_from_collection
+          @collection.remove_member_objects(batch)
+        end
+
+        def move_members_between_collections
+          destination_collection = ::Collection.find(params[:destination_collection_id])
+          remove_members_from_collection
+          add_members_to_collection(destination_collection)
+          if destination_collection.save
+            flash[:notice] = "Successfully moved #{batch.count} files to #{destination_collection.title} Collection."
+          else
+            flash[:error] = "An error occured. Files were not moved to #{destination_collection.title} Collection."
+          end
+        end
+
       def members
         @tab = :members
         presenter

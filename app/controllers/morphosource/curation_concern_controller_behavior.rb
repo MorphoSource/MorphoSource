@@ -5,7 +5,7 @@ module Morphosource
     extend ActiveSupport::Concern
 
     included do
-      before_action :find_curation_concern, only: [:showcase, :edit]
+      before_action :find_curation_concern, only: [:show, :showcase, :edit]
     end
 
     private
@@ -13,9 +13,10 @@ module Morphosource
     # Manually load resource to handle Ldp::Gone errors
     def find_curation_concern
       begin
-        @curation_concern = Media.find(params[:id])
+        @curation_concern = _curation_concern_type.find(params[:id])
       rescue Ldp::Gone => e
-        render 'not_found', locals: { resource_type: _curation_concern_type.to_s } and return
+        resource_type = _curation_concern_type.to_s.underscore.split('_').join(' ')
+        render 'not_found', locals: { resource_type: resource_type } and return
       end
     end
   end

@@ -3,7 +3,8 @@
 module Hyrax
   # Generated controller for BiologicalSpecimen
   class BiologicalSpecimensController < ApplicationController
-    # Adds Hyrax behaviors to the controller.
+    # Adds Hyrax behaviors to the controller
+    include Morphosource::CurationConcernControllerBehavior
     include Hyrax::WorksControllerBehavior
     include Morphosource::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks

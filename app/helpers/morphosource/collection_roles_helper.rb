@@ -13,15 +13,25 @@ module Morphosource
     end
 
     def collection_options
-      collections = @current_user.collections_managed
-      collections.delete(@collection)
-      options_for_select(collections.map { |c| [c.title.first, c.id] })
+      collections = collections_managed(@current_user)
+      collections.select!{|c| c["id"] != @collection.id}
+      options_for_select(collections.map { |c| [c["title_tesim"].first, c["id"]] })
     end
 
     def access_array
       roles = Collection::DEFAULT_GROUP_ROLES
       roles.each_with_object([]) do |role, options|
         options << [t('.' + role.dup.chop), role]
+      end
+    end
+
+    def collections_managed(current_user)
+      ids = current_user.manager_groups.map{|g| g.chomp("_managers")}
+      if ids.present?
+        Morphosource::SolrService.new
+          .get_docs(nil, fq: ["id:(#{ids.join(' OR ').upcase})"], fl: ["id,title_tesim"]).compact
+      else
+        return []
       end
     end
   end

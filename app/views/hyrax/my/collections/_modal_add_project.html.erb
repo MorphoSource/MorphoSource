@@ -6,7 +6,7 @@
         <h4 class="modal-title" id="add-subcollection-label"><%= t('hyrax.dashboard.collections.actions.add_project_to_Team.label') %></h4>
       </div>
       <div class="modal-body">
-        <%= form_tag(dashboard_create_nest_collection_under_path(id), method: :post, id: 'modal-form', :class => "form-horizontal") do %>
+        <%= form_tag(hyrax.dashboard_create_nest_collection_under_path(id), method: :post, id: 'modal-form', :class => "form-horizontal") do %>
           <select name="child_id" style="width: 60%">
             <option value="none"><%= t("hyrax.dashboard.my.action.select") %></option>
             <%# list of projects the user can edit and that don't have a parent already %>

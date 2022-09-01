@@ -7,10 +7,10 @@ module Morphosource
     with_themed_layout 'morphosource_1_column'
 
     skip_load_and_authorize_resource only: [
-      :show, :about, :facet, 
+      :show, :about, :facet,
       :media_export, :media_downloads, :media_download_counts, :media_requests
     ], instance_name: :collection
-    
+
     # Don't add breadcrumbs
     before_action :build_breadcrumbs, only: []
 
@@ -30,6 +30,14 @@ module Morphosource
       end
     end
     remove_bookmarks
+
+    def media_export_with_intersections_facet
+      media_export
+    end
+
+    def media_download_counts_with_intersections_facet
+      media_download_counts
+    end
 
     private
 

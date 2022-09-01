@@ -1,0 +1,146 @@
+<% org_form = Hyrax::OrganizationForm.new(@organization, @current_ability, controller) %>
+<%= simple_form_for org_form,
+  wrapper: :showcase_default,
+  :url => main_app.update_default_permissions_path(@collection),
+  html: {
+    class: ['editor', 'team_organization_permissions_edit'],
+    multipart: true
+  } do |f|
+%>
+
+<div class="row tab-action-buttons">
+  <%= f.submit 'Save Default Permissions', class: 'btn btn-primary' %>
+</div>
+
+<div class="col-sm-12">
+<h2 style="margin-top: 0px;">ORGANIZATION PERMISSION DEFAULTS</h2>
+</div>
+<div class="col-sm-6">
+  <div id="organization-permissions">
+    <div class="form-group row">
+      <div class="col-xs-6 showcase-label">
+        <label class="control-label" for="">Organization</label>
+      </div>
+      <div class="col-xs-6 showcase-value">
+        <%= link_to(@organization.title.first, team_about_path(@collection)) %>
+      </div>
+      </div>
+      <div class="form-group row">
+      <div class="col-xs-6 showcase-label">
+        <label class="control-label" for="">Institution</label>
+      </div>
+      <div class="col-xs-6 showcase-value">
+        <%= @organization.institution_name.first %>
+      </div>
+      </div>
+    <div class="mb-2" style="padding-left: 8px;">
+      <span>Use these fields to specify default recommended permissions settings for newly contributed media. For more details on these fields and how they should be used, consult our documentation on <a href="https://wiki.duke.edu/display/MD/Media+Ownership%2C+Management%2C+and+Reuse+Permissions" target="_blank">Media Ownership, Management, and Reuse Permissions</a>.</span>
+    </div>
+    <!-- These fields are used in Team - linked organization
+    Labels and hints are in config/locales/media_permissions -->
+
+    <!-- Data manager non-interactive -->
+    <div class="form-group row mb-2">
+      <div class="col-xs-6 showcase-label">
+        <label class="control-label select optional" for="data_manager">Data manager</label>
+        <i class="material-icons tooltip-icon" data-original-title="" title="">
+          <p class="hint hide">
+            <%= t('simple_form.hints.defaults.data_manager') %>
+          </p>
+        </i>
+      </div>
+      <div class="col-xs-6 showcase-value">
+        <%= @collection.organization.data_manager&.first.present? ?
+          User.find_by_user_key(@collection.organization.data_manager&.first).name_and_email :
+          'None selected. <a href="mailto:morphosource@duke.edu">Contact us</a> to change.'.html_safe
+        %>
+      </div>
+    </div>
+
+    <div class="mb-2 mt-2">
+      <%= render_edit_field_partial('download_permission', f: f, org_permissions: true, placeholder: 'No preference') %>
+      <%= render_edit_field_partial('download_reviewer', f: f, placeholder: 'No preference') %>
+    </div>
+
+    <div class="mb-2">
+      <span id="placeholder-text" style="display: none;">No preference</span>
+      <%= render_edit_field_partial('rights_holder_with_blank', f: f, placeholder: 'No preference') %>
+      <%= render_edit_field_partial('rights_statement_with_blank', f: f, placeholder: 'No preference') %>
+      <%= render_edit_field_partial('license_with_blank', f: f, placeholder: 'No preference') %>
+    </div>
+
+    <div class="mb-2">
+      <%= render_edit_field_partial('morphosource_use_agreement_type', f: f, placeholder: 'No preference') %>
+      <%= render_edit_field_partial('permits_commercial_use', f: f, placeholder: 'No preference') %>
+      <%= render_edit_field_partial('permits_3d_use', f: f, placeholder: 'No preference') %>
+      <%= render_edit_field_partial('required_archival_of_published_derivatives', f: f, placeholder: 'No preference') %>
+    </div>
+    </div>
+    </div>
+    <!-- second column -->
+    <div class="col-sm-6" style="padding-left:25px;">
+
+      <div class="mb-2">
+        <%= render_edit_field_partial('agreement_uri', f: f, placeholder: 'No preference') %>
+      </div>
+
+    <!-- Media preview non-interactive -->
+    <div class="form-group row mt-2">
+      <div class="col-xs-6 showcase-label">
+        <label class="control-label select optional" for="media_preview_mode">Media preview mode</label>
+        <i class="material-icons tooltip-icon" data-original-title="" title="">
+          <p class="hint hide">
+            <%= t('simple_form.hints.defaults.preview_mode') %>
+          </p>
+        </i>
+      </div>
+      <div class="col-xs-6 showcase-value">
+        <%= @collection.organization.preview_mode&.first.present? ? @collection.organization.preview_mode&.first : 'No preference' %>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-xs-12 showcase-value">
+        <%= t("hyrax.organization.permissions.media_preview") %>
+      </div>
+    </div>
+
+    <!-- Permissions enforcement mode non-interactive -->
+    <div class="form-group row mt-2">
+      <div class="col-xs-6 showcase-label">
+        <label class="control-label select optional" for="permissions_enforcement_mode">Permissions enforcement mode</label>
+        <i class="material-icons tooltip-icon" data-original-title="" title="">
+          <p class="hint hide">
+            <%= t('simple_form.hints.defaults.permissions_enforcement_mode') %>
+          </p>
+        </i>
+      </div>
+      <div class="col-xs-6 showcase-value">
+        <%= @collection.organization.permissions_enforcement_mode&.first.present? ? @collection.organization.permissions_enforcement_mode&.first : 'Recommend' %>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-xs-12 showcase-value">
+        <%= t("hyrax.organization.permissions.permissions_enforcement_mode") %>
+      </div>
+    </div>
+
+    <!-- Contact us text pertaining to both media preview mode and permissions enforcement mode -->
+    <div class="form-group row mt-1" style="font-style: italic;">
+      <div class="col-xs-12 showcase-value">
+        <%= t("hyrax.organization.permissions.contact_us").html_safe %>
+      </div>
+    </div>
+
+    <% if current_user.admin? %>
+      <div class="form-group row admin-preview-mode-container>">
+        <h2>Admin Settings</h2>
+        <%= render_edit_field_partial('data_manager', f: f, placeholder: 'No preference') %>
+        <%= render_edit_field_partial('preview_mode', f: f, blank_label: 'No preference') %>
+        <%= render_edit_field_partial('permissions_enforcement_mode', f: f) %>
+      </div>
+      <%= render 'morphosource/dashboard/collections/teams/organization/unlink_organization'%>
+    <% end %>
+  </div>
+<% end %>

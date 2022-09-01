@@ -1,0 +1,108 @@
+<%= simple_form_for @form, url: main_app.team_members_path(@collection), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+
+<div id="members" class="tab-pane">
+  <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
+    <div class="panel-body">
+      <%# taken from form_share.html.erb %>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="content-block">
+
+            <div id="participants" class="tab-pane">
+              <div class="edit-sharing-tab">
+                <section class="section-add-sharing">
+                  <!-- TODO: removing form tags below makes add group form hit the collections controller - needs more investigation -->
+                  <div>
+                    <form></form>
+                  </div>
+                  <div class="form-add-user-sharing-wrapper" data-id="<%= @form.id %>">
+                    <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'user-participants-form' }) do |f| %>
+
+                      <div class="row form-inline sharing-row-form add-users">
+                        <div class="col-sm-6 col-md-3 col-lg-3">
+                          <label><%= t('.add_individual_user') %>:</label>
+                        </div>
+                        <div class="col-sm-6 col-md-3 col-lg-3">
+                          <%= f.hidden_field_tag('collection_roles[agent_type]', 'user') %>
+                          <%= f.text_field 'collection_roles[agent_id]', placeholder: "Search for a user..." %>
+                        </div>
+                        <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
+                          <label>as</label>
+                          <%= f.select 'collection_roles[access]', ms_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                        </div>
+                        <div class="col-sm-6 col-md-3 col-lg-3">
+                          <%= submit_tag 'Add', class: 'btn btn-info edit-collection-add-user-sharing-button', disabled: true %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <!-- Add group form -->
+                    <div class="form-add-group-sharing-wrapper" data-id="<%= @form.id %>">
+                      <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'group-participants-form'}) do |f| %>
+                        <div class="row form-inline sharing-row-form add-groups">
+                          <div class="col-sm-6 col-md-3 col-lg-3">
+                            <label><%= t('.add_users_from_project_or_team') %>:</label>
+                          </div>
+                          <div class="col-sm-6 col-md-3 col-lg-3">
+                            <%= f.hidden_field_tag('collection_roles[agent_type]', 'group') %>
+                            <%= f.select 'collection_roles[team_collection_id]', collection_options, { prompt: "Select a group..." }, class: 'form-control' %>
+                          </div>
+                          <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
+                            <label>as</label>
+                            <%= f.select 'collection_roles[access]', ms_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                          </div>
+                          <div class="col-sm-6 col-md-3 col-lg-3">
+                            <%= submit_tag 'Add', class: 'btn btn-info edit-collection-add-group-sharing-button', :disabled => true %>
+                          </div>
+                        </div><!-- /.form-inline -->
+                      <% end %>
+                    </div>
+      <% end %>
+                </section>
+
+                <section class="section-collection-sharing">
+                  <% members_table = 'morphosource/dashboard/collections/members/tab_members_table.html.erb' %>
+                  <%= render members_table, access: 'managers', filter: :manage? %>
+                  <%= render members_table, access: 'editors', filter: :edit_works? %>
+                  <%= render members_table, access: 'depositors', filter: :deposit? %>
+                  <%= render members_table, access: 'downloaders', filter: :download_works? %>
+                  <%= render members_table, access: 'viewers', filter: :view? %>
+                </section>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <script>
+      // disable update user role button if no selection made
+      $(document).ready(function() {
+        function updateAccessEnabled(el){
+          let saveButton = $(el).closest('tr').find(".btn");
+          if (verifyAccess(el)) {
+            saveButton.prop('disabled', false);
+          } else {
+            saveButton.prop('disabled', true);
+          }
+        }
+
+        function verifyAccess(el) {
+          if ($(el).val() != '') {
+            return true;
+          } else {
+            return false
+          }
+        }
+
+        $('.select-edit-access').change(function(){
+          updateAccessEnabled(this);
+        });
+      });
+
+      </script>
+
+    </div>
+  </div>
+</div>

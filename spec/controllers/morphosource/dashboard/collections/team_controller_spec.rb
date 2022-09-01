@@ -1,0 +1,54 @@
+# frozen_string_literal: true
+require 'rails_helper'
+
+RSpec.describe Morphosource::Dashboard::Collections::TeamsController, type: :controller do
+
+  let(:user)  { User.create(email: 'email@email.com', password: 'password')}
+  let!(:contributors)  { Role.create(name: 'contributor') }
+  let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
+  let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+  let(:media) { Media.create(title: ['media']) }
+  let(:params)  { { "id" => team.id, "collection" => { "representative_id" => media.id } } }
+
+  before do
+    contributors.users += [user]
+    allow(user).to receive(:can?).with(:edit, team).and_return(true)
+    sign_in user
+    allow(subject).to receive(:current_user).and_return(user)
+    team.create_collection_groups
+    team.edit_users += [user]
+    team.save
+  end
+
+  it 'should have TeamPresenter' do
+    expect(controller.presenter_class).to be(Morphosource::Collections::TeamPresenter)
+  end
+
+  describe '#update' do
+    it 'calls update_thumbnail' do
+      expect(subject).to receive(:update_thumbnail)
+      put :update, params: params
+    end
+  end
+
+  describe 'update_thumbnail' do
+    let(:params)  { { id: team.id, collection: { representative_id: media.id } } }
+
+    before do
+      allow(subject).to receive(:params).and_return(params)
+      subject.instance_variable_set(:@collection, team)
+      subject.send(:update_thumbnail)
+    end
+
+    context 'user inputs a representative_id' do
+      it 'sets the thumbnail id to the media thumbnail id' do
+        expect(team.thumbnail_id).to eq(media.thumbnail_id)
+      end
+    end
+    context 'user does not input a representative_id' do
+      it 'sets the thumbnail id to nil' do
+        expect(team.thumbnail_id).to eq(nil)
+      end
+    end
+  end
+end

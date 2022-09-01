@@ -7,7 +7,7 @@ require 'hyrax/forms/collection_form'
 RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller do
 
   let(:user)  { User.create(email: 'email@email.com', password: 'password')}
-  let(:contributors)  { Role.create(name: 'contributor') }
+  let!(:contributors)  { Role.create(name: 'contributor') }
 
   let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 'project') }
@@ -88,6 +88,6 @@ RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller
         expect(collection).to receive(:create_collection_groups)
         subject.set_default_permissions
       end
-    end
+    end  
   end
 end

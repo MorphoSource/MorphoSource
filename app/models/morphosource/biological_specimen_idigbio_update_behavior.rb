@@ -2,11 +2,13 @@ module Morphosource
   module BiologicalSpecimenIdigbioUpdateBehavior
     include Morphosource::MessageHelper
 
-    def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false, force_update=false)
+    def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false, force_update=false, log_file=nil)
+      log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
+
       if idigbio_match_found == 1
         @idigbio_occurrence = idigbio_occurrence_id_results[:data].first
         if idigbio_recordset_different_from_org?
-          puts "iDigBio sync: Specimen #{self.id} not synced because the organization (#{self.organization_id.first}) has a recordset ID #{@org_recordset_id} and it is different from the iDigBio-supplied ID #{@idb_recordset_id}."
+          log.debug "iDigBio sync: Specimen #{self.id} not synced because the organization (#{self.organization_id.first}) has a recordset ID #{@org_recordset_id} and it is different from the iDigBio-supplied ID #{@idb_recordset_id}."
         else
           @save_work = save_work
           @system_update = system_update
@@ -18,7 +20,7 @@ module Morphosource
         end
       elsif idigbio_match_found > 1
         if system_update
-          puts "IDigBio sync: Specimen #{id} not synced because multiple records found for OID: #{occurrence_id.first}"
+          log.debug "IDigBio sync: Specimen #{id} not synced because multiple records found for OID: #{occurrence_id.first}"
         end
       end
     end

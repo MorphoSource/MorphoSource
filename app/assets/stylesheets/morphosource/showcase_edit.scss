@@ -324,7 +324,7 @@ input[type=checkbox].disabled {
   }
 
   .admin-block {
-    background-color: #efefef; 
+    background-color: #efefef;
     margin-top: 2em;
     padding-left: 20px !important;
     padding-right: 20px !important;
@@ -452,7 +452,7 @@ input[type=checkbox].disabled {
   #fileupload {
     p {
       padding: 0 10px;
-      box-sizing: content-box !important;      
+      box-sizing: content-box !important;
     }
     #files-message {
       color: red;
@@ -462,7 +462,7 @@ input[type=checkbox].disabled {
     }
     .fileupload-buttonbar {
       padding: 0;
-      box-sizing: content-box !important;      
+      box-sizing: content-box !important;
       .fileinput-button {
         margin-left: auto;
         margin-right: auto;
@@ -471,11 +471,11 @@ input[type=checkbox].disabled {
       .fileupload-progress {
         margin-top: 0;
         div {
-          box-sizing: content-box !important;      
+          box-sizing: content-box !important;
         }
       }
       .progress {
-        box-sizing: content-box !important;      
+        box-sizing: content-box !important;
         height: auto;
         margin-bottom: 0;
       }
@@ -554,8 +554,26 @@ input[type=checkbox].disabled {
 
 /* styles for dashboard collection edit page */
 .dashboard.showcase-edit {
+
   .title {
     padding-left:0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+      align-items: unset;
+
+      .btn {
+        width: 90%;
+      }
+    }
+
     h1 {
       font-size: 28px;
       margin-bottom: 2px;
@@ -577,7 +595,7 @@ input[type=checkbox].disabled {
       padding: 15px;
       font-size: 12px;
     }
-  } 
+  }
 
   .show-actions {
     padding: .5vw 1vw;

@@ -26,50 +26,43 @@ RSpec.describe Morphosource::MergeBiologicalSpecimenService do
     ]
   end
 
-  let(:processing_event) { 5.times.collect{ ProcessingEvent.create(title: ['processing event']) } }
-  let(:media) { 5.times.collect{ Media.create(title: ['media']) } }
+  let(:processing_event_set_0) { 2.times.collect{ ProcessingEvent.create(title: ['processing event']) } }
+  let(:media_set_0) { 2.times.collect{ Media.create(title: ['media']) } }
 
-
+  let(:processing_event_set_1) { 3.times.collect{ ProcessingEvent.create(title: ['processing event']) } }
+  let(:media_set_1) { 3.times.collect{ Media.create(title: ['media']) } }
 
   describe 'call' do
 
+    subject { described_class.new(specimen[0].id, specimen[1].id, true, false) }
+
     before do
-      media.each_with_index do |media, idx|
-        processing_event[idx].ordered_members << media
+      media_set_0.each_with_index do |media, idx|
+        processing_event_set_0[idx].ordered_members << media
+      end
+      media_set_1.each_with_index do |media, idx|
+        processing_event_set_1[idx].ordered_members << media
       end
 
       specimen[0].ordered_members << imaging_event[0]
-      imaging_event[0].ordered_members << processing_event[0]
-      
-
+      imaging_event[0].ordered_members += processing_event_set_0
       specimen[1].ordered_members << imaging_event[1]
-      imaging_event[1].ordered_members << processing_event[1]
+      imaging_event[1].ordered_members += processing_event_set_1
 
-      works = [specimen, imaging_event, processing_event, media].flatten
+      works = [specimen, imaging_event, processing_event_set_0, processing_event_set_1, media_set_0, media_set_1].flatten
       works.each(&:save)
       works.each(&:reload)
-
     end
 
-    it 'success' do
-      media_list, ie_list = subject.call(specimen[0].id, specimen[1].id)
+    it 'merged media to the specimen and return the media list and IE count that has been moved' do
+      media_list, ie_list = subject.call
+      expect(media_list.sort).to eq(media_set_1.map(&:id).sort)
+      expect(ie_list.count).to eq(media_set_1.count)
 
-      expect(media_list).to eq([])
-      #expect(ie_list).to eq([])
+      merged_specimen_media_ids = specimen[0].media.map(&:id).sort
+      all_created_media_ids = (media_set_0 + media_set_1).map(&:id).sort
+      expect(merged_specimen_media_ids).to eq(all_created_media_ids)
     end
   end
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
-

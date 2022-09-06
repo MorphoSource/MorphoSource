@@ -682,7 +682,7 @@ namespace :morphosource do
       if args[:merge] == 'true'
         merge = true
         report_only = false
-      elsif args[:merge] == 'report_only'
+      elsif args[:merge] == 'merge_report_only'
         merge = true
         report_only = true
       else
@@ -697,7 +697,7 @@ namespace :morphosource do
     bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
     grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
     filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
-    puts "find_and_merge_duplicate_bso: #{filtered.count} duplicate groups found"
+    puts "\n#{filtered.count} duplicate groups found"
     filtered.each do |key, dups|
       # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
       sorted_dups = dups.sort_by { |dup| -(dup['related_media_ids_ssim']&.count || 0) }
@@ -714,7 +714,7 @@ namespace :morphosource do
         puts " duplicate group #{key} merged -> remaining specimen #{merge_to}"
       end
     end
-    puts "\nTotal imaging event count: #{ie_total}"
+    puts "\nTotal imaging event count: #{ie_total}" if report_only
   end
 
   desc "Update specimens from IDigbio"

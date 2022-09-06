@@ -113,6 +113,24 @@
           </div>
         </div>
       <% end %>
+
+      <% if current_user.admin? %>
+        <div class="col-xs-12 col-md-6 action-section">
+          <div>
+            <h2 style="font-size: large;">Administrator Actions</h2>
+          </div>
+
+          <div>
+            <div class="list-item"><%= link_to "Create new organization", main_app.new_hyrax_organization_path %></div>
+            <div class="list-item"><%= link_to "Create new device", main_app.new_hyrax_device_path %></div>
+            <div class="list-item"><%= link_to "View and search users", hyrax.users_path %></div>
+            <div class="list-item">
+              <%= link_to "Background job dashboard", "/queues", target: '_blank' %>
+              <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i> 
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

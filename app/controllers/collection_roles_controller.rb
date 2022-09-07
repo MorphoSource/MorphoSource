@@ -4,6 +4,7 @@
 # Used by Collection/edit#sharing for Teams and Projects
 class CollectionRolesController < ApplicationController
   include Hyrax::CollectionsControllerBehavior
+  include Morphosource::Dashboard::CollectionsControllerBehavior
 
   before_action { collection_role_values(params[:collection_roles]) }
 
@@ -97,7 +98,7 @@ class CollectionRolesController < ApplicationController
   end
 
   def reload_collection_share
-    redirect_to(hyrax.edit_dashboard_collection_path(collection.id, anchor: 'members'))
+    redirect_to collection_members_path(collection)
   end
 
   def update_user_access

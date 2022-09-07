@@ -43,7 +43,7 @@ module Hyrax
           respond_to do |format|
             format.js {render :js => "location.reload()"}
             format.html do
-              redirect_to(hyrax.edit_dashboard_collection_path(@parent.id, anchor: 'team_projects'), notice: notice)
+              redirect_to(main_app.team_projects_path(@parent.id), notice: notice)
             end
           end
         else
@@ -51,7 +51,7 @@ module Hyrax
           respond_to do |format|
             format.js {render :js => "location.reload();alert('There was an error removing collection.')"}
             format.html do
-              redirect_to(hyrax.edit_dashboard_collection_path(@parent.id, anchor: 'team_projects'), alert: alert)
+              redirect_to(main_app.team_projects_path_path(@parent.id), alert: alert)
             end
           end
         end
@@ -77,7 +77,7 @@ module Hyrax
           respond_to do |format|
             format.js {render :js => "location.reload()"}
             format.html do
-              redirect_to(edit_dashboard_collection_path(@parent, anchor: 'team_projects'), notice: notice)
+              redirect_to(main_app.team_projects_path(@parent), notice: notice)
             end
           end
         else

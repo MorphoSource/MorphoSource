@@ -6,26 +6,26 @@ module Morphosource::Derivatives::Processors
   end
 
   # Processor to create a single 2D image thumbnail from 
-  class CTImageSeriesCroppedImage < Morphosource::Derivatives::Processors::CroppedImage
-    include Morphosource::Derivatives::Processors::CTImageSeriesUtil
+  class ImageSeriesCroppedImage < Morphosource::Derivatives::Processors::CroppedImage
+    include Morphosource::Derivatives::Processors::ImageSeriesUtil
 
     attr_accessor :tmp_dir_path, :img_coll, :ext
 
     class_attribute :timeout
 
     def process
-      timeout ? process_with_timeout : create_ct_image_series_cropped_image_derivative
+      timeout ? process_with_timeout : create_image_series_cropped_image_derivative
     end
 
     def process_with_timeout
-      Timeout.timeout(timeout) { create_ct_image_series_cropped_image_derivative }
+      Timeout.timeout(timeout) { create_image_series_cropped_image_derivative }
     rescue Timeout::Error
-      raise Morphosource::Derivatives::Processors::TimeoutError, "Unable to process CT Image Series derivative\nThe command took longer than #{timeout} seconds to execute"
+      raise Morphosource::Derivatives::Processors::TimeoutError, "Unable to process Image Series derivative\nThe command took longer than #{timeout} seconds to execute"
     end
 
     protected
     
-    def create_ct_image_series_cropped_image_derivative
+    def create_image_series_cropped_image_derivative
       @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
 

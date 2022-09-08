@@ -2,7 +2,7 @@ require 'fileutils'
 require 'zip'
 
 module Morphosource::Derivatives::Processors
-  module CTImageSeriesUtil
+  module ImageSeriesUtil
     def dicom_image_formats
       ['.dcm', '.dicom', '.ima', '']
     end

@@ -1519,3 +1519,15 @@ html {
     }
   }
 }
+
+/* unauthorized/not found specific */
+.showcase .error {
+  div.block {
+    margin-top: 30px;
+
+    .row {
+      margin-left: unset;
+      margin-right: unset;
+    }
+  }
+}

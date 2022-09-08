@@ -1,11 +1,10 @@
 <% content_for :body_css_classes do %>showcase<% end %>
-<% provide :page_title, "Unauthorized" %>
+<% provide :page_title, "Not Found" %>
 
 <% if respond_to?(:curation_concern) && curation_concern %>
-  <% resource_type = curation_concern.human_readable_type.downcase %>
+  <% resource_type = curation_concern.human_readable_type %>
   <% resource_id = curation_concern.id %>
 <% else %>
-  <% resource_type = "resource" %>
   <% resource_id = nil %>
 <% end %>
 
@@ -13,11 +12,11 @@
   <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4 block">
     <div class="row title">
       <h1 style="text-align: center;">
-        Unauthorized
+        <%= "#{ resource_type.titleize } Not Found" %>
       </h1>
     </div>
     <div class="row">
-      <%= "You are not authorized to access this #{ resource_type }#{ resource_id.present? ? " (ID: #{resource_id})" : "" }" %>. The resource may be private, or you may lack the specific access required to interact with it.
+      <%= "The #{ resource_type.downcase } resource#{ resource_id.present? ? " (ID: #{resource_id})" : "" }" %>  does not exist, is unavailable, or has been deleted.
     </div>
   </div>
 </div>

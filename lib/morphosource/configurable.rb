@@ -55,9 +55,13 @@ module Morphosource
         [".txt", ".pdf", ".docx"]
       end
 
-      # Allowed formats for Photographic reference attachments 
+      # Allowed formats for Photographic reference attachments
       mattr_accessor :reference_attachment_formats do
         [".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".pdf"]
+      end
+
+      mattr_accessor :sequential_section_formats do
+        [".zip"]
       end
 
       # right now same as all formats

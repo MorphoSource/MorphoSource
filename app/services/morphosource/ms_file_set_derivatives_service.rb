@@ -21,7 +21,7 @@ module Morphosource
           file_set.class.audio_mime_types +
           file_set.class.video_mime_types +
           file_set.class.image_mime_types +
-          file_set.class.mesh_mime_types + 
+          file_set.class.mesh_mime_types +
           file_set.class.archive_mime_types
       end
 
@@ -48,9 +48,9 @@ module Morphosource
         Morphosource::Derivatives::MeshDerivatives.create(
           filename,
           outputs: [ {
-            label: :glb, 
-            format: 'glb', 
-            unit: parent_work&.unit&.first, 
+            label: :glb,
+            format: 'glb',
+            unit: parent_work&.unit&.first,
             url: derivative_url('glb')
           } ]
         )
@@ -58,41 +58,12 @@ module Morphosource
 
       def create_archive_derivatives(filename)
         parent_work = file_set.member_of&.first
-
-        if parent_work&.media_type&.first == 'CTImageSeries'
+        if parent_work&.media_type&.first == 'SequentialSectionImageSeries'
           errors = []
-
-          begin
-            # Pull out a single image as 2D thumbnail
-            Morphosource::Derivatives::CTImageSeriesCroppedImageDerivatives.create(
-              filename,
-              outputs: [ { 
-                label: :thumbnail, 
-                url: derivative_url('thumbnail') 
-              } ]
-            )
-          rescue StandardError => e
-            errors << e
-          end
-
-          begin
-            # Create 3D derivative asset
-            Morphosource::Derivatives::CTImageSeriesDerivatives.create(
-              filename,
-              outputs: [ { 
-                label: :dcm,
-                format: 'dcm',
-                slice_thickness: parent_work&.slice_thickness&.first,
-                unit: parent_work&.unit&.first,
-                url: derivative_url('dcm'),
-                x_spacing: parent_work&.x_spacing&.first,
-                y_spacing: parent_work&.y_spacing&.first,
-                z_spacing: parent_work&.z_spacing&.first
-              } ]
-            )
-          rescue StandardError => e
-            errors << e
-          end
+          create_thumbnail_from_series_image(filename, errors)
+        elsif parent_work&.media_type&.first == 'CTImageSeries'
+          errors = []
+          create_thumbnail_from_series_image(filename, errors)
 
           if errors.count == 1
             raise errors.first
@@ -104,13 +75,28 @@ module Morphosource
         elsif parent_work&.media_type&.first == 'Mesh'
           Morphosource::Derivatives::MeshDerivatives.create(
             filename,
-            outputs: [ { 
+            outputs: [ {
               label: :glb,
               format: 'glb',
               unit: parent_work&.unit&.first,
               url: derivative_url('glb')
             }]
           )
+        end
+      end
+
+      def create_thumbnail_from_series_image(filename, errors)
+        begin
+          # Pull out a single image as 2D thumbnail
+          Morphosource::Derivatives::CTImageSeriesCroppedImageDerivatives.create(
+            filename,
+            outputs: [ {
+              label: :thumbnail,
+              url: derivative_url('thumbnail')
+            } ]
+          )
+        rescue StandardError => e
+          errors << e
         end
       end
   end

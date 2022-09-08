@@ -11,10 +11,12 @@ terms:
     term: CT/MRI image series (multiple files of type *.tiff, *.png, *.dcm, *.zip, etc.)
     active: true
   - id: PhotogrammetryImageSeries
-    term: Photogrammetry image series (multiple files of type *.tiff, *.png, etc.) 
+    term: Photogrammetry image series (multiple files of type *.tiff, *.png, etc.)
   - id: Mesh
     term: Mesh or point cloud (*.stl, *.ply, .etc, with optional associated texture or color file)
     active: true
+  - id: SequentialSectionImageSeries
+    term: Sequential section image series (multiple files of type *.tiff, *.png, *.zip, etc.)
   - id: Other
     term: Other
     active: true

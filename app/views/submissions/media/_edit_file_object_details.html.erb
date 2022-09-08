@@ -12,20 +12,20 @@ Please enter information for editable fields. Uneditable fields will be parsed a
   <%= render_edit_field_partial('map_type', f: f) %>
 </div>
 
-<p class="media_type_block CTImageSeries" style="padding: 10px; text-align: left;"><%= t("morphosource.media.help.pixel_spacing").html_safe %></p>
+<p class="media_type_block CTImageSeries SequentialSectionImageSeries" style="padding: 10px; text-align: left;"><%= t("morphosource.media.help.pixel_spacing").html_safe %></p>
 
-<div class="media_type_block CTImageSeries">
+<div class="media_type_block CTImageSeries SequentialSectionImageSeries">
   <%= render_edit_field_partial('x_spacing', f: f) %>
   <%= render_edit_field_partial('y_spacing', f: f) %>
   <%= render_edit_field_partial('z_spacing', f: f) %>
   <%= render_edit_field_partial('slice_thickness', f: f) %>
 </div>
 
-<div class="media_type_block CTImageSeries Mesh">
+<div class="media_type_block Mesh CTImageSeries SequentialSectionImageSeries">
   <%= render_edit_field_partial('unit', f: f) %>
 </div>
 
-<div class="media_type_block CTImageSeries">
+<div class="media_type_block CTImageSeries SequentialSectionImageSeries">
   <%= render_edit_field_partial('series_type', f: f) %>
 </div>
 
@@ -46,5 +46,5 @@ Please enter information for editable fields. Uneditable fields will be parsed a
 </div>
 
 <%# elsif @presenter.this_media_type.match(/image/i) %>
-<div class="media_type_block CTImageSeries PhotogrammetryImageSeries">
+<div class="media_type_block CTImageSeries PhotogrammetryImageSeries SequentialSectionImageSeries">
 </div>

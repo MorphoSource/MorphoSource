@@ -1,6 +1,6 @@
 module Morphosource
 	module Derivatives
-		class CTImageSeriesCroppedImageDerivatives < Hydra::Derivatives::Runner
+		class ImageSeriesCroppedImageDerivatives < Hydra::Derivatives::Runner
 			# Adds format: 'jpg' as the default to each of the directives
     	def self.transform_directives(options)
       	options.each do |directive|
@@ -15,7 +15,7 @@ module Morphosource
     	end
 
     	def self.processor_class
-      	::Morphosource::Derivatives::Processors::CTImageSeriesCroppedImage
+      	::Morphosource::Derivatives::Processors::ImageSeriesCroppedImage
     	end
 		end
 	end

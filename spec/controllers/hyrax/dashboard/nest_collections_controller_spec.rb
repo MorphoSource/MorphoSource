@@ -1,7 +1,5 @@
 require 'rails_helper'
 
-include Rails.application.routes.url_helpers
-
 RSpec.describe Hyrax::Dashboard::NestCollectionsController, type: :controller do
   routes { Hyrax::Engine.routes }
 
@@ -53,7 +51,7 @@ RSpec.describe Hyrax::Dashboard::NestCollectionsController, type: :controller do
         it 'redirects with an error' do
           post :create_relationship_under, params: params
           expect(subject.flash[:alert]).to eq("There was an error. #{project.title.first} was not added to #{team.title.first}")
-          expect(response).to redirect_to(team_projects_path(team.id))
+          expect(response).to redirect_to(Rails.application.routes.url_helpers.team_projects_path(team.id, locale: 'en'))
         end
       end
       context 'nesting works' do
@@ -66,7 +64,7 @@ RSpec.describe Hyrax::Dashboard::NestCollectionsController, type: :controller do
           expect(project.downloaders).to match_array([downloader])
           expect(project.viewers).to match_array([viewer])
           expect(subject.flash[:notice]).to eq("\'#{project.title.first}\' has been added to \'#{team.title.first}\'")
-          expect(response).to redirect_to(team_projects_path(team.id))
+          expect(response).to redirect_to(Rails.application.routes.url_helpers.team_projects_path(team.id, locale: 'en'))
         end
       end
     end
@@ -105,7 +103,7 @@ RSpec.describe Hyrax::Dashboard::NestCollectionsController, type: :controller do
         expect(project.viewers).to match_array([])
 
         expect(subject.flash[:notice]).to eq("\'#{project.title.first}\' has been removed from \'#{team.title.first}\'")
-        expect(response).to redirect_to(team_projects_path(team.id))
+        expect(response).to redirect_to(Rails.application.routes.url_helpers.team_projects_path(team.id, locale: 'en'))
       end
     end
   end

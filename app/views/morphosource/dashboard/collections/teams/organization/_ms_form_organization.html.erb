@@ -140,7 +140,9 @@
         <%= render_edit_field_partial('preview_mode', f: f, blank_label: 'No preference') %>
         <%= render_edit_field_partial('permissions_enforcement_mode', f: f) %>
       </div>
-      <%= render 'morphosource/dashboard/collections/teams/organization/unlink_organization'%>
     <% end %>
   </div>
+<% end %>
+<% if current_user.admin? && @collection.organization %>
+    <%= render 'morphosource/dashboard/collections/teams/organization/unlink_organization'%>
 <% end %>

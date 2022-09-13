@@ -30,7 +30,7 @@ module Morphosource
 
       def after_update
         respond_to do |format|
-          format.html { redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success') }
+          format.html { redirect_to collection_edit_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success') }
           format.json { render json: @collection, status: :updated, location: dashboard_collection_path(@collection) }
         end
       end

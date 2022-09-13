@@ -1,7 +1,7 @@
-<% # app/views/records/edit_fields/_x_spacing.html.erb %>
+<% # app/views/records/edit_fields/_z_spacing.html.erb %>
 <% # validates numbers only while user types %>
-<%= f.input :x_spacing, as: :string,
-    wrapper_html: { class: 'SequentialSectionImageSeries' },
-    label: 'X pixel spacing',
+<%= f.input :z_spacing, as: :string,
+    wrapper_html: { class: 'CTImageSeries required-flag' },
+    label: 'Z pixel spacing',
     input_html: { type: "text", onkeyup: "reportValidity('');", pattern: "[0-9]+(\.[0-9]+)?", oninvalid: "this.setCustomValidity('Only valid numbers allowed');", oninput: "this.setCustomValidity('');" }
 %>

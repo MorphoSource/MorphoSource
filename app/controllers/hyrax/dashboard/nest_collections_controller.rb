@@ -51,7 +51,7 @@ module Hyrax
           respond_to do |format|
             format.js {render :js => "location.reload();alert('There was an error removing collection.')"}
             format.html do
-              redirect_to(main_app.team_projects_path_path(@parent.id), alert: alert)
+              redirect_to(main_app.team_projects_path(@parent.id), alert: alert)
             end
           end
         end

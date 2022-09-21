@@ -552,8 +552,15 @@ input[type=checkbox].disabled {
 } /* / .showcase-edit */
 
 
+/* list teams and projects */
+.dashboard {
+  .show-actions {
+    padding: .5vw 1vw;
+  }
+}
+
 /* styles for dashboard collection edit page */
-.dashboard.showcase-edit {
+.dashboard.ms-collection-edit {
 
   .title {
     padding-left:0;

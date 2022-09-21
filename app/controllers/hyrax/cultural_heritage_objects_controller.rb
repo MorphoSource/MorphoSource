@@ -3,7 +3,8 @@
 module Hyrax
   # Generated controller for CulturalHeritageObject
   class CulturalHeritageObjectsController < ApplicationController
-    # Adds Hyrax behaviors to the controller.
+    # Adds Hyrax behaviors to the controller
+    include Morphosource::CurationConcernControllerBehavior
     include Hyrax::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect

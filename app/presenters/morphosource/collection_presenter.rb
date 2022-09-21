@@ -40,5 +40,9 @@ module Morphosource
     def team_managed_badge
       content_tag(:span, "Team Managed", class: "label", style: "background-color: #FF861F;")
     end
+
+    def collection_type_title
+      collection_type.title
+    end
   end
 end

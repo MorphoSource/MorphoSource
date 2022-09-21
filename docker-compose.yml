@@ -84,8 +84,8 @@ services:
       - POSTGRES_PASSWORD=$DB_PASSWORD
       - POSTGRES_DB=$DB_NAME
       - POSTGRES_HOST_AUTH_METHOD=trust
-    ports:
-      - "5432:5432"
+    # ports:
+    #  - "5432:5432"
     volumes:
       - db:/var/lib/postgresql/data
     networks:
@@ -96,15 +96,15 @@ services:
     volumes:
       - fcrepo:/data
       - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
-    ports:
-      - 8080:8080
+    #ports: # Re-open ports for local dev environments
+    #  - 8080:8080
     networks:
       - morphosource
 
   memcached:
     image: bitnami/memcached
-    ports:
-      - '11211:11211'
+    # ports:
+    #  - '11211:11211'
     networks:
       - morphosource
 
@@ -117,8 +117,8 @@ services:
 
   solr:
     image: solr:7.7.3
-    ports:
-      - 8983:8983
+    #ports: # Re-open ports for local dev environments
+    #  - 8983:8983
     command:
       - sh
       - "-c"

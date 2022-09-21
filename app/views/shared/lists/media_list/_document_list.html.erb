@@ -16,12 +16,16 @@
           <th><%= sortable_table_header('Taxonomy', 'taxonomy_si') %></th>
           <th><%= sortable_table_header('Type', 'human_readable_media_type_si') %></th>
           <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
-          <th><%= sortable_table_header('Publication Status', 'publication_status_si') %></th>
+          <th style="padding: 8px 0px 8px 0px;"><%= sortable_table_header('Publication Status', 'publication_status_si') %></th>
           <th class="remove-column">&nbsp;</th>
         </tr>
         </thead>
         <tbody>
-          <%= render partial: 'shared/lists/media_list/document_list_row', collection: @document_list, as: :document %>
+          <% if current_user and can? :edit, @collection %>
+            <%= render partial: 'shared/lists/media_list/edit_document_list_row', collection: @document_list, as: :document, locals: { collection_type: @collection.collection_type.title.downcase, member_ids: Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}").map{|d| d["id"]} } %>
+          <% else %>
+            <%= render partial: 'shared/lists/media_list/document_list_row', collection: @document_list, as: :document %>
+          <% end %>
         </tbody>
       </table>
     <% end # / form_tag %>

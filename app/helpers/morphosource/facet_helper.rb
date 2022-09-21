@@ -14,5 +14,13 @@ module Morphosource
         "Collection #{id} Not Found"
       end
     end
+
+    def user_name_by_id(id)
+      begin
+        User.find_by(ms_id: id).name_or_email
+      rescue
+        "User #{id} Not Found"
+      end
+    end
   end
 end

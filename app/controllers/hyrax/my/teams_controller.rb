@@ -3,7 +3,7 @@ module Hyrax
     class TeamsController < MyController
       include MyTeamsControllerBehavior
       include Morphosource::CollectionHelper
-      helper_method :page_is_project?, :ms_dashboard_my_collection_link, :hidden_params_for_filters, :visibility_label, 
+      helper_method :page_is_project?, :ms_dashboard_my_collection_link, :hidden_params_for_filters, :visibility_label,
         :page_is_team?, :collection_type, :hidden_params_for_pagination
 
       with_themed_layout 'morphosource_dashboard'
@@ -44,7 +44,7 @@ module Hyrax
       end
 
       def collections_by_memberships
-        @user = current_user 
+        @user = current_user
         all_memberships_collection_ids, manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = @user.collections_with_membership_role_ids
         # pass the target_collection_ids to information service (mainly for facets)
         if params['k_membership'].present?
@@ -70,7 +70,7 @@ module Hyrax
         depositor_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, depositor_collection_ids)
         downloader_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, downloader_collection_ids)
         viewer_docs = teams_service.collection_docs_by_type_and_ids(@collection_list_type_id, collection_filter_params, viewer_collection_ids)
-        # pass the target_collection_ids to information service 
+        # pass the target_collection_ids to information service
         if params['k_membership'].present?
           case params['k_membership']
             when 'Manager'
@@ -106,7 +106,7 @@ module Hyrax
         returned_solrize_filter_params = teams_information_service.solrize_filter_params(filter_params('k_', params))
         #unless params['k_membership'].present?
         #  # if no membership criteria, get collections with any membership value
-        #  returned_solrize_filter_params << teams_information_service.default_membership_params          
+        #  returned_solrize_filter_params << teams_information_service.default_membership_params
         #end
         returned_solrize_filter_params
       end
@@ -140,16 +140,16 @@ module Hyrax
           @collection_type_list_presenter ||= Hyrax::SelectTeamCollectionTypeListPresenter.new(current_user)
         end
 
-        def teams_service 
+        def teams_service
           @teams_service ||= teams_service_class.new(scope: self, user: current_user, params: params_for_query)
         end
 
         def teams_information_service
-          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "my", @target_collection_ids) 
+          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "my", @target_collection_ids)
         end
 
         def browse_teams_information_service
-          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "browse", nil) 
+          @teams_information_service ||= information_service_class.new(current_user, @collection_list_type_id, "browse", nil)
         end
 
         def paginated_item_list
@@ -182,7 +182,7 @@ module Hyrax
         def params_for_query
           #params.merge(q: params[:cq])
 
-          # setting higher collection limit for paginating the array       
+          # setting higher collection limit for paginating the array
           params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
         end
 

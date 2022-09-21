@@ -5,8 +5,8 @@ module Morphosource
     extend Hydra::Derivatives
 
     autoload :CroppedImageDerivatives
-    autoload :CTImageSeriesCroppedImageDerivatives
     autoload :CTImageSeriesDerivatives
+    autoload :ImageSeriesCroppedImageDerivatives
     autoload :MeshDerivatives
     autoload :VideoDerivatives
 

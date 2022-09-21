@@ -62,12 +62,12 @@ module Hyrax
 
       # Terms that appear above the accordion
       def primary_terms
-        [:title, :description, :creator, :contributor, :based_near, :related_url]
+        [:title, :description]
       end
 
       # Terms that appear within the accordion
       def secondary_terms
-        []
+        [:creator, :contributor, :based_near, :related_url]
       end
 
       def banner_info

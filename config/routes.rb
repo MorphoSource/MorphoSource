@@ -3,6 +3,8 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     scope module: :dashboard do
       post 'dashboard/collections/:id', controller: :collection_members, action: :update_members, as: 'update_members'
+      get 'dashboard/collections/:id/edit', controller: :collections, action: :edit
+      get 'dashboard/collections/:id', controller: :collections, action: :edit, as: 'edit_collection'
     end
   end
 
@@ -67,7 +69,6 @@ Rails.application.routes.draw do
         get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
         get '/specimens/facet/:id', to: 'biological_specimens#facet', as: 'dashboard_specimens_facet'
         get '/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'dashboard_chos_facet'
-
       end
     end
   end
@@ -78,15 +79,13 @@ Rails.application.routes.draw do
     get 'collections/:id/about', to: 'collections#about'
     get 'collections/:id/facet/:id', to: 'collections#facet'
 
-    # csv exports
-    get 'projects/:id/media_export', to: 'collections#media_export', as: 'project_media_export'
-    get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
     get 'teams/:id/media_downloads', to: 'collections#media_downloads', as: 'team_media_downloads'
-    get 'projects/:id/media_download_counts', to: 'collections#media_download_counts', as: 'project_media_download_counts'
-    get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
     get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
+    get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
+    get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
 
-    scope module: :collections do    
+
+    scope module: :collections do
       # these get redirected to projects/teams
       get 'collections/:id/biological_specimens', to: 'biological_specimens#show'
       get 'collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show'
@@ -101,6 +100,10 @@ Rails.application.routes.draw do
       get 'projects/:collection_id/facet/:id', to: 'projects#facet', as: 'project_media_facet'
       get 'projects/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'project_specimens_facet'
       get 'projects/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'project_chos_facet'
+
+      # csv exports
+      get 'projects/:id/media_export', to: 'projects#media_export_with_intersections_facet', as: 'project_media_export'
+      get 'projects/:id/media_download_counts', to: 'projects#media_download_counts_with_intersections_facet', as: 'project_media_download_counts'
 
       # projects redirects
       get 'projects/specimens/:id', to: redirect('projects/%{id}/biological_specimens')
@@ -127,6 +130,39 @@ Rails.application.routes.draw do
       get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
       get 'teams/:id/media_organization_transfer_status', to: 'teams#media_organization_transfer_status', as: 'team_media_organization_transfer_status'
     end
+
+    scope module: :dashboard do
+      get 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
+
+      get 'dashboard/collections/:id', to: 'collections#edit'
+      put 'dashboard/collections', to: 'collections#update'
+      put 'dashboard/collections/:id', to: 'collections#update'
+      patch 'dashboard/collections/:id', to: 'collections#update'
+      delete 'dashboard/collections/:id', to: 'collections#destroy', as: 'destroy_collection'
+      get 'dashboard/collections/new', to: 'collections#new', as: 'new_collection'
+
+      scope module: :collections do
+        get 'dashboard/teams/new', to: 'teams#new', as: 'new_team'
+        post 'dashboard/teams', to: 'teams#create'
+        get 'dashboard/teams/:id', to: "teams#edit", as: "team_edit"
+        get 'dashboard/teams/:id/files', to: 'teams#files'
+        put 'dashboard/teams', to: 'teams#update'
+        put 'dashboard/teams/:id', to: 'teams#update', as: 'update_team'
+        patch 'dashboard/teams/:id', to: 'teams#update'
+        get 'dashboard/teams/:id/members', to: 'teams#members', as: 'team_members'
+        get 'dashboard/teams/:id/organization', to: 'teams#organization', as: 'team_organization'
+        get 'dashboard/teams/:id/projects', to: 'teams#projects', as: 'team_projects'
+
+        get 'dashboard/projects/new', to: 'projects#new', as: 'new_project'
+        post 'dashboard/projects', to: 'projects#create'
+        get 'dashboard/projects/:id', to: 'projects#edit', as: 'project_edit'
+        get 'dashboard/projects/:id/files', to: 'projects#files'
+        put 'dashboard/projects', to: 'projects#update'
+        put 'dashboard/projects/:id', to: 'projects#update', as: 'update_project'
+        patch 'dashboard/projects/:id', to: 'projects#update'
+        get 'dashboard/projects/:id/members', to: 'projects#members', as: 'project_members'
+      end
+    end
   end
 
   scope module: :hyrax do
@@ -144,56 +180,12 @@ Rails.application.routes.draw do
     # cho pagination
     get 'organization_paging/concern/organizations/chos/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
 
-    # media pagination
-    get 'team_paging/teams/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'team_paging/projects/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
-    # bso pagination
-    get 'team_paging/teams/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'team_paging/projects/specimens/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
-    # cho pagination
-    get 'team_paging/teams/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'team_paging/projects/chos/:id', to: redirect { |params, request| "/teams/#{request.params[:id]}?#{request.params.to_query}" }
-
-    # media pagination
-    get 'project_paging/projects/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'project_paging/teams/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
-    # bso pagination
-    get 'project_paging/projects/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'project_paging/teams/specimens/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
-    # cho pagination
-    get 'project_paging/projects/chos/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'project_paging/teams/chos/:id', to: redirect { |params, request| "/projects/#{request.params[:id]}?#{request.params.to_query}" }
-
-    get 'dashboard/collections/specimens/:id', to: 'dashboard/collections#specimens'
-    get 'dashboard/collections/chos/:id', to: 'dashboard/collections#chos'
-    # media pagination
-    get 'project_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'team_paging/dashboard/collections/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'project_paging/dashboard/collections/:id/edit', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
-    get 'team_paging/dashboard/collections/:id/edit', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}" }
-    # bso pagination
-    get 'project_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
-    get 'team_paging/dashboard/collections/specimens/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=biological_specimens" }
-    # cho pagination
-    get 'project_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
-    get 'team_paging/dashboard/collections/chos/:id', to: redirect { |params, request| "/dashboard/collections/#{request.params[:id]}?#{request.params.to_query}&tab=cultural_heritage_objects" }
     # my teams/projects paging
     get 'my_projects_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/projects/?#{request.params.to_query}" }
     get 'my_teams_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/teams/?#{request.params.to_query}" }
     # browse teams/projects paging
     get 'browse_projects_paging/browse/teams', to: redirect { |params, request| "/browse/projects/?#{request.params.to_query}" }
     get 'browse_teams_paging/browse/teams', to: redirect { |params, request| "/browse/teams/?#{request.params.to_query}" }
-
-    
-    namespace :dashboard do
-      resources :collections, controller: 'collections'
-
-      # Note: the following route might effect pagination links
-      get 'collections/:parent_id/under', controller: 'ms_nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
-    end
-
-    #get 'dashboard/my/teams', controller: 'my/teams', action: :index
-    #get 'dashboard/my/projects', controller: 'my/teams', action: :index
 
     # Rails.application.routes.url_helpers.my_media_index_path
     scope :dashboard do
@@ -203,7 +195,7 @@ Rails.application.routes.draw do
         # resources :media, only: [:index], controller: 'morphosource/my/media'
       end
 
-      namespace :transfers do 
+      namespace :transfers do
         put 'decide', action: :batch_decide_transfers, as: 'batch_decide'
       end
     end

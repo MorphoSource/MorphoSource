@@ -1,0 +1,14 @@
+<div class="col-sm-12">
+<h2 style="margin-top: 0px;">Admin Settings</h2>
+</div>
+<div class="form-add-organization-wrapper col-sm-12" style="width:100%;">
+  <div class="form-inline add-sharing-form sharing-row-form" style="display:flex;">
+    <%= simple_form_for @collection,
+        url: main_app.dashboard_collection_link_organization_path,
+        method: 'post',
+        html: { id: 'add-organization-form', style: "width:100%; text-align:center;"} do |f| %>
+        <%= render_edit_field_partial('organization', f: f) %>
+        <%= submit_tag 'Link to organization', class: 'btn btn-sm btn-default', style: 'margin-left:10px;' %>
+    <% end %>
+  </div>
+</div>

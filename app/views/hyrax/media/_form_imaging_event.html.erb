@@ -1,10 +1,10 @@
 <div class="col-sm-6">
   <div class="content-block" style="margin-bottom: 30px;">
-  	<h2>IMAGING EVENT DETAILS</h2>
+    <h2>IMAGING EVENT DETAILS</h2>
 
     <%= render_edit_field_partial('ie_modality', f: i) %>
     <%= render_edit_field_partial('creator', f: i) %>
-    <%# todo: render date_field in simple_form_bootstrap 
+    <%# todo: render date_field in simple_form_bootstrap
     = render_edit_field_partial('date_created', f: i) %>
     <div class="row">
         <div class="col-xs-6 showcase-label">Date created</div>
@@ -12,19 +12,22 @@
         <%= i.date_field :date_created, wrapper: :inline, value: i.object.date_created, class: 'datepicker form-control' %>
         </div>
     </div>
+    <div class="ie_sequential_section_scan">
+      <%= render_edit_field_partial('slide_type', f: i) %>
+    </div>
     <%= render_edit_field_partial('software', f: i) %>
     <%= render_edit_field_partial('description', f: i) %>
     <%= render_edit_field_partial(
-      'attachment', 
-      f: i, 
-      field: 'ie_description', 
+      'attachment',
+      f: i,
+      field: 'ie_description',
       label: 'Description attachment file',
       curation_concern: @imaging_event_form.model
     ) %>
     <%= render_edit_field_partial(
-      'attachment_for_reference', 
-      f: i, 
-      field: 'ie_reference', 
+      'attachment_for_reference',
+      f: i,
+      field: 'ie_reference',
       label: 'Photographic reference file',
       curation_concern: @imaging_event_form.model
     ) %>
@@ -69,8 +72,7 @@
     <%= render_edit_field_partial('background_removal', f: i) %>
     </div>
 
-
-	</div>
+  </div>
 </div>
 <div class="col-sm-6">
   <div class="content-block">

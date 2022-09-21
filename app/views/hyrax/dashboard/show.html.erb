@@ -9,7 +9,7 @@
         <div>
           <span>
             Welcome <%= current_user.display_name.present? ? current_user.display_name : "to MorphoSource" %>!
-            The dashboard provides many different tools to create and manage records. 
+            The dashboard provides many different tools to create and manage records.
           </span>
         </div>
     </div>
@@ -18,7 +18,7 @@
 <div class="landing panel">
   <div class="panel-body">
   <div class="col-xs-12 actions">
-    <div class="row">  
+    <div class="row">
       <% if current_user.contributor? || current_user.admin? %>
         <div class="col-xs-12 col-md-6 action-section">
           <div>
@@ -31,13 +31,13 @@
 
               <div class="action-section">
                 <div class="list-item">
-                  <%= link_to "New project", main_app.new_dashboard_collection_path(collection_type_id: 2) %>
-                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.glossary.projects") %></p></i> 
+                  <%= link_to "New project", main_app.new_project_path %>
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.glossary.projects") %></p></i>
                 </div>
 
                 <div class="list-item">
-                  <%= link_to "New team", main_app.new_dashboard_collection_path(collection_type_id: 1) %>
-                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.glossary.teams") %></p></i> 
+                  <%= link_to "New team", main_app.new_team_path %>
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.glossary.teams") %></p></i>
                 </div>
 
                 <div class="list-item">
@@ -53,15 +53,15 @@
               <div>
                 <div class="list-item">
                   <%= link_to "My projects", main_app.my_projects_path %>
-                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_projects") %></p></i> 
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_projects") %></p></i>
                 </div>
                 <div class="list-item">
                   <%= link_to "My teams", main_app.my_teams_path %>
-                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_teams") %></p></i>  
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_teams") %></p></i>
                 </div>
                 <div class="list-item">
                   <%= link_to "My media and physical objects", main_app.my_media_index_path %>
-                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_media_and_objects") %></p></i>  
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_media_and_objects") %></p></i>
                 </div>
               </div>
             </div>
@@ -72,7 +72,7 @@
               <div>
                 <div class="list-item">
                   <%= link_to "Approve or deny download requests from other users", main_app.request_manager_path %>
-                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.requests_manager") %></p></i>   
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.requests_manager") %></p></i>
                 </div>
               </div>
             </div>
@@ -113,11 +113,29 @@
           </div>
         </div>
       <% end %>
+
+      <% if current_user.admin? %>
+        <div class="col-xs-12 col-md-6 action-section">
+          <div>
+            <h2 style="font-size: large;">Administrator Actions</h2>
+          </div>
+
+          <div>
+            <div class="list-item"><%= link_to "Create new organization", main_app.new_hyrax_organization_path %></div>
+            <div class="list-item"><%= link_to "Create new device", main_app.new_hyrax_device_path %></div>
+            <div class="list-item"><%= link_to "View and search users", hyrax.users_path %></div>
+            <div class="list-item">
+              <%= link_to "Background job dashboard", "/queues", target: '_blank' %>
+              <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i> 
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
 
-<script> 
+<script>
 $(function(){
   setupTooltip();
 });

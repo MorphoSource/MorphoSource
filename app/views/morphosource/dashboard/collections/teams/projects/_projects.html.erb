@@ -1,0 +1,17 @@
+<div id="team_projects" role="tabpanel" class="tab-pane active">
+  <div class="form-tab-content">
+    <div class="row tab-action-buttons sub-collections-wrapper">
+      <%= button_tag t('hyrax.dashboard.collections.actions.add_project_to_Team.label'),type: 'button',
+               class: 'btn btn-primary add-subcollection',
+               title: t('hyrax.dashboard.collections.actions.add_project_to_Team.label'),
+               data: { nestable: true,
+                       hasaccess: true,
+                       presenter_id: @presenter.id } %>
+      <%= link_to t('hyrax.dashboard.collections.actions.create_new_project_in_Team.label'),
+        main_app.create_subcollection_under_path(parent_id: @presenter.id),
+        title: t('hyrax.dashboard.collections.actions.create_new_project_in_Team.label'),
+        class: 'btn btn-primary' %>
+    </div>
+    <%= render 'morphosource/dashboard/collections/teams/projects/tab_project_list', id: @presenter.id, collection: @projects %>
+  </div>
+</div>

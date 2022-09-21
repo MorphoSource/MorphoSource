@@ -1,7 +1,23 @@
-<h1>Unauthorized</h1>
+<% content_for :body_css_classes do %>showcase<% end %>
+<% provide :page_title, "Unauthorized" %>
+
 <% if respond_to?(:curation_concern) && curation_concern %>
-  <p>The <%= curation_concern.human_readable_type.downcase %> you have tried to access is private<p>
-  <p>ID: <%= curation_concern.id %>
+  <% resource_type = curation_concern.human_readable_type.downcase %>
+  <% resource_id = curation_concern.id %>
 <% else %>
-  <p>The page you have tried to access is private<p>
+  <% resource_type = "resource" %>
+  <% resource_id = nil %>
 <% end %>
+
+<div class="error">
+  <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4 block">
+    <div class="row title">
+      <h1 style="text-align: center;">
+        Unauthorized
+      </h1>
+    </div>
+    <div class="row">
+      <%= "You are not authorized to access this #{ resource_type }#{ resource_id.present? ? " (ID: #{resource_id})" : "" }" %>. The resource may be private, or you may lack the specific access required to interact with it.
+    </div>
+  </div>
+</div>

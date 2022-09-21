@@ -83,7 +83,9 @@ module Hyrax
       :image_height,
       :color_space,
       :color_depth,
-      :compression
+      :compression,
+      # Sequential Section fields
+      :slide_type
 
     def media_permissions_string
       permissions_string = ''
@@ -519,7 +521,8 @@ module Hyrax
           @phase_contrast = @imaging_event.phase_contrast.first
           @optical_magnification = @imaging_event.optical_magnification.first
           @acquisition_type = @imaging_event.acquisition_type.first
-
+        elsif @imaging_event_modality == "Sequential Section Scan"
+          @slide_type = @imaging_event.slide_type.first
         end
         @imaging_event_creator = @imaging_event.creator
         @imaging_event_date_created = @imaging_event.date_created

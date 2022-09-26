@@ -8,8 +8,13 @@ module Hyrax
           can :create_any, ::Collection
           can :view_admin_show_any, ::Collection
         else
+          if contributor?
+            can :create_any, ::Collection
+          end
+
+          # TODO: Consider moving some of these up under contributor?
           can :manage_any, ::Collection if Hyrax::Collections::PermissionsService.can_manage_any_collection?(ability: self)
-          can :create_any, ::Collection if Hyrax::CollectionTypes::PermissionsService.can_create_any_collection_type?(ability: self)
+
           can :view_admin_show_any, ::Collection if Hyrax::Collections::PermissionsService.can_view_admin_show_for_any_collection?(ability: self)
 
           can [:edit, :update, :destroy], ::Collection do |collection| # for test by solr_doc, see solr_document_ability.rb

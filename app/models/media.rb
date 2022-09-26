@@ -471,7 +471,7 @@ class Media < Morphosource::Works::Base
   end
 
   def external_file
-    file_sets.first.original_file.external_file
+    file_sets&.first&.original_file&.external_file
   end
 
 

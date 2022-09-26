@@ -13,7 +13,8 @@ module Morphosource
         @service = service
         @resource_id = resource_id
         @manager = User.find_by(email: user_email)
-        @admin = User.find_by(ms_id: Hyrax.config.batch_user_key)
+        # @admin = User.find_by(ms_id: Hyrax.config.batch_user_key)
+        @admin = User.find_by(email: 'admin@email.com')
       end
 
       def call
@@ -28,7 +29,7 @@ module Morphosource
         @device = device
         @collection = create_series_collection
         # return import_errors if import_errors.present?
-        byebug
+        # byebug
         import_slides
       end
 
@@ -49,13 +50,14 @@ module Morphosource
       end
 
       def create_new_imaging_event
+        # byebug
         imaging_event = ImagingEvent.create( aperture_value: @slide.aperture_value,
                                              creator: @slide.creator,
                                              date_created: @slide.date_created,
                                              depositor: @manager.user_key,
                                              device_id: [@device.id],
                                              focal_length: @slide.focal_length,
-                                             ie_modality: ["SlideScan"],
+                                             ie_modality: ["SequentialSectionScan"],
                                              optical_magnification: @slide.magnification,
                                              physical_object_id: [@specimen.id],
                                              slide_type: ['Histological'],
@@ -126,10 +128,10 @@ module Morphosource
       def find_or_create_specimen
         specimen_doc = Morphosource::SolrService.new.get_docs("occurrence_id_tesim:#{occurrence_id} AND has_model_ssim:BiologicalSpecimen")&.first
 
-        byebug
+        # byebug
 
         return BiologicalSpecimen.find(specimen_doc["id"]) if specimen_doc.present?
-        byebug
+        # byebug
         specimen = BiologicalSpecimen.new(title: ['new specimen'],
                                           depositor: @admin.user_key,
                                           date_uploaded: Date.today,
@@ -138,7 +140,7 @@ module Morphosource
                                           taxonomy_id: [taxonomy.id])
 
         params = Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(occurrence_id)
-        byebug
+        # byebug
         params.each do |key,value|
           specimen.send(key + '=', [value].flatten)
         end
@@ -146,25 +148,25 @@ module Morphosource
         specimen.save
 
         Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(BiologicalSpecimen.new, ::Ability.new(@admin), specimen.attributes))
-        byebug
+        # byebug
         specimen.reload
       end
 
       def taxonomy
         taxonomy_doc = Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_tesim:#{gbif_key}")&.first
-        byebug
+        # byebug
         return Taxonomy.find(taxonomy_doc["id"]) if taxonomy_doc.present?
 
         taxonomy = Taxonomy.new(title: ['new taxonomy'], visibility: 'open', depositor: @admin.user_key, source: ["Imported by Morphosource::Import::SlideSeriesService"])
-        byebug
+        # byebug
         params = Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key, correct_synonym=false)
-        byebug
+        # byebug
         params.each do |key,value|
-          specimen.send(key + '=', [value].flatten)
+          taxonomy.send(key + '=', [value].flatten)
         end
-
-        Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(Taxonomy.new, ::Ability.new(@admin), taxonomy.attributes))
-        byebug
+        taxonomy.save!
+        Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(Taxonomy.new, ::Ability.new(@admin), taxonomy.attributes))
+        # byebug
         taxonomy.reload
       end
 

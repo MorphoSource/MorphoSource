@@ -3,6 +3,7 @@ require 'active_support/core_ext/numeric/conversions'
 #  `rails generate hyrax:work Media`
 module Hyrax
   class MediaPresenter < Hyrax::WorkShowPresenter
+    include ActionView::Helpers::NumberHelper
     include Morphosource::PresenterMethods
     include MorphosourceHelper
     include MediaFinderHelper
@@ -32,6 +33,7 @@ module Hyrax
       :direct_parent_members_raw_or_derived,
       :file_size, :accepted_file_count, :mime_type, :this_media_type, :file_set_list, :file_set_original_file_present,
       :fund_codes, :fund_code_associations, :active_fund_code_association,
+      :organization_transfer, :organization_transfer_on_publish,
       # Permissions
       :permits_commercial_use, :permits_3d_use, :required_archival_of_published_derivatives,
       :morphosource_use_agreement_type, :download_reviewer, :attachment_url,
@@ -81,7 +83,9 @@ module Hyrax
       :image_height,
       :color_space,
       :color_depth,
-      :compression
+      :compression,
+      # Sequential Section fields
+      :slide_type
 
     def media_permissions_string
       permissions_string = ''
@@ -122,10 +126,6 @@ module Hyrax
         Hyrax.config.iiif_image_server?  &&
         universal_viewable_ready?
       return viewer_ready
-    end
-
-    def external_file?
-      media.external_file?
     end
 
     def is_file_uploaded?
@@ -186,14 +186,6 @@ module Hyrax
 
     def preview_in_3D?
       !preview_mode.present? || preview_mode&.first == "" || preview_mode&.first == "Interactive/Embeddable"
-    end
-
-    def round_it(string_value)
-      if is_number_with_decimal?(string_value)
-        string_value.to_f.round(3).to_s
-      else
-        string_value
-      end
     end
 
     def media
@@ -279,11 +271,11 @@ module Hyrax
           @has_uv_space << file_set.has_uv_space.first.to_s if file_set.has_uv_space.present?
           @vertex_color << file_set.vertex_color.first.to_s if file_set.vertex_color.present?
           if (file_set.bounding_box_x.present? and file_set.bounding_box_y.present? and file_set.bounding_box_z.present?)
-            temp = round_it(file_set.bounding_box_x.first) + ', ' + round_it(file_set.bounding_box_y.first) + ', ' + round_it(file_set.bounding_box_z.first)
+            temp = number_with_precision(file_set.bounding_box_x.first, precision: 3) + ', ' + number_with_precision(file_set.bounding_box_y.first, precision: 3) + ', ' + number_with_precision(file_set.bounding_box_z.first, precision: 3)
             @bounding_box_dimensions << temp
           end
           if (file_set.centroid_x.present? and file_set.centroid_y.present? and file_set.centroid_z.present?)
-            temp = round_it(file_set.centroid_x.first) + ', ' + round_it(file_set.centroid_y.first) + ', ' + round_it(file_set.centroid_z.first)
+            temp = number_with_precision(file_set.centroid_x.first, precision: 3) + ', ' + number_with_precision(file_set.centroid_y.first, precision: 3) + ', ' + number_with_precision(file_set.centroid_z.first, precision: 3)
             @centroid_location << temp
           end
         elsif @this_media_type.match(/image/i)
@@ -315,7 +307,7 @@ module Hyrax
       if @file_size == 0
         @file_size = ""
       else
-        @file_size = @file_size.to_s(:delimited) + " bytes" # todo: convert to pretty format later
+        @file_size = number_to_human_size(@file_size)
       end
       if @point_count == 0
         @point_count = ""
@@ -484,14 +476,15 @@ module Hyrax
           @device_description = device.description&.first
           @device_modality = device.modality&.join(', ')
           device_modality_list = []
-          device.modality.each do |dm|
-            device_modality_list << Morphosource::ModalitiesService.new.label(dm)
-          end
+          # device.modality.each do |dm|
+          #   device_modality_list << Morphosource::ModalitiesService.new.label(dm)
+          # end
           @device_modality_term = device_modality_list.join(', ')
         end
 
         # get imaging event details
-        @imaging_event_modality = Morphosource::ModalitiesService.new.label(@imaging_event.ie_modality.first)
+        # @imaging_event_modality = Morphosource::ModalitiesService.new.label(@imaging_event.ie_modality.first)
+        @imaging_event_modality = "Sequential Section Scan"
         @filter = @imaging_event.ie_filter
         if @imaging_event_modality == "Photogrammetry" or
             @imaging_event_modality == "Photography"
@@ -529,7 +522,8 @@ module Hyrax
           @phase_contrast = @imaging_event.phase_contrast.first
           @optical_magnification = @imaging_event.optical_magnification.first
           @acquisition_type = @imaging_event.acquisition_type.first
-
+        elsif @imaging_event_modality == "Sequential Section Scan"
+          @slide_type = @imaging_event.slide_type.first
         end
         @imaging_event_creator = @imaging_event.creator
         @imaging_event_date_created = @imaging_event.date_created
@@ -552,10 +546,14 @@ module Hyrax
         imaging_event_exist = false
       end # end if imaging_event present?
 
+      # Fund code data
       @fund_code_associations = media.fund_code_associations.to_a
       @active_fund_code_association = media.active_fund_code_association
       @fund_codes = media.fund_codes.to_a
 
+      # Organization transfer request data
+      @organization_transfer_on_publish = false
+      @organization_transfer = ProxyDepositRequest.where(work_id: id, organization_transfer: true)&.first
     end
 
     def related_media_ids
@@ -630,6 +628,10 @@ module Hyrax
 
     def showcase_show_actions_partial
       'showcase_show_actions'
+    end
+
+    def showcase_general_details_partial
+      'showcase_general_details'
     end
 
     def showcase_file_object_details_partial

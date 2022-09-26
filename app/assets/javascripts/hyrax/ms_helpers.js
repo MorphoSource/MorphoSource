@@ -8,8 +8,8 @@ Array.prototype.uniq = function(){
 }
 
 function pluralize(noun, count) {
-  if (count != 1) 
-    suffix = 's' 
+  if (count != 1)
+    suffix = 's'
   else
     suffix = ''
   return count + ' ' + noun + suffix;
@@ -63,6 +63,14 @@ function hide_fields(field_array, clear = true) {
   if (clear) {
     $(field_array.join(',')).children('input, select').val('');
   }
+}
+
+function require_fields(field_array) {
+  $(field_array.join(',')).addClass('required-flag');
+}
+
+function unrequire_fields(field_array) {
+  $(field_array.join(',')).removeClass('required-flag');
 }
 
 function depositorLink(email) {
@@ -329,7 +337,7 @@ function modalityAbbrev(m) {
       return 'Video'
       break;
     default:
-      return 'Etc'; 
+      return 'Etc';
   }
 }
 

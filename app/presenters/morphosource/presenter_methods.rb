@@ -85,7 +85,7 @@ module Morphosource
 
     def parent_organization_recordset_id
        return [] unless parent_organization.present?
-       parent_organization.recordset_id&.first
+       parent_organization.recordset_id.join(',')
     end
 
     def parent_organization_related_url

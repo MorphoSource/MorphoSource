@@ -165,6 +165,7 @@ class BatchSubmissionsController < ApplicationController
         end
       end
       fund_code_id = request.params["batch_submission"]["fund_code"]
+      modality = request.params["batch_submission"]["modality"]
       media_ownership_fields = request.params["batch_submission"]["media"]
       media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
       @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
@@ -178,7 +179,8 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id,
         organization_transfer_immediately:( organization_media_transfer == :immediate ),
         device_id:device_id, 
-        media_ownership_fields:media_ownership_fields).to_h
+        media_ownership_fields:media_ownership_fields,
+        modality:modality).to_h
   end
 
   def ingest

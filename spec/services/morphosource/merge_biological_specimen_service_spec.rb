@@ -56,6 +56,7 @@ RSpec.describe Morphosource::MergeBiologicalSpecimenService do
 
     it 'merged media to the specimen and return the media list and IE count that has been moved' do
       media_list, ie_list = subject.call
+      specimen[0].update_index
       expect(media_list.sort).to eq(media_set_1.map(&:id).sort)
       expect(ie_list.count).to eq(media_set_1.count)
 

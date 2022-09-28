@@ -14,6 +14,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
   let(:media_ownership_fields) {
          {"visibility"=>"restricted", "download_reviewer"=>["e1eefa"], "rights_holder"=>["org ip holder"], "rights_statement"=>"http://rightsstatements.org/vocab/InC-OW-EU/1.0/", "license"=>["https://creativecommons.org/licenses/by-sa/4.0/"], "morphosource_use_agreement_type"=>"Permissive", "permits_commercial_use"=>"CommercialUsePermitted", "permits_3d_use"=>"3DPrintingPermitted", "required_archival_of_published_derivatives"=>"EncouragedButNotRequired", "funding"=>[""], "publisher"=>[""], "cite_as"=>"", "preview_mode"=>"Thumbnail Only", "agreement_uri"=>"", "member_of_collection_ids"=>""}
     }
+  let(:modality) {'Photogrammetry'}
 
   before do
     admins.users << [admin_user]
@@ -30,7 +31,8 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
       depositor:depositor, 
       organization_id:organization.id, 
       device_id:device.id,
-      media_ownership_fields:media_ownership_fields
+      media_ownership_fields:media_ownership_fields,
+      modality:modality
       )
     }
 

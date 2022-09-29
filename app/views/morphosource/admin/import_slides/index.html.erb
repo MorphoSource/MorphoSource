@@ -3,7 +3,7 @@
 <%= form_with url: import_slides_path, method: :post, local: true do |form| %>
   <div>
     <%= form.label :organization, "Organization" %>
-    <%= form.select_tag(:organization, options_for_select([['Museum of Comparative Zoology - Harvard University', 'Museum of Comparative Zoology - Harvard University']])) %>
+    <%= form.select_tag(:organization, options_for_select([['MCZ','MCZ']])) %>
   </div>
   <div>
     <%= form.label :service, "Service" %>

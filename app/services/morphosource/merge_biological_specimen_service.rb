@@ -25,6 +25,10 @@ module Morphosource
         ie.physical_object_id = [bso_to.id]        
       	ie.save unless @report_only
 		  end
+      if media_list.present? && !@report_only
+        # reindex bso_to specimens (ie.save above will reindex bso_from specimens)
+        UpdateWorkIndexJob.perform_later(@merge_to)
+      end
 		  if @delete_dup && !@report_only
 		  	bso_from.destroy 
 		  	puts " specimen #{@merge_from} destroyed"

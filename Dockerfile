@@ -43,12 +43,12 @@ CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 
 FROM msbase as morphosource
 
-ARG BUNDLE_WITHOUT="development test"
+ARG BUNDLE_WITHOUT
 ENV BLENDER_PATH="/app/blender/"
 
 RUN bundle install --jobs "$(nproc)"
-RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
-
+# RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
+# TODO enable production if necessary
 
 FROM msbase as mstools
 
@@ -123,8 +123,9 @@ CMD bundle exec sidekiq
 
 FROM msworkerbase as msworker
 
-ARG BUNDLE_WITHOUT="development test"
+ARG BUNDLE_WITHOUT
 ENV BLENDER_PATH="/app/blender/"
 
 RUN bundle install --jobs "$(nproc)"
-RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
+# RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
+# TODO enable production when necessary

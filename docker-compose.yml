@@ -7,6 +7,7 @@ services:
       target: morphosource
       args:
         - EXTRA_APK_PACKAGES=git less
+    container_name: app
     command: sh -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
     stdin_open: true
     tty: true
@@ -35,6 +36,7 @@ services:
     build:
       context: .
       target: msworker
+    container_name: resque
     command: sh -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
     user: root
     env_file:
@@ -61,6 +63,7 @@ services:
       target: morphosource
       args:
         - EXTRA_APK_PACKAGES=git less
+    container_name: db_migrate
     user: root
     env_file:
       - docker-compose.env
@@ -78,6 +81,7 @@ services:
 
   postgres:
     image: postgres:latest
+    container_name: postgres
     restart: always
     environment:
       - POSTGRES_USER=$DB_USERNAME
@@ -93,6 +97,7 @@ services:
 
   fcrepo:
     image: ghcr.io/samvera/fcrepo4:4.7.5
+    container_name: fcrepo
     volumes:
       - fcrepo:/data
       - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
@@ -102,7 +107,8 @@ services:
       - morphosource
 
   memcached:
-    image: bitnami/memcached
+    image: memcached
+    container_name: memcached
     # ports:
     #  - '11211:11211'
     networks:
@@ -110,6 +116,7 @@ services:
 
   redis:
     image: redis:5-alpine
+    container_name: redis
     volumes:
       - redis:/data
     networks:
@@ -117,6 +124,7 @@ services:
 
   solr:
     image: solr:7.7.3
+    container_name: solr
     #ports: # Re-open ports for local dev environments
     #  - 8983:8983
     command:

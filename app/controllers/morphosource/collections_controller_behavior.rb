@@ -164,11 +164,6 @@ module Morphosource
         :media
       end
 
-      def create_data_manager_facet
-        config = repository.blacklight_config
-        config.add_facet_field "user_with_ownership_ssi", label: "Data Manager", limit: 10, helper_method: :user_name_by_id
-      end
-
       def create_access_facet
         # TODO: Keep this? facet should be ok for all logged in users.
         return  unless current_user&.can? :edit, @collection

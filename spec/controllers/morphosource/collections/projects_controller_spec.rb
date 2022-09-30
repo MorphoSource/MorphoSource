@@ -13,7 +13,7 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
   end
 
   describe "search_builder_class" do
-    it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::MediaSearchBuilder) }
+    it{ expect(subject.search_builder_class).to eq(Morphosource::Collections::MediaSearchBuilder) }
   end
 
   describe ".configure_facets" do
@@ -57,6 +57,22 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
         expect(subject.label).to eq("Team")
         expect(subject.limit).to eq(10)
         expect(subject.helper_method).to eq(:collection_title_by_id)
+      end
+    end
+    describe 'data manager' do
+      subject { facet_fields['user_with_ownership_ssi'] }
+      it 'has a data manager facet' do
+        expect(subject.label).to eq("Data Manager")
+        expect(subject.limit).to eq(10)
+        expect(subject.helper_method).to eq(:user_name_by_id)
+      end
+    end
+    describe 'depositor' do
+      subject { facet_fields['depositor_ssim'] }
+      it 'has a depositor facet' do
+        expect(subject.label).to eq("Depositor")
+        expect(subject.limit).to eq(10)
+        expect(subject.helper_method).to eq(:user_name_by_id)
       end
     end
   end

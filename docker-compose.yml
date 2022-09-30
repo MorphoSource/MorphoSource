@@ -11,7 +11,7 @@ services:
     command: sh -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
     stdin_open: true
     tty: true
-    user: root
+    user: app
     env_file:
       - docker-compose.env
     depends_on:
@@ -32,13 +32,13 @@ services:
     networks:
       - morphosource
 
-  resque:
+  app_worker:
     build:
       context: .
       target: msworker
-    container_name: resque
+    container_name: app_worker
     command: sh -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
-    user: root
+    user: app
     env_file:
       - docker-compose.env
     depends_on:
@@ -52,8 +52,8 @@ services:
       - .:/app/samvera/hyrax-webapp
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
-      - resque-public:/app/samvera/hyrax-webapp/public
-      - resque-tmp:/app/samvera/hyrax-webapp/tmp
+      - app_worker-public:/app/samvera/hyrax-webapp/public
+      - app_worker-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
 
@@ -64,7 +64,7 @@ services:
       args:
         - EXTRA_APK_PACKAGES=git less
     container_name: db_migrate
-    user: root
+    user: app
     env_file:
       - docker-compose.env
     command: sh -c 'bundle && db-migrate-seed.sh'
@@ -145,8 +145,8 @@ volumes:
   rails-public:
   rails-tmp:
   redis:
-  resque-public:
-  resque-tmp:
+  app_worker-public:
+  app_worker-tmp:
   solr_home:
 
 networks:

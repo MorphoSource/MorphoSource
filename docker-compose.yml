@@ -57,6 +57,32 @@ services:
     networks:
       - morphosource
 
+  app_test:
+    build:
+      context: .
+      target: msworker
+    container_name: app_test
+    command: sh -c 'bundle && bundle exec rake hydra:test_server'
+    user: app
+    env_file:
+      - docker-compose.env
+      - docker-compose-test.env
+    depends_on:
+      - db_migrate
+      - memcached
+      - postgres
+      - redis
+    profiles:
+      - test
+    volumes:
+      - .:/app/samvera/hyrax-webapp
+      - test-derivatives:/app/samvera/hyrax-webapp/derivatives
+      - test-uploads:/app/samvera/hyrax-webapp/uploads
+      - test-public:/app/samvera/hyrax-webapp/public
+      - test-tmp:/app/samvera/hyrax-webapp/tmp
+    networks:
+      - morphosource
+
   db_migrate:
     build:
       context: .
@@ -148,6 +174,10 @@ volumes:
   app_worker-public:
   app_worker-tmp:
   solr_home:
+  test-derivatives:
+  test-uploads:
+  test-public:
+  test-tmp:
 
 networks:
   morphosource:

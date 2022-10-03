@@ -98,7 +98,9 @@ RUN mkdir -p /app/fiji && \
   cd /app/fiji && \
   wget https://github.com/MorphoSource/fiji-app-pinned/releases/download/2.3.0/fiji-nojre-2.3.0.zip -O fiji.zip && \
   unzip fiji.zip && \
-  rm fiji.zip
+  rm fiji.zip && \
+  wget https://github.com/MorphoSource/fiji-app-pinned/releases/download/2.3.0/ImageJ.sh -O ./Fiji.app/ImageJ.sh && \
+  chmod +x ./Fiji.app/ImageJ.sh
 
 # Install DICOM Toolkit (dcmtk) 3D CT stack derivative tool
 # RUN mkdir -p /app/dcmtk && \

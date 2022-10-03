@@ -4,11 +4,10 @@ module Morphosource
 
     def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false, force_update=false, log_file=nil)
       log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
-
       if idigbio_match_found == 1
         @idigbio_occurrence = idigbio_occurrence_id_results[:data].first
         if idigbio_recordset_different_from_org?
-          log.debug "iDigBio sync: Specimen #{self.id} not synced because the organization (#{self.organization_id.first}) has a recordset ID #{@org_recordset_id} and it is different from the iDigBio-supplied ID #{@idb_recordset_id}."
+          log.debug "iDigBio sync: Specimen #{self.id} not synced because the organization (#{self.organization_id.first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
         else
           @save_work = save_work
           @system_update = system_update
@@ -26,9 +25,10 @@ module Morphosource
     end
 
     def idigbio_recordset_different_from_org?
-      if (@org_recordset_id = self.organizations&.first&.recordset_id&.first).present? &&
-        (@idb_recordset_id = @idigbio_occurrence.dig("indexTerms", "recordset")).present?
-        return @org_recordset_id != @idb_recordset_id
+      if (@org_recordset_ids = self.organizations&.first&.recordset_id).present?
+        if (@idb_recordset_id = @idigbio_occurrence.dig("indexTerms", "recordset")).present?
+          return !@org_recordset_ids.include?(@idb_recordset_id)
+        end
       end
       return false
     end

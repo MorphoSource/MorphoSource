@@ -19,6 +19,10 @@ class Collection < ActiveFedora::Base
   DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
   EDIT_GROUP_ROLES = %w[managers editors].freeze
 
+  def presenter_class
+    team? ? Morphosource::Collections::TeamPresenter : Morphosource::Collections::ProjectPresenter
+  end
+
   # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
   def permission_template_read_groups
     (permission_template.agent_ids_for(access: 'view', agent_type: 'group') + permission_template.agent_ids_for(access: 'edit_works', agent_type: 'group') +
@@ -28,13 +32,7 @@ class Collection < ActiveFedora::Base
   end
 
   def human_readable_type
-    if team?
-      "Team"
-    elsif project?
-      "Project"
-    else
-      super
-    end
+    collection_type.title
   end
 
   def type_assigns_groups?
@@ -64,15 +62,15 @@ class Collection < ActiveFedora::Base
   end
 
   def list?
-    media_list? || slide_list?
+    false
   end
 
   def media_list?
     collection_type.title == 'Media List'
   end
 
-  def slide_list?
-    collection_type.title == 'Slide List'
+  def sequential_section_list?
+    collection_type.title == 'Sequential Section List'
   end
 
   def user_groups
@@ -166,7 +164,7 @@ class Collection < ActiveFedora::Base
           member.save!
           InheritPermissionsJob.perform_later(member)
         else
-          member.save! 
+          member.save!
         end
       end
       member

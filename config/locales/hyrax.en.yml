@@ -148,6 +148,8 @@ en:
         works: 'All Works'
         all_downloads: 'All Downloads'
         all_requests: 'All Requests'
+        media_lists: 'Media Lists'
+        sequential_section_lists: 'Sequential Section Lists'
     account_name:           "My Organization Account Id"
     directory:
       suffix:               "@example.org"
@@ -218,16 +220,27 @@ en:
           team:
             delete_confirmation_html: Are you sure you want to delete this team? This action cannot be undone.
             delete_confirmation_no_items_html: Deleting this team will permanently remove it from the repository. Items in this team will remain in the repository. Are you sure you want to delete this team?
+          media_list:
+            delete_confirmation_html: Are you sure you want to delete this list? This action cannot be undone.
+            delete_confirmation_no_items_html: Deleting this list will permanently remove it from the repository. Items in this list will remain in the repository. Are you sure you want to delete this list?
           project:
             delete_confirmation_html: Are you sure you want to delete this project? This action cannot be undone.
             delete_confirmation_no_items_html: Deleting this project will permanently remove it from the repository. Items in this project will remain in the repository. Are you sure you want to delete this project?
+          sequential_section_list:
+            delete_confirmation_html: Are you sure you want to delete this list? This action cannot be undone.
+            delete_confirmation_no_items_html: Deleting this list will permanently remove it from the repository. Items in this list will remain in the repository. Are you sure you want to delete this list?
           view_team: View team
           edit_team: Edit team
           delete_team: Delete team
+          view_media_list: View media list
+          edit_media_list: Edit media list
+          delete_media_list: Delete media list
           view_project: View project
           edit_project: Edit project
           delete_project: Delete project
-
+          view_sequential section_list: View sequential section list
+          edit_sequential section_list: Edit sequential section list
+          delete_sequential section_list: Delete sequential section list
         heading:
           visibility: visibility
           collection_type: collection type

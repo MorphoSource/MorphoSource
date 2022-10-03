@@ -332,12 +332,12 @@ class Media < Morphosource::Works::Base
     member_of_media_lists.map(&:id)
   end
 
-  def member_of_slide_lists
-    member_of_collections.select { |c| c.slide_list? }
+  def member_of_sequential_section_lists
+    member_of_collections.select { |c| c.sequential_section_list? }
   end
 
-  def member_of_slide_list_ids
-    member_of_slide_lists.map(&:id)
+  def member_of_sequential_section_list_ids
+    member_of_sequential_section_lists.map(&:id)
   end
 
   def ark_resource_type

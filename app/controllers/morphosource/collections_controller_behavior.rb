@@ -26,6 +26,10 @@ module Morphosource
       self.membership_service_class = Morphosource::Collections::CollectionMemberService
     end
 
+    def presenter_class
+      @collection.presenter_class
+    end
+
     def show
       @tab = tab
       presenter
@@ -85,43 +89,16 @@ module Morphosource
       end
 
       def redirect_to_collection_type
+        return unless (@_request.fullpath.include?('/collections/') && @collection.present?)
         remove_extra_params
-        if @_request.fullpath.include? '/collections/'
-          if @collection.team?
-            if @_request.fullpath.include? '/biological_specimens'
-              redirect_to team_specimens_path(request.parameters)
-            elsif @_request.fullpath.include? '/cultural_heritage_objects'
-              redirect_to team_chos_path(request.parameters)
-            else
-              redirect_to team_media_path(request.parameters)
-            end
-          elsif @collection.project?
-            if @_request.fullpath.include? '/biological_specimens'
-              redirect_to project_specimens_path(request.parameters)
-            elsif @_request.fullpath.include? '/cultural_heritage_objects'
-              redirect_to project_chos_path(request.parameters)
-            else
-              redirect_to project_media_path(request.parameters)
-            end
-          elsif @collection.media_list?
-            if @_request.fullpath.include? '/biological_specimens'
-              redirect_to media_list_specimens_path(request.parameters)
-            elsif @_request.fullpath.include? '/cultural_heritage_objects'
-              redirect_to media_list_chos_path(request.parameters)
-            else
-              redirect_to media_list_media_path(request.parameters)
-            end
-          elsif @collection.slide_list?
-            if @_request.fullpath.include? '/biological_specimens'
-              redirect_to slide_list_specimens_path(request.parameters)
-            elsif @_request.fullpath.include? '/cultural_heritage_objects'
-              redirect_to slide_list_chos_path(request.parameters)
-            else
-              redirect_to slide_list_media_path(request.parameters)
-            end
-          else
-            return
-          end
+        if @_request.fullpath.include? '/biological_specimens'
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_specimens_path")
+        elsif @_request.fullpath.include? '/cultural_heritage_objects'
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_chos_path")
+        elsif @_request.fullpath.include? '/about'
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_about_path")
+        else
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_media_path")
         end
       end
 
@@ -134,28 +111,8 @@ module Morphosource
       end
 
       def query_solr
-        # byebug
         search_results(params)
       end
-
-      # def search_results(user_params)
-      #   byebug
-      #   builder = search_builder.with(user_params)
-      #   builder.page = user_params[:page] if user_params[:page]
-      #   builder.rows = (user_params[:per_page] || user_params[:rows]) if user_params[:per_page] || user_params[:rows]
-      #
-      #   builder = yield(builder) if block_given?
-      #   byebug
-      #   response = repository.search(builder)
-      #   byebug
-      #   if response.grouped? && grouped_key_for_results
-      #     [response.group(grouped_key_for_results), []]
-      #   elsif response.grouped? && response.grouped.length == 1
-      #     [response.grouped.first, []]
-      #   else
-      #     [response, response.documents]
-      #   end
-      # end
 
       def query_solr_all_results
         search_results(params.merge(return_all_fields: true))
@@ -193,7 +150,6 @@ module Morphosource
       end
 
       def search_builder
-        # byebug
         search_builder_class.new(scope: self, collection: @curation_concern)
       end
 

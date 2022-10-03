@@ -13,14 +13,10 @@ class CollectionRolesController < ApplicationController
 
     if users_are_eligible?
       update_subcollections
-      byebug
       update_agent_access
-      byebug
     else
-      byebug
       update_notice('user_status')
     end
-    byebug
     reload_collection_share
   end
 
@@ -109,7 +105,6 @@ class CollectionRolesController < ApplicationController
   end
 
   def update_user_access
-    byebug
     if @new_group || @remove
       if @new_group
         change_groups(user)
@@ -129,7 +124,6 @@ class CollectionRolesController < ApplicationController
   end
 
   def change_groups(user)
-    byebug
     @group.users.delete(user)
     add_user_to_group(user, @new_group)
     @new_group.save
@@ -137,7 +131,6 @@ class CollectionRolesController < ApplicationController
 
   # Add user to appropriate role if user does not already have another collection role.
   def add_user_to_group(user, group)
-    byebug
     group.users << user unless collection.group_members.include? user
   end
 
@@ -233,7 +226,6 @@ class CollectionRolesController < ApplicationController
 
   # CollectionsControllerBehavior methods
   def find_subcollections
-    byebug
     presenter
     member_subcollections
   end

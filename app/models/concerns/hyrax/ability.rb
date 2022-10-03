@@ -217,7 +217,7 @@ module Hyrax
       end
 
       def curation_concerns_models
-        [::FileSet, ::Collection, ::MediaList, ::SlideList] +
+        [::FileSet, ::Collection, ::MediaList, ::SequentialSectionList] +
         Hyrax.config.curation_concerns
       end
 

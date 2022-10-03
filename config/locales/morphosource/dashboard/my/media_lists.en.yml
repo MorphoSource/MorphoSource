@@ -7,3 +7,8 @@ en:
             new: 'New Media List'
           count: "<strong>%{total_count} lists</strong>"
           page_title: 'Media Lists'
+        sequential_section_lists:
+          action:
+            new: 'New Sequential Section List'
+          count: "<strong>%{total_count} lists</strong>"
+          page_title: 'Sequential Section Lists'

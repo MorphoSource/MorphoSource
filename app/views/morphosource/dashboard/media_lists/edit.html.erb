@@ -1,8 +1,0 @@
-<% provide :page_title, construct_page_title( t('.header', type_title: @collection.collection_type.title, title: @form.title.first) ) %>
-
-<div class="row">
-  <div class="col-md-12">
-    <%= render 'flash_msg' %>
-    <%= render 'morphosource/dashboard/media_lists/edit_form' %>
-  </div>
-</div>

@@ -134,7 +134,7 @@ module Morphosource
                                           taxonomy_id: [taxonomy.id])
 
         params = Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(occurrence_id)
-        params.each do |key,value|
+        params.first.each do |key,value|
           specimen.send(key + '=', [value].flatten)
         end
 
@@ -151,8 +151,10 @@ module Morphosource
         taxonomy = Taxonomy.new(title: ['new taxonomy'], visibility: 'open', depositor: @admin.user_key, source: ["Imported by Morphosource::Import::SlideSeriesService"])
         params = Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key, correct_synonym=false)
         params.each do |key,value|
-          specimen.send(key + '=', [value].flatten)
+          taxonomy.send(key + '=', [value].flatten)
         end
+
+        taxonomy.save
 
         Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(Taxonomy.new, ::Ability.new(@admin), taxonomy.attributes))
         taxonomy.reload
@@ -161,7 +163,7 @@ module Morphosource
       private
 
         def create_series_collection
-          project_collection_type = Hyrax::CollectionType.where(title: "Project").first
+          project_collection_type = Hyrax::CollectionType.where(title: "Sequential Section List").first
           collection = Collection.create(title: collection_title, collection_type_gid: project_collection_type.gid, depositor: @manager.ms_id, visibility: 'open', related_url: collection_related_url, description: collection_description)
           collection.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)

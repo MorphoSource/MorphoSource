@@ -4,6 +4,8 @@ module Morphosource
     helper Morphosource::CollectionHelper
     include Morphosource::Facets::Collections
 
+    helper_method :remove_constraint_url
+
     with_themed_layout 'morphosource_1_column'
 
     skip_load_and_authorize_resource only: [
@@ -17,6 +19,7 @@ module Morphosource
     before_action :load_collection, :redirect_to_collection_type
 
     self.presenter_class = presenter_class
+
 
     def search_builder_class
       Morphosource::Collections::MediaSearchBuilder
@@ -40,20 +43,30 @@ module Morphosource
 
     private
 
-    def decide_layout
-      layout = case action_name
-               when 'show'
-                 'morphosource_1_column'
-               else
-                 'dashboard'
-               end
-      File.join(theme, layout)
-    end
+      def decide_layout
+        layout = case action_name
+                when 'show'
+                  'morphosource_1_column'
+                else
+                  'dashboard'
+                end
+        File.join(theme, layout)
+      end
 
-    def sort_parameters
-      s = (params[:sort].presence || '').split(' ')
-      return s[0], s[1]
-    end
-    helper_method :sort_parameters
+      def sort_parameters
+        s = (params[:sort].presence || '').split(' ')
+        return s[0], s[1]
+      end
+      helper_method :sort_parameters
+
+      def remove_constraint_url(localized_params)
+        localized_params.delete(:route_set)
+        unless localized_params.is_a? ActionController::Parameters
+          localized_params = ActionController::Parameters.new(localized_params)
+        end
+        options = localized_params.merge(q: nil, action: 'show')
+        options.permit!
+        main_app.url_for(options)
+      end
   end
 end

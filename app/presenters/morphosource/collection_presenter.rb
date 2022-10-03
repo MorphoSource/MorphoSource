@@ -24,12 +24,12 @@ module Morphosource
       self.class == Morphosource::Collections::MediaListPresenter
     end
 
-    def slide_list?
-      self.class == Morphosource::Collections::SlideListPresenter
+    def sequential_section_list?
+      self.class == Morphosource::Collections::SequentialSectionListPresenter
     end
 
     def list?
-      media_list? || slide_list?
+      media_list? || sequential_section_list?
     end
 
     def manager_list(managers)
@@ -55,6 +55,22 @@ module Morphosource
 
     def collection_type_title
       collection_type.title
+    end
+
+    def membership(current_user)
+      if collection.managers.include?(current_user)
+        'Manager'
+      elsif collection.editors.include?(current_user)
+        'Editor'
+      elsif collection.viewers.include?(current_user)
+        'Viewer'
+      elsif collection.downloaders.include?(current_user)
+        'Downloader'
+      elsif collection.depositors.include?(current_user)
+        'Depositor'
+      else
+        ''
+      end
     end
   end
 end

@@ -131,8 +131,8 @@ class MediaIndexer < Morphosource::WorkIndexer
       media_list_ids = object.member_of_media_list_ids
       solr_doc['member_of_media_list_ids_ssim'] = media_list_ids
       # slide list
-      slide_list_ids = object.member_of_slide_list_ids
-      solr_doc['member_of_slide_list_ids_ssim'] = slide_list_ids
+      sequential_section_list_ids = object.member_of_sequential_section_list_ids
+      solr_doc['member_of_sequential_section_list_ids_ssim'] = sequential_section_list_ids
 
 
       pub_status = publication_status

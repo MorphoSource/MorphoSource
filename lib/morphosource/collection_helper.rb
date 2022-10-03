@@ -19,8 +19,8 @@ module Morphosource
         team_media_path(collection)
       elsif collection.media_list?
         media_list_media_path(collection)
-      elsif collection.slide_list?
-        slide_list_media_path(collection)
+      elsif collection.sequential_section_list?
+        sequential_section_list_media_path(collection)
       end
     end
 
@@ -32,8 +32,8 @@ module Morphosource
         team_specimens_path(collection)
       elsif collection.media_list?
         media_list_specimens_path(collection)
-      elsif collection.slide_list?
-        slide_list_specimens_path(collection)
+      elsif collection.sequential_section_list?
+        sequential_section_list_specimens_path(collection)
       end
     end
 
@@ -45,8 +45,8 @@ module Morphosource
         team_chos_path(collection)
       elsif collection.media_list?
         media_list_chos_path(collection)
-      elsif collection.slide_list?
-        slide_list_chos_path(collection)
+      elsif collection.sequential_section_list?
+        sequential_section_list_chos_path(collection)
       end
     end
 
@@ -58,8 +58,8 @@ module Morphosource
         team_about_path(collection)
       elsif collection.media_list?
         media_list_about_path(collection)
-      elsif collection.slide_list?
-        slide_list_about_path(collection)
+      elsif collection.sequential_section_list?
+        sequential_section_list_about_path(collection)
       end
     end
 
@@ -67,8 +67,8 @@ module Morphosource
     def dashboard_media_tab_url(collection)
       if collection.media_list?
         dashboard_media_list_media_path(collection)
-      elsif collection.slide_list?
-        dashboard_slide_list_media_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_media_path(collection)
       end
     end
 
@@ -76,8 +76,8 @@ module Morphosource
     def dashboard_specimens_tab_url(collection)
       if collection.media_list?
         dashboard_media_list_specimens_path(collection)
-      elsif collection.slide_list?
-        dashboard_slide_list_specimens_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_specimens_path(collection)
       end
     end
 
@@ -85,8 +85,8 @@ module Morphosource
     def dashboard_chos_tab_url(collection)
       if collection.media_list?
         dashboard_media_list_chos_path(collection)
-      elsif collection.slide_list?
-        dashboard_slide_list_chos_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_chos_path(collection)
       end
     end
 
@@ -94,8 +94,8 @@ module Morphosource
     def dashboard_about_tab_url(collection)
       if collection.media_list?
         dashboard_media_list_about_path(collection)
-      elsif collection.slide_list?
-        dashboard_slide_list_about_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_about_path(collection)
       end
     end
 
@@ -103,8 +103,8 @@ module Morphosource
     def dashboard_members_tab_url(collection)
       if collection.media_list?
         dashboard_media_list_members_path(collection)
-      elsif collection.slide_list?
-        dashboard_slide_list_members_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_members_path(collection)
       end
     end
 
@@ -172,8 +172,8 @@ module Morphosource
       path_info.include?("media_lists")
     end
 
-    def page_is_slide_list?
-      path_info.include?("slide_lists")
+    def page_is_sequential_section_list?
+      path_info.include?("sequential_section_lists")
     end
 
     def collection_type
@@ -183,8 +183,8 @@ module Morphosource
         'project'
       elsif page_is_media_list?
         'media list'
-      elsif page_is_slide_list?
-        'slide list'
+      elsif page_is_sequential_section_list?
+        'sequential section list'
       end
     end
 
@@ -445,19 +445,21 @@ module Morphosource
     # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
     # provides url for removing individual constraints
     # TODO: probably a better way to do this
-    def remove_constraint_url(localized_params)
-      scope = localized_params.delete(:route_set) || self
+    # def remove_constraint_url(localized_params)
+    #   byebug
+    #   scope = localized_params.delete(:route_set) || self
 
-      unless localized_params.is_a? ActionController::Parameters
-        localized_params = ActionController::Parameters.new(localized_params)
-      end
-      options = localized_params.merge(q: nil, action: 'index')
-      options.permit!
-      if morphosource_collection_controller?
-        options[:action] = 'show'
-      end
-      scope.url_for(options)
-    end
+    #   unless localized_params.is_a? ActionController::Parameters
+    #     localized_params = ActionController::Parameters.new(localized_params)
+    #   end
+    #   options = localized_params.merge(q: nil, action: 'index')
+    #   options.permit!
+    #   if morphosource_collection_controller?
+    #     options[:action] = 'show'
+    #   end
+    #   byebug
+    #   scope.url_for(options)
+    # end
 
     def morphosource_collection_controller?
       collection_controllers = [ Morphosource::Collections::TeamsController,
@@ -480,19 +482,13 @@ module Morphosource
     end
 
     def collection_media_path(collection)
-      if collection.project?
-        main_app.project_media_path(collection)
-      else
-        main_app.team_media_path(collection)
-      end
+      collection_type = collection.collection_type.machine_id
+      main_app.send("#{collection_type + '_media_path'}", collection)
     end
 
     def collection_edit_path(collection)
-      if collection.project?
-        main_app.project_edit_path(collection)
-      else
-        main_app.team_edit_path(collection)
-      end
+      collection_type = collection.collection_type.machine_id
+      main_app.send("#{collection_type + '_edit_path'}", collection)
     end
 
 

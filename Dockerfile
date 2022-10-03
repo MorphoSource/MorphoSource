@@ -34,22 +34,10 @@ ENV BUNDLE_GEMFILE="./Gemfile"
 ENV BUNDLER_VERSION='2.0.2'
 RUN gem install bundler -v 2.0.2
 
-ARG APP_PATH=.
-COPY --chown=1001:501 $APP_PATH /app/samvera/hyrax-webapp
-
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 
-
-FROM msbase as morphosource
-
-ARG BUNDLE_WITHOUT
-ENV BLENDER_PATH="/app/blender/"
-
-RUN bundle install --jobs "$(nproc)"
-# RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
-# TODO enable production if necessary
-
+### MS TOOLS STAGE ###
 FROM msbase as mstools
 
 USER root
@@ -62,6 +50,8 @@ RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
 RUN apt update && \
   apt install -y \
   adoptopenjdk-8-hotspot \
+  blender \
+  dcmtk \
   ffmpeg \
   firefox-esr \
   libglu1-mesa \
@@ -96,12 +86,12 @@ COPY ./vendor/fits_config/exiftool/exiftool_xslt_map.xml /app/fits/xml/exiftool
 ENV PATH="${PATH}:/app/fits"
 
 # Install Blender 3D mesh derivative tool
-RUN mkdir -p /app/blender && \
-  cd /app/blender && \
-  wget https://download.blender.org/release/Blender2.82/blender-2.82-linux64.tar.xz -O blender.tar.xz && \
-  tar -Jxvf blender.tar.xz -C /app/blender --strip-components=1 && \
-  rm blender.tar.xz
-ENV BLENDER_PATH="/app/blender/"
+# RUN mkdir -p /app/blender && \
+#   cd /app/blender && \
+#   wget https://download.blender.org/release/Blender2.82/blender-2.82-linux64.tar.xz -O blender.tar.xz && \
+#   tar -Jxvf blender.tar.xz -C /app/blender --strip-components=1 && \
+#   rm blender.tar.xz
+# ENV BLENDER_PATH="/app/blender/"
 
 # Install Fiji 3D CT stack derivative tool
 RUN mkdir -p /app/fiji && \
@@ -111,26 +101,45 @@ RUN mkdir -p /app/fiji && \
   rm fiji.zip
 
 # Install DICOM Toolkit (dcmtk) 3D CT stack derivative tool
-RUN mkdir -p /app/dcmtk && \
-  cd /app/dcmtk && \
-  wget https://dicom.offis.de/download/dcmtk/dcmtk364/bin/dcmtk-3.6.4-linux-x86_64-static.tar.bz2 -O dcmtk.tar.bz2 && \
-  tar -jxvf dcmtk.tar.bz2 -C /app/dcmtk --strip-components=1 && \
-  rm dcmtk.tar.bz2 && \
-  chmod -R -c +x /app/dcmtk/bin
-ENV PATH="${PATH}:/app/dcmtk/bin"
+# RUN mkdir -p /app/dcmtk && \
+#   cd /app/dcmtk && \
+#   wget https://dicom.offis.de/download/dcmtk/dcmtk364/bin/dcmtk-3.6.4-linux-x86_64-static.tar.bz2 -O dcmtk.tar.bz2 && \
+#   tar -jxvf dcmtk.tar.bz2 -C /app/dcmtk --strip-components=1 && \
+#   rm dcmtk.tar.bz2 && \
+#   chmod -R -c +x /app/dcmtk/bin
+# ENV PATH="${PATH}:/app/dcmtk/bin"
 
+### MS WORKER BASE STAGE ###
 FROM mstools as msworkerbase
 
 ENV MALLOC_ARENA_MAX=2
 
 CMD bundle exec sidekiq
 
-
+### MS WORKER STAGE ###
 FROM msworkerbase as msworker
 
+ARG APP_PATH=.
 ARG BUNDLE_WITHOUT
-ENV BLENDER_PATH="/app/blender/"
 
+COPY --chown=1001:501 $APP_PATH/Gemfile /app/samvera/hyrax-webapp/Gemfile
+COPY --chown=1001:501 $APP_PATH/Gemfile.lock /app/samvera/hyrax-webapp/Gemfile.lock
 RUN bundle install --jobs "$(nproc)"
 # RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
-# TODO enable production when necessary
+# TODO enable production if necessary
+
+COPY --chown=1001:501 $APP_PATH /app/samvera/hyrax-webapp
+
+### MORPHOSOURCE STAGE ###
+FROM msbase as morphosource
+
+ARG APP_PATH=.
+ARG BUNDLE_WITHOUT
+
+COPY --chown=1001:501 $APP_PATH/Gemfile /app/samvera/hyrax-webapp/Gemfile
+COPY --chown=1001:501 $APP_PATH/Gemfile.lock /app/samvera/hyrax-webapp/Gemfile.lock
+RUN bundle install --jobs "$(nproc)"
+# RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
+# TODO enable production if necessary
+
+COPY --chown=1001:501 $APP_PATH /app/samvera/hyrax-webapp

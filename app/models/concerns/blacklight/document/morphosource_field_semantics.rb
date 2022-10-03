@@ -77,8 +77,8 @@ module Blacklight
           slice_thickness: Solrizer.solr_name('slice_thickness', :stored_searchable),
           unit: Solrizer.solr_name('unit', :stored_searchable),
           number_of_images_in_set: Solrizer.solr_name('number_of_images_in_set', :stored_searchable),
-          data_manager: Solrizer.solr_name('user_with_ownership_name', :stored_searchable),
-          data_depositor: Solrizer.solr_name('depositor_name', :stored_searchable)
+          data_manager: 'user_with_ownership_ssi',
+          data_depositor: Solrizer.solr_name('depositor', :stored_searchable),
         }
       end
 

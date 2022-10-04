@@ -62,7 +62,7 @@ services:
       context: .
       target: msworker
     container_name: app_test
-    command: sh -c 'bundle && bundle exec rake hydra:test_server'
+    command: sh -c 'rm -rf /app/samvera/hyrax-webapp/tmp/* && bundle && bundle exec rake hydra:test_server'
     user: app
     env_file:
       - docker-compose.env

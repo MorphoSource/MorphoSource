@@ -268,6 +268,17 @@ class SubmissionsController < ApplicationController
 
     end
 
+    # Is the media associated with an existing parent? If so, find organization ID
+    # TODO refactor this, possibly put in JS defaultMediaFields code??
+    if (
+      @submission.parent_media_list.present? && 
+      Media.exists?(@submission.parent_media_list&.split(',')&.first) &&
+      !@submission.organization_id.present?
+    )
+      parent_media = Media.find(@submission.parent_media_list&.split(',')&.first)
+      @submission.organization_id = parent_media&.organizations&.first&.id
+    end
+
     works.each do |work|
       if work == 'taxonomy' && @submission.taxonomy_params_array.present?
         @submission.taxonomy_params_array.each do |taxon_params|

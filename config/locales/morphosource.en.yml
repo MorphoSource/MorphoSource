@@ -49,7 +49,7 @@ en:
       landing_page:
         title: 'MorphoSource Dashboard'
         full_text:
-          become_a_contributor: In order to upload media, participate in projects and teams, or act as data manager for media that are shared with or transferred to you, you must first request contributor status. Visit <a href="/contribute">Become A Contributor</a> and supply a few details about the media you intend to contribute to MorphoSource or your reason for applying to be a project member or data manager. An administrator will check your application, and you will either be approved or hear back with additional questions or instructions presently. Thank you! 
+          become_a_contributor: In order to upload media, participate in projects and teams, or act as data manager for media that are shared with or transferred to you, you must first request contributor status. Visit <a href="/contribute">Become A Contributor</a> and supply a few details about the media you intend to contribute to MorphoSource or your reason for applying to be a project member or data manager. An administrator will check your application, and you will either be approved or hear back with additional questions or instructions presently. Thank you!
         hints:
           new_media: You can add media to an existing project or team during the Media Details step of submission. Alternately, go to the project or team page and submit your media from there.
           my_projects: All projects you created or are a member of are listed here.
@@ -118,6 +118,7 @@ en:
         ct_mri: 'CT/MRI Image Series'
         photogrammetry: 'Photogrammetry Image Series'
         mesh: 'Mesh or Point Cloud'
+        sequential_section: 'Sequential Section Image Series'
         other: 'Other'
     modal:
       approve:

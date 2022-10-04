@@ -14,13 +14,7 @@ Please enter information for editable fields. Uneditable fields will be parsed a
 
 <p class="media_type_block CTImageSeries SequentialSectionImageSeries" style="padding: 10px; text-align: left;"><%= t("morphosource.media.help.pixel_spacing").html_safe %></p>
 
-<div class="media_type_block CTImageSeries">
-  <%= render_edit_field_partial('x_spacing_required', f: f) %>
-  <%= render_edit_field_partial('y_spacing_required', f: f) %>
-  <%= render_edit_field_partial('z_spacing_required', f: f) %>
-</div>
-
-<div class="media_type_block SequentialSectionImageSeries">
+<div class="media_type_block SequentialSectionImageSeries CTImageSeries">
   <%= render_edit_field_partial('x_spacing', f: f) %>
   <%= render_edit_field_partial('y_spacing', f: f) %>
   <%= render_edit_field_partial('z_spacing', f: f) %>

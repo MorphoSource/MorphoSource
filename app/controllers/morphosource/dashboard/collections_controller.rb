@@ -10,7 +10,7 @@ module Morphosource
 
       before_action :filter_docs_with_read_access!, only: []
       before_action :build_breadcrumbs, only: []
-      before_action :load_collection, except: [:create, :new]
+      before_action :load_collection, except: [:create]
       before_action :redirect_to_collection_type, only: [:edit, :update, :new, :create]
 
       self.presenter_class = presenter_class
@@ -20,6 +20,9 @@ module Morphosource
       def edit
         @tab = :details
         presenter
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t('.header', type_title: @collection.collection_type.title), request.path
         super
       end
 
@@ -127,11 +130,11 @@ module Morphosource
       def load_collection
         if params[:id] || params[:collection_id]
           @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
+          authorize! :edit, @curation_concern
         else
           @curation_concern ||= Collection.new
         end
         @collection ||= @curation_concern
-        authorize! :edit, @collection
         rescue CanCan::AccessDenied
         redirect_to root_url, alert: 'You are not authorized to access this collection.'
       end

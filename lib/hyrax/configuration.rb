@@ -153,6 +153,12 @@ module Hyrax
       @fiji_path ||= 'fiji'
     end
 
+    # Custom executable path for running fiji scripts
+    attr_writer :fiji_script_command
+    def fiji_script_command
+      @fiji_script_command ||= nil
+    end
+
     attr_writer :python_path
     def python_path
       @python_path ||= 'python3'

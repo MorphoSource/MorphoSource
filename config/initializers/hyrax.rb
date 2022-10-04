@@ -182,6 +182,9 @@ Hyrax.config do |config|
 
   config.fiji_path = ENV.fetch("FIJI_PATH", "fiji")
 
+  # Custom full executable path for fiji command to run scripts
+  config.fiji_script_command = ENV.fetch("FIJI_SCRIPT_COMMAND", nil)
+
   config.python_path = ENV.fetch("MORPHOSOURCE_PYTHON", "python3")
 
   # Path to the file derivatives creation tool

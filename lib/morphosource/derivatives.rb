@@ -26,6 +26,10 @@ module Morphosource
       Hyrax.config.blender_path
     end
 
+    def self.fiji_script_command
+      Hyrax.config.fiji_script_command
+    end
+
     def self.fiji_path
       Hyrax.config.fiji_path
     end

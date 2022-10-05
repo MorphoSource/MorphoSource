@@ -149,7 +149,7 @@ class BatchSubmissionsController < ApplicationController
   def create_manifest_object
       input_path = manifest.tempfile.path
       media_path = user_share_full_path
-      admin_user = User.where(ms_id:Hyrax.config.batch_user_key).first
+      admin_user = User.batch_user
       depositor = current_user
       organization_id = request.params["organization_id"]
       device_id = request.params["batch_submission"]["device_id"]

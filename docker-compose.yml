@@ -52,8 +52,8 @@ services:
       - .:/app/samvera/hyrax-webapp
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
-      - app_worker-public:/app/samvera/hyrax-webapp/public
-      - app_worker-tmp:/app/samvera/hyrax-webapp/tmp
+      - rails-public:/app/samvera/hyrax-webapp/public
+      - rails-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
 
@@ -171,8 +171,6 @@ volumes:
   rails-public:
   rails-tmp:
   redis:
-  app_worker-public:
-  app_worker-tmp:
   solr_home:
   test-derivatives:
   test-uploads:

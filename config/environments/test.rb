@@ -37,8 +37,8 @@ Rails.application.configure do
   # pull the host from env variable later (see http://samvera.github.io/email_notifications.html)
   config.action_mailer.default_url_options = { host: ENV["HOST_NAME"] }
 
-  # Print deprecation notices to the stderr.
-  config.active_support.deprecation = :stderr
+  # Print deprecation notices to the log.
+  config.active_support.deprecation = :log
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true

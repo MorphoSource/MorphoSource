@@ -15,9 +15,6 @@ module Morphosource
       before_action :create_intersections_facet, only: [:show, :facet,
         :media_projects, :media_organization_transfer_status,
         :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
-      before_action :create_data_manager_facet, only: [:show, :facet,
-        :media_projects, :media_organization_transfer_status,
-        :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
       before_action :create_access_facet, only: [:show, :facet,
         :media_projects, :media_organization_transfer_status,
         :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
@@ -37,6 +34,8 @@ module Morphosource
           config.add_facet_field "media_organization_ssim", label: "Organization", limit: 10
           config.add_facet_field "member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
           config.add_facet_field "member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
+          config.add_facet_field "user_with_ownership_ssi", label: "Data Manager", limit: 10, helper_method: :user_name_by_id
+          config.add_facet_field "depositor_ssim", label: "Depositor", limit: 10, helper_method: :user_name_by_id
           # intersections facet added by before_action :create_intersections_facet
         end
       end

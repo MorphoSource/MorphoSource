@@ -58,15 +58,16 @@ bundle exec rails c
 ```
 #### Containers
 
-* `morphosource_sf_app_1` - Main web app container. Should be attached to in order to use Rails console.
-* `morphosource_sf_resque_1` - Very similar to app container, except this container has third-party tools for file metadata characterization and web preview derivative generation downloaded and installed. If trying to diagnose or debug an issue with characterization or derivatives, attach to this container.
-* `morphosource_sf_db_migrate_1` - Identical to app container in build. This container is used to create initial Postgres databases and seed Postgres/Fedora/Solr with necessary initial data, such as the default Hyrax admin set. It also creates the initial MorphoSource admin user. It waits for Postgres/Fedora/Solr to become accessible, carries out setup steps, and then exits. Because of this, it's normal for this to be the only container that has exited even while the rest of the server proceeds on. Further, These setup steps are idempotent, it does not matter how many times this container runs in the case of container restarts. If you update MorphoSource application code, this container will also take care of DB migrations.
-* `morphosource_sf_fcrepo_1`
-* `morphosource_sf_solr_1`
-* `morphosource_sf_postgres_1`
-* `morphosource_sf_memcached_1`
-* `morphosource_sf_redis_1`
-* `morphosource_sf_apache_1`
+* `app` - Main web app container. Should be attached to in order to use Rails console.
+* `app_worker` - Very similar to app container, except this container has third-party tools for file metadata characterization and web preview derivative generation downloaded and installed. If trying to diagnose or debug an issue with characterization or derivatives, attach to this container.
+* `app_test` - By default, this container will not be created or started. It is used by developers for running automated tests, and can be accessed by using the `test` container profile. This container is identical to app_worker in build.
+* `db_migrate` - Identical to app container in build. This container is used to create initial Postgres databases and seed Postgres/Fedora/Solr with necessary initial data, such as the default Hyrax admin set. It also creates the initial MorphoSource admin user. It waits for Postgres/Fedora/Solr to become accessible, carries out setup steps, and then exits. Because of this, it's normal for this to be the only container that has exited even while the rest of the server proceeds on. Further, These setup steps are idempotent, it does not matter how many times this container runs in the case of container restarts. If you update MorphoSource application code, this container will also take care of DB migrations.
+* `fcrepo`
+* `solr`
+* `postgres`
+* `memcached`
+* `redis`
+* `apache`
 
 #### Environment Variables
 

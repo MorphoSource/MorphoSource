@@ -55,6 +55,14 @@ class User < ApplicationRecord
      serialize field, Array
    end
 
+  def self.find_or_create_system_user(user_key)
+    User.find_by_user_key(user_key) || User.create!(
+      Hydra.config.user_key_field => user_key,
+      email: "#{user_key}@system_user",
+      password: Devise.friendly_token[0, 20]
+    )
+  end
+
   # Devise callback for checking if user is active
   def active_for_authentication?
     super && active

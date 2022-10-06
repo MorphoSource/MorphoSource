@@ -13,7 +13,7 @@ provide :page_title, construct_page_title(@presenter.title)
   </div>
 
   <div class="row team-header">
-    <div class="col-xs-12 col-sm-8 col-md-8">
+    <div class="col-xs-12 col-sm-8 col-md-8 title-wrapper">
       <div class="col-sm-12 col-md-12 flex">
         <div class="team-logo">
           <% unless @presenter.logo_record.blank? %>
@@ -41,7 +41,7 @@ provide :page_title, construct_page_title(@presenter.title)
                   <%= @presenter.id_badge %>
                   <%= @presenter.permission_badge %>
                 <% end %>
-                
+
               </div>
               <%= render 'collection_counts' %>
           </h1>
@@ -50,47 +50,10 @@ provide :page_title, construct_page_title(@presenter.title)
     </div>
 
     <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
-      <% if can?(:edit, @presenter.solr_document) %>
-        <div class="row collection-manage-buttons">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="max-width: unset;">
-              CSV export <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-              <% if @presenter.team? && @presenter.organization.present? %>
-                <li>
-                  <%= link_to 'Projects with media not managed by team',
-                    main_app.team_media_projects_path(id: @presenter.id, :format => :csv, :per_page => 1000000, 'f[intersections][]' => 'organization_not_team' ),
-                    class: 'btn btn-primary' 
-                  %>
-                </li>
-              <% end %>
-
-              <li>
-                <%= link_to 'Media downloads',
-                  media_downloads_csv_url(@collection),
-                  class: 'btn btn-primary' 
-                %>
-              </li>
-
-              <li>
-                <%= link_to 'Media metadata with download counts',
-                  media_download_counts_csv_url(@collection),
-                  class: 'btn btn-primary' 
-                %>
-              </li>
-
-              <li>
-                <%= link_to 'Media download requests',
-                  media_requests_csv_url(@collection),
-                  class: 'btn btn-primary' 
-                %>
-              </li>
-            </ul>
-
-          <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary' %>
-        </div>
-      <% end %>
-    </div>
+    <% if can?(:edit, @presenter.solr_document) %>
+      <%= render 'collection_manage_buttons' %>
+    <% end %>
+  </div>
 
   </div><!-- /row -->
 

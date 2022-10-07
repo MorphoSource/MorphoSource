@@ -1,3 +1,4 @@
+# Searches for taxonomy records in MorphoSource
 module Morphosource
   class TaxonomySearchService
     include SolrHelper

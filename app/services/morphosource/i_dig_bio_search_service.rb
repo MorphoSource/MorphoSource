@@ -137,26 +137,10 @@ module Morphosource
         end
       end
 
-      # Construct gbif params
-      if idb.has_key?('indexTerms') && idb['indexTerms'].has_key?('taxonid')
-        # Get taxonomy params from GBIF using iDigBio-provided taxonid
-        taxonomy_param_sets[:gbif] = Morphosource::GbifSearchService.taxonomy_params_from_gbif(idb['indexTerms']['taxonid'], true)
-      elsif (t = taxonomy_param_sets[:provider]).present?
-        # Get taxonomy params from GBIF by searching using lowest-level iDigBio taxonomic ranks
-        name = ''
-        if t['taxonomy_genus'].present? && t['taxonomy_species'].present? && t['taxonomy_subspecies'].present?
-          name = t.slice('taxonomy_genus', 'taxonomy_species', 'taxonomy_subspecies').join(' ')
-        elsif t['taxonomy_genus'].present? && t['taxonomy_species'].present?
-          name = t.slice('taxonomy_genus', 'taxonomy_species').join(' ')
-        else
-          higher_terms = ['taxonomy_genus', 'taxonomy_family', 'taxonomy_order', 'taxonomy_class', 'taxonomy_phylum', 'taxonomy_kingdom']
-          lowest_high_term = t.slice(*higher_terms).select { |k, v| v.present? }.values.first
-          name = lowest_high_term if lowest_high_term.present?
-        end
-        if name.present?
-          gbif = Morphosource::GbifSearchService.call({'name' => name})
-          taxonomy_param_sets[:gbif] = gbif.first if gbif.first.present?
-        end
+      # Get taxonomy params from GBIF by searching using lowest-level iDigBio taxonomic ranks
+      if taxonomy_param_sets[:provider].present? 
+        gbif = Morphosource::GbifSearchService.taxonomy_params_from_gbif_by_terms(taxonomy_param_sets[:provider])
+        taxonomy_param_sets[:gbif] = gbif if gbif.present?
       end
 
       return taxonomy_param_sets

@@ -58,7 +58,9 @@ module Hyrax
         :focal_length,
         :aperture_value,
         :iso_speed_ratings,
-        :shutter_speed
+        :shutter_speed,
+        # slide scan properties
+        :slide_type
     ]
 
     #self.terms += [:software, :scanner_modality]
@@ -106,7 +108,9 @@ module Hyrax
         # Photogrammetry properties and Photography properties
         :lens_make,
         :lens_model,
-        :light_source
+        :light_source,
+        # slide scan properites
+        :slide_type
     ]
 
     # These show above the fold
@@ -149,7 +153,9 @@ module Hyrax
             # Photogrammetry properties and Photography properties
             :lens_make,
             :lens_model,
-            :light_source
+            :light_source,
+            # slide scan properites
+            :slide_type
         ]
     end
 

@@ -80,16 +80,16 @@ module Morphosource
 
       if !occurrence_id.present?
         Rails.logger.error("Did not query iDigBio API, must provide an occurrence ID")
-        return {}
+        return {}, []
       end
       
       results = self.call({ 'occurrence_id' => occurrence_id })
       if results[:status] == :success && results[:data].present? && (results[:data]&.first&.dig('data', 'dwc:occurrenceID').downcase == occurrence_id.downcase)
         idb = results[:data].first
-        return self.biological_specimen_params_from_idigbio_result(idb)
+        return self.biological_specimen_params_from_idigbio_result(idb), results[:data]
       else
         Rails.logger.error("An error occurred querying the iDigBio API: #{results[:message]}")
-        return {}
+        return {}, []
       end
     end
 

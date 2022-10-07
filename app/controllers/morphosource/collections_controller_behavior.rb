@@ -7,7 +7,7 @@ module Morphosource
     include Blacklight::Base
     include Hyrax::CollectionsControllerBehavior
     include Morphosource::CollectionsControllerExportBehavior
-    
+
     included do
       # This is needed as of BL 3.7
       copy_blacklight_config_from(::CatalogController)
@@ -34,7 +34,7 @@ module Morphosource
       publication_settings_nag
       query_collection_counts
       query_collection_members
-      
+
       respond_to do |format|
         format.html { store_preferred_view }
         format.rss  { render :layout => false }
@@ -163,6 +163,28 @@ module Morphosource
       def tab
         :media
       end
+
+      def create_access_facet
+        # TODO: Keep this? facet should be ok for all logged in users.
+        return  unless current_user&.can? :edit, @collection
+
+        groups = current_user.groups - ['admin']
+
+        config = repository.blacklight_config
+        config.add_facet_field 'access_level', label: 'Access', query: {
+          edit: {
+            label: 'Edit',
+            fq: "(edit_access_group_ssim:(#{groups.join(' OR ')}) OR (edit_access_person_ssim:#{current_user.ms_id}))" },
+          # media where current user has download access
+          download: {
+            label: 'Download',
+            fq: "(download_access_group_ssim:(#{groups.join(' OR ')}) OR (download_access_person_ssim:#{current_user.ms_id}) NOT edit_access_person_ssim:#{current_user.ms_id} NOT edit_access_group_ssim:(#{groups.join(' OR ')}))" },
+          # media where current user has read access
+          view: {
+            label: 'View',
+            fq: "(read_access_group_ssim:(#{(['public'] + groups).join(' OR ')}) OR (read_access_person_ssim:#{current_user.ms_id}) NOT edit_access_person_ssim:#{current_user.ms_id} NOT edit_access_group_ssim:(#{groups.join(' OR ')}) NOT download_access_group_ssim:(#{groups.join(' OR ')}) NOT download_access_person_ssim:#{current_user.ms_id})"}
+          }
+        end
 
   end
 end

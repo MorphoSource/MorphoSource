@@ -268,6 +268,17 @@ class SubmissionsController < ApplicationController
 
     end
 
+    # Is the media associated with an existing parent? If so, find organization ID
+    # TODO refactor this, possibly put in JS defaultMediaFields code??
+    if (
+      @submission.parent_media_list.present? && 
+      Media.exists?(@submission.parent_media_list&.split(',')&.first) &&
+      !@submission.organization_id.present?
+    )
+      parent_media = Media.find(@submission.parent_media_list&.split(',')&.first)
+      @submission.organization_id = parent_media&.organizations&.first&.id
+    end
+
     works.each do |work|
       if work == 'taxonomy' && @submission.taxonomy_params_array.present?
         @submission.taxonomy_params_array.each do |taxon_params|
@@ -686,20 +697,13 @@ class SubmissionsController < ApplicationController
   end
 
   def get_organization_media_transfer
-    if (
-      params.dig(:media, :transfer_management).present? && 
+    if ( 
       @submission.organization_id.present? && 
       Organization.exists?(@submission.organization_id) && 
       (org = Organization.find(@submission.organization_id)).present? &&
       org.data_manager.present?
     )
-      if transfer_media_immediately?
-        :immediate
-      elsif params.dig(:media, :transfer_management) == 'publication'
-        :publication
-      else
-        nil
-      end
+      transfer_media_immediately? ? :immediate : :publication
     else
       nil
     end
@@ -707,10 +711,7 @@ class SubmissionsController < ApplicationController
 
   def transfer_media_immediately?
     ( params.dig(:media, :transfer_management) == 'immediate' ) ||
-    ( 
-      params.dig(:media, :transfer_management) == 'publication' && 
       ['open', 'restricted_download'].include?(params.dig(:media, :visibility)) 
-    )
   end
 
   # Utility functions

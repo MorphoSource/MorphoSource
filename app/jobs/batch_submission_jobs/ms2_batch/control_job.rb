@@ -16,7 +16,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       sub_jobs.each do |job_class|
         Rails.logger.debug "iN ControlJob #{@main_job_id}: sending to sub_job  " 
         job = job_class.send :perform_later, @manifest, @main_job_id
-        sleep(1.minute) until monitor_subjob_status(job)
+        sleep(30.seconds) until monitor_subjob_status(job)
         progress.increment
       end
     rescue StandardError => e

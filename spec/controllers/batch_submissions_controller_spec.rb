@@ -62,7 +62,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       } }
       it "returns" do
         BackgroundJob.create({ main_job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
-        post 'submit', :params => params 
+        post 'submit', :params => params
         expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
       end
     end
@@ -71,7 +71,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       let(:params) { {"manifest_object" => {}} }
       it "returns" do
         BackgroundJob.create({ main_job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
-        post 'ingest', :params => params 
+        post 'ingest', :params => params
         expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
       end
     end
@@ -129,11 +129,11 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           }
         } }
         it "shows result with modality MicroNanoXRayComputedTomography pre-selected" do
-          post 'submit', :params => params 
+          post 'submit', :params => params
           expect(response).to render_template 'validation_fail'
           html = response.body
           expect(html).to include 'media.media_file: File ANSP_Fish_53046_Head.zip cannot be found. Please check your shared folder.'
-          expect(html).to include 'media.media_type: Please enter a valid value: "Image", "Video", "CTImageSeries", "PhotogrammetryImageSeries", "Mesh", "Other"'
+          expect(html).to include 'media.media_type: Please enter a valid value: "Image", "Video", "CTImageSeries", "PhotogrammetryImageSeries", "Mesh", "SequentialSectionImageSeries", "Other"'
           expect(html).to include 'One of the following must have a value: biological_specimen.ms_id, biological_specimen.idigbio_uuid, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number.'
           expect(html).to include 'biological_specimen.date_created: Please enter a valid date in YYYY-MM-DD or MM-DD-YYYY format.'
           expect(html).to include 'biological_specimen.is_type_specimen: Please enter a valid value: "Yes", "No", "Y", "N", "true", "false", "0", "1"'
@@ -161,14 +161,14 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'media.raw_or_derived: Please enter a valid value.'
           expect(html).to include "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
           expect(html).to include 'imaging_event.ct.pixel_spacing_calibration: Please enter a valid value: "Geometry", "Fiducial"'
-
+          expect(html).to include 'media.keyword: Value(s) must be letters, accented letters, numbers, and spaces. Use comma as separator.'
         end
       end
 
       context "result with Photogrammetry pre-selected" do
         let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photogrammetry"}} }
         it "shows result with modality Photogrammetry pre-selected" do
-          post 'submit', :params => params 
+          post 'submit', :params => params
           expect(response).to render_template 'validation_fail'
           html = response.body
           expect(html).to include 'imaging_event.ct.exposure_time: Value should not be present when modality Photogrammetry is pre-selected'
@@ -180,7 +180,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       context "result with Photography pre-selected" do
         let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photography"}} }
         it "shows result with modality Photography pre-selected" do
-          post 'submit', :params => params 
+          post 'submit', :params => params
           expect(response).to render_template 'validation_fail'
           html = response.body
           expect(html).to include 'imaging_event.ct.acquisition_type: Value should not be present when modality Photography is pre-selected.'
@@ -216,7 +216,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       render_views
       let(:params) { {"manifest" => invalid_columns_file, "batch_submission" => {"modality" => "CTImageSeries"}} }
       before do
-        post 'submit', :params => params 
+        post 'submit', :params => params
       end
       it "displays column count invalid message" do
         expect(response).to render_template 'validation_fail'
@@ -228,7 +228,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       render_views
       let(:params) { {"manifest" => invalid_fields_file, "batch_submission" => {"modality" => "CTImageSeries"}} }
       before do
-        post 'submit', :params => params 
+        post 'submit', :params => params
       end
       it "displays invalid field message" do
         expect(response).to render_template 'validation_fail'
@@ -241,7 +241,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       render_views
       let(:params) { {"manifest" => invalid_parents_file, "batch_submission" => {"modality" => "photography"}} }
       it "displays invalid parents message" do
-        post 'submit', :params => params 
+        post 'submit', :params => params
         expect(response).to render_template 'validation_fail'
         html = response.body
         expect(html).to include 'media.parent_file ANSP_Fish_180334_Head.jpg has invalid parent(s) (found in row 10).  Please check and make sure each parent_file is pointing to the correct row.'
@@ -258,7 +258,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       end
       render_views
       it "displays bso message" do
-        post 'submit', :params => params 
+        post 'submit', :params => params
         expect(response).to render_template 'validation_fail'
         html = response.body
         expect(html).to include 'media.parent_file ANSP_Fish_180334_Head.jpg has invalid parent(s) (found in row 10).  Please check and make sure each parent_file is pointing to the correct row.'

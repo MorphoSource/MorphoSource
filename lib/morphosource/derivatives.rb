@@ -5,8 +5,8 @@ module Morphosource
     extend Hydra::Derivatives
 
     autoload :CroppedImageDerivatives
-    autoload :CTImageSeriesCroppedImageDerivatives
     autoload :CTImageSeriesDerivatives
+    autoload :ImageSeriesCroppedImageDerivatives
     autoload :MeshDerivatives
     autoload :VideoDerivatives
 
@@ -24,6 +24,10 @@ module Morphosource
 
     def self.blender_path
       Hyrax.config.blender_path
+    end
+
+    def self.fiji_script_command
+      Hyrax.config.fiji_script_command
     end
 
     def self.fiji_path

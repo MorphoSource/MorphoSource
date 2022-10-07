@@ -50,7 +50,7 @@ module Morphosource
         team_chos_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
       end
     end
-    
+
     def specimens_export_csv_url(collection)
       if collection.project?
         project_specimens_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
@@ -133,79 +133,6 @@ module Morphosource
       else
         ""
       end
-    end
-
-    def ms_collection_view_link(id, view)
-      current_uri = path_info
-      if current_uri.include?("dashboard/collections")
-        if action_name == 'edit'
-          link = edit_dashboard_collection_path(id, view)
-        else
-          link = dashboard_collection_path(id, view)
-        end
-      else
-        if current_uri.include?("teams")
-          link = team_media_path(id, view)
-        elsif current_uri.include?("projects")
-          link = project_media_path(id, view)
-        end
-      end
-      link.html_safe
-    end
-
-    def ms_collection_view_link_qs(tab, filter_prefix)
-      link = ""
-      parsed_params = filter_params(filter_prefix, request_params)
-      parsed_params.map do |k,v|
-        link = link + '&' + k + '=' + v
-      end
-      link = link + "#" + tab if tab.present?
-      link.html_safe
-    end
-
-    def query_collection_information
-      @collection_information = collection_information_service.collection_information
-      @collection_counts = @collection_information['counts'] ||= {}
-      @collection_media_groups = @collection_information['media_groups'] ||= {}
-      @collection_bso_groups = @collection_information['bso_groups'] ||= {}
-      @collection_cho_groups = @collection_information['cho_groups'] ||= {}
-      @collection_object_ids = @collection_information['collection_object_ids'] ||= []
-      @collection_organization_object_ids = @collection_information['organization_object_ids'] ||= []
-    end
-
-    def media_filter_params
-      collection_information_service.solrize_filter_params(filter_params('m_', params))
-    end
-
-    def bso_filter_params
-      collection_information_service.solrize_filter_params(filter_params('b_', params))
-    end
-
-    def cho_filter_params
-      collection_information_service.solrize_filter_params(filter_params('c_', params))
-    end
-
-    def filter_params(prefix, params)
-      return_params = {}
-      temp_params = params.select{ |k,v| k.match(/^#{prefix}/) }.select{ |k,v| v.present? }
-      temp_params.each do |k,v|
-        return_params[k] = v
-      end
-      return_params
-    end
-
-    def filter_projects(docs, params)
-      project_filter_params = filter_params('p_', params)
-      return docs if project_filter_params.empty?
-      filtered_docs = []
-      docs.each do |doc|
-        collection = Collection.find(doc.id)
-        visibility_to_compare = project_filter_params['visibility'] || collection.visibility
-        if collection.visibility == visibility_to_compare
-          filtered_docs << doc
-        end
-      end
-      filtered_docs
     end
 
     def hidden_params_for_filters(prefix)
@@ -473,6 +400,22 @@ module Morphosource
                                  Morphosource::Collections::CulturalHeritageObjectsController]
 
       collection_controllers.include? controller.class
+    end
+
+    def collection_media_path(collection)
+      if collection.project?
+        main_app.project_media_path(collection)
+      else
+        main_app.team_media_path(collection)
+      end
+    end
+
+    def collection_edit_path(collection)
+      if collection.project?
+        main_app.project_edit_path(collection)
+      else
+        main_app.team_edit_path(collection)
+      end
     end
 
 

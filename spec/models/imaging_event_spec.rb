@@ -60,6 +60,8 @@ RSpec.describe ImagingEvent do
           subject.lens_make = ["foo"]
           subject.lens_model = ["foo"]
           subject.light_source = ["foo"]
+          # Slides
+          subject.slide_type = ["foo"]
           expect(subject).to be_valid
     end
 
@@ -104,6 +106,8 @@ RSpec.describe ImagingEvent do
         subject.lens_make = ["foo"]
         subject.lens_model = ["foo"]
         subject.light_source = ["foo"]
+        # Slides 
+        subject.slide_type = ["foo"]
       end
       context 'missing title' do
         it 'is not valid' do

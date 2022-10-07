@@ -1,0 +1,47 @@
+<% provide :page_title, construct_page_title( t('hyrax.dashboard.collections.edit.header', type_title: @collection.collection_type.title, title: @collection.title.first) ) %>
+
+  <div class="row" style="margin-top:30px;">
+    <div class="col-md-12">
+      <%= render 'hyrax/base/flash_msg' %>
+      <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
+
+      <div class="col-xs-9 title team-title">
+        <div>
+          <span class="fa fa-edit" aria-hidden="true"></span>
+          <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
+            <%= @presenter.collection_type_badge %>
+            <%= @presenter.id_badge %>
+            <%= @presenter.permission_badge %>
+          </h1>
+        </div>
+        <div>
+          <%= link_to "Public View", collection_media_path(@collection), class: 'btn btn-primary' %>
+        </div>
+      </div>
+      <br>
+        <div class="panel panel-default tabs teams" id="collection-edit-controls">
+          <%= render 'nav_tabs' %>
+
+          <div class="tab-content">
+            <% case @tab %>
+            <% when :details %>
+              <%= render 'morphosource/dashboard/collections/details/form' %>
+            <% when :organization %>
+              <%= render 'morphosource/dashboard/collections/teams/organization/form' %>
+            <% when :projects %>
+              <%= render 'morphosource/dashboard/collections/teams/projects/projects' %>
+            <% when :members %>
+              <%= render 'morphosource/dashboard/collections/members/form' %>
+            <% end %>
+
+          </div> <!-- end tab-content -->
+
+        </div> <!-- end collection-controls -->
+
+      <%# only render add project modal if collection is a team %>
+      <% if @presenter.collection_type.title == "Team" %>
+        <%= render 'hyrax/my/collections/modal_add_project', id: @presenter.id, source: 'show' %>
+      <% end %>
+
+    </div>
+  </div>

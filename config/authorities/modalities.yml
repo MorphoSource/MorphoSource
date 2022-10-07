@@ -22,6 +22,9 @@ terms:
   - id: Photogrammetry
     term: Photogrammetry
     active: true
+  - id: SequentialSectionScan
+    term: Sequential Section Scan
+    active: true
   - id: StructuredLight
     term: Structured Light
     active: true

@@ -21,7 +21,7 @@ module Morphosource
           file_set.class.audio_mime_types +
           file_set.class.video_mime_types +
           file_set.class.image_mime_types +
-          file_set.class.mesh_mime_types + 
+          file_set.class.mesh_mime_types +
           file_set.class.archive_mime_types
       end
 
@@ -48,9 +48,9 @@ module Morphosource
         Morphosource::Derivatives::MeshDerivatives.create(
           filename,
           outputs: [ {
-            label: :glb, 
-            format: 'glb', 
-            unit: parent_work&.unit&.first, 
+            label: :glb,
+            format: 'glb',
+            unit: parent_work&.unit&.first,
             url: derivative_url('glb')
           } ]
         )
@@ -58,57 +58,68 @@ module Morphosource
 
       def create_archive_derivatives(filename)
         parent_work = file_set.member_of&.first
+        @errors = []
 
-        if parent_work&.media_type&.first == 'CTImageSeries'
-          errors = []
-
-          begin
-            # Pull out a single image as 2D thumbnail
-            Morphosource::Derivatives::CTImageSeriesCroppedImageDerivatives.create(
-              filename,
-              outputs: [ { 
-                label: :thumbnail, 
-                url: derivative_url('thumbnail') 
-              } ]
-            )
-          rescue StandardError => e
-            errors << e
-          end
-
-          begin
-            # Create 3D derivative asset
-            Morphosource::Derivatives::CTImageSeriesDerivatives.create(
-              filename,
-              outputs: [ { 
-                label: :dcm,
-                format: 'dcm',
-                slice_thickness: parent_work&.slice_thickness&.first,
-                unit: parent_work&.unit&.first,
-                url: derivative_url('dcm'),
-                x_spacing: parent_work&.x_spacing&.first,
-                y_spacing: parent_work&.y_spacing&.first,
-                z_spacing: parent_work&.z_spacing&.first
-              } ]
-            )
-          rescue StandardError => e
-            errors << e
-          end
-
-          if errors.count == 1
-            raise errors.first
-          elsif errors.count > 1
-            raise "Two errors were encountered generating derivatives for CT image series. Error 1 from 2D thumbnail derivative generation: #{errors[0].message}. Error 2 from 3D asset derivative generation: #{errors[1].message}."
-          end
+        # Create derivatives based on work media type
+        if ( parent_work&.media_type&.first == 'SequentialSectionImageSeries' || parent_work&.media_type&.first == 'PhotogrammetryImageSeries' )
+          create_thumbnail_from_series_image(filename)
+        elsif parent_work&.media_type&.first == 'CTImageSeries'
+          create_thumbnail_from_series_image(filename)
+          create_3d_ct_image_series_derivative(
+            filename,
+            parent_work&.unit&.first,
+            parent_work&.slice_thickness&.first,
+            parent_work&.x_spacing&.first,
+            parent_work&.y_spacing&.first,
+            parent_work&.z_spacing&.first
+          )
         elsif parent_work&.media_type&.first == 'Mesh'
-          Morphosource::Derivatives::MeshDerivatives.create(
+          create_mesh_derivatives(filename)
+        end
+
+        # Handle errors
+        if @errors.count == 1
+          raise @errors.first
+        elsif @errors.count > 1
+          err0_trace = @errors[0].backtrace.present? ? " (#{@errors[0].backtrace.first})" : ""
+          err1_trace = @errors[1].backtrace.present? ? " (#{@errors[1].backtrace.first})" : ""
+          raise "Two errors were encountered generating derivatives for CT image series. Error 1 from 2D thumbnail derivative generation: #{@errors[0].message}#{err0_trace}. Error 2 from 3D asset derivative generation: #{@errors[1].message}#{err1_trace}."
+        end
+      end
+
+      def create_thumbnail_from_series_image(filename)
+        begin
+          # Pull out a single image as 2D thumbnail
+          Morphosource::Derivatives::ImageSeriesCroppedImageDerivatives.create(
+            filename,
+            outputs: [ {
+              label: :thumbnail,
+              url: derivative_url('thumbnail')
+            } ]
+          )
+        rescue StandardError => e
+          @errors << e
+        end
+      end
+
+      def create_3d_ct_image_series_derivative(filename, unit, slice_thickness, x_spacing, y_spacing, z_spacing)
+        begin
+          # Create 3D derivative asset
+          Morphosource::Derivatives::CTImageSeriesDerivatives.create(
             filename,
             outputs: [ { 
-              label: :glb,
-              format: 'glb',
-              unit: parent_work&.unit&.first,
-              url: derivative_url('glb')
-            }]
+              label: :dcm,
+              format: 'dcm',
+              slice_thickness: slice_thickness,
+              unit: unit,
+              url: derivative_url('dcm'),
+              x_spacing: x_spacing,
+              y_spacing: y_spacing,
+              z_spacing: z_spacing
+            } ]
           )
+        rescue StandardError => e
+          @errors << e
         end
       end
   end

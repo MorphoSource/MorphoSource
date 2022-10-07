@@ -57,7 +57,7 @@ RSpec.describe Hyrax::Browse::BrowseHelper, type: :helper do
     let(:media_types) { YAML.load_file('config/authorities/media_types.yml') }
     let(:type_ids)    { media_types["terms"].map{ |term| term["id"] } }
 
-    let(:media_type_facets) { {"Image"=>3, "CTImageSeries"=>5, "Mesh"=>7, "Other"=>9, "PhotogrammetryImageSeries"=>11, "Video"=>13} }
+    let(:media_type_facets) { {"Image"=>3, "CTImageSeries"=>5, "Mesh"=>7, "Other"=>9, "PhotogrammetryImageSeries"=>11, "Video"=>13, "SequentialSectionImageSeries"=>15} }
 
     before do
       helper.instance_variable_set(:@media_type_facets, media_type_facets)

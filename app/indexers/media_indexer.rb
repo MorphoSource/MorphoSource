@@ -152,6 +152,9 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['taxonomy_si'] = taxonomy_titles&.first&.downcase
       solr_doc['human_readable_media_type_si'] = mt&.first&.downcase
       solr_doc['publication_status_si'] = pub_status&.downcase
+
+      # organization transfer fields
+      solr_doc['organization_transfer_on_publish_bsi'] = object.organization_transfer_on_publish
    end
   end
 

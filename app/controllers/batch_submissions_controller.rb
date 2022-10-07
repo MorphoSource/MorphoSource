@@ -149,7 +149,7 @@ class BatchSubmissionsController < ApplicationController
   def create_manifest_object
       input_path = manifest.tempfile.path
       media_path = user_share_full_path
-      admin_user = User.where(ms_id:Hyrax.config.batch_user_key).first
+      admin_user = User.batch_user
       depositor = current_user
       organization_id = request.params["organization_id"]
       device_id = request.params["batch_submission"]["device_id"]
@@ -165,6 +165,7 @@ class BatchSubmissionsController < ApplicationController
         end
       end
       fund_code_id = request.params["batch_submission"]["fund_code"]
+      modality = request.params["batch_submission"]["modality"]
       media_ownership_fields = request.params["batch_submission"]["media"]
       media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
       @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
@@ -178,7 +179,8 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id,
         organization_transfer_immediately:( organization_media_transfer == :immediate ),
         device_id:device_id, 
-        media_ownership_fields:media_ownership_fields).to_h
+        media_ownership_fields:media_ownership_fields,
+        modality:modality).to_h
   end
 
   def ingest
@@ -440,6 +442,10 @@ class BatchSubmissionsController < ApplicationController
             @parent_media_id = val
           end
         end
+      end
+    when "media.keyword"
+      unless /^[A-Za-zÀ-ÖØ-öø-ÿ0-9 ,]*$/.match(val)
+        error_msg = "media.keyword: Value(s) must be letters, accented letters, numbers, and spaces. Use comma as separator."
       end
     when /^media\.(.*)$/
       # note that specific media.* fields (e.g. media.media_type) should be handled above already
@@ -858,30 +864,20 @@ class BatchSubmissionsController < ApplicationController
 
   def get_organization_media_transfer
     if (
-      params.dig(:media, :transfer_management).present? && 
       params['organization_id'].present? && 
       Organization.exists?(params['organization_id']) && 
       (org = Organization.find(params['organization_id'])).present? &&
       org.data_manager.present?
     )
-      if transfer_media_immediately?
-        :immediate
-      elsif params.dig(:media, :transfer_management) == 'publication'
-        :publication
-      else
-        nil
-      end
+      transfer_media_immediately? ? :immediate : :publication
     else
       nil
     end
   end
 
   def transfer_media_immediately?
-    ( params.dig(:media, :transfer_management) == 'immediate' ) ||
-    ( 
-      params.dig(:media, :transfer_management) == 'publication' && 
+    ( params.dig(:media, :transfer_management) == 'immediate' ) ||     
       ['open', 'restricted_download'].include?(params.dig(:batch_submission, :media, :visibility)) 
-    )
   end
 
 

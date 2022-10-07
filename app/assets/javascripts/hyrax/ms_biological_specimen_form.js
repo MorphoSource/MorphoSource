@@ -243,12 +243,37 @@ $( document ).ready(function() {
             saveSpecimen();
           } else {
             var results = $.parseJSON(xhr.responseText);
-            if (jQuery.isEmptyObject(results)) {
+            if (jQuery.isEmptyObject(results) || results.idb_records.length == 0) {
               console.log(" no match from IDB, saving... ");
               saveSpecimen();
+            } else if (results.idb_records.length > 1) {
+              idb_records = results.idb_records;
+              var li = "";
+              $(idb_records).each(function() {
+                li += '<li><a href="//www.idigbio.org/portal/records/' + $(this)[0].uuid + '" target="_blank" id="idb-link">iDigBio UUID ' + $(this)[0].uuid + '</a> <span class="glyphicon glyphicon-new-window"></span></li>';
+              });
+              $('#idb-records').append(li);
+              $('#modal-idigbio-multi-result').modal();
+              enablePage();
+              $(document).on('click', '#modal-idigbio-multi-result #btn-save', function(){
+                $('#modal-idigbio-multi-result').modal('hide');
+                saveSpecimen();
+              });
+              $("#modal-idigbio-multi-result").on("hidden.bs.modal", function () {
+                $('#idb-records').html('');
+              });
             } else if (results.idigbio_uuid == $('#existing_idigbio_uuid').val()) {
               console.log(" idigbio_uuid is the same as existing, saving... ");
               saveSpecimen();
+            } else if ( ($('#organization-recordset-id').val() != '') && (!$('#organization-recordset-id').val().includes(results.idigbio_recordset_id)) ) {
+              $('#modal-idigbio-recordset-not-match').modal();
+              enablePage();
+              $(document).on('click', '#modal-idigbio-recordset-not-match #btn-save', function(){
+                $('#modal-idigbio-recordset-not-match').modal('hide');
+                // revert the occurrence ID before saving
+                $('#biological_specimen_occurrence_id').val($('#existing_occurrence_id').val());
+                saveSpecimen();
+              });
             } else {
               console.log("Match from IDB: ", results);
               $('#modal-idigbio-result #institution-code').html(results.institution_code);

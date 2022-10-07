@@ -33,7 +33,8 @@ module Hyrax
                              :collection_type_abilities,
                              :permission_template_abilities,
                              :solr_document_abilities,
-                             :trophy_abilities]
+                             :trophy_abilities,
+                             :temporary_link_abilities]
     end
 
     # Samvera doesn't use download user/groups, so make it an alias to read

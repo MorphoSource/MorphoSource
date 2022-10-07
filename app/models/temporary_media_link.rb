@@ -7,3 +7,5 @@ class TemporaryMediaLink < ApplicationRecord
 	Media.exists?(media_id) ? Media.find(media_id) : nil
   end
 end
+
+# todo: validate expires at isn't in the past when creating

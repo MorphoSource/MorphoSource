@@ -137,9 +137,10 @@ module Morphosource
         end
       end
 
-      # Construct gbif params
-      if idb.has_key?('indexTerms') && idb['indexTerms'].has_key?('taxonid')
-        taxonomy_param_sets[:gbif] = Morphosource::GbifSearchService.taxonomy_params_from_gbif(idb['indexTerms']['taxonid'], true)
+      # Get taxonomy params from GBIF by searching using lowest-level iDigBio taxonomic ranks
+      if taxonomy_param_sets[:provider].present? 
+        gbif = Morphosource::GbifSearchService.taxonomy_params_from_gbif_by_terms(taxonomy_param_sets[:provider])
+        taxonomy_param_sets[:gbif] = gbif if gbif.present?
       end
 
       return taxonomy_param_sets

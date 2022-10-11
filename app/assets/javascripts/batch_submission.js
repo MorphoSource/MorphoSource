@@ -10,6 +10,16 @@ $( document ).ready(function() {
     localStorage.removeItem("batchSubmissionFormData");
   }
 
+  if ($('body[class*="batch-submission-proceed"]').length) { 
+    $('#form-proceed').submit(function() {
+      // remove the ready-to-proceed page from history to prevent duplicate submissions
+      window.history.pushState(null, "", window.location.href);        
+      window.onpopstate = function() {
+        window.history.pushState(null, "", window.location.href);
+      };
+    });
+  }
+
   if ($('[class*="batch-submission-form"]').length) { // check if the page is batch submission form
 
     class RestoreableSubmissionForm extends SubmissionForm {

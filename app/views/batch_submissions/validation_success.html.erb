@@ -19,7 +19,7 @@
 
 <p>Your batch submission manifest successfully passed validation, and is ready for ingestion.</p>
 
-<%= form_tag main_app.batch_submissions_ingest_path do %>
+<%= form_tag main_app.batch_submissions_ingest_path, id: 'form-proceed' do %>
 	<%= hidden_field_tag "manifest_object", manifest_object.to_json %>
 	<%= submit_tag 'Proceed with ingestion', id: 'btn-submit', class: 'btn btn-primary btn-lg', data: { disable_with: "Submitting..." } %>
 <% end %>

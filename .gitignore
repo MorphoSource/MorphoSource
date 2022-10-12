@@ -82,3 +82,4 @@ vendor/alembic/__pycache__/*
 # ---------------------------------------------------
 
 /vendor/docker/apache/certs/*
+/vendor/docker/credentials.env

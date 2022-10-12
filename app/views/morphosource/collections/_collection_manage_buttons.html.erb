@@ -9,13 +9,13 @@
     <ul class="dropdown-menu">
       <li>
         <% if @tab == :specimens %>
-          <% query_link_title = 'Specimen metadata with facets' %>
+          <% query_link_title = 'Specimen metadata with facets CSV' %>
           <% query_link_url = specimens_export_csv_url(@collection) %>
         <% elsif @tab == :chos %>
-          <% query_link_title = 'Object metadata with facets' %>
+          <% query_link_title = 'Object metadata with facets CSV' %>
           <% query_link_url = chos_export_csv_url(@collection) %>
         <% else %>
-          <% query_link_title = 'Media metadata with facets' %>
+          <% query_link_title = 'Media metadata with facets CSV' %>
           <% query_link_url = media_export_csv_url(@collection) %>
         <% end %>
         <%= link_to query_link_title,
@@ -26,21 +26,21 @@
 
       <% if @tab == :media %>
         <li>
-          <%= link_to 'Media metadata with download counts',
+          <%= link_to 'Media metadata with download counts CSV',
             media_download_counts_csv_url(@collection),
             class: 'btn btn-primary'
           %>
         </li>
 
         <li>
-          <%= link_to 'Individual media downloads',
+          <%= link_to 'Individual media downloads CSV',
             media_downloads_csv_url(@collection),
             class: 'btn btn-primary'
           %>
         </li>
 
         <li>
-          <%= link_to 'Individual media download requests',
+          <%= link_to 'Individual media download requests CSV',
             media_requests_csv_url(@collection),
             class: 'btn btn-primary'
           %>
@@ -48,11 +48,20 @@
 
         <% if @presenter.team? && @presenter.organization.present? %>
           <li>
-            <%= link_to 'Projects with media not managed by team',
+            <%= link_to 'Projects with media not managed by team CSV',
               main_app.team_media_projects_path(id: @presenter.id, :format => :csv, :per_page => 1000000, 'f[intersections][]' => 'organization_not_team' ),
               class: 'btn btn-primary'
             %>
           </li>
+
+          <% if @presenter.organization.data_manager.present? %>
+            <li>
+              <%= link_to 'Organization transfer status per media CSV',
+                main_app.team_media_organization_transfer_status_path(request.parameters.merge(id: @presenter.id, :format => :csv, :per_page => 1000000)),
+                class: 'btn btn-primary' 
+              %>
+            </li>
+          <% end %>
         <% end %>
       <% end %>
     </ul>

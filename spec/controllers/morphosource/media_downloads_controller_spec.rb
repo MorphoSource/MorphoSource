@@ -8,6 +8,8 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
   describe "GET #show" do
     let(:user)        { User.create(email: 'user@email.com', password: 'password') }
     let(:depositor)   { User.create(email: 'depositor@email.com', password: 'password') }
+    
+    let(:download_hash) { SecureRandom.uuid }
 
     let(:work1)       { Media.create(title: ["Test Media Work"], depositor: depositor.ms_id) }
     let(:work2)       { Media.create(title: ["Test Media Work 2"], depositor: depositor.ms_id) }
@@ -70,7 +72,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
           end
         end
         it "returns a csv manifest for a single work" do
-          get :show, params: { key: [work1.access_control_id], token: user.token }
+          get :show, params: { key: [work1.access_control_id], token: user.token, download: download_hash }
           expect(response.status).to eq(200)
           expect(response.headers["Content-Type"]).to eq("application/zip")
           expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
@@ -78,7 +80,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
         
         it "returns a zip for multiple works" do
-          get :show, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token }
+          get :show, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash }
           expect(response.status).to eq(200)
           expect(response.headers["Content-Type"]).to eq("application/zip")
           expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
@@ -86,7 +88,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
 
         it "returns a zip for duplicated works" do
-          get :show, params: { key: [work1.access_control_id, work1.access_control_id], token: user.token }
+          get :show, params: { key: [work1.access_control_id, work1.access_control_id], token: user.token, download: download_hash }
           expect(response.status).to eq(200)
           expect(response.headers["Content-Type"]).to eq("application/zip")
           expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
@@ -94,7 +96,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
 
         it "returns a zip for unique works with conflicting names" do
-          get :show, params: { key: [work1.access_control_id, work_dup.access_control_id], token: user.token }
+          get :show, params: { key: [work1.access_control_id, work_dup.access_control_id], token: user.token, download: download_hash }
           expect(response.status).to eq(200)
           expect(response.headers["Content-Type"]).to eq("application/zip")
           expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
@@ -118,7 +120,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
             #allow(user).to receive(:downloadable_item_work_ids).and_return([])
           end
           it 'returns unauthorized' do
-            get :show, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token }
+            get :show, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash }
             expect(response.status).to eq(401)
           end
         end
@@ -129,7 +131,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
             allow(user).to receive(:my_approved_requests_work_ids).and_return([work1.id])
           end
           it 'returns unauthorized' do
-            get :show, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token }
+            get :show, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash }
             expect(response.status).to eq(401)
           end
         end
@@ -142,38 +144,86 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
       end
       context 'user is authorized to download the media' do
         before do
-          allow(user).to receive(:can?).with(:download, work1.id).and_return(true)
-          allow(user).to receive(:can?).with(:download, work2.id).and_return(true)
+          allow_any_instance_of(User).to receive(:can?).with(:download, work1.id).and_return(true)
+          allow_any_instance_of(User).to receive(:can?).with(:download, work2.id).and_return(true)
+          allow_any_instance_of(User).to receive(:can?).with(:download, work1).and_return(true)
+          allow_any_instance_of(User).to receive(:can?).with(:download, work2).and_return(true)
         end
 
-        context 'user has downloadable items' do
-          let!(:cart_item1) { CartItem.create(user_id: user.ms_id, work_id: work1.id, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
-          let!(:cart_item2) { CartItem.create(user_id: user.ms_id, work_id: work2.id, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
-
-          context 'the items have already been downloaded' do
-            before do
-              [cart_item1, cart_item2].each do |i|
-                i.date_downloaded = Date.yesterday
-                i.save
-              end
-            end
-            it 'creates new downloaded cart items' do
-              expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token } }.to change{CartItem.count}.by(2)
-            end
-          end
-          context 'the items have not been downloaded' do
-            it 'marks the items as downloaded' do
-              expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token } }.to change{CartItem.count}.by(0)
-              [cart_item1, cart_item2].each(&:reload)
-              expect(cart_item1.date_downloaded).not_to be(nil)
-              expect(cart_item1.date_downloaded).not_to be(nil)
-            end
+        context 'user has already downloaded media using the same download URL hash' do
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, in_cart: false, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, in_cart: false, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday) }
+          
+          it 'increments download attempts and updates download time on existing downloaded cart items' do
+            expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
+            [cart_item1, cart_item2].each(&:reload)
+            expect(cart_item1.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item1.download_attempts).to eq(2)
+            expect(cart_item2.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item2.download_attempts).to eq(2)
           end
         end
 
-        context 'the user does not have downloadable cart items' do
+        context 'user has already downloaded media using a different download URL hash' do
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, in_cart: false, download_hash: SecureRandom.uuid, download_attempts: 1, date_downloaded: Date.yesterday) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, in_cart: false, download_hash: SecureRandom.uuid, download_attempts: 1, date_downloaded: Date.yesterday) }
+          
           it 'creates new downloaded cart items' do
-            expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token } }.to change{CartItem.count}.by(2)
+            expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(2)
+          end
+        end
+
+        context 'user has undownload approved requests for these media' do
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: nil, download_attempts: nil, date_downloaded: nil, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: nil, download_attempts: 1, date_downloaded: nil, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
+
+          it 'adds download attempt and hash to existing request cart items' do
+            expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
+            [cart_item1, cart_item2].each(&:reload)
+            expect(cart_item1.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item1.download_attempts).to be(1)
+            expect(cart_item1.download_hash).to eq(download_hash)
+            expect(cart_item2.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item2.download_attempts).to eq(1)
+            expect(cart_item2.download_hash).to eq(download_hash)
+          end
+        end
+
+        context 'user repeats or resumes download of approved requests for these media' do
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
+
+          it 'increments download attempts and updates download time on existing request cart items' do
+            expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
+            [cart_item1, cart_item2].each(&:reload)
+            expect(cart_item1.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item1.download_attempts).to be(2)
+            expect(cart_item1.download_hash).to eq(download_hash)
+            expect(cart_item2.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item2.download_attempts).to eq(2)
+            expect(cart_item2.download_hash).to eq(download_hash)
+          end
+        end
+
+        context 'user has media in cart but has not downloaded them yet' do
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: nil, download_attempts: nil, date_downloaded: nil, in_cart: true) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: nil, download_attempts: 1, date_downloaded: nil, in_cart: true) }
+
+          it 'adds download attempt and hash to existing request cart items' do
+            expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
+            [cart_item1, cart_item2].each(&:reload)
+            expect(cart_item1.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item1.download_attempts).to be(1)
+            expect(cart_item1.download_hash).to eq(download_hash)
+            expect(cart_item2.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item2.download_attempts).to eq(1)
+            expect(cart_item2.download_hash).to eq(download_hash)
+          end
+        end
+
+        context 'user has no cart items for media' do
+          it 'creates new downloaded cart items' do
+            expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(2)
           end
         end
       end

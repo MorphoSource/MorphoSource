@@ -164,6 +164,23 @@ services:
     networks:
       - morphosource
 
+  apache: # Currently non-functional on Apple Silicon Macs
+    image: 'bitnami/apache:latest'
+    container_name: apache
+    user: root
+    ports:
+      - '80:80'
+      - '443:443'
+    env_file:
+      - ./vendor/docker/docker-compose.env
+    profiles:
+      - apache
+    volumes:
+    - ./vendor/docker/apache/vhost.conf:/vhosts/vhost.conf:ro
+    # - ./vendor/docker/apache/certs:/certs
+    networks:
+      - morphosource
+
 volumes:
   db:
   fcrepo:

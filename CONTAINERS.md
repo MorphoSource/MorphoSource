@@ -12,8 +12,6 @@ In order to deploy MorphoSource you'll need Docker and Docker Compose installed.
 
 You'll also need to set up `credentials.env`, and can optionally customize configuration options in `docker-compose.env`. Read on for details.
 
-You'll also need to create Recaptcha keys for your server hostname. Julie can provide Recaptcha keys for "localhost" dev environments to MorphoSource team members. We are working to make this optional and not mandatory for MorphoSource in the near future, but for the moment it is required.
-
 ### Credentials
 
 In the `vendor/docker` directory, there is a `credentials.env-example` file. Copy this file and rename it `credentials.env`. Your `vendor/docker/credentials.env` should look like this: 

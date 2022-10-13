@@ -135,7 +135,7 @@ module Morphosource
           :preview_mode, :rights_holder, :rights_holder_blank, :rights_statement_blank, 
           :license_blank, :permissions_enforcement_mode]
         multi_value_fields.each do |field|
-          @params[field] = Array(@params[field])
+          @params[field] = Array(@params[field]) if @params.key?(field)
         end
       end
 

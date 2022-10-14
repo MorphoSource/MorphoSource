@@ -25,7 +25,7 @@ module Morphosource
       private
 
       def get_items
-        @items = current_user.present? ? cart_items.where("date_downloaded IS NOT NULL").order(sort_param) : []
+        @items = current_user.present? ? current_user.cart_items.where("date_downloaded IS NOT NULL").order(sort_param) : []
       end
 
       def valid_sort_attributes

@@ -3,12 +3,13 @@ module Morphosource
     class DownloadsController < Hyrax::MyController
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
-      with_themed_layout 'morphosource_dashboard'      
+      include Morphosource::DatatableControllerBehavior
+      with_themed_layout 'morphosource_dashboard'
 
-      def index
-        get_items('downloads')
-        render 'morphosource/my/downloads/index'
-      end
+      before_action :get_items, only: :index
+      before_action :paginate_and_sort_items, only: :index
+
+      def index; end
 
       # Used when batch-copying previously downloaded items to cart
       def batch_create
@@ -21,6 +22,10 @@ module Morphosource
       end
 
       private
+
+      def get_items
+        @items = current_user.present? ? cart_items.where("date_downloaded IS NOT NULL").order('date_downloaded DESC') : []
+      end
 
       # If user batch selects multiple items for the same work
       def get_duplicate_requests

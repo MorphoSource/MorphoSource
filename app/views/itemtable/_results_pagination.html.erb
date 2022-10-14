@@ -5,6 +5,8 @@
 	    <div class="select-tag">
 	      Rows per page <%= select_tag :rows, options_for_select(Hyrax.config.teams_rows_per_page_range, selected: params[:rows] || Hyrax.config.teams_show_work_item_rows), onchange: "$('#rows_per_page').submit();" %> 
 	    </div>
+		<%= hidden_field_tag(:page, params[:page]) if params[:page].present? %>
+		<%= hidden_field_tag(:sort, params[:sort]) if params[:sort].present? %>
 	  <% end %>
 	</div>
 

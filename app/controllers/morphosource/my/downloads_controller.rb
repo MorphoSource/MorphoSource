@@ -3,7 +3,8 @@ module Morphosource
     class DownloadsController < Hyrax::MyController
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
-      include Morphosource::DatatableControllerBehavior
+      include Morphosource::ItemtableControllerBehavior
+      include Morphosource::ItemtableHelper
       with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items, only: :index
@@ -24,7 +25,15 @@ module Morphosource
       private
 
       def get_items
-        @items = current_user.present? ? cart_items.where("date_downloaded IS NOT NULL").order('date_downloaded DESC') : []
+        @items = current_user.present? ? cart_items.where("date_downloaded IS NOT NULL").order(sort_param) : []
+      end
+
+      def valid_sort_attributes
+        ['date_downloaded']
+      end
+
+      def default_sort_param
+        'date_downloaded DESC'
       end
 
       # If user batch selects multiple items for the same work

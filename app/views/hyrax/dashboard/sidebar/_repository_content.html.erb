@@ -17,8 +17,8 @@
     <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.collections') % ></span>
   <%# end %>
   <% if current_user.admin? %>
-    <%= menu.nav_link(hyrax.my_works_path,
-                      also_active_for: hyrax.dashboard_works_path) do %>
+    <%= menu.nav_link(hyrax.dashboard_works_path,
+                      also_active_for: hyrax.my_works_path) do %>
       <span class="fa fa-file" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.works') %></span>
     <% end %>
   <% end %>

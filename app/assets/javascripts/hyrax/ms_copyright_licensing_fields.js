@@ -1,6 +1,11 @@
 $( document ).ready(function() {
   // shared functions and listeners for copyright statement and licensing fields
-  var rightsStatementChange = function(field_prefix) {
+
+  // Disables CC license choices and restricts permits commercial use and morphosource agreement type field values based on rights statement choice
+  // Params:
+  //   field_prefix: form-specific field prefix ("media", "organization", "batch_submission_media")
+  //   reset: Should this choice roll-back previous restrictions? False on form load, true on user actions
+  var rightsStatementChange = function(field_prefix, reset = true) {
     var conditions = {
       0: ['http://rightsstatements.org/vocab/InC-RUU/1.0/'],
       1: ['http://rightsstatements.org/vocab/InC/1.0/', 'http://rightsstatements.org/vocab/InC-OW-EU/1.0/', 'http://rightsstatements.org/vocab/InC-EDU/1.0/'],
@@ -18,74 +23,98 @@ $( document ).ready(function() {
     switch (conditionMatch) {
       case '0':
         disableLicense(field_prefix, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/', 'http://creativecommons.org/publicdomain/zero/1.0/', 'http://creativecommons.org/publicdomain/mark/1.0/', 'http://www.morphosource.org/terms/licenseUnknown/']);
-        setCommercialUsePermitted(field_prefix, true, false);
+        if (reset) {
+          setCommercialUsePermitted(field_prefix, true, false); // reenable both options
+        }
         break;
       case '1':
         disableLicense(field_prefix, ['http://creativecommons.org/publicdomain/mark/1.0/']);
-        limitMorphoSourceUseAgreementToStandard(field_prefix, false);
-        setCommercialUsePermitted(field_prefix, true, false);
+        if (reset) {
+          limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
+          setCommercialUsePermitted(field_prefix, true, false); // reenable both options
+        }
         break;
       case '2':
         disableLicense(field_prefix, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'http://creativecommons.org/publicdomain/zero/1.0/', 'http://creativecommons.org/publicdomain/mark/1.0/']);
-        limitMorphoSourceUseAgreementToStandard(field_prefix, true);
-        setCommercialUsePermitted(field_prefix, false, false);
+        limitMorphoSourceUseAgreementToStandard(field_prefix, true); // permissive disallowed (due to non-commercial)
+        setCommercialUsePermitted(field_prefix, false, false); // only comm_use_not_permitted allowed
         break;
       case '3':
         disableLicense(field_prefix, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/', 'http://creativecommons.org/publicdomain/zero/1.0/']);
-        limitMorphoSourceUseAgreementToStandard(field_prefix, false);
-        setCommercialUsePermitted(field_prefix, true, false);
+        if (reset) {
+          limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
+          setCommercialUsePermitted(field_prefix, true, false); // reenable both options
+        }
         break;
       case '4':
         disableLicense(field_prefix, ['https://creativecommons.org/licenses/by/4.0/', 'https://creativecommons.org/licenses/by-sa/4.0/', 'https://creativecommons.org/licenses/by-nd/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/', 'https://creativecommons.org/licenses/by-nc-nd/4.0/', 'https://creativecommons.org/licenses/by-nc-sa/4.0/','http://creativecommons.org/publicdomain/zero/1.0/']);
-        limitMorphoSourceUseAgreementToStandard(field_prefix, true);
-        setCommercialUsePermitted(field_prefix, false, false);
+        limitMorphoSourceUseAgreementToStandard(field_prefix, true); // permissive disallowed (due to non-commercial)
+        setCommercialUsePermitted(field_prefix, false, false); // only comm_use_not_permitted_allowed
         break;
       default:
-        disableLicense(field_prefix, []);
-        limitMorphoSourceUseAgreementToStandard(field_prefix, false);
-        setCommercialUsePermitted(field_prefix, true, false);
+        if (reset) {
+          disableLicense(field_prefix, []); // reenable all licenses
+          limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
+          setCommercialUsePermitted(field_prefix, true, false); // reenable both options
+        }
         break;
     }
   };
 
-  var licenseChange = function(field_prefix) {
+  // Restricts permits commercial use and morphosource agreement type field values based on license choice
+  // Params:
+  //   field_prefix: form-specific field prefix ("media", "organization", "batch_submission_media")
+  //   reset: Should this choice roll-back previous restrictions? False on form load, true on user actions
+  var licenseChange = function(field_prefix, reset = true) {
     var selected_license = $(`select#${field_prefix}_license`).val();
     if ( /\/by-nc/.test(selected_license) ) {
-      limitMorphoSourceUseAgreementToStandard(field_prefix, true);
-      setCommercialUsePermitted(field_prefix, false, false);
+      limitMorphoSourceUseAgreementToStandard(field_prefix, true); // permissive disallowed (due to non-commercial)
+      setCommercialUsePermitted(field_prefix, false, false); // only comm_use_not_permitted_allowed
     }
     else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == 'http://creativecommons.org/publicdomain/mark/1.0/') || (selected_license == '')) {
-      limitMorphoSourceUseAgreementToStandard(field_prefix, false);
-      setCommercialUsePermitted(field_prefix, true, false);
+      if (reset) {
+        limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
+        setCommercialUsePermitted(field_prefix, true, false); // reenable both options
+      }
     }
     else {
-      limitMorphoSourceUseAgreementToStandard(field_prefix, false);
-      setCommercialUsePermitted(field_prefix, true, true);
+      setCommercialUsePermitted(field_prefix, true, true); // only comm_use_permitted allowed
+      if (reset) {
+        limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
+      }
     }
   };
 
-  var morphoSourceUseAgreementChange = function(field_prefix) {
+  // Restricts permits commercial use and other field values based on morphosource agreement type
+  // Params:
+  //   field_prefix: form-specific field prefix ("media", "organization", "batch_submission_media")
+  //   reset: Should this choice roll-back previous restrictions? False on form load, true on user actions
+  var morphoSourceUseAgreementChange = function(field_prefix, reset = true) {
     var selected_agreement = $(`select#${field_prefix}_morphosource_use_agreement_type`).val();
     if (selected_agreement == 'Standard') {
       var selected_license = $(`select#${field_prefix}_license`).val();
       if ( /\/by-nc/.test(selected_license) ) {
-        setCommercialUsePermitted(field_prefix, false, false);
+        setCommercialUsePermitted(field_prefix, false, false); // only comm_use_not_permitted_allowed
       }
       else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == '')) {
-        setCommercialUsePermitted(field_prefix, true, false);
+        if (reset) {
+          setCommercialUsePermitted(field_prefix, true, false); // reenable both options
+        }
       }
       else {
-        setCommercialUsePermitted(field_prefix, true, true);
+        setCommercialUsePermitted(field_prefix, true, true); // only comm_use_permitted allowed
       }
       unrestrictRequiredArchival(field_prefix);
       unrestrict3DUse(field_prefix);
     }
     else if (selected_agreement == 'Permissive') {
-      setCommercialUsePermitted(field_prefix, true, true);
+      setCommercialUsePermitted(field_prefix, true, true); // only comm_use_permitted allowed
       limit3DUse(field_prefix, '3DPrintingPermitted');
       limitRequiredArchival(field_prefix, 'EncouragedButNotRequired');
     }
   };
+
+  // Utility functions to carry out field restricting or reenabling
 
   var limitMorphoSourceUseAgreementToStandard = function(field_prefix, limit_morphosource_use_agreement_to_standard) {
     var permissive_option = $(`#${field_prefix}_morphosource_use_agreement_type option[value="Permissive"]`)
@@ -117,6 +146,10 @@ $( document ).ready(function() {
     $(`select#${field_prefix}_permits_3d_use option`).removeAttr('disabled');
   };
 
+  // condition combinations and effects
+  // commercial_use_permitted = false: comm_use_not_permitted reenabled and set as default, disables comm_use_permitted
+  // commercial_use_permitted = true, force = false: reenables both options, does not set a new default
+  // commercial_use_permitted = true, force = true: comm_use_permitted reenabled and set as default, disables comm_use_not_permitted
   var setCommercialUsePermitted = function(field_prefix, commercial_use_permitted, force_commercial_use_permitted) {
     var commercial_use_permitted_option = $(`select#${field_prefix}_permits_commercial_use option[value="CommercialUsePermitted"]`);
     var commercial_use_not_permitted_option = $(`select#${field_prefix}_permits_commercial_use option[value="CommercialUseNotPermitted"]`);
@@ -125,8 +158,7 @@ $( document ).ready(function() {
       if (force_commercial_use_permitted) {
         $(`select#${field_prefix}_permits_commercial_use`).val('CommercialUsePermitted');
         commercial_use_not_permitted_option.attr('disabled','disabled');
-      }
-      else {
+      } else {
         commercial_use_not_permitted_option.removeAttr('disabled');
       }
     }
@@ -153,6 +185,8 @@ $( document ).ready(function() {
       }
     });
   };
+
+  // Event triggers using the above functions
 
   // When a copyright statement is selected, check against license and prune available license options
   $('select[name="media[rights_statement]"]').change(function() {
@@ -202,21 +236,22 @@ $( document ).ready(function() {
     morphoSourceUseAgreementChange('batch_submission_media');
   });
 
+  // Set up fields on initial page load
   $( document ).ready(function() {
     if($('select[name="media[rights_statement]"]').length) {
-      rightsStatementChange('media');
-      licenseChange('media');
-      morphoSourceUseAgreementChange('media');
+      rightsStatementChange('media', false);
+      licenseChange('media', false);
+      morphoSourceUseAgreementChange('media', false);
     }
     else if($('select[name="organization[rights_statement]"]').length) {
-      rightsStatementChange('organization');
-      licenseChange('organization');
-      morphoSourceUseAgreementChange('organization');
+      rightsStatementChange('organization', false);
+      licenseChange('organization', false);
+      morphoSourceUseAgreementChange('organization', false);
     } 
     else if($('select[name="batch_submission[media][rights_statement]"]').length) {
-      rightsStatementChange('batch_submission_media');
-      licenseChange('batch_submission_media');
-      morphoSourceUseAgreementChange('batch_submission_media');
+      rightsStatementChange('batch_submission_media', false);
+      licenseChange('batch_submission_media', false);
+      morphoSourceUseAgreementChange('batch_submission_media', false);
     }
   });
 });

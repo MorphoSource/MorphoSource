@@ -56,6 +56,9 @@ $( document ).ready(function() {
           disableLicense(field_prefix, []); // reenable all licenses
           limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
           setCommercialUsePermitted(field_prefix, true, false); // reenable both options
+
+          // Enforce restrictive license behavior, in case this overwrote it
+          licenseChange(field_prefix, false);
         }
         break;
     }
@@ -75,6 +78,9 @@ $( document ).ready(function() {
       if (reset) {
         limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
         setCommercialUsePermitted(field_prefix, true, false); // reenable both options
+
+        // Enforce restrictive rights statement behavior, in case this overwrote it
+        rightsStatementChange(field_prefix, false); 
       }
     }
     else {

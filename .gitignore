@@ -83,3 +83,6 @@ vendor/alembic/__pycache__/*
 
 /vendor/docker/apache/certs/*
 /vendor/docker/credentials.env
+
+# For temporary local files (e.g., batch submission files) that should not be checked into repo
+/docker_files/*

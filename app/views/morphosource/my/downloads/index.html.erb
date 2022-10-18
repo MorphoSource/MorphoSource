@@ -22,11 +22,11 @@
     <h1>
       <% if @cart %>
         <span class="fa fa-shopping-cart" aria-hidden="true"></span>
-        Media Cart (<%= @items.total_count %>)
+        Media Cart (<%= @item_count %>)
         <%= render 'morphosource/batch_edits/download_all' %>
       <% else %>
         <span class="fa fa-download" aria-hidden="true"></span>
-        Downloads (<%= @items.total_count %>)
+        Downloads (<%= @item_count %>)
       <% end %>
     </h1>
   </div>

@@ -10,7 +10,9 @@ module Morphosource
       before_action :get_items, only: :index
       before_action :paginate_and_sort_items, only: :index
 
-      def index; end
+      def index
+        @item_count = count_text(@items.total_count)
+      end
 
       # Used when batch-copying previously downloaded items to cart
       def batch_create

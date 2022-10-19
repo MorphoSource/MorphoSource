@@ -3,33 +3,14 @@
     <h2 class="panel-title h2"><%= "Search #{page_title.pluralize}" %></h2>
   </div>
   <div class="panel-body">
-    <%= simple_form_for :filter_items, url: search_path, method: "GET" do |f| %>
-      <%= f.input :work_id, label: "Media ID", :input_html => {value: @work_id }, required: false %>
-      <%= f.input :user_id, input_html: { data: { user: format_users_select2(@user_id) } }, required: false %>
-
-      <div class="form-group search_start_date">
-        <label class="control-label" for="search_start_date">
-          <%= t('simple_form.labels.fund_code_charges.downloaded_after') %>
-        </label>
-        <%= f.date_field :date_downloaded_after, value: @date_downloaded_after, class: 'datepicker form-control' %>
-      </div>
-
-      <div class="form-group search_end_date">
-        <label class="control-label" for="search_end_date">
-          <%= t('simple_form.labels.fund_code_charges.downloaded_before') %>
-        </label>
-        <%= f.date_field :date_downloaded_before, value: @date_downloaded_before, class: 'datepicker form-control' %>
-      </div>
+    <%= simple_form_for :filter_items, url: url_for, method: "GET" do |f| %>
+      <%= render partial: 'search_form_fields', locals: {f: f} %>
 
       <%= f.submit 'Search', class: 'btn btn-primary' %>
-      <%= link_to 'Close', main_app.admin_downloads_path, class: 'btn btn-danger pull-right', style: 'margin-left: 20px;' %>
-      <%= link_to 'Start Over', search_path, class: 'btn btn-primary pull-right' %>
+      <%= link_to 'Export CSV', url_for(request.params.merge(format: :csv)), class: 'btn btn-primary', style: 'margin-left: 20px;' %>
+
+      <%= link_to 'Close', url_for, class: 'btn btn-danger pull-right' %>
+      <%= link_to 'Start Over', url_for(search: true), class: 'btn btn-primary pull-right', style: 'margin-right: 20px;' %>
     <% end %>
   </div>
 </div>
-
-<script>
-  $( document ).ready(function() {
-    $('#filter_items_user_id').userSearchMultiple($('#filter_items_user_id').data('user'));
-  });
-</script>

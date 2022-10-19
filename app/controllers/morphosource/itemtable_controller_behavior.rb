@@ -1,19 +1,6 @@
 # Methods to quickly bootstrap controllers that use JS datatable to list Rails DB objects
 module Morphosource
   module ItemtableControllerBehavior
-    def paginate_items
-      return if request.format == 'csv'
-      @items = @items.page(page_param).per(row_param)
-    end
-
-    def page_param
-      params[:page] ||= 1
-    end
-
-    def row_param
-      params[:rows] ||= Hyrax.config.teams_show_work_item_rows
-    end
-
     def sort_param
       if params[:sort].present?
         sort_attribute, order = params[:sort].split(' ')
@@ -40,6 +27,12 @@ module Morphosource
       'id DESC'
     end
 
+    def split_filter_user_keys
+      if params.dig(:filter_items, :user_id).present? 
+        params[:filter_items][:user_id] = params[:filter_items][:user_id].split(',')
+      end
+    end
+
     def filter_items
       (params[:filter_items] || []).each do |attribute, value|
         next unless valid_filter_attributes.include?(attribute) && value.present?
@@ -60,6 +53,19 @@ module Morphosource
     # Override this in controller to provide custom where formula statements for attribute values
     def filter_attribute_where_statements
       {}
+    end
+
+    def paginate_items
+      return if request.format == 'csv'
+      @items = @items.page(page_param).per(row_param)
+    end
+
+    def page_param
+      params[:page] ||= 1
+    end
+
+    def row_param
+      params[:rows] ||= Hyrax.config.teams_show_work_item_rows
     end
   end
 end

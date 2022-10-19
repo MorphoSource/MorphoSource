@@ -4,7 +4,6 @@ module Morphosource
     class DownloadsController < Morphosource::ItemtableController
       before_action :require_permissions
 
-      SEARCH_PATH = Rails.application.routes.url_helpers.admin_downloads_search_path
       PAGE_TITLE = I18n.t("hyrax.admin.sidebar.all_downloads")
 
       private

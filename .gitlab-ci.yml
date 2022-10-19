@@ -100,12 +100,12 @@ deploy_dev:
 #   tags:
 #     - demo
 
-# deploy_prod:
-#   extends: .deploy
-#   environment:
-#     name: production
-#     url: https://morphosource.lib.duke.edu/
-#   only:
-#     - master
-#   tags:
-#     - production
+deploy_prod:
+  extends: .deploy
+  environment:
+    name: production
+    url: https://morphosource.oit.duke.edu/
+  only:
+    - dev-oit-app-server
+  tags:
+    - production

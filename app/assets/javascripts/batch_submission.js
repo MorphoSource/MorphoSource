@@ -114,6 +114,9 @@ $( document ).ready(function() {
 
           let obj = {data: formData, timestamp: new Date().getTime()}
           localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
+          // re-enable the disabled fields so they will get included in the form submit
+          disablePage();
+          $('#media-ownership-fields input,select,textarea').prop('disabled', false); 
         });
 
         self.form.find('#start-over').click(function(){

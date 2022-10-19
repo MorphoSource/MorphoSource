@@ -22,6 +22,7 @@ module Morphosource
         redirect_to main_app.media_download_path(
           key: access_control_ids_from_work_ids,
           token: current_user.token,
+          download: SecureRandom.uuid,
           usage: usage, 
           usage_list: usage_list
         )

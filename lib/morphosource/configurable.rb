@@ -55,9 +55,13 @@ module Morphosource
         [".txt", ".pdf", ".docx"]
       end
 
-      # Allowed formats for Photographic reference attachments 
+      # Allowed formats for Photographic reference attachments
       mattr_accessor :reference_attachment_formats do
         [".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".pdf"]
+      end
+
+      mattr_accessor :sequential_section_formats do
+        [".zip"]
       end
 
       # right now same as all formats
@@ -75,7 +79,8 @@ module Morphosource
         'CTImageSeries' => {extensions: ct_formats, label: I18n.t('morphosource.media.format_labels.ct_mri')},
         'PhotogrammetryImageSeries' => {extensions: photogrammetry_formats, label: I18n.t('morphosource.media.format_labels.photogrammetry')},
         'Mesh' => {extensions: mesh_formats, label: I18n.t('morphosource.media.format_labels.mesh')},
-        'Other' => {extensions: other_formats, label: I18n.t('morphosource.media.format_labels.other')}
+        'Other' => {extensions: other_formats, label: I18n.t('morphosource.media.format_labels.other')},
+        'SequentialSectionImageSeries' => {extensions: sequential_section_formats, label: I18n.t('morphosource.media.format_labels.sequential_section')}
       }
 
     end

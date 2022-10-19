@@ -2,14 +2,15 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
 
-  let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
-  let(:depositor)               { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:manager)                 { User.create(email: 'manager@email.com', password: 'password') }
+  let!(:user)                   { User.create(email: 'user@email.com', password: 'password') }
+  let!(:depositor)              { User.create(email: 'depositor@email.com', password: 'password') }
+  let!(:manager)                { User.create(email: 'manager@email.com', password: 'password') }
   let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
   let!(:team)                   { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
   let!(:project)                { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
-  let!(:organization)           { Organization.create(title: ['Organization'], team_id: [team.id]) }
+  let!(:org_data_manager)       { User.create(email: 'data_manager@email.com', password: 'password') }
+  let!(:organization)           { Organization.create(title: ['Organization'], team_id: [team.id], data_manager: [org_data_manager.ms_id]) }
   let(:specimen)                { BiologicalSpecimen.create(title: ['Biological Specimen'], organization_id: [organization.id]) }
   let(:device)                  { Device.create(title: ['Device'], modality: ['Photogrammetry']) }
   let(:imaging_event)           { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
@@ -88,12 +89,63 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
         expect(subject.send(:media_ids)).to match_array(old_data_manager_media_ids + project_and_old_data_manager_media_ids)
         expect(subject.send(:media_ids)).not_to include(*project_media_ids)
       end
+
+      context 'media have organization_transfer_on_publish set to true' do
+        before do
+          (old_data_manager_media + project_and_old_data_manager_media).each do |m|
+            m.organization_transfer_on_publish = true
+            m.save!
+          end
+        end
+        it 'does not return the media' do
+          expect(subject.send(:media_ids)).to match_array([])
+        end
+      end
+
+      context 'media have proxy deposit requests' do
+        before do
+          Role.create(name: 'contributor')
+          org_data_manager.make_contributor
+          (old_data_manager_media + project_and_old_data_manager_media).each do |m|
+            ProxyDepositRequest.create(work_id: m.id, organization_transfer: true, receiving_user_id: org_data_manager.id, sending_user_id: depositor.id)
+          end
+        end
+        it 'does not return the media' do
+          expect(subject.send(:media_ids)).to match_array([])
+        end
+      end
     end
+
     context 'only the collection id is filled out' do
       context 'collection is another project' do
         it 'returns all project media associated with the organization' do
           expect(subject.send(:media_ids)).to match_array(project_media_ids + project_and_old_data_manager_media_ids)
           expect(subject.send(:media_ids)).not_to include(*old_data_manager_media_ids)
+        end
+
+        context 'media have organization_transfer_on_publish set to true' do
+          before do
+            (project_media + project_and_old_data_manager_media).each do |m|
+              m.organization_transfer_on_publish = true
+              m.save!
+            end
+          end
+          it 'does not return the media' do
+            expect(subject.send(:media_ids)).to match_array([])
+          end
+        end
+
+        context 'media have proxy deposit requests' do
+          before do
+            Role.create(name: 'contributor')
+            org_data_manager.make_contributor
+            (project_media + project_and_old_data_manager_media).each do |m|
+              ProxyDepositRequest.create(work_id: m.id, organization_transfer: true, receiving_user_id: org_data_manager.id, sending_user_id: depositor.id)
+            end
+          end
+          it 'does not return the media' do
+            expect(subject.send(:media_ids)).to match_array([])
+          end
         end
       end
 
@@ -115,6 +167,31 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
         it 'returns all media associated with the organization belonging to the team' do
           expect(subject.send(:media_ids)).to match_array(project_media_ids + project_and_old_data_manager_media_ids)
         end
+
+        context 'media have organization_transfer_on_publish set to true' do
+          before do
+            (project_media + project_and_old_data_manager_media).each do |m|
+              m.organization_transfer_on_publish = true
+              m.save!
+            end
+          end
+          it 'does not return the media' do
+            expect(subject.send(:media_ids)).to match_array([])
+          end
+        end
+
+        context 'media have proxy deposit requests' do
+          before do
+            Role.create(name: 'contributor')
+            org_data_manager.make_contributor
+            (project_media + project_and_old_data_manager_media).each do |m|
+              ProxyDepositRequest.create(work_id: m.id, organization_transfer: true, receiving_user_id: org_data_manager.id, sending_user_id: depositor.id)
+            end
+          end
+          it 'does not return the media' do
+            expect(subject.send(:media_ids)).to match_array([])
+          end
+        end
       end
 
       context 'both collection id and old manager are filled out' do
@@ -125,7 +202,34 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
           expect(subject.send(:media_ids)).not_to include(*project_media_ids)
           expect(subject.send(:media_ids)).not_to include(*old_data_manager_media_ids)
         end
+
+        context 'media have organization_transfer_on_publish set to true' do
+          before do
+            project_and_old_data_manager_media.each do |m|
+              m.organization_transfer_on_publish = true
+              m.save!
+            end
+          end
+          it 'does not return the media' do
+            expect(subject.send(:media_ids)).to match_array([])
+          end
+        end
+
+        context 'media have proxy deposit requests' do
+          before do
+            Role.create(name: 'contributor')
+            org_data_manager.make_contributor
+            project_and_old_data_manager_media.each do |m|
+              ProxyDepositRequest.create(work_id: m.id, organization_transfer: true, receiving_user_id: org_data_manager.id, sending_user_id: depositor.id)
+            end
+          end
+          it 'does not return the media' do
+            expect(subject.send(:media_ids)).to match_array([])
+          end
+        end
       end
+
+
     end
   end
 end

@@ -1,7 +1,6 @@
 require 'axlsx'
 
 # DrainableIO and RemoteInclusion help smooth out IntervalResponse and ZipTricks functionality
-
 class DrainableIO < StringIO
   def to_segment_and_clear
     string.dup.tap do
@@ -18,13 +17,14 @@ module Morphosource
     include Morphosource::CartItems
 
     before_action :validate_params, only: [:show]
+    before_action :validate_download_hash, only: [:show]
     before_action :validate_user, only: [:show]
     after_action :reset_recaptcha, only: [:show]
 
     def show
       prepare_all_files
       if @files.present? && @all_files.present?
-        create_downloaded_cart_items
+        create_or_update_cart_items_for_download
         create_interval_sequence
         send_interval_response
       else
@@ -33,24 +33,27 @@ module Morphosource
       end
     end
 
-    def create_downloaded_cart_items
-      media.each do |m|
-        if downloadable_item_for_work?(m.id)
-          item = find_downloadable_item(m.id)
-          if item.date_downloaded
-            create_downloaded_item(m.id)
-          else
-            mark_as('downloaded',item)
-          end
-        else
-          create_downloaded_item(m.id)
-        end
-      end
-    end
-
     def prepare_all_files
       @temp_files = []
       @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest
+    end
+
+    def create_or_update_cart_items_for_download
+      media.each do |m|
+        if (item = find_downloaded_downloadable_item(m.id, download_hash)).present?
+          # CartItem for media with DL hash exists, can increment DL attempts and update DL date
+          add_subsequent_download(item)
+        elsif (item = find_undownloaded_approved_request_item(m.id)).present?
+          # Undownloaded approved request exists, associate download with request
+          add_first_download(item, download_hash)
+        elsif (item = find_undownloaded_downloadable_item(m.id)).present?
+          # Undownloaded downloadable item exists (e.g., in media cart), associated download
+          add_first_download(item, download_hash)
+        else
+          # Add new CartItem for download
+          create_downloaded_item(m.id, download_hash)
+        end
+      end
     end
 
     def create_interval_sequence
@@ -97,24 +100,43 @@ module Morphosource
       response.cache_control[:public] ||= false
     end
 
-    def validate_params
-      return head(:bad_request) unless params_valid?
-    end
-
-    def validate_user
-      return head(:unauthorized) unless user_is_valid?
-    end
-
-    def reset_recaptcha
-      # this controller doesn't interact with recaptcha (yet!) but this is left in, just in case
-      session.delete(:recaptcha_verfied_in_cart)
-    end
-
     private
       # Validation methods
 
+      def validate_params
+        return head(:bad_request) unless params_valid?
+      end
+
       def params_valid?
-        user_from_token.present? && media.present?
+        user_from_token.present? && media.present? && download_hash.present?
+      end
+
+       # Get user record from token param
+       def user_from_token
+        @user ||= User.where(token: params[:token])&.first if params[:token].present?
+      end
+
+      # Get Media from keys
+      def media
+        @media ||= Media.where(accessControl_ssim: keys)
+      end
+
+      # Media access_control keys
+      def keys 
+        @keys ||= Array(params[:key])
+      end
+
+      def download_hash
+        @download_hash ||= params[:download] if params[:download].present?
+      end
+
+      def validate_download_hash
+        uuid_regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+        return head(:bad_request) unless uuid_regex.match?(download_hash.to_s.downcase)
+      end
+
+      def validate_user
+        return head(:unauthorized) unless user_is_valid?
       end
 
       def user_is_valid?
@@ -129,32 +151,15 @@ module Morphosource
         user.active && ( user.can?(:download, media.id) || user.approved_to_download?(media.id) )
       end
 
+      def reset_recaptcha
+        # this controller doesn't interact with recaptcha (yet!) but this is left in, just in case
+        session.delete(:recaptcha_verfied_in_cart)
+      end
+
       # Controller HTTP response methods
 
       def interval_sequence
         @interval_sequence ||= IntervalResponse::Sequence.new
-      end
-
-      # Methods for accessing works
-
-      # Media access_control keys
-      def keys 
-        @keys ||= Array(params[:key])
-      end
-
-      # Get Media from keys
-      def media
-        @media ||= Media.where(accessControl_ssim: keys)
-      end
-
-      # Get FileSets from Media
-      def file_sets
-        @file_sets ||= media.map(&:file_sets).flatten.compact
-      end
-
-      # Get user record from token param
-      def user_from_token
-        @user ||= User.where(token: params[:token])&.first if params[:token].present?
       end
 
       # Methods for preparing media binary files
@@ -199,6 +204,105 @@ module Morphosource
         else
           return nil, nil
         end
+      end
+
+      # Get FileSets from Media
+      def file_sets
+        @file_sets ||= media.map(&:file_sets).flatten.compact
+      end
+
+      # MorphoSource standard agreement file methods
+
+      def standard_agreement_files
+        standard_agreement_file_names.map do |file_name|
+          file = File.open(standard_agreement_file_path(file_name))
+
+          {
+            name: file_name,
+            size: file.size,
+            crc32: crc32_from_io(file),
+            file: file
+          }
+        end
+      end
+
+      def standard_agreement_file_names
+        standard_agreement_settings.map do |s|
+          if s[:type] == 'permissive'
+            label = s[:type]
+          else
+            label = [
+              s[:type], 
+              s[:permits_commercial_use], 
+              s[:required_archival_of_published_derivatives], 
+              s[:permits_3d_use]
+            ].join('_')
+          end
+
+          standard_agreement_file_name(label)
+        end
+      end
+
+      def standard_agreement_settings
+        media.map do |m|
+          if m.morphosource_use_agreement_type&.first == 'Permissive'
+            { type: 'permissive' }
+          else
+            {
+              type: 'std',
+              permits_commercial_use: 
+                permits_commercial_use(
+                  m.permits_commercial_use&.first
+                ),
+              required_archival_of_published_derivatives: 
+                required_archival_of_published_derivatives(
+                  m.required_archival_of_published_derivatives&.first
+                ),
+              permits_3d_use: permits_3d_use(
+                  m.permits_3d_use&.first
+                )
+            }
+          end
+        end.uniq
+      end
+
+      def permits_commercial_use(val)
+        case val
+        when 'CommercialUsePermitted'
+          'comm_yes'
+        else
+          'comm_no'
+        end
+      end
+
+      def required_archival_of_published_derivatives(val)
+        case val
+        when 'OnAnyRepository'
+          'rearc_any'
+        when 'OnMorphoSource'
+          'rearc_ms'
+        else
+          'rearc_no'
+        end
+      end
+
+      def permits_3d_use(val)
+        case val
+        when '3DPrintingPermitted'
+          '3d_yes'
+        when '3DPrintingLimited'
+          '3d_limited'
+        else
+          '3d_no'
+        end
+      end
+
+      def standard_agreement_file_name(permissions_label)
+        "ms_usage_#{permissions_label}.pdf"
+      end
+
+      def standard_agreement_file_path(file_name)
+        File.join(Rails.root, %w{app assets documents}, file_name)
       end
 
       # Media-specific custom agreement file methods
@@ -369,100 +473,6 @@ module Morphosource
         end
       end
 
-      # MorphoSource standard agreement file methods
-
-      def standard_agreement_files
-        standard_agreement_file_names.map do |file_name|
-          file = File.open(standard_agreement_file_path(file_name))
-
-          {
-            name: file_name,
-            size: file.size,
-            crc32: crc32_from_io(file),
-            file: file
-          }
-        end
-      end
-
-      def standard_agreement_file_names
-        standard_agreement_settings.map do |s|
-          if s[:type] == 'permissive'
-            label = s[:type]
-          else
-            label = [
-              s[:type], 
-              s[:permits_commercial_use], 
-              s[:required_archival_of_published_derivatives], 
-              s[:permits_3d_use]
-            ].join('_')
-          end
-
-          standard_agreement_file_name(label)
-        end
-      end
-
-      def standard_agreement_settings
-        media.map do |m|
-          if m.morphosource_use_agreement_type&.first == 'Permissive'
-            { type: 'permissive' }
-          else
-            {
-              type: 'std',
-              permits_commercial_use: 
-                permits_commercial_use(
-                  m.permits_commercial_use&.first
-                ),
-              required_archival_of_published_derivatives: 
-                required_archival_of_published_derivatives(
-                  m.required_archival_of_published_derivatives&.first
-                ),
-              permits_3d_use: permits_3d_use(
-                  m.permits_3d_use&.first
-                )
-            }
-          end
-        end.uniq
-      end
-
-      def permits_commercial_use(val)
-        case val
-        when 'CommercialUsePermitted'
-          'comm_yes'
-        else
-          'comm_no'
-        end
-      end
-
-      def required_archival_of_published_derivatives(val)
-        case val
-        when 'OnAnyRepository'
-          'rearc_any'
-        when 'OnMorphoSource'
-          'rearc_ms'
-        else
-          'rearc_no'
-        end
-      end
-
-      def permits_3d_use(val)
-        case val
-        when '3DPrintingPermitted'
-          '3d_yes'
-        when '3DPrintingLimited'
-          '3d_limited'
-        else
-          '3d_no'
-        end
-      end
-
-      def standard_agreement_file_name(permissions_label)
-        "ms_usage_#{permissions_label}.pdf"
-      end
-
-      def standard_agreement_file_path(file_name)
-        File.join(Rails.root, %w{app assets documents}, file_name)
-      end
-
       def crc32_from_io(file)
         crc = ZipTricks::StreamCRC32.from_io(file)
         file.rewind
@@ -477,6 +487,5 @@ module Morphosource
       def output_filename(file_name, media_id)
         File.basename(file_name, File.extname(file_name)) + "-#{media_id}" + File.extname(file_name)
       end
-
   end
 end

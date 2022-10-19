@@ -1,0 +1,6 @@
+<%= simple_form_for @collection,
+    url: main_app.dashboard_collection_unlink_organization_path,
+    method: 'post',
+    html: { id: 'remove-organization-form' } do |f| %>
+  <%= submit_tag 'Remove organization', class: 'btn btn-sm btn-default', style: 'position:relative; left:25px; font-size:14px;' %>
+<% end %>

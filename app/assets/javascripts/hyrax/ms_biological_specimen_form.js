@@ -265,6 +265,15 @@ $( document ).ready(function() {
             } else if (results.idigbio_uuid == $('#existing_idigbio_uuid').val()) {
               console.log(" idigbio_uuid is the same as existing, saving... ");
               saveSpecimen();
+            } else if ( ($('#organization-recordset-id').val() != '') && (!$('#organization-recordset-id').val().includes(results.idigbio_recordset_id)) ) {
+              $('#modal-idigbio-recordset-not-match').modal();
+              enablePage();
+              $(document).on('click', '#modal-idigbio-recordset-not-match #btn-save', function(){
+                $('#modal-idigbio-recordset-not-match').modal('hide');
+                // revert the occurrence ID before saving
+                $('#biological_specimen_occurrence_id').val($('#existing_occurrence_id').val());
+                saveSpecimen();
+              });
             } else {
               console.log("Match from IDB: ", results);
               $('#modal-idigbio-result #institution-code').html(results.institution_code);

@@ -45,7 +45,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
       if derived_parent_file.present?
         Rails.logger.debug "iN MediaSubcontrolJob: waiting for parent media creation: #{derived_parent_file}"        
-        sleep(1.minute) until (target_parent_id = created_parent_id(derived_parent_file)).present?
+        sleep(30.seconds) until (target_parent_id = created_parent_id(derived_parent_file)).present?
         Rails.logger.debug "iN MediaSubcontrolJob: parent media found: #{derived_parent_file} > #{target_parent_id}"
       end
 
@@ -66,7 +66,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     end
 
     # Monitor jobs
-    sleep(1.minute) until monitor_ingest_jobs
+    sleep(30.seconds) until monitor_ingest_jobs
 
     # Report errors
     status.update(manifest: @manifest)

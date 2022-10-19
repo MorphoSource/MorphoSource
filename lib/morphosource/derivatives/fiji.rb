@@ -28,6 +28,10 @@ module Morphosource::Derivatives
       @tool_path || Morphosource::Derivatives.fiji_path
     end
 
+    def custom_fiji_executable_path
+      @custom_fiji_executable_path || Morphosource::Derivatives.fiji_script_command
+    end
+
     protected
       def imagej_macro
         # Deprecated, no longer used
@@ -57,8 +61,16 @@ module Morphosource::Derivatives
         File.join(d, '')
       end
 
+      def command_path
+        if custom_fiji_executable_path.present?
+          custom_fiji_executable_path
+        else
+          "#{tool_path}/Fiji.app/ImageJ-linux64 --ij2 --headless --console --run"
+        end
+      end
+
       def command
-        "#{tool_path}/Fiji.app/ImageJ-linux64 --ij2 --headless --console --run #{script_path} '#{script_parameters}'"
+        "#{command_path} #{script_path} '#{script_parameters}'"
       end
   end
 end

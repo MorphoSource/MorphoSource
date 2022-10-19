@@ -6,7 +6,7 @@ module Morphosource::Derivatives::Processors
   end
 
   class CTImageSeries < Hydra::Derivatives::Processors::Processor
-    include Morphosource::Derivatives::Processors::CTImageSeriesUtil
+    include Morphosource::Derivatives::Processors::ImageSeriesUtil
 
     attr_accessor :tmp_dir_path, :img_coll, :ext
     attr_accessor :input_path, :scaled_path, :raw_dcm_path, :output_path, :manifest_path

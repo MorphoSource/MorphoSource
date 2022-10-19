@@ -149,7 +149,7 @@ class BatchSubmissionsController < ApplicationController
   def create_manifest_object
       input_path = manifest.tempfile.path
       media_path = user_share_full_path
-      admin_user = User.where(ms_id:Hyrax.config.batch_user_key).first
+      admin_user = User.batch_user
       depositor = current_user
       organization_id = request.params["organization_id"]
       device_id = request.params["batch_submission"]["device_id"]
@@ -165,6 +165,7 @@ class BatchSubmissionsController < ApplicationController
         end
       end
       fund_code_id = request.params["batch_submission"]["fund_code"]
+      modality = request.params["batch_submission"]["modality"]
       media_ownership_fields = request.params["batch_submission"]["media"]
       media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
       @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
@@ -178,11 +179,12 @@ class BatchSubmissionsController < ApplicationController
         organization_id:organization_id,
         organization_transfer_immediately:( organization_media_transfer == :immediate ),
         device_id:device_id, 
-        media_ownership_fields:media_ownership_fields).to_h
+        media_ownership_fields:media_ownership_fields,
+        modality:modality).to_h
   end
 
   def ingest
-    render 'ingest_started'
+     redirect_to ({:action=>'index'}), :notice => "Your submission job has started.  You can check the job status below."
   end
   
   def start_ingest_job

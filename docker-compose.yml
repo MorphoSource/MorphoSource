@@ -7,12 +7,14 @@ services:
       target: morphosource
       args:
         - EXTRA_APK_PACKAGES=git less
+    container_name: app
     command: sh -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
     stdin_open: true
     tty: true
-    user: root
+    user: app
     env_file:
-      - docker-compose.env
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
     depends_on:
       - db_migrate
       - fcrepo
@@ -31,14 +33,16 @@ services:
     networks:
       - morphosource
 
-  resque:
+  app_worker:
     build:
       context: .
       target: msworker
-    command: sh -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
-    user: root
+    container_name: app_worker
+    command: sh -c 'bundle && QUEUE=* bundle exec rails resque:workers'
+    user: app
     env_file:
-      - docker-compose.env
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
     depends_on:
       - db_migrate
       - fcrepo
@@ -50,8 +54,35 @@ services:
       - .:/app/samvera/hyrax-webapp
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
-      - resque-public:/app/samvera/hyrax-webapp/public
-      - resque-tmp:/app/samvera/hyrax-webapp/tmp
+      - rails-public:/app/samvera/hyrax-webapp/public
+      - rails-tmp:/app/samvera/hyrax-webapp/tmp
+    networks:
+      - morphosource
+
+  app_test:
+    build:
+      context: .
+      target: msworker
+    container_name: app_test
+    command: sh -c 'rm -rf /app/samvera/hyrax-webapp/tmp/* && bundle && bundle exec rake hydra:test_server'
+    user: app
+    env_file:
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
+      - ./vendor/docker/docker-compose-test.env
+    depends_on:
+      - db_migrate
+      - memcached
+      - postgres
+      - redis
+    profiles:
+      - test
+    volumes:
+      - .:/app/samvera/hyrax-webapp
+      - test-derivatives:/app/samvera/hyrax-webapp/derivatives
+      - test-uploads:/app/samvera/hyrax-webapp/uploads
+      - test-public:/app/samvera/hyrax-webapp/public
+      - test-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
 
@@ -61,9 +92,11 @@ services:
       target: morphosource
       args:
         - EXTRA_APK_PACKAGES=git less
-    user: root
+    container_name: db_migrate
+    user: app
     env_file:
-      - docker-compose.env
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
     command: sh -c 'bundle && db-migrate-seed.sh'
     depends_on:
       - postgres
@@ -78,14 +111,12 @@ services:
 
   postgres:
     image: postgres:latest
-    restart: always
-    environment:
-      - POSTGRES_USER=$DB_USERNAME
-      - POSTGRES_PASSWORD=$DB_PASSWORD
-      - POSTGRES_DB=$DB_NAME
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    ports:
-      - "5432:5432"
+    container_name: postgres
+    env_file:
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
+    # ports:
+    #  - "5432:5432"
     volumes:
       - db:/var/lib/postgresql/data
     networks:
@@ -93,23 +124,26 @@ services:
 
   fcrepo:
     image: ghcr.io/samvera/fcrepo4:4.7.5
+    container_name: fcrepo
     volumes:
       - fcrepo:/data
       - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
-    ports:
-      - 8080:8080
+    #ports: # Re-open ports for local dev environments
+    #  - 8080:8080
     networks:
       - morphosource
 
   memcached:
-    image: bitnami/memcached
-    ports:
-      - '11211:11211'
+    image: memcached
+    container_name: memcached
+    # ports:
+    #  - '11211:11211'
     networks:
       - morphosource
 
   redis:
     image: redis:5-alpine
+    container_name: redis
     volumes:
       - redis:/data
     networks:
@@ -117,8 +151,9 @@ services:
 
   solr:
     image: solr:7.7.3
-    ports:
-      - 8983:8983
+    container_name: solr
+    #ports: # Re-open ports for local dev environments
+    #  - 8983:8983
     command:
       - sh
       - "-c"
@@ -126,6 +161,23 @@ services:
     volumes:
       - solr_home:/opt/solr/server/solr/mycores
       - ./solr/config:/core_config/conf
+    networks:
+      - morphosource
+
+  apache: # Currently non-functional on Apple Silicon Macs
+    image: 'bitnami/apache:latest'
+    container_name: apache
+    user: root
+    ports:
+      - '80:80'
+      - '443:443'
+    env_file:
+      - ./vendor/docker/docker-compose.env
+    profiles:
+      - apache
+    volumes:
+    - ./vendor/docker/apache/vhost.conf:/vhosts/vhost.conf:ro
+    # - ./vendor/docker/apache/certs:/certs
     networks:
       - morphosource
 
@@ -137,9 +189,11 @@ volumes:
   rails-public:
   rails-tmp:
   redis:
-  resque-public:
-  resque-tmp:
   solr_home:
+  test-derivatives:
+  test-uploads:
+  test-public:
+  test-tmp:
 
 networks:
   morphosource:

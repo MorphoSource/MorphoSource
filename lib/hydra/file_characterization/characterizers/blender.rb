@@ -6,8 +6,16 @@ module Hydra::FileCharacterization::Characterizers
 
     protected
 
+      def command_path
+        if tool_path.present?
+          File.join(tool_path, "blender")
+        else
+          "blender"
+        end
+      end
+
       def command
-        "#{tool_path}/blender --background --factory-startup --addons io_scene_gltf2 --python vendor/blender_config/scripts/blender_characterize_mesh.py -- -i '#{filename}'"
+        "#{command_path} --background --factory-startup --addons io_scene_gltf2 --python vendor/blender_config/scripts/blender_characterize_mesh.py -- -i '#{filename}'"
       end
   
       # Remove any non-XML output that precedes the <?xml> tag

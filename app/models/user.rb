@@ -55,6 +55,14 @@ class User < ApplicationRecord
      serialize field, Array
    end
 
+  def self.find_or_create_system_user(user_key)
+    User.find_by_user_key(user_key) || User.create!(
+      Hydra.config.user_key_field => user_key,
+      email: "#{user_key}@system_user",
+      password: Devise.friendly_token[0, 20]
+    )
+  end
+
   # Devise callback for checking if user is active
   def active_for_authentication?
     super && active
@@ -237,18 +245,18 @@ class User < ApplicationRecord
         depositor_collection_ids << r.name.chomp("_depositors")
       elsif r.name.include? "viewers"
         viewer_collection_ids << r.name.chomp("_viewers")
-      end 
-    end 
+      end
+    end
     all_memberships_collection_ids = (
-            manager_collection_ids + 
+            manager_collection_ids +
             editor_collection_ids +
             depositor_collection_ids +
             downloader_collection_ids +
             viewer_collection_ids
             ).compact
-    return all_memberships_collection_ids, 
-            manager_collection_ids.compact, 
-            editor_collection_ids.compact, 
+    return all_memberships_collection_ids,
+            manager_collection_ids.compact,
+            editor_collection_ids.compact,
             depositor_collection_ids.compact,
             downloader_collection_ids.compact,
             viewer_collection_ids.compact
@@ -274,8 +282,28 @@ class User < ApplicationRecord
   end
 
   def can_submit_new_batch_submission?
-    return true unless batch_submission_jobs.present? 
+    return true unless batch_submission_jobs.present?
     return last_batch_submission_job.status == "completed" || last_batch_submission_job.status == "failed"
+  end
+
+  def manager_groups
+    groups.select{|g| g.include?("_managers")}
+  end
+
+  def editor_groups
+    groups.select{|g| g.include?("_editors")}
+  end
+
+  def depositor_groups
+    groups.select{|g| g.include?("_depositors")}
+  end
+
+  def downloader_groups
+    groups.select{|g| g.include?("_downloaders")}
+  end
+
+  def viewer_groups
+    groups.select{|g| g.include?("_viewers")}
   end
 
   private
@@ -308,4 +336,5 @@ class User < ApplicationRecord
   def reset_id_incrementer
     ActiveRecord::Base.connection.reset_pk_sequence!("users")
   end
+
 end

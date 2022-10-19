@@ -3,16 +3,19 @@ module Morphosource
     class TeamsController < Morphosource::CollectionsController
       include Morphosource::Collections::LinkedTeamsControllerBehavior
 
-      skip_load_and_authorize_resource only: [:show, :about, :facet, 
+      skip_load_and_authorize_resource only: [:show, :about, :facet,
         :media_projects, :media_organization_transfer_status,
         :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet
       ], instance_name: :collection
 
       before_action :authenticate_api_key_optional, only: :media_projects
-      before_action :load_organization, only: [:show, :facet, :about, 
+      before_action :load_organization, only: [:show, :facet, :about,
         :media_projects, :media_organization_transfer_status,
         :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
-      before_action :create_intersections_facet, only: [:show, :facet, 
+      before_action :create_intersections_facet, only: [:show, :facet,
+        :media_projects, :media_organization_transfer_status,
+        :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
+      before_action :create_access_facet, only: [:show, :facet,
         :media_projects, :media_organization_transfer_status,
         :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
 
@@ -31,18 +34,12 @@ module Morphosource
           config.add_facet_field "media_organization_ssim", label: "Organization", limit: 10
           config.add_facet_field "member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
           config.add_facet_field "member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
+          config.add_facet_field "user_with_ownership_ssi", label: "Data Manager", limit: 10, helper_method: :user_name_by_id
+          config.add_facet_field "depositor_ssim", label: "Depositor", limit: 10, helper_method: :user_name_by_id
           # intersections facet added by before_action :create_intersections_facet
         end
       end
       configure_facets
-
-      def media_export_with_intersections_facet
-        media_export
-      end
-
-      def media_download_counts_with_intersections_facet
-        media_download_counts
-      end
 
       # Exports CSV of projects containing org media not owned by linked team
       def media_projects
@@ -52,7 +49,7 @@ module Morphosource
         query_organization_media_collections
 
         @document_type = 'collection'
-        @document_list = @collections_document_list.map { |d| d.to_semantic_values } 
+        @document_list = @collections_document_list.map { |d| d.to_semantic_values }
         @document_list.map! do |coll|
           collection = Collection.find(coll[:id]&.first)
           addl_fields = {
@@ -84,7 +81,7 @@ module Morphosource
           repository.blacklight_config.max_per_page = 9999999
         end
         (@response, @document_list) = query_solr_all_results
-        @document_list.map! do |d|  
+        @document_list.map! do |d|
           # Derive organization transfer status
           status = ''
           if (req = ProxyDepositRequest.find_by(work_id: d.id, organization_transfer: true)).present?
@@ -117,15 +114,15 @@ module Morphosource
 
         # get project or team URL for collection
         def collection_url(coll_hash)
-          coll_hash[:project_or_team] == ['Project'] ? 
-            main_app.project_media_url(coll_hash[:id]) : 
+          coll_hash[:project_or_team] == ['Project'] ?
+            main_app.project_media_url(coll_hash[:id]) :
             main_app.team_media_url(coll_hash[:id])
         end
 
         # get number of media in collection hash, based on facets
         def media_number_in_collection(coll_hash)
-          facet_type = coll_hash[:project_or_team] == ['Project'] ? 
-            'member_of_project_ids_ssim' : 
+          facet_type = coll_hash[:project_or_team] == ['Project'] ?
+            'member_of_project_ids_ssim' :
             'member_of_team_ids_ssim'
           facet_counts = @response['facet_counts']['facet_fields'][facet_type].each_slice(2).to_a.to_h
           facet_counts[coll_hash[:id]&.first] || 0

@@ -9,7 +9,7 @@ module BatchSubmissionTools
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields,
         :skipped_row_count
 
-      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, organization_transfer_immediately: false, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:)
+      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, organization_transfer_immediately: false, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:, modality:)
         @input_path = input_path
         @media_path = media_path
         @admin_user = admin_user.user_key
@@ -18,7 +18,7 @@ module BatchSubmissionTools
         @organization_id = organization_id
         @organization_transfer_immediately = organization_transfer_immediately
         @device_id = device_id
-        @device_modality = Device.find(device_id).modality&.first
+        @device_modality = modality
         @media_ownership_fields = media_ownership_fields
 
         @collection_ids = Array(collection_ids)

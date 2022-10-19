@@ -163,19 +163,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe 'items a user has downloaded' do
-    # not downloaded
-    let!(:cart_item1) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday) }
-    # downloaded
-    let!(:cart_item2) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_downloaded: Date.yesterday) }
-
-    describe '#downloaded_items' do
-      it "returns items the user has downloaded" do
-        expect(user.downloaded_items).to match_array([cart_item2])
-      end
-    end
-  end
-
   describe 'items a user can download' do
     # downloadable items
     # item is from an open work

@@ -421,7 +421,7 @@ namespace :morphosource do
       else
         model.find_each do |o|
           Rails.logger.warn ("Re-indexing begin: #{args[:model]} id:#{o.id}")
-          UpdateWorkIndexJob.perform_later(o.id)
+          UpdateWorkIndexSlowJob.perform_later(o.id)
           Rails.logger.warn ("Re-indexing done: #{args[:model]} id:#{o.id}")
         end
       end
@@ -676,8 +676,51 @@ namespace :morphosource do
     end
   end
 
+  desc "Merge duplicate specimens"
+  task :find_and_merge_duplicate_specimens, [:merge] => :environment do |task, args|
+    if args[:merge].present?
+      if args[:merge] == 'true'
+        merge = true
+        report_only = false
+      elsif args[:merge] == 'merge_report_only'
+        merge = true
+        report_only = true
+      else
+        merge = false
+      end
+    else
+      merge = false
+    end
+    ie_total = 0
+    bso_list = []
+    qry = "has_model_ssim:BiologicalSpecimen AND occurrence_id_tesim:[* TO *] AND idigbio_uuid_tesim:[* TO *]"
+    bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
+    grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
+    filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
+    puts "\n#{filtered.count} duplicate groups found"
+    filtered.each do |key, dups|
+      # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
+      sorted_dups = dups.sort_by { |dup| -(dup['related_media_ids_ssim']&.count || 0) }
+      puts "\nDuplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
+      if merge == true
+        delete_dup = (report_only == false)
+        merge_to = sorted_dups.first['id']
+        sorted_dups.drop(1).each do |dup|
+          merge_from = dup['id']
+          media_list, ie_list = Morphosource::MergeBiologicalSpecimenService.call(merge_to, merge_from, delete_dup, report_only)
+          puts " moved media #{media_list} from specimen #{merge_from} to specimen #{merge_to}"
+          ie_total += ie_list.count
+        end
+        puts " duplicate group #{key} merged -> remaining specimen #{merge_to}"
+      end
+    end
+    puts "\nTotal imaging event count: #{ie_total}" if report_only
+  end
+
   desc "Update specimens from IDigbio"
   task :update_bso_from_idigbio, [:update, :project_id] => :environment do |task, args|
+    log_file = 'log/idigbio_update_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
+    log = Logger.new(log_file)
     if args[:update].present? && args[:update] == 'true'
       update = true
     else
@@ -688,21 +731,21 @@ namespace :morphosource do
       project_id = args[:project_id]
       qry = "media_member_of_project_ids_ssim:#{project_id} AND has_model_ssim:BiologicalSpecimen"
       result = ActiveFedora::SolrService.query(qry, rows: 999999)
-      puts "#{result.count} specimens found for #{project_id}..."
+      log.debug "#{result.count} specimens found for #{project_id}..."
       result.each do |hit|
         o = BiologicalSpecimen.find(hit.id)
         if o.present?
-          puts "Updating specimen #{o.id} of project #{project_id} from IDigbio"
-          UpdateBsoFromIdigbioJob.perform_later(o, update, true)
+          log.debug "Updating specimen #{o.id} of project #{project_id} from IDigbio"
+          UpdateBsoFromIdigbioJob.perform_later(o, update, true, log_file)
         else
-          puts "Specimen #{o.id} not found"
+          log.debug "Specimen #{o.id} not found"
         end
       end
     else
       # update all bso
       BiologicalSpecimen.find_each do |o|
-        puts "Updating specimen #{o.id} from IDigbio"
-        UpdateBsoFromIdigbioJob.perform_later(o, update, true)
+        log.debug "Updating specimen #{o.id} from IDigbio"
+        UpdateBsoFromIdigbioJob.perform_later(o, update, true, log_file)
       end
     end
   end

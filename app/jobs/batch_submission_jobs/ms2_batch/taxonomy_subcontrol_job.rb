@@ -15,7 +15,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     end
 
     # Monitor jobs
-    sleep(1.minute) until monitor_works_to_be_created
+    sleep(30.seconds) until monitor_works_to_be_created
 
     # Report errors
     status.update(manifest: @manifest)

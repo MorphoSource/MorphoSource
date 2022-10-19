@@ -153,6 +153,12 @@ module Hyrax
       @fiji_path ||= 'fiji'
     end
 
+    # Custom executable path for running fiji scripts
+    attr_writer :fiji_script_command
+    def fiji_script_command
+      @fiji_script_command ||= nil
+    end
+
     attr_writer :python_path
     def python_path
       @python_path ||= 'python3'
@@ -221,6 +227,13 @@ module Hyrax
     attr_writer :update_fast_queue_name
     def update_fast_queue_name
       @update_fast_queue_name ||= :update_fast
+    end
+
+    # @!attribute [w] update_medium_queue_name
+    #   ActiveJob queue to handle background work or collection update jobs that can be run with medium priority. 
+    attr_writer :update_medium_queue_name
+    def update_medium_queue_name
+      @update_medium_queue_name ||= :update_medium
     end
 
     # @!attribute [w] update_slow_queue_name

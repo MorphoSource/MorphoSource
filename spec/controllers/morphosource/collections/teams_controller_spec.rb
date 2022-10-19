@@ -53,6 +53,22 @@ RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end
+    describe 'data manager' do
+      subject { facet_fields['user_with_ownership_ssi'] }
+      it 'has a data manager facet' do
+        expect(subject.label).to eq("Data Manager")
+        expect(subject.limit).to eq(10)
+        expect(subject.helper_method).to eq(:user_name_by_id)
+      end
+    end
+    describe 'depositor' do
+      subject { facet_fields['depositor_ssim'] }
+      it 'has a depositor facet' do
+        expect(subject.label).to eq("Depositor")
+        expect(subject.limit).to eq(10)
+        expect(subject.helper_method).to eq(:user_name_by_id)
+      end
+    end
   end
 
   describe 'tab' do

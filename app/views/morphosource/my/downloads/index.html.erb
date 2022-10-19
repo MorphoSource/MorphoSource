@@ -22,11 +22,11 @@
     <h1>
       <% if @cart %>
         <span class="fa fa-shopping-cart" aria-hidden="true"></span>
-        Media Cart ( <%= @item_count %> )
+        Media Cart (<%= @item_count %>)
         <%= render 'morphosource/batch_edits/download_all' %>
       <% else %>
         <span class="fa fa-download" aria-hidden="true"></span>
-        Downloads ( <%= @item_count %> )
+        Downloads (<%= @item_count %>)
       <% end %>
     </h1>
   </div>
@@ -34,9 +34,9 @@
 
 <div class="panel-body">
   <h2 class="sr-only">Works listing</h2>
-  <%= render 'morphosource/my/downloads/batch_actions' %>
-  <%= render 'morphosource/my/downloads/document_list' %>
-  <%= render 'morphosource/my/downloads/results_pagination' %>
+  <%= render 'itemtable/batch_actions' %>
+  <%= render 'itemtable/document_list' %>
+  <%= render 'itemtable/results_pagination' %>
 </div>
 
 <%= render 'morphosource/my/modals/page_modal' %>

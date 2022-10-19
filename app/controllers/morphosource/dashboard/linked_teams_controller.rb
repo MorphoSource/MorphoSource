@@ -12,13 +12,13 @@ module Morphosource
         return unless current_user.admin?
 
         error_message = ""
-        if team_has_view_access_to_another_organization? 
-          error_message += @view_access_message 
+        if team_has_view_access_to_another_organization?
+          error_message += @view_access_message
         end
         if team_has_edit_access_to_another_organization?
-          error_message += @edit_access_message 
+          error_message += @edit_access_message
         end
-        
+
         if error_message != ""
           flash[:error] = error_message
         else
@@ -34,14 +34,14 @@ module Morphosource
         ClearOrganizationJob.perform_later(@team.id)
 
         flash[:notice] = 'Clear organization job has been submitted for background processing. Return to team or organization page later.'
-        redirect_back_organization
+        redirect_to team_organization_path(@team), flash: { notice: flash[:notice] }
       end
 
       def update_permissions
         return unless current_user.can?(:edit, @team)
 
         if (
-          params[:organization][:data_manager].present? && 
+          params[:organization][:data_manager].present? &&
           (u = User.find_by_user_key(params[:organization][:data_manager])) &&
           !u.contributor?
         )
@@ -56,7 +56,7 @@ module Morphosource
       def team_has_view_access_to_another_organization?
         @view_access_message = ""
         docs = Morphosource::SolrService.new.get_docs("read_access_group_ssim:#{@team.id}_managers")
-        if docs.count > 0 
+        if docs.count > 0
           media_ids = []
           po_ids = []
           rogue_orgs = []

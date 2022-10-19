@@ -2,7 +2,8 @@ module Hyrax
 
   # Generated controller for Organization
   class OrganizationsController < ApplicationController
-    # Adds Hyrax behaviors to the controller.
+    # Adds Hyrax behaviors to the controller
+    include Morphosource::CurationConcernControllerBehavior
     include Hyrax::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect

@@ -1,0 +1,34 @@
+<% provide :page_title, page_title %>
+
+<nav class="breadcrumb" role="region" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/?locale=en">Home</a></li>
+    <li><a href="/dashboard?locale=en">Dashboard</a></li>
+    <li class="active"><%= page_title %></li>
+  </ol>
+</nav>
+
+
+
+
+<% if @search %>
+  <%= render 'itemtable/search_form' %>
+<% else %>
+  <div class="mb-1">
+    <%= link_to "Search #{page_title.pluralize}", search_path, class: 'btn btn-primary' %>
+    <%= link_to 'Export CSV', main_app.admin_downloads_csv_path, class: 'btn btn-primary' %>
+    <%# link_to 'JSON Format', main_app.fund_code_charges_json_path(start_date: @start_date, end_date: @end_date), class: 'btn btn-primary' %>
+  </div>
+<% end %>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h2 class="panel-title h2"><%= page_title %> (<%= @item_count %>)</h2>
+  </div>
+  <div class="panel-body">
+    <%= render 'itemtable/document_list' %>
+    <div class="showcase">
+      <%= render 'itemtable/results_pagination' %>
+    </div>
+  </div>
+</div>

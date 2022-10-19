@@ -1,7 +1,7 @@
 <% if menu.show_configuration? %>
     <li class="h5"><%= t('hyrax.admin.sidebar.administration') %></li>
     
-    <%= menu.nav_link(main_app.my_downloads_path) do %>
+    <%= menu.nav_link(main_app.admin_downloads_path) do %>
       <span class="fa fa-download" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_downloads') %></span>
     <% end %>
 

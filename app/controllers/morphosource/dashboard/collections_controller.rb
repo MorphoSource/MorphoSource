@@ -88,13 +88,6 @@ module Morphosource
         end
       end
 
-      def create
-        unless current_user.can?(:create_any, Collection)
-          redirect_to root_url, alert: 'You are not authorized to create this collection.' and return
-        end
-        super
-      end
-
       def after_create
         set_default_permissions
         # if we are creating the new collection as a subcollection (via the nested collections controller),
@@ -132,11 +125,19 @@ module Morphosource
           @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
           authorize! :edit, @curation_concern
         else
-          @curation_concern ||= Collection.new
+          @curation_concern ||= collection_class.new
         end
         @collection ||= @curation_concern
         rescue CanCan::AccessDenied
         redirect_to root_url, alert: 'You are not authorized to access this collection.'
+      end
+
+      def collection_class
+        Collection
+      end
+
+      def default_collection_type_gid
+        default_collection_type.gid
       end
 
        def update_thumbnail

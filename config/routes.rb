@@ -63,8 +63,8 @@ Rails.application.routes.draw do
         resources :media, path: "media/:collection_id", only: [:index], controller: 'add_media', as: 'add_media'
         resources :specimens, only: [:index], controller: 'biological_specimens'
         resources :cultural_heritage_objects, only: [:index], controller: 'cultural_heritage_objects'
-        resources :media_lists, only: [:index], controller: 'collections/media_lists'
-        resources :sequential_section_lists, only: [:index], controller: 'collections/media_lists/sequential_section_lists'
+        resources :media_lists, only: [:index, :create], controller: 'collections/media_lists'
+        resources :sequential_section_lists, only: [:index, :create], controller: 'collections/media_lists/sequential_section_lists'
 
         get '/media/facet/:id', to: 'media#facet', as: 'dashboard_media_facet'
         get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
@@ -139,12 +139,14 @@ Rails.application.routes.draw do
       get 'media_lists/:collection_id/facet/:id', to: 'media_lists#facet', as: 'media_list_media_facet'
       get 'media_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'media_list_specimens_facet'
       get 'media_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
+      get 'media_lists/:id/order_media', to: 'media_lists#order_media', as: 'media_list_order_media'
 
       # sequential_section_lists
       scope module: :media_lists do
         get 'sequential_section_lists/:id', to: 'sequential_section_lists#show', as: 'sequential_section_list_media'
         get 'sequential_section_lists/:id/about', to: 'sequential_section_lists#about', as: 'sequential_section_list_about'
         get 'sequential_section_lists/:collection_id/facet/:id', to: 'sequential_section_lists#facet', as: 'sequential_section_list_media_facet'
+        get 'sequential_section_lists/:id/order_media', to: 'sequential_section_lists#order_media', as: 'sequential_section_list_order_media'
       end
       get 'sequential_section_lists/:id/biological_specimens', to: 'biological_specimens#show', as: 'sequential_section_list_specimens'
       get 'sequential_section_lists/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'sequential_section_list_chos'
@@ -618,4 +620,7 @@ Rails.application.routes.draw do
 
   # Team Projects with Media Not Owned by Team Export
   get 'api/projects/:id/view-only-media-projects', to: 'morphosource/collections/teams#media_projects', as: 'api_teams_media_projects', defaults: { format: 'json' }
+
 end
+
+

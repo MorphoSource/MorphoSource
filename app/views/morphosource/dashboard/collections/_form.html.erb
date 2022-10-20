@@ -12,7 +12,7 @@
               <% end %>
 
               <label class="control-label text required" for="collection_visibility">Visibility</label>
-              <%= render 'ms_form_visibility_component_for_collection', f: f %>
+              <%= render 'form_visibility_component_for_collection', f: f %>
             </div>
             <% if f.object.display_additional_fields? %>
               <%= link_to t('hyrax.collection.form.additional_fields'),
@@ -45,13 +45,16 @@
       </div> <!-- end description -->
 
 
-
       <div class="panel-footer">
         <%= f.submit t(:'hyrax.collection.select_form.create'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "create_submit", name: "create_collection" %>
         <% if @collection.team? %>
           <%= link_to t(:'helpers.action.cancel'), main_app.my_teams_path, class: 'btn btn-link' %>
         <% elsif @collection.project? %>
           <%= link_to t(:'helpers.action.cancel'), main_app.my_projects_path, class: 'btn btn-link' %>
+        <% elsif @collection.media_list? %>
+          <%= link_to t(:'helpers.action.cancel'), main_app.my_media_lists_path, class: 'btn btn-link' %>
+        <% elsif @collection.sequential_section_list? %>
+          <%= link_to t(:'helpers.action.cancel'), main_app.my_sequential_section_lists_path, class: 'btn btn-link' %>
         <% end %>
       </div>
     </div> <!-- end tab-content -->

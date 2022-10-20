@@ -33,17 +33,29 @@ module Morphosource
           main_app.project_media_path
         when "morphosource/collections/teams"
           main_app.team_media_path
+        when "morphosource/collections/media_lists"
+          main_app.media_list_media_path
+        when "morphosource/collections/media_lists/sequential_section_lists"
+          main_app.sequential_section_list_media_path
         when "morphosource/collections/biological_specimens"
           if @collection.project?
             main_app.project_specimens_path
           elsif @collection.team?
             main_app.team_specimens_path
+          elsif @collection.media_list?
+            main_app.media_list_specimens_path
+          elsif @collection.sequential_section_list?
+            main_app.sequential_section_list_specimens_path
           end
         when "morphosource/collections/cultural_heritage_objects"
           if @collection.project?
             main_app.project_chos_path
           elsif @collection.team?
             main_app.team_chos_path
+          elsif @collection.media_list?
+            main_app.media_list_chos_path
+          elsif @collection.sequential_section_list?
+            main_app.sequential_section_list_chos_path
           end
         else
           # hyrax/my/works controller and default cases.

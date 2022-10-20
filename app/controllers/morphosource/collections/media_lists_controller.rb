@@ -2,7 +2,9 @@ module Morphosource
   module Collections
     class MediaListsController < Morphosource::CollectionsController
 
-      skip_load_and_authorize_resource only: [:show, :about, :facet], instance_name: :collection
+      include Morphosource::Collections::OrderedMediaBehavior
+
+      skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media], instance_name: :collection
 
       before_action :redirect_to_collection_type, only: []
 
@@ -24,6 +26,26 @@ module Morphosource
         end
       end
       configure_facets
+
+      def body_css_classes
+        if current_ability.can? :edit, @collection
+          "showcase teams media-list edit"
+        else
+          "showcase teams media-list"
+        end
+      end
+
+      def query_solr
+        if @collection.ordered_media.present?
+          response = search_results(params)[0]
+          full_collection_params = params.dup.merge( { page: "1", rows: 999999 } )
+          document_list = search_results(full_collection_params)[1]
+          sorted_document_list = sort_document_list(document_list)
+          [response, sorted_document_list]
+        else
+          search_results(params)
+        end
+      end
 
       private
 

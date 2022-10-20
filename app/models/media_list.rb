@@ -1,4 +1,6 @@
 class MediaList < Collection
+  include Morphosource::MediaListMetadata
+
   after_create :create_collection_groups
 
   def self.collection_type

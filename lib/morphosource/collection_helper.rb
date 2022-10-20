@@ -491,6 +491,22 @@ module Morphosource
       main_app.send("#{collection_type + '_edit_path'}", collection)
     end
 
+    def order_media_path(collection)
+      collection_type = collection.collection_type.machine_id
+      main_app.send("#{collection_type + '_order_media_path'}", collection)
+    end
+
+    def order_media_sort(sort)
+      sort.nil? ? "id,asc" : sort.split.join(',')
+    end
+
+    def order_media_page(page)
+      page.nil? ? "1" : page
+    end
+
+    def order_media_per_page(count)
+      count.nil? ? @blacklight_config.default_solr_params[:rows].to_s : count
+    end
 
   end
 end

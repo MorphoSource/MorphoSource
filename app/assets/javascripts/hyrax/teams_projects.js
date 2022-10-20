@@ -6,8 +6,12 @@ $(document).ready(function() {
 
     if ($('body[class*="teams"]').length) { // check if the page is teams/projects show page
 
-      var mediaTable = createMediaTable('#datatable-media-list');
-      
+      if ($('body[class*="media-list edit"]').length) {
+        var mediaTable = createOrderedMediaTable('#datatable-media-list');
+      } else {
+        var mediaTable = createMediaTable('#datatable-media-list');
+      }
+
       // Toggle the visibility of table column
       $('.choose-columns-media .toggle-vis').on( 'click', function (e) {
         //e.preventDefault();
@@ -63,7 +67,7 @@ $(document).ready(function() {
       document.addEventListener("cho-loaded", function(event) {
         $('span.cho-count').html(' · ' + pluralize('Cultural Heritage Object', $('input[name="cho-count"]').val()));
         $('.tab-cho-count').html($('input[name="cho-count"]').val());
-  
+
         var choTable = createCulturalHeritageObjectTable('#datatable-cho-list');
 
         $('.choose-columns-cho .toggle-vis').on( 'click', function (e) {

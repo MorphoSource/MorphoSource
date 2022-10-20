@@ -163,8 +163,8 @@ module Morphosource
       private
 
         def create_series_collection
-          project_collection_type = Hyrax::CollectionType.where(title: "Sequential Section List").first
-          collection = Collection.create(title: collection_title, collection_type_gid: project_collection_type.gid, depositor: @manager.ms_id, visibility: 'open', related_url: collection_related_url, description: collection_description)
+          collection_type = Hyrax::CollectionType.where(title: "Sequential Section List").first
+          collection = SequentialSectionList.create(title: collection_title, collection_type_gid: collection_type.gid, depositor: @manager.ms_id, visibility: 'open', related_url: collection_related_url, description: collection_description)
           collection.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
           collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX

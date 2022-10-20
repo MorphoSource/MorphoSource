@@ -12,4 +12,9 @@ FactoryBot.define do
     fileset_visibility { [""] }
     fileset_accessibility { ["open"] }
   end
+
+  factory :public_media, class: Media do
+    title { ["public media"] }
+    visibility { 'open' }
+  end
 end

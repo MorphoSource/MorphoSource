@@ -25,17 +25,14 @@ module Morphosource
             end
 
             def collection_params
-              col_params = params.dig(:collection) || params.dig(:sequential_section_list)
-              form_class.model_attributes(col_params)
+              form_class.model_attributes(params[:sequential_section_list])
             end
 
             def member_params
-              params.dig(:collection,:members) ||
-              params.dig(:sequential_section_list,:members)
+              params.dig(:sequential_section_list, :members)
             end
 
             def thumbnail_params
-              params.dig(:collection,:representative_id) ||
               params.dig(:sequential_section_list, :representative_id)
             end
 

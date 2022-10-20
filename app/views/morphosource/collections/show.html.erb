@@ -1,5 +1,5 @@
-
-<% content_for :body_css_classes do %>showcase teams<% end %>
+<% content_for :body_css_classes do %><%= controller.body_css_classes %><% end %>
+<div id="collection-id" style="display: none;"><%= @presenter.id %></div>
 
 <%
 provide :page_title, construct_page_title(@presenter.title)

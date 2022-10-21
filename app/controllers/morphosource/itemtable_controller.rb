@@ -24,8 +24,6 @@ module Morphosource
           prepare_items_for_csv
         end
       end
-
-      render 'itemtable/index'
     end
 
     private

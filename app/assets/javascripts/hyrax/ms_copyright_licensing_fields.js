@@ -56,11 +56,13 @@ $( document ).ready(function() {
           disableLicense(field_prefix, []); // reenable all licenses
           limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
           setCommercialUsePermitted(field_prefix, true, false); // reenable both options
-
-          // Enforce restrictive license behavior, in case this overwrote it
-          licenseChange(field_prefix, false);
         }
         break;
+    }
+
+    if (reset) {
+      // Enforce restrictive license behavior, in case this overwrote it
+      licenseChange(field_prefix, false);
     }
   };
 
@@ -73,21 +75,21 @@ $( document ).ready(function() {
     if ( /\/by-nc/.test(selected_license) ) {
       limitMorphoSourceUseAgreementToStandard(field_prefix, true); // permissive disallowed (due to non-commercial)
       setCommercialUsePermitted(field_prefix, false, false); // only comm_use_not_permitted_allowed
-    }
-    else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == 'http://creativecommons.org/publicdomain/mark/1.0/') || (selected_license == '')) {
+    } else if ((selected_license == 'http://www.morphosource.org/terms/licenseUnknown/') || (selected_license == 'http://creativecommons.org/publicdomain/mark/1.0/') || (selected_license == '')) {
       if (reset) {
         limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
         setCommercialUsePermitted(field_prefix, true, false); // reenable both options
-
-        // Enforce restrictive rights statement behavior, in case this overwrote it
-        rightsStatementChange(field_prefix, false); 
       }
-    }
-    else {
+    } else {
       setCommercialUsePermitted(field_prefix, true, true); // only comm_use_permitted allowed
       if (reset) {
         limitMorphoSourceUseAgreementToStandard(field_prefix, false); // reenable either standard or permissive
       }
+    }
+
+    if (reset) {
+      // Enforce restrictive rights statement behavior, in case this overwrote it
+      rightsStatementChange(field_prefix, false); 
     }
   };
 

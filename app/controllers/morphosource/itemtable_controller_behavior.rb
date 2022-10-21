@@ -78,5 +78,26 @@ module Morphosource
     def row_param
       params[:rows] ||= Hyrax.config.teams_show_work_item_rows
     end
+
+    # Utility method to prepare CartItem records for csv
+    def prepare_cart_items_for_csv
+      @items = @items.map do |item|
+        item.attributes.except('id', 'download_hash', 'in_cart').map do |field, value|
+          if field == 'work_id'
+            field = 'media_id'
+          elsif field == 'user_id' || field == 'action_by'
+            value = User.find_by_user_key(value)&.name_and_email
+          elsif field == 'reviewers'
+            value = (value || []).map { |user_key| User.find_by_user_key(user_key)&.name_and_email } 
+          end
+
+          if value.kind_of? Array
+            value = value.join(';')
+          end
+
+          [field, value]
+        end.to_h
+      end
+    end
   end
 end

@@ -81,7 +81,7 @@ module Morphosource
       end
 
       def prepare_items_for_csv
-        @items = @items.map { |i| i.attributes }
+        prepare_cart_items_for_csv
       end
     end
   end

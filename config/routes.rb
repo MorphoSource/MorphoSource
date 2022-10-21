@@ -403,6 +403,9 @@ Rails.application.routes.draw do
       # all downloads
       get 'admin/downloads', action: :index, controller: :downloads, as: 'admin_downloads'
 
+      # all requests
+      get 'admin/requests', action: :index, controller: :requests, as: 'admin_requests'
+
       # contributor petitions
       get 'admin/contributor_applications', action: :current_applications, controller: :contributor_petitions, as: 'admin_contributor_petitions'
       get 'admin/contributor_applications_previous', action: :previous_applications, controller: :contributor_petitions, as: 'admin_contributor_petitions_previous'

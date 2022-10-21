@@ -20,11 +20,11 @@
   </div>
 <% end %>
 
-<div class="panel panel-default">
+<div class="panel panel-default itemtable <%= controller.controller_name %>">
   <div class="panel-heading">
     <h2 class="panel-title h2"><%= page_title %> (<%= @item_count %>)</h2>
   </div>
-  <div class="panel-body">
+  <div class="panel-body showcase">
     <%= render 'itemtable/document_list' %>
     <div class="showcase">
       <%= render 'itemtable/results_pagination' %>

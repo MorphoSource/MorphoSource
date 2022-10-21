@@ -5,6 +5,10 @@
       <span class="fa fa-download" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_downloads') %></span>
     <% end %>
 
+    <%= menu.nav_link(Rails.application.routes.url_helpers.admin_requests_path) do %>
+      <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_requests') %></span>
+    <% end %>
+
     <%= menu.nav_link(hyrax.dashboard_works_path, also_active_for: hyrax.my_works_path) do %>
       <span class="fa fa-file" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.works') %></span>
     <% end %>

@@ -27,14 +27,25 @@ module Morphosource
       'id DESC'
     end
 
+    def user_key_params
+      ['user_id']
+    end
+
     def split_filter_user_keys
-      if params.dig(:filter_items, :user_id).present? 
-        params[:filter_items][:user_id] = params[:filter_items][:user_id].split(',')
+      user_key_params.each do |user_key_param|
+        if params.dig(:filter_items, user_key_param).present? 
+          params[:filter_items][user_key_param] = params[:filter_items][user_key_param].split(',')
+        end
       end
     end
 
     def filter_items
       (params[:filter_items] || []).each do |attribute, value|
+        if value.kind_of?(Array)
+          value = value.compact.map(&:strip)
+        else
+          value = value.strip
+        end
         next unless valid_filter_attributes.include?(attribute) && value.present?
         instance_variable_set("@#{attribute}", value)
         if filter_attribute_where_statements.key?(attribute)

@@ -145,6 +145,7 @@ en:
         projects: 'Projects'
         works: 'All Works'
         all_downloads: 'All Downloads'
+        all_requests: 'All Requests'
     account_name:           "My Organization Account Id"
     directory:
       suffix:               "@example.org"

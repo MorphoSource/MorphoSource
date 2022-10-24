@@ -13,7 +13,8 @@ services:
     tty: true
     user: app
     env_file:
-      - docker-compose.env
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
     depends_on:
       - db_migrate
       - fcrepo
@@ -37,10 +38,11 @@ services:
       context: .
       target: msworker
     container_name: app_worker
-    command: sh -c 'bundle && COUNT=$RESQUE_WORKER_COUNT QUEUE=* bundle exec rails resque:workers'
+    command: sh -c 'bundle && QUEUE=* bundle exec rails resque:workers'
     user: app
     env_file:
-      - docker-compose.env
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
     depends_on:
       - db_migrate
       - fcrepo
@@ -65,8 +67,9 @@ services:
     command: sh -c 'rm -rf /app/samvera/hyrax-webapp/tmp/* && bundle && bundle exec rake hydra:test_server'
     user: app
     env_file:
-      - docker-compose.env
-      - docker-compose-test.env
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
+      - ./vendor/docker/docker-compose-test.env
     depends_on:
       - db_migrate
       - memcached
@@ -92,7 +95,8 @@ services:
     container_name: db_migrate
     user: app
     env_file:
-      - docker-compose.env
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
     command: sh -c 'bundle && db-migrate-seed.sh'
     depends_on:
       - postgres
@@ -108,12 +112,9 @@ services:
   postgres:
     image: postgres:latest
     container_name: postgres
-    restart: always
-    environment:
-      - POSTGRES_USER=$DB_USERNAME
-      - POSTGRES_PASSWORD=$DB_PASSWORD
-      - POSTGRES_DB=$DB_NAME
-      - POSTGRES_HOST_AUTH_METHOD=trust
+    env_file:
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
     # ports:
     #  - "5432:5432"
     volumes:
@@ -160,6 +161,23 @@ services:
     volumes:
       - solr_home:/opt/solr/server/solr/mycores
       - ./solr/config:/core_config/conf
+    networks:
+      - morphosource
+
+  apache: # Currently non-functional on Apple Silicon Macs
+    image: 'bitnami/apache:latest'
+    container_name: apache
+    user: root
+    ports:
+      - '80:80'
+      - '443:443'
+    env_file:
+      - ./vendor/docker/docker-compose.env
+    profiles:
+      - apache
+    volumes:
+    - ./vendor/docker/apache/vhost.conf:/vhosts/vhost.conf:ro
+    # - ./vendor/docker/apache/certs:/certs
     networks:
       - morphosource
 

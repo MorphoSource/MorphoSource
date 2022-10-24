@@ -61,17 +61,55 @@ module Morphosource
       end
     end
 
-    def create_downloaded_item(work_id)
+    # Find a previously downloaded CartItem where user can still download the work
+    def find_downloaded_downloadable_item(work_id, download_hash)
+      cart_items.where(work_id: work_id, download_hash: download_hash)
+        .where.not(date_downloaded: nil)
+        .find { |item| item.downloadable? }
+    end
+
+    # Find an undownloaded but approved active request CartItem
+    def find_undownloaded_approved_request_item(work_id)
+      cart_items.where(work_id: work_id, download_hash: nil, date_downloaded: nil)
+        .find { |item| item.approved? }
+    end
+
+    # Find an undownloaded but downloadable Cart Item, e.g. media in cart
+    def find_undownloaded_downloadable_item(work_id)
+      cart_items.where(work_id: work_id, download_hash: nil, date_downloaded: nil)
+        .find { |item| item.downloadable? }
+    end
+
+    # Add a first download event with download hash to a CartItem
+    def add_first_download(item, download_hash)
+      item.update_attributes(
+        date_downloaded: Time.now, 
+        download_attempts: 1,
+        download_hash: download_hash,
+        download_usage: usage, 
+        download_usage_list: usage_list, 
+      ) if item.present?
+    end
+
+    # Add a subsequent (non-first) download event to a CartItem
+    def add_subsequent_download(item)
+      item.update_attributes(
+        date_downloaded: Time.now, 
+        download_attempts: (item.download_attempts || 0) + 1,
+      ) if item.present?
+    end
+
+    # Create a downloaded CartItem for work
+    def create_downloaded_item(work_id, download_hash)
       item = create_cart_item(work_id)
-      item.update_attributes(in_cart: false, date_downloaded: Time.now, download_usage: usage, download_usage_list: usage_list) if item.present?
-    end
-
-    def downloadable_item_for_work?(work_id)
-      cart_items.where(work_id: work_id).find{|item| item.downloadable? }.present?
-    end
-
-    def find_downloadable_item(work_id)
-      cart_items.where(work_id: work_id).find{|item| item.downloadable? }
+      item.update_attributes(
+        in_cart: false, 
+        date_downloaded: Time.now, 
+        download_attempts: 1,
+        download_hash: download_hash,
+        download_usage: usage, 
+        download_usage_list: usage_list, 
+      ) if item.present?
     end
 
     def create_cart_item(work_id)

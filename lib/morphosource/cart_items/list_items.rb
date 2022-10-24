@@ -20,9 +20,6 @@ module Morphosource
         when 'previous'
           cart_items = previously_requested_items
           @item_count = count_text(cart_items.count)
-        when 'downloads'
-          cart_items = downloaded_items(page_from_params, rows_from_params)
-          @item_count = count_text(cart_items.total_count)
         end
         return cart_items 
       end

@@ -184,7 +184,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def ingest
-    render 'ingest_started'
+     redirect_to ({:action=>'index'}), :notice => "Your submission job has started.  You can check the job status below."
   end
   
   def start_ingest_job

@@ -2,23 +2,6 @@
 
 It's possible to deploy MorphoSource either as a local development environment or as a single-server instance using Docker containers and Docker Compose. This readme will detail the various options available to do so.
 
-## Getting Started
-
-To get up and running with the simplest version of the Docker Compose deployment, run
-
-```
-docker-compose --env-file docker-compose.env build
-docker-compose --env-file docker-compose.env up
-```
-
-Building containers may take a while due to installing Ruby gems and precompiling assets. When the containers are fully up and the container db_migrate has successfully finished seeding the database, you will be able to access the various services:
-
-* MorphoSource web application: http://localhost:3000
-* Solr: http://localhost:8983
-* Fedora: http://localhost:8080
-
-**Warning!** If you follow these steps and do nothing further, deployment will proceed successfully and you will be able to access MorphoSource, but you'll get errors on media pages related to not having a Recaptcha key. Read on for the full prerequisites, how to customize the deployment configuration, and the various deployment options available (including reverse proxy web server and/or HTTPS/SSL).
-
 ### Prerequisities
 
 In order to deploy MorphoSource you'll need Docker and Docker Compose installed.
@@ -27,35 +10,80 @@ In order to deploy MorphoSource you'll need Docker and Docker Compose installed.
 * [OS X](https://docs.docker.com/mac/started/)
 * [Linux](https://docs.docker.com/linux/started/)
 
+You'll also need to set up `credentials.env`, and can optionally customize configuration options in `docker-compose.env`. Read on for details.
+
+### Credentials
+
+In the `vendor/docker` directory, there is a `credentials.env-example` file. Copy this file and rename it `credentials.env`. Your `vendor/docker/credentials.env` should look like this: 
+
+```
+# Postgres DB user and pass
+DB_USERNAME=
+DB_PASSWORD=
+
+# Fedora user and pass
+FCREPO_USERNAME=
+FCREPO_PASSWORD=
+
+# Initial MorphoSource user, will be granted admin access
+MS_INIT_USR=
+MS_INIT_PW=
+
+# Recaptcha keys, necessary for downloading
+RECAPTCHA_SITE_KEY=
+RECAPTCHA_SECRET_KEY=
+```
+
+All of these fields should be completed to provide basic authentication credentials for your instance. Since the Docker instance will be creating a Postgres database, a Fedora/FCRepo repository, and the MorphoSource web application, the various usernames and passwords can be anything you choose. The `MS_INIT_USR` should be in the format of an email address, but even a fake email like `admin@email.com` can work. 
+
 You'll also need to create Recaptcha keys for your server hostname. Julie can provide Recaptcha keys for "localhost" dev environments to MorphoSource team members. We are working to make this optional and not mandatory for MorphoSource in the near future, but for the moment it is required.
 
-Finally, see the **Environment Variables** section for required and recommended customizations to `docker-compose.env`.
+### Environment Variables
+
+Optional configuration options can be found in `vendor/docker/docker-compose.env`. The fields most relevant are those that allow you to customize the setup of the MorphoSource instance at the top of the file:
+
+```
+# Site settings
+HOST_NAME=localhost
+SITE_TITLE="3D Data Repository"
+
+# For custom logo image, place image in public/ and label with leading slash, e.g. "/image.png"
+LOGO_IMAGE=
+
+# Number of Resque background workers
+COUNT=2
+```
+
+* `HOST_NAME` - Defines the server/site host name (`www.morphosource.org`)
+* `SITE_TITLE` - Short title for the repository instance, with double quotes if using spaces (`MorphoSource`)
+* `LOGO_IMAGE` - Custom logo image for server. Best to place the image in /public and list with leading slash (`/image.png`)
+* `COUNT` - This is the number of background Resque job workers. If increased, media contributions and other record creation and update will process more quickly, but perhaps unsurprisingly, this requires more powerful server hardware.
 
 ### Usage
 
-There are two Docker Compose files that can be used to deploy MorphoSource, `docker-compose.yml` and `docker-compose-apache.yml`. The first of these deploys MorphoSource as described in the **Getting Started** section - important MorphoSource stack services have their ports open to the host, and can be accessed from the relevant host ports. The main web app can be accessed at http://<host_name>:3000, Solr at http://<host_name>:8983, Fedora at http://<host_name>:8080, etc. The Apache Docker Compose file adds an Apache reverse proxy web server container to this arrangement and prevents services from exposing their own ports. Instead, the main web app is accessed at http://<host_name>, Solr is accessed at http://<host_name>/solr, and Fedora is accessed at http://<host_name>/fcrepo. This Apache server can also be used to deploy MorphoSource with HTTPS/SSL, if you have certificates pre-configured for your host server (see below for more details on this).
-
-#### Container Parameters
-
-Build and run basic deployment configuration
+The basic deployment profile will set up the MorphoSource web application to be accessible at port 3000, e.g. http://localhost:3000 if `HOST_NAME` is left to the default `localhost` value. You can also modify `docker-compose.yml` to open up ports to directly access the Solr and FCRepo admin consoles at ports 8983 and 8080 respectively by uncommenting the relevant lines.
 
 ```
-docker-compose --env-file docker-compose.env build
-docker-compose --env-file docker-compose.env up
+docker-compose up -d # Start containers
+docker-compose down  # Stop and remove containers
 ```
 
-Build and run Apache-based deployment configuration
+There is also a deployment profile that uses an Apache reverse proxy to expose services using URL endpoints, which most closely matches the production deployment used by MorphoSource.org. In this profile, the main web app is accessed at http://<host_name>, Solr is accessed at http://<host_name>/solr, and Fedora is accessed at http://<host_name>/fcrepo. By default, the main web app is also still accessible at http://<host_name>:3000, and you should probably comment this out in `docker-compose.yml` if using the Apache profile. The Apache server can also be used to deploy MorphoSource with HTTPS/SSL, if you have certificates pre-configured for your host server (see below). Note: This profile is not currently functional for Macs using Apple Silicon, and is best suited for Linux deployments.
 
 ```
-docker-compose --env-file docker-compose.env -f docker-compose-apache.yml build
-docker-compose --env-file docker-compose.env -f docker-compose-apache.yml up
+docker-compose --profile apache up -d # Start containers
+docker-compose --profile apache down  # Stop and remove containers
 ```
 
-Attach to main app container with a shell and run Rails console
+There is also a test profile used to run automated tests when doing development on the MorphoSource application. If you're doing development on MorphoSource using Docker, there is a separate documentation file with specific guides and tips for this purpose.
+
+Finally, accessing the interactive Rails console (for technical site administration) is straightforward:
+
 ```
-docker exec -it morphosource_sf_app_1 /bin/bash
+docker exec -it app /bin/bash
 bundle exec rails c
 ```
+
 #### Containers
 
 * `app` - Main web app container. Should be attached to in order to use Rails console.
@@ -69,22 +97,6 @@ bundle exec rails c
 * `redis`
 * `apache`
 
-#### Environment Variables
-
-All relevant and customizable environment variables are included in the file `docker-compose.env`, you should read over this file and familiarize yourself with it. Because this file is not called `.env` (in order to avoid problematic interactions with Rails and other packages), Docker and Docker Compose will not read it by default, and Docker executables must be informed how to locate this environment file with the command line option `--env-file docker-compose.env`.
-
-You have to provide values for the following fields related to Recaptcha keys:
-
-* `RECAPTCHA_SITE_KEY`
-* `RECAPTCHA_SECRET_KEY`
-
-You can optionally provide customized values for the following fields, and if you're deploying to a remote server, you should probably customize all of them:
-
-* `HOST_NAME` - Defines the server/site host name (`www.morphosource.org`)
-* `SITE_TITLE` - Short title for the repository instance, with double quotes if using spaces (`MorphoSource`)
-* `LOGO_IMAGE` - Custom logo image for server. Best to place the image in /public and list with leading slash (`/image.png`)
-* Username and password fields for initial MorphoSource admin user, Postgres DB user, and Fedora admin user
-
 #### Volumes
 
 While a number of volumes will be created, most will not be synced with locations on your file system. This lists only synced locations.
@@ -93,14 +105,14 @@ While a number of volumes will be created, most will not be synced with location
 * `./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml` - Fedora config XML
 * `./solr/config:/core_config/conf` - Solr config files
 
-If using `docker-compose-apache.yml`, there will be one or two additional synced volumes (1 for HTTP, 2 for HTTPS).
+If using the Apache profile, there will be one or two additional synced volumes (1 for HTTP, 2 for HTTPS).
 
 * `./vendor/docker/apache/vhost.conf:/vhosts/vhost.conf:ro` - Apache virtual host
 * `./vendor/docker/apache/certs:/certs` - Optional SSL certs, must be named server.crt and server.key
 
 #### Configuring HTTPS/SSL
 
-To configure HTTPS with `docker-compose-apache.yml`, there are a few configuration steps that must be followed. This assumes that you already have SSL certificate and private key files pre-configured for your host.
+To configure HTTPS with the Apache profile, there are a few configuration steps that must be followed. This assumes that you already have SSL certificate and private key files pre-configured for your host.
 
 1. Copy your SSL cert files to the following location. Please note they must be renamed to `server.crt` and `server.key`
 
@@ -109,17 +121,20 @@ cp path\to\your\certfile path\to\MorphoSource_SF\vendor\docker\apache\certs\serv
 cp path\to\your\keyfile  path\to\MorphoSource_SF\vendor\docker\apache\certs\server.key
 ```
 
-2. In `docker-compose-apache.yml` for the `apache` service, uncomment the certs volume and change the virtual host config file reference from `vhost.conf` to `ssl-vhost.conf`. Your service definition should look like the following example.
+2. In `docker-compose.yml` for the `apache` service, uncomment the certs volume and change the virtual host config file reference from `vhost.conf` to `ssl-vhost.conf`. Your service definition should look like the following example.
 
 ```
  apache:
     image: 'bitnami/apache:latest'
+    container_name: apache
     user: root
     ports:
       - '80:80'
       - '443:443'
     env_file:
-      - docker-compose.env
+      - ./vendor/docker/docker-compose.env
+    profiles:
+      - apache
     volumes:
     - ./vendor/docker/apache/ssl-vhost.conf:/vhosts/vhost.conf:ro
     - ./vendor/docker/apache/certs:/certs

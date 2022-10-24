@@ -10,6 +10,16 @@ $( document ).ready(function() {
     localStorage.removeItem("batchSubmissionFormData");
   }
 
+  if ($('body[class*="batch-submission-proceed"]').length) { 
+    $('#form-proceed').submit(function() {
+      // remove the ready-to-proceed page from history to prevent duplicate submissions
+      window.history.pushState(null, "", window.location.href);        
+      window.onpopstate = function() {
+        window.history.pushState(null, "", window.location.href);
+      };
+    });
+  }
+
   if ($('[class*="batch-submission-form"]').length) { // check if the page is batch submission form
 
     class RestoreableSubmissionForm extends SubmissionForm {
@@ -104,6 +114,11 @@ $( document ).ready(function() {
 
           let obj = {data: formData, timestamp: new Date().getTime()}
           localStorage.setItem("batchSubmissionFormData", JSON.stringify(obj));
+          // re-enable the disabled fields so they will get included in the form submit
+          disablePage();
+          $('#media-ownership-fields input,select,textarea')
+            .not('select#media_transfer_management')
+            .prop('disabled', false);
         });
 
         self.form.find('#start-over').click(function(){

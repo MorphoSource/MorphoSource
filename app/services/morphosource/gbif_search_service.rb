@@ -51,6 +51,32 @@ module Morphosource
       return taxonomy_params
     end
 
+    # Search for GBIF taxonomy by taxonomy terms
+    def self.taxonomy_params_from_gbif_by_terms(terms={})
+      name = ''
+      if terms['taxonomy_genus'].present? && terms['taxonomy_species'].present? && terms['taxonomy_subspecies'].present?
+        name = terms.slice('taxonomy_genus', 'taxonomy_species', 'taxonomy_subspecies').values.join(' ')
+      elsif terms['taxonomy_genus'].present? && terms['taxonomy_species'].present?
+        name = terms.slice('taxonomy_genus', 'taxonomy_species').values.join(' ')
+      else
+        higher_terms = ['taxonomy_genus', 'taxonomy_family', 'taxonomy_order', 'taxonomy_class', 'taxonomy_phylum', 'taxonomy_kingdom']
+        lowest_high_term = terms.slice(*higher_terms).select { |k, v| v.present? }.values.first
+        name = lowest_high_term if lowest_high_term.present?
+      end
+      if name.present?
+        gbif_result = self.call({'name' => name})&.first
+      else
+        return {}
+      end
+
+      return {} if !gbif_result.present?
+
+      # Create params from call result
+      gbif_result
+        .slice(*(GBIF_HIGHER_TAXONOMY_MAPPING.values.map(&:to_sym) + [:taxonomy_species, :taxonomy_subspecies]))
+        .transform_keys(&:to_s)
+    end
+
     def initialize(params={})
       @params = params
     end

@@ -8,8 +8,8 @@ RSpec.describe 'BSO page routing', type: :routing do
   end
 
   it 'has a route search_idigbio_by_occurrence_id_ajax' do
-    route = { controller: 'morphosource/i_dig_bio_search', action: 'search_idigbio_by_occurrence_id_ajax', oid: 'foobar'}
-    expect(:get => 'search_idigbio_by_occurrence_id_ajax/foobar').to route_to(route)
+    route = { controller: 'morphosource/i_dig_bio_search', action: 'search_idigbio_by_occurrence_id_ajax'}
+    expect(:post => 'search_idigbio_by_occurrence_id_ajax').to route_to(route)
   end
 
 end

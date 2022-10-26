@@ -17,7 +17,7 @@ module Morphosource
       end
 
       def valid_sort_attributes
-        ['date_downloaded', 'work_id', 'users.display_name']
+        ['date_downloaded', 'work_id', 'users.display_name', 'download_usage', 'download_usage_list']
       end
 
       def default_sort_param

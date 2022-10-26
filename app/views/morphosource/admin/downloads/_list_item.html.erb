@@ -12,7 +12,7 @@
       </div>
     </td>
     <td>
-      <%= link_to [main_app, document], id: "src_copy_link#{document.id}", class: 'document-title' do %>
+      <%= link_to [main_app, document], id: "src_copy_link#{document.id}" do %>
         <%= document.id %>
       <% end %>
     </td>
@@ -21,6 +21,8 @@
     <td><i><%= document["taxonomy_ssim"]&.first %></i></td>
     <td><%= document["human_readable_media_type_tesim"]&.first %></td>
     <td><%= link_to item.user.name_and_email, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
+    <td><%= item.download_usage %></td>
+    <td><%= item.download_usage_list %></td>
     <td class="date"><%= date(item,'downloaded') %></td>
   </tr>
 <% end %>

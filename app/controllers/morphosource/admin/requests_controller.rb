@@ -27,7 +27,8 @@ module Morphosource
           'date_canceled',
           'date_expired',
           'date_cleared',
-          'date_downloaded'
+          'date_downloaded',
+          'use'
         ]
       end
 

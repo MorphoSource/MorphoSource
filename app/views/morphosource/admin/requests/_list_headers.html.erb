@@ -4,9 +4,10 @@
 <th>Object</th>
 <th>Taxonomy</th>
 <th>Type</th>
-<th>Status</th>
 <th><%= sortable_itemtable_header("Requester", 'users.display_name', 'asc') %></th>
+<th><%= sortable_itemtable_header("Request Text", 'use', 'asc') %></th>
 <th><%= sortable_itemtable_header("Review", 'reviewers', 'asc') %></th>
+<th>Status</th>
 <th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_requested"), 'date_requested', 'desc') %></th>
 <th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_approved"), 'date_approved', 'desc') %></th>
 <th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_denied"), 'date_denied', 'desc') %></th>

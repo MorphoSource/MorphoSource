@@ -1,8 +1,10 @@
 <th>&nbsp;<!-- thumbnail column --></th>
-<th><%= sortable_itemtable_header("Media ID", 'work_id', 'desc') %></th>
+<th><%= sortable_itemtable_header("ID", 'work_id', 'desc') %></th>
 <th>Part</th>
 <th>Object</th>
 <th>Taxonomy</th>
 <th>Type</th>
 <th><%= sortable_itemtable_header("Download User", 'users.display_name', 'asc') %></th>
+<th><%= sortable_itemtable_header("Use Text", 'download_usage', 'asc') %></th>
+<th><%= sortable_itemtable_header("Use List", 'download_usage_list', 'asc') %></th>
 <th style="width: 15%;"><%= sortable_itemtable_header(t("morphosource.dashboard.my.heading.date_downloaded"), 'date_downloaded', 'desc') %></th>

@@ -23,15 +23,15 @@
     <td><i><%= document["taxonomy_ssim"]&.first %></i></td>
     <td><%= document["human_readable_media_type_tesim"]&.first %></td>
 
-    <td><%= item_status_label(item) %></td>
-
     <td><%= link_to item.user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
+    <td><%= item.use %></td>
     <td>
       <% reviewers.each do |reviewer| %>
         <%= link_to reviewer.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(reviewer) %>
       <% end %>
     </td>
     
+    <td><%= item_status_label(item) %></td>
     <td class="date"><%= date(item,'requested') %></td>
     <td class="date"><%= date(item,'approved') %></td>
     <td class="date"><%= date(item,'denied') %></td>

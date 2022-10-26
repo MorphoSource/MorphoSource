@@ -233,8 +233,9 @@ $( document ).ready(function() {
 
     function search_idigbio(occurrence_id) {
       $.ajax({
-        url: '/search_idigbio_by_occurrence_id_ajax/' + occurrence_id,
-        type: 'GET',
+        url: '/search_idigbio_by_occurrence_id_ajax',
+        type: 'POST',
+        data: {"oid": occurrence_id}, 
         dataType: 'json',
         timeout: 5000,
         complete: function(xhr, status) {

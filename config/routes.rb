@@ -506,7 +506,7 @@ Rails.application.routes.draw do
   get 'fund_code_charges.csv', to: 'fund_code_charges#index', as: 'fund_code_charges_csv', defaults: { format: 'csv' }
   get 'fund_code_charges.json', to: 'fund_code_charges#index', as: 'fund_code_charges_json', defaults: { format: 'json' }
 
-  get 'search_idigbio_by_occurrence_id_ajax/:oid', to: 'morphosource/i_dig_bio_search#search_idigbio_by_occurrence_id_ajax'
+  post 'search_idigbio_by_occurrence_id_ajax', to: 'morphosource/i_dig_bio_search#search_idigbio_by_occurrence_id_ajax'
 
   ### REST API routes ###
 

@@ -1,0 +1,16 @@
+<th>&nbsp;<!-- thumbnail column --></th>
+<th><%= sortable_itemtable_header("ID", 'work_id', 'desc') %></th>
+<th>Part</th>
+<th>Object</th>
+<th>Taxonomy</th>
+<th>Type</th>
+<th>Status</th>
+<th><%= sortable_itemtable_header("Requester", 'users.display_name', 'asc') %></th>
+<th><%= sortable_itemtable_header("Review", 'reviewers', 'asc') %></th>
+<th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_requested"), 'date_requested', 'desc') %></th>
+<th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_approved"), 'date_approved', 'desc') %></th>
+<th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_denied"), 'date_denied', 'desc') %></th>
+<th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_canceled"), 'date_canceled', 'desc') %></th>
+<th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_expired"), 'date_expired', 'desc') %></th>
+<th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_cleared"), 'date_cleared', 'desc') %></th>
+<th class="date-column"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_downloaded"), 'date_downloaded', 'desc') %></th>

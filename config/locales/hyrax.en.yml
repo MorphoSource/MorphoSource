@@ -143,7 +143,9 @@ en:
       sidebar:
         teams: 'Teams'
         projects: 'Projects'
-        works: 'All Works (Admin)'
+        works: 'All Works'
+        all_downloads: 'All Downloads'
+        all_requests: 'All Requests'
     account_name:           "My Organization Account Id"
     directory:
       suffix:               "@example.org"

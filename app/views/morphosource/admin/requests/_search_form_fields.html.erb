@@ -1,0 +1,17 @@
+<%= f.input :work_id, label: "Media ID", :input_html => {value: @work_id }, required: false %>
+
+<%= f.input :user_id, label: "Request User (For Multiple, Will Match Any)", input_html: { data: { user: format_users_select2(@user_id) } }, required: false %>
+
+<%= f.input :reviewers, label: "Reviewer User(s) (For Multiple, Will Match Entire Group)", input_html: { data: { user: format_users_select2(@reviewers) } }, required: false %>
+
+<% [ 'date_requested', 'date_approved','date_denied','date_canceled','date_expired','date_cleared', 'date_downloaded'].each do |attr| %>
+  <%= render partial: 'search_form_field_date_range', locals: { f: f, attr: attr } %>
+<% end %>
+
+
+<script>
+  $( document ).ready(function() {
+    $('#filter_items_user_id').userSearchMultiple($('#filter_items_user_id').data('user'));
+    $('#filter_items_reviewers').userSearchMultiple($('#filter_items_reviewers').data('user'));
+  });
+</script>

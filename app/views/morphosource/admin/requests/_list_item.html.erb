@@ -1,0 +1,44 @@
+<%# Was previously called _list_works.html.erb %>
+
+<% document = solr_doc_find(item.work_id) %>
+<% reviewers = item.reviewers.map { |user_key| User.find_by_user_key(user_key) }.compact %>
+
+<% if document.present? %>
+  <tr id="document_<%= document.id %>">
+    <td class="media-thumbnail-column">
+      <div>
+        <%= link_to [main_app, document], class: 'media-left', 'aria-hidden' => true do %>
+          <%= render_thumbnail_tag document, { class: 'hidden-xs file_listing_thumbnail' }, { suppress_link: true } %>
+        <% end %> 
+      </div>
+    </td>
+    <td>
+      <%= link_to [main_app, document], id: "src_copy_link#{document.id}" do %>
+        <%= document.id %>
+      <% end %>
+    </td>
+
+    <td><%= document.part&.first %></td>
+    <td class="break-all"><%= document["physical_object_title_ssim"]&.first %></td>
+    <td><i><%= document["taxonomy_ssim"]&.first %></i></td>
+    <td><%= document["human_readable_media_type_tesim"]&.first %></td>
+
+    <td><%= item_status_label(item) %></td>
+
+    <td><%= link_to item.user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
+    <td>
+      <% reviewers.each do |reviewer| %>
+        <%= link_to reviewer.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(reviewer) %>
+      <% end %>
+    </td>
+    
+    <td class="date"><%= date(item,'requested') %></td>
+    <td class="date"><%= date(item,'approved') %></td>
+    <td class="date"><%= date(item,'denied') %></td>
+    <td class="date"><%= date(item,'canceled') %></td>
+    <td class="date"><%= date(item,'expired') %></td>
+    <td class="date"><%= date(item,'cleared') %></td>
+    <td class="date"><%= date(item,'downloaded') %></td>
+    
+  </tr>
+<% end %>

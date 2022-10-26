@@ -1,30 +1,19 @@
-  <li class="h5"><%= t('hyrax.admin.sidebar.repository_objects') %></li>
+<li class="h5"><%= t('hyrax.admin.sidebar.repository_objects') %></li>
 
-  <%= menu.nav_link(Rails.application.routes.url_helpers.my_projects_path) do %>
-    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.projects') %></span>
-  <% end %>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_projects_path) do %>
+  <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.projects') %></span>
+<% end %>
 
-  <%= menu.nav_link(Rails.application.routes.url_helpers.my_teams_path) do %>
-    <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.teams') %></span>
-  <% end %>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_teams_path) do %>
+  <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.teams') %></span>
+<% end %>
 
-  <%= menu.nav_link(Rails.application.routes.url_helpers.my_media_index_path) do %>
-    <span class="fa fa-cube" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media_and_objects') %></span>
-  <% end %>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_media_index_path) do %>
+  <span class="fa fa-cube" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media_and_objects') %></span>
+<% end %>
 
-  <%#= menu.nav_link(hyrax.my_collections_path,
-                    also_active_for: hyrax.dashboard_collections_path) do % >
-    <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.collections') % ></span>
-  <%# end %>
-  <% if current_user.admin? %>
-    <%= menu.nav_link(hyrax.dashboard_works_path,
-                      also_active_for: hyrax.my_works_path) do %>
-      <span class="fa fa-file" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.works') %></span>
-    <% end %>
+<% if current_user.batch_submission_contributor? %>
+  <%= menu.nav_link(main_app.batch_submissions_path) do %>
+    <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
   <% end %>
-
-  <% if current_user.batch_submission_contributor? %>
-    <%= menu.nav_link(main_app.batch_submissions_path) do %>
-      <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
-    <% end %>
-  <% end %>
+<% end %>

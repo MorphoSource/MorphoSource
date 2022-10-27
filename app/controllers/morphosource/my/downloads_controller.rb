@@ -8,7 +8,7 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items, only: :index
-      before_action :paginate_and_sort_items, only: :index
+      before_action :paginate_items, only: [:index]
 
       def index
         @item_count = count_text(@items.total_count)

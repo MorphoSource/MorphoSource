@@ -400,6 +400,12 @@ Rails.application.routes.draw do
     end
 
     scope module: :admin do
+      # all downloads
+      get 'admin/downloads', action: :index, controller: :downloads, as: 'admin_downloads'
+
+      # all requests
+      get 'admin/requests', action: :index, controller: :requests, as: 'admin_requests'
+
       # contributor petitions
       get 'admin/contributor_applications', action: :current_applications, controller: :contributor_petitions, as: 'admin_contributor_petitions'
       get 'admin/contributor_applications_previous', action: :previous_applications, controller: :contributor_petitions, as: 'admin_contributor_petitions_previous'
@@ -506,7 +512,7 @@ Rails.application.routes.draw do
   get 'fund_code_charges.csv', to: 'fund_code_charges#index', as: 'fund_code_charges_csv', defaults: { format: 'csv' }
   get 'fund_code_charges.json', to: 'fund_code_charges#index', as: 'fund_code_charges_json', defaults: { format: 'json' }
 
-  get 'search_idigbio_by_occurrence_id_ajax/:oid', to: 'morphosource/i_dig_bio_search#search_idigbio_by_occurrence_id_ajax'
+  post 'search_idigbio_by_occurrence_id_ajax', to: 'morphosource/i_dig_bio_search#search_idigbio_by_occurrence_id_ajax'
 
   ### REST API routes ###
 

@@ -1,18 +1,6 @@
 # Methods to quickly bootstrap controllers that use JS datatable to list Rails DB objects
 module Morphosource
   module ItemtableControllerBehavior
-    def paginate_and_sort_items
-      @items = @items.page(page_param).per(row_param)
-    end
-
-    def page_param
-      params[:page] ||= 1
-    end
-
-    def row_param
-      params[:rows] ||= Hyrax.config.teams_show_work_item_rows
-    end
-
     def sort_param
       if params[:sort].present?
         sort_attribute, order = params[:sort].split(' ')
@@ -29,12 +17,87 @@ module Morphosource
       end
     end
 
+    # Override this in controller to provide additional valid attributes
     def valid_sort_attributes
       ['id']
     end
 
+    # Override this in controller to provide different default sort
     def default_sort_param
       'id DESC'
+    end
+
+    def user_key_params
+      ['user_id']
+    end
+
+    def split_filter_user_keys
+      user_key_params.each do |user_key_param|
+        if params.dig(:filter_items, user_key_param).present? 
+          params[:filter_items][user_key_param] = params[:filter_items][user_key_param].split(',')
+        end
+      end
+    end
+
+    def filter_items
+      (params[:filter_items] || []).each do |attribute, value|
+        if value.kind_of?(Array)
+          value = value.compact.map(&:strip)
+        else
+          value = value.strip
+        end
+        next unless valid_filter_attributes.include?(attribute) && value.present?
+        instance_variable_set("@#{attribute}", value)
+        if filter_attribute_where_statements.key?(attribute)
+          @items = @items.where(filter_attribute_where_statements[attribute], value)
+        else
+          @items = @items.where(attribute => value)
+        end
+      end
+    end
+
+    # Override this in controller to provide valid attributes
+    def valid_filter_attributes
+      []
+    end
+
+    # Override this in controller to provide custom where formula statements for attribute values
+    def filter_attribute_where_statements
+      {}
+    end
+
+    def paginate_items
+      return if request.format == 'csv'
+      @items = @items.page(page_param).per(row_param)
+    end
+
+    def page_param
+      params[:page] ||= 1
+    end
+
+    def row_param
+      params[:rows] ||= Hyrax.config.teams_show_work_item_rows
+    end
+
+    # Utility method to prepare CartItem records for csv
+    def prepare_cart_items_for_csv
+      @items = @items.map do |item|
+        item.attributes.except('id', 'download_hash', 'in_cart').map do |field, value|
+          if field == 'work_id'
+            field = 'media_id'
+          elsif field == 'user_id' || field == 'action_by'
+            value = User.find_by_user_key(value)&.name_and_email
+          elsif field == 'reviewers'
+            value = (value || []).map { |user_key| User.find_by_user_key(user_key)&.name_and_email } 
+          end
+
+          if value.kind_of? Array
+            value = value.join(';')
+          end
+
+          [field, value]
+        end.to_h
+      end
     end
   end
 end

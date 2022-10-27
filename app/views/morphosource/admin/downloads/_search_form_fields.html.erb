@@ -1,0 +1,23 @@
+<%= f.input :work_id, label: "Media ID", :input_html => {value: @work_id }, required: false %>
+
+<%= f.input :user_id, input_html: { data: { user: format_users_select2(@user_id) } }, required: false %>
+
+<div class="form-group search_start_date">
+  <label class="control-label" for="search_start_date">
+    <%= t('simple_form.labels.fund_code_charges.downloaded_after') %>
+  </label>
+  <%= f.date_field :date_downloaded_after, value: @date_downloaded_after, class: 'datepicker form-control' %>
+</div>
+
+<div class="form-group search_end_date">
+  <label class="control-label" for="search_end_date">
+    <%= t('simple_form.labels.fund_code_charges.downloaded_before') %>
+  </label>
+  <%= f.date_field :date_downloaded_before, value: @date_downloaded_before, class: 'datepicker form-control' %>
+</div>
+
+<script>
+  $( document ).ready(function() {
+    $('#filter_items_user_id').userSearchMultiple($('#filter_items_user_id').data('user'));
+  });
+</script>

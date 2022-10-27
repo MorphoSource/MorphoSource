@@ -1,0 +1,6 @@
+<% if @items.present? %>
+  <%= @items.first.keys.to_csv.html_safe -%>
+  <% @items.each do |item| %>
+    <%= item.values.map { |v| v.kind_of?(Array) ? v.join('; ') : v }.to_csv.html_safe -%>
+  <% end %>
+<% end %>

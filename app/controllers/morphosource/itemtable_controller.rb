@@ -14,7 +14,7 @@ module Morphosource
     PAGE_TITLE = nil # Overwrite in controller
 
     def index
-      @search = true if ( params[:search].present? || params[:commit] == 'Search' )
+      @search = true if search_form_present?
 
       respond_to do |format|
         format.html do 
@@ -32,5 +32,9 @@ module Morphosource
       self.class::PAGE_TITLE
     end
     helper_method :page_title
+
+    def search_form_present?
+      params[:search].present? || params[:commit] == 'Search' || params[:filter_items].present?
+    end
   end
 end

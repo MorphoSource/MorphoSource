@@ -3,7 +3,11 @@ begin
 
   namespace :ci do
     RSpec::Core::RakeTask.new(:spec, :tag) do |t, task_args|
-      t.rspec_opts = "--tag #{task_args[:tag]}"
+      if ENV['RSPEC_FAIL_FAST']
+        t.rspec_opts = "--tag #{task_args[:tag]} --fail-fast"
+      else
+        t.rspec_opts = "--tag #{task_args[:tag]}"
+      end
     end
 
     desc "RSpec tests for CI wrapped in with_server"

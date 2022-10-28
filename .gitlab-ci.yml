@@ -56,6 +56,7 @@ test_until_fail_job:
     - $RSPEC_FAIL_FAST == "true"
   except: 
     - master
+  except:
     variables:
       - $SKIP_TESTS == "true"
   script:

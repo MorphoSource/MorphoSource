@@ -54,9 +54,9 @@ test_until_fail_job:
   extends: .test
   variables: 
     RSPEC_FAIL_FAST: "true"
-  except: 
-    - master
   except:
+    refs: 
+      - master
     variables:
       - $SKIP_TESTS == "true"
   script:

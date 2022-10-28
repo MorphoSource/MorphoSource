@@ -28,6 +28,21 @@ module Morphosource
         render 'edit_password'
       end
 
+      # Process changes from profile form
+      def update
+        if conditionally_update
+          handle_successful_update
+          if @user.unconfirmed_email
+            notice = "You must confirm your email to finish processing the change of email address. Please respond to the confirmation email sent to the new address, and then log out and log back in to MorphoSource."
+            redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: notice and return
+          else
+            redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: "Your profile has been updated"
+          end
+        else
+          redirect_to hyrax.edit_dashboard_profile_path(@user.to_param), alert: @user.errors.full_messages
+        end
+      end
+
       def update_password
         authenticate_user!
         @user = current_user

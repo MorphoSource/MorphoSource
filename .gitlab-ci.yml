@@ -50,11 +50,24 @@ build_job:
   tags:
     - test
 
-test_job:
+test_until_fail_job:
+  extends: .test
+  variables: 
+    - $RSPEC_FAIL_FAST == "true"
+  except: 
+    - master
+    variables:
+      - $SKIP_TESTS == "true"
+  script:
+    - bin/rake ci:wrapped_spec[~accessibility]
+
+test_all_job:
   extends: .test
   except: 
     variables:
       - $SKIP_TESTS == "true"
+  only:
+    - master
   script:
     - bin/rake ci:wrapped_spec[~accessibility]
 

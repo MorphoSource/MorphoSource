@@ -53,7 +53,7 @@ build_job:
 test_until_fail_job:
   extends: .test
   variables: 
-    - $RSPEC_FAIL_FAST == "true"
+    RSPEC_FAIL_FAST: "true"
   except: 
     - master
   except:

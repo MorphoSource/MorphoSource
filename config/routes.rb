@@ -140,6 +140,7 @@ Rails.application.routes.draw do
       get 'media_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'media_list_specimens_facet'
       get 'media_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
       get 'media_lists/:id/order_media', to: 'media_lists#order_media', as: 'media_list_order_media'
+      get 'media_lists/:id/change_slide', to: 'media_lists#change_slide', as: 'change_slide'
 
       # sequential_section_lists
       scope module: :media_lists do
@@ -152,6 +153,7 @@ Rails.application.routes.draw do
       get 'sequential_section_lists/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'sequential_section_list_chos'
       get 'sequential_section_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'sequential_section_list_specimens_facet'
       get 'sequential_section_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'sequential_section_list_chos_facet'
+
     end
 
     scope module: :dashboard do

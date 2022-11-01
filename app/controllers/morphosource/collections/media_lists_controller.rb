@@ -3,6 +3,7 @@ module Morphosource
     class MediaListsController < Morphosource::CollectionsController
 
       include Morphosource::Collections::OrderedMediaBehavior
+      include Morphosource::Collections::ListViewerBehavior
 
       skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media], instance_name: :collection
 
@@ -41,9 +42,12 @@ module Morphosource
           full_collection_params = params.dup.merge( { page: "1", rows: 999999 } )
           document_list = search_results(full_collection_params)[1]
           sorted_document_list = sort_document_list(document_list)
+          media_presenter(sorted_document_list)
           [response, sorted_document_list]
         else
-          search_results(params)
+          (response, document_list) = search_results(params)
+          media_presenter(document_list)
+          [response, document_list]
         end
       end
 
@@ -61,6 +65,11 @@ module Morphosource
           # params id is the collection id
           args.merge!(request.params)
           main_app.media_list_media_facet_path(@collection.id, args)
+        end
+
+        def media_presenter(document_list)
+          media = Media.find(document_list.first["id"])
+          @media_presenter = Hyrax::MediaPresenter.new(media, current_ability)
         end
 
     end

@@ -15,49 +15,7 @@ provide :page_title, construct_page_title(@presenter.title)
     <% end %>
   </div>
 
-  <div class="row team-header">
-    <div class="col-xs-12 col-sm-8 col-md-8 title-wrapper">
-      <div class="col-sm-12 col-md-12 flex">
-        <div class="team-logo">
-          <% unless @presenter.logo_record.blank? %>
-            <% lr = @presenter.logo_record.first %>
-            <% if lr[:linkurl].blank? %>
-                <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
-            <% else %>
-                <a href="<%= lr[:linkurl] %>">
-                  <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
-                </a>
-            <% end %>
-          <% end %>
-        </div>
-        <div class="team-title">
-           <h1>
-              <div id="showcase-title">
-                <% if @presenter.team? && @presenter.organization %>
-                  <div class="super-title"><%= @presenter.organization.institution_name&.first %></div>
-                  <%= @presenter.organization.title.first %>
-                  <%= @presenter.organization_badge %>
-                  <%= @presenter.team_managed_badge %>
-                <% else %>
-                  <%= @presenter.title.first %>
-                  <%= @presenter.collection_type_badge %>
-                  <%= @presenter.id_badge %>
-                  <%= @presenter.permission_badge %>
-                <% end %>
-
-              </div>
-              <%= render 'collection_counts' %>
-          </h1>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
-      <% if can?(:edit, @presenter.solr_document) %>
-        <%= render 'collection_manage_buttons' %>
-      <% end %>
-    </div>
-  </div><!-- /row -->
+  <%= render 'header' %>
 
   <!-- Subcollections -->
   <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>

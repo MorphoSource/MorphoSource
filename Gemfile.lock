@@ -1,17 +1,17 @@
 GIT
+  remote: https://github.com/JocelynTriplett/pul_uv_rails.git
+  revision: 71447020e8e9a712c23da7d55dcd983291152d44
+  branch: slideatlas-openseadragon
+  specs:
+    pul_uv_rails (2.9)
+
+GIT
   remote: https://github.com/MorphoSource/iiif_manifest.git
   revision: 35a4ad395b3f6b284e459d35e7d639a06bd756da
   branch: morphosource
   specs:
     iiif_manifest (0.5.0)
       activesupport (>= 4)
-
-GIT
-  remote: https://github.com/MorphoSource/pul_uv_rails.git
-  revision: 633eba78f9298ef8b76cd4d45e2cb9466bb85d33
-  branch: webpack-al-slideatlas
-  specs:
-    pul_uv_rails (2.9)
 
 GIT
   remote: https://github.com/rails/activerecord-session_store.git

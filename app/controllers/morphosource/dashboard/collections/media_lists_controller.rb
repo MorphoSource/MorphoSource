@@ -49,6 +49,20 @@ module Morphosource
             form_class.model_attributes(params[:media_list])
           end
 
+          def update_thumbnail
+            media = Media.where(id: params[:media_list][:representative_id]).first
+            @collection.thumbnail_id = media.try(:thumbnail_id)
+          end
+
+          def process_member_changes
+            case params[:media_list][:members]
+            when 'add' then add_members_to_collection
+            when 'remove' then remove_members_from_collection
+            when 'move' then move_members_between_collections
+            end
+          end
+
+
       end
     end
   end

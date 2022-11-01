@@ -1,0 +1,29 @@
+<% content_for :body_css_classes do %><%= controller.body_css_classes %><% end %>
+<div id="collection-id" style="display: none;"><%= @presenter.id %></div>
+
+<%
+provide :page_title, construct_page_title(@presenter.title)
+%>
+<%= render '/flash_msg' %>
+
+<div class="hyc-container" style="margin-top: 10px;" itemscope itemtype="http://schema.org/CollectionPage">
+  <div class="hyc-header">
+    <% unless @presenter.banner_file.blank? %>
+        <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
+    <% else %>
+        <header class="hyc-generic"></header>
+    <% end %>
+  </div>
+
+  <%= render 'header' %>
+
+  <!-- Tab panes -->
+  <div class="panel-body">
+  <%= render 'search_header' %>
+    <%= render_document_index %>
+    <%= render 'shared/lists/results_pagination' %>
+  </div>
+
+
+
+</div><!-- div hyc-container -->

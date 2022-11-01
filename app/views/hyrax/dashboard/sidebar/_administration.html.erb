@@ -63,9 +63,6 @@
           <% end %>
         <% end %>
       <% end %>
-    </li>
-    <%= menu.nav_link(main_app.admin_import_slides_path) do %>
-      <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.import_slides') %></span>
   </li>
   <%= menu.nav_link(main_app.admin_contributor_petitions_path) do %>
     <span class="fa fa-award" aria-hidden="true"></span>
@@ -80,7 +77,7 @@
   <% end %>
   <%= menu.nav_link(main_app.admin_fund_codes_path) do %>
     <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_codes') %></span>
-    <% end %>
+  <% end %>
   <%= menu.nav_link(main_app.fund_code_charges_path) do %>
     <span class="fa fas fa-money-check-alt" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_code_charges') %></span>
   <% end %>

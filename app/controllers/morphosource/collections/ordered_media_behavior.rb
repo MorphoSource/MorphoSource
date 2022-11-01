@@ -62,7 +62,7 @@ module Morphosource
         page = params["page"].present? ? params["page"].to_i : 1
         per = params["per_page"].present? ? params["per_page"].to_i : @blacklight_config.default_solr_params[:rows]
 
-        @collection.ordered_media.first.split(",").each_with_index do |id, index|
+        filtered_order(document_list).each_with_index do |id, index|
           doc = document_list.find {|x| x['id'] == id }
           if doc.nil?
             next
@@ -80,6 +80,11 @@ module Morphosource
 
         # Paginate document list
         Kaminari.paginate_array(document_list, total_count: document_list.count).page(page).per(per)
+      end
+
+      # get the intersection of the saved order and the current collection members
+      def filtered_order(document_list)
+        @collection.ordered_media.first.split(",") & document_list.map(&:id)
       end
 
     end

@@ -1,0 +1,69 @@
+<div class="row team-header">
+  <div class="title-wrapper" style="display: flex; flex-direction: column; justify-content: space-between; min-width: 40%;">
+    <div id="top" style="flex-grow:1; display:flex;">
+      <div class="col-sm-12 col-md-12 flex">
+        <div class="team-logo">
+          <% unless @presenter.logo_record.blank? %>
+            <% lr = @presenter.logo_record.first %>
+            <% if lr[:linkurl].blank? %>
+                <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+            <% else %>
+                <a href="<%= lr[:linkurl] %>">
+                  <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+                </a>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="team-title" style="display: flex; flex-direction: column; justify-content: space-around;">
+            <h1>
+              <div id="showcase-title">
+                <% if @presenter.team? && @presenter.organization %>
+                  <div class="super-title"><%= @presenter.organization.institution_name&.first %></div>
+                  <%= @presenter.organization.title.first %>
+                  <%= @presenter.organization_badge %>
+                  <%= @presenter.team_managed_badge %>
+                <% else %>
+                  <%= @presenter.title.first %>
+                  <%= @presenter.collection_type_badge %>
+                  <%= @presenter.id_badge %>
+                  <%= @presenter.permission_badge %>
+                <% end %>
+
+              </div>
+              <%= render 'collection_counts' %>
+              <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
+                <% if can?(:edit, @presenter.solr_document) %>
+                  <%= render 'collection_manage_buttons' %>
+                <% end %>
+              </div>
+          </h1>
+        </div>
+      </div>
+      <!-- Subcollections -->
+      <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>
+          <div class="hyc-blacklight hyc-bl-title">
+            <h4>TEAM PROJECTS</h4>
+          </div>
+          <div class="hyc-blacklight hyc-bl-results">
+            <%= render 'subcollection_list', collection: @subcollection_docs %>
+          </div>
+      <% end %>
+    </div>
+    <div id="bottom">
+      <div class="panel panel-default tabs" role="main" style="margin-bottom: 0px;">
+        <!-- Nav tabs -->
+
+        <%= render 'facets' %>
+        <%= render 'constraints' %>
+        <%= render 'nav_tabs' %>
+        <%= render 'did_you_mean' %>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div id="header-viewer-wrapper" style="min-width: 500px;">
+    <%= render 'viewer', media_presenter: @media_presenter, viewer: true %>
+  </div>
+</div><!-- /row -->

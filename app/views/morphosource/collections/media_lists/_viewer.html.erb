@@ -1,27 +1,27 @@
-<% if presenter.external_file? %>
+<% if media_presenter.external_file? %>
   <div class="viewer-wrapper">
     <div class="viewer">
       <iframe id="uv-iframe"
         height="100%"
         width="100%"
-        src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: curation_concern.access_control_id) %>&config=<%= PulUvRails::UniversalViewer.config_src %>"
+        src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: media_presenter.access_control_id) %>&config=<%= PulUvRails::UniversalViewer.config_src %>"
         allowfullscreen
         frameborder="0"
       ></iframe>
     </div>
   </div>
-<% elsif presenter.is_file_uploaded? %>
+<% elsif media_presenter.is_file_uploaded? %>
 <%# if presenter.representative_id.present? && presenter.representative_presenter.present? %>
-  <% if presenter.preview_in_3D? %>
+  <% if media_presenter.preview_in_3D? %>
 
     <%# if presenter.universal_viewable_ready? && defined?(viewer) && viewer %>
-    <% if presenter.universal_viewer? && presenter.derivative_present? %>
+    <% if media_presenter.universal_viewer? && media_presenter.derivative_present? %>
       <div class="viewer-wrapper">
         <div class="viewer">
           <iframe id="uv-iframe"
             height="100%"
             width="100%"
-            src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: curation_concern.access_control_id) %>&config=<%= PulUvRails::UniversalViewer.config_src %>"
+            src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: media_presenter.access_control_id) %>&config=<%= PulUvRails::UniversalViewer.config_src %>"
             allowfullscreen
             frameborder="0"
           ></iframe>
@@ -39,11 +39,11 @@
 
   <% else %>
 
-    <% if presenter.universal_viewable_ready? %>
+    <% if media_presenter.universal_viewable_ready? %>
       <div class="viewer-wrapper-2d">
         <div class="viewer">
           <div class="image-wrapper">
-            <%= render_thumbnail_tag(presenter, {}, {suppress_link:true}) %>
+            <%= render_thumbnail_tag(media_presenter, {}, {suppress_link:true}) %>
           </div>
         </div>
         <p>Interactive/Embeddable Media Preview disabled by data contributor</p>
@@ -72,3 +72,11 @@
   </div>
 
 <% end %>
+
+<div id="viewer-controls" style="height:35px; display: flex; flex-direction:row; justify-content: space-between;">
+  <a id="viewer-previous" class="btn btn-sm btn-default">Previous</a>
+  <div>
+    <div id="current_viewer_id"><%= media_presenter.id %></div>
+  </div>
+  <a id="viewer-next" class="btn btn-sm btn-default" style="padding-right:20px;">Next</a>
+</div>

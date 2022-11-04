@@ -114,4 +114,9 @@ class FileSet < ActiveFedora::Base
   def processing_event?
     false
   end
+
+  def is_remote_backed?
+    # todo: might need additional condition to distinguish remoted-backed from browse everywhere uploads
+    import_url&.match(/^https?:\/\//).present?
+  end
 end

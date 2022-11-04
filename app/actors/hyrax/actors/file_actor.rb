@@ -22,15 +22,49 @@ module Hyrax
       # @todo create a job to monitor the temp directory (or in a multi-worker system, directories!) to prune old files that have made it into the repo
       def ingest_file(io)
         # Skip versioning because versions will be minted by VersionCommitter as necessary during save_characterize_and_record_committer.
-        Hydra::Works::AddFileToFileSet.call(file_set,
+
+        if file_set.is_remote_backed?
+byebug
+          Hydra::Works::AddExternalFileToFileSet.call(file_set,
+                                            file_set.import_url,
+                                            relation,
+                                            versioning: false)
+
+
+        else
+          Hydra::Works::AddFileToFileSet.call(file_set,
                                             io,
                                             relation,
                                             versioning: false)
+        end
+
         return false unless file_set.save
         repository_file = related_file
         Hyrax::VersioningService.create(repository_file, user)
         pathhint = io.uploaded_file.uploader.path if io.uploaded_file # in case next worker is on same filesystem
-        CharacterizeJob.perform_later(file_set, repository_file.id, pathhint || io.path)
+
+        if file_set.is_remote_backed?
+
+byebug
+        
+#        at this point mime_type is set, redirect works
+# =>     digest not match 
+
+        # characterize the temp file (io.uploaded_file) , then delete after? 
+
+#/tmp/d20221104-40-ilosif/chapel.png
+
+#
+#        need to CharacterizeJob here ?
+
+          CharacterizeJob.perform_now(file_set, repository_file.id, pathhint || io.path)
+          file_set.save
+
+
+
+        else
+          CharacterizeJob.perform_later(file_set, repository_file.id, pathhint || io.path)
+        end
       end
 
       # Reverts file and spawns async job to characterize and create derivatives.

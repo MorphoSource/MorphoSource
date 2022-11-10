@@ -24,7 +24,7 @@ module Hyrax
         # Skip versioning because versions will be minted by VersionCommitter as necessary during save_characterize_and_record_committer.
 
         if file_set.is_remote_backed?
-byebug
+#byebug
           Hydra::Works::AddExternalFileToFileSet.call(file_set,
                                             file_set.import_url,
                                             relation,
@@ -42,29 +42,7 @@ byebug
         repository_file = related_file
         Hyrax::VersioningService.create(repository_file, user)
         pathhint = io.uploaded_file.uploader.path if io.uploaded_file # in case next worker is on same filesystem
-
-        if file_set.is_remote_backed?
-
-byebug
-        
-#        at this point mime_type is set, redirect works
-# =>     digest not match 
-
-        # characterize the temp file (io.uploaded_file) , then delete after? 
-
-#/tmp/d20221104-40-ilosif/chapel.png
-
-#
-#        need to CharacterizeJob here ?
-
-          CharacterizeJob.perform_now(file_set, repository_file.id, pathhint || io.path)
-          file_set.save
-
-
-
-        else
-          CharacterizeJob.perform_later(file_set, repository_file.id, pathhint || io.path)
-        end
+        CharacterizeJob.perform_later(file_set, repository_file.id, pathhint || io.path)
       end
 
       # Reverts file and spawns async job to characterize and create derivatives.

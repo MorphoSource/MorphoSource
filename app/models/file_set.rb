@@ -3,6 +3,7 @@ class FileSet < ActiveFedora::Base
 
   # properties must go before include Morphosource::FileSetBehavior
   property :accessibility, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/accessibility")
+  property :mime_type_of_remote, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mimeTypeOfRemote"), multiple: false
 
   include Morphosource::FileSetBehavior
 
@@ -113,6 +114,15 @@ class FileSet < ActiveFedora::Base
 
   def processing_event?
     false
+  end
+
+  def set_mime_type_if_remote
+    if is_remote_backed?
+      self.mime_type_of_remote = characterization_proxy.mime_type
+      characterization_proxy.mime_type = "message/external-body; access-type=URL; URL=\"#{import_url}\""
+      characterization_proxy.save
+      self.save
+    end
   end
 
   def is_remote_backed?

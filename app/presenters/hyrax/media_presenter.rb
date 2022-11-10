@@ -248,6 +248,8 @@ module Hyrax
         # if content mime type does not exist, use the mime type
         if file_set.contents_mime_type.first.present?
           contents_mime_type = file_set.contents_mime_type.first
+        elsif file_set.is_remote_backed?
+          contents_mime_type = file_set.mime_type_of_remote
         elsif file_set.mime_type.present?
           contents_mime_type = file_set.mime_type
         else

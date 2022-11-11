@@ -13,6 +13,8 @@ The primary elements of the technical stack are as follows. Version numbers refl
 * [Universal Viewer](https://universalviewer.io/) & [Aleph](https://github.com/aleph-viewer/aleph): Web viewer framework and extensions to enable viewing of web preview assets for 3D models, CT/MRI volume data, 2D images, and video files.
 * [Blacklight Catalog Framework](https://projectblacklight.org/): Used for browsing, searching, and filtering records in application front-end.
 
+**Note:** The Docker implementation of Solr that we use is **not** affected by the recent log4j security vulnerability. While version 7.7.3 of Solr is in the range of Solr versions that can be affected by the vulnerability, the specific Docker implementation successfully mitigates the vulnerability with correct JVM settings as verified by security experts and the Apache Solr team.
+
 There is also a raft of other third-party applications used behind the scenes to process uploaded binary files, automatically characterize file-level metadata from them, and to generate web preview derivative assets for them. For some of these (3D models and CT/MRI volumes in particular), there are no industry-standard tools to generate previews, and MorphoSource generates these preview assets using original workflows that sometimes involve multiple third-party tools. 
 
 * FITS 1.3.0: Characterizes file-level metadata for a wide variety of files. 

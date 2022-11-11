@@ -1,21 +1,22 @@
-<div class="row record-padding paginate-wrapper">
-
-	<div class="col-md-12 col-lg-2">
-	  <%= form_tag '', method: :get, :id => 'rows_per_page' do %>
-	    <div class="select-tag">
-	      Rows per page <%= select_tag :rows, options_for_select(Hyrax.config.teams_rows_per_page_range, selected: params[:rows] || Hyrax.config.teams_show_work_item_rows), onchange: "$('#rows_per_page').submit();" %> 
-	    </div>
-		<%= hidden_field_tag(:page, params[:page]) if params[:page].present? %>
-		<%= hidden_field_tag(:sort, params[:sort]) if params[:sort].present? %>
-	  <% end %>
+<div class="row record-padding paginate-wrapper itemtable pull-left">
+	<div class="col-xs-12">
+		<% if @items.present? %>
+			<div id="per_page-dropdown" class="btn-group">
+				<button type="button" class="btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+					<%= selected = params[:rows] || Hyrax.config.teams_show_work_item_rows %> per page <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<% Hyrax.config.teams_rows_per_page_range.each do |rows| %>
+						<li role="menuitem">
+							<%= link_to(url_for(request.params.merge(rows: rows))) do %>
+								<%= rows %><span class="sr-only"> per page</span>
+							<% end %>
+						</li>
+					<% end  %>
+				</ul>
+			</div>
+		<% end %>
+		<div class="paginate-info">Showing <%= page_entries_info @items %></div>
+		<%= paginate @items, outer_window: 2, theme: 'blacklight', param_name: :page, class: 'btn-group' %>
 	</div>
-
-	<div class="col-md-12 col-lg-2">
-		<div>Showing <%= page_entries_info @items %></div>
-	</div>
-
-	<div class="col-md-12 col-lg-8">
-		<%= paginate @items, outer_window: 2, theme: 'blacklight', param_name: :page %>
-	</div>
-
 </div><!-- /row -->

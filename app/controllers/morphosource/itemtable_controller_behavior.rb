@@ -34,6 +34,7 @@ module Morphosource
     def split_filter_user_keys
       user_key_params.each do |user_key_param|
         if params.dig(:filter_items, user_key_param).present? 
+          next if params.dig(:filter_items, user_key_param).kind_of? Array
           params[:filter_items][user_key_param] = params[:filter_items][user_key_param].split(',')
         end
       end

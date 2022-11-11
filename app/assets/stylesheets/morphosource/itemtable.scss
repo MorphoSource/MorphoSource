@@ -36,3 +36,23 @@ div.date-range-element {
   padding-left: 5px;
   padding-right: 5px;
 }
+
+div.paginate-wrapper.itemtable {
+  div.paginate-info {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  div#per_page-dropdown {
+    padding-top: 0;
+    vertical-align: top;
+
+    button {
+      background-color: #fff;
+      border-color: rgb(221, 221, 221);
+      border-width: 1px;
+      border-style: solid;
+      border-radius: 3px;
+    }
+  }
+}

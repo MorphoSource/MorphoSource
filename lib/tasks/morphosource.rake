@@ -353,7 +353,9 @@ namespace :morphosource do
   desc 'Set up MS email user'
   task :create_email_sender_user => :environment do 
     if Hyrax.config.contact_email.present? && !User.find_by(email: Hyrax.config.contact_email)
-      User.create(email: Hyrax.config.contact_email, password: Morphosource.ms_init_pw)
+      u = User.new(email: Hyrax.config.contact_email, password: Morphosource.ms_init_pw)
+      u.skip_confirmation!
+      u.save!
     end
   end
 
@@ -364,7 +366,9 @@ namespace :morphosource do
     admin = Role.where("name = 'admin'")[0] || Role.create(name: 'admin')
     emails.each do |email|
       if !User.find_by(email: email)
-        User.create(email: email, password: password)
+        u = User.new(email: email, password: password)
+        u.skip_confirmation!
+        u.save!
       end
       admin.users << User.find_by(email: email)
     end
@@ -373,8 +377,10 @@ namespace :morphosource do
     # account for accessibility testing
     test_usr = Morphosource.ms_test_usr
     test_pw = Morphosource.ms_test_pw
-    if !User.find_by(email: test_usr)
-      User.create(email: test_usr, password: test_pw)
+    if test_usr != "NOT_SET" && !User.find_by(email: test_usr)
+      u = User.new(email: test_usr, password: test_pw)
+      u.skip_confirmation!
+      u.save!
     end
 
     # create email sender user
@@ -385,9 +391,15 @@ namespace :morphosource do
   task :create_development_users => :environment do
     defaults = Morphosource::Users::Defaults
     # create user accounts
-    admin = User.create(defaults::ADMIN)
-    contributor = User.create(defaults::CONTRIBUTOR)
-    registered = User.create(defaults::REGISTERED)
+    admin = User.new(defaults::ADMIN)
+    admin.skip_confirmation!
+    admin.save!
+    contributor = User.new(defaults::CONTRIBUTOR)
+    contributor.skip_confirmation!
+    contributor.save!
+    registered = User.new(defaults::REGISTERED)
+    registered.skip_confirmation!
+    registered.save!
     # assign admin to admin role
     admins = Role.find_or_create_by(name: 'admin')
     admins.users += [admin]

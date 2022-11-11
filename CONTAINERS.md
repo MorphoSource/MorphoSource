@@ -18,8 +18,8 @@ In the `vendor/docker` directory, there is a `credentials.env-example` file. Cop
 
 ```
 # Postgres DB user and pass
-DB_USERNAME=
-DB_PASSWORD=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
 
 # Fedora user and pass
 FCREPO_USERNAME=

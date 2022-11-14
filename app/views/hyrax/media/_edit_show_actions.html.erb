@@ -4,12 +4,14 @@
       <%= f.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if f.object.persisted? %>
       <%= f.submit class: 'btn btn-primary btn-save btn-save-media', onclick: "confirmation_needed = false\;", id: "with_files_submit", name: "save_with_files", value: "Save", data: { :disable_with => false } %>
       <% unless @presenter.has_child_media? %>
-        <% unless @presenter.is_published? %>
+        <% if @presenter.has_DOI? %> 
+          <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media has a DOI.">Delete</a>
+        <% elsif @presenter.is_published? %>
+          <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media is published.">Delete</a>
+        <% else %> 
           <%= link_to "Delete", [main_app, @presenter],
             class: 'btn btn-danger', data: { confirm: "Delete this media?" },
             method: :delete %>
-        <% else %> 
-          <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media is published.">Delete</a>
         <% end %>
       <% else %> 
         <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media has child media.">Delete</a>

@@ -6,21 +6,39 @@ file_set = member_edit
   <td class="thumbnail">
     <%= render_thumbnail_tag(@presenter, {}, {suppress_link:true}) %>
   </td>
-  <td class="attribute attribute-filename ensure-wrapped">
+  <td class="w-25 attribute attribute-filename ensure-wrapped">
     <%= member.link_name %>
     </td>
-  <td>
+  <td class="w-25">
     <% if file_set.user_can_perform_any_action? %>
       <% if can?(:destroy, file_set.id) %>
-        <% unless @presenter.has_child_media? %>
-          <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
-              method: :delete, title: t('.delete_title', file_set: file_set),
-              data: { confirm: t('.delete_confirm', file_set: file_set, application_name: application_name) } %>
+
+        <% if @presenter.has_DOI? %>
+          <% if current_user.admin? %>
+            <% unless @presenter.has_child_media? %>
+              <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
+                  method: :delete, title: t('.delete_title', file_set: file_set),
+                  data: { confirm: t('.delete_confirm_with_DOI', file_set: file_set, application_name: application_name) } %>
+            <% else %>
+              <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
+                  method: :delete, title: t('.delete_title', file_set: file_set),
+                  data: { confirm: t('.delete_confirm_parent_with_DOI', file_set: file_set, application_name: application_name) } %>
+            <% end %>
+          <% else %>
+            <p class="text-disabled small">(File cannot be deleted if the media has a DOI)</p>
+          <% end %>
         <% else %>
-          <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
-              method: :delete, title: t('.delete_title', file_set: file_set),
-              data: { confirm: t('.delete_confirm_parent', file_set: file_set, application_name: application_name) } %>
-        <% end %>
+          <% unless @presenter.has_child_media? %>
+            <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
+                method: :delete, title: t('.delete_title', file_set: file_set),
+                data: { confirm: t('.delete_confirm', file_set: file_set, application_name: application_name) } %>
+          <% else %>
+            <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
+                method: :delete, title: t('.delete_title', file_set: file_set),
+                data: { confirm: t('.delete_confirm_parent', file_set: file_set, application_name: application_name) } %>
+          <% end %>  
+        <% end # has_DOI? %>
+
       <% end %>
     <% end %>
   </td>

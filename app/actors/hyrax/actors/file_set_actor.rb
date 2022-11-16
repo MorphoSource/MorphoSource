@@ -1,3 +1,5 @@
+require 'digest'
+
 module Hyrax
   module Actors
     # Actions are decoupled from controller logic so that they may be called from a controller or a background job.
@@ -21,6 +23,7 @@ module Hyrax
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)
         file_set.title = [file_set.label] if file_set.title.blank?
+        file_set.digest = Digest::SHA1.file(file.path).to_s
         return false unless file_set.save # Need to save to get an id
         if from_url
           # If ingesting from URL, don't spawn an IngestJob; instead

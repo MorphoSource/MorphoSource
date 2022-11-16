@@ -4,6 +4,7 @@ class FileSet < ActiveFedora::Base
   # properties must go before include Morphosource::FileSetBehavior
   property :accessibility, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/accessibility")
   property :mime_type_of_remote, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mimeTypeOfRemote"), multiple: false
+  property :digest, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/digest"), multiple: false
 
   include Morphosource::FileSetBehavior
 

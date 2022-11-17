@@ -117,13 +117,15 @@ class FileSet < ActiveFedora::Base
     false
   end
 
-  def set_mime_type_if_remote
+  # this method is called after CharacterizeJob and CreateDerivativesJob
+  def set_final_attributes
     if is_remote_backed?
-      self.mime_type_of_remote = characterization_proxy.mime_type
+     self.mime_type_of_remote = characterization_proxy.mime_type
       characterization_proxy.mime_type = "message/external-body; access-type=URL; URL=\"#{import_url}\""
       characterization_proxy.save
-      self.save
     end
+    self.digest = original_file.digest.first.path.split(':').last
+    self.save
   end
 
   def is_remote_backed?

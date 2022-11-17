@@ -23,8 +23,11 @@ module Hyrax
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)
         file_set.title = [file_set.label] if file_set.title.blank?
-        file_set.digest = Digest::SHA1.file(file.path).to_s
+        if file_set.is_remote_backed? && file.path.present?
+          file_set.digest = Digest::SHA1.file(file.path).to_s
+        end
         return false unless file_set.save # Need to save to get an id
+
         if from_url
           # If ingesting from URL, don't spawn an IngestJob; instead
           # reach into the FileActor and run the ingest with the file instance in

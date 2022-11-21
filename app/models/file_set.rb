@@ -124,7 +124,6 @@ class FileSet < ActiveFedora::Base
       characterization_proxy.mime_type = "message/external-body; access-type=URL; URL=\"#{import_url}\""
       characterization_proxy.save
     end
-    self.digest = original_file.digest.first.path.split(':').last
     self.save
   end
 

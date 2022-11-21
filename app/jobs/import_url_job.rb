@@ -26,51 +26,27 @@ class ImportUrlJob < Hyrax::ApplicationJob
     @file_set = file_set
     @operation = operation
 
-    if file_set.is_remote_backed?
-
-      copy_remote_file_for_remote_backed(uri, name) do |f|
-        file_set.reload
-
-        log_import_status(uri, f, user)
-      end 
-
-    else
+    unless file_set.is_remote_backed?
       unless BrowseEverything::Retriever.can_retrieve?(uri, headers)
         send_error('Expired URL')
         return false
       end
+    end
 
-      # @todo Use Hydra::Works::AddExternalFileToFileSet instead of manually
-      #       copying the file here. This will be gnarly.
-      copy_remote_file(uri, name, headers) do |f|
-        # reload the FileSet once the data is copied since this is a long running task
-        file_set.reload
+    # @todo Use Hydra::Works::AddExternalFileToFileSet instead of manually
+    #       copying the file here. This will be gnarly.
+    copy_remote_file(uri, name, headers) do |f|
+      # reload the FileSet once the data is copied since this is a long running task
+      file_set.reload
 
-        # FileSetActor operates synchronously so that this tempfile is available.
-        # If asynchronous, the job might be invoked on a machine that did not have this temp file on its file system!
-        # NOTE: The return status may be successful even if the content never attaches.
-        log_import_status(uri, f, user)
-      end
+      # FileSetActor operates synchronously so that this tempfile is available.
+      # If asynchronous, the job might be invoked on a machine that did not have this temp file on its file system!
+      # NOTE: The return status may be successful even if the content never attaches.
+      log_import_status(uri, f, user)
     end
   end
 
   private
-
-    def copy_remote_file_for_remote_backed(uri, name)
-      filename = File.basename(name)
-      dir = Dir.mktmpdir
-      open(File.join(dir, filename), 'wb') do |f|
-        begin
-          f << open(uri).read
-          yield f
-        rescue StandardError => e
-byebug
-          send_error(e.message)
-        end
-      end
-#todo: check temp file deletion
-    end
-
 
     # Download file from uri, yields a block with a file in a temporary directory.
     # It is important that the file on disk has the same file name as the URL,
@@ -87,7 +63,11 @@ byebug
 
       File.open(File.join(dir, filename), 'wb') do |f|
         begin
-          write_file(uri, f, headers)
+          if file_set.is_remote_backed?
+            f << open(uri).read
+          else
+            write_file(uri, f, headers)
+          end
           yield f
         rescue StandardError => e
           send_error(e.message)

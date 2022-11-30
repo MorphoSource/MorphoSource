@@ -7,7 +7,7 @@ module Morphosource
       before_action :authorize_collection_access, except: [:facet]
 
       def search_builder_class
-        Morphosource::Users::EditMediaSearchBuilder
+        @collection.search_builder_class
       end
 
       private

@@ -9,6 +9,16 @@ module Morphosource
       def collection_type_title
         "Media List"
       end
+
+      def membership(current_user)
+        if collection.managers.include?(current_user)
+          'Manager'
+        elsif collection.viewers.include?(current_user)
+          'Viewer'
+        else
+          ''
+        end
+      end
     end
   end
 end

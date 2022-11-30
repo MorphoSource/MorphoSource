@@ -1,6 +1,11 @@
 <% modalities_service = Morphosource::ModalitiesService.new %>
+<% if @collection.present? %>
+  <% modality_options = @collection.media_modalities %>
+<% else %>
+  <% modality_options = modalities_service.select_all_options %>
+<% end %>
 <%= f.input :submission_modality, as: :select,
-    collection: modalities_service.select_all_options,
+    collection: modality_options,
     include_blank: true,
     item_helper: modalities_service.method(:include_current_value),
     input_html: { class: 'form-control', onchange:'showFieldsByModality();' },

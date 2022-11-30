@@ -89,7 +89,6 @@ Rails.application.routes.draw do
     get 'sequential_section_lists/:id/media_downloads', to: 'collections#media_downloads', as: 'sequential_section_list_media_downloads'
     get 'sequential_section_lists/:id/media_requests', to: 'collections#media_requests', as: 'sequential_section_list_media_requests'
 
-
     scope module: :collections do
       # these get redirected to projects/teams/media lists/slide lists
       get 'collections/:id/biological_specimens', to: 'biological_specimens#show'
@@ -457,6 +456,10 @@ Rails.application.routes.draw do
       get 'contribute', action: :index, controller: :contributor_petitions, as: 'user_contributor_petition'
       put 'submit_contributor_application', action: :create, controller: :contributor_petitions, as: 'user_contributor_petition_submit'
       patch 'update_contributor_application/(:id)', action: :update, controller: :contributor_petitions, as: 'user_contributor_petition_update'
+
+      # search_collections
+      get 'my/collections/search', to: 'collections/search_collections#search', as: 'search_my_collections'
+
     end
 
     scope module: :admin do

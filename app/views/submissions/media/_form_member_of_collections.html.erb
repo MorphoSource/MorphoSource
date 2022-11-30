@@ -4,11 +4,11 @@
 
   <div class="form-inline">
     <div class="col-xs-10 pl-0">
-      <%= f.input_field :member_of_collection_ids,
+    <%= f.input_field :member_of_collection_ids,
                   prompt: :translate,
                   data: {
                     autocomplete: 'collection',
-                    'autocomplete-url' => Rails.application.routes.url_helpers.qa_path + '/search/collections?access=deposit'
+                    'autocomplete-url' => '/my/collections/search.json'
                   } %>
     </div>
     <div class="col-xs-2 pl-0">
@@ -31,3 +31,5 @@
     </td>
 </tr>
 </script>
+
+

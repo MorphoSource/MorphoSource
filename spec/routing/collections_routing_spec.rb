@@ -16,6 +16,11 @@ RSpec.describe 'collections routing', type: :routing do
     expect(:get => "/dashboard/my/sequential_section_lists").to route_to(route)
   end
 
+  it 'has a search my collections route' do
+    route = { controller: 'morphosource/my/collections/search_collections', action: 'search' }
+    expect(:get => "/my/collections/search").to route_to(route)
+  end
+
   # collections
   # this will be redirected by the controller to either teams or projects
   it 'has a collections show route' do

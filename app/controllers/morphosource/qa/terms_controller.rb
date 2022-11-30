@@ -3,6 +3,7 @@ module Morphosource
   module Qa
     class TermsController < ::Qa::TermsController
 
+
       private
 
         def init_authority

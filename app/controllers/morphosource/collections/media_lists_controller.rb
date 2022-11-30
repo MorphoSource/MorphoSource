@@ -68,6 +68,8 @@ module Morphosource
         end
 
         def media_presenter(document_list)
+          return if document_list.empty?
+
           media = Media.find(document_list.first["id"])
           @media_presenter = Hyrax::MediaPresenter.new(media, current_ability)
         end

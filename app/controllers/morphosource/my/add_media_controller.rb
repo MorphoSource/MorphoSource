@@ -6,8 +6,14 @@ module Morphosource
 
       before_action :authorize_collection_access, except: [:facet]
 
+      # Only display sequential section scan media for sequential section lists
+      # Only display media belonging to the same object
       def search_builder_class
-        Morphosource::Users::EditMediaSearchBuilder
+        if @collection.sequential_section_list?
+          Morphosource::Users::EditMedia::EditSequentialSectionScansSearchBuilder
+        else
+          Morphosource::Users::EditMediaSearchBuilder
+        end
       end
 
       private

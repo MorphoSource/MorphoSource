@@ -70,6 +70,8 @@ Rails.application.routes.draw do
         get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
         get '/specimens/facet/:id', to: 'biological_specimens#facet', as: 'dashboard_specimens_facet'
         get '/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'dashboard_chos_facet'
+
+        # get '/collections/search', to: 'collections#search', as: 'my_collections_search'
       end
     end
   end
@@ -84,7 +86,6 @@ Rails.application.routes.draw do
     get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
     get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
     get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
-
 
     scope module: :collections do
       # these get redirected to projects/teams/media lists/slide lists
@@ -444,6 +445,10 @@ Rails.application.routes.draw do
       get 'contribute', action: :index, controller: :contributor_petitions, as: 'user_contributor_petition'
       put 'submit_contributor_application', action: :create, controller: :contributor_petitions, as: 'user_contributor_petition_submit'
       patch 'update_contributor_application/(:id)', action: :update, controller: :contributor_petitions, as: 'user_contributor_petition_update'
+
+      # search_collections
+      get 'my/collections/search', to: 'collections/search_collections#search', as: 'search_my_collections'
+
     end
 
     scope module: :admin do

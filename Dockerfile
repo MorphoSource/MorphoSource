@@ -58,6 +58,11 @@ RUN apt update && \
   python3 \
   python3-pip
 
+# Update node/npm
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+  apt install -yq nodejs build-essential && \
+  npm install -g npm
+
 # Install Python packages
 RUN pip3 install --no-cache-dir --upgrade pip && \
   pip3 install --no-cache-dir numpy Pillow pydicom

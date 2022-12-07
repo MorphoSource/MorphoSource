@@ -20,6 +20,13 @@
         <%= button_to 'Grant Batch Submission Contributor Status', main_app.make_batch_submission_contributor_path(@user.ms_id), method: :post, class: "btn btn-xs btn-primary w-100" %>
       <% end %>
     </p>
+    <p id='remote-file-submitter-buttons'>
+      <% if @user.remote_file_submitter? %>
+        <%= button_to 'Remove Remote File Submitter Status', main_app.remove_remote_file_submitter_path(@user.ms_id), method: :post, class: "btn btn-xs btn-danger w-100" %>
+      <% else %>
+        <%= button_to 'Grant Remote File Submitter Status', main_app.make_remote_file_submitter_path(@user.ms_id), method: :post, class: "btn btn-xs btn-primary w-100" %>
+      <% end %>
+    </p>
     <p id='active-buttons'>
       <% if @user.active %>
         <%= button_to 'Make Inactive (Ban)', main_app.make_inactive_path(@user.ms_id), method: :post, class: "btn btn-xs btn-danger w-100" %>

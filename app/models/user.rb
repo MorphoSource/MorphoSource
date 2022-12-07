@@ -159,6 +159,28 @@ class User < ApplicationRecord
     end
   end
 
+  def remote_file_submitter?
+    groups.include? 'remote_file_submitter'
+  end
+
+  def make_remote_file_submitter
+    if remote_file_submitter?
+      puts "Can't add - #{display_name} is already a remote file submitter"
+    else
+      remote_file_submitter_group.users += [self]
+      puts "#{display_name} is now a remote file submitter"
+    end
+  end
+
+  def remove_remote_file_submitter
+    if !remote_file_submitter?
+      puts "Can't remove - #{display_name} is not a remote file submitter"
+    else
+      remote_file_submitter_group.users -= [self]
+      puts "#{display_name} remote file submitter status removed"
+    end
+  end
+
   def charge_api_user?
     groups.include? 'charge_api'
   end
@@ -326,6 +348,10 @@ class User < ApplicationRecord
 
   def batch_submission_contributor_group
     Role.find_by(name: 'batch_submission_contributor')
+  end
+
+  def remote_file_submitter_group
+    Role.find_by(name: 'remote_file_submitter')
   end
 
   def charge_api_group

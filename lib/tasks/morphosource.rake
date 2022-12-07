@@ -25,6 +25,8 @@ namespace :morphosource do
     Rake::Task['morphosource:create_collection_types'].invoke
     # admin role
     Rake::Task['morphosource:create_admin_role'].invoke
+    # remote file submitter role
+    Rake::Task['morphosource:create_remote_file_submitter_role'].invoke
     # batch submission contributor role
     Rake::Task['morphosource:create_batch_submission_contributor_role'].invoke
     # contributor role
@@ -465,6 +467,11 @@ namespace :morphosource do
       project = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
       Hyrax::CollectionTypes::CreateService.add_default_participants(project.id)
     end
+  end
+
+  desc 'Set Up Remote File Submitter Role'
+  task :create_remote_file_submitter_role => :environment do
+    Role.find_or_create_by(name: 'remote_file_submitter')
   end
 
   desc 'Set Up Batch Submission Contributor Role'

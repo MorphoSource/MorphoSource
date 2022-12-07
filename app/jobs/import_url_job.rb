@@ -64,8 +64,10 @@ class ImportUrlJob < Hyrax::ApplicationJob
       File.open(File.join(dir, filename), 'wb') do |f|
         begin
           if file_set.is_remote_backed?
+            # for other external url file
             f << open(uri).read
           else
+            # for BrowseEverywhere file
             write_file(uri, f, headers)
           end
           yield f

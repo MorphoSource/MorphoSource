@@ -1,0 +1,30 @@
+<% provide :page_title, @presenter.page_title %>
+<div class="row work-type">
+  <div class="col-xs-12">
+    <%= render 'work_type', presenter: @presenter %>
+  </div>
+  <div class="col-xs-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+            <div class="col-sm-8">
+              <h2><%= @presenter.title.first %>
+                <small class="text-muted"><%= @presenter.permission_badge %> <%= @presenter.workflow.badge %></small>
+              </h2>
+            </div>
+            <div class="col-sm-4 text-right">
+              <%= link_to "Edit", edit_polymorphic_path([main_app, @presenter]), class: 'btn btn-default' %>
+              <%= link_to "Delete", [main_app, @presenter], class: 'btn btn-danger', data: { confirm: "Delete this #{@presenter.human_readable_type}?" }, method: :delete %>
+            </div>
+          </div>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-sm-9">
+            <%= render 'metadata', presenter: @presenter %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

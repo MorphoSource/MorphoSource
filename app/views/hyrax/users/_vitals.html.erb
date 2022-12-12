@@ -1,11 +1,5 @@
 <div class="list-group-item">
-  <span class="glyphicon glyphicon-time" aria-hidden="true"></span> Joined on <%= user.created_at.to_date.strftime("%b %d, %Y") %> <br>
-  <div>
-    <span aria-hidden="true"> <span style='font-weight:bold;'>Status:</span> <%= user.contributor? ? 'Contributor' : 'Standard User' %></span>
-  </div>
-  <div>
-    <span aria-hidden="true"> <span style='font-weight:bold;'>Account Active:</span> <%= user.active ? 'Yes' : 'No' %></span>
-  </div>
+  <span class="glyphicon glyphicon-time" aria-hidden="true"></span> Joined on <%= user.created_at.to_date.strftime("%b %d, %Y") %>
 </div>
 
 <div class="list-group-item">

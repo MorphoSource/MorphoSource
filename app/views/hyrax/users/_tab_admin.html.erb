@@ -7,7 +7,7 @@
   </div>
   <div class="row">
     <div class="col-sm-12 block-fill">
-      <b>Role</b>
+      <b>Roles</b>
     </div>
   </div>
   <div class="row">
@@ -62,21 +62,21 @@
 
   <div class="row">
     <div class="col-sm-12 block-fill">
-      <b>Account Status</b>
+      <b>Settings</b>
     </div>
   </div>
   <div class="row">
     <div class="col-sm-4">
-      Active
+      Account Status
     </div>
     <div class="col-sm-6 col-md-5 col-lg-4 toggle-btn">
       <% if @user.active %>
         <%= button_to main_app.make_inactive_path(@user.ms_id), method: :post do %>
-          <i class="fa fa-toggle-on"></i> <span>Yes</span>
+          <i class="fa fa-toggle-on"></i> <span>Active</span>
         <% end %>
       <% else %>
         <%= button_to main_app.make_active_path(@user.ms_id), method: :post do %>
-          <i class="fa fa-toggle-off"></i> <span>No</span>
+          <i class="fa fa-toggle-off"></i> <span>Inactive (Banned)</span>
         <% end %>
       <% end %>
     </div>

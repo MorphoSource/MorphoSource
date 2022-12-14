@@ -249,7 +249,8 @@ module Hyrax
         if file_set.contents_mime_type.first.present?
           contents_mime_type = file_set.contents_mime_type.first
         elsif file_set.is_remote_backed?
-          contents_mime_type = file_set.mime_type_of_remote
+          # note that mime_type_of_remote is nil since it might not be set until after characterized and derived
+          contents_mime_type = file_set.mime_type_of_remote || ""
         elsif file_set.mime_type.present?
           contents_mime_type = file_set.mime_type
         else

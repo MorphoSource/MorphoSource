@@ -211,6 +211,7 @@ class SubmissionsController < ApplicationController
   end
 
   def create
+byebug
     clear_session_submission_settings
     reinstantiate_submission
 
@@ -790,23 +791,34 @@ class SubmissionsController < ApplicationController
   end
 
   def set_files(attributes_for_actor)
-    # https://github.com/samvera/hyrax/blob/v2.9.0/app/controllers/concerns/hyrax/works_controller_behavior.rb
+    if attributes_for_actor["remote_origin_url"].present?
+      # set file attributes for remote-backed media
+      uri = URI.parse(attributes_for_actor["remote_origin_url"].first)
 
-    # If they selected a BrowseEverything file, but then clicked the
-    # remove button, it will still show up in `selected_files`, but
-    # it will no longer be in uploaded_files. By checking the
-    # intersection, we get the files they added via BrowseEverything
-    # that they have not removed from the upload widget.
-    uploaded_files = attributes_for_actor.delete(:uploaded_files) || []
-    selected_files = attributes_for_actor.delete(:selected_files)&.values || []
-    browse_everything_urls = uploaded_files & selected_files.map { |f| f[:url] }
+byebug
+# todo: validate white list here?
 
-    # we need the hash of files with url and file_name
-    browse_everything_files = selected_files.select { |v| uploaded_files.include?(v[:url]) }
-    attributes_for_actor[:remote_files] = browse_everything_files
+      attributes_for_actor[:remote_files] = [{"url" => attributes_for_actor["remote_origin_url"].first, "file_name" => File.basename(uri.path)}]
+      attributes_for_actor[:uploaded_files] = []
+    else
+      # https://github.com/samvera/hyrax/blob/v2.9.0/app/controllers/concerns/hyrax/works_controller_behavior.rb
 
-    # Strip out any BrowseEverthing files from the regular uploads.
-    attributes_for_actor[:uploaded_files] = uploaded_files - browse_everything_urls
+      # If they selected a BrowseEverything file, but then clicked the
+      # remove button, it will still show up in `selected_files`, but
+      # it will no longer be in uploaded_files. By checking the
+      # intersection, we get the files they added via BrowseEverything
+      # that they have not removed from the upload widget.
+      uploaded_files = attributes_for_actor.delete(:uploaded_files) || []
+      selected_files = attributes_for_actor.delete(:selected_files)&.values || []
+      browse_everything_urls = uploaded_files & selected_files.map { |f| f[:url] }
+
+      # we need the hash of files with url and file_name
+      browse_everything_files = selected_files.select { |v| uploaded_files.include?(v[:url]) }
+      attributes_for_actor[:remote_files] = browse_everything_files
+
+      # Strip out any BrowseEverthing files from the regular uploads.
+      attributes_for_actor[:uploaded_files] = uploaded_files - browse_everything_urls
+    end
 
     return attributes_for_actor
   end
@@ -831,6 +843,7 @@ class SubmissionsController < ApplicationController
   end
 
   def save_params_to_session
+byebug
     session[:submission].deep_merge!(submission_params) if params[:submission]
   end
 

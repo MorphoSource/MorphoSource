@@ -33,6 +33,13 @@
               <%= render 'hyrax/media/form_files_edit', f: f %>
             </div>
 
+
+            <div class="row showcase-section-header">
+              <span class="h2 required-flag">REMOTE-BACKED MEDIA</span>
+            </div>
+            <%= f.input :remote_origin_url, label: 'Remote Origin URL' %>
+
+
             <%= render 'submissions/media/custom_thumbnail', f: f %>
 
           </div>

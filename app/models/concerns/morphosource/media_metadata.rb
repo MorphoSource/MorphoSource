@@ -7,7 +7,7 @@ module Morphosource
     included do
       # -- Core metadata --
 
-      property :remote_origin_url, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/remoteOriginUrl"), multiple: false do |index|
+      property :remote_origin_url, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/remoteOriginUrl") do |index|
         index.as :stored_searchable
       end
   

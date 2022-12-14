@@ -3,6 +3,8 @@ class MediaList < Collection
 
   after_create :create_collection_groups
 
+  DEFAULT_GROUP_ROLES = %w[managers viewers].freeze
+
   def self.collection_type
     Hyrax::CollectionType.find_by(machine_id: 'media_list')
   end
@@ -20,16 +22,6 @@ class MediaList < Collection
     self.collection_type_gid = collection_type.gid
   end
 
-  DEFAULT_GROUP_ROLES = %w[managers].freeze
-
-  def managers_group
-    Role.find_by(name: id.concat("_managers"))
-  end
-
-  def managers
-    Role.find_by(name: id.concat("_managers")).users
-  end
-
   def collection_type
     self.class.collection_type
   end
@@ -38,28 +30,11 @@ class MediaList < Collection
     true
   end
 
+  def apply_collection_permissions?
+    false
+  end
+
   def human_readable_type
     "Media List"
   end
-
-  def user_groups
-    [managers_group]
-  end
-
-  def group_members
-    managers
-  end
-
-  # Create manager/depositor/viewer roles for each Team/Project collection
-  def create_collection_groups
-    Role.create(name: id.concat("_managers"))
-    add_depositor_to_managers
-  end
-
-  def membership_of(user)
-    membership_list = []
-    membership_list << 'Manager' if managers.include?(user)
-    membership_list
-  end
-
 end

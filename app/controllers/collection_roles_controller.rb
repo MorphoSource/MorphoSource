@@ -232,8 +232,8 @@ class CollectionRolesController < ApplicationController
 
   def presenter
     if @collection.list?
-      self.presenter_class = Morphosource::MediaListPresenter
-      self.single_item_search_builder_class = Morphosource::MediaLists::SingleMediaListSearchBuilder
+      self.presenter_class = Morphosource::Collections::MediaListPresenter
+      # self.single_item_search_builder_class = Morphosource::MediaLists::SingleMediaListSearchBuilder
     end
     super
   end

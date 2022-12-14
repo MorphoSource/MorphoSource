@@ -11,3 +11,10 @@ en:
             new: 'New List'
             view: 'View List'
             collection_update_success: ' was successfully updated.'
+          form_members_table:
+            managers:
+              help: Managers of this list can add and remove media from the collection, modify collection metadata, and delete the list. Managers are not given additional access to any media in the list.
+            viewers:
+              help: Viewers of this list can view the list even if the visibility permissions otherwise would not permit them to view it. Viewers are not given additional access to any media in this list.
+
+

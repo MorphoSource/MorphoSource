@@ -39,17 +39,21 @@ class Collection < ActiveFedora::Base
     team? || project?
   end
 
+  def apply_collection_permissions?
+    project? || team?
+  end
+
   # managers_group, depositors_group, editors_group, downloaders_group, and viewers_group methods
-  DEFAULT_GROUP_ROLES.each do |role|
+  self::DEFAULT_GROUP_ROLES.each do |role|
     define_method("#{role}_group") do
       Role.find_by(name: id.concat("_#{role}"))
     end
   end
 
   # managers, depositors, editors, downloaders, and viewers methods
-  DEFAULT_GROUP_ROLES.each do |role|
+  self::DEFAULT_GROUP_ROLES.each do |role|
     define_method(role) do
-      Role.find_by(name: id.concat("_#{role}")).users
+      Role.find_by(name: id.concat("_#{role}"))&.users || []
     end
   end
 
@@ -74,7 +78,7 @@ class Collection < ActiveFedora::Base
   end
 
   def user_groups
-    [managers_group, editors_group, depositors_group, downloaders_group, viewers_group]
+    [managers_group, editors_group, depositors_group, downloaders_group, viewers_group].compact
   end
 
   def user_groups_names
@@ -124,7 +128,9 @@ class Collection < ActiveFedora::Base
 
   # Create manager/depositor/viewer roles for each Team/Project collection
   def create_collection_groups
-    DEFAULT_GROUP_ROLES.each do |role|
+    return if managers_group.present?
+
+    self.class::DEFAULT_GROUP_ROLES.each do |role|
       Role.create(name: id.concat("_#{role}"))
     end
     add_depositor_to_managers
@@ -132,7 +138,7 @@ class Collection < ActiveFedora::Base
 
   def copy_parent_membership(parent_id)
     parent = Collection.find(parent_id)
-    DEFAULT_GROUP_ROLES.each do |role|
+    self.class::DEFAULT_GROUP_ROLES.each do |role|
       parent.send(role).each do |member|
         send(role) << member unless group_members.include? member
       end
@@ -143,7 +149,7 @@ class Collection < ActiveFedora::Base
   def remove_parent_membership(parent, user=nil)
     # do not remove the selected user from the collection members
     members = parent.group_members - [user]
-    DEFAULT_GROUP_ROLES.each do |role|
+    self.class::DEFAULT_GROUP_ROLES.each do |role|
       members.each do |member|
         send(role).delete(member)
       end
@@ -159,7 +165,7 @@ class Collection < ActiveFedora::Base
         member.errors.add(:collections, message)
       else
         member.member_of_collections << self
-        if project? || team?
+        if apply_collection_permissions?
           Hyrax::PermissionTemplateApplicator.apply(permission_template).to(model: member)
           member.save!
           InheritPermissionsJob.perform_later(member)
@@ -197,7 +203,7 @@ class Collection < ActiveFedora::Base
     return unless self.organization.present?
     return unless work.organizations_team_ids.include? self.id
     groups = []
-    DEFAULT_GROUP_ROLES.each do |role|
+    self.class::DEFAULT_GROUP_ROLES.each do |role|
       groups.push(self.id + '_' + role)
     end
     work.read_groups = (work.read_groups + groups).uniq

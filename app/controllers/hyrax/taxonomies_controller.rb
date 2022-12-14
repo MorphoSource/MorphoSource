@@ -10,5 +10,10 @@ module Hyrax
 
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::TaxonomyPresenter
+
+    def show
+      render 'hyrax/base/unauthorized', status: :unauthorized and return unless current_user&.admin?
+      super
+    end
   end
 end

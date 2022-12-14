@@ -14,6 +14,7 @@ module Hyrax
       :required_archival_of_published_derivatives,
       :permits_3d_use,
       :physical_object_id,
+      :remote_origin_url,
       to: :solr_document
 
     attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,

@@ -97,7 +97,7 @@ function setupMatchingFormatRequirement() {
   // Create placeholder for message in the file upload form listing allowed file formats.
   let uploadForm = $('#fileupload');
   let acceptedFormatsMessage = document.createElement('p');
-  $(acceptedFormatsMessage).attr('id','formats-message');
+  $(acceptedFormatsMessage).attr('class','formats-message');
   $(acceptedFormatsMessage).text("Uploaded file formats must match the selected media type.");
   // Create placeholder for message in the file upload form listing unallowed files to be removed.
   let unallowedFilesMessage = document.createElement('p');
@@ -109,12 +109,15 @@ function setupMatchingFormatRequirement() {
   uploadForm.prepend(unallowedOldFilesMessage);
   uploadForm.prepend(unallowedFilesMessage);
   uploadForm.prepend(acceptedFormatsMessage);
+
+  let remoteFileForm = $('#remote-file');
+  remoteFileForm.prepend($(acceptedFormatsMessage).clone());
 }
 
 // Updates message in upload form to display accepted file formats.
 function updateAcceptedFormatsMessage() {
   let formats = mediaTypeFormats();
-  let acceptedFormatsMessage = $('#formats-message');
+  let acceptedFormatsMessage = $('.formats-message');
   acceptedFormatsMessage.text(formats.message);
 }
 

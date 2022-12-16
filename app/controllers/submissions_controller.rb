@@ -211,7 +211,6 @@ class SubmissionsController < ApplicationController
   end
 
   def create
-byebug
     clear_session_submission_settings
     reinstantiate_submission
 
@@ -795,7 +794,7 @@ byebug
       # set file attributes for remote-backed media
       uri = URI.parse(attributes_for_actor["remote_origin_url"].first)
 
-byebug
+#byebug
 # todo: validate white list here?
 
       attributes_for_actor[:remote_files] = [{"url" => attributes_for_actor["remote_origin_url"].first, "file_name" => File.basename(uri.path)}]
@@ -843,7 +842,6 @@ byebug
   end
 
   def save_params_to_session
-byebug
     session[:submission].deep_merge!(submission_params) if params[:submission]
   end
 

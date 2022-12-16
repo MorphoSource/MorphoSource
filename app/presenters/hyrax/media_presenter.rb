@@ -17,7 +17,7 @@ module Hyrax
       :remote_origin_url,
       to: :solr_document
 
-    attr_accessor :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
+    attr_accessor :file_origin, :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_taxonomy_title, :physical_object_link, :physical_object_id,
       :device_and_facility, :device_link, :device, :device_id, :device_label, :device_manufacturer, :device_description,
       :device_organization_institution, :device_modality, :device_modality_term,
@@ -238,6 +238,7 @@ module Hyrax
       @compression = []
       @color_depth = []
       @file_status = ""
+      @file_origin = remote_origin_url.present?? "Remote" : ""
       temp = ""
       contents_mime_type = ""
       @file_set_original_file_present = true

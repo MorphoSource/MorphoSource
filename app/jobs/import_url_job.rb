@@ -26,7 +26,12 @@ class ImportUrlJob < Hyrax::ApplicationJob
     @file_set = file_set
     @operation = operation
 
-    unless file_set.is_remote_backed?
+    if file_set.is_remote_backed?
+      unless user.can_submit_remote_file? file_set.import_url
+        send_error('User is not allowed to submit the remote file')
+        return false
+      end
+    else
       unless BrowseEverything::Retriever.can_retrieve?(uri, headers)
         send_error('Expired URL')
         return false

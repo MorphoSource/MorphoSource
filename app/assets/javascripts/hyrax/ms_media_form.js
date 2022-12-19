@@ -609,15 +609,19 @@ function prepareFieldsBeforeSubmit() {
 }
 
 var noFileCheck = function() {
-  if ($('.attribute-filename').length > 0) {
-    // there is existing file associated with media
+  if (fileOrigin == "local") {
+    if ($('.attribute-filename').length > 0) {
+      // there is existing file associated with media
+      return true;
+    } else if (justUploaded > 0) {
+      // file just uploaded waiting to be save
+      return true;
+    }  
+  } else if (fileOrigin == "remote") {
     return true;
-  } else if (justUploaded > 0) {
-    // file just uploaded waiting to be save
-    return true;
-  } else {
-    return confirm('The media currently has no file associated.  Please click OK if you want to proceed.')
-  }
+  } 
+
+  return confirm('The media currently has no file associated.  Please click OK if you want to proceed.')
 }
 
 var hasRequiredFields = function() {

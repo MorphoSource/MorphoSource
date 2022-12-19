@@ -7,6 +7,10 @@ module Morphosource
     included do
       # -- Core metadata --
 
+      property :remote_origin_url, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/remoteOriginUrl"), multiple: false do |index|
+        index.as :stored_searchable
+      end
+  
       # Required select values
       property :media_type, predicate: ::RDF::URI.new("http://rs.tdwg.org/ac/terms/subtypeLiteral") do |index|
         index.as :stored_searchable, :facetable

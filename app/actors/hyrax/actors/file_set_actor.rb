@@ -7,9 +7,10 @@ module Hyrax
       include Lockable
       attr_reader :file_set, :user, :attributes
 
-      def initialize(file_set, user)
+      def initialize(file_set, user, is_remote_backed = false)
         @file_set = file_set
         @user = user
+        @is_remote_backed = is_remote_backed
       end
 
       # @!group Asynchronous Operations
@@ -22,8 +23,8 @@ module Hyrax
       def create_content(file, relation = :original_file, from_url: false)
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)
-        file_set.title = [file_set.label] if file_set.title.blank?
-        if file_set.is_remote_backed? && file.path.present?
+        file_set.title = [file_set.label] if file_set.title.blank?        
+        if (@is_remote_backed || file_set.is_remote_backed?) && file.path.present?
           file_set.digest = Digest::SHA1.file(file.path).to_s
         end
         return false unless file_set.save # Need to save to get an id

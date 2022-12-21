@@ -128,6 +128,7 @@ class FileSet < ActiveFedora::Base
   end
 
   def is_remote_backed?
-    self.parent.is_remote_backed?
+    return false unless self.parent.present?
+    return self.parent.is_remote_backed?
   end
 end

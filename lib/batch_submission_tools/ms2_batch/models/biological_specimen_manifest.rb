@@ -89,20 +89,40 @@ module BatchSubmissionTools
                   )
                 ).present?
               )
-              oi_bsos.first
-            elsif (
-                initial_attrs[:catalog_number].present? && 
-                ( cc_bsos = ::BiologicalSpecimen.where(
-                    catalog_number: initial_attrs[:catalog_number].to_s,
-                    collection_code: initial_attrs[:collection_code].to_s,
-                    institution_code: initial_attrs[:institution_code].to_s
-                  )
-                ).present?
-              )
-              cc_bsos.first
+              Rails.logger.debug('found bso matching OID')
+              oi_bsos.first 
             else
-              nil
+              if initial_attrs[:catalog_number].present? 
+                cc_bsos = ::BiologicalSpecimen.where(
+                  catalog_number: initial_attrs[:catalog_number].to_s,
+                  collection_code: initial_attrs[:collection_code].to_s,
+                  institution_code: initial_attrs[:institution_code].to_s
+                )
+                if cc_bsos.present?
+                  Rails.logger.debug('found bso matching darwin core triplets, checking OID...')
+                  if initial_attrs[:occurrence_id].present? && cc_bsos.first.occurrence_id.present?
+                    # When matching the darwin core triplets, if OID is specified in the submission,
+                    # the existing bso must have an OID that matches the OID specified 
+                    if cc_bsos.first.occurrence_id.first == initial_attrs[:occurrence_id].first
+                      Rails.logger.debug('- bso has OID matches specified OID')
+                      cc_bsos.first
+                    else
+                      Rails.logger.debug('- bso has OID but does not match specified OID')
+                      nil
+                    end
+                  else
+                    Rails.logger.debug('no need to compare OID, returning bso found.')
+                    cc_bsos.first
+                  end
+                else
+                  Rails.logger.debug('darwin core triplets not found')
+                  nil
+                end
+              else
+                nil
+              end
             end
+
         end
 
         def import_work

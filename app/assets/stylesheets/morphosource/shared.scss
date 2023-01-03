@@ -38,6 +38,17 @@ $ms-dark-blue: #002c64;
   }
 }
 
+/* override jquery-confirm styles */
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default, 
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default:hover, 
+.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default,
+.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default:hover {
+  background-color: $button-color !important;
+  color: $button-font-color !important;
+  border-color: $button-border-color !important;
+  white-space: nowrap !important;
+}
+
 /* global and utility classes below.  Some will be available in Boostrap 4.0+ */
 .m-0 {
   margin: 0 !important;

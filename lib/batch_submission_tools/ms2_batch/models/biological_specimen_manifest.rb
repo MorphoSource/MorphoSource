@@ -89,37 +89,30 @@ module BatchSubmissionTools
                   )
                 ).present?
               )
+              # OID is specified in the submission, and a bso is found with matching OID
               Rails.logger.debug('found bso matching OID')
               oi_bsos.first 
             else
-              if initial_attrs[:catalog_number].present? 
-                cc_bsos = ::BiologicalSpecimen.where(
-                  catalog_number: initial_attrs[:catalog_number].to_s,
-                  collection_code: initial_attrs[:collection_code].to_s,
-                  institution_code: initial_attrs[:institution_code].to_s
-                )
-                if cc_bsos.present?
-                  Rails.logger.debug('found bso matching darwin core triplets, checking OID...')
-                  if initial_attrs[:occurrence_id].present? && cc_bsos.first.occurrence_id.present?
-                    # When matching the darwin core triplets, if OID is specified in the submission,
-                    # the existing bso must have an OID that matches the OID specified 
-                    if cc_bsos.first.occurrence_id.first == initial_attrs[:occurrence_id].first
-                      Rails.logger.debug('- bso has OID matches specified OID')
-                      cc_bsos.first
-                    else
-                      Rails.logger.debug('- bso has OID but does not match specified OID')
-                      nil
-                    end
-                  else
-                    Rails.logger.debug('no need to compare OID, returning bso found.')
+              if initial_attrs[:occurrence_id].present? 
+                # if OID is specified, but no BSO with matching OID is found in the previous block, 
+                # there is no need to look up by darwin core triplets because OID will not match anyway
+                nil
+              else
+                if initial_attrs[:catalog_number].present? 
+                  cc_bsos = ::BiologicalSpecimen.where(
+                    catalog_number: initial_attrs[:catalog_number].to_s,
+                    collection_code: initial_attrs[:collection_code].to_s,
+                    institution_code: initial_attrs[:institution_code].to_s
+                  )
+                  if cc_bsos.present?
+                    Rails.logger.debug('found bso matching darwin core triplets')
                     cc_bsos.first
+                  else
+                    nil
                   end
                 else
-                  Rails.logger.debug('darwin core triplets not found')
                   nil
                 end
-              else
-                nil
               end
             end
 

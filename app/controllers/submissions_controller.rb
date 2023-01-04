@@ -791,12 +791,8 @@ class SubmissionsController < ApplicationController
 
   def set_files(attributes_for_actor)
     if attributes_for_actor["remote_origin_url"].present?
-      # set file attributes for remote-backed media
+      # set file attributes
       uri = URI.parse(attributes_for_actor["remote_origin_url"].first)
-
-#byebug
-# todo: validate white list here?
-
       attributes_for_actor[:remote_files] = [{"url" => attributes_for_actor["remote_origin_url"].first, "file_name" => File.basename(uri.path)}]
       attributes_for_actor[:uploaded_files] = []
     else

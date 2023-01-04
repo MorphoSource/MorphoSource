@@ -608,6 +608,14 @@ function prepareFieldsBeforeSubmit() {
 
 }
 
+var remoteUrlCheck = function() {
+
+  alert($('#media_remote_origin_url').val());
+  alert($('#media_allowed_remote_source').val())
+
+  return false;
+}
+
 var noFileCheck = function() {
   if (fileOrigin == "local") {
     if ($('.attribute-filename').length > 0) {

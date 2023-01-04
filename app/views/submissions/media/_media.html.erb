@@ -21,7 +21,7 @@
           prompt: "Myself" %>
         </div>
       <% end %>
-
+      <%= f.hidden_field :allowed_remote_source, :value => current_user.allowed_remote_source %>
       <div class="row">
 
         <div class="col-xs-12">

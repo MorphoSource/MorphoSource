@@ -609,11 +609,9 @@ function prepareFieldsBeforeSubmit() {
 }
 
 var remoteUrlCheck = function() {
-
-  alert($('#media_remote_origin_url').val());
-  alert($('#media_allowed_remote_source').val())
-
-  return false;
+  var url = (new URL($('#media_remote_origin_url').val()));
+  var whitelist = $('#media_allowed_remote_source').val().split('\n');
+  return ($.inArray(url.host, whitelist) != -1);
 }
 
 var noFileCheck = function() {

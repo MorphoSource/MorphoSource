@@ -609,9 +609,17 @@ function prepareFieldsBeforeSubmit() {
 }
 
 var remoteUrlCheck = function() {
-  var url = (new URL($('#media_remote_origin_url').val()));
+  try {
+    var url = (new URL($('#media_remote_origin_url').val()));
+    var extension = url.pathname.substring(url.pathname.lastIndexOf('.'));
+  } catch (e) {
+    return false;    
+  }
   var whitelist = $('#media_allowed_remote_source').val().split('\n');
-  return ($.inArray(url.host, whitelist) != -1);
+  var acceptedFormats = $('#remote-file .formats-message').html().replace(/(.*): /, '') .split(', ');
+  console.log("checking " + extension +  " in: " + acceptedFormats);
+
+  return ($.inArray(url.host, whitelist) != -1) && ($.inArray(extension, acceptedFormats) != -1);
 }
 
 var noFileCheck = function() {

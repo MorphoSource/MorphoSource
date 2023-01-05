@@ -11,7 +11,13 @@ module Morphosource
         thumb = fetch_thumbnail(object)
         return unless thumb
         if thumbnail?(thumb)
-          thumbnail_path(thumb)
+          # add timestamp for fingerprinting
+          if object.date_modified.present?
+            timestamp = "&t=" + object.date_modified.to_time.to_i.to_s
+          else
+            timestamp = ""
+          end
+          thumbnail_path(thumb) + timestamp
         else
           default_image
         end

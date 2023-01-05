@@ -1,4 +1,15 @@
+div.panel.itemtable {
+  min-width: 1200px;
+}
+
+// Panel has controller name class, can override general behavior by controller
+div.panel.itemtable.requests {
+  min-width: 1600px;
+}
+
 table.itemtable {
+  font-size: 12px;
+
   a.table-sort-header {
     color: inherit;
     text-decoration: none;
@@ -9,6 +20,39 @@ table.itemtable {
 
     span.glyphicon-sort-by-attributes,span.glyphicon-sort-by-attributes-alt {
       opacity:  0.7;
+    }
+  }
+
+  td.media-thumbnail-column {
+    width: 80px;
+  }
+
+  .date-column {
+    width: 6%;
+  }
+}
+
+div.date-range-element {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+div.paginate-wrapper.itemtable {
+  div.paginate-info {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  div#per_page-dropdown {
+    padding-top: 0;
+    vertical-align: top;
+
+    button {
+      background-color: #fff;
+      border-color: rgb(221, 221, 221);
+      border-width: 1px;
+      border-style: solid;
+      border-radius: 3px;
     }
   }
 }

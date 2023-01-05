@@ -34,6 +34,14 @@ en:
         header: 'Fund Code Control Panel'
       fund_code_charges:
         header: 'Fund Code Charges'
+      itemtable:
+        date_approved: 'Appr.'
+        date_canceled: 'Canc.'
+        date_cleared: 'Clear'
+        date_denied: 'Deny'
+        date_downloaded: 'DL'
+        date_expired: 'Expiry'
+        date_requested: 'Req.'
     base:
       form_progress:
         required_format: 'File formats match selected media type'
@@ -73,6 +81,13 @@ en:
         heading:
           file_visibility: 'File Visibility'
           date_downloaded: 'Date Downloaded'
+          date_approved: 'Date Approved'
+          date_canceled: 'Date Canceled'
+          date_cleared: 'Date Cleared'
+          date_denied: 'Date Denied'
+          date_downloaded: 'Date Downloaded'
+          date_expired: 'Date Expired'
+          date_requested: 'Date Requested'
           publication_status: 'Publication Status'
         works:
           submission_button: 'New Submission'

@@ -141,10 +141,15 @@ module Morphosource
     def prepare_name(taxon) 
       # Has to be done due to GBIF canonicalName/genus name mismatches
       if taxon['rank'] == 'SPECIES' || taxon['rank'] == 'SUBSPECIES'
-        nt = taxon[GBIF_NAME_TERM].split(' ')
         genus = taxon['genus']
-        species = (nt.length > 1) ? nt[1] : nil 
-        subspecies = (nt.length > 2) ? nt[2] : nil
+        if (taxon[GBIF_NAME_TERM]).present?
+          nt = taxon[GBIF_NAME_TERM]&.split(' ') || []
+          species = (nt.length > 1) ? nt[1] : nil 
+          subspecies = (nt.length > 2) ? nt[2] : nil
+        else
+          species = taxon['species']
+          subspecies = nil
+        end
         return [genus, species, subspecies].compact.join(' '), species, subspecies
       else
         return taxon[GBIF_NAME_TERM], nil, nil

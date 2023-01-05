@@ -15,5 +15,13 @@ module Morphosource
         end
       end
     end
+
+    def format_users_select2(user_keys)
+      Array(user_keys).map do |ms_id|
+        if (u = User.where(ms_id: ms_id)&.first).present?
+          { id: u.id, user_key: u.user_key, text: u.email.present? ? u.email : '' }
+        end
+      end.compact
+    end
   end
 end

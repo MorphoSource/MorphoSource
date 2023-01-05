@@ -1,136 +1,42 @@
 # MorphoSource_SF 
 
-A generated Hyrax-based MorphoSource application
+MorphoSource is a digital repository for 3D, 2D, and AV media content representing physical objects of scholarly relevance, with specific support for biological specimen objects, built from and on top of [Hyrax 2.9](https://github.com/samvera/hyrax). 
 
-*Note that these instructions for running this application are intended to run within the [morphosource-vagrant](https://github.com/MorphoSource/morphosource-vagrant) virtual machine. There also exists an Ansible solution for running the application on production environments.*
+## Technical stack
 
+The primary elements of the technical stack are as follows. Version numbers reflect the current Docker deployment environment, and may differ slightly in other environments.
 
-## Prerequisites (vagrant / virtualbox)
+* Ruby on Rails web application ([Ruby 2.6](https://www.ruby-lang.org/en/), [Rails 5.2.8](https://rubyonrails.org/)): Customized Hyrax 2.9 digital repository application. Connects to FCRepo, Solr, and application-specific Postgres DB for application state information.
+* [Fedora (FCRepo) 4.7.5](https://github.com/fcrepo/fcrepo/tree/fcrepo-4.7.5): Preservation and storage layer for binary files and primary record metadata. In production and docker environments, primary record metadata is stored using an FCRepo-managed Postgres DB distinct from the application DB.
+* [Solr 7.7.3](https://solr.apache.org/): Indexes important record data for fast querying to enable browsing, searching, and filtering hundreds of thousands of records.
+* [Postgres](https://www.postgresql.org/): Used by both Rails web app and FCRepo.
+* [Universal Viewer](https://universalviewer.io/) & [Aleph](https://github.com/aleph-viewer/aleph): Web viewer framework and extensions to enable viewing of web preview assets for 3D models, CT/MRI volume data, 2D images, and video files.
+* [Blacklight Catalog Framework](https://projectblacklight.org/): Used for browsing, searching, and filtering records in application front-end.
 
-* [Vagrant](https://www.vagrantup.com/) version 1.8.5+
+**Note:** The Docker implementation of Solr that we use is **not** affected by the recent log4j security vulnerability. While version 7.7.3 of Solr is in the range of Solr versions that can be affected by the vulnerability, the specific Docker implementation successfully mitigates the vulnerability with correct JVM settings as verified by security experts and the Apache Solr team.
 
-   *You can quickly check to see if you have a suitable version of vagrant installed by running `vagrant -v`*
+There is also a raft of other third-party applications used behind the scenes to process uploaded binary files, automatically characterize file-level metadata from them, and to generate web preview derivative assets for them. For some of these (3D models and CT/MRI volumes in particular), there are no industry-standard tools to generate previews, and MorphoSource generates these preview assets using original workflows that sometimes involve multiple third-party tools. 
 
-   *If you don't have vagrant installed, you can [download it](https://www.vagrantup.com/downloads.html) -- it's available for both Mac and Windows, as well as Debian and Centos.*
+* FITS 1.3.0: Characterizes file-level metadata for a wide variety of files. 
+* ImageMagick: Characterizes 2D images and produces thumbnails for preview assets.
+* Blender 2.8: Used to work with 3D meshes, both to characterize and to assist in generating preview assets.
+* FIJI 2.3.0: Used to work with CT/MRI image stacks to assist in generating previews.
+* DICOM Toolkit: Various tools used to process CT/MRI image stacks for generating previews. 
+* Python 3, numpy, Pillow, pydicom: Python and relevant modules used for CT/MRI processing scripts.
+* gltf-pipeline: Tool to compress generated preview GLTF files using Draco compression, reducing filesize.
 
-* [VirtualBox](https://www.virtualbox.org/)
+## Installing and deploying MorphoSource
 
-   *Vagrant runs inside of a Virtual Machine (VM) hosted by VirtualBox, which is made by Oracle and is free to [download](https://www.virtualbox.org/wiki/Downloads). They have version for Mac and Windows, as well as Linux and Solaris.*
+The straightforward full-featured way to install and deploy MorphoSource is a containerized approach that uses Docker Compose to stand up a handful of containers comprising the entire technical stack. See [CONTAINERS.md](https://github.com/MorphoSource/MorphoSource_SF/blob/master/CONTAINERS.md) for more details. This is the approach recommended for any future instances of MorphoSource.
 
-   *You can quickly check to see if you have VirtualBox installed by running `vboxmanage --version`*
+There is also a more outdated approach using a [Vagrant virtual machine](https://github.com/MorphoSource/MorphoSource_SF/blob/master/VAGRANT.md). Historically, our developers used this for deploying individual development environments. But at this point, all of our devs have shifted to using Docker, and we would not suggest continuing to use Vagrant unless there are very good reasons to do so.
 
+Currently (as of November 2022), we deploy MorphoSource to production on Duke OIT VMs using a collection of Ansible scripts to prepare the server VM, install prerequisites, and install and set up the technical stack as well as the Rails application itself. This represents a third possible way of deploying MorphoSource, though it's by far the most complex and most dependent on specific server and network policies (and so would probably require modification if it were, for example, being applied in another university's IT environment). These scripts are available in the separate [morphosource-ansible](https://github.com/MorphoSource/morphosource-ansible) repository. In the future we plan to move to a simpler devOps environment where we use Ansible to deploy the Docker containerized version of the application. If you are interested in using Ansible here, we would recommend contacting our team for a meeting to discuss the pros and cons and so we can share tips and suggestions.
 
-## Setup the Environment
+## Useful Links
 
-
-### Vagrant
-
-1. clone the [morphosource-vagrant](https://github.com/morphosource/morphosource-vagrant) repository
-
-   `git clone https://github.com/morphosource/morphosource-vagrant.git`
-
-2. move to the *morphosource-vagrant* folder, then clone the MorphoSource_SF repository
-
-   `cd morphosource-vagrant`
-
-   `git clone https://github.com/MorphoSource/MorphoSource_SF.git`
-
-3. startup vagrant
-
-   `vagrant up`
-
-   *This will run through provisioning the new Virtual Machine. The first time it runs, it will take a while to complete. In the future when you want to startup the dev environment, you'll run the same command but it will startup much more quickly*
-
-   *Vagrant creates a shared folder that you can access both inside the VM and on your workstation. We've found it's best to do your git operations exclusively via the workstation folder.*
-
-   Shell into vagrant box
-
-   `vagrant ssh`
-
-
-### MorphoSource application
-
-This repo ([MorphoSource_SF](https://github.com/morphosource/MorphoSource_SF)) is included as a submodule in morphosource-vagrant, so the folder and files are there already.
-
-4. Move to the MorphoSource_SF folder
-
-   `cd /vagrant/MorphoSource_SF`
-
-   then checkout the latest code from the MorphoSource_SF repository.
-   For dev branch, run the following commands:
-
-    `git checkout dev`
-
-    `git fetch`
-
-    `git pull`
-
-5. Run MorphoSource_SF setup script
-
-   `../install_scripts/morphosource_sf.sh`
-
-6. start the server(s)
-
-    `bin/rails hydra:server`
-
-    *This starts Solr, Fedora, and Rails*
-
-
-7. Create default admin set
-
-    Open a new ssh session and shell into vagrant:
-
-   `cd morphosource-vagrant`
-
-   `vagrant ssh`
-
-   `cd /vagrant/MorphoSource_SF`
-
-    then run
-
-    `rake morphosource:setup`
-    
-    `rake morphosource:dev_cache_on`
-
-    (you can close the session when it's done)
-
-
-8. The application should now be running at [localhost:3000](http://localhost:3000). You can try to do some things like [creating a new user account](http://localhost:3000/users/sign_up?locale=en) and [depositing an object](http://localhost:3000/concern/works/new?locale=en)
-
-    *Note that if you would like to give your user account admin rights, you'll need to edit the config/role_map.yml file. Create a new role type under the development section at the top named 'admin:' and add the user account you created under it as '- email@address.com'.  After updating the role_map.xml, shutdown and restart the rails server to see the change. *
-
-
-### Shut down the application
-
-* to shut down the app, stop the rails server by pressing Ctrl-C, logout of vagrant `logout`, and then shutdown the VM `vagrant halt`
-
-
-### Start up the application
-
-* to startup again, run `vagrant up`, `vagrant ssh`, `cd /vagrant/MorphoSource_SF`, and `bin/rails hydra:server`
-
-
-
-## Solr and Fedora
-
-* [SOLR](https://github.com/apache/lucene-solr) should be running on [:8983](http://localhost:8983)
-* [Fedora](https://github.com/fcrepo4/fcrepo4) should be running on [:8984](http://localhost:8984)
-* Solr and Fedora now run individually (so we don't need to run rake tasks) see [Run the wrappers](https://github.com/samvera/hyrax/wiki/Hyrax-Development-Guide#run-the-wrappers).
-
-
-## Environment (via morphosource-vagrant)
-
-* Ubuntu 16.04 64-bit base machine
-* [Solr 7.1](http://lucene.apache.org/solr/): [http://localhost:8983/solr/](http://localhost:8983/solr/)
-* [Fedora 12.1](http://fedorarepository.org/): [http://localhost:8984/](http://localhost:8984/)
-* [Ruby 2.6](https://www.ruby-lang.org) (managed by RVM)
-* [Rails 5.2](http://rubyonrails.org/)
-* [Hyrax v2.9](http://hyr.ax/)
-
-## Tests
-
-* See further instructions in the [Wiki](https://github.com/MorphoSource/MorphoSource_SF/wiki/Tests)
-
-## References
-
-Instructions are based on the [Samvera Hyrax](https://github.com/samvera/hyrax#creating-a-hyrax-based-app) installation instructions
+* [MorphoSource Technical Documentation](https://github.com/MorphoSource/docs/wiki): Helpful documentation pertaining to technical administration of a MorphoSource repository. The base page is the "MorphoSource Management Guide (Or, The Care And Feeding Of The MorphoSource Application)," but the subsidiary pages in the wiki also contain much useful information.
+* [MorphoSource container environment documentation](https://github.com/MorphoSource/MorphoSource_SF/blob/master/CONTAINERS.md)
+* [General-purpose Documentation](https://wiki.duke.edu/display/MD/MorphoSource+Documentation+Home): This is a set of documentation directed toward end users that explains how to use the MorphoSource repository from a user-facing perspective.
+* [REST API schema and documentation](https://morphosource.stoplight.io/docs/morphosource-api/rm6bqdolcidct-morpho-source-rest-api): Lists and examples of current query API routes. All of this information is encoded using OpenAPI 3.1.0 and is also [available on GitHub](https://github.com/MorphoSource/morphosource-api).
+* [Hyrax GitHub Repository](https://github.com/samvera/hyrax): It can sometimes be helpful to look at some of the documentation relating to Hyrax, since it is the foundation on which MorphoSource runs. But there are many differences between vanilla Hyrax and MorphoSource, so caveat lector!

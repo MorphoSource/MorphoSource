@@ -18,8 +18,8 @@ In the `vendor/docker` directory, there is a `credentials.env-example` file. Cop
 
 ```
 # Postgres DB user and pass
-DB_USERNAME=
-DB_PASSWORD=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
 
 # Fedora user and pass
 FCREPO_USERNAME=
@@ -144,7 +144,7 @@ cp path\to\your\keyfile  path\to\MorphoSource_SF\vendor\docker\apache\certs\serv
 
 ## Built With
 
-* [MorphoSource 2.1.0](https://github.com/MorphoSource/MorphoSource_SF)
+* [MorphoSource 2.2.0](https://github.com/MorphoSource/MorphoSource_SF)
 * [Fedora FCRepo 4.7.5](https://github.com/orgs/samvera/packages/container/package/fcrepo4)
 * [Solr 7.7.3](https://hub.docker.com/_/solr)
 * [Postgres](https://hub.docker.com/_/postgres)

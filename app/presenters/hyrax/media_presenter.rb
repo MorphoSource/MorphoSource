@@ -168,6 +168,10 @@ module Hyrax
       @download_permission.include?('Publish')
     end
 
+    def has_DOI?
+      @doi.present?
+    end
+
     def has_child_media?
       @child_media_id_list.any?
     end

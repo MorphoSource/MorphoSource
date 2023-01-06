@@ -616,9 +616,7 @@ var remoteUrlCheck = function() {
     return false;    
   }
   var whitelist = $('#media_allowed_remote_source').val().split('\n');
-  var acceptedFormats = $('#remote-file .formats-message').html().replace(/(.*): /, '') .split(', ');
-  console.log("checking " + extension +  " in: " + acceptedFormats);
-
+  var acceptedFormats = $('#media_accepted_formats').val().split(', ');
   return ($.inArray(url.host, whitelist) != -1) && ($.inArray(extension, acceptedFormats) != -1);
 }
 

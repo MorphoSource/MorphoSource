@@ -127,6 +127,9 @@ function updateAcceptedFormatsInput() {
   let formats = mediaTypeFormats();
   let fileInput = $('#addfiles > input[type="file"]');
   fileInput.attr("accept", formats.list);
+  if ($('#media_accepted_formats').length) {
+    $('#media_accepted_formats').val(formats.list);
+  }
 }
 
 // fulfilling or unfulfilling the format requirement triggers Hyrax to check whether the form is valid.

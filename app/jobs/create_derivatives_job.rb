@@ -10,6 +10,10 @@ class CreateDerivativesJob < Hyrax::ApplicationJob
 
     file_set.create_derivatives(filename)
 
+    # Since file characterization and derivative creation overwrites the mime_type set by 
+    # calling AddExternalFileToFileSet, this needs to be called here to update the mime_type 
+    file_set.set_final_attributes
+
     # Reload from Fedora and reindex for thumbnail and extracted text
     file_set.reload
     file_set.update_index

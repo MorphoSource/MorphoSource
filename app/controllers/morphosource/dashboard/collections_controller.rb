@@ -17,6 +17,8 @@ module Morphosource
 
       self.form_class = Hyrax::Forms::CollectionForm
 
+      helper_method :search_action_for_dashboard
+
       def edit
         @tab = :details
         presenter
@@ -39,32 +41,32 @@ module Morphosource
       end
 
       def process_member_changes
-          case params[:collection][:members]
-          when 'add' then add_members_to_collection
-          when 'remove' then remove_members_from_collection
-          when 'move' then move_members_between_collections
-          end
+        case member_params
+        when 'add' then add_members_to_collection
+        when 'remove' then remove_members_from_collection
+        when 'move' then move_members_between_collections
         end
+      end
 
-        def add_members_to_collection(collection = nil)
-          collection ||= @collection
-          collection.add_member_objects batch
-        end
+      def add_members_to_collection(collection = nil)
+        collection ||= @collection
+        collection.add_member_objects batch
+      end
 
-        def remove_members_from_collection
-          @collection.remove_member_objects(batch)
-        end
+      def remove_members_from_collection
+        @collection.remove_member_objects(batch)
+      end
 
-        def move_members_between_collections
-          destination_collection = ::Collection.find(params[:destination_collection_id])
-          remove_members_from_collection
-          add_members_to_collection(destination_collection)
-          if destination_collection.save
-            flash[:notice] = "Successfully moved #{batch.count} files to #{destination_collection.title} Collection."
-          else
-            flash[:error] = "An error occured. Files were not moved to #{destination_collection.title} Collection."
-          end
+      def move_members_between_collections
+        destination_collection = ::Collection.find(params[:destination_collection_id])
+        remove_members_from_collection
+        add_members_to_collection(destination_collection)
+        if destination_collection.save
+          flash[:notice] = "Successfully moved #{batch.count} files to #{destination_collection.title} Collection."
+        else
+          flash[:error] = "An error occured. Files were not moved to #{destination_collection.title} Collection."
         end
+      end
 
       def members
         @tab = :members
@@ -78,21 +80,10 @@ module Morphosource
         respond_to do |format|
           format.js {render :js => "location.reload()"}
           format.html do
-            if @collection.team?
-              redirect_to main_app.my_teams_path
-            else
-              redirect_to main_app.my_projects_path
-            end
+            redirect_to main_app.send("my_#{@collection.collection_type.machine_id.pluralize}_path")
           end
           format.json { head :no_content, location: '/dashboard/my/collections' }
         end
-      end
-
-      def create
-        unless current_user.can?(:create_any, Collection)
-          redirect_to root_url, alert: 'You are not authorized to create this collection.' and return
-        end
-        super
       end
 
       def after_create
@@ -132,17 +123,37 @@ module Morphosource
           @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
           authorize! :edit, @curation_concern
         else
-          @curation_concern ||= Collection.new
+          @curation_concern ||= collection_class.new
         end
         @collection ||= @curation_concern
         rescue CanCan::AccessDenied
         redirect_to root_url, alert: 'You are not authorized to access this collection.'
       end
 
-       def update_thumbnail
-         media = Media.where(id: params[:collection][:representative_id]).first
-         @collection.thumbnail_id = media.try(:thumbnail_id)
-       end
+      def collection_class
+        Collection
+      end
+
+      def default_collection_type_gid
+        default_collection_type.gid
+      end
+
+      def update_thumbnail
+        media = Media.where(id: thumbnail_params).first
+        @collection.thumbnail_id = media.try(:thumbnail_id)
+      end
+
+      def collection_params
+        form_class.model_attributes(params[:collection])
+      end
+
+      def thumbnail_params
+        params[:collection][:representative_id]
+      end
+
+      def member_params
+        params[:collection][:members]
+      end
 
     end
   end

@@ -13,6 +13,12 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
     end
   end
 
+  describe 'list_access_options' do
+    it 'returns options for manager and viewer' do
+      expect(helper.list_access_options).to match_array([["Manager", "managers"], ["Viewer", "viewers"]])
+    end
+  end
+
   describe 'ms_edit_access_options' do
     context 'current managers' do
       it { expect(helper.ms_edit_access_options('managers')).to eq("<option value=\"editors\">Editor</option>\n<option value=\"depositors\">Depositor</option>\n<option value=\"downloaders\">Downloader</option>\n<option value=\"viewers\">Viewer</option>\n<option value=\"remove\">Remove</option>") }

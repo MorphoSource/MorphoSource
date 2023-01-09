@@ -42,18 +42,47 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
     it {expect(subject.send(:tab)).to eq(:chos) }
   end
 
-  describe 'presenter_class' do
-    context 'collection is a project' do
-      let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
-      let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
-      before { subject.instance_variable_set(:@collection, project) }
-      it {expect(subject.presenter_class).to eq(Morphosource::Collections::ProjectPresenter) }
+  # helpers/morphosource/my/works_helper
+  describe '#search_action_for_dashboard' do
+    let(:main_app)    { Rails.application.routes.url_helpers }
+    let(:params)      { { controller: controller.controller_path } }
+    let(:collection)  { double('collection', id: 'abc') }
+    subject           { controller.view_context }
+
+    before do
+      allow(subject).to receive(:params).and_return(params)
+      subject.instance_variable_set(:@collection, collection)
+      [:project?, :team?, :media_list?, :sequential_section_list?].each do |type|
+        allow(collection).to receive(type).and_return(false)
+      end
     end
+
     context 'collection is a team' do
-      let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-      let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
-      before { subject.instance_variable_set(:@collection, team) }
-      it {expect(subject.presenter_class).to eq(Morphosource::Collections::TeamPresenter) }
+      before do
+        allow(collection).to receive(:team?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.team_chos_path(id: collection.id, locale: 'en')) }
+    end
+
+    context 'collection is a project' do
+      before do
+        allow(collection).to receive(:project?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.project_chos_path(id: collection.id, locale: 'en')) }
+    end
+
+    context 'collection is a media list' do
+      before do
+        allow(collection).to receive(:media_list?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.media_list_chos_path(id: collection.id, locale: 'en')) }
+    end
+
+    context 'collection is a sequential section list' do
+      before do
+        allow(collection).to receive(:sequential_section_list?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.sequential_section_list_chos_path(id: collection.id, locale: 'en')) }
     end
   end
 end

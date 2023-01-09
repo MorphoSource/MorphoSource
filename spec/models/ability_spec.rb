@@ -39,44 +39,114 @@ RSpec.describe Ability, type: :model do
   end
 
   describe 'Showcase user abilities' do
+    context 'works' do
+      context 'work is public' do
+        let!(:public_media)     { Media.create(title: ['Public Media'], visibility: 'open') }
+        let!(:public_specimen)  { BiologicalSpecimen.create(title: ['Public Specimen'], vouchered: ['Yes'], visibility: 'open') }
+        let(:public_cho)       { CulturalHeritageObject.create(title: ['Private CHO'], vouchered: ['Yes'], visibility: 'open') }
 
-    context 'work is public' do
-      let!(:public_media)     { Media.create(title: ['Public Media'], visibility: 'open') }
-      let!(:public_specimen)  { BiologicalSpecimen.create(title: ['Public Specimen'], vouchered: ['Yes'], visibility: 'open') }
-      let(:public_cho)       { CulturalHeritageObject.create(title: ['Private CHO'], vouchered: ['Yes'], visibility: 'open') }
+        it 'authorizes admins, contributors, registered users, and guests' do
+          expect(admin_ability).to be_able_to(:read, public_media)
+          expect(user_ability).to be_able_to(:read, public_media)
+          expect(guest_ability).to be_able_to(:read, public_media)
 
-      it 'authorizes admins, contributors, registered users, and guests' do
-        expect(admin_ability).to be_able_to(:read, public_media)
-        expect(user_ability).to be_able_to(:read, public_media)
-        expect(guest_ability).to be_able_to(:read, public_media)
+          expect(admin_ability).to be_able_to(:read, public_specimen)
+          expect(user_ability).to be_able_to(:read, public_specimen)
+          expect(guest_ability).to be_able_to(:read, public_specimen)
 
-        expect(admin_ability).to be_able_to(:read, public_specimen)
-        expect(user_ability).to be_able_to(:read, public_specimen)
-        expect(guest_ability).to be_able_to(:read, public_specimen)
+          expect(admin_ability).to be_able_to(:read, public_cho)
+          expect(user_ability).to be_able_to(:read, public_cho)
+          expect(guest_ability).to be_able_to(:read, public_cho)
+        end
+      end
 
-        expect(admin_ability).to be_able_to(:read, public_cho)
-        expect(user_ability).to be_able_to(:read, public_cho)
-        expect(guest_ability).to be_able_to(:read, public_cho)
+      context 'work is private' do
+        let(:private_media)     { Media.create(title: ['Private Media'], visibility: 'restricted') }
+        let(:private_specimen)  { BiologicalSpecimen.create(title: ['Private Specimen'], vouchered: ['Yes'], visibility: 'restricted') }
+        let(:private_cho)       { CulturalHeritageObject.create(title: ['Private CHO'], vouchered: ['Yes'], visibility: 'restricted') }
+
+        it 'denies registered users, and guests, authorizes admins' do
+          expect(admin_ability).to be_able_to(:read, private_media)
+          expect(user_ability).not_to be_able_to(:read, private_media)
+          expect(guest_ability).not_to be_able_to(:read, private_media)
+
+          expect(admin_ability).to be_able_to(:read, private_specimen)
+          expect(user_ability).not_to be_able_to(:read, private_specimen)
+          expect(guest_ability).not_to be_able_to(:read, private_specimen)
+
+          expect(admin_ability).to be_able_to(:read, private_cho)
+          expect(user_ability).not_to be_able_to(:read, private_cho)
+          expect(guest_ability).not_to be_able_to(:read, private_cho)
+        end
       end
     end
+    context 'collections' do
+      let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
 
-    context 'work is private' do
-      let(:private_media)     { Media.create(title: ['Private Media'], visibility: 'restricted') }
-      let(:private_specimen)  { BiologicalSpecimen.create(title: ['Private Specimen'], vouchered: ['Yes'], visibility: 'restricted') }
-      let(:private_cho)       { CulturalHeritageObject.create(title: ['Private CHO'], vouchered: ['Yes'], visibility: 'restricted') }
+      let(:team_collection_type)                    { Hyrax::CollectionType.create(title: 'Team') }
+      let(:project_collection_type)                 { Hyrax::CollectionType.create(title: 'Project') }
+      let(:media_list_collection_type)              { Hyrax::CollectionType.create(title: 'Media List') }
+      let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'Sequential Section List') }
 
-      it 'denies registered users, and guests, authorizes admins' do
-        expect(admin_ability).to be_able_to(:read, private_media)
-        expect(user_ability).not_to be_able_to(:read, private_media)
-        expect(guest_ability).not_to be_able_to(:read, private_media)
+      let(:team)                    { Collection.new(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
+      let(:project)                 { Collection.new(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
+      let(:media_list)              { MediaList.new(title: ['media list'], visibility: 'open', collection_type_gid: media_list_collection_type.gid, depositor: depositor.ms_id) }
+      let(:sequential_section_list) { SequentialSectionList.new(title: ['sequential section list'], collection_type_gid: sequential_section_list_collection_type.gid, depositor: depositor.ms_id) }
 
-        expect(admin_ability).to be_able_to(:read, private_specimen)
-        expect(user_ability).not_to be_able_to(:read, private_specimen)
-        expect(guest_ability).not_to be_able_to(:read, private_specimen)
+      let(:collections) { [team, project, media_list, sequential_section_list] }
 
-        expect(admin_ability).to be_able_to(:read, private_cho)
-        expect(user_ability).not_to be_able_to(:read, private_cho)
-        expect(guest_ability).not_to be_able_to(:read, private_cho)
+      context 'collection is public' do
+        before do
+          collections.each do |c|
+            c.visibility = 'open'
+            c.save!
+          end
+        end
+
+        it 'authorizes admins, contributors, registered users, and guests' do
+          expect(admin_ability).to be_able_to(:read, team)
+          expect(user_ability).to be_able_to(:read, team)
+          expect(guest_ability).to be_able_to(:read, team)
+
+          expect(admin_ability).to be_able_to(:read, project)
+          expect(user_ability).to be_able_to(:read, project)
+          expect(guest_ability).to be_able_to(:read, project)
+
+          expect(admin_ability).to be_able_to(:read, media_list)
+          expect(user_ability).to be_able_to(:read, media_list)
+          expect(guest_ability).to be_able_to(:read, media_list)
+
+          expect(admin_ability).to be_able_to(:read, sequential_section_list)
+          expect(user_ability).to be_able_to(:read, sequential_section_list)
+          expect(guest_ability).to be_able_to(:read, sequential_section_list)
+        end
+      end
+
+      context 'collection is private' do
+        before do
+          collections.each do |c|
+          c.visibility = 'restricted'
+          c.save!
+          end
+        end
+
+        it 'denies registered users, and guests, authorizes admins' do
+          expect(admin_ability).to be_able_to(:read, team)
+          expect(user_ability).not_to be_able_to(:read, team)
+          expect(guest_ability).not_to be_able_to(:read, team)
+
+          expect(admin_ability).to be_able_to(:read, project)
+          expect(user_ability).not_to be_able_to(:read, project)
+          expect(guest_ability).not_to be_able_to(:read, project)
+
+          expect(admin_ability).to be_able_to(:read, media_list)
+          expect(user_ability).not_to be_able_to(:read, media_list)
+          expect(guest_ability).not_to be_able_to(:read, media_list)
+
+          expect(admin_ability).to be_able_to(:read, sequential_section_list)
+          expect(user_ability).not_to be_able_to(:read, sequential_section_list)
+          expect(guest_ability).not_to be_able_to(:read, sequential_section_list)
+        end
       end
     end
   end

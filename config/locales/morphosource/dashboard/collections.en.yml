@@ -4,7 +4,18 @@ en:
       collections:
         organization:
           info: For more information on organizational teams, please read <a href="https://wiki.duke.edu/pages/viewpage.action?pageId=266569096">What is an Organizational Management Team?</a>
+        media_lists:
+          action:
+            new:
+              header: New %{type_title}
+            edit:
+              header: Edit %{type_title}
         projects:
+          new:
+            header: New %{type_title}
+          edit:
+            header: Edit %{type_title}
+        sequential_section_lists:
           new:
             header: New %{type_title}
           edit:

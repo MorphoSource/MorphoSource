@@ -7,7 +7,8 @@ module Morphosource
         @tab == tab ? 'active' : ''
       end
 
-      # TODO - refactor? using for collections show pages
+      # TODO - refactor
+      # Change to controller helper method - see morphosource/my/sequential_sections_lists_controller
       # search box action
       def search_action_for_dashboard
         case params[:controller]
@@ -24,30 +25,41 @@ module Morphosource
         when "morphosource/my/media"
           main_app.my_media_index_path
         when "morphosource/my/add_media"
-          main_app.my_add_media_index_path
+          main_app.my_add_media_index_path(collection_id: @collection.id)
         when "morphosource/my/biological_specimens"
           main_app.my_specimens_path
         when "morphosource/my/cultural_heritage_objects"
           main_app.my_cultural_heritage_objects_path
         when "morphosource/collections/projects"
-          main_app.project_media_path
+          main_app.project_media_path(@collection.id)
         when "morphosource/collections/teams"
-          main_app.team_media_path
+          main_app.team_media_path(@collection.id)
+        when "morphosource/collections/media_lists"
+          main_app.media_list_media_path(@collection.id)
+        when "morphosource/collections/media_lists/sequential_section_lists"
+          main_app.sequential_section_list_media_path(@collection.id)
         when "morphosource/collections/biological_specimens"
           if @collection.project?
-            main_app.project_specimens_path
+            main_app.project_specimens_path(@collection.id)
           elsif @collection.team?
-            main_app.team_specimens_path
+            main_app.team_specimens_path(@collection.id)
+          elsif @collection.media_list?
+            main_app.media_list_specimens_path(@collection.id)
+          elsif @collection.sequential_section_list?
+            main_app.sequential_section_list_specimens_path(@collection.id)
           end
         when "morphosource/collections/cultural_heritage_objects"
           if @collection.project?
-            main_app.project_chos_path
+            main_app.project_chos_path(@collection.id)
           elsif @collection.team?
-            main_app.team_chos_path
+            main_app.team_chos_path(@collection.id)
+          elsif @collection.media_list?
+            main_app.media_list_chos_path(@collection.id)
+          elsif @collection.sequential_section_list?
+            main_app.sequential_section_list_chos_path(@collection.id)
           end
         else
-          # hyrax/my/works controller and default cases.
-          hyrax.my_works_path
+          main_app.my_media_index_path
         end
       end
 

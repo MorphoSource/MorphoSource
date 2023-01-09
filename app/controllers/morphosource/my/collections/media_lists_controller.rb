@@ -17,6 +17,10 @@ module Morphosource
           main_app.my_media_lists_url(*args)
         end
 
+        def search_action_for_dashboard
+          main_app.my_media_lists_path
+        end
+
         private
 
           def add_collection_type_breadcrumb

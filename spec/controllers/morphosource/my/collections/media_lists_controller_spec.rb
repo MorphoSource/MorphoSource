@@ -12,7 +12,11 @@ RSpec.describe Morphosource::My::Collections::MediaListsController, type: :contr
 
   describe 'search_action_url' do
     it 'is media_list_media_path' do
-      expect(subject.send(:search_action_url)).to include("/dashboard/my/media_lists?locale=en")
+      expect(subject.search_action_url).to include("/dashboard/my/media_lists?locale=en")
     end
+  end
+
+  describe 'search_action_for_dashboard' do
+    it { expect(subject.search_action_for_dashboard).to eq("/dashboard/my/media_lists?locale=en") }
   end
 end

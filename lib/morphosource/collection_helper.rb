@@ -11,84 +11,69 @@ module Morphosource
       @tab == tab ? 'active' : ''
     end
 
+    # show page main/media tab
     def media_tab_url(collection)
-      if collection.project?
-        project_media_path(collection)
-      elsif collection.team?
-        team_media_path(collection)
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_media_path", collection)
     end
 
+    # show page main/specimens tab
     def specimens_tab_url(collection)
-      if collection.project?
-        project_specimens_path(collection)
-      elsif collection.team?
-        team_specimens_path(collection)
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_specimens_path", collection)
     end
 
+    # show page main/chos tab
     def chos_tab_url(collection)
-      if collection.project?
-        project_chos_path(collection)
-      elsif collection.team?
-        team_chos_path(collection)
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_chos_path", collection)
     end
 
+    # show page main/about tab
     def about_tab_url(collection)
-      if collection.project?
-        project_about_path(collection)
-      elsif collection.team?
-        team_about_path(collection)
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_about_path", collection)
+    end
+
+    # dashboard edit members tab
+    def members_tab_url(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_members_path", collection)
     end
 
     def chos_export_csv_url(collection)
-      if collection.project?
-        project_chos_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
-      elsif collection.team?
-        team_chos_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_chos_export_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
     end
 
     def specimens_export_csv_url(collection)
-      if collection.project?
-        project_specimens_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
-      elsif collection.team?
-        team_specimens_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_specimens_export_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
     end
 
     def media_export_csv_url(collection)
-      if collection.project?
-        project_media_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
-      elsif collection.team?
-        team_media_export_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_media_export_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
     end
 
     def media_downloads_csv_url(collection)
-      if collection.project?
-        project_media_downloads_path(id: collection.id, :format => :csv, :per_page => 1000000)
-      elsif collection.team?
-        team_media_downloads_path(id: collection.id, :format => :csv, :per_page => 1000000)
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_media_downloads_path", id: collection.id, :format => :csv, :per_page => 1000000)
     end
 
     def media_download_counts_csv_url(collection)
-      if collection.project?
-        project_media_download_counts_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
-      elsif collection.team?
-        team_media_download_counts_path(request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_media_download_counts_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
     end
 
     def media_requests_csv_url(collection)
-      if collection.project?
-        project_media_requests_path(id: collection.id, :format => :csv, :per_page => 1000000)
-      elsif collection.team?
-        team_media_requests_path(id: collection.id, :format => :csv, :per_page => 1000000)
-      end
+      main_app.send("#{collection_type_machine_id(collection)}_media_requests_path", id: collection.id, :format => :csv, :per_page => 1000000)
+    end
+
+    def collection_media_path(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_media_path", collection)
+    end
+
+    def collection_edit_path(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_edit_path", collection)
+    end
+
+    def update_collection_path(collection)
+      main_app.send("update_#{collection_type_machine_id(collection)}_path", collection)
+    end
+
+    def my_collections_type_path(collection)
+      main_app.send("my_#{collection_type_machine_id(collection)}s_path")
     end
 
     def page_is_team?
@@ -103,11 +88,23 @@ module Morphosource
       path_info.include?("projects")
     end
 
+    def page_is_media_list?
+      path_info.include?("media_lists")
+    end
+
+    def page_is_sequential_section_list?
+      path_info.include?("sequential_section_lists")
+    end
+
     def collection_type
       if page_is_team?
         'team'
       elsif page_is_project?
         'project'
+      elsif page_is_media_list?
+        'media list'
+      elsif page_is_sequential_section_list?
+        'sequential section list'
       end
     end
 
@@ -365,26 +362,22 @@ module Morphosource
       end
     end
 
-    # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
-    # provides url for removing individual constraints
-    # TODO: probably a better way to do this
-    def remove_constraint_url(localized_params)
-      scope = localized_params.delete(:route_set) || self
+    def render_constraints_filters(localized_params = params)
+      return "".html_safe unless localized_params[:f]
+      path = controller.search_state_class.new(localized_params, blacklight_config, controller)
+      content = []
+      localized_params[:f].each_pair do |facet,values|
+        content << render_filter_element(facet, values, path)
+      end
 
-      unless localized_params.is_a? ActionController::Parameters
-        localized_params = ActionController::Parameters.new(localized_params)
-      end
-      options = localized_params.merge(q: nil, action: 'index')
-      options.permit!
-      if morphosource_collection_controller?
-        options[:action] = 'show'
-      end
-      scope.url_for(options)
+      safe_join(content.flatten, "\n")
     end
 
     def morphosource_collection_controller?
       collection_controllers = [ Morphosource::Collections::TeamsController,
                                  Morphosource::Collections::ProjectsController,
+                                 Morphosource::Collections::MediaListsController,
+                                 Morphosource::Collections::MediaLists::SequentialSectionListsController,
                                  Morphosource::Collections::BiologicalSpecimensController,
                                  Morphosource::Collections::CulturalHeritageObjectsController]
 
@@ -402,22 +395,9 @@ module Morphosource
       collection_controllers.include? controller.class
     end
 
-    def collection_media_path(collection)
-      if collection.project?
-        main_app.project_media_path(collection)
-      else
-        main_app.team_media_path(collection)
-      end
+    def collection_type_machine_id(collection)
+      collection.collection_type.machine_id
     end
-
-    def collection_edit_path(collection)
-      if collection.project?
-        main_app.project_edit_path(collection)
-      else
-        main_app.team_edit_path(collection)
-      end
-    end
-
 
   end
 end

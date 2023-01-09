@@ -2,7 +2,7 @@ module Morphosource
   module My
     class CollectionsController < Hyrax::My::CollectionsController
 
-      helper_method :remove_constraint_url
+      helper_method :remove_constraint_url, :search_action_for_dashboard
 
       before_action :build_breadcrumbs, only: []
       before_action :create_membership_facet

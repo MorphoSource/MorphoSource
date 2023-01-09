@@ -12,4 +12,8 @@ RSpec.describe Morphosource::Dashboard::Collections::MediaListsController, type:
 
     it { expect(subject.send(:default_collection_type).title).to eq("Media List") }
   end
+
+  describe 'collection_class' do
+    it { expect(subject.send(:collection_class)).to eq(MediaList) }
+  end
 end

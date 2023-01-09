@@ -4,6 +4,10 @@ module Morphosource
       module MediaLists
         class SequentialSectionListsSearchBuilder < Morphosource::My::Collections::MediaListsSearchBuilder
 
+          def models
+            [::Collection, SequentialSectionList]
+          end
+
           def collection_types
             [Hyrax::CollectionType.find_by(title: "Sequential Section List")]
           end

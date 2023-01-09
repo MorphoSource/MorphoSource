@@ -8,8 +8,6 @@ module Morphosource
 
       self.presenter_class = Morphosource::Collections::MediaListPresenter
 
-      copy_blacklight_config_from(::MediaCatalogController)
-
       private
 
         # link for facet filters

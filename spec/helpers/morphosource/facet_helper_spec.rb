@@ -29,4 +29,16 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
     end
   end
 
+  describe 'visibility_label' do
+    let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team') }
+    context 'open' do
+      let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, visibility: 'open') }
+      it { expect(helper.visibility_label(team.visibility)).to eq('Public') }
+    end
+    context 'restricted' do
+      let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
+      it { expect(helper.visibility_label(team.visibility)).to eq('Private') }
+    end
+  end
+
 end

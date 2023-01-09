@@ -1,0 +1,14 @@
+en:
+  morphosource:
+    dashboard:
+      collections:
+        media_lists:
+          sequential_section_lists:
+            new:
+              header: 'New Sequential Section List'
+            action:
+              edit: 'Edit List'
+              delete: 'Delete List'
+              new: 'New List'
+              view: 'View List'
+              collection_update_success: ' was successfully updated.'

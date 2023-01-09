@@ -18,6 +18,10 @@ class Collection < ActiveFedora::Base
   DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
   EDIT_GROUP_ROLES = %w[managers editors].freeze
 
+  def presenter_class
+    team? ? Morphosource::Collections::TeamPresenter : Morphosource::Collections::ProjectPresenter
+  end
+
   # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
   def permission_template_read_groups
     (permission_template.agent_ids_for(access: 'view', agent_type: 'group') + permission_template.agent_ids_for(access: 'edit_works', agent_type: 'group') +
@@ -27,16 +31,14 @@ class Collection < ActiveFedora::Base
   end
 
   def human_readable_type
-    if team?
-      "Team"
-    elsif project?
-      "Project"
-    else
-      super
-    end
+    collection_type.title
   end
 
   def type_assigns_groups?
+    team? || project?
+  end
+
+  def media_inherit_permissions?
     team? || project?
   end
 
@@ -60,6 +62,18 @@ class Collection < ActiveFedora::Base
 
   def project?
     collection_type.title == 'Project'
+  end
+
+  def list?
+    false
+  end
+
+  def media_list?
+    collection_type.title == 'Media List'
+  end
+
+  def sequential_section_list?
+    collection_type.title == 'Sequential Section List'
   end
 
   def user_groups
@@ -143,7 +157,7 @@ class Collection < ActiveFedora::Base
     end
   end
 
-  # override the method from models/concerns/hyrax/collection_behavior.rb to apply collection permissions to works
+  # override the method from models/concerns/hyrax/collection_behavior.rb to apply collection permissions to works added to teams or projects
   def add_member_objects(new_member_ids)
     Array(new_member_ids).collect do |member_id|
       member = ActiveFedora::Base.find(member_id)
@@ -152,9 +166,14 @@ class Collection < ActiveFedora::Base
         member.errors.add(:collections, message)
       else
         member.member_of_collections << self
-        Hyrax::PermissionTemplateApplicator.apply(permission_template).to(model: member)
-        member.save!
-        InheritPermissionsJob.perform_later(member)
+        byebug
+        if media_inherit_permissions?
+          Hyrax::PermissionTemplateApplicator.apply(permission_template).to(model: member)
+          member.save!
+          InheritPermissionsJob.perform_later(member)
+        else
+          member.save!
+        end
       end
       member
     end
@@ -164,9 +183,13 @@ class Collection < ActiveFedora::Base
     member_ids.each do |id|
       work = ActiveFedora::Base.find(id)
       work.member_of_collections.delete self
-      remove_team_access_grants(work)
+      if team? || project?
+        remove_team_access_grants(work)
+      end
       work.save!
-      InheritPermissionsJob.perform_later(work)
+      if team? || project?
+        InheritPermissionsJob.perform_later(work)
+      end
     end
   end
 

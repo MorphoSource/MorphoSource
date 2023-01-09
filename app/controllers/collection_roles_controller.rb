@@ -211,7 +211,7 @@ class CollectionRolesController < ApplicationController
       flash[:error] = translate('hyrax.dashboard.collections.form.permission_update_errors')
     when 'user_status'
       emails = @non_contributors.join(', ')
-      flash[:error] = "#{'User'.pluralize(@non_contributors.count)} (#{emails}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the #{'user'.pluralize(@non_contributors.count)} to a membership role that does not require contributor status (downloader, viewer), or have the #{'user'.pluralize(@non_contributors.count)} request contributor status."
+      flash[:error] = "#{'User'.pluralize(@non_contributors.count)} (#{emails}) can't be added to the #{params[:collection_roles][:access]} role because they do not have contributor status. Either add the #{'user'.pluralize(@non_contributors.count)} to a membership role that does not require contributor status or have the #{'user'.pluralize(@non_contributors.count)} request contributor status."
     when 'duplicate'
       flash[:error] = "#{@user.name} is already a member of #{@collection.title.first}"
     end
@@ -225,5 +225,13 @@ class CollectionRolesController < ApplicationController
   def find_subcollections
     presenter
     member_subcollections
+  end
+
+  def presenter
+    self.presenter_class = @collection.presenter_class
+    if @collection.list?
+      self.single_item_search_builder_class = Morphosource::Collections::SingleMediaListSearchBuilder
+    end
+    super
   end
 end

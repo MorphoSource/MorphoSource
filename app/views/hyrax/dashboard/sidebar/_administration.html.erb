@@ -1,56 +1,100 @@
 <% if menu.show_configuration? %>
-    <li class="h5"><%= t('hyrax.admin.sidebar.administration') %></li>
-    
-    <%= menu.nav_link(Rails.application.routes.url_helpers.admin_downloads_path) do %>
-      <span class="fa fa-download" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_downloads') %></span>
-    <% end %>
+  <li class="h5"><%= t('hyrax.admin.sidebar.administration') %></li>
 
-    <%= menu.nav_link(Rails.application.routes.url_helpers.admin_requests_path) do %>
-      <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_requests') %></span>
-    <% end %>
+  <%= menu.nav_link(Rails.application.routes.url_helpers.admin_downloads_path) do %>
+    <span class="fa fa-download" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_downloads') %></span>
+  <% end %>
 
-    <%= menu.nav_link(hyrax.dashboard_works_path, also_active_for: hyrax.my_works_path) do %>
-      <span class="fa fa-file" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.works') %></span>
-    <% end %>
+  <%= menu.nav_link(Rails.application.routes.url_helpers.admin_requests_path) do %>
+    <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_requests') %></span>
+  <% end %>
 
-    <%= menu.nav_link(main_app.admin_contributor_petitions_path) do %>
-      <span class="fa fa-award" aria-hidden="true"></span> <span class="sidebar-action-text">
-        <%= t('morphosource.admin.sidebar.contributor_petitions') %>
-        <% if ( petition_count = ContributorPetition.where(decision_required: true).count ) > 0 %>
-          <span class="count label label-danger" style="vertical-align: text-top;">
-            <%= number_with_delimiter(petition_count, :delimiter => ',') %>
-          </span>
-        <% end %>
-      </span>
-    <% end %>
+  <%= menu.nav_link(hyrax.dashboard_works_path, also_active_for: hyrax.my_works_path) do %>
+    <span class="fa fa-file" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.works') %></span>
+  <% end %>
 
-    <%= menu.nav_link(main_app.admin_data_curation_path) do %>
-      <span class="fa fa-database" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.data_curation') %></span>
-    <% end %>
+  <%= menu.nav_link(main_app.admin_contributor_petitions_path) do %>
+    <span class="fa fa-award" aria-hidden="true"></span> <span class="sidebar-action-text">
+      <%= t('morphosource.admin.sidebar.contributor_petitions') %>
+      <% if ( petition_count = ContributorPetition.where(decision_required: true).count ) > 0 %>
+        <span class="count label label-danger" style="vertical-align: text-top;">
+          <%= number_with_delimiter(petition_count, :delimiter => ',') %>
+        </span>
+      <% end %>
+    </span>
+  <% end %>
 
-    <%= menu.nav_link(main_app.admin_fund_codes_path) do %>
-      <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_codes') %></span>
-    <% end %>
+  <%= menu.nav_link(main_app.admin_data_curation_path) do %>
+    <span class="fa fa-database" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.data_curation') %></span>
+  <% end %>
 
-    <%= menu.nav_link(main_app.fund_code_charges_path) do %>
-      <span class="fa fas fa-money-check-alt" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_code_charges') %></span>
-    <% end %>
+  <%= menu.nav_link(main_app.admin_fund_codes_path) do %>
+    <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_codes') %></span>
+  <% end %>
 
-    <li>
-      <%= menu.collapsable_section t('hyrax.admin.sidebar.settings'),
-                                   icon_class: "fa fa-cog",
-                                   id: 'collapseSettings',
-                                   open: menu.settings_section? do %>
-        <% if can?(:update, :appearance) %>
-          <%= menu.nav_link(hyrax.admin_appearance_path) do %>
-            <span class="fa fa-paint-brush" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.appearance') %></span>
-          <% end %>
-        <% end %>
-        <% if can?(:manage, Hyrax::Feature) %>
-          <%= menu.nav_link(hyrax.admin_features_path) do %>
-            <span class="fa fa-wrench" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.technical') %></span>
-          <% end %>
+  <%= menu.nav_link(main_app.fund_code_charges_path) do %>
+    <span class="fa fas fa-money-check-alt" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_code_charges') %></span>
+  <% end %>
+
+  <li>
+    <%= menu.collapsable_section t('hyrax.admin.sidebar.settings'),
+                                  icon_class: "fa fa-cog",
+                                  id: 'collapseSettings',
+                                  open: menu.settings_section? do %>
+      <% if can?(:update, :appearance) %>
+        <%= menu.nav_link(hyrax.admin_appearance_path) do %>
+          <span class="fa fa-paint-brush" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.appearance') %></span>
         <% end %>
       <% end %>
-    </li>
+      <% if can?(:manage, Hyrax::Feature) %>
+        <%= menu.nav_link(hyrax.admin_collection_types_path) do %>
+          <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.collection_types') %></span>
+        <% end %>
+      <% end %>
+      <% if can?(:manage, Hyrax::Feature) %>
+        <%= menu.nav_link(hyrax.edit_pages_path) do %>
+          <span class="fa fa-file-text-o" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.pages') %></span>
+        <% end %>
+        <%= menu.nav_link(hyrax.edit_content_blocks_path) do %>
+          <span class="fa fa-square-o" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.content_blocks') %></span>
+        <% end %>
+        <%= menu.nav_link(hyrax.admin_features_path) do %>
+          <span class="fa fa-wrench" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.technical') %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </li>
+  <li>
+    <%= menu.nav_link(main_app.admin_import_slides_path) do %>
+      <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.import_slides') %></span>
+    <% end %>
+  </li>
+  <%= menu.nav_link(main_app.admin_contributor_petitions_path) do %>
+    <span class="fa fa-award" aria-hidden="true"></span>
+    <span class="sidebar-action-text">
+      <%= t('morphosource.admin.sidebar.contributor_petitions') %>
+      <% if ( petition_count = ContributorPetition.where(decision_required: true).count ) > 0 %>
+        <span class="count label label-danger" style="vertical-align: text-top;">
+          <%= number_with_delimiter(petition_count, :delimiter => ',') %>
+        </span>
+      <% end %>
+    </span>
+  <% end %>
+  <%= menu.nav_link(main_app.admin_fund_codes_path) do %>
+    <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_codes') %></span>
+    <% end %>
+  <%= menu.nav_link(main_app.fund_code_charges_path) do %>
+    <span class="fa fas fa-money-check-alt" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_code_charges') %></span>
+  <% end %>
+  <% if can?(:manage, Sipity::WorkflowResponsibility) %>
+    <%= menu.nav_link(hyrax.admin_workflow_roles_path) do %>
+      <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.workflow_roles') %></span>
+    <% end %>
+  <% end %>
+  <%= menu.nav_link(main_app.admin_data_curation_path) do %>
+    <span class="fa fa-database" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.data_curation') %></span>
+  <% end %>
+  <%= menu.nav_link(main_app.admin_import_slides_path) do %>
+    <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.import_slides') %></span>
+  <% end %>
 <% end %>

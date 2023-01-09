@@ -7,6 +7,13 @@ module Morphosource
       options_for_select(access_array)
     end
 
+    def list_access_options
+      roles = MediaList::DEFAULT_GROUP_ROLES
+      roles.each_with_object([]) do |role, options|
+        options << [t('.' + role.dup.chop), role]
+      end
+    end
+
     def ms_edit_access_options(access)
       options = access_array.reject { |option| option.include? access }
       options_for_select(options << %w[Remove remove])

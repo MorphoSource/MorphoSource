@@ -11,35 +11,100 @@ module Morphosource
       @tab == tab ? 'active' : ''
     end
 
+    # show page main/media tab
     def media_tab_url(collection)
       if collection.project?
         project_media_path(collection)
       elsif collection.team?
         team_media_path(collection)
+      elsif collection.media_list?
+        media_list_media_path(collection)
+      elsif collection.sequential_section_list?
+        sequential_section_list_media_path(collection)
       end
     end
 
+    # show page main/specimens tab
     def specimens_tab_url(collection)
       if collection.project?
         project_specimens_path(collection)
       elsif collection.team?
         team_specimens_path(collection)
+      elsif collection.media_list?
+        media_list_specimens_path(collection)
+      elsif collection.sequential_section_list?
+        sequential_section_list_specimens_path(collection)
       end
     end
 
+    # show page main/chos tab
     def chos_tab_url(collection)
       if collection.project?
         project_chos_path(collection)
       elsif collection.team?
         team_chos_path(collection)
+      elsif collection.media_list?
+        media_list_chos_path(collection)
+      elsif collection.sequential_section_list?
+        sequential_section_list_chos_path(collection)
       end
     end
 
+    # show page main/about tab
     def about_tab_url(collection)
       if collection.project?
         project_about_path(collection)
       elsif collection.team?
         team_about_path(collection)
+      elsif collection.media_list?
+        media_list_about_path(collection)
+      elsif collection.sequential_section_list?
+        sequential_section_list_about_path(collection)
+      end
+    end
+
+    # dashboard edit main/media tab
+    def dashboard_media_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_media_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_media_path(collection)
+      end
+    end
+
+    # dashboard edit specimens tab
+    def dashboard_specimens_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_specimens_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_specimens_path(collection)
+      end
+    end
+
+    # dashboard edit chos tab
+    def dashboard_chos_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_chos_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_chos_path(collection)
+      end
+    end
+
+    # dashboard edit details tab
+    def dashboard_about_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_about_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_about_path(collection)
+      end
+    end
+
+    # dashboard edit members tab
+    def dashboard_members_tab_url(collection)
+      if collection.media_list?
+        dashboard_media_list_members_path(collection)
+      elsif collection.sequential_section_list?
+        dashboard_sequential_section_list_members_path(collection)
       end
     end
 
@@ -103,11 +168,23 @@ module Morphosource
       path_info.include?("projects")
     end
 
+    def page_is_media_list?
+      path_info.include?("media_lists")
+    end
+
+    def page_is_sequential_section_list?
+      path_info.include?("sequential_section_lists")
+    end
+
     def collection_type
       if page_is_team?
         'team'
       elsif page_is_project?
         'project'
+      elsif page_is_media_list?
+        'media list'
+      elsif page_is_sequential_section_list?
+        'sequential section list'
       end
     end
 
@@ -365,22 +442,36 @@ module Morphosource
       end
     end
 
+    def render_constraints_filters(localized_params = params)
+      return "".html_safe unless localized_params[:f]
+      path = controller.search_state_class.new(localized_params, blacklight_config, controller)
+      content = []
+      localized_params[:f].each_pair do |facet,values|
+        content << render_filter_element(facet, values, path)
+      end
+
+      safe_join(content.flatten, "\n")
+    end
+
     # override https://github.com/projectblacklight/blacklight/blob/3120185709271c39f702a4ba176c5ad3865684d6/app/helpers/blacklight/render_constraints_helper_behavior.rb#L50
     # provides url for removing individual constraints
     # TODO: probably a better way to do this
-    def remove_constraint_url(localized_params)
-      scope = localized_params.delete(:route_set) || self
+    # def remove_constraint_url(localized_params)
+    #   byebug
+    #   scope = localized_params.delete(:route_set) || self
 
-      unless localized_params.is_a? ActionController::Parameters
-        localized_params = ActionController::Parameters.new(localized_params)
-      end
-      options = localized_params.merge(q: nil, action: 'index')
-      options.permit!
-      if morphosource_collection_controller?
-        options[:action] = 'show'
-      end
-      scope.url_for(options)
-    end
+    #   unless localized_params.is_a? ActionController::Parameters
+    #     localized_params = ActionController::Parameters.new(localized_params)
+    #   end
+    #   options = localized_params.merge(q: nil, action: 'index')
+    #   options.permit!
+    #   if morphosource_collection_controller?
+    #     options[:action] = 'show'
+    #   end
+    #   byebug
+    #   scope.url_for(options)
+    #   'www.amazon.com'
+    # end
 
     def morphosource_collection_controller?
       collection_controllers = [ Morphosource::Collections::TeamsController,
@@ -403,19 +494,13 @@ module Morphosource
     end
 
     def collection_media_path(collection)
-      if collection.project?
-        main_app.project_media_path(collection)
-      else
-        main_app.team_media_path(collection)
-      end
+      collection_type = collection.collection_type.machine_id
+      main_app.send("#{collection_type + '_media_path'}", collection)
     end
 
     def collection_edit_path(collection)
-      if collection.project?
-        main_app.project_edit_path(collection)
-      else
-        main_app.team_edit_path(collection)
-      end
+      collection_type = collection.collection_type.machine_id
+      main_app.send("#{collection_type + '_edit_path'}", collection)
     end
 
 

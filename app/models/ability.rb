@@ -24,6 +24,7 @@ class Ability
     if registered_user?
       can [ :show ], ::User
       can [ :index, :create, :update], ContributorPetition
+      can [ :show ], MediaList
     end
   end
 end

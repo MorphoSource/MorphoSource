@@ -55,7 +55,7 @@ namespace :morphosource do
   task dev_cache_on: :environment do
     Rake::Task['dev:cache'].invoke if !Rails.root.join('tmp', 'caching-dev.txt').exist?
   end
-  
+
   # Taken from hyrax:stats:user_stats at https://github.com/samvera/hyrax/blob/v2.9.0/lib/tasks/stats_tasks.rake
   # But using a slightly customized UserStatImporter to prevent DB row bloat
   desc "Cache work view, file view & file download stats for all users"
@@ -351,7 +351,7 @@ namespace :morphosource do
   end
 
   desc 'Set up MS email user'
-  task :create_email_sender_user => :environment do 
+  task :create_email_sender_user => :environment do
     if Hyrax.config.contact_email.present? && !User.find_by(email: Hyrax.config.contact_email)
       u = User.new(email: Hyrax.config.contact_email, password: Morphosource.ms_init_pw)
       u.skip_confirmation!
@@ -455,7 +455,7 @@ namespace :morphosource do
     Role.find_or_create_by(name: 'admin')
   end
 
-  desc 'Set up Team and Project collection types'
+  desc 'Set up Team, Project, Media List, and Sequential Section List collection types'
   task :create_collection_types => :environment do
     if !Hyrax::CollectionType.where(title: Morphosource::CollectionTypes::Teams::SETTINGS[:title]).present?
       team = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Teams::SETTINGS)
@@ -464,6 +464,14 @@ namespace :morphosource do
     if !Hyrax::CollectionType.where(title: Morphosource::CollectionTypes::Projects::SETTINGS[:title]).present?
       project = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Projects::SETTINGS)
       Hyrax::CollectionTypes::CreateService.add_default_participants(project.id)
+    end
+    if !Hyrax::CollectionType.where(title: Morphosource::CollectionTypes::MediaLists::SETTINGS[:title]).present?
+      media_list = Hyrax::CollectionType.create(Morphosource::CollectionTypes::MediaLists::SETTINGS)
+      Hyrax::CollectionTypes::CreateService.add_default_participants(media_list.id)
+    end
+    if !Hyrax::CollectionType.where(title: Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS[:title]).present?
+      sequential_section_list = Hyrax::CollectionType.create(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
+      Hyrax::CollectionTypes::CreateService.add_default_participants(sequential_section_list.id)
     end
   end
 

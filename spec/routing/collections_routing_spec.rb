@@ -2,7 +2,19 @@ require 'rails_helper'
 
 RSpec.describe 'collections routing', type: :routing do
 
-  let(:id)  { '12345' }
+  let(:id)            { '12345' }
+  let(:collection_id) { 'abcde' }
+
+  # my
+  it 'has a my media lists route' do
+    route = { controller: 'morphosource/my/collections/media_lists', action: 'index' }
+    expect(:get => "/dashboard/my/media_lists").to route_to(route)
+  end
+
+  it 'has a my sequential section lists lists route' do
+    route = { controller: 'morphosource/my/collections/media_lists/sequential_section_lists', action: 'index' }
+    expect(:get => "/dashboard/my/sequential_section_lists").to route_to(route)
+  end
 
   # collections
   # this will be redirected by the controller to either teams or projects
@@ -54,6 +66,81 @@ RSpec.describe 'collections routing', type: :routing do
     route = { controller: 'morphosource/collections/projects', action: 'about', id: id }
     expect(:get => "/projects/#{id}/about").to route_to(route)
   end
+
+  # media_lists
+
+  it 'has a media lists route' do
+    route = { controller: 'morphosource/collections/media_lists', action: 'show', id: id }
+    expect(:get => "/media_lists/#{id}").to route_to(route)
+  end
+
+  it 'has a media lists specimens route' do
+    route = { controller: 'morphosource/collections/biological_specimens', action: 'show', id: id }
+    expect(:get => "/media_lists/#{id}/biological_specimens").to route_to(route)
+  end
+
+  it 'has a media lists chos route' do
+    route = { controller: 'morphosource/collections/cultural_heritage_objects', action: 'show', id: id }
+    expect(:get => "/media_lists/#{id}/cultural_heritage_objects").to route_to(route)
+  end
+
+  it 'has a media lists about route' do
+    route = { controller: 'morphosource/collections/media_lists', action: 'about', id: id }
+    expect(:get => "/media_lists/#{id}/about").to route_to(route)
+  end
+
+  it 'has a media lists media faceting route' do
+    route = { controller: 'morphosource/collections/media_lists', action: 'facet', id: id, collection_id: collection_id }
+    expect(:get => "/media_lists/#{collection_id}/facet/#{id}").to route_to(route)
+  end
+
+  it 'has a media lists specimens faceting route' do
+    route = { controller: 'morphosource/collections/biological_specimens', action: 'facet', id: id, collection_id: collection_id }
+    expect(:get => "/media_lists/#{collection_id}/biological_specimens/facet/#{id}").to route_to(route)
+  end
+
+  it 'has a media lists chos faceting route' do
+    route = { controller: 'morphosource/collections/cultural_heritage_objects', action: 'facet', id: id, collection_id: collection_id }
+    expect(:get => "/media_lists/#{collection_id}/cultural_heritage_objects/facet/#{id}").to route_to(route)
+  end
+
+
+  # sequential_section_lists
+
+  it 'has a sequential section lists route' do
+    route = { controller: 'morphosource/collections/media_lists/sequential_section_lists', action: 'show', id: id }
+    expect(:get => "/sequential_section_lists/#{id}").to route_to(route)
+  end
+
+  it 'has a sequential section lists specimens route' do
+    route = { controller: 'morphosource/collections/biological_specimens', action: 'show', id: id }
+    expect(:get => "/sequential_section_lists/#{id}/biological_specimens").to route_to(route)
+  end
+
+  it 'has a sequential section lists chos route' do
+    route = { controller: 'morphosource/collections/cultural_heritage_objects', action: 'show', id: id }
+    expect(:get => "/sequential_section_lists/#{id}/cultural_heritage_objects").to route_to(route)
+  end
+
+  it 'has a sequential section lists about route' do
+    route = { controller: 'morphosource/collections/media_lists/sequential_section_lists', action: 'about', id: id }
+    expect(:get => "/sequential_section_lists/#{id}/about").to route_to(route)
+  end
+
+  it 'has a sequential section lists media faceting route' do
+    route = { controller: 'morphosource/collections/media_lists/sequential_section_lists', action: 'facet', id: id, collection_id: collection_id }
+    expect(:get => "/sequential_section_lists/#{collection_id}/facet/#{id}").to route_to(route)
+  end
+
+  it 'has a sequential section lists specimens faceting route' do
+    route = { controller: 'morphosource/collections/biological_specimens', action: 'facet', id: id, collection_id: collection_id }
+    expect(:get => "/sequential_section_lists/#{collection_id}/biological_specimens/facet/#{id}").to route_to(route)
+  end
+
+  it 'has a sequential section lists chos faceting route' do
+    route = { controller: 'morphosource/collections/cultural_heritage_objects', action: 'facet', id: id, collection_id: collection_id }
+    expect(:get => "/sequential_section_lists/#{collection_id}/cultural_heritage_objects/facet/#{id}").to route_to(route)
+  end
 end
 
 RSpec.describe 'collections dashboard routes', type: :routing do
@@ -75,7 +162,7 @@ RSpec.describe 'collections dashboard routes', type: :routing do
       expect(:get => "/collections/#{id}/under").to route_to(route)
     end
   end
-
+  # teams
   describe 'teams' do
     it 'has a details edit route' do
       route = { controller: 'morphosource/dashboard/collections/teams', action: 'edit', id: id }
@@ -118,6 +205,7 @@ RSpec.describe 'collections dashboard routes', type: :routing do
       expect(:get => "/dashboard/teams/#{id}/files").to route_to(route)
     end
   end
+#   # projects
   describe 'projects' do
     it 'has a details route' do
       route = { controller: 'morphosource/dashboard/collections/projects', action: 'edit', id: id }
@@ -150,6 +238,76 @@ RSpec.describe 'collections dashboard routes', type: :routing do
     it 'has a files route' do
       route = { controller: 'morphosource/dashboard/collections/projects', action: 'files', id: id }
       expect(:get => "/dashboard/projects/#{id}/files").to route_to(route)
+    end
+  end
+  # media lists
+  describe 'media lists' do
+    it 'has a details route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists', action: 'edit', id: id }
+      expect(:get => "/dashboard/media_lists/#{id}").to route_to(route)
+    end
+    it 'has a members route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists', action: 'members', id: id }
+      expect(:get => "/dashboard/media_lists/#{id}/members").to route_to(route)
+    end
+    it 'has a new media list route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists', action: 'new' }
+      expect(:get => "/dashboard/media_lists/new").to route_to(route)
+    end
+    it 'has a create media list route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists', action: 'create' }
+      expect(:post => "/dashboard/media_lists").to route_to(route)
+    end
+    it 'has an update media list route without an id' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists', action: 'update' }
+      expect(:put => "/dashboard/media_lists").to route_to(route)
+    end
+    it 'has an update media list route with put' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists', action: 'update', id: id }
+      expect(:put => "/dashboard/media_lists/#{id}").to route_to(route)
+    end
+    it 'has an update media list route with patch' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists', action: 'update', id: id }
+      expect(:patch => "/dashboard/media_lists/#{id}").to route_to(route)
+    end
+    it 'has a files route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists', action: 'files', id: id }
+      expect(:get => "/dashboard/media_lists/#{id}/files").to route_to(route)
+    end
+  end
+  # sequential section lists
+  describe 'sequential section lists' do
+    it 'has a details route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists/sequential_section_lists', action: 'edit', id: id }
+      expect(:get => "/dashboard/sequential_section_lists/#{id}").to route_to(route)
+    end
+    it 'has a members route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists/sequential_section_lists', action: 'members', id: id }
+      expect(:get => "/dashboard/sequential_section_lists/#{id}/members").to route_to(route)
+    end
+    it 'has a new sequential section list route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists/sequential_section_lists', action: 'new' }
+      expect(:get => "/dashboard/sequential_section_lists/new").to route_to(route)
+    end
+    it 'has a create sequential section list route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists/sequential_section_lists', action: 'create' }
+      expect(:post => "/dashboard/sequential_section_lists").to route_to(route)
+    end
+    it 'has an update sequential section list route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists/sequential_section_lists', action: 'update' }
+      expect(:put => "/dashboard/sequential_section_lists").to route_to(route)
+    end
+    it 'has an update sequential section list route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists/sequential_section_lists', action: 'update', id: id }
+      expect(:put => "/dashboard/sequential_section_lists/#{id}").to route_to(route)
+    end
+    it 'has an update sequential section list route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists/sequential_section_lists', action: 'update', id: id }
+      expect(:patch => "/dashboard/sequential_section_lists/#{id}").to route_to(route)
+    end
+    it 'has a files route' do
+      route = { controller: 'morphosource/dashboard/collections/media_lists/sequential_section_lists', action: 'files', id: id }
+      expect(:get => "/dashboard/sequential_section_lists/#{id}/files").to route_to(route)
     end
   end
 end

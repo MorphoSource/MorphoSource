@@ -1,0 +1,18 @@
+require 'rails_helper'
+
+RSpec.describe Morphosource::My::Collections::MediaListsController, type: :controller do
+
+  describe 'collections_type' do
+    it { expect(subject.collections_type).to eq('media_lists') }
+  end
+
+  describe 'search_builder_class' do
+    it { expect(subject.search_builder_class).to be(Morphosource::My::Collections::MediaListsSearchBuilder) }
+  end
+
+  describe 'search_action_url' do
+    it 'is media_list_media_path' do
+      expect(subject.send(:search_action_url)).to include("/dashboard/my/media_lists?locale=en")
+    end
+  end
+end

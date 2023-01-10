@@ -28,6 +28,10 @@ module Morphosource
       user_groups.include? 'batch_submission_contributor'
     end
 
+    def remote_file_submitter?
+      user_groups.include? 'remote_file_submitter'
+    end
+
     # Grant all users with edit or download access permission to download
     def download_groups(id)
       @doc ||= get_doc(id)

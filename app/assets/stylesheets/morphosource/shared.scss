@@ -22,6 +22,22 @@ $block-border-color: #d4d4d4;
 $ms-blue: #003880;
 $ms-dark-blue: #002c64;
 
+::placeholder {
+  color: #ccc !important;
+}
+
+.toggle-btn button {
+  background-color: transparent;
+  border: none;
+  i {
+    font-size: 19px;    
+  }
+  span {
+    font-size: 14px;
+    vertical-align: text-bottom;
+  }
+}
+
 /* global and utility classes below.  Some will be available in Boostrap 4.0+ */
 .m-0 {
   margin: 0 !important;

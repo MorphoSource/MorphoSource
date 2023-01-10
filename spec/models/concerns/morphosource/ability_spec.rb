@@ -324,6 +324,22 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     end
   end
 
+  describe '#remote_file_submitter?' do
+    context 'user is not a remote_file_submitter' do
+      it 'returns false' do
+        expect(ability.remote_file_submitter?).to be(false)
+      end
+    end
+    context 'user is a remote_file_submitter' do
+      before do
+        allow(user).to receive(:groups).and_return(['remote_file_submitter'])
+      end
+      it 'returns true' do
+        expect(ability.remote_file_submitter?).to be(true)
+      end
+    end
+  end
+
   describe 'proxy_deposit_abilities' do
     let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
     let(:owner)     { User.create(email: 'owner@email.com', password: 'password') }

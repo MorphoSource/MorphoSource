@@ -51,6 +51,8 @@ en:
       collection:
         new: "New Collection"
   hyrax:
+    user_profile:
+      tab_administration: User Administration
     media:
       member_edit:
         delete: Delete

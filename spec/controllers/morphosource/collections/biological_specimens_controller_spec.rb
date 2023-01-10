@@ -48,27 +48,6 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
     it {expect(subject.send(:tab)).to eq(:specimens) }
   end
 
-  # describe 'presenter_class' do
-  #   context 'collection is a project' do
-  #     let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
-  #     let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
-  #     before { subject.instance_variable_set(:@collection, project) }
-  #     it {expect(subject.presenter_class).to eq(Morphosource::Collections::ProjectPresenter) }
-  #   end
-  #   context 'collection is a team' do
-  #     let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-  #     let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
-  #     before { subject.instance_variable_set(:@collection, team) }
-  #     it {expect(subject.presenter_class).to eq(Morphosource::Collections::TeamPresenter) }
-  #   end
-  #   context 'collection is a media list' do
-  #     let(:media_list_collection_type) { Hyrax::CollectionType.create(title: 'Media List') }
-  #     let(:media_list)                 { MediaList.create(title: ['Media List'], collection_type_gid: media_list_collection_type.gid) }
-  #     before { subject.instance_variable_set(:@collection, media_list) }
-  #     it {expect(subject.presenter_class).to eq(Morphosource::Collections::MediaListPresenter) }
-  #   end
-  # end
-
   describe 'search_action_url, search_facet_path' do
     let(:facet_id)  { 'depositor_ssi' }
     context 'collection is a team' do

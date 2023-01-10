@@ -10,7 +10,7 @@ class SubmissionsController < ApplicationController
   include Morphosource::LinkedTeams::LinkedTeamsManagement
   include Morphosource::CustomThumbnails
 
-  load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax,
+  load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, :validate_remote_file_ajax,
     :save_data, :organization_for_recordset, :organization_default_media_fields,
     :new_organization_submit, :new_taxonomy_submit, :new_device_submit,
     :new_processing_event_submit]
@@ -136,6 +136,13 @@ class SubmissionsController < ApplicationController
     ms_taxa = ms_taxa.reject { |t| gbif_ms_ids.include? t[:id] }
 
     render :json => gbif_taxa + ms_taxa
+  end
+
+  def validate_remote_file_ajax
+    url = params[:u]
+byebug
+    # current_user available here
+
   end
 
   def organization_for_recordset

@@ -617,6 +617,22 @@ var remoteUrlCheck = function() {
   }
   var whitelist = $('#media_allowed_remote_source').val().split('\n');
   var acceptedFormats = $('#media_accepted_formats').val().split(', ');
+
+
+  // todo: change to POST later?
+  $.ajax({
+    url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url),
+    type: 'GET',
+    dataType: 'json',
+    complete: function (xhr, status) {
+      var results = $.parseJSON(xhr.responseText);
+debugger;
+      console.log(results);
+    }
+  });
+return false;
+
+
   return ($.inArray(url.host, whitelist) != -1) && ($.inArray(extension, acceptedFormats) != -1);
 }
 

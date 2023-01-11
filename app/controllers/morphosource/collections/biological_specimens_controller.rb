@@ -33,7 +33,7 @@ module Morphosource
         def search_action_url(*args)
           args&.first&.delete("collection_id")
           collection_type = @collection.collection_type.machine_id
-          main_app.send("#{collection_type + '_specimens_path'}", @collection, *args)
+          main_app.send("#{collection_type}_specimens_path", @collection, *args)
         end
 
         # The url of the "more" link for additional facet values
@@ -42,7 +42,7 @@ module Morphosource
           # params id is the collection id
           args.merge!(request.params)
           collection_type = @collection.collection_type.machine_id
-          main_app.send("#{collection_type + '_specimens_facet_path'}", @collection.id, args)
+          main_app.send("#{collection_type}_specimens_facet_path", @collection.id, args)
         end
 
         def tab

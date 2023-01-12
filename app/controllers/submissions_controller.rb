@@ -139,10 +139,32 @@ class SubmissionsController < ApplicationController
   end
 
   def validate_remote_file_ajax
-    url = params[:u]
-byebug
+    
+    # todo: validate token here?
+
     # current_user available here
 
+    url = URI.parse(params[:u])
+    req = Net::HTTP::Get.new(url.request_uri)
+    http = Net::HTTP.new(url.host, url.port)
+    http.use_ssl = (url.scheme == "https")
+    res = http.request(req)
+    message = ""
+    if res.code == "200"
+      status = "success"    
+    elsif res.code == "404"
+      status = "fail"
+      message = "not found"
+    else
+      status = "fail"
+      message = "unknown"
+    end
+    response_object = {
+      status: status,
+      http_code: res.code,
+      message: message
+    }
+    render :json => response_object
   end
 
   def organization_for_recordset

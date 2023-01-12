@@ -608,15 +608,21 @@ function prepareFieldsBeforeSubmit() {
 
 }
 
-var remoteUrlCheck = function() {
+var remoteFileCheckAndSubmit = function(view) {
   try {
     var url = (new URL($('#media_remote_origin_url').val()));
     var extension = url.pathname.substring(url.pathname.lastIndexOf('.'));
   } catch (e) {
-    return false;    
+    $.alert('The Remote Origin URL is not valid.');
+    return;
   }
-  var whitelist = $('#media_allowed_remote_source').val().split('\n');
+  //var whitelist = $('#media_allowed_remote_source').val().split('\n');
   var acceptedFormats = $('#media_accepted_formats').val().split(', ');
+
+  if ($.inArray(extension, acceptedFormats) == -1) {
+    $.alert('The Remote Origin URL file format is not valid.');
+    return;
+  }
 
 
   // todo: change to POST later?
@@ -626,14 +632,15 @@ var remoteUrlCheck = function() {
     dataType: 'json',
     complete: function (xhr, status) {
       var results = $.parseJSON(xhr.responseText);
-debugger;
-      console.log(results);
+      console.log("remote file check: ", results);
+      if (results.status == "success") {
+        view.submitMedia();
+      } else {
+        $.alert('The Remote Origin URL is not valid or not allowed.');
+      }
     }
   });
-return false;
 
-
-  return ($.inArray(url.host, whitelist) != -1) && ($.inArray(extension, acceptedFormats) != -1);
 }
 
 var noFileCheck = function() {

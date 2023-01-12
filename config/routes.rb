@@ -315,10 +315,10 @@ Rails.application.routes.draw do
     :new_processing_event_submit] do
     collection do
       # AJAX in-submission-flow methods
+      post 'validate_remote_file_ajax'
       post 'search_po_ajax'
       post 'save_data'
       get 'search_taxonomy_ajax'
-      get 'validate_remote_file_ajax'
       get 'organization_for_recordset'
       get 'organization_default_media_fields'
       # AJAX physical object or media edit page submission methods

@@ -631,8 +631,11 @@ var remoteFileCheckAndSubmit = function(view) {
       console.log("remote file check: ", results);
       if (results.status == "success") {
         view.submitMedia();
+      } else if (results.status == "error") {
+        $.alert('There is problem with the Remote Origin URL: ' + results.message);
+        enablePage();
       } else {
-        $.alert('The Remote Origin URL is not valid or not allowed.');
+        $.alert('There is problem with the Remote Origin URL.  Please try again later or contact MorphoSource team.');
         enablePage();
       }
     }

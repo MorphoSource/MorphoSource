@@ -138,36 +138,44 @@ class SubmissionsController < ApplicationController
     render :json => gbif_taxa + ms_taxa
   end
 
-  def validate_remote_file_ajax
-    status = ""
-    http_code = ""
-    message = ""
-    
-    # check against whitelist
-    unless current_user.can_submit_remote_file? params[:u]
-      status = "fail"
-      message = "not allowed"
-    end
-
-    unless status == "fail"
-      # check response code for 404 or other problems
+  def validate_remote_file_ajax    
+    if !current_user.can_submit_remote_file? params[:u]
+      status = "error"
+      message = "The path is invalid or not allowed"
+      http_code = ""
+    else
       url = URI.parse(params[:u])
-      req = Net::HTTP::Get.new(url.request_uri)
-      http = Net::HTTP.new(url.host, url.port)
-      http.use_ssl = (url.scheme == "https")
-      res = http.request(req)
-      http_code = res.code
-      if http_code == "200"
-        status = "success"    
-      elsif http_code == "404"
+      begin
+        req = Net::HTTP::Get.new(url.request_uri)
+        http = Net::HTTP.new(url.host, url.port)
+        http.use_ssl = (url.scheme == "https")
+        http.read_timeout = 5 #sec
+        res = http.request(req)
+      rescue Net::ReadTimeout, Net::OpenTimeout => e
+        status = "error"
+        message = "The request has timed out"
+        http_code = ""        
+      rescue Exception => e
         status = "fail"
-        message = "not found"
+        message = "#{e.message}"
+        http_code = ""        
       else
-        status = "fail"
-        message = "unknown"
+        http_code = res.code
+        if http_code == "200"
+          status = "success"
+          message = ""
+        elsif http_code == "404"
+          status = "error"
+          message = "The path is not found"
+        elsif http_code == "503"
+          status = "error"
+          message = "Service unavailable"
+        else
+          status = "fail"
+          message = "other response code"
+        end
       end
     end
-
     response_object = {
       status: status,
       http_code: http_code,

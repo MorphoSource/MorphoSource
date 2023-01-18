@@ -144,36 +144,20 @@ class SubmissionsController < ApplicationController
       message = "The path is invalid or not allowed"
       http_code = ""
     else
-      url = URI.parse(params[:u])
       begin
-        req = Net::HTTP::Get.new(url.request_uri)
-        http = Net::HTTP.new(url.host, url.port)
-        http.use_ssl = (url.scheme == "https")
-        http.read_timeout = 5 #sec
-        res = http.request(req)
-      rescue Net::ReadTimeout, Net::OpenTimeout => e
-        status = "error"
-        message = "The request has timed out"
-        http_code = ""        
+        http_code = RestClient.head(params[:u]).code
+        status = "success"
+        message = ""
+      rescue RestClient::Exception => e
+        message = "#{e.message}"
+        http_code = e.http_code        
       rescue Exception => e
-        status = "fail"
         message = "#{e.message}"
         http_code = ""        
-      else
-        http_code = res.code
-        if http_code == "200"
-          status = "success"
-          message = ""
-        elsif http_code == "404"
-          status = "error"
-          message = "The path is not found"
-        elsif http_code == "503"
-          status = "error"
-          message = "Service unavailable"
-        else
-          status = "fail"
-          message = "other response code"
-        end
+      end
+
+      unless status == "success"
+        status = http_code.present? ? "error" : "fail"
       end
     end
     response_object = {

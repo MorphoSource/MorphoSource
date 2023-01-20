@@ -43,7 +43,6 @@ class ImportUrlJob < Hyrax::ApplicationJob
     copy_remote_file(uri, name, headers) do |f|
       # reload the FileSet once the data is copied since this is a long running task
       file_set.reload
-
       # FileSetActor operates synchronously so that this tempfile is available.
       # If asynchronous, the job might be invoked on a machine that did not have this temp file on its file system!
       # NOTE: The return status may be successful even if the content never attaches.
@@ -64,13 +63,30 @@ class ImportUrlJob < Hyrax::ApplicationJob
     def copy_remote_file(uri, name, headers = {})
       filename = File.basename(name)
       dir = Dir.mktmpdir
+      if file_set.is_remote_backed?
+        unless File.extname(name).present?
+          # add file extension if needed to prevent characterization issue
+          content_type = RestClient.head(uri.to_s).headers[:content_type]
+byebug
+          case content_type 
+          when "application/zip"
+            filename = filename + ".zip"
+
+          # todo: handle other content types.  move this to a method shared with submission controller?
+
+          else
+            Rails.logger.debug("ImportUrlJob: Unknown content_type ")
+          end
+        end
+      end
+byebug
       Rails.logger.debug("ImportUrlJob: Copying <#{uri}> to #{dir}")
 
       File.open(File.join(dir, filename), 'wb') do |f|
         begin
           if file_set.is_remote_backed?
             # for other external url file
-            f << open(uri).read
+            f << URI.open(uri).read
           else
             # for BrowseEverywhere file
             write_file(uri, f, headers)

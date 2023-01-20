@@ -616,14 +616,6 @@ var remoteFileCheckAndSubmit = function(view) {
     $.alert('The Remote Origin URL is not valid.');
     return;
   }
-  /* todo: there are urls that might not have a file extension (e.g. redirect)
-     if we still want to check the file ext, perhaps change this to a warning instead of error?
-  var acceptedFormats = $('#media_accepted_formats').val().split(', ');
-  if ($.inArray(extension, acceptedFormats) == -1) {
-    $.alert('The Remote Origin URL file format is not valid.');
-    return;
-  } 
-  */
   disablePage();
   console.log("remote file check... ");
   $.ajax({
@@ -634,7 +626,20 @@ var remoteFileCheckAndSubmit = function(view) {
       var results = $.parseJSON(xhr.responseText);
       console.log("remote file check results: ", results);
       if (results.status == "success") {
-        view.submitMedia();
+        if (results.resp_file_ext != "") {
+          // Check if the file extension evaluated from headers content type an accepted format
+         var acceptedFormats = $('#media_accepted_formats').val().split(', ');
+         if ($.inArray(results.resp_file_ext, acceptedFormats) == -1) {
+            // todo: might change this to a warning and allow submitting media?
+            $.alert('The file format (' + results.resp_file_ext + ') returned by the Remote Origin URL is not an accepted format.');
+            console.log("acceptedFormats: " + acceptedFormats);
+            enablePage();
+          } else {
+            view.submitMedia();
+          }
+        } else {
+          view.submitMedia();        
+        }
       } else if (results.status == "error") {
         $.alert('There is problem with the Remote Origin URL: ' + results.message);
         enablePage();

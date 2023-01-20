@@ -138,14 +138,17 @@ class SubmissionsController < ApplicationController
     render :json => gbif_taxa + ms_taxa
   end
 
-  def validate_remote_file_ajax    
+  def validate_remote_file_ajax
+    file_ext = ""
     if !current_user.can_submit_remote_file? params[:u]
       status = "error"
       message = "The path is invalid or not allowed"
       http_code = ""
     else
       begin
-        http_code = RestClient.head(params[:u]).code
+        head = RestClient.head(params[:u])
+        http_code = head.code
+        file_ext = file_extension_from_content_type(head.headers[:content_type])
         status = "success"
         message = ""
       rescue RestClient::Exception => e
@@ -163,7 +166,8 @@ class SubmissionsController < ApplicationController
     response_object = {
       status: status,
       http_code: http_code,
-      message: message
+      message: message,
+      resp_file_ext: file_ext
     }
     render :json => response_object
   end

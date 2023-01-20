@@ -7,6 +7,8 @@ require 'browse_everything/retriever'
 # Called by AttachFilesToWorkJob (when files are uploaded to s3)
 # and CreateWithRemoteFilesActor when files are located in some other service.
 class ImportUrlJob < Hyrax::ApplicationJob
+  include MorphosourceHelper
+  
   queue_as Hyrax.config.ingest_queue_name
   attr_reader :file_set, :operation
 
@@ -63,23 +65,11 @@ class ImportUrlJob < Hyrax::ApplicationJob
     def copy_remote_file(uri, name, headers = {})
       filename = File.basename(name)
       dir = Dir.mktmpdir
-      if file_set.is_remote_backed?
-        unless File.extname(name).present?
-          # add file extension if needed to prevent characterization issue
-          content_type = RestClient.head(uri.to_s).headers[:content_type]
-byebug
-          case content_type 
-          when "application/zip"
-            filename = filename + ".zip"
-
-          # todo: handle other content types.  move this to a method shared with submission controller?
-
-          else
-            Rails.logger.debug("ImportUrlJob: Unknown content_type ")
-          end
-        end
+      if file_set.is_remote_backed? && !File.extname(name).present?
+        # add file extension needed for characterization later
+        filename = filename + file_extension_from_content_type(RestClient.head(uri.to_s).headers[:content_type])
       end
-byebug
+
       Rails.logger.debug("ImportUrlJob: Copying <#{uri}> to #{dir}")
 
       File.open(File.join(dir, filename), 'wb') do |f|

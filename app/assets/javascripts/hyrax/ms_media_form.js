@@ -669,7 +669,7 @@ var noFileCheck = function() {
 
 var hasRequiredFields = function() {
   // only require fields for media with files attached
-  if ($('.attribute-filename').length == 0 && justUploaded == 0) {
+  if (fileOrigin == 'local' && $('.attribute-filename').length == 0 && justUploaded == 0) {
     return true;
   }
 

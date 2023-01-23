@@ -1,0 +1,15 @@
+      <ul class="nav nav-tabs" id="myTab">
+        <% if current_user.admin? %>
+          <li class="active"><a href="#administration"><i class="fa fa-users-cog"></i> <%= I18n.t('hyrax.user_profile.tab_administration') %></a></li>
+        <% end %>
+        <li <% unless current_user.admin? %>class="active"<% end %>><a href="#contributions"><i class="glyphicon glyphicon-star"></i> <%= I18n.t('hyrax.user_profile.tab_highlighted') %></a></li>
+        <li><a href="#activity_log"><i class="glyphicon glyphicon-calendar"></i> <%= I18n.t('hyrax.user_profile.tab_activity') %></a></li>
+      </ul>
+
+      <div class="tab-content">
+        <%= render 'contributions', presenter: presenter %>
+        <%= render 'activity', presenter: presenter %>
+        <% if current_user.admin? %>
+          <%= render 'tab_admin' %>
+        <% end %>
+      </div> <!-- /tab-content -->

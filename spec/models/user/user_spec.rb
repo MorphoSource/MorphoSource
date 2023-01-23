@@ -102,6 +102,22 @@ RSpec.describe User, type: :model do
       end
     end
 
+    describe '#remote_file_submitter?' do
+      context 'user is not a remote_file_submitter' do
+        it 'returns false' do
+          expect(user.remote_file_submitter?).to be(false)
+        end
+      end
+      context 'user is a remote_file_submitter' do
+        before do
+          allow(user).to receive(:groups).and_return(['remote_file_submitter'])
+        end
+        it 'returns true' do
+          expect(user.remote_file_submitter?).to be(true)
+        end
+      end
+    end
+
     describe '#can_submit_new_batch_submission?' do
       context 'user cannot submit' do
         it 'returns false when job is working' do

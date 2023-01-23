@@ -1,0 +1,90 @@
+<div class="tab-pane active" id="administration">
+
+  <div class="row">
+    <% flash.each do |key, value| %>
+      <div class="alert alert-<%= key %>"><%= value %></div>
+    <% end %>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 block-fill">
+      <b>Roles</b>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      Contributor 
+    </div>
+    <div class="col-sm-6 col-md-5 col-lg-4 toggle-btn">
+      <% if @user.contributor? %>
+        <%= button_to main_app.remove_contributor_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-on"></i> <span>Yes</span>
+        <% end %>
+      <% else %>
+        <%= button_to main_app.make_contributor_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-off"></i> <span>No</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      Batch Submission Contributor  
+    </div>
+    <div class="col-sm-6 col-md-5 col-lg-4 toggle-btn">
+      <% if @user.batch_submission_contributor? %>
+        <%= button_to main_app.remove_batch_submission_contributor_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-on"></i> <span>Yes</span>
+        <% end %>
+      <% else %>
+        <%= button_to main_app.make_batch_submission_contributor_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-off"></i> <span>No</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      Remote File Submitter
+    </div>
+    <div class="col-sm-6 col-md-5 col-lg-4 toggle-btn">
+      <%
+       if @user.remote_file_submitter? %>
+        <%= button_to main_app.remove_remote_file_submitter_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-on"></i> <span>Yes</span>
+        <% end %>
+      <% else %>
+        <%= button_to main_app.make_remote_file_submitter_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-off"></i> <span>No</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12 block-fill">
+      <b>Settings</b>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      Account Status
+    </div>
+    <div class="col-sm-6 col-md-5 col-lg-4 toggle-btn">
+      <% if @user.active %>
+        <%= button_to main_app.make_inactive_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-on"></i> <span>Active</span>
+        <% end %>
+      <% else %>
+        <%= button_to main_app.make_active_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-off"></i> <span>Inactive (Banned)</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <hr />
+  <div>
+    <a class="btn" href="<%= main_app.profile_edit_path(@user.ms_id) %>">Edit User Profile</a>
+    <a class="btn" href="<%= hyrax.users_path %>">View All Users</a>
+  </div>
+
+</div>

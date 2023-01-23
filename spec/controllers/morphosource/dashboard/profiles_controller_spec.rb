@@ -8,7 +8,10 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
 
   let!(:user2) { User.create(email: "user2@test.com", password: 'password', display_name: "Test User 2", ms_id: "msid22") }
 
-  let(:update_params) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", postal_code: "New Code", telephone: "New Phone", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], software: ["new software1", "new software2", ""], mesh_file_type: ["new type1", "new type2", ""], volume_file_type: ["new type3", "new type4", ""], printer_model: ["new model1", "new model2", ""], printer_file: ["new type5", "new type6", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true}, id: user.ms_id} }
+  let(:update_params) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", postal_code: "New Code", telephone: "New Phone", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], software: ["new software1", "new software2", ""], mesh_file_type: ["new type1", "new type2", ""], volume_file_type: ["new type3", "new type4", ""], printer_model: ["new model1", "new model2", ""], printer_file: ["new type5", "new type6", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true, sftp_share: 'testshare', allowed_remote_source: 'validdomain.com'}, id: user.ms_id} }
+
+  let(:update_params_invalid_domain) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", postal_code: "New Code", telephone: "New Phone", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], software: ["new software1", "new software2", ""], mesh_file_type: ["new type1", "new type2", ""], volume_file_type: ["new type3", "new type4", ""], printer_model: ["new model1", "new model2", ""], printer_file: ["new type5", "new type6", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true, sftp_share: 'testshare', allowed_remote_source: 'invalid_domain'}, id: user.ms_id} }
+
 
   describe '#update' do
 
@@ -41,6 +44,36 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
       expect(user.facebook_handle).to eq("new facebook")
       expect(user.website).to eq("new website")
       expect(user.ms_id).to eq("msid678")
+      expect(user.sftp_share).to eq("testshare")
+      expect(user.allowed_remote_source).to eq("validdomain.com")
+    end
+
+    it 'fails to update the user with invalid domain' do
+      patch :update, params: update_params_invalid_domain
+      user.reload
+
+      expect(user.display_name).to eq("Test User")
+      expect(user.affiliation).to eq("Test Affiliation")
+      expect(user.department).to eq("Test Department")
+      expect(user.address).to eq("Test Address")
+      expect(user.country).to eq("US")
+      expect(user.state).to eq("NC")
+      expect(user.postal_code).to eq("27278")
+      expect(user.telephone).to eq("5555555555")
+      expect(user.demographics).to eq(["demo1", "demo2"])
+      expect(user.intent).to eq(["intent1", "intent2"])
+      expect(user.software).to eq(["software1", "software2"])
+      expect(user.mesh_file_type).to eq(["type1","type2"])
+      expect(user.volume_file_type).to eq(["type3","type4"])
+      expect(user.printer_model).to eq(["model1","model2"])
+      expect(user.printer_file).to eq(["type5", "type6"])
+      expect(user.orcid).to eq("https://orcid.org/0000-0000-0000-0000")
+      expect(user.twitter_handle).to eq("@TestTest")
+      expect(user.facebook_handle).to eq("test.test")
+      expect(user.website).to eq("morphosource.org")
+      expect(user.ms_id).to eq("msid678")
+      expect(user.sftp_share).to eq(nil)
+      expect(user.allowed_remote_source).to eq(nil)
     end
   end
 

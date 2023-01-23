@@ -1,0 +1,7 @@
+<div class="form-group">
+  <%= f.label :allowed_remote_source, t("morphosource.dashboard.profiles.edit_primary.allowed_remote_source").html_safe, class: 'col-sm-4 control-label' %>
+  <div class="col-sm-8">
+    <%= f.text_area :allowed_remote_source, class: "form-control d-inline", placeholder: 'wwww.example1.com
+example2.com', disabled: !current_user.admin? %>
+  </div>
+</div><!-- .form-group -->

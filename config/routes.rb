@@ -501,6 +501,10 @@ Rails.application.routes.draw do
   post 'users/:id/make_batch_submission_contributor' => 'batch_submission_contributors#make_batch_submission_contributor', as: 'make_batch_submission_contributor'
   post 'users/:id/remove_batch_submission_contributor' => 'batch_submission_contributors#remove_batch_submission_contributor', as: 'remove_batch_submission_contributor'
 
+  # Routes for granting/removing remote_file_submitter status
+  post 'users/:id/make_remote_file_submitter' => 'remote_file_submitters#make_remote_file_submitter', as: 'make_remote_file_submitter'
+  post 'users/:id/remove_remote_file_submitter' => 'remote_file_submitters#remove_remote_file_submitter', as: 'remove_remote_file_submitter'
+
   # Routes for editing/updating password from profile page
   get 'dashboard/profiles/:id/edit_password' => 'morphosource/dashboard/profiles#edit_password', as: 'profile_edit_password'
   patch 'dashboard/profiles/:id/update_password' => 'morphosource/dashboard/profiles#update_password', as: 'profile_update_password'

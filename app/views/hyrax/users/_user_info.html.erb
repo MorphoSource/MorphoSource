@@ -21,6 +21,12 @@
       <div class="col-xs-6 showcase-value break-all"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
     </div>
     <% end %>
+    <% if user.allowed_remote_source %>
+    <div class="row">
+      <div class="col-xs-6 showcase-label">Allowed Remote File Source URLs</div>
+      <div class="col-xs-6 showcase-value break-all"><%= user.allowed_remote_source %></div>
+    </div>
+    <% end %>
   <% end %>
 
   <% if user.affiliation %>

@@ -521,7 +521,7 @@ $( document ).ready(function() {
         if ($('#imaging_event_ie_modality').length)
           var imagingEventModality = $('#imaging_event_ie_modality').val();
         if (deviceModality && imagingEventModality) {
-          if (deviceModality.includes(imagingEventModality)) {
+          if (deviceModality.split(',').includes(imagingEventModality)) {
             return true;
           } else {
             console.log('deviceModality '+ deviceModality);

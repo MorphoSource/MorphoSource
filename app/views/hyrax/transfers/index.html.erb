@@ -55,15 +55,15 @@
                     <% end %>
                   </div>
                 </div>
-                <%= form_tag main_app.transfers_batch_decide_path, method: :put, id: 'batch-transfer-decide', style: 'max-width: unset;' do %>
-                  <div class="panel-body">
+                <div class="panel-body">
+                  <%= form_tag main_app.transfers_batch_decide_path, method: :put, id: 'batch-transfer-decide', style: 'max-width: unset;' do %>
                     <%= @presenter.render_received_transfers %>
-                  </div>
-                <% end %>
+                  <% end %>
+                  <%= render 'hyrax/transfers/received_results_pagination', incoming_proxy_deposits: @presenter.paginated_incoming_proxy_deposits %>
+                </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
 

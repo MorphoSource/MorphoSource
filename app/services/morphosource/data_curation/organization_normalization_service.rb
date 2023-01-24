@@ -6,7 +6,7 @@ module Morphosource
         new(team_id: team_id,
             collection_id: collection_id,
             old_manager_email: old_manager_email,
-            email: email,
+            email: email.downcase,
             remove_previous_reviewers: remove_previous_reviewers,
             update_publication_status: update_publication_status
         ).call

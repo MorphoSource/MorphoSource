@@ -699,7 +699,7 @@ var hasRequiredFields = function() {
         missing_fields.push('Pixel Spacing Units');
       }
       let field = (missing_fields.length > 1) ? "fields" : "field";
-      alert(`Please add required ${field}: ${missing_fields.join(', ')}.`);
+      $.alert(`Please add required ${field}: ${missing_fields.join(', ')}.`);
       return false;
     }
   }

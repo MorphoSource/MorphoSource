@@ -33,6 +33,12 @@ class ImportUrlJob < Hyrax::ApplicationJob
         send_error('User is not allowed to submit the remote file')
         return false
       end
+      # url might not have an extension or not the actual content type extension
+      # todo: if it has extension, check if it is valid and call file_extension_from_content_type if not
+      if !File.extname(name).present?
+        # add file extension needed for characterization, etc
+        name = name + file_extension_from_content_type(RestClient.head(uri.to_s).headers[:content_type])
+      end
     else
       unless BrowseEverything::Retriever.can_retrieve?(uri, headers)
         send_error('Expired URL')
@@ -65,10 +71,6 @@ class ImportUrlJob < Hyrax::ApplicationJob
     def copy_remote_file(uri, name, headers = {})
       filename = File.basename(name)
       dir = Dir.mktmpdir
-      if file_set.is_remote_backed? && !File.extname(name).present?
-        # add file extension needed for characterization later
-        filename = filename + file_extension_from_content_type(RestClient.head(uri.to_s).headers[:content_type])
-      end
 
       Rails.logger.debug("ImportUrlJob: Copying <#{uri}> to #{dir}")
 

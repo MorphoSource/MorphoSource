@@ -429,6 +429,11 @@ Rails.application.routes.draw do
     if ENV['CROSSREF_DOI_SHOULDER'].present? && ENV['CROSSREF_DOI_SHOULDER'].split('/')[0].present?
       get '/*doi_tag/*identifier', action: :resolve_doi, controller: :identifier_resolver, constraints: { doi_tag: ENV['CROSSREF_DOI_SHOULDER'].split('/')[0] }
     end
+
+    # Temporary media access link
+    post 'temporary_links/generate_link_for_media/:media_id', action: :create, controller: :temporary_media_access_links, as: 'temporary_media_access_link_create'
+    delete 'temporary_links/revoke_media_link/:id', action: :destroy, controller: :temporary_media_access_links, as: 'temporary_media_access_link_destroy'
+    delete 'temporary_links/revoke_all_links_for_media/:media_id', action: :destroy_all, controller: :temporary_media_access_links, as: 'temporary_media_access_link_destroy_all'
   end
 
   # when creating a collection, use the morphosource collections controller

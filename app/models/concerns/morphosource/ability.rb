@@ -5,6 +5,14 @@ module Morphosource
       include Hyrax::Ability
     end
 
+    def temporary_link_abilities
+      can :generate_temporary_link, String do |id|
+        user_is_data_manager?(id)
+      end
+
+      can :destroy, TemporaryMediaAccessLink, user_id: current_user.id
+    end
+
     def proxy_deposit_abilities
       if Flipflop.transfer_works?
         can :transfer, String do |id|

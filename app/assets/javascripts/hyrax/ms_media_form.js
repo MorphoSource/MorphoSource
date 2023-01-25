@@ -13,6 +13,20 @@ document.addEventListener("share-tab-loaded", function(event) {
     }
   });
 
+  $('input#media_temporary_link_expires_at').change(function() {
+    let a = $('a#generate-temporary-media-access-link').first();
+    console.log(a);
+    console.log(a.attr('href'));
+    let url = new URL(a.attr('href'));
+    url.searchParams.set("expires_at", $(this).val());
+    a.attr('href', url);
+  });
+
+  var clipboard = new Clipboard('.copy-temporary-media-link');
+  clipboard.on('success', function(e) {
+    $(e.trigger).tooltip('show');
+    e.clearSelection();
+  }); 
 });
 
 $( document ).ready(function() {

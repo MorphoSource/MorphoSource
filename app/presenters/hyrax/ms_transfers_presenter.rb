@@ -22,6 +22,11 @@ module Hyrax
       end
     end
 
+    # pagination methods - incoming
+    def paginated_incoming_proxy_deposits
+      Kaminari.paginate_array(incoming_proxy_deposits, total_count: incoming_total_items).page(incoming_current_page).per(incoming_rows_from_params)
+    end
+
     private
 
       attr_reader :current_user, :view_context, :since
@@ -47,11 +52,6 @@ module Hyrax
           end
           ProxyDepositRequest.outgoing_for(user: current_user, number_of_days: number_of_days)
         end
-      end
-
-      # pagination methods - incoming
-      def paginated_incoming_proxy_deposits
-        Kaminari.paginate_array(incoming_proxy_deposits, total_count: incoming_total_items).page(incoming_current_page).per(incoming_rows_from_params)
       end
 
       def incoming_total_items

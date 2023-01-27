@@ -13,13 +13,10 @@ module Hyrax
       # @return [Boolean] true if create was successful
       def create(env)
         remote_files = env.attributes.delete(:remote_files)
-        
-        # todo: uncomment below and remove the attributes_for_actor setup in submissions_controller.rb#827
         # set file attributes for remote backed media
-        #if env.curation_concern.media? && env.attributes["remote_origin_url"]&.present?
-        #  remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"].first)
-        #end
-        
+        if env.curation_concern.media? && env.attributes["remote_origin_url"]&.present?
+          remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"].first)
+        end
         # next actor is CreateWithFilesActor.create
         next_actor.create(env) && attach_files(env, remote_files)
       end

@@ -824,30 +824,23 @@ class SubmissionsController < ApplicationController
   end
 
   def set_files(attributes_for_actor)
-    if attributes_for_actor["remote_origin_url"].present?
-      # set file attributes
-      uri = URI.parse(attributes_for_actor["remote_origin_url"].first)
-      attributes_for_actor[:remote_files] = [{"url" => attributes_for_actor["remote_origin_url"].first, "file_name" => File.basename(uri.path)}]
-      attributes_for_actor[:uploaded_files] = []
-    else
-      # https://github.com/samvera/hyrax/blob/v2.9.0/app/controllers/concerns/hyrax/works_controller_behavior.rb
+    # https://github.com/samvera/hyrax/blob/v2.9.0/app/controllers/concerns/hyrax/works_controller_behavior.rb
 
-      # If they selected a BrowseEverything file, but then clicked the
-      # remove button, it will still show up in `selected_files`, but
-      # it will no longer be in uploaded_files. By checking the
-      # intersection, we get the files they added via BrowseEverything
-      # that they have not removed from the upload widget.
-      uploaded_files = attributes_for_actor.delete(:uploaded_files) || []
-      selected_files = attributes_for_actor.delete(:selected_files)&.values || []
-      browse_everything_urls = uploaded_files & selected_files.map { |f| f[:url] }
+    # If they selected a BrowseEverything file, but then clicked the
+    # remove button, it will still show up in `selected_files`, but
+    # it will no longer be in uploaded_files. By checking the
+    # intersection, we get the files they added via BrowseEverything
+    # that they have not removed from the upload widget.
+    uploaded_files = attributes_for_actor.delete(:uploaded_files) || []
+    selected_files = attributes_for_actor.delete(:selected_files)&.values || []
+    browse_everything_urls = uploaded_files & selected_files.map { |f| f[:url] }
 
-      # we need the hash of files with url and file_name
-      browse_everything_files = selected_files.select { |v| uploaded_files.include?(v[:url]) }
-      attributes_for_actor[:remote_files] = browse_everything_files
+    # we need the hash of files with url and file_name
+    browse_everything_files = selected_files.select { |v| uploaded_files.include?(v[:url]) }
+    attributes_for_actor[:remote_files] = browse_everything_files
 
-      # Strip out any BrowseEverthing files from the regular uploads.
-      attributes_for_actor[:uploaded_files] = uploaded_files - browse_everything_urls
-    end
+    # Strip out any BrowseEverthing files from the regular uploads.
+    attributes_for_actor[:uploaded_files] = uploaded_files - browse_everything_urls
 
     return attributes_for_actor
   end

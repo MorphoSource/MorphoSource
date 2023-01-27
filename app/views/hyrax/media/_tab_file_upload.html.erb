@@ -5,7 +5,15 @@
     <div class="content-block">
       <h2 class="required-flag">UPLOAD FILE<span class="label label-info"></span></h2>
       <% unless @presenter.file_set_list.present? %>
-        <%= render 'form_files_edit', f: f %>
+        <% if @presenter.file_origin != "Remote" %>
+          <%= render 'form_files_edit', f: f %>
+        <% else %>
+          <% if current_user.remote_file_submitter? %>
+            <%= render 'form_files_remote', f: f %>
+          <% else %>
+            Permission is required to update.
+          <% end %>    
+        <% end %>    
       <% else %>
         To replace a file, please delete the existing file first.
       <% end %>

@@ -77,6 +77,16 @@ class ImportUrlJob < Hyrax::ApplicationJob
       File.open(File.join(dir, filename), 'wb') do |f|
         begin
           if file_set.is_remote_backed?
+
+            # todo: 
+            # BrowseEverything cannot download certain remote file, 
+            # e.g. https://deepblue.lib.umich.edu/data/downloads/vt150j467
+            # using URI.open below is working, but the sha1 hash of the downloaded file does not match
+            # we might need to investigate the sha1 hash issue:
+            # - maybe related to the url has no file extension?  mime type unknown?  binary transfer method?
+            # or find another way to download large file, especially zip
+            # - check if BE has any update or option?
+
             # for other external url file
             f << URI.open(uri).read
           else

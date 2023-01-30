@@ -5,6 +5,7 @@ module Hyrax
   class MediaController < ApplicationController
     # Adds Hyrax behaviors to the controller
     include Morphosource::CurationConcernControllerBehavior
+    include Morphosource::CurationConcernTemporaryAccessControllerBehavior
     include Hyrax::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
@@ -24,6 +25,7 @@ module Hyrax
     before_action :save_individual_access, only: [:update]
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
+    before_action :redirect_to_temporary_link_url_if_needed, only: [:showcase]
     after_action :set_fund_code, only: [:update]
     after_action :update_thumbnail, only: [:update]
     after_action :deliver_individual_access_messages, only: [:update]
@@ -322,6 +324,16 @@ module Hyrax
         return true if params["commit"] == "Update Embargo" || params["commit"] == "Update Lease"
         validate_file_formats
         curation_concern.errors.empty?
+      end
+
+      # If the user can't read media normally and access cookie exists, redirect to temp link url
+      def redirect_to_temporary_link_url_if_needed
+        return unless controller_name == "media"
+        if params[:id] && temporary_link_cookie_exists?(params[:id]) && !current_ability.can?(:read, params[:id])
+          redirect_to main_app.media_showcase_temporary_link_path(
+            media_id: params[:id], token: temporary_media_access_link_from_cookie(params[:id]).token
+          )
+        end
       end
 
       def set_fileset_visibility

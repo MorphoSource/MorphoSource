@@ -120,9 +120,10 @@ if Flipflop.assign_admin_set? %>
               <% f.object.model.active_temporary_links.each do |link| %>
                 <tr>
                   <td style="padding-left: 0;">
-                    <%= link_to main_app.media_showcase_url(access_token: link.token), main_app.media_showcase_url(access_token: link.token) %>
+                    <% link_url = main_app.media_showcase_temporary_link_url(media_id: f.object, token: link.token) %>
+                    <%= link_to link_url, link_url, style: 'overflow-wrap: break-word;' %>
                     <button type="button" class="btn btn-link copy-temporary-media-link" style="color: black;"
-                            data-clipboard-text="<%= main_app.media_showcase_url(access_token: link.token) %>"
+                            data-clipboard-text="<%= link_url %>"
                             data-toggle="tooltip" data-placement="bottom"
                             title="<%= t('hyrax.single_use_links.copy.tooltip') %>">
                       <i class="far fa-copy fa-lg"></i>

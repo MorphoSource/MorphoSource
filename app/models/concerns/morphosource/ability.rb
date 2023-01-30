@@ -3,14 +3,38 @@ module Morphosource
     extend ActiveSupport::Concern
     included do
       include Hyrax::Ability
+
+      attr_accessor :temporary_media_access_link
     end
 
     def temporary_link_abilities
+
+      # Creating and destroying temporary access links
       can :generate_temporary_link, String do |id|
         user_is_data_manager?(id)
       end
-
       can :destroy, TemporaryMediaAccessLink, user_id: current_user.id
+
+      # Viewing media and file_sets via temporary access link
+      can :read, [ActiveFedora::Base, ::SolrDocument] do |obj|
+        if temporary_media_access_link.present?
+          Rails.logger.debug("[CANCAN] Checking for temporary access grant")
+        
+          if obj.file_set?
+            obj = obj.is_a?(ActiveFedora::Base) ? obj.member_of&.first : FileSet.find(obj.id).member_of&.first
+            return false unless obj.present?
+          end
+
+          temporary_media_access_link.active? && temporary_media_access_link.media_id == obj.id
+        end
+      end
+
+      can :read, String do |id|
+        if temporary_media_access_link.present?
+          obj = ActiveFedora::Base.find(id)
+          can? :read, obj
+        end
+      end
     end
 
     def proxy_deposit_abilities

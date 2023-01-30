@@ -1,7 +1,8 @@
+# Handles creation and deletion of temporary media access links
 module Morphosource
   class TemporaryMediaAccessLinksController < ApplicationController
     load_and_authorize_resource only: :destroy
-
+    
     def create
       params.require(:media_id)
       params.require(:expires_at)

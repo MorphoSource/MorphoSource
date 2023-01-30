@@ -2,6 +2,8 @@ require 'iiif_manifest'
 
 module Morphosource
 	class ManifestsController < ApplicationController
+		include CurationConcernTemporaryAccessControllerBehavior
+
 		class_attribute :iiif_manifest_builder
 		self.iiif_manifest_builder = Hyrax::ManifestBuilderService.new(
 			iiif_manifest_factory: ::IIIFManifest::V3::ManifestFactory
@@ -11,6 +13,7 @@ module Morphosource
 			headers['Access-Control-Allow-Origin'] = '*'
 
 		 	if params.include?(:id) && (m = media_from_access_control(params[:id]))
+				authorize_with_temporary_link_if_present m.id
         authorize! :read, m.id
 
 		 		json = iiif_manifest_builder.manifest_for(

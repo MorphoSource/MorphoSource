@@ -16,6 +16,7 @@ module Hyrax
     def showcase
       @presenter = show_presenter.new(@curation_concern_from_search_result, current_ability, request)
       @presenter.get_showcase_data
+      flash[:notice] = I18n.t 'morphosource.media.view.temporary_access'
       render '/hyrax/media/showcase', presenter: @presenter
     end
 

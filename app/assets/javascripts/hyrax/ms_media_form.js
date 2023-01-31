@@ -17,7 +17,7 @@ document.addEventListener("share-tab-loaded", function(event) {
 
 $( document ).ready(function() {
   if ( $('form[id*="edit_media"]').length ||
-       $('form[id*="new_media"]').length ) { // if media form page (add/edit)
+       $('form[id*="new_media"]').length ) {
 
     IsImagingEventOK = false;
     IsProcessingEventOK = false;
@@ -501,7 +501,7 @@ $( document ).ready(function() {
       if (uploadStatusOK) {
         if (noFileCheck()) {
           if (fileOrigin == "remote") {
-            remoteFileCheckAndSubmit(editMediaSubmit, null);
+            remoteFileCheckAndSubmit();
           } else {
             editMediaSubmit();            
           }
@@ -624,7 +624,15 @@ var editMediaSubmit = function() {
   }            
 }
 
-var remoteFileCheckAndSubmit = function(func, view) {
+var doSubmitMedia = function(view) {
+  if ($('form[id*="edit_media"]').length) {
+    editMediaSubmit();
+  } else if ($('form[id*="new_media"]').length) {
+    view.submitMedia();
+  }
+}
+
+var remoteFileCheckAndSubmit = function(view=null) {
   try {
     var url = (new URL($('#media_remote_origin_url').val()));
     var extension = url.pathname.substring(url.pathname.lastIndexOf('.'));
@@ -653,12 +661,7 @@ var remoteFileCheckAndSubmit = function(func, view) {
                 content: 'The file format (' + results.resp_file_ext + ') returned by the Remote Origin URL is not an accepted format.  Click CONFIRM to save the media, or CANCEL to go back.',
                 buttons: {
                   confirm: function() {
-                    // todo: move this to a shared function?
-                    if ($.isFunction(func)) {
-                      func();
-                    } else if (view) {
-                      view.submitMedia();
-                    }
+                    doSubmitMedia(view);
                   },
                   cancel: function() {
                     enablePage();
@@ -666,19 +669,11 @@ var remoteFileCheckAndSubmit = function(func, view) {
                 }
             });
           } else {
-            if ($.isFunction(func)) {
-              func();
-            } else if (view) {
-              view.submitMedia();
-            }
+            doSubmitMedia(view);
           }
         } else {
-          $.alert('Warning: The file format is unknown.  Please check the media after it is saved.');
-          if ($.isFunction(func)) {
-            func();
-          } else if (view) {
-            view.submitMedia();
-          }
+          $.alert('The file format is unknown.  Please check the media after it is saved.', 'Warning');
+          doSubmitMedia(view);
         }
       } else if (results.status == "error") {
         $.alert('There is problem with the Remote Origin URL: ' + results.message);

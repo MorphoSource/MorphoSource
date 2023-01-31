@@ -21,7 +21,7 @@ class UpdateMediaMetadataJob < Hyrax::ApplicationJob
       :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :download_reviewer, 
       :morphosource_use_agreement_type, :required_archival_of_published_derivatives, 
       :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, 
-      :cite_as, :description, :license, :rights_statement
+      :cite_as, :description, :license, :rights_statement, :creator
     ]
   end
 end

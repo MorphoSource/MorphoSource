@@ -27,12 +27,27 @@ class ProxyDepositRequest < ActiveRecord::Base
   # @return [Enumerable] a set of requests that the given user can act upon to claim the ownership transfer
   # @note We are iterating through the found objects and querying SOLR each time. Assuming we are rendering this result in a view,
   #       this is reasonable. In the view we will render the #to_s of the associated work. So we may as well preload the SOLR document.
+  # Replacing deleted_work? with remove_deleted_transfers to avoid loading Fedora media objects
   def self.incoming_for(user:, number_of_days:)
     if number_of_days == 'all'
-      where(receiving_user: user).order('created_at desc').reject(&:deleted_work?)
+      transfers = where(receiving_user: user).order('created_at desc')
+      remove_deleted_transfers(transfers)
     else
-      where(receiving_user: user).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc').reject(&:deleted_work?)
+      transfers = where(receiving_user: user).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
+      remove_deleted_transfers(transfers)
     end
+  end
+
+  def self.remove_deleted_transfers(transfers)
+    return transfers if transfers.empty?
+
+    transfer_ids = transfers.map(&:work_id)
+    existing_ids = Morphosource::SolrService.new.get_docs(nil, fq:["id:(#{transfer_ids.join(' OR ')})"], fl: ["id"]).map{|doc| doc["id"]}
+    missing_ids = transfer_ids - existing_ids
+    return transfers if missing_ids.empty?
+
+    missing_requests = ProxyDepositRequest.where(work_id: missing_ids)
+    transfers - missing_requests
   end
 
   # @param [User] user - the person who requested that a work be transfer to someone else

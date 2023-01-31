@@ -70,6 +70,26 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
       expect_any_instance_of(described_class).to receive(:call)
       subject
     end
+
+    context 'new data manager email is entered with incorrect capitalization' do
+      before do
+        params[:email] = user.email.upcase
+      end
+      it 'successfully finds the user' do
+        expect_any_instance_of(described_class).to receive(:call)
+        subject
+      end
+    end
+
+    context 'new data manager email is entered incorrectly' do
+      let(:email) { 'nobody@email.com' }
+      before do
+        params[:email] = email
+      end
+      it 'raises an error' do
+        expect { subject }.to raise_error("One or more required parameters is not present or incorrect")
+      end
+    end
   end
 
   describe '#call' do

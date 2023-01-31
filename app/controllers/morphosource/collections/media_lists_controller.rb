@@ -6,9 +6,16 @@ module Morphosource
 
       before_action :redirect_to_collection_type, only: []
 
+      # temporary restriction so only admins can access media lists and sequential section lists
+      before_action :authorize_admin
+
       self.presenter_class = Morphosource::Collections::MediaListPresenter
 
       private
+
+        def authorize_admin
+          redirect_to root_path and return unless current_user.admin?
+        end
 
         # link for facet filters
         def search_action_url(*args)

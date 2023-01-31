@@ -6,8 +6,7 @@
       <h2 class="required-flag">UPLOAD FILE<span class="label label-info"></span></h2>
       <% unless @presenter.file_set_list.present? %>
 
-
-        <ul class="nav nav-tabs sub-nav" role="tablist">
+        <ul class="nav nav-tabs sub-nav upload-file" role="tablist">
           <li role="presentation" id="tab-local-file-section" class="active">
             <a href="#local-file-section" aria-controls="local-file-section" role="tab" data-toggle="tab" aria-expanded="false">
               Upload From Computer / Cloud
@@ -37,8 +36,6 @@
             </div>
           <% end %>    
         </div>
-
-
 
       <% else %>
         To replace a file, please delete the existing file first.

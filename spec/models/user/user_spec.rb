@@ -8,6 +8,7 @@ RSpec.describe User, type: :model do
   it { should have_many(:owned_fund_codes) }
   it { should have_many(:fund_code_memberships) }
   it { should have_many(:fund_codes) }
+  it { should have_many(:temporary_media_access_links) }
 
   describe 'after_database_authentication' do
     before do

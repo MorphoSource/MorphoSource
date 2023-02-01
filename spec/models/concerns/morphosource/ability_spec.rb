@@ -379,4 +379,77 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     end
   end
 
+  describe 'temporary_link_abilities' do
+    let(:other_user) { create(:user) }
+    let(:managed_media) { create(:media, depositor: user.ms_id) }
+    let(:unmanaged_media) { create(:media, depositor: other_user.ms_id) }
+    let(:other_unmanaged_media) { create(:media, depositor: other_user.ms_id) }
+
+    describe 'can? :generate_temporary_link, String' do
+      context 'user is media data manager' do
+        it 'user can' do
+          expect(ability.can? :generate_temporary_link, managed_media.id).to be true
+        end
+      end
+
+      context 'user is does media data manager' do
+        it 'user cannot' do
+          expect(ability.can? :generate_temporary_link, unmanaged_media.id).to be false
+        end
+      end
+    end
+
+    describe 'can? :destroy, TemporaryMediaAccessLink' do
+      let(:user_temporary_link) { create(:temporary_media_access_link, user: user, media_id: managed_media.id )} 
+      let(:other_user_temporary_link) { create(:temporary_media_access_link, user: other_user, media_id: managed_media.id )}
+
+      context 'user is associated with the link' do
+        it 'user can' do
+          expect(ability.can? :destroy, user_temporary_link).to be true
+        end
+      end
+
+      context 'user is not associated with the link' do
+        it 'user cannot' do
+          expect(ability.can? :destroy, other_user_temporary_link).to be false
+        end
+      end
+    end
+
+    describe 'can? :read, [ActiveFedora::Base, SolrDocument] without temporary link credentials' do
+      context 'user is media data manager' do
+        it 'user can read media' do
+          managed_media.read_users += [user]
+          managed_media.save
+          expect(ability.can? :read, managed_media).to be true
+        end
+      end
+
+      context 'user is not media data manager' do
+        it 'user cannot read media' do
+          expect(ability.can? :read, unmanaged_media).to be false
+        end
+      end
+    end
+
+    describe 'can? :read, [ActiveFedora::Base, SolrDocument] with temporary link credentials' do
+      let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: unmanaged_media.id )} 
+
+      before do
+        ability.temporary_media_access_link = temporary_link
+      end
+
+      context 'user has temporary access credentials' do
+        it 'user can access media' do
+          expect(ability.can? :read, unmanaged_media).to be true
+        end
+      end
+
+      context 'user has temporary access credentials, but not the right credentials for this media' do
+        it 'user cannot access media' do
+          expect(ability.can? :read, other_unmanaged_media).to be false
+        end
+      end
+    end
+  end
 end

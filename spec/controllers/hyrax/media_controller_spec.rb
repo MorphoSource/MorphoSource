@@ -19,7 +19,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
   end
 
   let(:depositor) do
-    FactoryBot.build(:user)
+    FactoryBot.create(:user)
   end
 
   let(:ability) { double }

@@ -331,7 +331,7 @@ module Hyrax
         return unless controller_name == "media"
         if params[:id] && temporary_link_cookie_exists?(params[:id]) && !current_ability.can?(:read, params[:id])
           redirect_to main_app.media_showcase_temporary_link_path(
-            media_id: params[:id], token: temporary_media_access_link_from_cookie(params[:id]).token
+            id: params[:id], token: temporary_media_access_link_from_cookie(params[:id]).token
           )
         end
       end

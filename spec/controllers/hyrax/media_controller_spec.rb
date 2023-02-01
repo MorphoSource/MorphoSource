@@ -142,6 +142,66 @@ RSpec.describe Hyrax::MediaController, type: :controller do
         end
       end
     end
+
+    describe 'interactions with private media and temporary link access cookie' do
+      let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )} 
+      let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
+      let(:main_app) { Rails.application.routes.url_helpers }
+
+      before do
+        allow(subject).to receive(:cookies).and_return(cookie_jar)
+      end
+
+      context 'user is not logged in but has a temporary access cookie' do
+        it 'redirects to media temporary link view URL' do
+          cookie_jar.encrypted[temporary_link.media_id] = { 
+            value: temporary_link.token, 
+            expires: temporary_link.expires_at
+          }
+
+          get :showcase, params: { id: work.id }
+          expect(response.status).to eq(302)
+          expect(response).to redirect_to main_app.media_showcase_temporary_link_path(
+            id: work.id, token: temporary_link.token, locale: 'en'
+          )
+        end
+      end
+
+      context 'user is logged in, has temporary access cookie, but already has access to media' do
+        before do
+          sign_in user
+          work.read_users += [user]
+          work.save
+        end
+
+        it 'does not redirect and successfully returns media via usual route' do
+          cookie_jar.encrypted[temporary_link.media_id] = { 
+            value: temporary_link.token, 
+            expires: temporary_link.expires_at
+          }
+          get :showcase, params: { id: work.id }
+          expect(response.status).to eq(200)
+        end
+      end
+
+      context 'user is logged in, has temporary access cookie, and does not have access to media' do
+        before do
+          sign_in user
+        end
+
+        it 'redirects to media temporary link view URL' do
+          cookie_jar.encrypted[temporary_link.media_id] = { 
+            value: temporary_link.token, 
+            expires: temporary_link.expires_at
+          }
+          get :showcase, params: { id: work.id }
+          expect(response.status).to eq(302)
+          expect(response).to redirect_to main_app.media_showcase_temporary_link_path(
+            id: work.id, token: temporary_link.token, locale: 'en'
+          )
+        end
+      end
+    end
   end
 
   describe "#valid_file_formats" do

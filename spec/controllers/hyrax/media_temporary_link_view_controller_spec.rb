@@ -51,7 +51,7 @@ RSpec.describe Hyrax::MediaTemporaryLinkViewController, type: :controller do
     context 'when accessed without valid temporary link credentials for logged in user' do
       let(:main_app) { Rails.application.routes.url_helpers }
       
-      it 'returns authorized' do
+      it 'returns unauthorized' do
         sign_in user
         get :showcase, params: { id: media.id, token: '1111' }
         expect(response.status).to eq(401)

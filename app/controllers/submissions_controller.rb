@@ -146,7 +146,7 @@ class SubmissionsController < ApplicationController
       http_code = ""
     else
       begin
-        head = RestClient.head(params[:u])
+        head = RestClient::Request.execute(method: :head, url: params[:u], timeout: 15)
         http_code = head.code
         file_ext = file_extension_from_content_type(head.headers[:content_type])
         status = "success"

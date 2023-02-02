@@ -548,4 +548,6 @@ Rails.application.routes.draw do
 
   # Team Projects with Media Not Owned by Team Export
   get 'api/projects/:id/view-only-media-projects', to: 'morphosource/collections/teams#media_projects', as: 'api_teams_media_projects', defaults: { format: 'json' }
+
+  delete '/media_batch_edits', to: 'morphosource/batch_edits#destroy_collection', as: 'media_batch_edits'
 end

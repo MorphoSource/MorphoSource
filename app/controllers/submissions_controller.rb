@@ -826,8 +826,8 @@ class SubmissionsController < ApplicationController
   def set_files(attributes_for_actor)
     if attributes_for_actor["remote_origin_url"].present?
       # set file attributes
-      uri = URI.parse(attributes_for_actor["remote_origin_url"].first)
-      attributes_for_actor[:remote_files] = [{"url" => attributes_for_actor["remote_origin_url"].first, "file_name" => File.basename(uri.path)}]
+      uri = URI.parse(attributes_for_actor["remote_origin_url"])
+      attributes_for_actor[:remote_files] = [{"url" => attributes_for_actor["remote_origin_url"], "file_name" => File.basename(uri.path)}]
       attributes_for_actor[:uploaded_files] = []
     else
       # https://github.com/samvera/hyrax/blob/v2.9.0/app/controllers/concerns/hyrax/works_controller_behavior.rb
@@ -985,7 +985,8 @@ class SubmissionsController < ApplicationController
                 :organization_search,
                 :taxonomy_params_array,
                 :organization_for_attachment,
-                :fund_code
+                :fund_code,
+                :remote_files
         )
     )
   end

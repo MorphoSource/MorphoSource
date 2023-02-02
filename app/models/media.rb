@@ -43,7 +43,7 @@ class Media < Morphosource::Works::Base
   end
 
   def is_remote_backed?
-    self.remote_origin_url&.first&.match(/^https?:\/\//).present?
+    self.remote_origin_url&.match(/^https?:\/\//).present?
   end
 
   def cart_items

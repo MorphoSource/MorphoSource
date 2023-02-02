@@ -658,7 +658,7 @@ var remoteFileCheckAndSubmit = function(view=null) {
             console.log("acceptedFormats: " + acceptedFormats);                        
             $.confirm({
                 title: 'Please confirm',
-                content: 'The file format (' + results.resp_file_ext + ') returned by the Remote Origin URL is not an accepted format.  Click CONFIRM to save the media, or CANCEL to go back.',
+                content: 'The file format returned by the Remote Origin URL is ' + (results.resp_file_ext || "unknown") + ' and it does not match an accepted format.  Click CONFIRM to save the media, or CANCEL to go back.',
                 buttons: {
                   confirm: function() {
                     doSubmitMedia(view);

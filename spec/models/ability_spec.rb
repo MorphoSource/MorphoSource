@@ -95,6 +95,29 @@ RSpec.describe Ability, type: :model do
 
       let(:collections) { [team, project, media_list, sequential_section_list] }
 
+      context 'creating a collection' do
+        it 'allows admins to create all collection types' do
+          expect(admin_ability).to be_able_to(:create, Collection)
+          expect(admin_ability).to be_able_to(:create, MediaList)
+          expect(admin_ability).to be_able_to(:create, SequentialSectionList)
+        end
+        it 'allows contributors to create all collection types' do
+          expect(contributor_ability).to be_able_to(:create, Collection)
+          expect(contributor_ability).to be_able_to(:create, MediaList)
+          expect(contributor_ability).to be_able_to(:create, SequentialSectionList)
+        end
+        it 'does not allow registered users to create any collection types' do
+          expect(user_ability).not_to be_able_to(:create, Collection)
+          expect(user_ability).not_to be_able_to(:create, MediaList)
+          expect(user_ability).not_to be_able_to(:create, SequentialSectionList)
+        end
+        it 'does not allow guest users to create any collection types' do
+          expect(guest_ability).not_to be_able_to(:create, Collection)
+          expect(guest_ability).not_to be_able_to(:create, MediaList)
+          expect(guest_ability).not_to be_able_to(:create, SequentialSectionList)
+        end
+      end
+
       context 'collection is public' do
         before do
           collections.each do |c|

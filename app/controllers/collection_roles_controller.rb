@@ -8,6 +8,8 @@ class CollectionRolesController < ApplicationController
 
   before_action { collection_role_values(params[:collection_roles]) }
 
+  delegate :presenter_class, to: :@collection
+
   def update_collection_groups
     return unless can? :edit, collection
 
@@ -98,7 +100,7 @@ class CollectionRolesController < ApplicationController
   end
 
   def reload_collection_share
-    redirect_to collection_members_path(collection)
+    redirect_to members_tab_url(collection)
   end
 
   def update_user_access
@@ -233,10 +235,5 @@ class CollectionRolesController < ApplicationController
   def find_subcollections
     presenter
     member_subcollections
-  end
-
-  def presenter
-    self.presenter_class = @collection.presenter_class
-    super
   end
 end

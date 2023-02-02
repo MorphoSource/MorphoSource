@@ -263,7 +263,7 @@ module Hyrax
         IIIFManifest::V3::DisplayContent.new(
           URI::join(
             hostname,
-            Hyrax::Engine.routes.url_helpers.download_path(model.access_control_id, file: download_file_suffix)
+            Rails.application.routes.url_helpers.download_path(model.access_control_id, file: download_file_suffix)
           ),
           format: format,
           type: type

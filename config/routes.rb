@@ -271,11 +271,14 @@ Rails.application.routes.draw do
   mount BrowseEverything::Engine => '/browse' # this is needed after updating Hyrax to 2.7
 
   scope module: :morphosource do
-    resources :downloads, only: :show
     resources :tags, param: :tag, only: [:index, :show]
     get '/attachments/:id', to: 'attachments#show', as: 'attachment'
-    get '/download', to: 'media_downloads#show', as: 'media_download'
     get '/manifests/:id', to: 'manifests#show', as: 'manifest'
+
+    # media ZIP downloads
+    get '/download', to: 'media_downloads#show', as: 'media_download'
+    # derivative (thumbnail and 3D/2D/AV preview) downloads
+    get '/downloads/:id', to: 'derivative_downloads#show', as: 'download'
   end
 
 

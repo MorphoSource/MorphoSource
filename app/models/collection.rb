@@ -182,11 +182,11 @@ class Collection < ActiveFedora::Base
     member_ids.each do |id|
       work = ActiveFedora::Base.find(id)
       work.member_of_collections.delete self
-      if team? || project?
+      if media_inherit_permissions?
         remove_team_access_grants(work)
       end
       work.save!
-      if team? || project?
+      if media_inherit_permissions?
         InheritPermissionsJob.perform_later(work)
       end
     end

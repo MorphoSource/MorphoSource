@@ -1,23 +1,23 @@
 require 'rails_helper'
 
 RSpec.describe Hyrax::MediaTemporaryLinkViewController, type: :controller do
-  # describe "search_builder_class" do
-  #   it "is Morphosource::TemporaryMediaAccessLinkSearchBuilder" do
-  #     expect(subject.send(:search_builder_class)).to be(Morphosource::TemporaryMediaAccessLinkSearchBuilder)
-  #   end
-  # end
+  describe "search_builder_class" do
+    it "is Morphosource::TemporaryMediaAccessLinkSearchBuilder" do
+      expect(subject.send(:search_builder_class)).to be(Morphosource::TemporaryMediaAccessLinkSearchBuilder)
+    end
+  end
 
   describe 'GET #showcase' do
     let(:user)  { create(:confirmed_user) }
     let(:media) { create(:media, depositor: user.ms_id ) }
 
-    # context 'when params are not provided' do
-    #   it 'a url generation error is produced' do
-    #     expect{
-    #       process :showcase, method: :get
-    #     }.to raise_error(ActionController::UrlGenerationError)
-    #   end
-    # end
+    context 'when params are not provided' do
+      it 'a url generation error is produced' do
+        expect{
+          process :showcase, method: :get
+        }.to raise_error(ActionController::UrlGenerationError)
+      end
+    end
 
     context 'when accessed with valid temporary link credentials' do
       let!(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: media.id )} 

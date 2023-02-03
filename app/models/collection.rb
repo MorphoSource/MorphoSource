@@ -166,7 +166,6 @@ class Collection < ActiveFedora::Base
         member.errors.add(:collections, message)
       else
         member.member_of_collections << self
-        byebug
         if media_inherit_permissions?
           Hyrax::PermissionTemplateApplicator.apply(permission_template).to(model: member)
           member.save!

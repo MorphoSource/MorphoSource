@@ -2,5 +2,14 @@ en:
   morphosource:
     dashboard:
       my:
+        collections:
+          media_lists:
+            action:
+              edit: 'Edit List'
+              delete: 'Delete List'
+          sequential_section_lists:
+            action:
+              edit: 'Edit List'
+              delete: 'Delete List'
         media_objects:
           title: "Media and Objects"

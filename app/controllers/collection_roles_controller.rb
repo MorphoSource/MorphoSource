@@ -212,18 +212,13 @@ class CollectionRolesController < ApplicationController
     when 'fail'
       flash[:error] = translate('hyrax.dashboard.collections.form.permission_update_errors')
     when 'user_status'
+      user = 'user'.pluralize(@non_contributors.count)
       emails = @non_contributors.join(', ')
-      flash[:error] = "#{'User'.pluralize(@non_contributors.count)} (#{emails}) can't be added to the #{params[:collection_roles][:access]} role because they do not have contributor status. Either add the #{'user'.pluralize(@non_contributors.count)} to a membership role that does not require contributor status (#{non_contributor_roles}) or have the #{'user'.pluralize(@non_contributors.count)} request contributor status."
+      access = params[:collection_roles][:access]
+      roles = t("morphosource.dashboard.collections.#{@collection.collection_type.machine_id}.members.roles.non-contributor")
+      flash[:error] = translate('morphosource.dashboard.collections.form.non_contributor_errors', user: user, emails: emails, access: access, roles: roles)
     when 'duplicate'
       flash[:error] = "#{@user.name} is already a member of #{@collection.title.first}"
-    end
-  end
-
-  def non_contributor_roles
-    if @collection.list?
-      'viewer'
-    else
-      'downloader, viewer'
     end
   end
 

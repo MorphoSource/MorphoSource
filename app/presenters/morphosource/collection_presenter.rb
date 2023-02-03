@@ -57,6 +57,10 @@ module Morphosource
       collection_type.title
     end
 
+    def collection_type_machine_id
+      collection_type.machine_id
+    end
+
     def membership(current_user)
       if collection.managers.include?(current_user)
         'Manager'

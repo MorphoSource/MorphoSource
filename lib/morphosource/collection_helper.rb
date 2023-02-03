@@ -396,6 +396,7 @@ module Morphosource
     end
 
     def collection_type_machine_id(collection)
+      collection = Collection.find(collection) if collection.is_a? String
       collection.collection_type.machine_id
     end
 

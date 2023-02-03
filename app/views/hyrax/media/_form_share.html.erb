@@ -122,7 +122,7 @@ if Flipflop.assign_admin_set? %>
               <tr>
                 <td style="padding-left: 0;">
                   <% link_url = main_app.media_showcase_temporary_link_url(media_id: f.object, token: link.token) %>
-                  <%= link_to link_url, link_url, style: 'overflow-wrap: break-word;' %>
+                  <%= link_to link_url, link_url, style: 'overflow-wrap: anywhere;' %>
                   <button type="button" class="btn btn-link copy-temporary-media-link" style="color: black;"
                           data-clipboard-text="<%= link_url %>"
                           data-toggle="tooltip" data-placement="bottom"

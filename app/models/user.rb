@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :fund_code_memberships
   has_many :fund_codes, :through => :fund_code_memberships
   has_many :temporary_media_access_links
+  has_many :temporary_collection_access_links
 
   has_secure_token
 

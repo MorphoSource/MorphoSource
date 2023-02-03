@@ -136,7 +136,7 @@ Rails.application.routes.draw do
     scope module: :dashboard do
       get 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
 
-      get 'dashboard/collections/:id', to: 'collections#edit'
+      get 'dashboard/collections/:id', to: 'collections#edit', as: 'collection_edit'
       put 'dashboard/collections', to: 'collections#update'
       put 'dashboard/collections/:id', to: 'collections#update'
       patch 'dashboard/collections/:id', to: 'collections#update'
@@ -440,6 +440,11 @@ Rails.application.routes.draw do
     post 'temporary_links/generate_link_for_media/:media_id', action: :create, controller: :temporary_media_access_links, as: 'temporary_media_access_link_create'
     delete 'temporary_links/revoke_media_link/:id', action: :destroy, controller: :temporary_media_access_links, as: 'temporary_media_access_link_destroy'
     delete 'temporary_links/revoke_all_links_for_media/:media_id', action: :destroy_all, controller: :temporary_media_access_links, as: 'temporary_media_access_link_destroy_all'
+
+    # Temporary collection (project/team) media access link
+    post 'temporary_links/generate_link_for_collection/:collection_id', action: :create, controller: :temporary_collection_access_links, as: 'temporary_collection_access_link_create'
+    delete 'temporary_links/revoke_collection_link/:id', action: :destroy, controller: :temporary_collection_access_links, as: 'temporary_collection_access_link_destroy'
+    delete 'temporary_links/revoke_all_links_for_collection/:collection_id', action: :destroy_all, controller: :temporary_collection_access_links, as: 'temporary_collection_access_link_destroy_all'
   end
 
   # when creating a collection, use the morphosource collections controller

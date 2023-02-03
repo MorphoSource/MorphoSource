@@ -38,6 +38,21 @@ $(document).ready(function() {
       disablePageAndSave(".dropdown-toggle");
     });
 
+    // Temporary access link UI
+
+    $('input#collection_temporary_link_expires_at').change(function() {
+      let a = $('a#generate-temporary-collection-access-link').first();
+      let url = new URL(a.attr('href'));
+      url.searchParams.set("expires_at", $(this).val());
+      a.attr('href', url);
+    });
+  
+    var clipboard = new Clipboard('.copy-temporary-collection-link');
+    clipboard.on('success', function(e) {
+      $(e.trigger).tooltip('show');
+      e.clearSelection();
+    }); 
+
   } // end if collection form page
 
 

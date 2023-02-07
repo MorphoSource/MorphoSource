@@ -508,10 +508,7 @@ $( document ).ready(function() {
         }
       } else {
         promptAutoSave(".btn-save-media");
-//todo: test auto save
       }
-
-
     }); // /on submit
 
     $(".nav-tabs.upload-file a").click(function(){

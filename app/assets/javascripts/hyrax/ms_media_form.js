@@ -621,7 +621,9 @@ var editMediaSubmit = function() {
       IsImagingEventOK = true;
       submitProcessingEvent();
     }
-  }            
+  } else {
+    enablePage();
+  }
 }
 
 var doSubmitMedia = function(view) {

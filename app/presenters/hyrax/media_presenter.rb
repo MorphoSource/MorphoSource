@@ -238,7 +238,7 @@ module Hyrax
       @compression = []
       @color_depth = []
       @file_status = ""
-      @file_origin = remote_origin_url.present?? "Remote" : ""
+      @file_origin = media.file_origin
       temp = ""
       contents_mime_type = ""
       @file_set_original_file_ready = true

@@ -38,15 +38,15 @@ module Hyrax
 
         # @return [TrueClass]
         def attach_files(files, env)
-          unless env.curation_concern.media? && env.curation_concern.is_remote_backed? 
-            return true if files.blank?
+          if env.curation_concern.media? && env.curation_concern.is_remote_backed?            
+            # if remote file url is empty or same as the current one, no need to call AttachFilesToWorkJob
+            if !env.curation_concern.remote_origin_url.present? || 
+              (env.curation_concern.remote_origin_url == env.curation_concern.file_sets&.first&.import_url)
+              return true
+            end
           else
-            return true unless env.curation_concern.remote_origin_url.present?
-            
-byebug
-# todo: check if remote_origin_url has changed
-
-            #return true unless env.curation_concern.remote_origin_url_changed?
+            # this block is for other work type (e.g. PE) and media that is not remote-backed (which includes local/cloud upload) 
+            return true if files.blank?
           end
           AttachFilesToWorkJob.perform_later(env.curation_concern, files, env.attributes.to_h.symbolize_keys)
           true

@@ -26,7 +26,7 @@ module Hyrax
       def update(env)
         remote_files = env.attributes.delete(:remote_files)
         # set file attributes for remote backed media
-        if env.curation_concern.media? && env.attributes["remote_origin_url"]&.present?
+        if env.curation_concern.media? && env.attributes["remote_origin_url"].present?
           remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"])
         end
         # next actor is CreateWithFilesActor.update
@@ -61,7 +61,7 @@ module Hyrax
         # @param [HashWithIndifferentAccess] remote_files
         # @return [TrueClass]
         def attach_files(env, remote_files)
-          return true unless remote_files
+          return true unless remote_files.present?
           remote_files.each do |file_info|
             next if file_info.blank? || file_info[:url].blank?
             # Escape any space characters, so that this is a legal URI

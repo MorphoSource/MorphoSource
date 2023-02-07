@@ -262,7 +262,12 @@ module Hyrax
     def characterize
       if current_user.admin?
         media_work = Media.find(params[:id])
-        if media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
+        # For remote file, the original_file.content is empty, so original_file.present? returns false 
+        # Therefore check for uri instead
+        if media_work.is_remote_backed? && media_work.file_sets.first.present? && media_work.file_sets.first.original_file.uri.present?
+          PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id)
+          flash[:notice] = "Media characterization job has been started"
+        elsif media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
           PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id)
           flash[:notice] = "Media characterization job has been started"
         else
@@ -276,7 +281,10 @@ module Hyrax
     def create_derivatives
       if current_user.admin?
         media_work = Media.find(params[:id])
-        if media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
+        if media_work.is_remote_backed? && media_work.file_sets.first.present? && media_work.file_sets.first.original_file.uri.present?
+          PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id)
+          flash[:notice] = "Media create derivatives job has been started"
+        elsif media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
           PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id)
           flash[:notice] = "Media create derivatives job has been started"
         else

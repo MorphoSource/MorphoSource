@@ -637,7 +637,7 @@ var remoteFileCheckAndSubmit = function(view=null) {
     var url = (new URL($('#media_remote_origin_url').val()));
     var extension = url.pathname.substring(url.pathname.lastIndexOf('.'));
   } catch (e) {
-    $.alert('The Remote Origin URL is not valid.');
+    $.alert('Please enter a valid Remote Origin URL.');
     return false;
   }
 

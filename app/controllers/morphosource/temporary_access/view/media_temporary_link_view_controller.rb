@@ -2,7 +2,7 @@
 module Morphosource
   module TemporaryAccess
     module View
-      class MediaTemporaryLinkViewController < MediaController
+      class MediaTemporaryLinkViewController < Hyrax::MediaController
         before_action :load_temporary_media_access_link,
           :authorize_temporary_media_access_link,
           :load_curation_concern_resource,

@@ -22,10 +22,6 @@ module Hyrax
       # @return [IngestJob, FalseClass] false on failure, otherwise the queued job
       def create_content(file, relation = :original_file, from_url: false)
         if (@is_remote_backed || file_set.is_remote_backed?) && file.path.present?
-
-          #byebug
-          # todo: for the sha1 hash issue, check sha1 hash of file.path here
-
           file_set.digest = Digest::SHA1.file(file.path).to_s
           # get the actual file name set previously in import_url_job (to avoid no/wrong file ext)
           file_set.label = File.basename(file.path)

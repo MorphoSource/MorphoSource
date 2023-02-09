@@ -668,7 +668,7 @@ class BatchSubmissionsController < ApplicationController
       "media.z_spacing" => "number_RequiredByMediaType_CTImageSeries",
       "media.slice_thickness" => "number",
       "media.series_type" => "controlled",
-      "media.unit" => "controlled",
+      "media.unit" => "controlled_required",
       "media.map_type" => "controlled",
       "biological_specimen.identifier" => "text",
       "biological_specimen.related_url" => "text",

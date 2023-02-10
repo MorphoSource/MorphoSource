@@ -181,6 +181,14 @@ class User < ApplicationRecord
     end
   end
 
+  def can_submit_remote_file?(url)
+    return false unless self.remote_file_submitter?
+    white_list = self.allowed_remote_source.split(/\n+|\r+/).reject(&:empty?)
+    uri = URI(url)
+    return false unless uri.host.present?
+    return (white_list.include? uri.host)
+  end
+
   def charge_api_user?
     groups.include? 'charge_api'
   end

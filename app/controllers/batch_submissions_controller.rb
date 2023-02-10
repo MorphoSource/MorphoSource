@@ -582,6 +582,30 @@ class BatchSubmissionsController < ApplicationController
       unless valid_boolean.ignore_case_include? val
         error_msg = "#{field_name}: Please enter a valid value: " + valid_boolean.to_s.gsub(/\[|\]/, '')
       end
+    when /^controlled(_RequiredByMediaType_.*)?$/
+      if $1.present?
+        by_media_type = $1.split('_').last
+        if by_media_type == @media_type
+          if !val.present?
+            error_msg = "#{field_name}: Value should be present for media type #{by_media_type}."
+          else
+            required = true
+          end
+        else
+          required = false
+        end
+      else
+        required = false
+      end
+      if (!error_msg.present?)
+        unless (!val.present?) && (!required)
+          # this is called by rules, e.g. controlled_RequiredByMediaType_CTImageSeries
+          # and will call e.g. valid_media_unit (based on field_name "media_unit") to check for valid values
+          unless valid_values_for(field_name).ignore_case_include? val
+            error_msg = "#{field_name}: Please enter a valid value: " + valid_values_for(field_name).to_s.gsub(/\[|\]/, '')
+          end
+        end
+      end
     when /^number(_RequiredByMediaType_.*)?$/
       if $1.present?
         by_media_type = $1.split('_').last
@@ -668,7 +692,7 @@ class BatchSubmissionsController < ApplicationController
       "media.z_spacing" => "number_RequiredByMediaType_CTImageSeries",
       "media.slice_thickness" => "number",
       "media.series_type" => "controlled",
-      "media.unit" => "controlled_required",
+      "media.unit" => "controlled_RequiredByMediaType_CTImageSeries",
       "media.map_type" => "controlled",
       "biological_specimen.identifier" => "text",
       "biological_specimen.related_url" => "text",

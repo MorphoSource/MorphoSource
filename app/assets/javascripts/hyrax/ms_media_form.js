@@ -12,19 +12,6 @@ document.addEventListener("share-tab-loaded", function(event) {
         $('#new_proxy_deposit_request').submit();
     }
   });
-
-  $('input#media_temporary_link_expires_at').change(function() {
-    let a = $('a#generate-temporary-media-access-link').first();
-    let url = new URL(a.attr('href'));
-    url.searchParams.set("expires_at", $(this).val());
-    a.attr('href', url);
-  });
-
-  var clipboard = new Clipboard('.copy-temporary-media-link');
-  clipboard.on('success', function(e) {
-    $(e.trigger).tooltip('show');
-    e.clearSelection();
-  }); 
 });
 
 $( document ).ready(function() {
@@ -52,6 +39,20 @@ $( document ).ready(function() {
     //removeLastRepeatable();  // this should not be needed since it's already called inside 'if edit media form page' block
 
     form = $('form[id*="media"]')[0];
+
+    // Temporary media access links
+    $('input#media_temporary_link_expires_at').change(function() {
+      let a = $('a#generate-temporary-media-access-link').first();
+      let url = new URL(a.attr('href'));
+      url.searchParams.set("expires_at", $(this).val());
+      a.attr('href', url);
+    });
+  
+    var clipboard = new Clipboard('.copy-temporary-media-link');
+    clipboard.on('success', function(e) {
+      $(e.trigger).tooltip('show');
+      e.clearSelection();
+    }); 
 
     // Hidden Default Scale Bar Field
     scaleBarGroup = document.querySelector('div.media_scale_bar');

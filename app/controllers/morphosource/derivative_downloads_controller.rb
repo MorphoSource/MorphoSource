@@ -1,6 +1,6 @@
 module Morphosource
   class DerivativeDownloadsController < Hyrax::DownloadsController
-    include CurationConcernTemporaryAccessControllerBehavior
+    include Morphosource::TemporaryAccess::Authorize::MediaControllerBehavior
 
     def show
       case file

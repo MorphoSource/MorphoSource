@@ -28,7 +28,8 @@ module Morphosource
                             uuid
                             x_spacing
                             y_spacing
-                            z_spacing].freeze
+                            z_spacing
+                            remote_origin_url].freeze
 
       def fileset_visibility
         self[Solrizer.solr_name('fileset_visibility', :stored_searchable)]

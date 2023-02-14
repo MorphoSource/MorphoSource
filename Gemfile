@@ -70,6 +70,10 @@ gem 'axlsx'
 
 gem 'dalli' # mem_cache_store support
 
+# Sentry.io error tracking
+gem "sentry-ruby"
+gem "sentry-rails"
+
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
   gem 'web-console', '>= 3.3.0'

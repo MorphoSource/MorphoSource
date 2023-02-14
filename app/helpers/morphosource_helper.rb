@@ -4,57 +4,6 @@ module MorphosourceHelper
   include MediaFinderHelper
   include Hyrax::Renderers
 
-  def file_extension_from_content_type(content_type)
-    return nil unless content_type.present?
-    case content_type 
-    when "application/zip"
-      ".zip"
-    when "image/gif"   
-      ".gif"
-    when /^image\/jpe?g$/
-      ".jpg"
-    when "image/png"
-      ".png"   
-    when "image/bmp"
-      ".bmp"   
-    when "image/tiff"    
-      ".tif"
-    when "application/dicom"
-      ".dcm"
-    when "image/jpeg2000"
-      ".jp2"
-    when "image/svg+xml"
-      ".svg"
-    when "application/ply"
-      ".ply"
-    when "application/stl"
-      ".stl"
-    when "text/prs.wavefront-obj"
-      ".obj"
-    when "model/gltf+json"
-      ".gltf"
-    when "model/vrml"
-      ".wrl"
-    when "model/x3d+xml"
-      ".x3d"
-    when /^video\/mpe?g$/
-      ".mpg"
-    when "video/mp4"    
-      ".mp4"
-    when "video/quicktime"    
-      ".mov"
-    when "video/avi"    
-      ".avi"
-    when "video/x-m4v"
-      ".m4v"
-    when "video/x-ms-wmv"
-      ".wmv"
-    else
-      Rails.logger.debug("in file_extension_from_header: Unknown content_type ")
-      ""
-    end
-  end
-
   def solr_doc_find(id)
     begin
       return SolrDocument.find(id)

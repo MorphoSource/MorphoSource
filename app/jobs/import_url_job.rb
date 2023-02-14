@@ -7,8 +7,6 @@ require 'browse_everything/retriever'
 # Called by AttachFilesToWorkJob (when files are uploaded to s3)
 # and CreateWithRemoteFilesActor when files are located in some other service.
 class ImportUrlJob < Hyrax::ApplicationJob
-  include MorphosourceHelper
-  
   queue_as Hyrax.config.ingest_queue_name
   attr_reader :file_set, :operation
 
@@ -28,18 +26,7 @@ class ImportUrlJob < Hyrax::ApplicationJob
     @file_set = file_set
     @operation = operation
 
-    if file_set.is_remote_backed?
-      unless user.can_submit_remote_file? file_set.import_url
-        send_error('User is not allowed to submit the remote file')
-        return false
-      end
-      # url might not have an extension or not the actual content type extension
-      # todo: if it has extension, check if it is valid and call file_extension_from_content_type if not
-      if !File.extname(name).present?
-        # add file extension needed for characterization, etc
-        name = name + file_extension_from_content_type(RestClient.head(uri.to_s).headers[:content_type])
-      end
-    else
+    unless file_set.is_remote_backed?
       unless BrowseEverything::Retriever.can_retrieve?(uri, headers)
         send_error('Expired URL')
         return false
@@ -51,6 +38,7 @@ class ImportUrlJob < Hyrax::ApplicationJob
     copy_remote_file(uri, name, headers) do |f|
       # reload the FileSet once the data is copied since this is a long running task
       file_set.reload
+
       # FileSetActor operates synchronously so that this tempfile is available.
       # If asynchronous, the job might be invoked on a machine that did not have this temp file on its file system!
       # NOTE: The return status may be successful even if the content never attaches.
@@ -71,14 +59,13 @@ class ImportUrlJob < Hyrax::ApplicationJob
     def copy_remote_file(uri, name, headers = {})
       filename = File.basename(name)
       dir = Dir.mktmpdir
-
       Rails.logger.debug("ImportUrlJob: Copying <#{uri}> to #{dir}")
 
       File.open(File.join(dir, filename), 'wb') do |f|
         begin
           if file_set.is_remote_backed?
             # for other external url file
-            f << URI.open(uri).read
+            f << open(uri).read
           else
             # for BrowseEverywhere file
             write_file(uri, f, headers)

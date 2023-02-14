@@ -21,48 +21,16 @@
           prompt: "Myself" %>
         </div>
       <% end %>
-      <%= f.hidden_field :allowed_remote_source, :value => current_user.allowed_remote_source %>
-      <%= f.hidden_field :accepted_formats, :value => "" %>
+
       <div class="row">
 
         <div class="col-xs-12">
           <div class="block showcase-edit showcase-section">
-
             <div class="row showcase-section-header">
               <span class="h2 required-flag">UPLOAD FILE <span class="label label-info"></span></span>
             </div>
-
-            <div class="content-block mt-2">
-              <ul class="nav nav-tabs pt-0" role="tablist">
-                <li role="presentation" id="tab-local-file-section" class="active">
-                  <a href="#local-file-section" aria-controls="local-file-section" role="tab" data-toggle="tab" aria-expanded="false">
-                    Upload From Computer / Cloud
-                  </a>
-                </li>
-                <% if current_user.remote_file_submitter? %>
-                  <li role="presentation" id="tab-remote-file-section" class="">
-                    <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
-                      Remote File Location
-                    </a>
-                  </li>
-                <% end %>
-              </ul>
-
-              <!-- Tab panes -->
-              <div class="tab-content tab-borders mt-0">
-                <div role="tabpanel" class="tab-pane active" id="local-file-section">
-                  <div class="form-tab-content">
-                    <%= render 'hyrax/media/form_files_edit', f: f %>
-                  </div>
-                </div>
-                <% if current_user.remote_file_submitter? %>
-                  <div role="tabpanel" class="tab-pane" id="remote-file-section">
-                    <div class="form-tab-content">
-                      <%= render 'hyrax/media/form_files_remote', f: f %>
-                    </div>
-                  </div>
-                <% end %>    
-              </div>
+            <div class="content-block">
+              <%= render 'hyrax/media/form_files_edit', f: f %>
             </div>
 
             <%= render 'submissions/media/custom_thumbnail', f: f %>

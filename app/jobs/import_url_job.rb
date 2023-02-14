@@ -78,8 +78,9 @@ class ImportUrlJob < Hyrax::ApplicationJob
         begin
           if file_set.is_remote_backed?
             # BrowseEverything::Retriever cannot download certain remote file (Failed to download error)
-            # Download by URI.open instead
-            f << URI.open(uri).read
+            # Download by open-uri methods instead
+            download = URI.open(uri.to_s)
+            IO.copy_stream(download, f.path)
           else
             # for BrowseEverywhere file
             write_file(uri, f, headers)

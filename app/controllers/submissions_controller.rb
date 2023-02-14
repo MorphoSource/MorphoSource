@@ -142,7 +142,7 @@ class SubmissionsController < ApplicationController
     file_ext = ""
     if !current_user.can_submit_remote_file? params[:u]
       status = "error"
-      message = "The path is invalid or not allowed"
+      message = "The path is invalid or not allowed.  Please make sure you have the permissions and the domains are allowed."
       http_code = ""
     else
       begin

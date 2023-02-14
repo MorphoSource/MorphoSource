@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 collection_ids = @document_list.map(&:id)
 collections = ActiveFedora::Base.find(collection_ids)
-byebug
 json.array! collections do |collection|
   json.id collection.id
   json.label collection.title

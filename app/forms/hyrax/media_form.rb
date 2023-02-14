@@ -65,7 +65,8 @@ module Hyrax
       :funding,
       :publisher,
       :cite_as,
-      :preview_mode
+      :preview_mode,
+      :remote_origin_url
     ]
 
     self.required_fields = [:media_type]

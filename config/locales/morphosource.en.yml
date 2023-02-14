@@ -105,7 +105,7 @@ en:
           display_name: "Display Name"
           email: "Email Address"
           sftp_share: "SFTP Share"
-          allowed_remote_source: "Remote File Source Domains"
+          allowed_remote_source: "Allowed Remote File Source URLs"
           facebook_handle: "Facebook Handle"
           help_change_picture_type: "JPG, GIF, or PNG (less than 2MB)"
           intent: "Please Describe Your Intended<br>Use For MorphoSource<br>(You May Choose More Than One)"

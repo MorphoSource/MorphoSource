@@ -95,12 +95,6 @@ input[type=checkbox].disabled {
     margin-bottom: 0;
   }
 
-  #remote-file {
-    .showcase-label, .showcase-value {
-      width: 100% !important;
-    }
-  }
-
   .controls-remove-text {
     display: none;
   }
@@ -371,15 +365,6 @@ input[type=checkbox].disabled {
         width: 100%;
       }
     }
-  }
-  .tab-content.tab-borders {
-    div:first-child, .tab-pane {
-      margin-top: 0 !important;
-      padding-top: 10px;
-    }
-    border-left:   1px solid #efefef;
-    border-right:  1px solid #efefef;
-    border-bottom: 1px solid #efefef;
   }
 
   /* object detail tab specific styles */

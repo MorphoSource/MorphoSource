@@ -1,11 +1,5 @@
 // Use this script to override jquery file upload options.  Add method can also be defined here
 $( document ).ready(function() {
-  if (location.href.indexOf("remote-file-section") > -1) {
-    fileOrigin = "remote";
-  } else {
-    fileOrigin = "local";
-  }
-
   justUploaded = 0;
   uploadStatusOK = true;
   isAutoSave = false;

@@ -21,15 +21,12 @@ module Hyrax
       # @param [Symbol, #to_s] relation
       # @return [IngestJob, FalseClass] false on failure, otherwise the queued job
       def create_content(file, relation = :original_file, from_url: false)
-        if (@is_remote_backed || file_set.is_remote_backed?) && file.path.present?
-          file_set.digest = Digest::SHA1.file(file.path).to_s
-          # get the actual file name set previously in import_url_job (to avoid no/wrong file ext)
-          file_set.label = File.basename(file.path)
-        end
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)
         file_set.title = [file_set.label] if file_set.title.blank?        
-
+        if (@is_remote_backed || file_set.is_remote_backed?) && file.path.present?
+          file_set.digest = Digest::SHA1.file(file.path).to_s
+        end
         return false unless file_set.save # Need to save to get an id
 
         if from_url
@@ -153,8 +150,6 @@ module Hyrax
             file.uploader.filename.present? ? file.uploader.filename : File.basename(Addressable::URI.parse(file.file_url).path)
           elsif file.respond_to?(:original_name) # e.g. Hydra::Derivatives::IoDecorator
             file.original_name
-          elsif (@is_remote_backed || file_set.is_remote_backed?) && file.path.present?
-            File.basename(file.path)
           elsif file_set.import_url.present?
             # This path is taken when file is a Tempfile (e.g. from ImportUrlJob)
             File.basename(Addressable::URI.parse(file_set.import_url).path)

@@ -5,7 +5,7 @@ RSpec.describe Morphosource::My::CollectionsSearchBuilder do
   let(:builder)     { described_class.new(scope: scope) }
 
   describe 'models' do
-    it { expect(builder.models).to match_array([::Collection]) }
+    it { expect(builder.models).to match_array([::Collection, MediaList, SequentialSectionList]) }
   end
 
   describe 'collection_types' do

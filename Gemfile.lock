@@ -874,6 +874,11 @@ GEM
     selenium-webdriver (3.142.6)
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
+    sentry-rails (5.8.0)
+      railties (>= 5.0)
+      sentry-ruby (~> 5.8.0)
+    sentry-ruby (5.8.0)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     shex (0.6.1)
       ebnf (~> 2.0)
       json-ld (~> 3.1)
@@ -1055,6 +1060,8 @@ DEPENDENCIES
   rubyzip
   sass-rails (~> 5.0)
   selenium-webdriver
+  sentry-rails
+  sentry-ruby
   shoulda-callback-matchers (~> 1.1.1)
   shoulda-matchers (~> 3.1)
   solr_wrapper (~> 2.0.0)

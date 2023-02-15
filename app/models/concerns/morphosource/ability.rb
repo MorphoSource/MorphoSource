@@ -8,11 +8,6 @@ module Morphosource
     end
 
     def temporary_link_abilities
-
-      # Creating and destroying temporary access links
-      can :generate_temporary_link, String do |id|
-        user_is_data_manager?(id)
-      end
       can :destroy, TemporaryMediaAccessLink, user_id: current_user.id
 
       # Viewing media and file_sets via temporary access link

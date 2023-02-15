@@ -6,8 +6,7 @@ module Morphosource
     def create
       params.require(:media_id)
       params.require(:expires_at)
-      authorize! :generate_temporary_link, params[:media_id]
-      # return authorize errors via JSON if possible
+      authorize! :edit, params[:media_id]
 
       temporary_link = TemporaryMediaAccessLink.new(
         user: current_user,

@@ -232,6 +232,25 @@ class Collection < ActiveFedora::Base
     collection_type_gid
   end
 
+  # modality options for creating new media in the collection
+  # override this to allow only certain modalities
+  def media_modalities
+    Morphosource::ModalitiesService.new.select_all_options
+  end
+
+  def search_builder_class
+    Morphosource::Users::MyMediaSearchBuilder
+  end
+
+  def media_docs
+    Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media")
+  end
+
+  def media
+    Media.where("member_of_collection_ids_ssim:#{id}")
+  end
+
+
   private
 
     def add_depositor_to_managers

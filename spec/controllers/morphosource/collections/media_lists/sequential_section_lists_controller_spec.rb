@@ -8,6 +8,46 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
   let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'Sequential Section List') }
   let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential Section list'], collection_type_gid: sequential_section_list_collection_type.gid, depositor: depositor.ms_id) }
 
+  describe 'temporary admin-only restriction' do
+    let(:params)  { { id: sequential_section_list.id } }
+    before do
+      sequential_section_list.visibility = 'open'
+      sequential_section_list.save!
+      sign_in user
+    end
+
+    context 'user is an admin' do
+      let(:admin_role)  { Role.create(name: 'admin') }
+      before do
+        admin_role.users << user
+        admin_role.save
+      end
+      it 'responds with a 200' do
+        get :show, params: params
+        expect(response.status).to eq(200)
+        get :about, params: params
+        expect(response.status).to eq(200)
+        get :media_export_with_intersections_facet, format: :csv, params: params
+        expect(response.status).to eq(200)
+        get :media_download_counts_with_intersections_facet, format: :csv, params: params
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context 'user is not an admin' do
+      it 'responds with a redirect' do
+        get :show, params: params
+        expect(response.status).to eq(302)
+        get :about, params: params
+        expect(response.status).to eq(302)
+        get :media_export_with_intersections_facet, params: params
+        expect(response.status).to eq(302)
+        get :media_download_counts_with_intersections_facet, params: params
+        expect(response.status).to eq(302)
+      end
+    end
+  end
+
   describe 'presenter_class' do
     it {expect(subject.presenter_class).to eq(Morphosource::Collections::MediaLists::SequentialSectionListPresenter) }
   end

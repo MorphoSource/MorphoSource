@@ -210,6 +210,15 @@ class Collection < ActiveFedora::Base
     collection_type_gid
   end
 
+  # Temporary View Access Link methods
+  def temporary_links
+    TemporaryCollectionAccessLink.where(collection_id: id)
+  end
+
+  def active_temporary_links
+    temporary_links.where('expires_at > ?', DateTime.now)
+  end
+
   private
 
     def add_depositor_to_managers

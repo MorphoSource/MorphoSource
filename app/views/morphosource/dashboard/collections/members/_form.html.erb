@@ -28,7 +28,11 @@
                         </div>
                         <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
                           <label>as</label>
-                          <%= f.select 'collection_roles[access]', ms_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                          <% if @collection.list? %>
+                            <%= f.select 'collection_roles[access]', list_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                          <% else %>
+                            <%= f.select 'collection_roles[access]', ms_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                          <% end %>
                         </div>
                         <div class="col-sm-6 col-md-3 col-lg-3">
                           <%= submit_tag 'Add', class: 'btn btn-info edit-collection-add-user-sharing-button', disabled: true %>
@@ -50,7 +54,11 @@
                           </div>
                           <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
                             <label>as</label>
-                            <%= f.select 'collection_roles[access]', ms_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                            <% if @collection.list? %>
+                              <%= f.select 'collection_roles[access]', list_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                            <% else %>
+                              <%= f.select 'collection_roles[access]', ms_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
+                            <% end %>
                           </div>
                           <div class="col-sm-6 col-md-3 col-lg-3">
                             <%= submit_tag 'Add', class: 'btn btn-info edit-collection-add-group-sharing-button', :disabled => true %>
@@ -63,11 +71,16 @@
 
                 <section class="section-collection-sharing">
                   <% members_table = 'morphosource/dashboard/collections/members/tab_members_table.html.erb' %>
-                  <%= render members_table, access: 'managers', filter: :manage? %>
-                  <%= render members_table, access: 'editors', filter: :edit_works? %>
-                  <%= render members_table, access: 'depositors', filter: :deposit? %>
-                  <%= render members_table, access: 'downloaders', filter: :download_works? %>
-                  <%= render members_table, access: 'viewers', filter: :view? %>
+                  <% if @collection.list? %>
+                    <%= render members_table, access: 'managers', filter: :manage? %>
+                    <%= render members_table, access: 'viewers', filter: :view? %>
+                  <% else %>
+                    <%= render members_table, access: 'managers', filter: :manage? %>
+                    <%= render members_table, access: 'editors', filter: :edit_works? %>
+                    <%= render members_table, access: 'depositors', filter: :deposit? %>
+                    <%= render members_table, access: 'downloaders', filter: :download_works? %>
+                    <%= render members_table, access: 'viewers', filter: :view? %>
+                  <% end %>
                 </section>
               </div>
             </div>

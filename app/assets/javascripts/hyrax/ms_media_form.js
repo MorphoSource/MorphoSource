@@ -16,6 +16,9 @@ document.addEventListener("share-tab-loaded", function(event) {
 });
 
 $( document ).ready(function() {
+  if ($('form[id*="edit_media_list"]').length) { return }
+  if ($('form[id*="new_media_list"]').length) { return }
+
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) { // if media form page (add/edit)
 

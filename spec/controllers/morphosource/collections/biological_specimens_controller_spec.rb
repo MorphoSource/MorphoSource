@@ -48,16 +48,119 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
     it {expect(subject.send(:tab)).to eq(:specimens) }
   end
 
-  context 'collection is a project' do
-    let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
-    let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
-    before { subject.instance_variable_set(:@collection, project) }
-    it {expect(subject.presenter_class).to eq(Morphosource::Collections::ProjectPresenter) }
+  describe 'search_action_url, search_facet_path' do
+    let(:facet_id)  { 'depositor_ssi' }
+    context 'collection is a team' do
+      let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
+      let!(:team) { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
+      before do
+        subject.instance_variable_set(:@collection, team)
+      end
+      describe 'search_action_url' do
+        it 'is team_specimens_path' do
+          expect(subject.send(:search_action_url)).to eq("/teams/#{team.id}/biological_specimens?locale=en")
+        end
+      end
+      describe 'search_facet_path' do
+        it 'is team_specimens_facet_path' do
+          expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/teams/#{team.id}/biological_specimens/facet/#{facet_id}?locale=en")
+        end
+      end
+    end
+    context 'collection is a project' do
+      let!(:project_collection_type) { Hyrax::CollectionType.create(title: 'project', machine_id: 'project') }
+      let!(:project) { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
+      before do
+        subject.instance_variable_set(:@collection, project)
+      end
+      describe 'search_action_url' do
+        it 'is project_specimens_path' do
+          expect(subject.send(:search_action_url)).to eq("/projects/#{project.id}/biological_specimens?locale=en")
+        end
+      end
+      describe 'search_facet_path' do
+        it 'is project_specimens_facet_path' do
+          expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/projects/#{project.id}/biological_specimens/facet/#{facet_id}?locale=en")
+        end
+      end
+    end
+    context 'collection is a media list' do
+      let!(:media_list_collection_type) { Hyrax::CollectionType.create(title: 'media_list', machine_id: 'media_list') }
+      let!(:media_list) { Collection.create(title: ['media_list'], collection_type_gid: media_list_collection_type.gid) }
+      before do
+        subject.instance_variable_set(:@collection, media_list)
+      end
+      describe 'search_action_url' do
+        it 'is media_list_specimens_path' do
+          expect(subject.send(:search_action_url)).to eq("/media_lists/#{media_list.id}/biological_specimens?locale=en")
+        end
+      end
+      describe 'search_facet_path' do
+        it 'is media_list_specimens_facet_path' do
+          expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/media_lists/#{media_list.id}/biological_specimens/facet/#{facet_id}?locale=en")
+        end
+      end
+    end
+    context 'collection is a sequential section list' do
+      let!(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'sequential_section_list', machine_id: 'sequential_section_list') }
+      let!(:sequential_section_list) { Collection.create(title: ['sequential_section_list'], collection_type_gid: sequential_section_list_collection_type.gid) }
+      before do
+        subject.instance_variable_set(:@collection, sequential_section_list)
+      end
+      describe 'search_action_url' do
+        it 'is sequential_section_list_specimens_path' do
+          expect(subject.send(:search_action_url)).to eq("/sequential_section_lists/#{sequential_section_list.id}/biological_specimens?locale=en")
+        end
+      end
+      describe 'search_facet_path' do
+        it 'is sequential_section_list_specimens_facet_path' do
+          expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/sequential_section_lists/#{sequential_section_list.id}/biological_specimens/facet/#{facet_id}?locale=en")
+        end
+      end
+    end
   end
-  context 'collection is a team' do
-    let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-    let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
-    before { subject.instance_variable_set(:@collection, team) }
-    it {expect(subject.presenter_class).to eq(Morphosource::Collections::TeamPresenter) }
+
+  # helpers/morphosource/my/works_helper
+  describe '#search_action_for_dashboard' do
+    let(:main_app)    { Rails.application.routes.url_helpers }
+    let(:params)      { { controller: controller.controller_path } }
+    let(:collection)  { double('collection', id: 'abc') }
+    subject           { controller.view_context }
+
+    before do
+      allow(subject).to receive(:params).and_return(params)
+      subject.instance_variable_set(:@collection, collection)
+      [:project?, :team?, :media_list?, :sequential_section_list?].each do |type|
+        allow(collection).to receive(type).and_return(false)
+      end
+    end
+
+    context 'collection is a team' do
+      before do
+        allow(collection).to receive(:team?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.team_specimens_path(id: collection.id, locale: 'en')) }
+    end
+
+    context 'collection is a project' do
+      before do
+        allow(collection).to receive(:project?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.project_specimens_path(id: collection.id, locale: 'en')) }
+    end
+
+    context 'collection is a media list' do
+      before do
+        allow(collection).to receive(:media_list?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.media_list_specimens_path(id: collection.id, locale: 'en')) }
+    end
+
+    context 'collection is a sequential section list' do
+      before do
+        allow(collection).to receive(:sequential_section_list?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.sequential_section_list_specimens_path(id: collection.id, locale: 'en')) }
+    end
   end
 end

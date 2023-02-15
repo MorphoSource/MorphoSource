@@ -88,6 +88,6 @@ RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller
         expect(collection).to receive(:create_collection_groups)
         subject.set_default_permissions
       end
-    end  
+    end
   end
 end

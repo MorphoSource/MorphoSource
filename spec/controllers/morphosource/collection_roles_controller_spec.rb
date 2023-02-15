@@ -29,7 +29,7 @@ RSpec.describe CollectionRolesController, type: :controller do
   end
 
   describe '#update_collection_groups' do
-  let(:user_status_message) { "User (#{another_user.email}) can't be added to the #{params[:collection_roles][:access]} role because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer) or have the user request contributor status." }
+  let(:user_status_message) { "The user (#{another_user.email}) can't be added to the #{params[:collection_roles][:access]} role because they do not have contributor status. Either add the user to a membership role that does not require contributor status (downloader, viewer) or have the user request contributor status." }
     before do
       team.create_collection_groups
     end
@@ -547,8 +547,7 @@ RSpec.describe CollectionRolesController, type: :controller do
             end
           end
           context 'collection is a list' do
-            let(:user_status_message) {"User (#{another_user.email}) can't be added to the #{params[:collection_roles][:access]} role because they do not have contributor status. Either add the user to a membership role that does not require contributor status (viewer) or have the user request contributor status."
-            }
+            let(:user_status_message) {"The user (#{another_user.email}) can't be added to the #{params[:collection_roles][:access]} role because they do not have contributor status. Either add the user to a membership role that does not require contributor status (viewer) or have the user request contributor status."}
             before do
               params[:id] = media_list.id
               post :update_collection_groups, params: params

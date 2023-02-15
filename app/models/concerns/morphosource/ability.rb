@@ -8,7 +8,10 @@ module Morphosource
     end
 
     def temporary_link_abilities
-      can :destroy, TemporaryMediaAccessLink, user_id: current_user.id
+      # Did user create link or is user data manager for media?
+      can :destroy, TemporaryMediaAccessLink do |link|
+        ( current_user.id == link.user_id ) || user_is_data_manager?(link.media_id) || current_user.admin?
+      end
 
       # Viewing media and file_sets via temporary access link
       can :read, [ActiveFedora::Base, ::SolrDocument] do |obj|

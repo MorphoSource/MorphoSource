@@ -130,7 +130,7 @@ if Flipflop.assign_admin_set? %>
                 <td style="padding-left: 0;">
                   <% link_url = main_app.media_showcase_temporary_link_url(f.object, token: link.token) %>
                   <%= link_to link_url, link_url, style: 'overflow-wrap: anywhere;' %>
-                  <button type="button" class="btn btn-link copy-temporary-media-link" style="color: black;"
+                  <button type="button" class="btn btn-link copy-temporary-media-link" style="color: black; padding: 0;"
                           data-clipboard-text="<%= link_url %>"
                           data-toggle="tooltip" data-placement="bottom"
                           title="<%= t('hyrax.single_use_links.copy.tooltip') %>">
@@ -138,9 +138,11 @@ if Flipflop.assign_admin_set? %>
                   </button>
                 </td>
                 <td><%= link.user.name_or_email %></td>
-                <td><div><%= link.expires_at.to_date %></div></td>
+                <td><%= link.expires_at.to_date %></td>
                 <td>
-                  <div><%= link_to "Revoke", main_app.temporary_media_access_link_destroy_path(link), method: :delete, class: 'btn btn-sm btn-danger' %></div>
+                  <% if can? :destroy, link %>
+                    <%= link_to "Revoke", main_app.temporary_media_access_link_destroy_path(link), method: :delete, class: 'btn btn-sm btn-danger' %>
+                  <% end %>
                 </td>
               </tr>
             <% end %>
@@ -150,7 +152,7 @@ if Flipflop.assign_admin_set? %>
         </div>
       </div>
     <% else %>
-      <p>No active temporary access links exist. Media data managers can generate time-limited access links for this media record.
+      <p>There are no active temporary access links for this media.
     <% end %>
   </div>
 </div>

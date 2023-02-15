@@ -27,9 +27,9 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
         expect(response.status).to eq(200)
         get :about, params: params
         expect(response.status).to eq(200)
-        get :media_export_with_intersections_facet, params: params
+        get :media_export_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
-        get :media_download_counts_with_intersections_facet, params: params
+        get :media_download_counts_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
       end
     end

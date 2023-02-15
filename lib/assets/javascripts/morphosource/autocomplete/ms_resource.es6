@@ -96,6 +96,15 @@ export default class MorphosourceResource extends Resource {
                                 short_title: obj.short_title
                               };
                             })
+    } else if (this.url == '/my/collections/search.json') {
+      results = data.map((obj) => {
+                              return {
+                                id: obj.id,
+                                text: obj.label[0],
+                                type: obj.machine_id,
+                                object_id: obj.object_id[0]
+                              };
+                            })
     } else {
       results = data.map((obj) => {
                                return { id: obj.id, text: obj.label[0] };

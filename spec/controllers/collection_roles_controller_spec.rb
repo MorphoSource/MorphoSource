@@ -34,19 +34,21 @@ RSpec.describe CollectionRolesController, :type => :controller do
       context 'collection is a list' do
         before do
           allow(collection).to receive(:list?).and_return(true)
+          allow(collection).to receive_message_chain(:collection_type, :machine_id).and_return('media_list')
         end
         it 'has the correct user status message' do
           subject.send(:update_notice, status)
-          expect(flash[:error]).to eq("Users (user1@email.com, user2@email.com) can't be added to the manager role because they do not have contributor status. Either add the users to a membership role that does not require contributor status (viewer) or have the users request contributor status.")
+          expect(flash[:error]).to eq("The users (user1@email.com, user2@email.com) can't be added to the manager role because they do not have contributor status. Either add the users to a membership role that does not require contributor status (viewer) or have the users request contributor status.")
         end
       end
       context 'collection is not a list' do
         before do
           allow(collection).to receive(:list?).and_return(false)
+          allow(collection).to receive_message_chain(:collection_type, :machine_id).and_return('team')
         end
         it 'has the correct user status message' do
           subject.send(:update_notice, status)
-          expect(flash[:error]).to eq("Users (user1@email.com, user2@email.com) can't be added to the manager role because they do not have contributor status. Either add the users to a membership role that does not require contributor status (downloader, viewer) or have the users request contributor status.")
+          expect(flash[:error]).to eq("The users (user1@email.com, user2@email.com) can't be added to the manager role because they do not have contributor status. Either add the users to a membership role that does not require contributor status (downloader, viewer) or have the users request contributor status.")
         end
       end
     end

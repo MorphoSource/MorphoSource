@@ -5,12 +5,19 @@ module Morphosource
       include Hyrax::Ability
 
       attr_accessor :temporary_media_access_link
+      attr_accessor :temporary_collection_access_link
     end
 
     def temporary_link_abilities
-      # Did user create link or is user data manager for media?
       can :destroy, TemporaryMediaAccessLink do |link|
-        ( current_user.id == link.user_id ) || user_is_data_manager?(link.media_id) || current_user.admin?
+        ( current_user.id == link.user_id ) || current_user.admin? || user_is_data_manager?(link.media_id) 
+      end
+
+      can :destroy, TemporaryCollectionAccessLink do |link|
+        ( current_user.id == link.user_id ) || current_user.admin? || (
+          Collection.exists?(id) &&
+          Collection.find(id).managers.include?(current_user)
+        )
       end
 
       # Viewing media and file_sets via temporary access link

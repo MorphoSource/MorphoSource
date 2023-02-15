@@ -8,7 +8,7 @@ module Morphosource
 
       # This overrides the models in FilterByType
       def models
-        [::Collection]
+        [::Collection, ::MediaList, ::SequentialSectionList]
       end
 
       # override to restrict to specific collection type

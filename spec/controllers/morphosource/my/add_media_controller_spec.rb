@@ -72,4 +72,25 @@ RSpec.describe Morphosource::My::AddMediaController, type: :controller do
       expect(controller.send(:search_facet_path, {:id => id})).to eq( "/dashboard/my/media/#{collection_id}/facet/#{id}?locale=en")
     end
   end
+
+  describe 'search_action_url' do
+    it 'is media#index' do
+      expect(controller.send(:search_action_url, [])).to eq("/dashboard/my/media/?locale=en")
+    end
+  end
+
+  # helpers/morphosource/my/works_helper
+  describe '#search_action_for_dashboard' do
+    let(:main_app)    { Rails.application.routes.url_helpers }
+    let(:params)      { { controller: controller.controller_path } }
+    let(:collection)  { double('collection', id: 'abc')}
+    subject           { controller.view_context }
+
+    before do
+      allow(subject).to receive(:params).and_return(params)
+      subject.instance_variable_set(:@collection, collection)
+    end
+
+    it { expect(subject.search_action_for_dashboard).to eq(main_app.my_add_media_index_path(collection_id: collection.id, locale: 'en')) }
+  end
 end

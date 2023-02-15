@@ -84,7 +84,10 @@ Rails.application.routes.draw do
     get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
     get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
     get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
-
+    get 'media_lists/:id/media_downloads', to: 'collections#media_downloads', as: 'media_list_media_downloads'
+    get 'media_lists/:id/media_requests', to: 'collections#media_requests', as: 'media_list_media_requests'
+    get 'sequential_section_lists/:id/media_downloads', to: 'collections#media_downloads', as: 'sequential_section_list_media_downloads'
+    get 'sequential_section_lists/:id/media_requests', to: 'collections#media_requests', as: 'sequential_section_list_media_requests'
 
     scope module: :collections do
       # these get redirected to projects/teams/media lists/slide lists
@@ -94,9 +97,7 @@ Rails.application.routes.draw do
       # projects
       get 'projects/:id', to: 'projects#show', as: 'project_media'
       get 'projects/:id/biological_specimens', to: 'biological_specimens#show', as: 'project_specimens'
-      get 'projects/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'project_specimens_export'
       get 'projects/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'project_chos'
-      get 'projects/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'project_chos_export'
       get 'projects/:id/about', to: 'projects#about', as: 'project_about'
       get 'projects/:collection_id/facet/:id', to: 'projects#facet', as: 'project_media_facet'
       get 'projects/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'project_specimens_facet'
@@ -105,6 +106,8 @@ Rails.application.routes.draw do
       # csv exports
       get 'projects/:id/media_export', to: 'projects#media_export_with_intersections_facet', as: 'project_media_export'
       get 'projects/:id/media_download_counts', to: 'projects#media_download_counts_with_intersections_facet', as: 'project_media_download_counts'
+      get 'projects/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'project_specimens_export'
+      get 'projects/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'project_chos_export'
 
       # projects redirects
       get 'projects/specimens/:id', to: redirect('projects/%{id}/biological_specimens')
@@ -113,9 +116,7 @@ Rails.application.routes.draw do
       # teams
       get 'teams/:id', to: 'teams#show', as: 'team_media'
       get 'teams/:id/biological_specimens', to: 'biological_specimens#show', as: 'team_specimens'
-      get 'teams/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'team_specimens_export'
       get 'teams/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'team_chos'
-      get 'teams/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'team_chos_export'
       get 'teams/:id/about', to: 'teams#about', as: 'team_about'
       get 'teams/:collection_id/facet/:id', to: 'teams#facet', as: 'team_media_facet'
       get 'teams/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'team_specimens_facet'
@@ -128,6 +129,8 @@ Rails.application.routes.draw do
       # linked teams csv
       get 'teams/:id/media_export', to: 'teams#media_export_with_intersections_facet', as: 'team_media_export'
       get 'teams/:id/media_download_counts', to: 'teams#media_download_counts_with_intersections_facet', as: 'team_media_download_counts'
+      get 'teams/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'team_specimens_export'
+      get 'teams/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'team_chos_export'
       get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
       get 'teams/:id/media_organization_transfer_status', to: 'teams#media_organization_transfer_status', as: 'team_media_organization_transfer_status'
 
@@ -140,12 +143,25 @@ Rails.application.routes.draw do
       get 'media_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'media_list_specimens_facet'
       get 'media_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
 
+      # csv exports
+      get 'media_lists/:id/media_export', to: 'media_lists#media_export_with_intersections_facet', as: 'media_list_media_export'
+      get 'media_lists/:id/media_download_counts', to: 'media_lists#media_download_counts_with_intersections_facet', as: 'media_list_media_download_counts'
+      get 'media_lists/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'media_list_specimens_export'
+      get 'media_lists/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'media_list_chos_export'
+
       # sequential_section_lists
       scope module: :media_lists do
         get 'sequential_section_lists/:id', to: 'sequential_section_lists#show', as: 'sequential_section_list_media'
         get 'sequential_section_lists/:id/about', to: 'sequential_section_lists#about', as: 'sequential_section_list_about'
         get 'sequential_section_lists/:collection_id/facet/:id', to: 'sequential_section_lists#facet', as: 'sequential_section_list_media_facet'
+
+        # csv exports
+        get 'sequential_section_lists/:id/media_export', to: 'sequential_section_lists#media_export_with_intersections_facet', as: 'sequential_section_list_media_export'
+        get 'sequential_section_lists/:id/media_download_counts', to: 'sequential_section_lists#media_download_counts_with_intersections_facet', as: 'sequential_section_list_media_download_counts'
       end
+      get 'sequential_section_lists/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'sequential_section_list_specimens_export'
+      get 'sequential_section_lists/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'sequential_section_list_chos_export'
+
       get 'sequential_section_lists/:id/biological_specimens', to: 'biological_specimens#show', as: 'sequential_section_list_specimens'
       get 'sequential_section_lists/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'sequential_section_list_chos'
       get 'sequential_section_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'sequential_section_list_specimens_facet'
@@ -440,6 +456,10 @@ Rails.application.routes.draw do
       get 'contribute', action: :index, controller: :contributor_petitions, as: 'user_contributor_petition'
       put 'submit_contributor_application', action: :create, controller: :contributor_petitions, as: 'user_contributor_petition_submit'
       patch 'update_contributor_application/(:id)', action: :update, controller: :contributor_petitions, as: 'user_contributor_petition_update'
+
+      # search_collections
+      get 'my/collections/search', to: 'collections/search_collections#search', as: 'search_my_collections'
+
     end
 
     scope module: :admin do

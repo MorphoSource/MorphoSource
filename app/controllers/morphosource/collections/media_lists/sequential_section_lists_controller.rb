@@ -25,6 +25,10 @@ module Morphosource
           main_app.sequential_section_list_media_facet_path(@collection.id, args)
         end
 
+        def collection_type
+          Hyrax::CollectionType.find_by(title: 'Sequential Section List')
+        end
+
       end
     end
   end

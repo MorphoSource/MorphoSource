@@ -1,0 +1,9 @@
+en:
+  morphosource:
+    dashboard:
+      collections:
+        project:
+          members:
+            roles:
+              contributor: 'manager, editor, depositor'
+              non-contributor: 'downloader, viewer'

@@ -8,26 +8,6 @@ module Morphosource
 
       self.presenter_class = Morphosource::Collections::ProjectPresenter
 
-      copy_blacklight_config_from(::MediaCatalogController)
-
-      def self.configure_facets
-        configure_blacklight do |config|
-          config.http_method = :post
-          config.search_builder_class = self.new.search_builder_class
-          # clear catalog facet fields
-          config.facet_fields = {}
-          config.add_facet_field "publication_status_ssi", label: "Publication Status", limit: 10
-          config.add_facet_field "human_readable_media_type_ssim", label: "Media Type", limit: 10
-          config.add_facet_field "physical_object_title_ssim", label: "Object", limit: 10
-          config.add_facet_field "media_organization_ssim", label: "Organization", limit: 10
-          config.add_facet_field "member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
-          config.add_facet_field "member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
-          config.add_facet_field "user_with_ownership_ssi", label: "Data Manager", limit: 10, helper_method: :user_name_by_id
-          config.add_facet_field "depositor_ssim", label: "Depositor", limit: 10, helper_method: :user_name_by_id
-        end
-      end
-      configure_facets
-
       private
 
         # link for facet filters

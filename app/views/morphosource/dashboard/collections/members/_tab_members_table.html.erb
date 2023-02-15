@@ -3,9 +3,12 @@
 <% group = @collection.send(group_name) %>
 
 <h3><%= t("hyrax.dashboard.collections.form_members_table.#{access}.title") %></h3>
-<p><%= t("hyrax.dashboard.collections.form_members_table.#{access}.help") %></p>
-
-<% if group.users.count > 0 %>
+<% if @collection.list? %>
+  <p><%= t("morphosource.dashboard.collections.media_lists.form_members_table.#{access}.help") %></p>
+<% else %>
+  <p><%= t("hyrax.dashboard.collections.form_members_table.#{access}.help") %></p>
+<% end %>
+<% if group.present? && group.users.count > 0 %>
   <table class="table table-striped share-status">
     <thead>
       <tr>
@@ -36,7 +39,11 @@
               </td>
             <% else %>
               <td style="width:20%;">
-                <%= f.select 'collection_roles[new_access]', ms_edit_access_options(access), { prompt: t('.select_a_role') }, class: 'form-control select-edit-access' %>
+                <% if @collection.list? %>
+                  <%= f.select 'collection_roles[new_access]', list_edit_access_options(access), { prompt: t('.select_a_role') }, class: 'form-control select-edit-access' %>
+                <% else %>
+                  <%= f.select 'collection_roles[new_access]', ms_edit_access_options(access), { prompt: t('.select_a_role') }, class: 'form-control select-edit-access' %>
+                <% end %>
                 <%= f.hidden_field_tag('collection_roles[agent_type]', 'user') %>
                 <%= f.hidden_field_tag('collection_roles[agent_id]', user.ms_id) %>
                 <%= f.hidden_field_tag('collection_roles[access]', access) %>
@@ -52,5 +59,9 @@
     </tbody>
   </table>
 <% else %>
-  <p><em><%= t("hyrax.dashboard.collections.form_members_table.#{access}.empty") %></em></p>
+  <% if @collection.list? %>
+    <p><em><%= t("morphosource.dashboard.collections.media_lists.form_members_table.#{access}.empty") %></em></p>
+  <% else %>
+    <p><em><%= t("hyrax.dashboard.collections.form_members_table.#{access}.empty") %></em></p>
+  <% end %>
 <% end %>

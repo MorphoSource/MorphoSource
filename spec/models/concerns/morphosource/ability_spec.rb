@@ -385,33 +385,26 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     let(:unmanaged_media) { create(:media, depositor: other_user.ms_id) }
     let(:other_unmanaged_media) { create(:media, depositor: other_user.ms_id) }
 
-    describe 'can? :generate_temporary_link, String' do
-      context 'user is media data manager' do
-        it 'user can' do
-          expect(ability.can? :generate_temporary_link, managed_media.id).to be true
-        end
-      end
-
-      context 'user is does media data manager' do
-        it 'user cannot' do
-          expect(ability.can? :generate_temporary_link, unmanaged_media.id).to be false
-        end
-      end
-    end
-
     describe 'can? :destroy, TemporaryMediaAccessLink' do
-      let(:user_temporary_link) { create(:temporary_media_access_link, user: user, media_id: managed_media.id )} 
+      let(:user_temporary_link) { create(:temporary_media_access_link, user: user, media_id: unmanaged_media.id )} 
       let(:other_user_temporary_link) { create(:temporary_media_access_link, user: other_user, media_id: managed_media.id )}
+      let(:third_temporary_link) { create(:temporary_media_access_link, user: other_user, media_id: unmanaged_media.id )}
 
-      context 'user is associated with the link' do
+      context 'user created the link but is not associated media data manager' do
         it 'user can' do
           expect(ability.can? :destroy, user_temporary_link).to be true
         end
       end
 
-      context 'user is not associated with the link' do
+      context 'user did not create link but is associated media data manager' do
+        it 'user can' do
+          expect(ability.can? :destroy, other_user_temporary_link).to be true
+        end
+      end
+
+      context 'user did not create link and is not associated media data manager' do
         it 'user cannot' do
-          expect(ability.can? :destroy, other_user_temporary_link).to be false
+          expect(ability.can? :destroy, third_temporary_link).to be false
         end
       end
     end

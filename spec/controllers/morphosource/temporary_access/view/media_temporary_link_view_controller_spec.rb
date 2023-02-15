@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Hyrax::MediaTemporaryLinkViewController, type: :controller do
+RSpec.describe Morphosource::TemporaryAccess::View::MediaTemporaryLinkViewController, type: :controller do
   describe "search_builder_class" do
     it "is Morphosource::TemporaryMediaAccessLinkSearchBuilder" do
       expect(subject.send(:search_builder_class)).to be(Morphosource::TemporaryMediaAccessLinkSearchBuilder)

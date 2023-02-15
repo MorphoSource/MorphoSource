@@ -6,7 +6,7 @@ module Morphosource
     def create
       params.require(:media_id)
       params.require(:expires_at)
-      authorize! :generate_temporary_link, params[:media_id]
+      authorize! :edit, params[:media_id]
 
       temporary_link = TemporaryMediaAccessLink.new(
         user: current_user,
@@ -29,17 +29,6 @@ module Morphosource
       media_id = @temporary_media_access_link.media_id
       @temporary_media_access_link.destroy
       redirect_to media_showcase_edit_path(media_id, anchor: 'share') and return
-    end
-
-    def destroy_all
-      params.require(:media_id)
-      if current_user && (links = current_user.temporary_media_access_links.where(media_id: params[:media_id])).present?
-        links.each do |link|
-          authorize! :destroy, link
-          link.destroy
-        end
-      end
-      redirect_to media_showcase_edit_path(params[:media_id], anchor: 'share') and return
     end
   end
 end

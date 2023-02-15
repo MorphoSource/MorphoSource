@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Morphosource::CurationConcernTemporaryAccessControllerBehavior, type: :controller do
+RSpec.describe Morphosource::TemporaryAccess::Authorize::TemporaryAccessControllerBehavior, type: :controller do
   let(:controller) { Morphosource::ManifestsController }
   let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
   subject { controller.new }

@@ -427,7 +427,7 @@ Rails.application.routes.draw do
       post 'admin/data_curation/apply_permission_template', action: :apply_permission_template, controller: :data_curation, as: 'admin_apply_permission_template'
     end
 
-    # Routes concerning viewing media and collection records via temporary access links
+    # Routes concerning viewing media via temporary access links
     scope module: :temporary_access do
       scope module: :view do
         # view media via temporary access link
@@ -444,12 +444,10 @@ Rails.application.routes.draw do
     # Temporary media access link
     post 'temporary_links/generate_link_for_media/:media_id', action: :create, controller: :temporary_media_access_links, as: 'temporary_media_access_link_create'
     delete 'temporary_links/revoke_media_link/:id', action: :destroy, controller: :temporary_media_access_links, as: 'temporary_media_access_link_destroy'
-    delete 'temporary_links/revoke_all_links_for_media/:media_id', action: :destroy_all, controller: :temporary_media_access_links, as: 'temporary_media_access_link_destroy_all'
 
     # Temporary collection (project/team) media access link
     post 'temporary_links/generate_link_for_collection/:collection_id', action: :create, controller: :temporary_collection_access_links, as: 'temporary_collection_access_link_create'
     delete 'temporary_links/revoke_collection_link/:id', action: :destroy, controller: :temporary_collection_access_links, as: 'temporary_collection_access_link_destroy'
-    delete 'temporary_links/revoke_all_links_for_collection/:collection_id', action: :destroy_all, controller: :temporary_collection_access_links, as: 'temporary_collection_access_link_destroy_all'
   end
 
   # when creating a collection, use the morphosource collections controller

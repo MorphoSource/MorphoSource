@@ -19,6 +19,24 @@ RSpec.describe Morphosource::Admin::TemporaryMediaAccessLinksController, :type =
     context 'when user is data manager for media and can create temporary access links' do
       before do 
         allow(controller).to receive(:current_user) { manager_user }
+        media.edit_users = media.edit_users + [manager_user]
+        media.save!
+      end
+
+      it 'temporary access link is created and page is redirected' do
+        expect{
+          process :create, method: :post, params: params
+        }.to change{TemporaryMediaAccessLink.count}.by(1)
+ 
+        expect(response).to redirect_to(media_showcase_edit_path(media, anchor: 'share'))
+      end 
+    end
+
+    context 'when user is not data manager but has edit access to media and can create temporary access links' do
+      before do 
+        allow(controller).to receive(:current_user) { other_manager_user }
+        media.edit_users = media.edit_users + [other_manager_user]
+        media.save!
       end
 
       it 'temporary access link is created and page is redirected' do
@@ -40,14 +58,13 @@ RSpec.describe Morphosource::Admin::TemporaryMediaAccessLinksController, :type =
         process :create, method: :post, params: params
         }.to change{TemporaryMediaAccessLink.count}.by 0
 
-        expect(response).to have_http_status 302
-        expect(response).to redirect_to root_path
+        expect(response).to have_http_status 401
       end 
     end
   end
 
   describe 'POST #destroy' do
-    let!(:temporary_link) { create(:temporary_media_access_link, user: manager_user, media_id: media.id )} 
+    let!(:temporary_link) { create(:temporary_media_access_link, user: other_manager_user, media_id: media.id )} 
     context 'when params are not provided' do
       it 'temporary access link is not created and response is error' do
         expect{
@@ -56,7 +73,21 @@ RSpec.describe Morphosource::Admin::TemporaryMediaAccessLinksController, :type =
       end 
     end
 
-    context 'user is able to delete temporary media access link' do
+    context 'user created temp link and is able to delete temporary media access link' do
+      before do
+        sign_in other_manager_user
+      end
+
+      it 'temporary access link is deleted and page is redirected' do
+        expect{
+          process :destroy, method: :delete, params: { id: temporary_link.id } 
+        }.to change{TemporaryMediaAccessLink.count}.by(-1)
+  
+        expect(response).to redirect_to(media_showcase_edit_path(media, anchor: 'share'))
+      end 
+    end
+
+    context 'user did not create link but is media data manager and is able to delete temporary media access link' do
       before do
         sign_in manager_user
       end
@@ -81,65 +112,6 @@ RSpec.describe Morphosource::Admin::TemporaryMediaAccessLinksController, :type =
         }.to change{TemporaryMediaAccessLink.count}.by(0)
   
         expect(response).to have_http_status 401
-      end 
-    end
-  end
-
-  describe 'POST #destroy_all' do
-    let!(:temporary_link1) { create(:temporary_media_access_link, user: manager_user, media_id: media.id )} 
-    let!(:temporary_link2) { create(:temporary_media_access_link, user: manager_user, media_id: media.id )}
-    context 'when params are not provided' do
-      it 'temporary access link is not created and response is error' do
-        expect{
-        process :destroy_all, method: :delete
-        }.to raise_error(ActionController::UrlGenerationError)
-      end 
-    end
-
-    context 'user is able to delete temporary media access links' do
-      before do
-        sign_in manager_user
-      end
-
-      it 'temporary access links are deleted and page is redirected' do
-        expect{
-          process :destroy_all, method: :delete, params: { media_id: media.id } 
-        }.to change{TemporaryMediaAccessLink.count}.by(-2)
-  
-        expect(response).to redirect_to(media_showcase_edit_path(media, anchor: 'share'))
-      end 
-    end
-
-    context 'user is not able to delete temporary media access links' do
-      before do
-        sign_in public_user
-      end
-
-      it 'temporary access links are not deleted and page is redirected' do
-        expect{
-          process :destroy_all, method: :delete, params: { media_id: media.id }  
-        }.to change{TemporaryMediaAccessLink.count}.by(0)
-  
-        expect(response).to have_http_status 302
-        expect(response).to redirect_to(media_showcase_edit_path(media, anchor: 'share'))
-      end 
-    end
-
-    context 'user is only able to delete some temporary media access links' do
-      let!(:temporary_link3) { create(:temporary_media_access_link, user: other_manager_user, media_id: media.id )}
-
-      before do
-        sign_in manager_user
-      end
-
-      it 'some temporary access link are deleted, some not, and page is redirected' do
-        expect(TemporaryMediaAccessLink.count).to be(3)
-        expect{
-          process :destroy_all, method: :delete, params: { media_id: media.id }  
-        }.to change{TemporaryMediaAccessLink.count}.by(-2)
-        expect(TemporaryMediaAccessLink.count).to be(1)
-  
-        expect(response).to redirect_to(media_showcase_edit_path(media, anchor: 'share'))
       end 
     end
   end

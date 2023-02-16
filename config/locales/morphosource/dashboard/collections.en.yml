@@ -13,19 +13,27 @@ en:
             title: 'Viewers'
             help: Viewers of this collection can view the collection even if it is private. Viewers are not given additional access to media in the collection.
             empty: No viewers have been added.
+        new:
+          header: New %{type_title}
+        edit:
+          header: Edit %{type_title}
         organization:
           info: For more information on organizational teams, please read <a href="https://wiki.duke.edu/pages/viewpage.action?pageId=266569096">What is an Organizational Management Team?</a>
         media_lists:
           action:
             new:
-              header: New %{type_title}
+              header: New Media List
             edit:
-              header: Edit %{type_title}
+              header: Edit Media List
+          new:
+            header: New Media List
           edit:
-            header: Edit %{type_title}
+            header: Edit Media List
           sequential_section_lists:
+            new:
+              header: New Sequential Section List
             edit:
-              header: Edit %{type_title}
+              header: Edit Sequential Section List
           form_members_table:
             managers:
               title: 'Managers'
@@ -37,18 +45,18 @@ en:
               empty: No viewers have been added.
         projects:
           new:
-            header: New %{type_title}
+            header: New Project
           edit:
-            header: Edit %{type_title}
+            header: Edit Project
         sequential_section_lists:
           new:
-            header: New %{type_title}
+            header: New Sequential Section List
           edit:
-            header: Edit %{type_title}
+            header: Edit Sequential Section List
         teams:
           new:
-            header: New %{type_title}
+            header: New Team
           edit:
-            header: Edit %{type_title}
+            header: Edit Team
 
 

@@ -188,6 +188,7 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def start_ingest_job
+byebug
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
     main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
@@ -345,10 +346,20 @@ class BatchSubmissionsController < ApplicationController
     warn_msg = ""
     case field_name
     when "media.media_file"
+
+byebug
+
+# handle both local and remote file here?
+
+# check 404 here ? user permission , whitelist?
+
       if !val.present?
         error_msg = "media.media_file: Please enter a value."
-      elsif !File.exist?(user_share_full_path + val)
-        error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
+
+#      elsif !File.exist?(user_share_full_path + val)
+#        error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
+
+
       else
         duplicate_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
         if duplicate_media_found_row + 1 != current_row

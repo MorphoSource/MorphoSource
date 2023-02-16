@@ -26,7 +26,7 @@ module BatchSubmissionTools
         def create_new_attributes
           addl_attrs = { depositor: depositor, on_behalf_of: on_behalf_of }
 
-          Importer::Factory::TaxonomyFactory.new(
+          BatchSubmissionsImporter::Factory::TaxonomyFactory.new(
             initial_attrs.except(:id).merge(addl_attrs)
           ).create_attributes
         end

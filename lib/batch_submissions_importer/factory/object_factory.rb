@@ -176,7 +176,7 @@ module BatchSubmissionsImporter
         val = { work_parents_attributes: {} }
         if attributes[:parent_id]
           attributes[:parent_id].each_with_index do |v, i|
-            val[:work_parents_attributes][i] = { id: v, _destroy: "false" }
+            val[:work_parents_attributes][i.to_s] = { id: v, _destroy: "false" }
           end
         end
         val

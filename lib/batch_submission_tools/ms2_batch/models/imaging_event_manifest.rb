@@ -27,7 +27,7 @@ module BatchSubmissionTools
             on_behalf_of: on_behalf_of
           }
 
-          Importer::Factory::ImagingEventFactory.new(
+          BatchSubmissionsImporter::Factory::ImagingEventFactory.new(
             initial_attrs.except(:id).merge(addl_attrs)
           ).create_attributes
         end

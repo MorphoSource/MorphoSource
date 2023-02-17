@@ -74,7 +74,7 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     # these get redirected to projects/teams
-    get 'collections/:id', to: 'collections#show'
+    get 'collections/:id', to: 'collections#show', as: 'collection_show'
     get 'collections/:id/about', to: 'collections#about'
     get 'collections/:id/facet/:id', to: 'collections#facet'
 
@@ -427,11 +427,12 @@ Rails.application.routes.draw do
       post 'admin/data_curation/apply_permission_template', action: :apply_permission_template, controller: :data_curation, as: 'admin_apply_permission_template'
     end
 
-    # Routes concerning viewing media via temporary access links
+    # View media and collections via temporary access links
     scope module: :temporary_access do
       scope module: :view do
-        # view media via temporary access link
         get 'concern/media/:id/temporary_link/:token', action: :showcase, controller: :media_temporary_link_view, as: 'media_showcase_temporary_link'
+        get 'projects/:id/temporary_link/:token', action: :show, controller: :projects_temporary_link_view, as: 'project_show_temporary_link'
+        get 'teams/:id/temporary_link/:token', action: :show, controller: :teams_temporary_link_view, as: 'teams_show_temporary_link'
       end
     end
 

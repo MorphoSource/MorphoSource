@@ -31,18 +31,18 @@ module Morphosource
           end
 
           def load_curation_concern
-            @curation_concern = SolrDocument.find(params[:id])
+            @concern_solr_doc = SolrDocument.find(params[:id])
           end
 
           def authorize_curation_concern
             current_ability.send("#{ability_attribute}=", @temporary_access_link)
-            current_ability.authorize! :read, @curation_concern
+            current_ability.authorize! :read, @concern_solr_doc
           end
 
           def set_authorization_cookie
-            return if cookies.encrypted[@curation_concern.id].present?
+            return if cookies.encrypted[@concern_solr_doc.id].present?
 
-            cookies.encrypted[@curation_concern.id] = { 
+            cookies.encrypted[@concern_solr_doc.id] = { 
               value: @temporary_access_link.token, 
               expires: @temporary_access_link.expires_at
             }

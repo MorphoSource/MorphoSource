@@ -22,8 +22,9 @@ module Morphosource
 
       # Viewing media and file_sets via temporary access link
       can :read, [ActiveFedora::Base, ::SolrDocument] do |obj|
+        # For single media temp access link
         if temporary_media_access_link.present?
-          Rails.logger.debug("[CANCAN] Checking for temporary access grant")
+          Rails.logger.debug("[CANCAN] Checking for individual media temporary access grant")
         
           if obj.file_set?
             obj = obj.is_a?(ActiveFedora::Base) ? obj.member_of&.first : FileSet.find(obj.id).member_of&.first
@@ -32,10 +33,19 @@ module Morphosource
 
           temporary_media_access_link.active? && temporary_media_access_link.media_id == obj.id
         end
+
+        # For project-wide temp access link
+        if temporary_collection_access_link.present?
+          Rails.logger.debug("[CANCAN] Checking for collection temporary access grant")
+
+          (obj.team? || obj.project? ) && 
+            temporary_collection_access_link.active? && 
+            temporary_collection_access_link.collection_id == obj.id
+        end
       end
 
       can :read, String do |id|
-        if temporary_media_access_link.present?
+        if temporary_media_access_link.present? || temporary_collection_access_link.present?
           obj = ActiveFedora::Base.find(id)
           can? :read, obj
         end

@@ -10,7 +10,7 @@ module Morphosource
           :load_curation_concern,
           :authorize_curation_concern,
           :set_authorization_cookie,
-          :reset_curation_concern, only: :showcase
+          :set_curation_concern, only: :showcase
         skip_authorize_resource only: [:showcase, :thumbnail]
 
         # Want to make use of hyrax/media views
@@ -33,10 +33,10 @@ module Morphosource
           render '/hyrax/media/showcase', presenter: @presenter
         end
 
-        def reset_curation_concern
-          if @curation_concern && Media.exists?(@curation_concern.id)
-            @curation_concern_from_search_results = @curation_concern
-            @curation_concern = Media.find(@curation_concern.id)
+        def set_curation_concern
+          if @concern_solr_doc && Media.exists?(@concern_solr_doc.id)
+            @curation_concern_from_search_results = @concern_solr_doc
+            @curation_concern = Media.find(@concern_solr_doc.id)
           end
         end
       end

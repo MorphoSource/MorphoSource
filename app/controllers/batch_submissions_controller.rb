@@ -346,24 +346,27 @@ byebug
     warn_msg = ""
     case field_name
     when "media.media_file"
-
-byebug
-
-# handle both local and remote file here?
-
-# check 404 here ? user permission , whitelist?
-
       if !val.present?
         error_msg = "media.media_file: Please enter a value."
-
-#      elsif !File.exist?(user_share_full_path + val)
-#        error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
-
-
       else
-        duplicate_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
-        if duplicate_media_found_row + 1 != current_row
-          error_msg = "media.media_file: File #{val} found in more than one row (see row #{duplicate_media_found_row+1})."
+        if val.match(/^https?:\/\//).present?
+          if !current_user.can_submit_remote_file?(val)
+            error_msg = "media.media_file: File path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed."
+          else
+            rf = MorphosourceHelper::RemoteFileInfo.new(val)
+            error_msg = "media.media_file: " + rf.message if rf.message.present?
+
+            # todo: check file_ext for warnings?
+            
+          end
+        elsif !File.exist?(user_share_full_path + val)
+          error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
+        end
+        if !error_msg.present?
+          duplicate_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
+          if duplicate_media_found_row + 1 != current_row
+            error_msg = "media.media_file: File #{val} found in more than one row (see row #{duplicate_media_found_row+1})."
+          end
         end
       end
     when "media.preview_file"

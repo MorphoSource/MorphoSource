@@ -4,55 +4,82 @@ module MorphosourceHelper
   include MediaFinderHelper
   include Hyrax::Renderers
 
-  def file_extension_from_content_type(content_type)
-    return "" unless content_type.present?
-    case content_type 
-    when "application/zip"
-      ".zip"
-    when "image/gif"   
-      ".gif"
-    when /^image\/jpe?g$/
-      ".jpg"
-    when "image/png"
-      ".png"   
-    when "image/bmp"
-      ".bmp"   
-    when "image/tiff"    
-      ".tif"
-    when "application/dicom"
-      ".dcm"
-    when "image/jpeg2000"
-      ".jp2"
-    when "image/svg+xml"
-      ".svg"
-    when "application/ply"
-      ".ply"
-    when "application/stl"
-      ".stl"
-    when "text/prs.wavefront-obj"
-      ".obj"
-    when "model/gltf+json"
-      ".gltf"
-    when "model/vrml"
-      ".wrl"
-    when "model/x3d+xml"
-      ".x3d"
-    when /^video\/mpe?g$/
-      ".mpg"
-    when "video/mp4"    
-      ".mp4"
-    when "video/quicktime"    
-      ".mov"
-    when "video/avi"    
-      ".avi"
-    when "video/x-m4v"
-      ".m4v"
-    when "video/x-ms-wmv"
-      ".wmv"
-    else
-      Rails.logger.debug("in file_extension_from_header: Unknown content_type ")
-      ""
+  class RemoteFileInfo
+    attr_accessor :message, :http_code, :file_ext, :status
+
+    def initialize(url)
+      @message = ""
+      @status = ""
+      @http_code = ""        
+      @file_ext = ""
+      begin
+        head = RestClient::Request.execute(method: :head, url: url, timeout: 15)
+        @http_code = head.code
+        @file_ext = file_extension_from_content_type(head.headers[:content_type])
+        @status = "success"
+      rescue RestClient::Exception => e
+        @message = "#{e.message}"
+        @http_code = e.http_code        
+      rescue Exception => e
+        @message = "#{e.message}"
+        @http_code = ""        
+      end
+      unless @status == "success"
+        @status = @http_code.present? ? "error" : "fail"
+      end
     end
+
+    def file_extension_from_content_type(content_type)
+      return "" unless content_type.present?
+      case content_type 
+      when "application/zip"
+        ".zip"
+      when "image/gif"   
+        ".gif"
+      when /^image\/jpe?g$/
+        ".jpg"
+      when "image/png"
+        ".png"   
+      when "image/bmp"
+        ".bmp"   
+      when "image/tiff"    
+        ".tif"
+      when "application/dicom"
+        ".dcm"
+      when "image/jpeg2000"
+        ".jp2"
+      when "image/svg+xml"
+        ".svg"
+      when "application/ply"
+        ".ply"
+      when "application/stl"
+        ".stl"
+      when "text/prs.wavefront-obj"
+        ".obj"
+      when "model/gltf+json"
+        ".gltf"
+      when "model/vrml"
+        ".wrl"
+      when "model/x3d+xml"
+        ".x3d"
+      when /^video\/mpe?g$/
+        ".mpg"
+      when "video/mp4"    
+        ".mp4"
+      when "video/quicktime"    
+        ".mov"
+      when "video/avi"    
+        ".avi"
+      when "video/x-m4v"
+        ".m4v"
+      when "video/x-ms-wmv"
+        ".wmv"
+      else
+        Rails.logger.debug("in file_extension_from_header: Unknown content_type ")
+        ""
+      end
+    end
+  
   end
 
   def solr_doc_find(id)

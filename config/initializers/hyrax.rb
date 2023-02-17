@@ -79,8 +79,9 @@ Hyrax.config do |config|
   # Rake task create_production_users will create a user account corresponding to this email
   config.contact_email = ENV['CONTACT_EMAIL'] || "do.not.reply@morphosource.org"
 
-  # MS developer team's email address (for receiving emails in test environments)
-  config.ms_dev_email = ENV['MS_DEV_EMAIL'] || "morphosource@duke.edu"
+  # Email address for overriding all mail recipients when sending emails from actionmailer 
+  # (for receiving emails in dev / local test environments)
+  config.override_mail_recipient = ENV['OVERRIDE_MAIL_RECIPIENT'] || ""
 
   # The user who runs batch jobs.
   # Should be user key of site-wide admin user or dedicated batch job user

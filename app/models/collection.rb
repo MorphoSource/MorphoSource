@@ -131,8 +131,9 @@ class Collection < ActiveFedora::Base
 
   # Create manager/depositor/viewer roles for each Team/Project collection
   def create_collection_groups
-    DEFAULT_GROUP_ROLES.each do |role|
-      Role.create(name: id.concat("_#{role}"))
+    self.class::DEFAULT_GROUP_ROLES.each do |role|
+      name = id.concat("_#{role}")
+      Role.create(name: name) unless Role.find_by(name: name)
     end
     add_depositor_to_managers
   end
@@ -255,8 +256,10 @@ class Collection < ActiveFedora::Base
 
     def add_depositor_to_managers
       user = User.find_by(ms_id: depositor)
-      managers_group.users << user
-      managers_group.save
+      unless managers_group.users.include? user
+        managers_group.users << user
+        managers_group.save
+      end
     end
 
     def destroy_default_groups

@@ -40,13 +40,6 @@ class MediaList < Collection
     managers + viewers
   end
 
-  # Create manager/viewer roles for each Media List
-  def create_collection_groups
-    Role.create(name: id.concat("_managers"))
-    add_depositor_to_managers
-    Role.create(name: id.concat("_viewers"))
-  end
-
   def membership_of(user)
     membership_list = []
     membership_list << 'Manager' if managers.include?(user)

@@ -265,6 +265,12 @@ en:
           delete_Project:
             label: 'Delete project'
             confirmation: 'Delete this project?'
+          delete_Media List:
+            label: 'Delete list'
+            confirmation: 'Delete this list?'
+          delete_Sequential Section List:
+            label: 'Delete list'
+            confirmation: 'Delete this list?'
           public_view:
             label: 'Public view'
         form_relationships:

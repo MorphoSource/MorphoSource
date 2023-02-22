@@ -2,7 +2,7 @@ require 'iiif_manifest'
 
 module Morphosource
   class ManifestsController < ApplicationController
-    include Morphosource::TemporaryAccess::Authorize::MediaControllerBehavior
+    include Morphosource::TemporaryAccess::MediaControllerBehavior
 
     class_attribute :iiif_manifest_builder
     self.iiif_manifest_builder = Hyrax::ManifestBuilderService.new(

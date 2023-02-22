@@ -5,7 +5,7 @@ module Hyrax
   class MediaController < ApplicationController
     # Adds Hyrax behaviors to the controller
     include Morphosource::CurationConcernControllerBehavior
-    include Morphosource::TemporaryAccess::Authorize::MediaControllerBehavior
+    include Morphosource::TemporaryAccess::MediaControllerBehavior
     include Hyrax::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
@@ -25,7 +25,7 @@ module Hyrax
     before_action :save_individual_access, only: [:update]
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
-    before_action :redirect_to_temporary_link_url_if_needed, only: [:showcase]
+    before_action :authorize_with_temporary_link, only: [:showcase]
     after_action :set_fund_code, only: [:update]
     after_action :update_thumbnail, only: [:update]
     after_action :deliver_individual_access_messages, only: [:update]
@@ -51,7 +51,14 @@ module Hyrax
     end
 
     def showcase
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      # note: most curation concern methods get concern from curation_concern_from_search_results
+      # this refactors that - only for showcase method - to be more direct, like collections
+      # if this works well, should refactor to use this across the board
+      curation_concern_solr_doc = curation_concern.present? ? 
+        ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
+      raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
+
+      @presenter = show_presenter.new(curation_concern_solr_doc, current_ability, request)
       @presenter.get_showcase_data
       set_flash
       render '/hyrax/media/showcase', presenter: @presenter
@@ -290,6 +297,24 @@ module Hyrax
 
     private
 
+      # authorize media using temporary access link if one is present
+      def authorize_with_temporary_link
+        if params[:token].present?
+          # user accessing project via temporary link URL, auth and set cookie if needed
+          load_temporary_access_link
+          authorize_temporary_access_link
+          load_curation_concern
+          authorize_curation_concern
+          set_authorization_cookie
+          flash[:notice] = I18n.t 'morphosource.media.view.temporary_access'
+        elsif params[:id].present? && temporary_link_cookie_exists?(params[:id]) && !current_ability.can?(:read, params[:id])
+          # user has pre-existing cookie and can't otherwise access project
+          redirect_to main_app.media_showcase_temporary_link_path(
+            id: params[:id], token: temporary_access_link_from_cookie(params[:id]).token
+          )
+        end
+      end
+
       # Checks that uploaded files are the correct format for selected media type.
       def validate_file_formats
         files = []
@@ -324,16 +349,6 @@ module Hyrax
         return true if params["commit"] == "Update Embargo" || params["commit"] == "Update Lease"
         validate_file_formats
         curation_concern.errors.empty?
-      end
-
-      # If the user can't read media normally and access cookie exists, redirect to temp link url
-      def redirect_to_temporary_link_url_if_needed
-        return unless controller_name == "media"
-        if params[:id] && temporary_link_cookie_exists?(params[:id]) && !current_ability.can?(:read, params[:id])
-          redirect_to main_app.media_showcase_temporary_link_path(
-            id: params[:id], token: temporary_access_link_from_cookie(params[:id]).token
-          )
-        end
       end
 
       def set_fileset_visibility

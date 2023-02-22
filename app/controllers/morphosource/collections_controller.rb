@@ -3,8 +3,7 @@ module Morphosource
     include Morphosource::CollectionsControllerBehavior
     helper Morphosource::CollectionHelper
     include Morphosource::Facets::Collections
-    include Morphosource::TemporaryAccess::View::CollectionsTemporaryLinkViewControllerBehavior
-    include Morphosource::TemporaryAccess::Authorize::CollectionsControllerBehavior
+    include Morphosource::TemporaryAccess::CollectionsControllerBehavior
 
     with_themed_layout 'morphosource_1_column'
 

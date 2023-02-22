@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     # redirect the default media view to showcase view, except for certain action (e.g. new)
     get 'concern/media/new', to: 'media#new'
     get 'concern/media/:id', to: 'media#showcase', as: :media_showcase
+    get 'concern/media/:id/temporary_link/:token', to: 'media#showcase', as: 'media_showcase_temporary_link'
     # in case we need to reference the old edit page. remove this hyraxedit route later
     get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
     put 'concern/media/:id/mint_doi', to: 'media#mint_doi', as: :media_mint_doi
@@ -101,7 +102,6 @@ Rails.application.routes.draw do
       get 'projects/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'project_chos_facet'
       get 'projects/:id/temporary_link/:token', to: 'projects#show', as: 'project_show_temporary_link'
       
-
       # csv exports
       get 'projects/:id/media_export', to: 'projects#media_export_with_intersections_facet', as: 'project_media_export'
       get 'projects/:id/media_download_counts', to: 'projects#media_download_counts_with_intersections_facet', as: 'project_media_download_counts'
@@ -427,13 +427,6 @@ Rails.application.routes.draw do
       # data curation
       get 'admin/data_curation', action: :index, controller: :data_curation, as: 'admin_data_curation'
       post 'admin/data_curation/apply_permission_template', action: :apply_permission_template, controller: :data_curation, as: 'admin_apply_permission_template'
-    end
-
-    # View media via temporary access link
-    scope module: :temporary_access do
-      scope module: :view do
-        get 'concern/media/:id/temporary_link/:token', action: :showcase, controller: :media_temporary_link_view, as: 'media_showcase_temporary_link'
-      end
     end
 
     # ARK and DOI resolving routes

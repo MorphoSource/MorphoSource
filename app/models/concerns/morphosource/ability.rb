@@ -126,6 +126,22 @@ module Morphosource
       rg
     end
 
+    # append a new user group (temporarily)
+    def user_groups_append(group)
+      if !user_groups.include?(group)
+        @user_groups << group
+      end
+      user_groups
+    end
+
+    # append a new user group (temporarily)
+    def user_groups_exclude(group)
+      if user_groups.include?(group)
+        @user_groups.delete(group)
+      end
+      user_groups
+    end
+
     private
 
       def download_permissions

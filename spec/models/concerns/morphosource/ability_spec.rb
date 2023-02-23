@@ -445,4 +445,32 @@ RSpec.describe 'Morphosource::Ability', type: :model do
       end
     end
   end
+
+  describe 'user group modification' do
+    describe 'user groups are not modified' do
+      it 'user_groups includes public and registered' do
+        expect(ability.user_groups).to eq(['public', 'registered'])
+      end
+    end
+
+    describe '#user_groups_append' do
+      before do
+        ability.user_groups_append(read_group.name)
+      end
+
+      it 'user groups should include appended group name' do
+        expect(ability.user_groups).to eq(['public', 'registered', read_group.name])
+      end
+    end
+
+    describe '#user_groups_exclude' do
+      before do
+        ability.user_groups_exclude('registered')
+      end
+
+      it 'user groups should not include registered' do
+        expect(ability.user_groups).to eq(['public'])
+      end
+    end
+  end
 end

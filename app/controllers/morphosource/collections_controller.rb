@@ -63,6 +63,7 @@ module Morphosource
 
       def authorize_with_temporary_link
         return unless self.can_authorize_with_temporary_link
+
         if params[:token].present?
           # user accessing project via temporary link URL, auth and set cookie if needed
           load_temporary_access_link
@@ -70,12 +71,25 @@ module Morphosource
           load_curation_concern
           authorize_curation_concern
           set_authorization_cookie
-          flash[:notice] = I18n.t('morphosource.collections.view.temporary_access', collection_type: 'project')
-        elsif params[:id].present? && temporary_link_cookie_exists?(params[:id]) && !current_ability.can?(:read, params[:id])
+        elsif (
+          params[:id].present? && 
+          temporary_link_cookie_exists?(params[:id]) && 
+          !current_ability.can?(:read, params[:id])
+        )
           # user has pre-existing cookie and can't otherwise access project
           authorize_with_temporary_link_if_present(params[:id])
-          flash[:notice] = I18n.t('morphosource.collections.view.temporary_access', collection_type: 'project')
         end
+        
+        # allow user to view collection media as viewer
+        load_collection
+        if @collection.viewers_group
+          current_ability.user_groups_append(@collection.viewers_group.name)
+        end
+      
+        flash[:notice] = I18n.t(
+          'morphosource.collections.view.temporary_access', 
+          collection_type: 'project'
+        )
       end
   end
 end

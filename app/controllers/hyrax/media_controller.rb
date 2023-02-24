@@ -5,7 +5,7 @@ module Hyrax
   class MediaController < ApplicationController
     # Adds Hyrax behaviors to the controller
     include Morphosource::CurationConcernControllerBehavior
-    include Morphosource::TemporaryAccess::MediaControllerBehavior
+    include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
     include Hyrax::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
@@ -19,13 +19,15 @@ module Hyrax
     # override Hydra::AccessControlsEnforcement to include 'download' access in @discovery_permissions
     self.search_builder_class = Morphosource::WorkSearchBuilder
 
+    self.temporary_access_link_class = TemporaryMediaAccessLink
+
     skip_authorize_resource only: [:showcase, :thumbnail]
 
     before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
-    before_action :authorize_with_temporary_link, only: [:showcase]
+    before_action :authorize_media_with_temporary_link, only: [:showcase]
     after_action :set_fund_code, only: [:update]
     after_action :update_thumbnail, only: [:update]
     after_action :deliver_individual_access_messages, only: [:update]
@@ -296,24 +298,6 @@ module Hyrax
     end
 
     private
-
-      # authorize media using temporary access link if one is present
-      def authorize_with_temporary_link
-        if params[:token].present?
-          # user accessing project via temporary link URL, auth and set cookie if needed
-          load_temporary_access_link
-          authorize_temporary_access_link
-          load_curation_concern
-          authorize_curation_concern
-          set_authorization_cookie
-          flash[:notice] = I18n.t 'morphosource.media.view.temporary_access'
-        elsif params[:id].present? && temporary_link_cookie_exists?(params[:id]) && !current_ability.can?(:read, params[:id])
-          # user has pre-existing cookie and can't otherwise access project
-          redirect_to main_app.media_showcase_temporary_link_path(
-            id: params[:id], token: temporary_access_link_from_cookie(params[:id]).token
-          )
-        end
-      end
 
       # Checks that uploaded files are the correct format for selected media type.
       def validate_file_formats

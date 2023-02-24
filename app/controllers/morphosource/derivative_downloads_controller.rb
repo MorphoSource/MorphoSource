@@ -1,6 +1,8 @@
 module Morphosource
   class DerivativeDownloadsController < Hyrax::DownloadsController
-    include Morphosource::TemporaryAccess::MediaControllerBehavior
+    include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
+
+    self.temporary_access_link_class = TemporaryMediaAccessLink
 
     def show
       case file
@@ -29,13 +31,8 @@ module Morphosource
 
         # check for temporary access cookie if necessary
         if !can?(:read, asset_id)
-          if file_reference == 'thumbnail'
-            media = Media.find(asset_id) if Media.exists?(asset_id)
-          else
-            media = file_set&.member_of&.first
-          end
-
-          authorize_with_temporary_link_if_present(media.id) if media.present?
+          media_id = (file_reference == 'thumbnail') ? asset_id : file_set&.member_of&.first&.id
+          authorize_media_with_temporary_link(media_id) if media_id.present?
         end
 
         authorize! :read, asset_id

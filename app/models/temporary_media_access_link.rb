@@ -7,6 +7,10 @@ class TemporaryMediaAccessLink < ApplicationRecord
     where('expires_at > ?', Time.zone.now)
   end
 
+  def self.document_id_attribute
+    :media_id
+  end
+
   def media
     Media.exists?(media_id) ? Media.find(media_id) : nil
   end

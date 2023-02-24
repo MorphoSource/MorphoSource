@@ -7,6 +7,10 @@ class TemporaryCollectionAccessLink < ApplicationRecord
     where('expires_at > ?', Time.zone.now)
   end
 
+  def self.document_id_attribute
+    :collection_id
+  end
+
   def collection
 	  Collection.exists?(collection_id) ? Collection.find(collection_id) : nil
   end

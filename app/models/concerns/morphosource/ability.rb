@@ -1,53 +1,13 @@
 module Morphosource
   module Ability
     extend ActiveSupport::Concern
+    include Morphosource::Ability::TemporaryLinkAbilities
+    
     included do
       include Hyrax::Ability
 
       attr_accessor :temporary_media_access_link
       attr_accessor :temporary_collection_access_link
-    end
-
-    def temporary_link_abilities
-      can :destroy, TemporaryMediaAccessLink do |link|
-        ( current_user.id == link.user_id ) || current_user.admin? || user_is_data_manager?(link.media_id) 
-      end
-
-      can :destroy, TemporaryCollectionAccessLink do |link|
-        ( current_user.id == link.user_id ) || current_user.admin? || (
-          Collection.exists?(id) &&
-          Collection.find(id).managers.include?(current_user)
-        )
-      end
-
-      # Viewing media and file_sets via temporary access link
-      can :read, [ActiveFedora::Base, ::SolrDocument] do |obj|
-        if temporary_media_access_link.present?
-          # For single media temp access link
-          Rails.logger.debug("[CANCAN] Checking for individual media temporary access grant")
-        
-          if obj.file_set?
-            obj = obj.is_a?(ActiveFedora::Base) ? obj.member_of&.first : FileSet.find(obj.id).member_of&.first
-            return false unless obj.present?
-          end
-
-          temporary_media_access_link.active? && temporary_media_access_link.media_id == obj.id
-        elsif temporary_collection_access_link.present?
-          # For project-wide temp access link
-          Rails.logger.debug("[CANCAN] Checking for collection temporary access grant")
-
-          (obj.team? || obj.project? ) && 
-            temporary_collection_access_link.active? && 
-            temporary_collection_access_link.collection_id == obj.id
-        end
-      end
-
-      can :read, String do |id|
-        if temporary_media_access_link.present? || temporary_collection_access_link.present?
-          obj = ActiveFedora::Base.find(id)
-          can? :read, obj
-        end
-      end
     end
 
     def proxy_deposit_abilities

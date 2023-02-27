@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Morphosource::TemporaryAccess::Authorize::TemporaryAccessControllerBehavior, type: :controller do
+RSpec.describe Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior, type: :controller do
   let(:controller) { Morphosource::ManifestsController }
   let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
   subject { controller.new }
@@ -15,7 +15,7 @@ RSpec.describe Morphosource::TemporaryAccess::Authorize::TemporaryAccessControll
 
   describe '#temporary_link_cookie_exists?' do
     it 'detects temporary media access cookie if cookie is present' do
-      cookie_jar.encrypted[temporary_link.media_id] = { 
+      cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
         value: temporary_link.token, 
         expires: temporary_link.expires_at
       }
@@ -36,7 +36,7 @@ RSpec.describe Morphosource::TemporaryAccess::Authorize::TemporaryAccessControll
     end
 
     it 'adds temporary link to current_ability when cookie is present' do
-      cookie_jar.encrypted[temporary_link.media_id] = { 
+      cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
         value: temporary_link.token, 
         expires: temporary_link.expires_at
       }

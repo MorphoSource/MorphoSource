@@ -116,7 +116,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
           before do
             allow(subject).to receive(:cookies).and_return(cookie_jar)
-            cookie_jar.encrypted[private_media.id] = temporary_link.token
+            cookie_jar.encrypted["ta_#{private_media.id}"] = temporary_link.token
           end
 
           context 'user is not logged in' do
@@ -213,7 +213,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
           before do
             allow(subject).to receive(:cookies).and_return(cookie_jar)
-            cookie_jar.encrypted[private_media.id] = temporary_link.token
+            cookie_jar.encrypted["ta_#{private_media.id}"] = temporary_link.token
           end
 
           context 'user is not logged in' do

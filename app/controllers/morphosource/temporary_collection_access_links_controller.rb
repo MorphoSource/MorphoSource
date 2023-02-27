@@ -6,6 +6,7 @@ module Morphosource
     def create
       params.require(:collection_id)
       params.require(:expires_at)
+
       authorize! :edit, params[:collection_id]
 
       temporary_link = TemporaryCollectionAccessLink.new(

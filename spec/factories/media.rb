@@ -4,6 +4,7 @@ FactoryBot.define do
     visibility { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
     fileset_visibility { [""] }
     fileset_accessibility { ["private"] }
+    depositor { nil }
   end
 
   factory :public_media, :parent => :media do

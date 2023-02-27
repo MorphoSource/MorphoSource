@@ -143,62 +143,183 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       end
     end
 
-    describe 'interactions with private media and temporary link access cookie' do
-      let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )} 
-      let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
+    describe 'temporary link access' do
       let(:main_app) { Rails.application.routes.url_helpers }
 
-      before do
-        allow(subject).to receive(:cookies).and_return(cookie_jar)
-      end
+      describe 'via URL' do
+        let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )} 
 
-      context 'user is not logged in but has a temporary access cookie' do
-        it 'redirects to media temporary link view URL' do
-          cookie_jar.encrypted[temporary_link.media_id] = { 
-            value: temporary_link.token, 
-            expires: temporary_link.expires_at
-          }
+        context 'user is not logged in but has a temporary access URL' do 
+          it 'user is authorized with temp link flash msg' do
+            get :showcase, params: { id: work.id, token: temporary_link.token }
+            expect(response.status).to eq(200)
+            expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
+          end
+        end
+  
+        context 'user is logged in, has temporary access URL, but already has access to media' do
+          before do
+            sign_in user
+            work.read_users += [user]
+            work.save
+          end
+  
+          it 'user is authorized with temp link flash msg' do
+            get :showcase, params: { id: work.id, token: temporary_link.token }
+            expect(response.status).to eq(200)
+            expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
+          end
+        end
+  
+        context 'user is logged in, has temporary access URL, and does not have access to media' do
+          before do
+            sign_in user
+          end
+  
+          it 'user is authorized with temp link flash msg' do
+            get :showcase, params: { id: work.id, token: temporary_link.token }
+            expect(response.status).to eq(200)
+            expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
+          end
+        end
 
-          get :showcase, params: { id: work.id }
-          expect(response.status).to eq(302)
-          expect(response).to redirect_to main_app.media_showcase_temporary_link_path(
-            id: work.id, token: temporary_link.token, locale: 'en'
-          )
+        context 'when temporary link URL is expired' do
+          let(:expired_temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id, expires_at: Time.now - 1.month )}
+
+          it 'user is redirected to sign-in page without authorization' do
+            get :showcase, params: { id: work.id, token: expired_temporary_link.token }
+            expect(response.status).to eq(302)
+            expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
+          end
         end
       end
 
-      context 'user is logged in, has temporary access cookie, but already has access to media' do
+      describe 'via cookie' do
+        let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
+        let(:main_app) { Rails.application.routes.url_helpers }
+  
         before do
-          sign_in user
-          work.read_users += [user]
-          work.save
+          allow(subject).to receive(:cookies).and_return(cookie_jar)
+        end
+  
+        describe 'for individual media access' do
+          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )} 
+
+          context 'user is not logged in but has a temporary access cookie' do
+            it 'user is authorized with temp link flash msg' do
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
+                value: temporary_link.token, 
+                expires: temporary_link.expires_at
+              }
+    
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+              expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
+            end
+          end
+    
+          context 'user is logged in, has temporary access cookie, but already has access to media' do
+            before do
+              sign_in user
+              work.read_users += [user]
+              work.save
+            end
+    
+            it 'user is authorized without temp link flash msg' do
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
+                value: temporary_link.token, 
+                expires: temporary_link.expires_at
+              }
+    
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+              expect(response.flash[:notice]).to eq('')
+            end
+          end
+    
+          context 'user is logged in, has temporary access cookie, and does not have access to media' do
+            before do
+              sign_in user
+            end
+    
+            it 'user is authorized with temp link flash msg' do
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
+                value: temporary_link.token, 
+                expires: temporary_link.expires_at
+              }
+    
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+              expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
+            end
+          end
+
+          context 'when temporary link cookie is expired' do
+            let(:expired_temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id, expires_at: Time.now - 1.month )}
+
+            it 'user is redirected to sign-in page without authorization' do
+              cookie_jar.encrypted["ta_#{expired_temporary_link.media_id}"] = { 
+                value: expired_temporary_link.token, 
+                expires: expired_temporary_link.expires_at
+              }
+    
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(302)
+              expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
+            end
+          end
         end
 
-        it 'does not redirect and successfully returns media via usual route' do
-          cookie_jar.encrypted[temporary_link.media_id] = { 
-            value: temporary_link.token, 
-            expires: temporary_link.expires_at
-          }
-          get :showcase, params: { id: work.id }
-          expect(response.status).to eq(200)
-        end
-      end
+        describe 'for access to media through project' do
+          let(:temporary_link) { create(:temporary_collection_access_link, user: user, collection_id: '123456789' )}
 
-      context 'user is logged in, has temporary access cookie, and does not have access to media' do
-        before do
-          sign_in user
-        end
+          before do
+            allow_any_instance_of(Media).to receive(:member_of_collection_ids).and_return(['123456789'])
+          end
 
-        it 'redirects to media temporary link view URL' do
-          cookie_jar.encrypted[temporary_link.media_id] = { 
-            value: temporary_link.token, 
-            expires: temporary_link.expires_at
-          }
-          get :showcase, params: { id: work.id }
-          expect(response.status).to eq(302)
-          expect(response).to redirect_to main_app.media_showcase_temporary_link_path(
-            id: work.id, token: temporary_link.token, locale: 'en'
-          )
+          context 'user is not logged in but has a temporary access cookie' do
+            it 'user is authorized' do
+              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
+                value: temporary_link.token, 
+                expires: temporary_link.expires_at
+              }
+    
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+   
+          context 'user is logged in, has temporary access cookie, and does not have access to media' do
+            before do
+              sign_in user
+            end
+    
+            it 'user is authorized with temp link flash msg' do
+              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
+                value: temporary_link.token, 
+                expires: temporary_link.expires_at
+              }
+    
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(200)
+            end
+          end
+
+          context 'when temporary link cookie is expired' do
+            let(:expired_temporary_link) { create(:temporary_collection_access_link, user: user, collection_id: '123456789', expires_at: Time.now - 1.month )}
+
+            it 'user is redirected to sign-in page without authorization' do
+              cookie_jar.encrypted["ta_#{expired_temporary_link.collection_id}"] = { 
+                value: expired_temporary_link.token, 
+                expires: expired_temporary_link.expires_at
+              }
+    
+              get :showcase, params: { id: work.id }
+              expect(response.status).to eq(302)
+              expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
+            end
+          end
+        
         end
       end
     end

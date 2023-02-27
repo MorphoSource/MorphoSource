@@ -58,7 +58,7 @@ module Hyrax
       # if this works well, should refactor to use this across the board
       curation_concern_solr_doc = curation_concern.present? ? 
         ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
-      raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
+      raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
 
       @presenter = show_presenter.new(curation_concern_solr_doc, current_ability, request)
       @presenter.get_showcase_data

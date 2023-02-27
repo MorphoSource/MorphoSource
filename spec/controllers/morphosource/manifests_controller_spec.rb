@@ -33,7 +33,7 @@ RSpec.describe Morphosource::ManifestsController, type: :controller do
       end
 
       it 'displays iiif manifest' do
-        cookie_jar.encrypted[temporary_link.media_id] = { 
+        cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
           value: temporary_link.token, 
           expires: temporary_link.expires_at
         }

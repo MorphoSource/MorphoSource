@@ -11,26 +11,26 @@ module Morphosource
   
         can :destroy, TemporaryCollectionAccessLink do |link|
           ( current_user.id == link.user_id ) || current_user.admin? || (
-            Collection.exists?(id) &&
-            Collection.find(id).managers.include?(current_user)
+            Collection.exists?(link.collection_id) &&
+            Collection.find(link.collection_id).managers.include?(current_user)
           )
         end
   
         # View Media, FileSets, and Projects via temporary access link
 
-        can :read, [Media] do |obj|
+        can :read, Media do |obj|
           can_read_media_with_temporary_link? obj
         end
 
-        can :read, [FileSet] do |obj|
+        can :read, FileSet do |obj|
           can_read_fileset_with_temporary_link? obj
         end
 
-        can :read, [Collection] do |obj|
+        can :read, Collection do |obj|
           can_read_collection_with_temporary_link? obj
         end
 
-        can :read, [::SolrDocument] do |obj|
+        can :read, ::SolrDocument do |obj|
           case obj.has_model&.first
           when 'Media'
             can_read_media_with_temporary_link? obj
@@ -56,7 +56,7 @@ module Morphosource
         def can_read_media_with_temporary_link?(media)
           if temporary_media_access_link.present?
             Rails.logger.debug("[CANCAN] Checking for individual media temporary access grant")
-            temporary_media_access_link.active? && temporary_media_access_link.media_id == obj.id
+            temporary_media_access_link.active? && temporary_media_access_link.media_id == media.id
           elsif temporary_collection_access_link.present?
             Rails.logger.debug("[CANCAN] Checking for collection-level media temporary access grant")
             temporary_collection_access_link.present? && 

@@ -27,6 +27,7 @@ RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
       before do
         subject.instance_variable_set(:@collection, team)
         allow(subject).to receive(:load_collection).and_return(true)
+        allow(subject).to receive(:authorize_collection).and_return(true)
         get :show, params: { id: team.id }
       end
       it 'has an intersections facet' do

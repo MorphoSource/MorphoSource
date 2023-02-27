@@ -83,6 +83,9 @@ module Morphosource
       def load_collection
         @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
         @collection ||= @curation_concern
+      end
+
+      def authorize_collection
         authorize! :read, @collection
         rescue CanCan::AccessDenied
           redirect_to root_url, alert: 'You are not authorized to access this collection.'

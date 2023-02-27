@@ -232,6 +232,15 @@ class Collection < ActiveFedora::Base
     collection_type_gid
   end
 
+  # Temporary View Access Link methods
+  def temporary_links
+    TemporaryCollectionAccessLink.where(collection_id: id)
+  end
+
+  def active_temporary_links
+    temporary_links.where('expires_at > ?', DateTime.now)
+  end
+
   # modality options for creating new media in the collection
   # override this to allow only certain modalities
   def media_modalities
@@ -249,7 +258,6 @@ class Collection < ActiveFedora::Base
   def media
     Media.where("member_of_collection_ids_ssim:#{id}")
   end
-
 
   private
 

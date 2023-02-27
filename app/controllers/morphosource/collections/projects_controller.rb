@@ -6,6 +6,7 @@ module Morphosource
       before_action :create_access_facet, only: [:show, :facet,
         :media_projects, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
 
+      self.can_authorize_with_temporary_link = true
       self.presenter_class = Morphosource::Collections::ProjectPresenter
 
       private

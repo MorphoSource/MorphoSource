@@ -40,7 +40,6 @@
               <%# we're loading these values dynamically to speed page load %>
               <%= f.input :representative_id, label: 'Media ID for Thumbnail', hint: 'Media IDs can be viewed in the Media tab', input_html: { data: { text: f.object.representative_id } } %>
             <% end %>
-
           </div>
         </div>
 
@@ -53,6 +52,10 @@
             <% end %>
           </div>
         </div>
+
+      <% if @collection.project? %>
+        <%= render 'morphosource/dashboard/collections/details/temporary_access_links', f: f %>
+      <% end %>
 
       </div>
 

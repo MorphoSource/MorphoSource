@@ -3,6 +3,7 @@ module Morphosource
     include Morphosource::CollectionsControllerBehavior
     helper Morphosource::CollectionHelper
     include Morphosource::Facets::Collections
+    include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
 
     with_themed_layout 'morphosource_1_column'
 
@@ -10,13 +11,17 @@ module Morphosource
       :show, :about, :facet,
       :media_export, :media_downloads, :media_download_counts, :media_requests
     ], instance_name: :collection
+    prepend_before_action :authorize_collection_with_temporary_link, only: [:show, :about]
 
     # Don't add breadcrumbs
     before_action :build_breadcrumbs, only: []
 
-    before_action :load_collection, :redirect_to_collection_type
+    before_action :load_collection, :redirect_to_collection_type, :authorize_collection
 
+    class_attribute :can_authorize_with_temporary_link
+    self.can_authorize_with_temporary_link = false
     self.presenter_class = presenter_class
+    self.temporary_access_link_class = TemporaryCollectionAccessLink
 
     def search_builder_class
       Morphosource::Collections::MediaSearchBuilder

@@ -1,0 +1,8 @@
+en:
+  morphosource:
+    collections:
+      view:
+        temporary_access: You are viewing this MorphoSource %{collection_type} with a temporary access link. This grants you access to view the project as well as all media contained within the project. This does not grant the ability to download file(s) associated with media.
+      edit:
+        temporary_access:
+          description: You can use this section to generate a temporary link to share this %{collection_type} and the media contained in it with someone, even if they don't have a MorphoSource account. This link will allow that user to view this %{collection_type} and the media in the %{collection_type}, but not download any media file(s) associated with the media records. You can set how long until this link expires.

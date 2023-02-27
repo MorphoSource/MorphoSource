@@ -15,18 +15,6 @@
           data: { confirm: t('.delete_confirm', file_set: file_set, application_name: application_name) } %>
       </li>
     <% end %>
-
-    <% if can?(:download, file_set.id) %>
-      <li role="menuitem" tabindex="-1">
-        <%= link_to t('.download'),
-                    hyrax.download_path(file_set),
-                    title: t('.download_title', file_set: file_set),
-                    target: "_blank",
-                    id: "file_download",
-                    data: { label: file_set.id } %>
-      </li>
-    <% end %>
-
     </ul>
   </div>
 <% end %>

@@ -6,6 +6,8 @@ module Morphosource
       before_action :load_organization, only: [:show]
       before_action :get_object_ids, only: [:facet, :objects_export]
 
+      self.can_authorize_with_temporary_link = true
+
       def search_builder
         search_builder_class.new(self)
       end

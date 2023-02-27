@@ -496,6 +496,15 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  # Temporary View Access Link methods
+  def temporary_links
+    TemporaryMediaAccessLink.where(media_id: id)
+  end
+
+  def active_temporary_links
+    temporary_links.where('expires_at > ?', DateTime.now)
+  end
+
   # Create request to transfer ownership of media and/or move media to organization team
   # generally, don't use this for where media data manager == org data manager,
   # but the method can handle this circumstance for use in developer console, etc

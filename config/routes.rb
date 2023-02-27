@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     # redirect the default media view to showcase view, except for certain action (e.g. new)
     get 'concern/media/new', to: 'media#new'
     get 'concern/media/:id', to: 'media#showcase', as: :media_showcase
+    get 'concern/media/:id/temporary_link/:token', to: 'media#showcase', as: 'media_showcase_temporary_link'
     # in case we need to reference the old edit page. remove this hyraxedit route later
     get 'concern/media/:id/hyraxedit', to: 'media#hyraxedit'
     put 'concern/media/:id/mint_doi', to: 'media#mint_doi', as: :media_mint_doi
@@ -76,7 +77,7 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     # these get redirected to projects/teams
-    get 'collections/:id', to: 'collections#show'
+    get 'collections/:id', to: 'collections#show', as: 'collection_show'
     get 'collections/:id/about', to: 'collections#about'
     get 'collections/:id/facet/:id', to: 'collections#facet'
 
@@ -102,7 +103,8 @@ Rails.application.routes.draw do
       get 'projects/:collection_id/facet/:id', to: 'projects#facet', as: 'project_media_facet'
       get 'projects/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'project_specimens_facet'
       get 'projects/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'project_chos_facet'
-
+      get 'projects/:id/temporary_link/:token', to: 'projects#show', as: 'project_show_temporary_link'
+      
       # csv exports
       get 'projects/:id/media_export', to: 'projects#media_export_with_intersections_facet', as: 'project_media_export'
       get 'projects/:id/media_download_counts', to: 'projects#media_download_counts_with_intersections_facet', as: 'project_media_download_counts'
@@ -171,7 +173,7 @@ Rails.application.routes.draw do
     scope module: :dashboard do
       get 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
 
-      get 'dashboard/collections/:id', to: 'collections#edit'
+      get 'dashboard/collections/:id', to: 'collections#edit', as: 'collection_edit'
       put 'dashboard/collections', to: 'collections#update'
       put 'dashboard/collections/:id', to: 'collections#update'
       patch 'dashboard/collections/:id', to: 'collections#update'
@@ -327,11 +329,14 @@ Rails.application.routes.draw do
   mount BrowseEverything::Engine => '/browse' # this is needed after updating Hyrax to 2.7
 
   scope module: :morphosource do
-    resources :downloads, only: :show
     resources :tags, param: :tag, only: [:index, :show]
     get '/attachments/:id', to: 'attachments#show', as: 'attachment'
-    get '/download', to: 'media_downloads#show', as: 'media_download'
     get '/manifests/:id', to: 'manifests#show', as: 'manifest'
+
+    # media ZIP downloads
+    get '/download', to: 'media_downloads#show', as: 'media_download'
+    # derivative (thumbnail and 3D/2D/AV preview) downloads
+    get '/downloads/:id', to: 'derivative_downloads#show', as: 'download'
   end
 
 
@@ -493,6 +498,14 @@ Rails.application.routes.draw do
     if ENV['CROSSREF_DOI_SHOULDER'].present? && ENV['CROSSREF_DOI_SHOULDER'].split('/')[0].present?
       get '/*doi_tag/*identifier', action: :resolve_doi, controller: :identifier_resolver, constraints: { doi_tag: ENV['CROSSREF_DOI_SHOULDER'].split('/')[0] }
     end
+
+    # Temporary media access link
+    post 'temporary_links/generate_link_for_media/:media_id', action: :create, controller: :temporary_media_access_links, as: 'temporary_media_access_link_create'
+    delete 'temporary_links/revoke_media_link/:id', action: :destroy, controller: :temporary_media_access_links, as: 'temporary_media_access_link_destroy'
+
+    # Temporary collection (project/team) media access link
+    post 'temporary_links/generate_link_for_collection/:collection_id', action: :create, controller: :temporary_collection_access_links, as: 'temporary_collection_access_link_create'
+    delete 'temporary_links/revoke_collection_link/:id', action: :destroy, controller: :temporary_collection_access_links, as: 'temporary_collection_access_link_destroy'
   end
 
   # when creating a collection, use the morphosource collections controller

@@ -53,7 +53,7 @@
           </div>
         </div>
 
-      <% if @collection.team? || @collection.project? %>
+      <% if @collection.project? %>
         <%= render 'morphosource/dashboard/collections/details/temporary_access_links', f: f %>
       <% end %>
 

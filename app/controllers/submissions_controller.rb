@@ -10,7 +10,7 @@ class SubmissionsController < ApplicationController
   include Morphosource::LinkedTeams::LinkedTeamsManagement
   include Morphosource::CustomThumbnails
 
-  load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax,
+  load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, :validate_remote_file_ajax,
     :save_data, :organization_for_recordset, :organization_default_media_fields,
     :new_organization_submit, :new_taxonomy_submit, :new_device_submit,
     :new_processing_event_submit]
@@ -105,9 +105,13 @@ class SubmissionsController < ApplicationController
       @devices_with_ids.delete(Hyrax.config.unknown_ct_scanner)
     end
 
-    if params[:collection] && Collection.exists?(params[:collection])
-      @submission.collection_id = params[:collection]
-      @submission.collection_name = Collection.find(@submission.collection_id).title.first
+    if params[:collection]
+      begin
+        @collection = Collection.find(params[:collection])
+        @submission.collection_id = @collection.id
+        @submission.collection_name = @collection.title.first
+      rescue
+      end
     end
   end
 
@@ -136,6 +140,40 @@ class SubmissionsController < ApplicationController
     ms_taxa = ms_taxa.reject { |t| gbif_ms_ids.include? t[:id] }
 
     render :json => gbif_taxa + ms_taxa
+  end
+
+  def validate_remote_file_ajax
+    file_ext = ""
+    if !current_user.can_submit_remote_file? params[:u]
+      status = "error"
+      message = "The path is invalid or not allowed"
+      http_code = ""
+    else
+      begin
+        head = RestClient::Request.execute(method: :head, url: params[:u], timeout: 15)
+        http_code = head.code
+        file_ext = file_extension_from_content_type(head.headers[:content_type])
+        status = "success"
+        message = ""
+      rescue RestClient::Exception => e
+        message = "#{e.message}"
+        http_code = e.http_code        
+      rescue Exception => e
+        message = "#{e.message}"
+        http_code = ""        
+      end
+
+      unless status == "success"
+        status = http_code.present? ? "error" : "fail"
+      end
+    end
+    response_object = {
+      status: status,
+      http_code: http_code,
+      message: message,
+      resp_file_ext: file_ext
+    }
+    render :json => response_object
   end
 
   def organization_for_recordset
@@ -271,7 +309,7 @@ class SubmissionsController < ApplicationController
     # Is the media associated with an existing parent? If so, find organization ID
     # TODO refactor this, possibly put in JS defaultMediaFields code??
     if (
-      @submission.parent_media_list.present? && 
+      @submission.parent_media_list.present? &&
       Media.exists?(@submission.parent_media_list&.split(',')&.first) &&
       !@submission.organization_id.present?
     )
@@ -697,9 +735,9 @@ class SubmissionsController < ApplicationController
   end
 
   def get_organization_media_transfer
-    if ( 
-      @submission.organization_id.present? && 
-      Organization.exists?(@submission.organization_id) && 
+    if (
+      @submission.organization_id.present? &&
+      Organization.exists?(@submission.organization_id) &&
       (org = Organization.find(@submission.organization_id)).present? &&
       org.data_manager.present?
     )
@@ -711,7 +749,7 @@ class SubmissionsController < ApplicationController
 
   def transfer_media_immediately?
     ( params.dig(:media, :transfer_management) == 'immediate' ) ||
-      ['open', 'restricted_download'].include?(params.dig(:media, :visibility)) 
+      ['open', 'restricted_download'].include?(params.dig(:media, :visibility))
   end
 
   # Utility functions
@@ -790,23 +828,30 @@ class SubmissionsController < ApplicationController
   end
 
   def set_files(attributes_for_actor)
-    # https://github.com/samvera/hyrax/blob/v2.9.0/app/controllers/concerns/hyrax/works_controller_behavior.rb
+    if attributes_for_actor["remote_origin_url"].present?
+      # set file attributes
+      uri = URI.parse(attributes_for_actor["remote_origin_url"])
+      attributes_for_actor[:remote_files] = [{"url" => attributes_for_actor["remote_origin_url"], "file_name" => File.basename(uri.path)}]
+      attributes_for_actor[:uploaded_files] = []
+    else
+      # https://github.com/samvera/hyrax/blob/v2.9.0/app/controllers/concerns/hyrax/works_controller_behavior.rb
 
-    # If they selected a BrowseEverything file, but then clicked the
-    # remove button, it will still show up in `selected_files`, but
-    # it will no longer be in uploaded_files. By checking the
-    # intersection, we get the files they added via BrowseEverything
-    # that they have not removed from the upload widget.
-    uploaded_files = attributes_for_actor.delete(:uploaded_files) || []
-    selected_files = attributes_for_actor.delete(:selected_files)&.values || []
-    browse_everything_urls = uploaded_files & selected_files.map { |f| f[:url] }
+      # If they selected a BrowseEverything file, but then clicked the
+      # remove button, it will still show up in `selected_files`, but
+      # it will no longer be in uploaded_files. By checking the
+      # intersection, we get the files they added via BrowseEverything
+      # that they have not removed from the upload widget.
+      uploaded_files = attributes_for_actor.delete(:uploaded_files) || []
+      selected_files = attributes_for_actor.delete(:selected_files)&.values || []
+      browse_everything_urls = uploaded_files & selected_files.map { |f| f[:url] }
 
-    # we need the hash of files with url and file_name
-    browse_everything_files = selected_files.select { |v| uploaded_files.include?(v[:url]) }
-    attributes_for_actor[:remote_files] = browse_everything_files
+      # we need the hash of files with url and file_name
+      browse_everything_files = selected_files.select { |v| uploaded_files.include?(v[:url]) }
+      attributes_for_actor[:remote_files] = browse_everything_files
 
-    # Strip out any BrowseEverthing files from the regular uploads.
-    attributes_for_actor[:uploaded_files] = uploaded_files - browse_everything_urls
+      # Strip out any BrowseEverthing files from the regular uploads.
+      attributes_for_actor[:uploaded_files] = uploaded_files - browse_everything_urls
+    end
 
     return attributes_for_actor
   end
@@ -944,7 +989,8 @@ class SubmissionsController < ApplicationController
                 :organization_search,
                 :taxonomy_params_array,
                 :organization_for_attachment,
-                :fund_code
+                :fund_code,
+                :remote_files
         )
     )
   end

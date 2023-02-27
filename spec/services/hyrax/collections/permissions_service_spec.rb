@@ -366,6 +366,32 @@ RSpec.describe Hyrax::Collections::PermissionsService do
           expect(described_class.collection_ids_for_user(access: ['manage', 'deposit', 'view'], ability: ability)).to match_array []
         end
       end
+
+      describe 'lists' do
+        let(:media_list_collection_type)              { Hyrax::CollectionType.create(title: ['Media List']) }
+        let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: ['Sequential Section List']) }
+        let(:media_list)                              { MediaList.create(title: ['media_list'], depositor: user2.ms_id, collection_type_gid: media_list_collection_type.gid) }
+        let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential_section_list'], depositor: user2.ms_id, collection_type_gid: sequential_section_list_collection_type.gid) }
+
+        let(:collections) { [collection, media_list, sequential_section_list] }
+
+        it 'returns collection ids where user has view access' do
+          collections.each do |collection|
+            collection.viewers << user
+            collection.viewers_group.save
+            collection.viewers_group.reload
+          end
+          expect(described_class.collection_ids_for_user(access: 'view', ability: ability)).to match_array(collections.map(&:id))
+        end
+        it 'returns collection ids where user has manage access' do
+          collections.each do |collection|
+            collection.managers << user
+            collection.managers_group.save
+            collection.managers_group.reload
+          end
+          expect(described_class.collection_ids_for_user(access: ['manage'], ability: ability)).to match_array(collections.map(&:id))
+        end
+      end
     end
 
     describe '.source_ids_for_manage' do

@@ -1,0 +1,17 @@
+    <fieldset>
+      <ul id="visibility-options" class="visibility">
+        <span id="selected_visibility_for_collection" class=<%= (@collection&.visibility || 'new') %>></span>
+        <li class="radio">
+          <label>
+            <%= f.radio_button :visibility, Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC, data: { 'target': '#collapsePublic', 'toggle':'collapse' } %>
+            <%= visibility_badge(Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC) %>
+          </label>
+        </li>
+        <li class="radio">
+          <label>
+            <%= f.radio_button :visibility, Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE %>
+            <%= visibility_badge(Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE) %>
+          </label>
+        </li>
+      </ul>
+    </fieldset>

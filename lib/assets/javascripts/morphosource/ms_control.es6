@@ -1,3 +1,4 @@
+
 //import Registry from 'hyrax/relationships/registry'
 import Registry from './ms_registry'
 import Resource from 'hyrax/relationships/resource'
@@ -44,6 +45,28 @@ export default class RelationshipsControl {
   }
 
   validate() {
+    this.errors = null
+    let data = this.searchData()
+
+    if (this.input.is("#media_member_of_collection_ids")) {
+      if (data.type == "sequential_section_list") {
+        let submission_modality = $("select[name='submission[submission_modality]']").val();
+        let edit_media_modality = $('#imaging_event_ie_modality').find(":selected").val();
+        let modality = (submission_modality || edit_media_modality)
+        if (modality != "SequentialSectionScan") {
+          this.errors = ["Sequential Section Scan Lists can only contain media with modality Sequential Section Scan"]
+          alert(this.errors);
+        }
+        let submission_object_id = $('#media_member_of_collection_ids').attr('data-selected-object')
+        let edit_media_object_id = $('#physical-object-id-value').attr('value')
+        let object_id = (submission_object_id || edit_media_object_id);
+        if (object_id != data.object_id) {
+          this.errors = ["All media in a Sequential Section Scan List must be from object id: " + data.object_id]
+          alert(this.errors);
+        }
+      }
+    }
+
     if (this.input.val() === "") {
       this.errors = ['ID cannot be empty.']
     }

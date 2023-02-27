@@ -23,6 +23,8 @@ RSpec.describe MediaIndexer do
       member_of_public_collection_ids: ['id1','id2','id3'],
       member_of_team_ids: ['id1','id2','id3'],
       member_of_project_ids: ['id1','id2','id3'],
+      member_of_media_list_ids: ['id1','id2','id3'],
+      member_of_sequential_section_list_ids: ['id1','id2','id3'],
       taxonomies_titles: ['taxonomy1', 'taxonomy2'],
     } }
 
@@ -60,6 +62,12 @@ RSpec.describe MediaIndexer do
     end
     it 'indexes project ids' do
       expect(subject['member_of_project_ids_ssim']).to eq(field_values[:member_of_project_ids])
+    end
+    it 'indexes media_list ids' do
+      expect(subject['member_of_media_list_ids_ssim']).to eq(field_values[:member_of_media_list_ids])
+    end
+    it 'indexes sequential_section_list ids' do
+      expect(subject['member_of_sequential_section_list_ids_ssim']).to eq(field_values[:member_of_sequential_section_list_ids])
     end
     it 'indexes publication status' do
       expect(subject['publication_status_ssi']).to eq('Restricted Download')
@@ -100,7 +108,7 @@ RSpec.describe MediaIndexer do
   describe 'physical object fields' do
     let(:organization)  { Organization.create(title: ['Organization']) }
     let(:taxonomy)      { Taxonomy.create(title: ['taxonomy title']) }
-    let(:specimen)      { 
+    let(:specimen)      {
       BiologicalSpecimen.create(
         title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id],
         institution_code: ["123"],

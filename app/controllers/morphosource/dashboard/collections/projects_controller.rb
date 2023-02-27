@@ -7,7 +7,7 @@ module Morphosource
 
         before_action :redirect_to_collection_type, only: []
         before_action :build_breadcrumbs, only: []
-        before_action :load_collection, :authorize_collection
+        before_action :load_collection
 
         self.presenter_class = Morphosource::Collections::ProjectPresenter
 

@@ -1,7 +1,9 @@
 //$(document).on('turbolinks:load', function() {
 $(document).ready(function() {
 
-  if ( $('form[id*="edit_collection"]').length || $('form[id*="edit_media_list"]').length || $('form[id*="edit_sequential_section_list"]').length ) { // if collection form page (edit)
+  if ( $('form[id*="edit_collection"]').length ||
+       $('form[id*="edit_media_list"]').length ||
+       $('form[id*="edit_sequential_section_list"]').length ) { // if collection form page (edit)
 
     setupTooltip();
     removeLastRepeatable();
@@ -28,13 +30,8 @@ $(document).ready(function() {
       }
     });
 
-    if ($('form[id*="edit_collection"]').length) {
-      form = $('form[id*="edit_collection"]')[0];
-    } else if ($('form[id*="edit_media_list"]').length) {
-      form = $('form[id*="edit_media_list"]')[0];
-    } else if ($('form[id*="edit_sequential_section_list"]').length) {
-      form = $('form[id*="edit_sequential_section_list"]')[0];
-    }
+    form = $('form[id*="edit_"]')[0]
+
     form.addEventListener("submit", function(submitEvent) {
       //submitEvent.preventDefault();
       disablePageAndSave(".dropdown-toggle");

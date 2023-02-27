@@ -21,13 +21,13 @@ describe 'morphosource rake tasks' do
   describe "morphosource:create_collection_types", type: :task do
     let(:team_settings)     { Morphosource::CollectionTypes::Teams::SETTINGS }
     let(:project_settings)  { Morphosource::CollectionTypes::Projects::SETTINGS }
-    let(:types)  { Hyrax::CollectionType.all }
+    let(:types)             { Hyrax::CollectionType.all }
     let(:team_type)         { types.find{|t| t[:title] == "Team"} }
     let(:project_type)      { types.find{|t| t[:title] == "Project"} }
     let(:type_settings)     { [ { type: team_type, settings: team_settings }, { type: project_type, settings: project_settings } ] }
 
     it 'creates collection types' do
-      expect { create_collection_types.invoke }.to change { Hyrax::CollectionType.count }.by(2)
+      expect { create_collection_types.invoke }.to change { Hyrax::CollectionType.count }.by(4)
     end
 
     it 'assigns the correct attribute values' do

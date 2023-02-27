@@ -328,6 +328,22 @@ class Media < Morphosource::Works::Base
     member_of_projects.map(&:id)
   end
 
+  def member_of_media_lists
+    member_of_collections.select { |c| c.media_list? }
+  end
+
+  def member_of_media_list_ids
+    member_of_media_lists.map(&:id)
+  end
+
+  def member_of_sequential_section_lists
+    member_of_collections.select { |c| c.sequential_section_list? }
+  end
+
+  def member_of_sequential_section_list_ids
+    member_of_sequential_section_lists.map(&:id)
+  end
+
   def ark_resource_type
     # Valid ARK resource types:
     # 'Audiovisual', 'Collection', 'DataPaper', 'Dataset', 'Event', 'Image',
@@ -480,12 +496,21 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  # Temporary View Access Link methods
+  def temporary_links
+    TemporaryMediaAccessLink.where(media_id: id)
+  end
+
+  def active_temporary_links
+    temporary_links.where('expires_at > ?', DateTime.now)
+  end
+
   # Create request to transfer ownership of media and/or move media to organization team
   # generally, don't use this for where media data manager == org data manager,
   # but the method can handle this circumstance for use in developer console, etc
   def transfer_media_to_organization
     org = organizations&.first
-    if ( 
+    if (
       org.present? &&
       (new_manager_id = org&.data_manager&.first).present? &&
       (new_manager = User.find_by_user_key(new_manager_id)).present?
@@ -503,7 +528,7 @@ class Media < Morphosource::Works::Base
         create_new_organization_transfer_request(new_manager)
       end
 
-      
+
     else
       message = "Failed to transfer management of media #{id} to organization #{org&.id} with data manager #{org&.data_manager}"
 
@@ -526,12 +551,21 @@ class Media < Morphosource::Works::Base
     # Create new proxy deposit request from user with ownership to organization
     message = I18n.t('morphosource.media.organization_transfer.transfer_message').html_safe
     ProxyDepositRequest.create!(
-      work_id: id, 
-      receiving_user: org_data_manager, 
-      sending_user: User.find_by_user_key(user_with_ownership), 
-      sender_comment: message, 
+      work_id: id,
+      receiving_user: org_data_manager,
+      sending_user: User.find_by_user_key(user_with_ownership),
+      sender_comment: message,
       organization_transfer: true
     )
+  end
+
+  # keeping external file methods for now, but these will be deleted once Simon's remote file changes are incorporated.
+  def external_file?
+    file_sets&.first&.external_file.present?
+  end
+
+  def external_file
+    file_sets&.first&.original_file&.external_file
   end
 
   private

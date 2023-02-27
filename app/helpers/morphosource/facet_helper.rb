@@ -22,5 +22,14 @@ module Morphosource
         "User #{id} Not Found"
       end
     end
+
+    def visibility_label(visibility)
+      case visibility
+      when 'open'
+        "Public"
+      when 'restricted'
+        "Private"
+      end
+    end
   end
 end

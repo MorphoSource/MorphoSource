@@ -26,6 +26,10 @@ module Morphosource
       self.membership_service_class = Morphosource::Collections::CollectionMemberService
     end
 
+    def presenter_class
+      @collection.presenter_class
+    end
+
     def show
       @tab = tab
       presenter
@@ -79,33 +83,25 @@ module Morphosource
       def load_collection
         @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
         @collection ||= @curation_concern
+      end
+
+      def authorize_collection
         authorize! :read, @collection
         rescue CanCan::AccessDenied
           redirect_to root_url, alert: 'You are not authorized to access this collection.'
       end
 
       def redirect_to_collection_type
+        return unless (@_request.fullpath.include?('/collections/') && @collection.present?)
         remove_extra_params
-        if @_request.fullpath.include? '/collections/'
-          if @collection.team?
-            if @_request.fullpath.include? '/biological_specimens'
-              redirect_to team_specimens_path(request.parameters)
-            elsif @_request.fullpath.include? '/cultural_heritage_objects'
-              redirect_to team_chos_path(request.parameters)
-            else
-              redirect_to team_media_path(request.parameters)
-            end
-          elsif @collection.project?
-            if @_request.fullpath.include? '/biological_specimens'
-              redirect_to project_specimens_path(request.parameters)
-            elsif @_request.fullpath.include? '/cultural_heritage_objects'
-              redirect_to project_chos_path(request.parameters)
-            else
-              redirect_to project_media_path(request.parameters)
-            end
-          else
-            return
-          end
+        if @_request.fullpath.include? '/biological_specimens'
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_specimens_path")
+        elsif @_request.fullpath.include? '/cultural_heritage_objects'
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_chos_path")
+        elsif @_request.fullpath.include? '/about'
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_about_path")
+        else
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_media_path")
         end
       end
 

@@ -1,0 +1,39 @@
+<% id = collection_presenter.id %>
+<%# Data attributes referenced by the javascript for submitting nested forms.
+todo: data-colls-hash takes additional time and might not be needed.  Can be removed later
+%>
+<tr id="document_<%= id %>"
+  data-source="my"
+  data-id="<%= id %>"
+  data-colls-hash="<%#= collection_presenter.available_parent_collections(scope: controller) %>"
+  data-post-url="<%#= hyrax.dashboard_create_nest_collection_within_path(id) %>"
+  data-post-delete-url="<%= main_app.destroy_collection_path(id) %>">
+
+  <td>
+      <div class="team-logo">
+        <% if (collection_presenter.thumbnail_path == nil) %>
+          <span class="<%= Hyrax::ModelIcon.css_class_for(Collection) %> collection-icon-small"></span>
+        <% else %>
+          <%= image_tag(collection_presenter.thumbnail_path, class: "file_listing_thumbnail") %>
+        <% end %>
+      </div>
+  </td>
+  <td>
+    <div class="thumbnail-title-wrapper">
+    <%= link_to main_app.send("#{collection_presenter.collection_type.machine_id + '_media_path'}", id) do %>
+      <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>
+      <%= collection_presenter.title_or_label %>
+     <% end %>
+    </div>
+  </td>
+  <td><%= collection_presenter.total_items %></td>
+  <%#= collection_presenter.total_viewable_items %>
+  <td class="date"><%= collection_presenter.modified_date.try(:to_formatted_s, :standard) %> </td>
+  <td><%= collection_presenter.membership(current_user) %></td>
+  <td><%= collection_presenter.permission_badge %></td>
+  <% if (current_user.manager_groups || collection_presenter.edit_groups).present? %>
+    <td><%= render 'collection_action_menu', collection_presenter: collection_presenter %></td>
+  <% else %>
+    <td></td>
+  <% end %>
+</tr>

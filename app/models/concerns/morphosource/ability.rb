@@ -1,8 +1,13 @@
 module Morphosource
   module Ability
     extend ActiveSupport::Concern
+    include Morphosource::Ability::TemporaryLinkAbilities
+    
     included do
       include Hyrax::Ability
+
+      attr_accessor :temporary_media_access_link
+      attr_accessor :temporary_collection_access_link
     end
 
     def proxy_deposit_abilities
@@ -79,6 +84,22 @@ module Morphosource
       rg |= download_groups(id)
       Rails.logger.debug("[CANCAN] read_groups: #{rg.inspect}")
       rg
+    end
+
+    # append a new user group (temporarily)
+    def user_groups_append(group)
+      if !user_groups.include?(group)
+        @user_groups << group
+      end
+      user_groups
+    end
+
+    # append a new user group (temporarily)
+    def user_groups_exclude(group)
+      if user_groups.include?(group)
+        @user_groups.delete(group)
+      end
+      user_groups
     end
 
     private

@@ -16,7 +16,7 @@ module Hyrax
 
       # Need to find a different way to point to the public mesh file URL, or can I use the old one? Should test in console?
       # url = URI::join(request.base_url, '/downloads/', id).to_s;
-      url = Hyrax::Engine.routes.url_helpers.download_path(id, file: 'glb')
+      url = Rails.application.routes.url_helpers.download_path(id, file: 'glb')
       # url = Hyrax.config.iiif_image_url_builder.call(
       #   original_file.id,
       #   request.base_url,

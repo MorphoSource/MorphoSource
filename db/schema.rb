@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_08_152150) do
+ActiveRecord::Schema.define(version: 2023_02_02_214425) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -628,6 +628,26 @@ ActiveRecord::Schema.define(version: 2022_12_08_152150) do
     t.index ["permission_template_id", "name"], name: "index_sipity_workflows_on_permission_template_and_name", unique: true
   end
 
+  create_table "temporary_collection_access_links", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "collection_id", null: false
+    t.string "token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.index ["token"], name: "index_temporary_collection_access_links_on_token", unique: true
+    t.index ["user_id"], name: "index_temporary_collection_access_links_on_user_id"
+  end
+
+  create_table "temporary_media_access_links", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "media_id", null: false
+    t.string "token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.index ["token"], name: "index_temporary_media_access_links_on_token", unique: true
+    t.index ["user_id"], name: "index_temporary_media_access_links_on_user_id"
+  end
+
   create_table "tinymce_assets", force: :cascade do |t|
     t.string "file"
     t.datetime "created_at", null: false
@@ -749,4 +769,6 @@ ActiveRecord::Schema.define(version: 2022_12_08_152150) do
   add_foreign_key "fund_code_memberships", "fund_codes"
   add_foreign_key "fund_code_memberships", "users"
   add_foreign_key "fund_codes", "users"
+  add_foreign_key "temporary_collection_access_links", "users"
+  add_foreign_key "temporary_media_access_links", "users"
 end

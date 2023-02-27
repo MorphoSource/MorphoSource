@@ -1,0 +1,17 @@
+en:
+  morphosource:
+    dashboard:
+      collections:
+        media_list:
+          new:
+            header: 'New Media List'
+          action:
+            edit: 'Edit List'
+            delete: 'Delete List'
+            new: 'New List'
+            view: 'View List'
+            collection_update_success: ' was successfully updated.'
+          members:
+            roles:
+              contributor: 'manager'
+              non-contributor: 'viewer'

@@ -4,8 +4,14 @@ require 'rails_helper'
 RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
   let(:team_depositor)       { User.create(email: 'teamdepositor@email.com', password: 'password') }
   let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team') }
-  let(:team)                 { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: team_depositor.ms_id) }
+  let(:team)                 { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: team_depositor.ms_id, visibility: 'open') }
   let(:user)                 { User.create(email: 'email@email.com', password: 'password') }
+  let(:project_collection_type)                 { Hyrax::CollectionType.create(title: 'Project') }
+  let(:project)                                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: team_depositor.ms_id, visibility: 'open') }
+  let(:media_list_collection_type)              { Hyrax::CollectionType.create(title: 'Media List') }
+  let(:media_list)                              { MediaList.create(title: ['media list'], visibility: 'open', collection_type_gid: media_list_collection_type.gid, depositor: team_depositor.ms_id) }
+  let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'Sequential Section List') }
+  let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential section list'], visibility: 'open', collection_type_gid: sequential_section_list_collection_type.gid, depositor: team_depositor.ms_id) }
 
   let(:controller)           { Morphosource::Collections::TeamsController }
   subject { controller.new }
@@ -167,6 +173,59 @@ RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
         expect(ids('view')).to match_array([public_media.id, group_read_access_media.id, individual_read_access_media.id])
         # user is not able to see private media they have not been granted access to
         expect(ids('view')).not_to include([private_media.id, org_media.id])
+      end
+    end
+  end
+
+  describe 'redirect_to_collection_type', type: :request do
+    context 'request includes /collections/' do
+      context 'collection is a team' do
+        it 'redirects to the teams path' do
+          get "/collections/#{team.id}"
+          expect(response).to redirect_to(main_app.team_media_path(team.id))
+          get "/collections/#{team.id}/biological_specimens"
+          expect(response).to redirect_to(main_app.team_specimens_path(team.id))
+          get "/collections/#{team.id}/cultural_heritage_objects"
+          expect(response).to redirect_to(main_app.team_chos_path(team.id))
+          get "/collections/#{team.id}/about"
+          expect(response).to redirect_to(main_app.team_about_path(team.id))
+        end
+      end
+      context 'collection is a project' do
+        it 'redirects to the projects path' do
+          get "/collections/#{project.id}"
+          expect(response).to redirect_to(main_app.project_media_path(project.id))
+          get "/collections/#{project.id}/biological_specimens"
+          expect(response).to redirect_to(main_app.project_specimens_path(project.id))
+          get "/collections/#{project.id}/cultural_heritage_objects"
+          expect(response).to redirect_to(main_app.project_chos_path(project.id))
+          get "/collections/#{project.id}/about"
+          expect(response).to redirect_to(main_app.project_about_path(project.id))
+        end
+      end
+      context 'collection is a media list' do
+        it 'redirects to the media_list path' do
+          get "/collections/#{media_list.id}"
+          expect(response).to redirect_to(main_app.media_list_media_path(media_list.id))
+          get "/collections/#{media_list.id}/biological_specimens"
+          expect(response).to redirect_to(main_app.media_list_specimens_path(media_list.id))
+          get "/collections/#{media_list.id}/cultural_heritage_objects"
+          expect(response).to redirect_to(main_app.media_list_chos_path(media_list.id))
+          get "/collections/#{media_list.id}/about"
+          expect(response).to redirect_to(main_app.media_list_about_path(media_list.id))
+        end
+      end
+      context 'collection is a sequential section list' do
+        it 'redirects to the sequential_section_list path' do
+          get "/collections/#{sequential_section_list.id}"
+          expect(response).to redirect_to(main_app.sequential_section_list_media_path(sequential_section_list.id))
+          get "/collections/#{sequential_section_list.id}/biological_specimens"
+          expect(response).to redirect_to(main_app.sequential_section_list_specimens_path(sequential_section_list.id))
+          get "/collections/#{sequential_section_list.id}/cultural_heritage_objects"
+          expect(response).to redirect_to(main_app.sequential_section_list_chos_path(sequential_section_list.id))
+          get "/collections/#{sequential_section_list.id}/about"
+          expect(response).to redirect_to(main_app.sequential_section_list_about_path(sequential_section_list.id))
+        end
       end
     end
   end

@@ -87,4 +87,17 @@ RSpec.describe Morphosource::My::CulturalHeritageObjectsController, type: :contr
       expect(controller.send(:search_action_url, [])).to eq("/dashboard/my/cultural_heritage_objects?locale=en")
     end
   end
+
+  # helpers/morphosource/my/works_helper
+  describe '#search_action_for_dashboard' do
+    let(:main_app)    { Rails.application.routes.url_helpers }
+    let(:params)      { { controller: controller.controller_path } }
+    subject           { controller.view_context }
+
+    before do
+      allow(subject).to receive(:params).and_return(params)
+    end
+
+    it { expect(subject.search_action_for_dashboard).to eq(main_app.my_cultural_heritage_objects_path(locale: 'en')) }
+  end
 end

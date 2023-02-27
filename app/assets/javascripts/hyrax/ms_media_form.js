@@ -15,6 +15,9 @@ document.addEventListener("share-tab-loaded", function(event) {
 });
 
 $( document ).ready(function() {
+  if ($('form[id*="edit_media_list"]').length) { return }
+  if ($('form[id*="new_media_list"]').length) { return }
+
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) { // if media form page (add/edit)
 
@@ -621,21 +624,68 @@ function prepareFieldsBeforeSubmit() {
 
 }
 
-var noFileCheck = function() {
-  if ($('.attribute-filename').length > 0) {
-    // there is existing file associated with media
-    return true;
-  } else if (justUploaded > 0) {
-    // file just uploaded waiting to be save
-    return true;
-  } else {
-    return confirm('The media currently has no file associated.  Please click OK if you want to proceed.')
+var remoteFileCheckAndSubmit = function(view) {
+  try {
+    var url = (new URL($('#media_remote_origin_url').val()));
+    var extension = url.pathname.substring(url.pathname.lastIndexOf('.'));
+  } catch (e) {
+    $.alert('The Remote Origin URL is not valid.');
+    return;
   }
+  disablePage();
+  console.log("remote file check... ");
+  $.ajax({
+    url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url),
+    type: 'POST',
+    dataType: 'json',
+    complete: function (xhr, status) {
+      var results = $.parseJSON(xhr.responseText);
+      console.log("remote file check results: ", results);
+      if (results.status == "success") {
+        if (results.resp_file_ext != "") {
+          // Check if the file extension evaluated from headers content type an accepted format
+         var acceptedFormats = $('#media_accepted_formats').val().split(', ');
+         if ($.inArray(results.resp_file_ext, acceptedFormats) == -1) {
+            // todo: might change this to a warning and allow submitting media?
+            $.alert('The file format (' + results.resp_file_ext + ') returned by the Remote Origin URL is not an accepted format.');
+            console.log("acceptedFormats: " + acceptedFormats);
+            enablePage();
+          } else {
+            view.submitMedia();
+          }
+        } else {
+          view.submitMedia();        
+        }
+      } else if (results.status == "error") {
+        $.alert('There is problem with the Remote Origin URL: ' + results.message);
+        enablePage();
+      } else {
+        $.alert('There is problem with the Remote Origin URL.  Please try again later or contact MorphoSource team.');
+        enablePage();
+      }
+    }
+  });
+}
+
+var noFileCheck = function() {
+  if (fileOrigin == "local") {
+    if ($('.attribute-filename').length > 0) {
+      // there is existing file associated with media
+      return true;
+    } else if (justUploaded > 0) {
+      // file just uploaded waiting to be save
+      return true;
+    }  
+  } else if (fileOrigin == "remote") {
+    return true;
+  } 
+
+  return confirm('The media currently has no file associated.  Please click OK if you want to proceed.')
 }
 
 var hasRequiredFields = function() {
   // only require fields for media with files attached
-  if ($('.attribute-filename').length == 0 && justUploaded == 0) {
+  if (fileOrigin == 'local' && $('.attribute-filename').length == 0 && justUploaded == 0) {
     return true;
   }
 
@@ -665,7 +715,7 @@ var hasRequiredFields = function() {
         missing_fields.push('Pixel Spacing Units');
       }
       let field = (missing_fields.length > 1) ? "fields" : "field";
-      alert(`Please add required ${field}: ${missing_fields.join(', ')}.`);
+      $.alert(`Please add required ${field}: ${missing_fields.join(', ')}.`);
       return false;
     }
   }

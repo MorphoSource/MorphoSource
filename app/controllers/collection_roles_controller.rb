@@ -8,6 +8,8 @@ class CollectionRolesController < ApplicationController
 
   before_action { collection_role_values(params[:collection_roles]) }
 
+  delegate :presenter_class, to: :@collection
+
   def update_collection_groups
     return unless can? :edit, collection
 
@@ -98,7 +100,7 @@ class CollectionRolesController < ApplicationController
   end
 
   def reload_collection_share
-    redirect_to collection_members_path(collection)
+    redirect_to members_tab_url(collection)
   end
 
   def update_user_access
@@ -210,8 +212,11 @@ class CollectionRolesController < ApplicationController
     when 'fail'
       flash[:error] = translate('hyrax.dashboard.collections.form.permission_update_errors')
     when 'user_status'
+      user = 'user'.pluralize(@non_contributors.count)
       emails = @non_contributors.join(', ')
-      flash[:error] = "#{'User'.pluralize(@non_contributors.count)} (#{emails}) can't be added to the roles manager, editor, or depositor because they do not have contributor status. Either add the #{'user'.pluralize(@non_contributors.count)} to a membership role that does not require contributor status (downloader, viewer), or have the #{'user'.pluralize(@non_contributors.count)} request contributor status."
+      access = params[:collection_roles][:access]
+      roles = t("morphosource.dashboard.collections.#{@collection.collection_type.machine_id}.members.roles.non-contributor")
+      flash[:error] = translate('morphosource.dashboard.collections.form.non_contributor_errors', user: user, emails: emails, access: access, roles: roles)
     when 'duplicate'
       flash[:error] = "#{@user.name} is already a member of #{@collection.title.first}"
     end

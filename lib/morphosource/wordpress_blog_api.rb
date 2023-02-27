@@ -38,9 +38,11 @@ module Morphosource
     end
 
     def self.api_request
-      RestClient.get(
-        API_URL + POSTS_ENDPOINT,
-        { params: { per_page: 3 } }
+      RestClient::Request.execute(
+        method: :get, 
+        url: API_URL + POSTS_ENDPOINT,
+        headers: { params: { per_page: 3 } },
+        timeout: 15
       )
     end
   end

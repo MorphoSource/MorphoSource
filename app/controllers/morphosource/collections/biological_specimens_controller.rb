@@ -32,11 +32,8 @@ module Morphosource
         # link for facet filters
         def search_action_url(*args)
           args&.first&.delete("collection_id")
-          if @collection.project?
-            main_app.project_specimens_path(@curation_concern, *args)
-          elsif @collection.team?
-            main_app.team_specimens_path(@curation_concern, *args)
-          end
+          collection_type = @collection.collection_type.machine_id
+          main_app.send("#{collection_type}_specimens_path", @collection, *args)
         end
 
         # The url of the "more" link for additional facet values
@@ -44,11 +41,8 @@ module Morphosource
           # args id is the solr facet
           # params id is the collection id
           args.merge!(request.params)
-          if @collection.project?
-            main_app.project_specimens_facet_path(@collection.id, args)
-          elsif @collection.team?
-            main_app.team_specimens_facet_path(@collection.id, args)
-          end
+          collection_type = @collection.collection_type.machine_id
+          main_app.send("#{collection_type}_specimens_facet_path", @collection.id, args)
         end
 
         def tab

@@ -920,6 +920,10 @@ html {
     }
 
     .label {
+      vertical-align: text-top;
+      @media (min-width: 1200px) {
+        vertical-align: baseline;
+      }  
       color: $font-color;
       border: 1px solid $font-color;
       border-radius: .75em;

@@ -39,10 +39,9 @@ module Morphosource
       # Replace those indices of collection_media_ids with current_page_media_ids
       def sub_current_page_id_order(collection_ids, page_ids)
         index_range = current_page_media_indices
-        x = 0
-        index_range.each do |i|
-          collection_ids[i] = page_ids[x]
-          x += 1
+        index_range.each_with_index do |i,index|
+          collection_ids[i] = page_ids[index]
+          index += 1
         end
         [collection_ids.compact.join(",")]
       end

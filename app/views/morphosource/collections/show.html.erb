@@ -1,4 +1,4 @@
-<% content_for :body_css_classes do %><%= controller.body_css_classes %><% end %>
+<% content_for :body_css_classes do %><%= "showcase teams media-list#{' edit' if @can_edit}" %><% end %>
 <div id="collection-id" style="display: none;"><%= @presenter.id %></div>
 
 <%

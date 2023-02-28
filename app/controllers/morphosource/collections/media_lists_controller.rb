@@ -25,6 +25,11 @@ module Morphosource
         end
       end
 
+      def show
+        @can_edit = current_ability.can? :edit, @collection
+        super
+      end
+
       def query_solr
         if @collection.ordered_media.present?
           response = search_results(params)[0]

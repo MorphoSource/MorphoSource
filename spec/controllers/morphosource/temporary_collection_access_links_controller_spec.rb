@@ -23,7 +23,7 @@ RSpec.describe Morphosource::Admin::TemporaryCollectionAccessLinksController, :t
         project.managers_group.users << manager_user
         project.managers_group.save
         project.save
-        allow(controller).to receive(:current_user) { manager_user }
+        sign_in manager_user
       end
 
       it 'temporary access link is created and page is redirected' do

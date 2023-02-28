@@ -25,7 +25,7 @@
           <th class="remove-column">&nbsp;</th>
         </tr>
         </thead>
-        <% if current_ability.can? :edit, @collection %>
+        <% if @can_edit %>
           <tbody id="sortable-media-list" data-url=<%= order_media_path(@collection) %> data-sort=<%= order_media_sort(params["sort"]) %> data-page=<%= order_media_page(params["page"]) %> data-per-page=<%= order_media_per_page(params["per_page"]) %> >
               <%= render partial: 'edit_document_list_row', collection: @document_list, as: :document, locals: { collection_type: @collection.collection_type.title.downcase, member_ids: Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}").map{|d| d["id"]} } %>
           </tbody>

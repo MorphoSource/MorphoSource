@@ -15,6 +15,7 @@ module Morphosource
 
       self.presenter_class = Morphosource::Collections::MediaListPresenter
 
+<<<<<<< HEAD
       self.collection_type = collection_type
 
       def body_css_classes
@@ -30,6 +31,8 @@ module Morphosource
         super
       end
 
+=======
+>>>>>>> 749dff91 (use saved abilities)
       def query_solr
         if @collection.ordered_media.present?
           response = search_results(params)[0]

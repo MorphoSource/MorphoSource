@@ -15,24 +15,8 @@ module Morphosource
 
       self.presenter_class = Morphosource::Collections::MediaListPresenter
 
-<<<<<<< HEAD
       self.collection_type = collection_type
 
-      def body_css_classes
-        if current_ability.can? :edit, @collection
-          "showcase teams media-list edit"
-        else
-          "showcase teams media-list"
-        end
-      end
-
-      def show
-        @can_edit = current_ability.can? :edit, @collection
-        super
-      end
-
-=======
->>>>>>> 749dff91 (use saved abilities)
       def query_solr
         if @collection.ordered_media.present?
           response = search_results(params)[0]
@@ -43,7 +27,6 @@ module Morphosource
           (response, document_list) = search_results(params)
         end
       end
-
 
       private
 

@@ -3,8 +3,9 @@ require 'spec_helper'
 
 RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
 
+  let(:user)                    { User.create(email: 'user@email.com', password: 'password')}
   let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-  let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
+  let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
 
   describe "search_builder_class" do
     it { expect(subject.search_builder_class).to eq(Morphosource::Collections::MediaSearchBuilder) }
@@ -25,6 +26,8 @@ RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
     context 'team is linked to an organization' do
       let!(:organization)  { Organization.create(title: ['Linked Organization'], team_id: [team.id]) }
       before do
+        team.create_collection_groups
+        Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
         subject.instance_variable_set(:@collection, team)
         allow(subject).to receive(:load_collection).and_return(true)
         allow(subject).to receive(:authorize_collection).and_return(true)

@@ -18,10 +18,12 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
   before do
     team.create_collection_groups
     project.create_collection_groups
+    Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
+    Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
   end
 
   describe "search_builder_class" do
-    it { expect(subject.search_builder_class).to eq(        Morphosource::Collections::MediaSearchBuilder) }
+    it { expect(subject.search_builder_class).to eq(Morphosource::Collections::MediaSearchBuilder) }
   end
 
   describe ".configure_facets" do

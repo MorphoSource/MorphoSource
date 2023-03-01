@@ -23,6 +23,16 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
   describe "PUT #request_item" do
     context "user requests one item" do
+      context 'item ids are blank' do
+        before do
+          request.env["HTTP_REFERER"] = "original_page"
+          put :request_item, params: { item_id: '', intended_use: ["Intended Use"] }
+        end
+        it "adds a flash error message and reloads the page" do
+          expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.alert'))
+          expect(response).to redirect_to("original_page")
+        end
+      end
       context 'the item has not been requested before' do
         before do
           request.env["HTTP_REFERER"] = "original_page"
@@ -126,6 +136,16 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
     end
 
     context "user requests multiple items" do
+      context 'item ids are blank' do
+        before do
+          request.env["HTTP_REFERER"] = "original_page"
+          put :request_item, params: { batch_document_ids: [], intended_use: ["Intended Use"] }
+        end
+        it "adds a flash error message and reloads the page" do
+          expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.alert'))
+          expect(response).to redirect_to("original_page")
+        end
+      end
       context 'none of the items has been requested before' do
         before do
           request.env["HTTP_REFERER"] = "original_page"
@@ -216,91 +236,117 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
   describe "GET #request_again" do
 
     context "user requests one item again" do
-      before do
-        cartItem1.date_expired = Date.yesterday
-        cartItem1.save
-        request.env["HTTP_REFERER"] = "original_page"
-        get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"] }
+
+      context 'item ids are blank' do
+        before do
+          request.env["HTTP_REFERER"] = "original_page"
+          put :request_again, params: { item_id: '', intended_use: ["Intended Use"] }
+        end
+        it "adds a flash error message and reloads the page" do
+          expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.alert'))
+          expect(response).to redirect_to("original_page")
+        end
       end
 
-      it "removes the item from the cart" do
-        cartItem1.reload
-        expect(cartItem1.in_cart).to be(false)
-      end
+      context 'item ids are valid' do
+        before do
+          cartItem1.date_expired = Date.yesterday
+          cartItem1.save
+          request.env["HTTP_REFERER"] = "original_page"
+          get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"] }
+        end
 
-      it 'creates a new cart item' do
-        expect{
-          process :request_again, method: :get, params: { item_id: cartItem1.id, intended_use: ["Intended Use"] }
-        }.to change{CartItem.count}.by(1)
-      end
+        it "removes the item from the cart" do
+          cartItem1.reload
+          expect(cartItem1.in_cart).to be(false)
+        end
 
-      it 'assigns the correct attribute values to the new cart item' do
-        item = CartItem.last
-        work = Media.find(cartItem1.work_id)
-        expect(item.user_id).to eq(current_user.ms_id)
-        expect(item.work_id).to eq(work.id)
-        expect(item.in_cart).to be(true)
-        expect(item.date_requested.to_date).to eq(Date.today)
-        expect(item.restricted?).to be(work.restricted?)
-        expect(item.date_cleared).to be(nil)
-        expect(item.use).to eq("Intended Use")
-      end
+        it 'creates a new cart item' do
+          expect{
+            process :request_again, method: :get, params: { item_id: cartItem1.id, intended_use: ["Intended Use"] }
+          }.to change{CartItem.count}.by(1)
+        end
 
-      it "reloads the page" do
-        expect(response).to redirect_to("original_page")
+        it 'assigns the correct attribute values to the new cart item' do
+          item = CartItem.last
+          work = Media.find(cartItem1.work_id)
+          expect(item.user_id).to eq(current_user.ms_id)
+          expect(item.work_id).to eq(work.id)
+          expect(item.in_cart).to be(true)
+          expect(item.date_requested.to_date).to eq(Date.today)
+          expect(item.restricted?).to be(work.restricted?)
+          expect(item.date_cleared).to be(nil)
+          expect(item.use).to eq("Intended Use")
+        end
+
+        it "reloads the page" do
+          expect(response).to redirect_to("original_page")
+        end
       end
     end
 
     context "user requests multiple items again" do
-      before do
-        cartItem1.date_expired = Date.yesterday
-        cartItem1.save
-        cartItem5.date_denied = Date.yesterday
-        cartItem5.save
-        request.env["HTTP_REFERER"] = "original_page"
+      context 'item ids are blank' do
+        before do
+          request.env["HTTP_REFERER"] = "original_page"
+          put :request_again, params: { batch_document_ids: [], intended_use: ["Intended Use"] }
+        end
+        it "adds a flash error message and reloads the page" do
+          expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.alert'))
+          expect(response).to redirect_to("original_page")
+        end
       end
+      context 'item ids are valid' do
+        before do
+          cartItem1.date_expired = Date.yesterday
+          cartItem1.save
+          cartItem5.date_denied = Date.yesterday
+          cartItem5.save
+          request.env["HTTP_REFERER"] = "original_page"
+        end
 
-      it "removes any items in the cart" do
-        get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
-        [cartItem1,cartItem5].each(&:reload)
-        expect(cartItem1.in_cart).to be(false)
-        expect(cartItem5.in_cart).to be(false)
-      end
+        it "removes any items in the cart" do
+          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+          [cartItem1,cartItem5].each(&:reload)
+          expect(cartItem1.in_cart).to be(false)
+          expect(cartItem5.in_cart).to be(false)
+        end
 
-      it 'creates new cart items' do
-        expect{
-          process :request_again, method: :get, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
-        }.to change{CartItem.count}.by(2)
-      end
+        it 'creates new cart items' do
+          expect{
+            process :request_again, method: :get, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+          }.to change{CartItem.count}.by(2)
+        end
 
-      it 'assigns the correct attribute values to the new cart items' do
-        get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
-        items = CartItem.limit(2).order('id desc')
-        item1 = items[0]
-        work1 = Media.find(item1.work_id)
-        item2 = items[1]
-        work2 = Media.find(item2.work_id)
+        it 'assigns the correct attribute values to the new cart items' do
+          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+          items = CartItem.limit(2).order('id desc')
+          item1 = items[0]
+          work1 = Media.find(item1.work_id)
+          item2 = items[1]
+          work2 = Media.find(item2.work_id)
 
-        expect(item1.user_id).to eq(current_user.ms_id)
-        expect(item1.work_id).to eq(work1.id)
-        expect(item1.in_cart).to be(true)
-        expect(item1.date_requested.to_date).to eq(Date.today)
-        expect(item1.restricted?).to be(work1.restricted?)
-        expect(item1.date_cleared).to be(nil)
-        expect(item1.use).to eq("Intended Use")
+          expect(item1.user_id).to eq(current_user.ms_id)
+          expect(item1.work_id).to eq(work1.id)
+          expect(item1.in_cart).to be(true)
+          expect(item1.date_requested.to_date).to eq(Date.today)
+          expect(item1.restricted?).to be(work1.restricted?)
+          expect(item1.date_cleared).to be(nil)
+          expect(item1.use).to eq("Intended Use")
 
-        expect(item2.user_id).to eq(current_user.ms_id)
-        expect(item2.work_id).to eq(work2.id)
-        expect(item2.in_cart).to be(true)
-        expect(item2.date_requested.to_date).to eq(Date.today)
-        expect(item2.restricted?).to be(work2.restricted?)
-        expect(item2.date_cleared).to be(nil)
-        expect(item2.use).to eq("Intended Use")
-      end
+          expect(item2.user_id).to eq(current_user.ms_id)
+          expect(item2.work_id).to eq(work2.id)
+          expect(item2.in_cart).to be(true)
+          expect(item2.date_requested.to_date).to eq(Date.today)
+          expect(item2.restricted?).to be(work2.restricted?)
+          expect(item2.date_cleared).to be(nil)
+          expect(item2.use).to eq("Intended Use")
+        end
 
-      it "reloads the page" do
-        get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
-        expect(response).to redirect_to("original_page")
+        it "reloads the page" do
+          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+          expect(response).to redirect_to("original_page")
+        end
       end
     end
   end

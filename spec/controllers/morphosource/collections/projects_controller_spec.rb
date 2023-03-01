@@ -12,6 +12,7 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
 
   before do
     project.create_collection_groups
+    Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
   end
 
   describe "search_builder_class" do
@@ -66,37 +67,36 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
       let(:main_app) { Rails.application.routes.url_helpers }
 
       describe 'via URL' do
-        let(:temporary_link) { create(:temporary_collection_access_link, user: user, collection_id: project.id )} 
+        let(:temporary_link) { create(:temporary_collection_access_link, user: user, collection_id: project.id )}
 
-        context 'user is not logged in but has a temporary access URL' do 
+        context 'user is not logged in but has a temporary access URL' do
           it 'user is authorized with temp link flash msg' do
             get :show, params: { id: project.id, token: temporary_link.token }
             expect(response.status).to eq(200)
             expect(response.flash[:notice]).to eq(I18n.t('morphosource.collections.view.temporary_access', collection_type: project))
           end
         end
-  
+
         context 'user is logged in, has temporary access URL, but already has access to project' do
           before do
             sign_in user
-            Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
             project.editors_group.users << user
             project.editors_group.save
             project.save
           end
-  
+
           it 'user is authorized with temp link flash msg' do
             get :show, params: { id: project.id, token: temporary_link.token }
             expect(response.status).to eq(200)
             expect(response.flash[:notice]).to eq(I18n.t('morphosource.collections.view.temporary_access', collection_type: project))
           end
         end
-  
+
         context 'user is logged in, has temporary access URL, and does not have access to media' do
           before do
             sign_in user
           end
-  
+
           it 'user is authorized with temp link flash msg' do
             get :show, params: { id: project.id, token: temporary_link.token }
             expect(response.status).to eq(200)
@@ -116,59 +116,58 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
       end
 
       describe 'via cookie' do
-        let(:temporary_link) { create(:temporary_collection_access_link, user: user, collection_id: project.id )} 
+        let(:temporary_link) { create(:temporary_collection_access_link, user: user, collection_id: project.id )}
         let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
         let(:main_app) { Rails.application.routes.url_helpers }
-  
+
         before do
           allow(subject).to receive(:cookies).and_return(cookie_jar)
         end
-  
+
         context 'user is not logged in but has a temporary access cookie' do
           it 'user is authorized with temp link flash msg' do
-            cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
-              value: temporary_link.token, 
+            cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = {
+              value: temporary_link.token,
               expires: temporary_link.expires_at
             }
-  
+
             get :show, params: { id: project.id }
             expect(response.status).to eq(200)
             expect(response.flash[:notice]).to eq(I18n.t('morphosource.collections.view.temporary_access', collection_type: project))
           end
         end
-  
+
         context 'user is logged in, has temporary access cookie, but already has access to project' do
           before do
             sign_in user
-            Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
             project.editors_group.users << user
             project.editors_group.save
             project.save
           end
-  
+
           it 'user is authorized without temp link flash msg' do
-            cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
-              value: temporary_link.token, 
+            cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = {
+              value: temporary_link.token,
               expires: temporary_link.expires_at
             }
-  
+
             get :show, params: { id: project.id }
             expect(response.status).to eq(200)
             expect(response.flash[:notice]).to eq(nil)
           end
         end
-  
+
         context 'user is logged in, has temporary access cookie, and does not have access to project' do
           before do
             sign_in user
           end
-  
+
           it 'user is authorized with temp link flash msg' do
-            cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
-              value: temporary_link.token, 
+            cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = {
+              value: temporary_link.token,
               expires: temporary_link.expires_at
             }
-  
+
             get :show, params: { id: project.id }
             expect(response.status).to eq(200)
             expect(response.flash[:notice]).to eq(I18n.t('morphosource.collections.view.temporary_access', collection_type: project))
@@ -179,11 +178,11 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
           let(:expired_temporary_link) { create(:temporary_collection_access_link, user: user, collection_id: project.id, expires_at: Time.now - 1.month )}
 
           it 'user is redirected to sign-in page without authorization' do
-            cookie_jar.encrypted["ta_#{expired_temporary_link.collection_id}"] = { 
-              value: expired_temporary_link.token, 
+            cookie_jar.encrypted["ta_#{expired_temporary_link.collection_id}"] = {
+              value: expired_temporary_link.token,
               expires: expired_temporary_link.expires_at
             }
-  
+
             get :show, params: { id: project.id }
             expect(response.status).to eq(302)
             expect(response).to redirect_to main_app.root_path(locale: 'en')

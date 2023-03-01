@@ -26,7 +26,7 @@ module Morphosource
           # use the default collection type (provides backward compatibility with versions < Hyrax 2.1.0)
           @collection.collection_type_gid = params[:collection_type_gid].presence || default_collection_type.gid
           @collection.attributes = collection_params.except(:members, :parent_id, :collection_type_gid)
-          @collection.apply_depositor_metadata(current_user.user_key)
+          @collection.depositor = current_user.user_key
           add_members_to_collection unless batch.empty?
           @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
           if @collection.save

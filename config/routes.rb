@@ -64,8 +64,8 @@ Rails.application.routes.draw do
         resources :media, path: "media/:collection_id", only: [:index], controller: 'add_media', as: 'add_media'
         resources :specimens, only: [:index], controller: 'biological_specimens'
         resources :cultural_heritage_objects, only: [:index], controller: 'cultural_heritage_objects'
-        resources :media_lists, only: [:index], controller: 'collections/media_lists'
-        resources :sequential_section_lists, only: [:index], controller: 'collections/media_lists/sequential_section_lists'
+        resources :media_lists, only: [:index, :create], controller: 'collections/media_lists'
+        resources :sequential_section_lists, only: [:index, :create], controller: 'collections/media_lists/sequential_section_lists'
 
         get '/media/facet/:id', to: 'media#facet', as: 'dashboard_media_facet'
         get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
@@ -104,7 +104,7 @@ Rails.application.routes.draw do
       get 'projects/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'project_specimens_facet'
       get 'projects/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'project_chos_facet'
       get 'projects/:id/temporary_link/:token', to: 'projects#show', as: 'project_show_temporary_link'
-      
+
       # csv exports
       get 'projects/:id/media_export', to: 'projects#media_export_with_intersections_facet', as: 'project_media_export'
       get 'projects/:id/media_download_counts', to: 'projects#media_download_counts_with_intersections_facet', as: 'project_media_download_counts'
@@ -144,6 +144,7 @@ Rails.application.routes.draw do
       get 'media_lists/:collection_id/facet/:id', to: 'media_lists#facet', as: 'media_list_media_facet'
       get 'media_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'media_list_specimens_facet'
       get 'media_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
+      get 'media_lists/:id/order_media', to: 'media_lists#order_media', as: 'media_list_order_media'
 
       # csv exports
       get 'media_lists/:id/media_export', to: 'media_lists#media_export_with_intersections_facet', as: 'media_list_media_export'
@@ -160,6 +161,9 @@ Rails.application.routes.draw do
         # csv exports
         get 'sequential_section_lists/:id/media_export', to: 'sequential_section_lists#media_export_with_intersections_facet', as: 'sequential_section_list_media_export'
         get 'sequential_section_lists/:id/media_download_counts', to: 'sequential_section_lists#media_download_counts_with_intersections_facet', as: 'sequential_section_list_media_download_counts'
+
+        # order media
+        get 'sequential_section_lists/:id/order_media', to: 'sequential_section_lists#order_media', as: 'sequential_section_list_order_media'
       end
       get 'sequential_section_lists/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'sequential_section_list_specimens_export'
       get 'sequential_section_lists/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'sequential_section_list_chos_export'
@@ -628,3 +632,5 @@ Rails.application.routes.draw do
 
   delete '/media_batch_edits', to: 'morphosource/batch_edits#destroy_collection', as: 'media_batch_edits'
 end
+
+

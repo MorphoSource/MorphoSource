@@ -51,17 +51,14 @@ module Morphosource
           end
 
           def collection_params
-            col_params = params.dig(:collection) || params.dig(:media_list)
-            form_class.model_attributes(col_params)
+            form_class.model_attributes(params[:media_list])
           end
 
           def member_params
-            params.dig(:collection,:members) ||
             params.dig(:media_list,:members)
           end
 
           def thumbnail_params
-            params.dig(:collection,:representative_id) ||
             params.dig(:media_list, :representative_id)
           end
 

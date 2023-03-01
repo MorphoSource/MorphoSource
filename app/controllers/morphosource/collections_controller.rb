@@ -5,6 +5,8 @@ module Morphosource
     include Morphosource::Facets::Collections
     include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
 
+    helper_method :remove_constraint_url, :body_css_classes
+
     with_themed_layout 'morphosource_1_column'
 
     skip_load_and_authorize_resource only: [
@@ -61,6 +63,10 @@ module Morphosource
 
     def media_download_counts_with_intersections_facet
       media_download_counts
+    end
+
+    def body_css_classes
+      "showcase teams"
     end
 
     private

@@ -32,6 +32,9 @@ module Morphosource
 
     def show
       @tab = tab
+      # save abilities so we won't have to check multiple times in views.
+      @can_edit = current_ability.can? :edit, @collection
+      @can_deposit = current_ability.can? :deposit, @collection
       presenter
       (@media_count, @object_ids) = collection_media
       (@response, @document_list) = query_solr

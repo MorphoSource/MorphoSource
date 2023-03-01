@@ -106,6 +106,11 @@ RSpec.describe 'collections routing', type: :routing do
     expect(:get => "/media_lists/#{collection_id}/cultural_heritage_objects/facet/#{id}").to route_to(route)
   end
 
+  it 'has a media lists order media route' do
+    route = { controller: 'morphosource/collections/media_lists', action: 'order_media', id: id }
+    expect(:get => "/media_lists/#{id}/order_media").to route_to(route)
+  end
+
 
   # sequential_section_lists
   it 'has a sequential section lists route' do
@@ -141,6 +146,11 @@ RSpec.describe 'collections routing', type: :routing do
   it 'has a sequential section lists chos faceting route' do
     route = { controller: 'morphosource/collections/cultural_heritage_objects', action: 'facet', id: id, collection_id: collection_id }
     expect(:get => "/sequential_section_lists/#{collection_id}/cultural_heritage_objects/facet/#{id}").to route_to(route)
+  end
+
+  it 'has a sequential section lists order media route' do
+    route = { controller: 'morphosource/collections/media_lists/sequential_section_lists', action: 'order_media', id: id }
+    expect(:get => "/sequential_section_lists/#{id}/order_media").to route_to(route)
   end
 end
 

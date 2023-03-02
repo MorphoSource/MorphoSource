@@ -8,7 +8,7 @@
         <p><%= t('morphosource.collections.view.temporary_access', collection_type: @presenter.collection_type_title.downcase) %></p>
         <div class="row" style="margin-left: unset; padding-left: 10px;">
           <span style="margin-right: 10px;"><b>Create Temporary Link Valid Until: </b></span>
-          <%= f.date_field :temporary_link_expires_at, value: Date.today + 3.months, class: 'datepicker form-control', style: 'width: 150px; display: inline; margin-right: 10px;', max: '9999-12-31' %>
+          <%= f.date_field :temporary_link_expires_at, value: Date.today + 3.months, class: 'datepicker form-control', style: 'width: 150px; display: inline; margin-right: 10px;', max: '9999-12-31', min: Date.today + 1.day %>
           <%= link_to "Generate", main_app.temporary_collection_access_link_create_url(f.object, expires_at: Date.today + 3.months), method: :post, id: 'generate-temporary-collection-access-link', class: 'btn btn-primary' %>
         </div>
       </div>

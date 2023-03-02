@@ -4,8 +4,15 @@ module Morphosource
     load_and_authorize_resource only: :destroy
     
     def create
-      params.require(:collection_id)
-      params.require(:expires_at)
+      if !params[:collection_id].present?
+        flash[:error] = "A project ID must be supplied when generating temporary project access link."
+        redirect_to collection_edit_path(params[:collection_id]) and return
+      end
+
+      if !params[:expires_at].present?
+        flash[:error] = "An expiration date must be supplied when generating temporary project access link."
+        redirect_to collection_edit_path(params[:collection_id]) and return
+      end
 
       authorize! :edit, params[:collection_id]
 

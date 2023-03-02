@@ -27,18 +27,56 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
           allow(Morphosource::DerivativePath).to receive(:derivative_path_for_reference).and_return(fixture_path + '/images/ms.jpg')
         end
   
-        it 'sends requested file content' do
-          get :show, params: { id: public_media.id, file: 'thumbnail' }
-          expect(response).to be_success
-          expect(response.body).to eq content
-          expect(response.headers['Content-Length']).to eq "25806"
-          expect(response.headers['Accept-Ranges']).to eq "bytes"
+        context 'reference via media id' do
+          it 'sends requested file content' do
+            get :show, params: { id: public_media.id, file: 'thumbnail' }
+            expect(response).to be_success
+            expect(response.body).to eq content
+            expect(response.headers['Content-Length']).to eq "25806"
+            expect(response.headers['Accept-Ranges']).to eq "bytes"   
+          end
+
+          it 'does not get anything from Fedora' do
+            expect(ActiveFedora::Base).not_to receive(:find).with(public_media.id)
+            expect(ActiveFedora::Base).not_to receive(:find).with(public_file_set.id)
+            get :show, params: { id: public_media.id, file: 'thumbnail' }
+          end
         end
-  
-        it 'retrieves the thumbnail without contacting Fedora' do
-          expect(ActiveFedora::Base).not_to receive(:find).with(public_media.id)
-          expect(ActiveFedora::Base).not_to receive(:find).with(public_file_set.id)
-          get :show, params: { id: public_media.id, file: 'thumbnail' }
+        
+        context 'reference via file_set id' do
+          it 'sends requested file content' do
+            get :show, params: { id: public_file_set.id, file: 'thumbnail' }
+            expect(response).to be_success
+            expect(response.body).to eq content
+            expect(response.headers['Content-Length']).to eq "25806"
+            expect(response.headers['Accept-Ranges']).to eq "bytes"            
+          end
+
+          it 'does not get anything from Fedora' do
+            expect(ActiveFedora::Base).not_to receive(:find).with(public_media.id)
+            expect(ActiveFedora::Base).not_to receive(:find).with(public_file_set.id)
+            get :show, params: { id: public_file_set.id, file: 'thumbnail' }
+          end
+        end
+        
+        context 'with default thumbnail' do
+          before do
+            allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
+          end
+
+          context 'reference via file_set id' do
+            it 'sends default image with success status code' do
+              get :show, params: { id: public_file_set.id, file: 'thumbnail' }
+              expect(response).to have_http_status(200)
+              expect(response.content_type).to eq 'image/png'
+            end
+
+            it 'does not get anything from Fedora' do
+              expect(ActiveFedora::Base).not_to receive(:find).with(public_media.id)
+              expect(ActiveFedora::Base).not_to receive(:find).with(public_file_set.id)
+              get :show, params: { id: public_file_set.id, file: 'thumbnail' }
+            end
+          end
         end
       end
 
@@ -73,9 +111,9 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
 
         context 'user is not logged in' do
-          it 'sends default image with unauthorized status code' do
+          it 'sends default image with not found status code' do
             get :show, params: { id: private_media.id, file: 'thumbnail' }
-            expect(response).to have_http_status(:unauthorized)
+            expect(response).to have_http_status(404)
             expect(response.content_type).to eq 'image/png'
           end
         end
@@ -89,12 +127,38 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             private_file_set.save
           end
 
-          it 'sends requested file content' do
+          it 'sends requested file content from media id' do
             get :show, params: { id: private_media.id, file: 'thumbnail' }
             expect(response).to be_success
             expect(response.body).to eq content
             expect(response.headers['Content-Length']).to eq "25806"
             expect(response.headers['Accept-Ranges']).to eq "bytes"
+            expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+            expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+          end
+  
+          it 'sends requested file content from file_set id' do
+            get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+            expect(response).to be_success
+            expect(response.body).to eq content
+            expect(response.headers['Content-Length']).to eq "25806"
+            expect(response.headers['Accept-Ranges']).to eq "bytes"
+            expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+            expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+          end
+  
+          context 'with default thumbnail' do
+            before do
+              allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
+            end
+  
+            it 'sends default image with success http code' do
+              get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+              expect(response).to have_http_status(200)
+              expect(response.content_type).to eq 'image/png'
+              expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+              expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+            end
           end
         end
 
@@ -103,9 +167,9 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             sign_in other_user
           end
 
-          it 'sends default image with unauthorized status code' do
+          it 'sends default image with not found status code' do
             get :show, params: { id: private_media.id, file: 'thumbnail' }
-            expect(response).to have_http_status(:unauthorized)
+            expect(response).to have_http_status(404)
             expect(response.content_type).to eq 'image/png'
           end
         end
@@ -120,12 +184,56 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
           end
 
           context 'user is not logged in' do
-            it 'sends requested file content' do
-              get :show, params: { id: private_media.id, file: 'thumbnail' }
-              expect(response).to be_success
-              expect(response.body).to eq content
-              expect(response.headers['Content-Length']).to eq "25806"
-              expect(response.headers['Accept-Ranges']).to eq "bytes"
+            context 'reference via media id' do
+              it 'sends requested file content' do
+                get :show, params: { id: private_media.id, file: 'thumbnail' }
+                expect(response).to be_success
+                expect(response.body).to eq content
+                expect(response.headers['Content-Length']).to eq "25806"
+                expect(response.headers['Accept-Ranges']).to eq "bytes"   
+              end
+
+              it 'gets media from Fedora, not file_set' do
+                expect(ActiveFedora::Base).to receive(:find).with(private_media.id)
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+                get :show, params: { id: private_media.id, file: 'thumbnail' }
+              end
+            end
+            
+            context 'reference via file_set id' do
+              it 'sends requested file content' do
+                get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                expect(response).to be_success
+                expect(response.body).to eq content
+                expect(response.headers['Content-Length']).to eq "25806"
+                expect(response.headers['Accept-Ranges']).to eq "bytes"            
+              end
+
+              it 'gets file_set from Fedora, not media' do
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+                expect(ActiveFedora::Base).to receive(:find).with(private_file_set.id)
+                get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+              end
+            end
+            
+            context 'with default thumbnail' do
+              before do
+                allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
+              end
+    
+              context 'reference via file_set id' do
+                it 'sends default image with not found status code' do
+                  get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                  expect(response).to have_http_status(404)
+                  expect(response.content_type).to eq 'image/png'
+                end
+
+                it 'does not get anything from Fedora' do
+                  expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+                  expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+                  get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                end
+              end
             end
           end
 
@@ -138,27 +246,115 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
               private_file_set.save
             end
 
-            it 'sends requested file content' do
-              get :show, params: { id: private_media.id, file: 'thumbnail' }
-              expect(response).to be_success
-              expect(response.body).to eq content
-              expect(response.headers['Content-Length']).to eq "25806"
-              expect(response.headers['Accept-Ranges']).to eq "bytes"
-            end
-          end
-
-          context 'user is logged in but does not have user-level access' do
-              before do
-                sign_in other_user
-              end
-
+            context 'reference via media id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
                 expect(response).to be_success
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
-                expect(response.headers['Accept-Ranges']).to eq "bytes"
+                expect(response.headers['Accept-Ranges']).to eq "bytes"   
               end
+
+              it 'does not get anything from Fedora' do
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+                get :show, params: { id: private_media.id, file: 'thumbnail' }
+              end
+            end
+            
+            context 'reference via file_set id' do
+              it 'sends requested file content' do
+                get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                expect(response).to be_success
+                expect(response.body).to eq content
+                expect(response.headers['Content-Length']).to eq "25806"
+                expect(response.headers['Accept-Ranges']).to eq "bytes"            
+              end
+
+              it 'does not get anything from Fedora' do
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+                get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+              end
+            end
+            
+            context 'with default thumbnail' do
+              before do
+                allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
+              end
+    
+              context 'reference via file_set id' do
+                it 'sends default image with success status code' do
+                  get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                  expect(response).to have_http_status(200)
+                  expect(response.content_type).to eq 'image/png'
+                end
+
+                it 'does not get anything from Fedora' do
+                  expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+                  expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+                  get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                end
+              end
+            end
+          end
+
+          context 'user is logged in but does not have user-level access' do
+            before do
+              sign_in other_user
+            end
+
+            context 'reference via media id' do
+              it 'sends requested file content' do
+                get :show, params: { id: private_media.id, file: 'thumbnail' }
+                expect(response).to be_success
+                expect(response.body).to eq content
+                expect(response.headers['Content-Length']).to eq "25806"
+                expect(response.headers['Accept-Ranges']).to eq "bytes"   
+              end
+
+              it 'gets media from Fedora, not file_set' do
+                expect(ActiveFedora::Base).to receive(:find).with(private_media.id)
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+                get :show, params: { id: private_media.id, file: 'thumbnail' }
+              end
+            end
+            
+            context 'reference via file_set id' do
+              it 'sends requested file content' do
+                get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                expect(response).to be_success
+                expect(response.body).to eq content
+                expect(response.headers['Content-Length']).to eq "25806"
+                expect(response.headers['Accept-Ranges']).to eq "bytes"            
+              end
+
+              it 'gets file_set from Fedora, not media' do
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+                expect(ActiveFedora::Base).to receive(:find).with(private_file_set.id)
+                get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+              end
+            end
+            
+            context 'with default thumbnail' do
+              before do
+                allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
+              end
+    
+              context 'reference via file_set id' do
+                it 'sends default image with not found status code' do
+                  get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                  expect(response).to have_http_status(404)
+                  expect(response.content_type).to eq 'image/png'
+                end
+
+                it 'does not get anything from Fedora' do
+                  expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+                  expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+                  get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                end
+              end
+            end
           end
         end
       end
@@ -172,7 +368,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
         context 'user is not logged in' do
           it 'sends default image with unauthorized status code' do
             get :show, params: { id: private_file_set.access_control_id, file: 'glb' }
-            expect(response).to have_http_status(:unauthorized)
+            expect(response).to have_http_status(404)
             expect(response.content_type).to eq 'image/png'
           end
         end
@@ -202,7 +398,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
           it 'sends default image with unauthorized status code' do
             get :show, params: { id: private_file_set.access_control_id, file: 'glb' }
-            expect(response).to have_http_status(:unauthorized)
+            expect(response).to have_http_status(404)
             expect(response.content_type).to eq 'image/png'
           end
         end
@@ -259,28 +455,6 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
           end
         end
       end
-    end
-  end
-
-  describe "derivative_download_options" do
-    context "when file returned is png" do
-      before do
-        allow(controller).to receive(:default_file).and_return 'world.png'
-      end
-
-      subject { controller.send(:derivative_download_options) }
-
-      it { is_expected.to eq(disposition: 'inline', type: 'image/png') }
-    end
-
-    context "when file returned is glb" do
-      before do
-        allow(controller).to receive(:default_file).and_return 'world.glb'
-      end
-      
-      subject { controller.send(:derivative_download_options) }
-
-      it { is_expected.to eq(disposition: 'inline', type: 'model/gltf+json') }
     end
   end
 end

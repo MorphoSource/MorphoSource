@@ -171,6 +171,9 @@ $ms-dark-blue: #002c64;
 .dot-delimited span:last-child:after {
   content: '';
 }
+.link-alert, .link-alert:hover, .link-alert:visited {
+  color: red !important;  
+}
 
 .no-gutter > [class*='col-'] {
   padding-right:0 !important;

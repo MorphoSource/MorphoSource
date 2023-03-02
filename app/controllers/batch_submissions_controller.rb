@@ -355,9 +355,17 @@ byebug
           else
             rf = MorphosourceHelper::RemoteFileInfo.new(val)
             error_msg = "media.media_file: " + rf.message if rf.message.present?
-
-            # todo: check file_ext for warnings?
-            
+            # Check if the file extension evaluated from headers content type is an accepted format
+            if rf.file_ext.present?
+              supplied_media_type = cell_value(current_row, field_column("media.media_type"))
+              if valid_media_types.ignore_case_include? supplied_media_type # check only if media type is valid
+                media_type = valid_media_types.ignore_case_included_value supplied_media_type
+                accepted_formats = Morphosource::MEDIA_FORMATS[media_type][:extensions]
+                if !accepted_formats.include? rf.file_ext
+                  warn_msg += "The file format returned by the media.media_file URL is " + (rf.file_ext || "unknown") + " and it does not match an accepted format: " + accepted_formats.join(', ')
+                end
+              end
+            end            
           end
         elsif !File.exist?(user_share_full_path + val)
           error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."

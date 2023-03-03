@@ -4,10 +4,11 @@ module Morphosource
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
       include Morphosource::CartItems::RequestMessages
-      with_themed_layout 'morphosource_dashboard'      
+      with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items_by_id, except: [:index]
       before_action :get_intended_use, only: [:request_item, :request_again, :request_work]
+      before_action :check_blank_items, only: [:request_item, :request_again]
 
       def index
         get_items('my_requests')
@@ -47,22 +48,22 @@ module Morphosource
         reviewer_items.each do |reviewer_id, items|
           send_request_message_to_reviewer(reviewer_id, items)
         end
-        send_request_message_to_requestor(items)        
+        send_request_message_to_requestor(items)
       end
 
       def send_request_message_to_requestor(items)
         requestor = current_user
         message_to_requestor = "<p>You have sent a request to download"
         if items.count <= max_for_details
-          message_to_requestor += " the following media:" + 
+          message_to_requestor += " the following media:" +
           cart_item_message_content(items, "requestor")
         else
           message_to_requestor += " #{items.count} media. Since more than #{max_for_details} media have been requested, the individual media are not detailed in this message. "
-        end  
+        end
         message_to_requestor += "<p>You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard.</p>"
         deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
       end
-      
+
       def send_request_message_to_reviewer(reviewer_id, items)
         # note: this method sends message to only 1 requestor and should be used in item.reviewers.each
         requestor = current_user
@@ -71,7 +72,7 @@ module Morphosource
         message_to_reviewer = "<p>#{user_email_link(requestor)} has requested to download"
         if items.count <= max_for_details
           message_to_reviewer += " the following media:</p>" +
-            cart_item_message_content(items, "reviewer") 
+            cart_item_message_content(items, "reviewer")
         else
           message_to_reviewer += " #{items.count} media. Since more than #{max_for_details} media have been requested, the individual media are not detailed in this message. "
         end
@@ -82,18 +83,18 @@ module Morphosource
 
       def send_requestor_action_message(item, action)
         work = Media.find(item.work_id)
-        if work.present?          
+        if work.present?
           requestor = current_user
           reviewer_list = []
           item.reviewers.each do |r_id|
             reviewer_list << User.where(ms_id: r_id).first
           end
-          message_to_reviewer = "<p>User #{user_email_link(requestor)} has #{action} the download request for: " + 
+          message_to_reviewer = "<p>User #{user_email_link(requestor)} has #{action} the download request for: " +
             cart_item_message_content([item], "reviewer") + "</p>"
           if action == 'canceled'
             message_to_reviewer += "<p>The request has been removed from your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard.  You can view canceled requests in your <a href='http://#{host_name}/dashboard/my/previous_requests'>Previous Requests</a> page.</p>"
           end
-          "<p>Please contact #{user_email_link(requestor)} if you have a question related to this request.</p>" 
+          "<p>Please contact #{user_email_link(requestor)} if you have a question related to this request.</p>"
           deliver(email_sender, reviewer_list, message_to_reviewer, "User has #{action} a download request")
         end
       end
@@ -135,6 +136,16 @@ module Morphosource
         end
         redirect_back(fallback_location: my_requests_path)
       end
+
+      private
+
+        def check_blank_items
+          if @items.blank?
+            flash[:error] = t('morphosource.dashboard.my.requests.request_item.alert')
+            redirect_back(fallback_location: my_requests_path) && return
+          end
+        end
+
     end
   end
 end

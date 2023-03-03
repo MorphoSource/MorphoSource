@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe SequentialSectionList, type: :model do
-  let!(:sequential_section_list_collection_type)  { Hyrax::CollectionType.create(title: 'List', machine_id: 'sequential_section_list') }
+  let!(:sequential_section_list_collection_type)  { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS) }
 
   describe 'collection_type' do
     it { expect(described_class.collection_type).to eq(sequential_section_list_collection_type) }

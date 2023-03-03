@@ -45,7 +45,7 @@ module Morphosource
         end
 
         if success
-          flash[:notice] = I18n.t 'morphosource.media.view.temporary_access'
+          flash.now[:notice] = I18n.t 'morphosource.media.view.temporary_access'
         end
       end
 
@@ -75,7 +75,7 @@ module Morphosource
             current_ability.user_groups_append(@collection.viewers_group.name)
           end
         
-          flash[:notice] = I18n.t(
+          flash.now[:notice] = I18n.t(
             'morphosource.collections.view.temporary_access', 
             collection_type: 'project'
           )

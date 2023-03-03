@@ -4,8 +4,16 @@ module Morphosource
     load_and_authorize_resource only: :destroy
     
     def create
-      params.require(:media_id)
-      params.require(:expires_at)
+      if !params[:media_id].present?
+        flash[:error] = "A media ID must be supplied when generating temporary media access link."
+        redirect_to media_showcase_edit_path(params[:media_id], anchor: 'share') and return
+      end
+
+      if !params[:expires_at].present?
+        flash[:error] = "An expiration date must be supplied when generating temporary media access link."
+        redirect_to media_showcase_edit_path(params[:media_id], anchor: 'share') and return
+      end
+
       authorize! :edit, params[:media_id]
 
       temporary_link = TemporaryMediaAccessLink.new(

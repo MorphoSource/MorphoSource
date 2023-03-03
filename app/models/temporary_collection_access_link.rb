@@ -2,6 +2,7 @@
 class TemporaryCollectionAccessLink < ApplicationRecord
   belongs_to :user
   has_secure_token
+  validate :expires_at_cannot_be_in_the_past
 
   def self.active_links
     where('expires_at > ?', Time.zone.now)
@@ -19,5 +20,9 @@ class TemporaryCollectionAccessLink < ApplicationRecord
     expires_at > Time.now.utc
   end
 
-  # todo: validate expires at isn't in the past when creating
+  def expires_at_cannot_be_in_the_past
+    if expires_at.present? && expires_at <= Date.today
+      errors.add(:expires_at, "can't be in the past")
+    end
+  end
 end

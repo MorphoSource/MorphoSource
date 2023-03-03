@@ -183,11 +183,11 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           end
         end
 
-        context 'when temporary link URL is expired' do
-          let(:expired_temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id, expires_at: Time.now - 1.month )}
+        context 'when temporary link URL has been revoked' do
 
           it 'user is redirected to sign-in page without authorization' do
-            get :showcase, params: { id: work.id, token: expired_temporary_link.token }
+            temporary_link.destroy!
+            get :showcase, params: { id: work.id, token: temporary_link.token }
             expect(response.status).to eq(302)
             expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
           end
@@ -254,15 +254,15 @@ RSpec.describe Hyrax::MediaController, type: :controller do
             end
           end
 
-          context 'when temporary link cookie is expired' do
-            let(:expired_temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id, expires_at: Time.now - 1.month )}
-
+          context 'when temporary link cookie has been revoked' do
             it 'user is redirected to sign-in page without authorization' do
-              cookie_jar.encrypted["ta_#{expired_temporary_link.media_id}"] = { 
-                value: expired_temporary_link.token, 
-                expires: expired_temporary_link.expires_at
+              temporary_link.destroy!
+
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
+                value: temporary_link.token, 
+                expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(302)
               expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
@@ -305,21 +305,20 @@ RSpec.describe Hyrax::MediaController, type: :controller do
             end
           end
 
-          context 'when temporary link cookie is expired' do
-            let(:expired_temporary_link) { create(:temporary_collection_access_link, user: user, collection_id: '123456789', expires_at: Time.now - 1.month )}
-
+          context 'when temporary link cookie has been revoked' do
             it 'user is redirected to sign-in page without authorization' do
-              cookie_jar.encrypted["ta_#{expired_temporary_link.collection_id}"] = { 
-                value: expired_temporary_link.token, 
-                expires: expired_temporary_link.expires_at
+              temporary_link.destroy!
+
+              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
+                value: temporary_link.token, 
+                expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(302)
               expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
             end
-          end
-        
+          end  
         end
       end
     end

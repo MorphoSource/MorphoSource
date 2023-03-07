@@ -105,9 +105,13 @@ class SubmissionsController < ApplicationController
       @devices_with_ids.delete(Hyrax.config.unknown_ct_scanner)
     end
 
-    if params[:collection] && Collection.exists?(params[:collection])
-      @submission.collection_id = params[:collection]
-      @submission.collection_name = Collection.find(@submission.collection_id).title.first
+    if params[:collection]
+      begin
+        @collection = Collection.find(params[:collection])
+        @submission.collection_id = @collection.id
+        @submission.collection_name = @collection.title.first
+      rescue
+      end
     end
   end
 
@@ -305,7 +309,7 @@ class SubmissionsController < ApplicationController
     # Is the media associated with an existing parent? If so, find organization ID
     # TODO refactor this, possibly put in JS defaultMediaFields code??
     if (
-      @submission.parent_media_list.present? && 
+      @submission.parent_media_list.present? &&
       Media.exists?(@submission.parent_media_list&.split(',')&.first) &&
       !@submission.organization_id.present?
     )
@@ -731,9 +735,9 @@ class SubmissionsController < ApplicationController
   end
 
   def get_organization_media_transfer
-    if ( 
-      @submission.organization_id.present? && 
-      Organization.exists?(@submission.organization_id) && 
+    if (
+      @submission.organization_id.present? &&
+      Organization.exists?(@submission.organization_id) &&
       (org = Organization.find(@submission.organization_id)).present? &&
       org.data_manager.present?
     )
@@ -745,7 +749,7 @@ class SubmissionsController < ApplicationController
 
   def transfer_media_immediately?
     ( params.dig(:media, :transfer_management) == 'immediate' ) ||
-      ['open', 'restricted_download'].include?(params.dig(:media, :visibility)) 
+      ['open', 'restricted_download'].include?(params.dig(:media, :visibility))
   end
 
   # Utility functions

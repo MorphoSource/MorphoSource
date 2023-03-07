@@ -8,8 +8,10 @@ import tabifyForm from 'hyrax/tabbed_form'
 // but now replaces the last url part if and only if
 // that part is edit
 export default class {
+
   constructor(elem) {
-    let field = elem.find('#collection_representative_id')
+    // match thumbnail select field regardless of collection type
+    let field = $('[id*="representative_id"]');
     this.thumbnailSelect = new ThumbnailSelect(this.url(), field)
     tabifyForm(elem.find('form.editor'))
 

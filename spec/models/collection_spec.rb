@@ -62,7 +62,7 @@ RSpec.describe Collection, type: :model do
     it 'returns team and project' do
       expect(team.human_readable_type).to eq "Team"
       expect(project.human_readable_type).to eq "Project"
-      expect(another_collection.human_readable_type).to eq "Collection"
+      expect(another_collection.human_readable_type).to eq "Another"
     end
   end
 
@@ -392,5 +392,9 @@ RSpec.describe Collection, type: :model do
         expect(solr_doc['media_member_of_collection_ids_ssim']).to be(nil)
       end
     end
+  end
+
+  describe 'search_builder_class' do
+    it { expect(project.search_builder_class).to eq( Morphosource::Users::MyMediaSearchBuilder) }
   end
 end

@@ -2,6 +2,9 @@
 Sentry.init do |config|
   config.breadcrumbs_logger = [:active_support_logger, :http_logger]
 
+  # disable server logs
+  config.logger = Logger.new(nil)
+
   config.environment = ENV['SENTRY_ENV'] || Rails.env
 
   # sample one-third of errors

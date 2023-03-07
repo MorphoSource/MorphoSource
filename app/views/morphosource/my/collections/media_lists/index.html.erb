@@ -1,0 +1,38 @@
+<% content_for :body_css_classes do %>collections-list showcase showcase-edit teams<% end %>
+
+<% provide :page_title, t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
+
+<% provide :page_header do %>
+  <div class="col-xs-9 title">
+    <h1>
+      <span class="fa fa-list" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
+    </h1>
+  </div>
+  <div class="col-xs-3 show-actions text-right">
+    <% if can?(:create_any, Collection) %>
+      <% # link directly to create collection form with type %>
+      <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
+    <% end %>
+  </div>
+  <% @collection_counts.each do |membership, count| %>
+    <%= render 'membership_count', membership: membership, count: count %>
+  <% end %>
+<% end %>
+
+<div class="collections-wrapper">
+  <div class="panel panel-default collections-panel-wrapper">
+    <div class="panel-heading">
+      <span class="count-display"><%= I18n.t("morphosource.dashboard.my.#{@collections_type}.count", total_count: @response.total_count).html_safe %></span>
+    </div>
+    <div class="panel-body">
+      <h2 class="sr-only">Collections listing</h2>
+      <%= render 'search_header' %>
+      <%= render 'hyrax/my/document_list' %>
+      <%= render 'shared/lists/results_pagination' %>
+    </div>
+  </div>
+
+  <!-- Render Modals -->
+  <%= render 'modal_delete_collection' %>
+
+</div><!-- /collections-wrapper -->

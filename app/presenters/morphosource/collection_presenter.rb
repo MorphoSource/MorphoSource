@@ -20,6 +20,18 @@ module Morphosource
       self.class == Morphosource::Collections::ProjectPresenter
     end
 
+    def media_list?
+      self.class == Morphosource::Collections::MediaListPresenter
+    end
+
+    def sequential_section_list?
+      self.class == Morphosource::Collections::SequentialSectionListPresenter
+    end
+
+    def list?
+      media_list? || sequential_section_list?
+    end
+
     def manager_list(managers)
       ml = []
       managers.each do |m|
@@ -43,6 +55,26 @@ module Morphosource
 
     def collection_type_title
       collection_type.title
+    end
+
+    def collection_type_machine_id
+      collection_type.machine_id
+    end
+
+    def membership(current_user)
+      if collection.managers.include?(current_user)
+        'Manager'
+      elsif collection.editors.include?(current_user)
+        'Editor'
+      elsif collection.viewers.include?(current_user)
+        'Viewer'
+      elsif collection.downloaders.include?(current_user)
+        'Downloader'
+      elsif collection.depositors.include?(current_user)
+        'Depositor'
+      else
+        ''
+      end
     end
   end
 end

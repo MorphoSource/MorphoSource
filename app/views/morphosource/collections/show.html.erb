@@ -1,5 +1,5 @@
-
-<% content_for :body_css_classes do %>showcase teams<% end %>
+<% content_for :body_css_classes do %><%= "showcase teams media-list#{' edit' if @can_edit}" %><% end %>
+<div id="collection-id" style="display: none;"><%= @presenter.id %></div>
 
 <%
 provide :page_title, construct_page_title(@presenter.title)
@@ -53,7 +53,7 @@ provide :page_title, construct_page_title(@presenter.title)
     </div>
 
     <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
-      <% if can?(:edit, @presenter.solr_document) %>
+      <% if @can_deposit %>
         <%= render 'collection_manage_buttons' %>
       <% end %>
     </div>

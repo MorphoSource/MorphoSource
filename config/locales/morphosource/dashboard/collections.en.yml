@@ -2,15 +2,61 @@ en:
   morphosource:
     dashboard:
       collections:
+        form:
+          non_contributor_errors: "The %{user} (%{emails}) can't be added to the %{access} role because they do not have contributor status. Either add the %{user} to a membership role that does not require contributor status (%{roles}) or have the %{user} request contributor status."
+        form_members_table:
+          managers:
+            title: 'Managers'
+            help: Managers of this collection can add and remove works from the collection, modify collection metadata, give other members access, and delete the collection.
+            empty: No managers have been added.
+          viewers:
+            title: 'Viewers'
+            help: Viewers of this collection can view the collection even if it is private. Viewers are not given additional access to media in the collection.
+            empty: No viewers have been added.
+        new:
+          header: New %{type_title}
+        edit:
+          header: Edit %{type_title}
         organization:
           info: For more information on organizational teams, please read <a href="https://wiki.duke.edu/pages/viewpage.action?pageId=266569096">What is an Organizational Management Team?</a>
+        media_lists:
+          action:
+            new:
+              header: New Media List
+            edit:
+              header: Edit Media List
+          new:
+            header: New Media List
+          edit:
+            header: Edit Media List
+          sequential_section_lists:
+            new:
+              header: New Sequential Section List
+            edit:
+              header: Edit Sequential Section List
+          form_members_table:
+            managers:
+              title: 'Managers'
+              help: Managers of this collection can add and remove media from the collection, modify collection metadata, grant other members access, and delete the collection.
+              empty: No managers have been added.
+            viewers:
+              title: 'Viewers'
+              help: Viewers of this collection can view the collection even if it is private. Viewers are not given additional access to media in the collection.
+              empty: No viewers have been added.
         projects:
           new:
-            header: New %{type_title}
+            header: New Project
           edit:
-            header: Edit %{type_title}
+            header: Edit Project
+        sequential_section_lists:
+          new:
+            header: New Sequential Section List
+          edit:
+            header: Edit Sequential Section List
         teams:
           new:
-            header: New %{type_title}
+            header: New Team
           edit:
-            header: Edit %{type_title}
+            header: Edit Team
+
+

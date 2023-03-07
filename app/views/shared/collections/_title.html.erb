@@ -1,0 +1,9 @@
+<h1>
+   <div id="showcase-title">
+     <%= @presenter.title.first %>
+     <%= @presenter.collection_type_badge %>
+     <%= @presenter.id_badge %>
+     <%= @presenter.permission_badge %>
+   </div>
+   <%= render 'shared/collections/collection_counts' %>
+</h1>

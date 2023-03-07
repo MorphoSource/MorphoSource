@@ -3,6 +3,7 @@ include ActionDispatch::TestProcess
 include Warden::Test::Helpers
 
 RSpec.describe Morphosource::My::MediaController, type: :controller do
+
   let(:user)  { User.create(email: 'user@email.com', password: 'password') }
 
   describe ".configure_facets" do
@@ -100,5 +101,18 @@ RSpec.describe Morphosource::My::MediaController, type: :controller do
     it 'is media#index' do
       expect(controller.send(:search_action_url, [])).to eq("/dashboard/my/media?locale=en")
     end
+  end
+
+  # helpers/morphosource/my/works_helper
+  describe '#search_action_for_dashboard' do
+    let(:main_app)  { Rails.application.routes.url_helpers }
+    let(:params)    { { controller: controller.controller_path } }
+    subject         { controller.view_context }
+
+    before do
+      allow(subject).to receive(:params).and_return(params)
+    end
+
+    it { expect(subject.search_action_for_dashboard).to eq(main_app.my_media_index_path(locale: 'en')) }
   end
 end

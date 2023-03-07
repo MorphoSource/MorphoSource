@@ -2,5 +2,17 @@ en:
   morphosource:
     dashboard:
       my:
+        collections:
+          media_lists:
+            action:
+              edit: 'Edit List'
+              delete: 'Delete List'
+          sequential_section_lists:
+            action:
+              edit: 'Edit List'
+              delete: 'Delete List'
         media_objects:
           title: "Media and Objects"
+        requests:
+          request_item:
+            alert: 'Error requesting selected items: missing item ids. If the problem persists, please contact MorphoSource administrators at morphosource@duke.edu.'

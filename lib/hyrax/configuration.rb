@@ -649,6 +649,11 @@ module Hyrax
       @contact_email ||= "repo-admin@example.org"
     end
 
+    attr_writer :override_mail_recipient
+    def override_mail_recipient
+      @override_mail_recipient ||= ""
+    end
+
     attr_writer :subject_prefix
     def subject_prefix
       @subject_prefix ||= "Contact form:"

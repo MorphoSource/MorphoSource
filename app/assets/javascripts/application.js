@@ -49,3 +49,6 @@
 //= require morphosource/editor/getty_controlled_vocabulary
 //= require morphosource/submission
 //= require morphosource/getty_fields
+
+//= require("jquery-ui/ui/widget")
+//= require("jquery-ui/ui/widgets/sortable")

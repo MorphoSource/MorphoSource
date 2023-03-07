@@ -5,6 +5,7 @@ module Hyrax
   class MediaController < ApplicationController
     # Adds Hyrax behaviors to the controller
     include Morphosource::CurationConcernControllerBehavior
+    include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
     include Hyrax::WorksControllerBehavior
     include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
@@ -18,12 +19,15 @@ module Hyrax
     # override Hydra::AccessControlsEnforcement to include 'download' access in @discovery_permissions
     self.search_builder_class = Morphosource::WorkSearchBuilder
 
+    self.temporary_access_link_class = TemporaryMediaAccessLink
+
     skip_authorize_resource only: [:showcase, :thumbnail]
 
     before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
+    before_action :authorize_media_with_temporary_link, only: [:showcase]
     after_action :set_fund_code, only: [:update]
     after_action :update_thumbnail, only: [:update]
     after_action :deliver_individual_access_messages, only: [:update]
@@ -49,7 +53,14 @@ module Hyrax
     end
 
     def showcase
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      # note: most curation concern methods get concern from curation_concern_from_search_results
+      # this refactors that - only for showcase method - to be more direct, like collections
+      # if this works well, should refactor to use this across the board
+      curation_concern_solr_doc = curation_concern.present? ? 
+        ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
+      raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
+
+      @presenter = show_presenter.new(curation_concern_solr_doc, current_ability, request)
       @presenter.get_showcase_data
       set_flash
       render '/hyrax/media/showcase', presenter: @presenter

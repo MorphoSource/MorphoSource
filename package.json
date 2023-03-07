@@ -1,5 +1,7 @@
 {
   "name": "MorphoSource_SF",
   "private": true,
-  "dependencies": {}
+  "dependencies": {
+    "jquery-ui": "^1.13.2"
+  }
 }

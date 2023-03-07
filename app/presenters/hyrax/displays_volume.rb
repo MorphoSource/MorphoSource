@@ -11,7 +11,7 @@ module Hyrax
     def display_volume
       return nil unless ::FileSet.exists?(id) && solr_document.volume? && current_ability.can?(:read, id)
 
-      url = Hyrax::Engine.routes.url_helpers.download_path(id, file: 'dcm')
+      url = Rails.application.routes.url_helpers.download_path(id, file: 'dcm')
       format = 'application/dicom'
       type = 'PhysicalObject'
 

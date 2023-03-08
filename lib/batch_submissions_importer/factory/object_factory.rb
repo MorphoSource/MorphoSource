@@ -151,7 +151,7 @@ module BatchSubmissionsImporter
 
       def tags_attributes
         # remove beginning/trailing spaces and spaces around commas
-        attributes[:keyword].present? ? { :tags => attributes[:keyword]&.first.gsub(/\s+,\s+/, ',').strip } : {}
+        attributes[:keyword].present? ? { :tags => attributes[:keyword]&.first.gsub(/\s*,\s*/, ',').strip } : {}
       end
 
       def location_attributes(based_near_values)

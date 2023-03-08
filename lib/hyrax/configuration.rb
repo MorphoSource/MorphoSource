@@ -516,6 +516,28 @@ module Hyrax
       @cache_path ||= ->() { Rails.root + 'tmp' + 'uploads' + 'cache' }
     end
 
+    # YAML file application configuration
+
+    attr_writer :docs_yml_path
+    def docs_yml_path
+      @docs_yml_path ||= "config/docs.yml"
+    end
+
+    def docs
+      return {} unless ( docs_yml_path && File.exist?(docs_yml_path) )
+      YAML.load_file(docs_yml_path) || {}
+    end
+
+    attr_reader :header_docs
+    def header_docs
+      @header_docs ||= docs.select { |doc| doc["header"] }
+    end
+
+    attr_reader :footer_docs
+    def footer_docs
+      @footer_docs ||= docs.select { |doc| doc["footer"] }
+    end
+
     # Enable IIIF image service. This is required to use the
     # IIIF viewer enabled show page
     #

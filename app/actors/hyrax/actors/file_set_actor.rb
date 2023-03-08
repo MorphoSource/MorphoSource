@@ -184,6 +184,7 @@ module Hyrax
           work.thumbnail = new_fileset if work.thumbnail_id == file_set.id
           work.representative = new_fileset if work.representative_id == file_set.id
           work.rendering_ids -= [file_set.id]
+          work.remote_origin_url = "" if new_fileset.nil?
           work.save!
         end
 

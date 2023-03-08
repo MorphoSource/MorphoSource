@@ -238,7 +238,7 @@ module Hyrax
       @compression = []
       @color_depth = []
       @file_status = ""
-      @file_origin = remote_origin_url.present?? "Remote" : ""
+      @file_origin = media.file_origin
       temp = ""
       contents_mime_type = ""
       @file_set_original_file_ready = true
@@ -276,6 +276,7 @@ module Hyrax
           #    </identity>
           #  </identification>
         end
+        contents_mime_type = "" if contents_mime_type.nil?
         @mime_type << contents_mime_type
         @file_size += file_set.file_size.first.to_i if file_set.file_size.present?
         @accepted_file_count += file_set.contents_accepted_file_count.first.to_i if file_set.contents_accepted_file_count.present?

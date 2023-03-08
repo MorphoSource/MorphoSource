@@ -5,7 +5,38 @@
     <div class="content-block">
       <h2 class="required-flag">UPLOAD FILE<span class="label label-info"></span></h2>
       <% unless @presenter.file_set_list.present? %>
-        <%= render 'form_files_edit', f: f %>
+
+        <ul class="nav nav-tabs sub-nav upload-file" role="tablist">
+          <li role="presentation" id="tab-local-file-section" class="active">
+            <a href="#local-file-section" aria-controls="local-file-section" role="tab" data-toggle="tab" aria-expanded="false">
+              Upload From Computer / Cloud
+            </a>
+          </li>
+          <% if current_user.remote_file_submitter? %>
+            <li role="presentation" id="tab-remote-file-section" class="">
+              <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
+                Remote File Location
+              </a>
+            </li>
+          <% end %>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content tab-borders mt-0">
+          <div role="tabpanel" class="tab-pane active" id="local-file-section">
+            <div class="form-tab-content">
+              <%= render 'form_files_edit', f: f %>
+            </div>
+          </div>
+          <% if current_user.remote_file_submitter? %>
+            <div role="tabpanel" class="tab-pane" id="remote-file-section">
+              <div class="form-tab-content">
+                <%= render 'form_files_remote', f: f %>
+              </div>
+            </div>
+          <% end %>    
+        </div>
+
       <% else %>
         To replace a file, please delete the existing file first.
       <% end %>

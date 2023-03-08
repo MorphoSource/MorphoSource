@@ -9,7 +9,7 @@
     </div>
   <% else %>
     <div class="btn-group">
-      <% if presenter.editor? && presenter.file_origin != "Remote" %><%# todo: remove the file_origin check when remote media can be edited %>
+      <% if presenter.editor? %>
         <%= edit_work_button %>
       <% end %>
     </div>

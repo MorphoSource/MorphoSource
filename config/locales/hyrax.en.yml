@@ -135,10 +135,11 @@ en:
       docs:
         short_title: "Docs"
         title: "Documentation"
-        guide: "User Guide"
+        guide: "Standard Users"
         glossary: "Glossary of Terms"
-        contributors: "For Contributors"
+        contributors: "Contributor Users"
         citation: "Citation"
+        faq: "FAQ"
       resources:
         title: "Resources"
         api: "API"

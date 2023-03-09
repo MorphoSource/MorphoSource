@@ -5,22 +5,13 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'
       helper Morphosource::UserProfile::UserProfileHelper
 
-      before_action :find_user, except: [:edit_password, :update_password, :generate_new_api_key]
+      before_action :find_user
+      before_action :authenticate_user!
+      before_action :authorize_edit, only: [:show]
       before_action :check_allowed_remote_source, :strip_empty_values, only: [:update]
-
-      skip_authorize_resource only: [:edit_password, :update_password, :generate_new_api_key]
-
-      def edit
-        authenticate_user!
-        unless current_user.admin? || @user == current_user
-          render 'hyrax/base/unauthorized', status: :unauthorized
-        end
-        super
-      end
+      authorize_resource class: '::User', instance_name: :user
 
       def edit_password
-        authenticate_user!
-        @user = current_user
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         add_breadcrumb t(:'hyrax.admin.sidebar.profile'), hyrax.dashboard_profile_path
@@ -43,8 +34,6 @@ module Morphosource
       end
 
       def update_password
-        authenticate_user!
-        @user = current_user
         if @user.update_with_password(update_password_params)
           bypass_sign_in(@user)
           redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: "Your password has been updated"
@@ -54,8 +43,6 @@ module Morphosource
       end
 
       def generate_new_api_key
-        authenticate_user!
-        @user = current_user
         @user.regenerate_token
         redirect_to main_app.profile_show_path, notice: "New API key has been generated."
       end
@@ -72,6 +59,10 @@ module Morphosource
       end
 
       private
+
+        def authorize_edit
+          authorize! :edit, @user
+        end
 
         def user_params
           params.require(:user).permit(:address, :affiliation, :sftp_share, :allowed_remote_source, :avatar, :country, :department, :display_name, :email, :facebook_handle, :linkedin_handle, :orcid, :postal_code, :remove_avatar, :state, :telephone, :terms_read, :twitter_handle, :website, demographics: [], software: [], intent: [], mesh_file_type: [], volume_file_type: [], printer_file: [], printer_model: [] )

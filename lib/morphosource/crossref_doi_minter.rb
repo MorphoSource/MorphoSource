@@ -58,10 +58,22 @@ module Morphosource
     # - resource_type
     def self.generate_metadata_deposit_xml(identifier, params={})
       doi = identifier_to_doi(identifier)
+
+      # clean params and add additional params as necessary
+
+      # if author_first or author_last are > 60 characters, truncate
+      if params['author_first'] && params['author_first'].length > 60
+        params['author_first'] = params['author_first'].truncate(60)
+      end
+      if params['author_last'] && params['author_last'].length > 60
+        params['author_last'] = params['author_last'].truncate(60)
+      end
+
       # set timestamp and publication_year if not passed in
       params.reverse_merge!({'timestamp' => Time.now.to_i, 'publication_year' => Time.now.year})
       # always set doi_batch_id and doi
       params.merge!({'doi_batch_id' => SecureRandom.uuid, 'doi' => doi})
+
       required_params = %w{ doi_batch_id author_first author_last title doi url resource_type timestamp publication_year }
       required_params.each do |required_param|
         if params[required_param].blank?

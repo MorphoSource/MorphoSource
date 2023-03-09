@@ -1,12 +1,16 @@
 class UpdateMediaMetadataJob < Hyrax::ApplicationJob
 
-  queue_as Hyrax.config.update_medium_queue_name
+  queue_as Hyrax.config.update_slow_queue_name
 
-  def perform(media_attributes)
+  def perform(media_attributes, allow_blank_values=false)
   	if Media.exists?(media_attributes[:id]&.first)
   		media = Media.find(media_attributes[:id]&.first)
   		media_properties.each do |p|
-        if media_attributes[p].present? && media[p] != media_attributes[p]
+        if ( 
+          media_attributes.key?(p) && 
+          ( allow_blank_values || media_attributes[p].present? ) &&
+          media[p] != media_attributes[p]
+        )
           media[p] = media_attributes[p]
         end
   		end

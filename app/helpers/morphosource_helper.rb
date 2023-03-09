@@ -5,7 +5,7 @@ module MorphosourceHelper
   include Hyrax::Renderers
 
   def file_extension_from_content_type(content_type)
-    return nil unless content_type.present?
+    return "" unless content_type.present?
     case content_type 
     when "application/zip"
       ".zip"

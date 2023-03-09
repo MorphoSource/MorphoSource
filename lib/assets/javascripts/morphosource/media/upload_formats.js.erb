@@ -243,6 +243,7 @@ $( document ).ready(function(){
     setupMatchingFormatRequirement();
     // In case on edit form or reloading after a failed validation, check formats requirement and update the accepted formats message.
     updateAcceptedFormatsMessage();
+    updateAcceptedFormatsInput();
     checkFormatsRequirement();
 
     // Whenever a file is uploaded, check to see if it fulfills the formats requirement, and update the unallowed files message if the file is the wrong extension.

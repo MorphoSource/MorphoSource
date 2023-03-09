@@ -13,7 +13,9 @@ file_set = member_edit
     <% if file_set.user_can_perform_any_action? %>
       <% if can?(:destroy, file_set.id) %>
 
-        <% if @presenter.has_DOI? %>
+        <% if @presenter.file_origin == "Remote" && !current_user.remote_file_submitter? && !current_user.admin? %>
+          <p class="text-disabled small">(File cannot be deleted without access)</p>
+        <% elsif @presenter.has_DOI? %>
           <% if current_user.admin? %>
             <% unless @presenter.has_child_media? %>
               <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),
@@ -37,7 +39,7 @@ file_set = member_edit
                 method: :delete, title: t('.delete_title', file_set: file_set),
                 data: { confirm: t('.delete_confirm_parent', file_set: file_set, application_name: application_name) } %>
           <% end %>  
-        <% end # has_DOI? %>
+        <% end %>
 
       <% end %>
     <% end %>

@@ -19,7 +19,7 @@ $( document ).ready(function() {
   if ($('form[id*="new_media_list"]').length) { return }
 
   if ( $('form[id*="edit_media"]').length ||
-       $('form[id*="new_media"]').length ) { // if media form page (add/edit)
+       $('form[id*="new_media"]').length ) {
 
     IsImagingEventOK = false;
     IsProcessingEventOK = false;
@@ -76,6 +76,7 @@ $( document ).ready(function() {
       adjust_form_media_type();
     });
 
+    setMediaLocalRemoteEvent();
 
     // debug: click save button in standalone form to submit related work form
     $(".btn-save.debug").click(function() {
@@ -515,71 +516,70 @@ $( document ).ready(function() {
       mediaSubmitEvent.preventDefault();
       if (uploadStatusOK) {
         if (noFileCheck()) {
-          prepareFieldsBeforeSubmit();
-          if (isModalityValid() && hasRequiredFields()) {
-            disablePageAndSave(".btn-save-media");
-            if (HasEditImagingEventForm) {
-              $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
-            } else {
-              IsImagingEventOK = true;
-              submitProcessingEvent();
-            }
+          if (fileOrigin == "remote") {
+            remoteFileCheckAndSubmit();
+          } else {
+            editMediaSubmit();            
           }
         }
       } else {
         promptAutoSave(".btn-save-media");
       }
-
-      function isModalityValid() {
-        // check modality consistency
-        if ($('#device-modality-value').length)
-          var deviceModality = $('#device-modality-value').attr('data-modality-id');
-        if ($('#imaging_event_ie_modality').length)
-          var imagingEventModality = $('#imaging_event_ie_modality').val();
-        if (deviceModality && imagingEventModality) {
-          if (deviceModality.split(',').includes(imagingEventModality)) {
-            return true;
-          } else {
-            console.log('deviceModality '+ deviceModality);
-            console.log('imagingEventModality '+ imagingEventModality);
-            alert('Device modality does not match imaging event modality.');
-          }
-        } else {
-          return true;
-        }
-      }
-
-
-      function submitProcessingEvent() {
-        // only needs to save PE edit form. Note that for cases like raw media,
-        // which has no PE, the page will have a new PE form, which does not need
-        // to be submitted when saving the Media
-        if (HasEditProcessingEventForm) {
-          var isProcessingActivityValid = buildProcessingActivity(); // populate the PA field before saving PE
-          if (isProcessingActivityValid) {
-            $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
-          }
-        } else {
-          IsProcessingEventOK = true;
-          saveMediaIfReady();
-        }
-      }
-
-      function saveMediaIfReady() {
-        if (IsImagingEventOK && IsProcessingEventOK) {
-          //console.log('updating media work...');
-          form.submit();
-        } else {
-          alert('imaging_event or processing_event not saved properly.');
-          enablePageAndSave(".btn-save-media");
-        }
-      }
-
     }); // /on submit
+
+    $(".nav-tabs.upload-file a").click(function(){
+      // set the hash to the main nav tab name instead of sub tab name
+      // so that reloading the page will open the file-upload tab
+      window.location.hash = 'file-upload';
+    });
 
   } // end if edit media form page
 
 })
+
+function isModalityValid() {
+  // check modality consistency
+  if ($('#device-modality-value').length)
+    var deviceModality = $('#device-modality-value').attr('data-modality-id');
+  if ($('#imaging_event_ie_modality').length)
+    var imagingEventModality = $('#imaging_event_ie_modality').val();
+  if (deviceModality && imagingEventModality) {
+    if (deviceModality.split(',').includes(imagingEventModality)) {
+      return true;
+    } else {
+      console.log('deviceModality '+ deviceModality);
+      console.log('imagingEventModality '+ imagingEventModality);
+      alert('Device modality does not match imaging event modality.');
+    }
+  } else {
+    return true;
+  }
+}
+
+function submitProcessingEvent() {
+  // only needs to save PE edit form. Note that for cases like raw media,
+  // which has no PE, the page will have a new PE form, which does not need
+  // to be submitted when saving the Media
+  if (HasEditProcessingEventForm) {
+    var isProcessingActivityValid = buildProcessingActivity(); // populate the PA field before saving PE
+    if (isProcessingActivityValid) {
+      $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
+    }
+  } else {
+    IsProcessingEventOK = true;
+    saveMediaIfReady();
+  }
+}
+
+function saveMediaIfReady() {
+  if (IsImagingEventOK && IsProcessingEventOK) {
+    //console.log('updating media work...');
+    form.submit();
+  } else {
+    $.alert('imaging_event or processing_event not saved properly.');
+    enablePageAndSave(".btn-save-media");
+  }
+}
 
 // Puts concatenated values into scale bar on submit.
 function buildScaleBar(scaleBar, scaleBarGroupUl) {
@@ -624,14 +624,38 @@ function prepareFieldsBeforeSubmit() {
 
 }
 
-var remoteFileCheckAndSubmit = function(view) {
+var editMediaSubmit = function() {
+  prepareFieldsBeforeSubmit();
+  if (isModalityValid() && hasRequiredFields()) {
+    disablePageAndSave(".btn-save-media");
+    if (HasEditImagingEventForm) {
+      $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
+    } else {
+      IsImagingEventOK = true;
+      submitProcessingEvent();
+    }
+  } else {
+    enablePage();
+  }
+}
+
+var doSubmitMedia = function(view) {
+  if ($('form[id*="edit_media"]').length) {
+    editMediaSubmit();
+  } else if ($('form[id*="new_media"]').length) {
+    view.submitMedia();
+  }
+}
+
+var remoteFileCheckAndSubmit = function(view=null) {
   try {
     var url = (new URL($('#media_remote_origin_url').val()));
     var extension = url.pathname.substring(url.pathname.lastIndexOf('.'));
   } catch (e) {
-    $.alert('The Remote Origin URL is not valid.');
-    return;
+    $.alert('Please enter a valid Remote Origin URL.');
+    return false;
   }
+
   disablePage();
   console.log("remote file check... ");
   $.ajax({
@@ -646,25 +670,58 @@ var remoteFileCheckAndSubmit = function(view) {
           // Check if the file extension evaluated from headers content type an accepted format
          var acceptedFormats = $('#media_accepted_formats').val().split(', ');
          if ($.inArray(results.resp_file_ext, acceptedFormats) == -1) {
-            // todo: might change this to a warning and allow submitting media?
-            $.alert('The file format (' + results.resp_file_ext + ') returned by the Remote Origin URL is not an accepted format.');
-            console.log("acceptedFormats: " + acceptedFormats);
-            enablePage();
+            console.log("acceptedFormats: " + acceptedFormats);                        
+            $.confirm({
+                title: 'Please confirm',
+                content: 'The file format returned by the Remote Origin URL is ' + (results.resp_file_ext || "unknown") + ' and it does not match an accepted format.  Click CONFIRM to save the media, or CANCEL to go back.',
+                buttons: {
+                  confirm: function() {
+                    doSubmitMedia(view);
+                  },
+                  cancel: function() {
+                    enablePage();
+                  }
+                }
+            });
           } else {
-            view.submitMedia();
+            doSubmitMedia(view);
           }
         } else {
-          view.submitMedia();        
+          $.alert('The file format is unknown.  Please check the media after it is saved.', 'Warning');
+          doSubmitMedia(view);
         }
       } else if (results.status == "error") {
         $.alert('There is problem with the Remote Origin URL: ' + results.message);
         enablePage();
+        return false;
       } else {
         $.alert('There is problem with the Remote Origin URL.  Please try again later or contact MorphoSource team.');
         enablePage();
+        return false;
       }
+
+    }//complete
+  });
+}
+
+var setMediaLocalRemoteEvent = function() {
+  $('#tab-local-file-section a').click(function(event) {
+    if ($('#media_remote_origin_url').val() != "") {
+      $.alert('Please clear the Remote Origin URL if the file is not from a remote location.');
+      return false;        
+    } else {
+      fileOrigin = "local";
     }
   });
+
+  $('#tab-remote-file-section a').click(function(event) {
+    if (justUploaded > 0) {
+      $.alert('Please remove the file uploaded from computer or cloud first.');
+      return false;
+    } else {
+      fileOrigin = "remote";
+    }
+  });    
 }
 
 var noFileCheck = function() {

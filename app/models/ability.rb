@@ -8,7 +8,7 @@ class Ability
 
     if current_user.admin?
       can [:create, :show, :add_user, :remove_user, :index, :edit, :update, :destroy], Role
-      can [:index], ::User
+      can [:manage], ::User
     end
 
     # Limits creating new objects to admins and contributors

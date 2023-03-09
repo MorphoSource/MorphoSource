@@ -128,7 +128,14 @@ module Hyrax
       end
 
       def user_abilities
-        can [:edit, :update, :toggle_trophy], ::User, id: current_user.id
+        can [
+          :edit, 
+          :edit_password, 
+          :generate_new_api_key, 
+          :update, 
+          :update_password, 
+          :toggle_trophy
+        ], ::User, id: current_user.id
         can :show, ::User
       end
 

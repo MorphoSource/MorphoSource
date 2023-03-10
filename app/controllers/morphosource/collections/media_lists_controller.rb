@@ -9,7 +9,8 @@ module Morphosource
       before_action :redirect_to_collection_type, only: []
 
       # temporary restriction so only admins can access media lists and sequential section lists
-      before_action :authorize_admin
+      # allow show action only
+      before_action :authorize_admin, except: [:show, :about, :facet]
 
       class_attribute :collection_type
 

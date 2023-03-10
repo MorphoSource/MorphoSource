@@ -8,6 +8,10 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
   let(:media_list_collection_type)  { Hyrax::CollectionType.create(title: 'Media List') }
   let(:media_list)                  { MediaList.create(title: ['media list'], collection_type_gid: media_list_collection_type.gid, depositor: depositor.ms_id) }
 
+  before do
+    Morphosource::Collections::PermissionsCreateService.create_default(collection: media_list)
+  end
+
   describe 'temporary admin-only restriction' do
     let(:params)  { { id: media_list.id } }
     before do
@@ -35,11 +39,14 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
     end
 
     context 'user is not an admin' do
-      it 'responds with a redirect' do
+      it 'responds with a 200' do
         get :show, params: params
-        expect(response.status).to eq(302)
+        expect(response.status).to eq(200)
         get :about, params: params
-        expect(response.status).to eq(302)
+        expect(response.status).to eq(200)
+      end
+
+      it 'redirects to root' do
         get :media_export_with_intersections_facet, params: params
         expect(response.status).to eq(302)
         get :media_download_counts_with_intersections_facet, params: params

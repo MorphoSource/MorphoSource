@@ -60,11 +60,15 @@ module Morphosource
         redirect_to main_app.profile_show_path, notice: "New API key has been generated."
       end
 
-      def check_allowed_remote_source
+      def check_allowed_remote_source         
         allowed_remote_source = request.params["user"]["allowed_remote_source"]
         return true unless allowed_remote_source.present?
-        return true if allowed_remote_source.split(/\r\n/).all? { |s| is_valid_domain? s } 
-        redirect_to hyrax.edit_dashboard_profile_path(@user.ms_id), alert: "#{t("morphosource.dashboard.profiles.edit_primary.allowed_remote_source")} are invalid."
+        allowed_remote_source = allowed_remote_source.gsub(/https?:\/\//, '')
+        if allowed_remote_source.split(/\r\n/).all? { |s| is_valid_domain? s } 
+          request.params["user"]["allowed_remote_source"] = allowed_remote_source
+          return true 
+        end
+        redirect_to hyrax.edit_dashboard_profile_path(@user.ms_id), alert: "#{t("morphosource.dashboard.profiles.edit_primary.allowed_remote_source")} are invalid. Please enter valid domain names only (e.g. www.example.com)"
       end
 
       def is_valid_domain?(path)

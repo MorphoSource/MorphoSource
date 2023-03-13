@@ -262,16 +262,21 @@ module Hyrax
     def characterize
       if current_user.admin?
         media_work = Media.find(params[:id])
-        # For remote file, the original_file.content is empty, so original_file.present? returns false 
-        # Therefore check for uri instead
-        if media_work.is_remote_backed? && media_work.file_sets.first.present? && media_work.file_sets.first.original_file.uri.present?
-          PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id)
-          flash[:notice] = "Media characterization job has been started"
+        # Note: For remote file, the original_file.content is empty, therefore original_file.present? returns false 
+        if media_work.is_remote_backed? 
+          if !media_work.file_sets.first.present?
+            flash[:error] = "Media has no FileSet. Characterization job not created."
+          elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
+            PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id)
+            flash[:notice] = "Media characterization job has been started"
+          else
+            flash[:error] = "Characterization job not created. Try deleting and uploading the file again."
+          end
         elsif media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
           PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id)
           flash[:notice] = "Media characterization job has been started"
         else
-          flash[:error] = "Media has no FileSet or FileSet has no original file, characterization job not created"
+          flash[:error] = "Media has no FileSet or FileSet has no original file. Characterization job not created."
         end
       end
       redirect_to(main_app.media_showcase_edit_path(id: params[:id])) and return
@@ -281,9 +286,15 @@ module Hyrax
     def create_derivatives
       if current_user.admin?
         media_work = Media.find(params[:id])
-        if media_work.is_remote_backed? && media_work.file_sets.first.present? && media_work.file_sets.first.original_file.uri.present?
-          PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id)
-          flash[:notice] = "Media create derivatives job has been started"
+        if media_work.is_remote_backed? 
+          if !media_work.file_sets.first.present?
+            flash[:error] = "Media has no FileSet. Create derivatives job not created."
+          elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
+            PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id)
+            flash[:notice] = "Media create derivatives job has been started"
+          else
+            flash[:error] = "Create derivatives job not created. Try deleting and uploading the file again."
+          end
         elsif media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
           PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id)
           flash[:notice] = "Media create derivatives job has been started"

@@ -2,6 +2,8 @@ module Morphosource
   module Solr
     module Media
 
+      include Morphosource::MediaBehavior
+
       # media fedora object properties
       MEDIA_PROPERTIES = %w[ark
                             available
@@ -31,12 +33,33 @@ module Morphosource
                             z_spacing
                             remote_origin_url].freeze
 
+      def download_reviewer
+        self['download_reviewer_ssim']
+      end
+
       def fileset_visibility
         self[Solrizer.solr_name('fileset_visibility', :stored_searchable)]
       end
 
+      def fileset_accessibility
+        self['fileset_accessibility_ssim']
+      end
+
       def human_readable_media_type
         self[Solrizer.solr_name('human_readable_media_type', :stored_searchable)].first
+      end
+
+      def objects
+        return nil unless physical_object_ids.present?
+
+        physical_object_ids.each_with_object([]) do |id, objects|
+          objects << SolrDocument.find(id)
+        end
+      end
+      alias physical_objects objects
+
+      def physical_object_ids
+        self['physical_object_id_ssim']
       end
 
       def physical_object_type

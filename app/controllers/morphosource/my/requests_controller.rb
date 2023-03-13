@@ -115,8 +115,8 @@ module Morphosource
       # Request download from media showcase page
       def request_work
         work_id = params[:work_id].first
-        work = Media.find(work_id)
-        if work.can_add_to_cart? || (current_user.can? :download, work.id)
+        work = SolrDocument.find(work_id)
+        if work.public? || (current_user.can? :download, work.id)
           if work_already_in_cart?(work_id)
             item = find_item_in_cart(work_id)
             if item.unrequested? || item.cleared?

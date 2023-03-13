@@ -2,12 +2,20 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
 
-  let(:user)  { User.create(email: 'user@email.com', password: 'password') }
-  let(:some_user) { User.create(email: 'some_user@email.com', password: 'password') }
+  let(:user)              { User.create(email: 'user@email.com', password: 'password') }
+  let(:some_user)         { User.create(email: 'some_user@email.com', password: 'password') }
 
-  let(:restricted_work) { Media.create(title: ['Restricted Work'], fileset_accessibility: ['restricted_download']) }
-  let(:restricted_work2) { Media.create(title: ['Restricted Work'], fileset_accessibility: ['restricted_download']) }
-  let(:open_work) { Media.create(title: ['Open Work'], fileset_accessibility: ['open']) }
+  let(:restricted_work)   { Media.create(title: ['Restricted Work'], visibility: 'open', fileset_accessibility: ['restricted_download']) }
+  let(:restricted_work2)  { Media.create(title: ['Restricted Work'], visibility: 'open', fileset_accessibility: ['restricted_download']) }
+  let(:open_work)         { Media.create(title: ['Open Work'], visibility: 'open', fileset_accessibility: ['open']) }
+  let(:works)             { [restricted_work, restricted_work2, open_work] }
+
+  before do
+    works.each do |work|
+      allow(SolrDocument).to receive(:find).and_call_original
+      allow(SolrDocument).to receive(:find).with(work.id).and_return(SolrDocument.find(work.id))
+    end
+  end
 
   describe '#has_download_access_or_approval?' do
     subject { user.has_download_access_or_approval?(restricted_work.id) }
@@ -166,28 +174,28 @@ RSpec.describe User, type: :model do
   describe 'items a user can download' do
     # downloadable items
     # item is from an open work
-    let!(:cart_item1)  { CartItem.create(user_id: user.ms_id, work_id: open_work.id) }
+    let!(:cart_item1)       { CartItem.create(user_id: user.ms_id, work_id: open_work.id) }
     # user has download access to restricted work
-    let!(:restricted_work2) { Media.create(title: ['Restricted Work'], fileset_accessibility: ['restricted_download']) }
-    let!(:cart_item2)  { CartItem.create(user_id: user.ms_id, work_id: restricted_work2.id) }
+    let!(:restricted_work2) { Media.create(title: ['Restricted Work'], visibility: 'open', fileset_accessibility: ['restricted_download']) }
+    let!(:cart_item2)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work2.id) }
     # user has an approved request
-    let!(:cart_item3)  { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
+    let!(:cart_item3)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
 
     # non-downloadable items
     # item is from a private work
-    let!(:private_work) { Media.create(title: ['Restricted Work'], visibility: 'restricted', fileset_accessibility: ['private']) }
-    let!(:cart_item4)  { CartItem.create(user_id: user.ms_id, work_id: private_work.id) }
+    let!(:private_work)     { Media.create(title: ['Restricted Work'], visibility: 'restricted', fileset_accessibility: ['private']) }
+    let!(:cart_item4)       { CartItem.create(user_id: user.ms_id, work_id: private_work.id) }
     # item is from a private work
     # item status is not requested
-    let!(:cart_item5) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id) }
+    let!(:cart_item5)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id) }
     # item status is requested
-    let!(:cart_item6) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.today) }
+    let!(:cart_item6)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.today) }
     # item status is cleared
-    let!(:cart_item7) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_cleared: Date.today) }
+    let!(:cart_item7)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_cleared: Date.today) }
     # item status is expired
-    let!(:cart_item8) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday) }
+    let!(:cart_item8)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday) }
     # item status is denied
-    let!(:cart_item9) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_denied: Date.yesterday) }
+    let!(:cart_item9)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_denied: Date.yesterday) }
     before do
       restricted_work2.download_users += [user]
       restricted_work2.save

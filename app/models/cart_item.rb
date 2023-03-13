@@ -49,7 +49,7 @@ class CartItem < ApplicationRecord
   def work
     @work ||= begin
       begin
-        return Media.find(work_id)
+        return SolrDocument.find(work_id)
       rescue
         return nil
       end
@@ -70,14 +70,17 @@ class CartItem < ApplicationRecord
   end
 
   def downloadable?
-    return false unless work.present?
-    case
-      when work.open? then true
-      when user.ms_id == work.download_reviewer.first then true
-      when user.ms_id == work.user_with_ownership then true
-      when approved? then true
-      when user.can?(:download, work) then true
-      else false
+    begin
+      case
+        when work.open_download? then true
+        when reviewer.include?(user) then true
+        when user.ms_id == work.user_with_ownership&.first then true
+        when approved? then true
+        when user.can?(:download, work) then true
+        else false
+      end
+    rescue
+      return false
     end
   end
 
@@ -86,7 +89,7 @@ class CartItem < ApplicationRecord
   end
 
   def user_is_reviewer_or_has_ownership?
-    work.reviewer.include?(user_id) || user_id == work.user_with_ownership
+    reviewer.include?(user) || user_id == work.user_with_ownership.first
   end
 
   def reviewer

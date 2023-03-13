@@ -5,24 +5,7 @@ class DocsController < ApplicationController
     outdated_flash
   end
 
-  def api
-    outdated_flash
-  end
-
-  def beta_guide
-  end
-
-  def citation
-  end
-
-  def contributors
-    # outdated_flash
-  end
-
   def contributor_terms
-  end
-
-  def guide
   end
 
   def rss

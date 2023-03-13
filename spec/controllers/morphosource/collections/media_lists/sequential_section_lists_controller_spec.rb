@@ -11,6 +11,7 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
   describe 'temporary admin-only restriction' do
     let(:params)  { { id: sequential_section_list.id } }
     before do
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: sequential_section_list)
       sequential_section_list.visibility = 'open'
       sequential_section_list.save!
       sign_in user
@@ -35,11 +36,14 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
     end
 
     context 'user is not an admin' do
-      it 'responds with a redirect' do
+      it 'responds with a 200' do
         get :show, params: params
-        expect(response.status).to eq(302)
+        expect(response.status).to eq(200)
         get :about, params: params
-        expect(response.status).to eq(302)
+        expect(response.status).to eq(200)
+      end
+
+      it 'redirects to root' do
         get :media_export_with_intersections_facet, params: params
         expect(response.status).to eq(302)
         get :media_download_counts_with_intersections_facet, params: params

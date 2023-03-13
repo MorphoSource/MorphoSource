@@ -407,20 +407,7 @@ Rails.application.routes.draw do
   resources :docs do
     collection do
       get 'about'
-      get 'api'
-      get 'beta_guide'
-      get 'citation'
-      get 'contributors'
-      get 'guide'
       get 'rss'
-    end
-  end
-
-  namespace :docs do
-    resources :guide, except: [:index, :show, :new, :create, :edit, :update, :destroy] do
-      collection do
-        get 'pixel_spacing'
-      end
     end
   end
 
@@ -537,12 +524,12 @@ Rails.application.routes.draw do
   # MS1 Static Redirects
   get '/About/home', to: redirect('/docs/about', status: 301)
   get '/About/contact', to: redirect('/docs/about', status: 301)
-  get '/About/userInfo', to: redirect('/docs/guide', status: 301)
-  get '/About/userGuide', to: redirect('/docs/guide', status: 301)
-  get '/About/contributorInfo', to: redirect('/docs/contributors', status: 301)
+  get '/About/userInfo', to: redirect('/', status: 301)
+  get '/About/userGuide', to: redirect('/', status: 301)
+  get '/About/contributorInfo', to: redirect('/', status: 301)
   get '/About/terms', to: redirect('/docs/about', status: 301)
-  get '/About/howToCite', to: redirect('/docs/citation', status: 301)
-  get '/About/API', to: redirect('/docs/api', status: 301)
+  get '/About/howToCite', to: redirect('/', status: 301)
+  get '/About/API', to: redirect('/', status: 301)
   get '/About/report', to: redirect('/docs/rss', status: 301)
   get '/About/termsAndConditions', to: redirect('/terms', status: 301)
 

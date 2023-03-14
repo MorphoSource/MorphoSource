@@ -106,8 +106,6 @@ class MediaIndexer < Morphosource::WorkIndexer
       # add organization facet
       solr_doc['media_organization_tesim'] = organization_titles
       solr_doc['media_organization_ssim'] = organization_titles
-      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
-      solr_doc['media_organization_sim'] = organization_titles
       solr_doc['media_organization_id_ssim'] = organization_id
       solr_doc['media_organization_id_tesim'] = organization_id
 

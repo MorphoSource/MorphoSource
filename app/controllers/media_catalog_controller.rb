@@ -17,7 +17,7 @@ class MediaCatalogController < CatalogController
     # object type - specimen or cho
     config.add_facet_field solr_name("media_physical_object_type", :symbol), label: "Object Type", limit: 10
     # organization that owns the object
-    config.add_facet_field solr_name("media_organization", :facetable), label: "Organization", limit: 10
+    config.add_facet_field solr_name("media_organization", :symbol), label: "Organization", limit: 10
     # organization that manages the imaging device
     config.add_facet_field solr_name("media_device_facility_organization", :symbol), label: "Imaging Facility", limit: 10
 

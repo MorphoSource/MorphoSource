@@ -185,6 +185,7 @@ class User < ApplicationRecord
 
   def can_submit_remote_file?(url)
     return false unless self.remote_file_submitter?
+    return false unless self.allowed_remote_source.present?
     white_list = self.allowed_remote_source.split(/\n+|\r+/).reject(&:empty?)
     uri = URI(url)
     return false unless uri.host.present?

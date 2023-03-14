@@ -37,7 +37,7 @@ class ImportUrlJob < Hyrax::ApplicationJob
       # todo: if it has extension, check if it is valid and call file_extension_from_content_type if not
       if !File.extname(name).present?
         # add file extension needed for characterization, etc
-        name = name + file_extension_from_content_type(RestClient.head(uri.to_s).headers[:content_type])
+        name = name + MorphosourceHelper::RemoteFileInfo.new(uri.to_s).file_ext
       end
     else
       unless BrowseEverything::Retriever.can_retrieve?(uri, headers)

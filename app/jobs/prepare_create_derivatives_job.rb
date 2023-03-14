@@ -15,6 +15,10 @@ class PrepareCreateDerivativesJob < Hyrax::ApplicationJob
 
     wrapper = JobIoWrapper.find_by(file_set_id: work.id)
     path_hint = wrapper.uploaded_file ? wrapper.uploaded_file.uploader.path : wrapper.path
-    CreateDerivativesJob.perform_later(work, work.original_file.id, path_hint)
+    if File.exists?(path_hint)
+      CreateDerivativesJob.perform_later(work, work.original_file.id, path_hint)
+    else
+      raise 'PrepareCreateDerivativesJob: Temp file does not exist'
+    end
   end
 end

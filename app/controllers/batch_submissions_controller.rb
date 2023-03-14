@@ -347,12 +347,33 @@ class BatchSubmissionsController < ApplicationController
     when "media.media_file"
       if !val.present?
         error_msg = "media.media_file: Please enter a value."
-      elsif !File.exist?(user_share_full_path + val)
-        error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
       else
-        duplicate_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
-        if duplicate_media_found_row + 1 != current_row
-          error_msg = "media.media_file: File #{val} found in more than one row (see row #{duplicate_media_found_row+1})."
+        if val.match(/^https?:\/\//).present?
+          if !current_user.can_submit_remote_file?(val)
+            error_msg = "media.media_file: The remote file path is invalid or not allowed. Please make sure you have remote file submitter permissions and that the domain for the remote file is allowed."
+          else
+            rf = MorphosourceHelper::RemoteFileInfo.new(val)
+            error_msg = "media.media_file: " + rf.message if rf.message.present?
+            # Check if the file extension evaluated from headers content type is an accepted format
+            if rf.file_ext.present?
+              supplied_media_type = cell_value(current_row, field_column("media.media_type"))
+              if valid_media_types.ignore_case_include? supplied_media_type # check only if media type is valid
+                media_type = valid_media_types.ignore_case_included_value supplied_media_type
+                accepted_formats = Morphosource::MEDIA_FORMATS[media_type][:extensions]
+                if !accepted_formats.include? rf.file_ext
+                  warn_msg += "The file format returned by the media.media_file URL is " + (rf.file_ext || "unknown") + " and it does not match an accepted format: " + accepted_formats.join(', ')
+                end
+              end
+            end            
+          end
+        elsif !File.exist?(user_share_full_path + val)
+          error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
+        end
+        if !error_msg.present?
+          duplicate_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
+          if duplicate_media_found_row + 1 != current_row
+            error_msg = "media.media_file: File #{val} found in more than one row (see row #{duplicate_media_found_row+1})."
+          end
         end
       end
     when "media.preview_file"
@@ -582,6 +603,30 @@ class BatchSubmissionsController < ApplicationController
       unless valid_boolean.ignore_case_include? val
         error_msg = "#{field_name}: Please enter a valid value: " + valid_boolean.to_s.gsub(/\[|\]/, '')
       end
+    when /^controlled(_RequiredByMediaType_.*)?$/
+      if $1.present?
+        by_media_type = $1.split('_').last
+        if by_media_type == @media_type
+          if !val.present?
+            error_msg = "#{field_name}: Value should be present for media type #{by_media_type}."
+          else
+            required = true
+          end
+        else
+          required = false
+        end
+      else
+        required = false
+      end
+      if (!error_msg.present?)
+        unless (!val.present?) && (!required)
+          # this is called by rules, e.g. controlled_RequiredByMediaType_CTImageSeries
+          # and will call e.g. valid_media_unit (based on field_name "media_unit") to check for valid values
+          unless valid_values_for(field_name).ignore_case_include? val
+            error_msg = "#{field_name}: Please enter a valid value: " + valid_values_for(field_name).to_s.gsub(/\[|\]/, '')
+          end
+        end
+      end
     when /^number(_RequiredByMediaType_.*)?$/
       if $1.present?
         by_media_type = $1.split('_').last
@@ -668,7 +713,7 @@ class BatchSubmissionsController < ApplicationController
       "media.z_spacing" => "number_RequiredByMediaType_CTImageSeries",
       "media.slice_thickness" => "number",
       "media.series_type" => "controlled",
-      "media.unit" => "controlled",
+      "media.unit" => "controlled_RequiredByMediaType_CTImageSeries",
       "media.map_type" => "controlled",
       "biological_specimen.identifier" => "text",
       "biological_specimen.related_url" => "text",

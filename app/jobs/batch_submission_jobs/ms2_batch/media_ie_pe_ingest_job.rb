@@ -11,6 +11,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     @main_job_id = main_job_id
     @organization_id = @manifest["biological_specimen_ingests"].first["organization_id"]
 
+    # debug: check ingest['parent']
     if !ingest['physical_object_id'].present?
       raise "Physical object ID not present for ingest. Ingest: #{ingest}"
     end
@@ -38,6 +39,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     parent_media = nil
     # ingest parent processing events and media
+    # debug: check ingest['parent']
     if ingest['parent'].present?
       ingest['parent'].each do |idx, parent|
 
@@ -79,6 +81,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             preview_file = parent['media']['media_path'] + parent['media']['initial_attrs']['preview_file'].first
           end
 
+          # debug: check parent['media']['attrs']
           if is_raw
             parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
               'Media', 

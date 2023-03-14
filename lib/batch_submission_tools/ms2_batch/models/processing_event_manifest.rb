@@ -18,7 +18,7 @@ module BatchSubmissionTools
         def create_new_attributes
           addl_attrs = { depositor: depositor, on_behalf_of: on_behalf_of }
 
-          Importer::Factory::ProcessingEventFactory.new(
+          BatchSubmissionsImporter::Factory::ProcessingEventFactory.new(
             initial_attrs.except(:id).merge(addl_attrs)
           ).create_attributes
         end

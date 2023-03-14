@@ -238,7 +238,7 @@ module Hyrax
       @compression = []
       @color_depth = []
       @file_status = ""
-      @file_origin = media.file_origin
+      @file_origin = (media.file_origin == "Local") ? "" : media.file_origin # don't display if Local
       temp = ""
       contents_mime_type = ""
       @file_set_original_file_ready = true

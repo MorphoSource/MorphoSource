@@ -84,8 +84,6 @@ class MediaIndexer < Morphosource::WorkIndexer
 
       # add physical object facet
       solr_doc['media_physical_object_type_tesim'] = physical_object_type
-      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
-      solr_doc['media_physical_object_type_sim'] = physical_object_type
       solr_doc['media_physical_object_type_ssim'] = physical_object_type
       # physical_object fields
       solr_doc['physical_object_id_ssim'] = physical_object_id

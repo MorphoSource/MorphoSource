@@ -41,7 +41,7 @@ RSpec.describe AllCatalogController, :type => :controller do
       end
 
       describe 'media physical object type' do
-        subject { facet_fields['media_physical_object_type_sim'] }
+        subject { facet_fields['media_physical_object_type_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Media Object Type")
           expect(subject.limit).to eq(5)

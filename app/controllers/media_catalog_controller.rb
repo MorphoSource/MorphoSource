@@ -15,7 +15,7 @@ class MediaCatalogController < CatalogController
     # modality - inherited from imaging event modality
     config.add_facet_field solr_name("media_modality", :symbol), label: "Modality", limit: 10
     # object type - specimen or cho
-    config.add_facet_field solr_name("media_physical_object_type", :facetable), label: "Object Type", limit: 10
+    config.add_facet_field solr_name("media_physical_object_type", :symbol), label: "Object Type", limit: 10
     # organization that owns the object
     config.add_facet_field solr_name("media_organization", :facetable), label: "Organization", limit: 10
     # organization that manages the imaging device

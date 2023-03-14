@@ -36,7 +36,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'modality' do
-        subject { facet_fields['media_modality_sim'] }
+        subject { facet_fields['media_modality_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Modality")
           expect(subject.limit).to eq(10)

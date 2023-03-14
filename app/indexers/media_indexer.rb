@@ -32,8 +32,6 @@ class MediaIndexer < Morphosource::WorkIndexer
       # add modality facet
       modality = object.modality
       solr_doc['media_modality_tesim'] = modality
-      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
-      solr_doc['media_modality_sim'] = modality
       solr_doc['media_modality_ssim'] = modality
 
       solr_doc['media_parent_id_ssim'] = object.media_parent&.id

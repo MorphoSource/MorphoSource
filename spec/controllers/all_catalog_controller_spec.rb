@@ -25,7 +25,7 @@ RSpec.describe AllCatalogController, :type => :controller do
       end
 
       describe 'human readable media type' do
-        subject { facet_fields['human_readable_media_type_sim'] }
+        subject { facet_fields['human_readable_media_type_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Media Type")
           expect(subject.limit).to eq(5)
@@ -33,7 +33,7 @@ RSpec.describe AllCatalogController, :type => :controller do
       end
 
       describe 'media modality' do
-        subject { facet_fields['media_modality_sim'] }
+        subject { facet_fields['media_modality_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Media Modality")
           expect(subject.limit).to eq(6)
@@ -41,7 +41,7 @@ RSpec.describe AllCatalogController, :type => :controller do
       end
 
       describe 'media physical object type' do
-        subject { facet_fields['media_physical_object_type_sim'] }
+        subject { facet_fields['media_physical_object_type_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Media Object Type")
           expect(subject.limit).to eq(5)
@@ -49,7 +49,7 @@ RSpec.describe AllCatalogController, :type => :controller do
       end
 
       describe 'media organization' do
-        subject { facet_fields['media_organization_sim'] }
+        subject { facet_fields['media_organization_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Media Organization")
           expect(subject.limit).to eq(5)

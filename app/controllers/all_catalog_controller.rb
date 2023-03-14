@@ -15,10 +15,10 @@ class AllCatalogController < CatalogController
     # facet fields
     config.add_facet_field solr_name("human_readable_type", :facetable), label: "Work Type", limit: 5
     # media
-    config.add_facet_field solr_name("human_readable_media_type", :facetable), label: "Media Type", limit: 5
-    config.add_facet_field solr_name("media_modality", :facetable), label: "Media Modality", limit: 6
-    config.add_facet_field solr_name("media_physical_object_type", :facetable), label: "Media Object Type", limit: 5
-    config.add_facet_field solr_name("media_organization", :facetable), label: "Media Organization", limit: 5
+    config.add_facet_field solr_name("human_readable_media_type", :symbol), label: "Media Type", limit: 5
+    config.add_facet_field solr_name("media_modality", :symbol), label: "Media Modality", limit: 6
+    config.add_facet_field solr_name("media_physical_object_type", :symbol), label: "Media Object Type", limit: 5
+    config.add_facet_field solr_name("media_organization", :symbol), label: "Media Organization", limit: 5
     config.add_facet_field solr_name("keyword", :facetable), label: "Media Tag", limit: 5
     config.add_facet_field solr_name('member_of_collections', :symbol), label: 'Media Team / Project', limit: 5
     # objects

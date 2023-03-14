@@ -28,7 +28,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'human readable media type' do
-        subject { facet_fields['human_readable_media_type_sim'] }
+        subject { facet_fields['human_readable_media_type_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Type")
           expect(subject.limit).to eq(10)

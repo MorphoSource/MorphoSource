@@ -11,7 +11,7 @@ class MediaCatalogController < CatalogController
 
     # facet fields
     # type
-    config.add_facet_field solr_name("human_readable_media_type", :facetable), label: "Type", limit: 10
+    config.add_facet_field solr_name("human_readable_media_type", :symbol), label: "Type", limit: 10
     # modality - inherited from imaging event modality
     config.add_facet_field solr_name("media_modality", :facetable), label: "Modality", limit: 10
     # object type - specimen or cho

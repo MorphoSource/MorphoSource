@@ -26,7 +26,9 @@ class MediaCatalogController < CatalogController
     # collections
     config.add_facet_field solr_name('member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :collection_title_by_id
     config.add_facet_field solr_name('member_of_project_ids', :symbol), label: 'Project', limit: 10, helper_method: :collection_title_by_id
-
+    # users
+    config.add_facet_field solr_name('user_with_ownership_name', :symbol), label: 'Data Managed By', limit: 10
+    config.add_facet_field solr_name('depositor_name', :symbol), label: 'Data Uploaded By', limit: 10
 
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
@@ -78,6 +80,8 @@ class MediaCatalogController < CatalogController
     config.add_show_field solr_name('z_spacing', :stored_searchable)
     config.add_show_field solr_name('doi', :stored_searchable)
     config.add_show_field solr_name('ark', :stored_searchable)
+    config.add_show_field solr_name('user_with_ownership_name', :stored_searchable)
+    config.add_show_field solr_name('depositor_name', :stored_searchable)
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields

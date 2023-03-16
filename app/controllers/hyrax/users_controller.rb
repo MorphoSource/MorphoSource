@@ -53,7 +53,7 @@ module Hyrax
                    [::User.batch_user_key, ::User.audit_user_key])
             .references(:trophies)
             .order(sort_value)
-            .page(params[:page]).per(10)
+            .page(params[:page] || 1).per(per_page_param)
       end
 
       # You can override base_query to return a list of arguments
@@ -80,6 +80,11 @@ module Hyrax
         else
           sort
         end
+      end
+
+      # only admins may use this (otherwise json route too open)
+      def per_page_param
+        ( current_user&.admin? && params[:per_page] ) ? params[:per_page] : 10
       end
   end
 end

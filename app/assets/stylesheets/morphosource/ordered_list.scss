@@ -2,3 +2,11 @@
 .ui-sortable-handle{
   cursor: pointer;
 }
+
+tr.highlight {
+  background-color: #f9f9f9;
+
+  i.fa-eye {
+    color: green;
+  }
+}

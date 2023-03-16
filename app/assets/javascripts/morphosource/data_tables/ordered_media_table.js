@@ -10,14 +10,15 @@ var createOrderedMediaTable = function(selector) {
     columnDefs: [
       { orderable: false, targets: 0 }, // disable sorting
       { orderable: false, targets: 1 },
-      { orderable: false, targets: -1 },
       //{ visible: false, targets: 9 }, // hide column by default
       //{ width: "20%", targets: -1 },
       { responsivePriority: 1, targets: 0 },
       { responsivePriority: 2, targets: 1 },
-      { responsivePriority: 3, targets: 2 },
-      { responsivePriority: 4, targets: -1 }, // rightmost column
-      { responsivePriority: 5, targets: -2 }
+      { responsivePriority: 3, targets: 3 },
+      { responsivePriority: 4, targets: 4 },
+      { responsivePriority: 5, targets: 5 },
+      { responsivePriority: 6, targets: 6 },
+      { responsivePriority: 7, targets: 2 },
     ],
     pageLength: 10,
     bPaginate: false,

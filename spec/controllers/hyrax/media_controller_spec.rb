@@ -147,35 +147,35 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       let(:main_app) { Rails.application.routes.url_helpers }
 
       describe 'via URL' do
-        let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )} 
+        let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )}
 
-        context 'user is not logged in but has a temporary access URL' do 
+        context 'user is not logged in but has a temporary access URL' do
           it 'user is authorized with temp link flash msg' do
             get :showcase, params: { id: work.id, token: temporary_link.token }
             expect(response.status).to eq(200)
             expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
           end
         end
-  
+
         context 'user is logged in, has temporary access URL, but already has access to media' do
           before do
             sign_in user
             work.read_users += [user]
             work.save
           end
-  
+
           it 'user is authorized with temp link flash msg' do
             get :showcase, params: { id: work.id, token: temporary_link.token }
             expect(response.status).to eq(200)
             expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
           end
         end
-  
+
         context 'user is logged in, has temporary access URL, and does not have access to media' do
           before do
             sign_in user
           end
-  
+
           it 'user is authorized with temp link flash msg' do
             get :showcase, params: { id: work.id, token: temporary_link.token }
             expect(response.status).to eq(200)
@@ -197,57 +197,57 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       describe 'via cookie' do
         let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
         let(:main_app) { Rails.application.routes.url_helpers }
-  
+
         before do
           allow(subject).to receive(:cookies).and_return(cookie_jar)
         end
-  
+
         describe 'for individual media access' do
-          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )} 
+          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )}
 
           context 'user is not logged in but has a temporary access cookie' do
             it 'user is authorized with temp link flash msg' do
-              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
               expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
             end
           end
-    
+
           context 'user is logged in, has temporary access cookie, but already has access to media' do
             before do
               sign_in user
               work.read_users += [user]
               work.save
             end
-    
+
             it 'user is authorized without temp link flash msg' do
-              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
               expect(response.flash[:notice]).to eq('')
             end
           end
-    
+
           context 'user is logged in, has temporary access cookie, and does not have access to media' do
             before do
               sign_in user
             end
-    
+
             it 'user is authorized with temp link flash msg' do
-              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
               expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
@@ -258,8 +258,8 @@ RSpec.describe Hyrax::MediaController, type: :controller do
             it 'user is redirected to sign-in page without authorization' do
               temporary_link.destroy!
 
-              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
 
@@ -279,27 +279,27 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
           context 'user is not logged in but has a temporary access cookie' do
             it 'user is authorized' do
-              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
             end
           end
-   
+
           context 'user is logged in, has temporary access cookie, and does not have access to media' do
             before do
               sign_in user
             end
-    
+
             it 'user is authorized with temp link flash msg' do
-              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
             end
@@ -309,8 +309,8 @@ RSpec.describe Hyrax::MediaController, type: :controller do
             it 'user is redirected to sign-in page without authorization' do
               temporary_link.destroy!
 
-              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
 
@@ -318,7 +318,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
               expect(response.status).to eq(302)
               expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
             end
-          end  
+          end
         end
       end
     end
@@ -706,9 +706,9 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       end
     end
 
-    context 'fund code setting and creation' do 
+    context 'fund code setting and creation' do
       context 'media has no current fund code' do
-        before do 
+        before do
           allow(subject.current_user).to receive(:admin?).and_return(true)
         end
 
@@ -719,7 +719,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       end
 
       context 'media has already been associated to fund codes' do
-        before do 
+        before do
           allow(subject.current_user).to receive(:admin?).and_return(true)
           patch :update, params: { id: curation_concern, media: {select_new_fund_code: fund_code1.id}, action: "update" }
           patch :update, params: { id: curation_concern, media: {select_new_fund_code: fund_code2.id}, action: "update" }
@@ -735,6 +735,22 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           expect(curation_concern.active_fund_code_association.fund_code_id).to eq(fund_code1.id)
         end
       end
+    end
+  end
+
+  describe 'media_list_url' do
+    let(:media_list_collection_type)  { FactoryBot.create(:media_list_collection_type) }
+    let(:media_list)                  { FactoryBot.create(:media_list, collection_type_gid: media_list_collection_type.gid, depositor: depositor.ms_id) }
+    it 'is the url for the media list show page' do
+      expect(subject.media_list_url(media_list)).to include("media_lists/#{media_list.id}")
+    end
+  end
+
+  describe 'sequential_section_list_url' do
+    let(:sequential_section_list_collection_type) { FactoryBot.create(:sequential_section_list_collection_type) }
+    let(:sequential_section_list)                 { FactoryBot.create(:sequential_section_list, collection_type_gid: sequential_section_list_collection_type.gid, depositor: depositor.ms_id) }
+    it 'is the url for the sequential section list show page' do
+      expect(subject.sequential_section_list_url(sequential_section_list)).to include("sequential_section_lists/#{sequential_section_list.id}")
     end
   end
 end

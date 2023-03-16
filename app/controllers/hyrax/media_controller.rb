@@ -56,7 +56,7 @@ module Hyrax
       # note: most curation concern methods get concern from curation_concern_from_search_results
       # this refactors that - only for showcase method - to be more direct, like collections
       # if this works well, should refactor to use this across the board
-      curation_concern_solr_doc = curation_concern.present? ? 
+      curation_concern_solr_doc = curation_concern.present? ?
         ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
       raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
 
@@ -273,8 +273,8 @@ module Hyrax
     def characterize
       if current_user.admin?
         media_work = Media.find(params[:id])
-        # Note: For remote file, the original_file.content is empty, therefore original_file.present? returns false 
-        if media_work.is_remote_backed? 
+        # Note: For remote file, the original_file.content is empty, therefore original_file.present? returns false
+        if media_work.is_remote_backed?
           if !media_work.file_sets.first.present?
             flash[:error] = "Media has no FileSet. Characterization job not created."
           elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
@@ -297,7 +297,7 @@ module Hyrax
     def create_derivatives
       if current_user.admin?
         media_work = Media.find(params[:id])
-        if media_work.is_remote_backed? 
+        if media_work.is_remote_backed?
           if !media_work.file_sets.first.present?
             flash[:error] = "Media has no FileSet. Create derivatives job not created."
           elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
@@ -314,6 +314,14 @@ module Hyrax
         end
       end
       redirect_to(main_app.media_showcase_edit_path(id: params[:id])) and return
+    end
+
+    def media_list_url(list)
+      URI.join(root_url, main_app.media_list_media_path(list)).to_s
+    end
+
+    def sequential_section_list_url(list)
+      URI.join(root_url, main_app.sequential_section_list_media_path(list)).to_s
     end
 
     private

@@ -77,7 +77,7 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     # these get redirected to projects/teams
-    get 'collections/:id', to: 'collections#show', as: 'collection_show'
+    get 'collections/:id', to: 'collections#show', as: 'collection'
     get 'collections/:id/about', to: 'collections#about'
     get 'collections/:id/facet/:id', to: 'collections#facet'
 
@@ -137,7 +137,7 @@ Rails.application.routes.draw do
       get 'teams/:id/media_organization_transfer_status', to: 'teams#media_organization_transfer_status', as: 'team_media_organization_transfer_status'
 
       # media_lists
-      get 'media_lists/:id', to: 'media_lists#show', as: 'media_list_media'
+      get 'media_lists/:id', to: 'media_lists#show', as: 'media_list'
       get 'media_lists/:id/biological_specimens', to: 'biological_specimens#show', as: 'media_list_specimens'
       get 'media_lists/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'media_list_chos'
       get 'media_lists/:id/about', to: 'media_lists#about', as: 'media_list_about'

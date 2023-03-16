@@ -37,7 +37,7 @@ module Morphosource
         when "morphosource/collections/media_lists"
           main_app.media_list_path(@collection.id)
         when "morphosource/collections/media_lists/sequential_section_lists"
-          main_app.sequential_section_list_media_path(@collection.id)
+          main_app.sequential_section_list_path(@collection.id)
         when "morphosource/collections/biological_specimens"
           if @collection.project?
             main_app.project_specimens_path(@collection.id)

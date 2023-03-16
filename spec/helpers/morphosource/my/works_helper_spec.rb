@@ -24,7 +24,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
 
     context "morphosource/collections/media_lists/sequential_section_lists" do
       let(:controller_param)  { "morphosource/collections/media_lists/sequential_section_lists" }
-      it { expect(helper.search_action_for_dashboard).to eq(main_app.sequential_section_list_media_path(collection.id)) }
+      it { expect(helper.search_action_for_dashboard).to eq(main_app.sequential_section_list_path(collection.id)) }
     end
 
     context "morphosource/collections/biological_specimens" do

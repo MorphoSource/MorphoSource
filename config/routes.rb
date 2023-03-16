@@ -154,7 +154,7 @@ Rails.application.routes.draw do
 
       # sequential_section_lists
       scope module: :media_lists do
-        get 'sequential_section_lists/:id', to: 'sequential_section_lists#show', as: 'sequential_section_list_media'
+        get 'sequential_section_lists/:id', to: 'sequential_section_lists#show', as: 'sequential_section_list'
         get 'sequential_section_lists/:id/about', to: 'sequential_section_lists#about', as: 'sequential_section_list_about'
         get 'sequential_section_lists/:collection_id/facet/:id', to: 'sequential_section_lists#facet', as: 'sequential_section_list_media_facet'
 

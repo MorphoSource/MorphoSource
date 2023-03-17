@@ -44,7 +44,7 @@ RSpec.describe Morphosource::Admin::DataCurationController, type: :controller do
 
       it 'redirects to the team' do
         post :apply_permission_template, params: params
-        expect(response).to redirect_to(team_media_path(team))
+        expect(response).to redirect_to(team_path(team))
       end
     end
   end

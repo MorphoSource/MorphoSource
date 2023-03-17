@@ -212,6 +212,6 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
       subject.instance_variable_set(:@collection, collection)
     end
 
-    it { expect(subject.search_action_for_dashboard).to eq(main_app.project_media_path(id: collection.id, locale: 'en')) }
+    it { expect(subject.search_action_for_dashboard).to eq(main_app.project_path(id: collection.id, locale: 'en')) }
   end
 end

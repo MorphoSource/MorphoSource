@@ -31,9 +31,9 @@ module Morphosource
         when "morphosource/my/cultural_heritage_objects"
           main_app.my_cultural_heritage_objects_path
         when "morphosource/collections/projects"
-          main_app.project_media_path(@collection.id)
+          main_app.project_path(@collection.id)
         when "morphosource/collections/teams"
-          main_app.team_media_path(@collection.id)
+          main_app.team_path(@collection.id)
         when "morphosource/collections/media_lists"
           main_app.media_list_path(@collection.id)
         when "morphosource/collections/media_lists/sequential_section_lists"

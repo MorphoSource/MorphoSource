@@ -104,7 +104,7 @@ module Morphosource
         elsif @_request.fullpath.include? '/about'
           redirect_to main_app.send("#{@collection.collection_type.machine_id}_about_path")
         else
-          redirect_to main_app.send("#{@collection.collection_type.machine_id}_media_path")
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_path")
         end
       end
 

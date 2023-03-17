@@ -4,9 +4,9 @@ module Hyrax
 
       def collection_link(collection)
         if collection.project?
-          link = link_to(collection.title.first, Rails.application.routes.url_helpers.project_media_path(collection.id))
+          link = link_to(collection.title.first, Rails.application.routes.url_helpers.project_path(collection.id))
         elsif collection.team?
-          link = link_to(collection.title.first, Rails.application.routes.url_helpers.team_media_path(collection.id))
+          link = link_to(collection.title.first, Rails.application.routes.url_helpers.team_path(collection.id))
         else
           link = ''
         end

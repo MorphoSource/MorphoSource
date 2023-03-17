@@ -96,7 +96,7 @@ Rails.application.routes.draw do
       get 'collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show'
 
       # projects
-      get 'projects/:id', to: 'projects#show', as: 'project_media'
+      get 'projects/:id', to: 'projects#show', as: 'project'
       get 'projects/:id/biological_specimens', to: 'biological_specimens#show', as: 'project_specimens'
       get 'projects/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'project_chos'
       get 'projects/:id/about', to: 'projects#about', as: 'project_about'
@@ -116,7 +116,7 @@ Rails.application.routes.draw do
       get 'projects/chos/:id', to: redirect('projects/%{id}/cultural_heritage_objects')
 
       # teams
-      get 'teams/:id', to: 'teams#show', as: 'team_media'
+      get 'teams/:id', to: 'teams#show', as: 'team'
       get 'teams/:id/biological_specimens', to: 'biological_specimens#show', as: 'team_specimens'
       get 'teams/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'team_chos'
       get 'teams/:id/about', to: 'teams#about', as: 'team_about'
@@ -342,8 +342,6 @@ Rails.application.routes.draw do
     # derivative (thumbnail and 3D/2D/AV preview) downloads
     get '/downloads/:id', to: 'derivative_downloads#show', as: 'download'
   end
-
-
 
   mount Hyrax::Engine, at: '/'
   resources :welcome, only: 'index'

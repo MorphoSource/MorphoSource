@@ -85,9 +85,9 @@ RUN mkdir -p /app/fits && \
   unzip fits.zip && \
   rm fits.zip && \
   chmod a+x /app/fits/fits.sh
-COPY ./vendor/fits_config/fits.xml /app/fits/xml
-COPY ./vendor/fits_config/exiftool/exiftool_dicom_to_fits.xslt /app/fits/xml/exiftool
-COPY ./vendor/fits_config/exiftool/exiftool_xslt_map.xml /app/fits/xml/exiftool
+COPY --chown=1001:501 ./vendor/fits_config/fits.xml /app/fits/xml
+COPY --chown=1001:501 ./vendor/fits_config/exiftool/exiftool_dicom_to_fits.xslt /app/fits/xml/exiftool
+COPY --chown=1001:501 ./vendor/fits_config/exiftool/exiftool_xslt_map.xml /app/fits/xml/exiftool
 ENV PATH="${PATH}:/app/fits"
 
 # Install Blender 3D mesh derivative tool

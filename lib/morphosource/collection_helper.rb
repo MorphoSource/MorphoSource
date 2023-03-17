@@ -12,9 +12,11 @@ module Morphosource
     end
 
     # show page main/media tab
-    def media_tab_url(collection)
-      main_app.send("#{collection_type_machine_id(collection)}_media_path", collection)
+    def collection_media_path(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_path", collection)
     end
+    alias media_tab_url collection_media_path
+
 
     # show page main/specimens tab
     def specimens_tab_url(collection)
@@ -58,10 +60,6 @@ module Morphosource
 
     def media_requests_csv_url(collection)
       main_app.send("#{collection_type_machine_id(collection)}_media_requests_path", id: collection.id, :format => :csv, :per_page => 1000000)
-    end
-
-    def collection_media_path(collection)
-      main_app.send("#{collection_type_machine_id(collection)}_media_path", collection)
     end
 
     def collection_edit_path(collection)
@@ -114,11 +112,11 @@ module Morphosource
 
     def showpage_url(id, tab)
       if page_is_team?
-        Rails.application.routes.url_helpers.team_media_path(id) + "\##{tab}"
+        Rails.application.routes.url_helpers.team_path(id) + "\##{tab}"
       elsif page_is_organization?
         Rails.application.routes.url_helpers.show_organization_path(id) + "\##{tab}"
       elsif page_is_project?
-        Rails.application.routes.url_helpers.project_media_path(id) + "\##{tab}"
+        Rails.application.routes.url_helpers.project_path(id) + "\##{tab}"
       end
     end
 

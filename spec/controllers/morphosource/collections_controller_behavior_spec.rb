@@ -182,7 +182,7 @@ RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
       context 'collection is a team' do
         it 'redirects to the teams path' do
           get "/collections/#{team.id}"
-          expect(response).to redirect_to(main_app.team_media_path(team.id))
+          expect(response).to redirect_to(main_app.team_path(team.id))
           get "/collections/#{team.id}/biological_specimens"
           expect(response).to redirect_to(main_app.team_specimens_path(team.id))
           get "/collections/#{team.id}/cultural_heritage_objects"
@@ -194,7 +194,7 @@ RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
       context 'collection is a project' do
         it 'redirects to the projects path' do
           get "/collections/#{project.id}"
-          expect(response).to redirect_to(main_app.project_media_path(project.id))
+          expect(response).to redirect_to(main_app.project_path(project.id))
           get "/collections/#{project.id}/biological_specimens"
           expect(response).to redirect_to(main_app.project_specimens_path(project.id))
           get "/collections/#{project.id}/cultural_heritage_objects"

@@ -278,7 +278,6 @@ class CatalogController < ApplicationController
     respond_to do |format|
       format.html { store_preferred_view }
       format.rss  { render :layout => false }
-      format.atom { render :layout => false }
       format.csv  do
         @new_document_list = @document_list.map { |d| d.to_semantic_values }
       end

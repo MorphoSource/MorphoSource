@@ -19,7 +19,13 @@ ActiveSupport::Reloader.to_prepare do
     end
   end
 
-  Riiif::Image.authorization_service = Hyrax::IIIFAuthorizationService
+  Riiif::Image.authorization_service = Morphosource::IIIFAuthorizationService
+
+  # monkey patch class to support auth via temp link credentials
+  Riiif::ImagesController.class_eval do
+    include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
+    self.temporary_access_link_class = TemporaryMediaAccessLink
+  end
 
   Riiif.not_found_image = Rails.root.join('app', 'assets', 'images', 'us_404.svg')
   Riiif.unauthorized_image = Rails.root.join('app', 'assets', 'images', 'us_404.svg')

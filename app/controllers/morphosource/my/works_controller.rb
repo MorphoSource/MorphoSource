@@ -28,8 +28,6 @@ module Morphosource
           format.html {
             render 'morphosource/my/works/index'
           }
-          format.rss  { render layout: false }
-          format.atom { render layout: false }
         end
       end
 

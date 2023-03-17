@@ -206,7 +206,7 @@ RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
       context 'collection is a media list' do
         it 'redirects to the media_list path' do
           get "/collections/#{media_list.id}"
-          expect(response).to redirect_to(main_app.media_list_media_path(media_list.id))
+          expect(response).to redirect_to(main_app.media_list_path(media_list.id))
           get "/collections/#{media_list.id}/biological_specimens"
           expect(response).to redirect_to(main_app.media_list_specimens_path(media_list.id))
           get "/collections/#{media_list.id}/cultural_heritage_objects"
@@ -218,7 +218,7 @@ RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
       context 'collection is a sequential section list' do
         it 'redirects to the sequential_section_list path' do
           get "/collections/#{sequential_section_list.id}"
-          expect(response).to redirect_to(main_app.sequential_section_list_media_path(sequential_section_list.id))
+          expect(response).to redirect_to(main_app.sequential_section_list_path(sequential_section_list.id))
           get "/collections/#{sequential_section_list.id}/biological_specimens"
           expect(response).to redirect_to(main_app.sequential_section_list_specimens_path(sequential_section_list.id))
           get "/collections/#{sequential_section_list.id}/cultural_heritage_objects"

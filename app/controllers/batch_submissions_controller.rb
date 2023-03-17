@@ -349,6 +349,7 @@ class BatchSubmissionsController < ApplicationController
         error_msg = "media.media_file: Please enter a value."
       else
         if val.match(/^https?:\/\//).present?
+byebug
           if !current_user.can_submit_remote_file?(val)
             error_msg = "media.media_file: The remote file path is invalid or not allowed. Please make sure you have remote file submitter permissions and that the domain for the remote file is allowed."
           else

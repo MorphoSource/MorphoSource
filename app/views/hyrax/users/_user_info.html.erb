@@ -24,7 +24,9 @@
     <% if user.remote_file_submitter? %>
     <div class="row">
       <div class="col-xs-6 showcase-label">Allowed Remote File Domains</div>
-      <div class="col-xs-6 showcase-value break-all"><%= user.allowed_domains %></div>
+      <div class="col-xs-6 showcase-value break-all">
+        <%= render partial: 'user_allowed_domains', collection: user.allowed_domains, as: :item %>
+      </div>
     </div>
     <% end %>
   <% end %>

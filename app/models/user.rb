@@ -183,13 +183,37 @@ class User < ApplicationRecord
     end
   end
 
-  def can_submit_remote_file?(url)
-    return false unless self.remote_file_submitter?
-    return false unless self.allowed_remote_source.present?
-    white_list = self.allowed_remote_source.split(/\n+|\r+/).reject(&:empty?)
+  def can_submit_remote_file?(url, org_id)
+    return false unless self.remote_file_submitter? && org_id.present?
+    begin
+      team_id = Organization.find(org_id)&.team_id&.first
+    rescue ActiveFedora::ObjectNotFoundError
+      Rails.logger.debug "Error in can_submit_remote_file: organization not found"
+      return false
+    end
+    return false unless team_id.present? && allowed_domains[team_id].present?
+    white_list = allowed_domains[team_id].split(/\n+|\r+/).reject(&:empty?)
     uri = URI(url)
     return false unless uri.host.present?
     return (white_list.include? uri.host)
+  end
+
+  # This returns allowed domains from all teams the user has depositor and above access to
+  def allowed_domains
+    return {} unless self.remote_file_submitter?
+    domains = {}
+    ids = roles.map{ |r| r.name.gsub(/(_managers|_editors|_depositors)/, "") if r.name.match(/(_managers|_editors|_depositors)/) }.compact
+    ids.each do |id|
+      begin
+        c = Collection.find(id)
+        if c.organization.present? && c.can_submit_remote_files? && c.allowed_remote_source.present?
+          domains[id] = c.allowed_remote_source
+        end
+      rescue ActiveFedora::ObjectNotFoundError
+        Rails.logger.debug "Error in finding allowed domains: collection not found"
+      end
+    end
+    return domains
   end
 
   def charge_api_user?

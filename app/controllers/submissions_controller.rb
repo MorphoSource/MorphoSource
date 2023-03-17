@@ -143,7 +143,7 @@ class SubmissionsController < ApplicationController
   end
 
   def validate_remote_file_ajax
-    if !current_user.can_submit_remote_file? params[:u]
+    if !current_user.can_submit_remote_file?(params[:u], params[:o])
       status = "error"
       message = "The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed."
       http_code = ""

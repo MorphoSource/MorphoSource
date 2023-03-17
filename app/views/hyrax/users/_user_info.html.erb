@@ -21,10 +21,10 @@
       <div class="col-xs-6 showcase-value break-all"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
     </div>
     <% end %>
-    <% if user.allowed_remote_source %>
+    <% if user.remote_file_submitter? %>
     <div class="row">
-      <div class="col-xs-6 showcase-label"><%= t("morphosource.dashboard.profiles.edit_primary.allowed_remote_source") %></div>
-      <div class="col-xs-6 showcase-value break-all"><%= user.allowed_remote_source %></div>
+      <div class="col-xs-6 showcase-label">Allowed Remote File Domains</div>
+      <div class="col-xs-6 showcase-value break-all"><%= user.allowed_domains %></div>
     </div>
     <% end %>
   <% end %>

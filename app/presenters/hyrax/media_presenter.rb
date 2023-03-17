@@ -17,7 +17,7 @@ module Hyrax
       :remote_origin_url,
       to: :solr_document
 
-    attr_accessor :file_origin, :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
+    attr_accessor :organization_id, :file_origin, :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_taxonomy_title, :physical_object_link, :physical_object_id,
       :device_and_facility, :device_link, :device, :device_id, :device_label, :device_manufacturer, :device_description,
       :device_organization_institution, :device_modality, :device_modality_term,
@@ -237,6 +237,7 @@ module Hyrax
       @image_height = []
       @compression = []
       @color_depth = []
+      @organization_id = ""
       @file_status = ""
       @file_origin = (media.file_origin == "Local") ? "" : media.file_origin # don't display if Local
       temp = ""
@@ -445,6 +446,7 @@ module Hyrax
 
         physical_object = ActiveFedora::Base.find(@imaging_event.physical_object_id.to_a)&.first if @imaging_event.physical_object_id.present?
         if physical_object.present?
+          @organization_id = media.organization_id&.first
           if physical_object.class == BiologicalSpecimen
             biological_specimen = physical_object
             @physical_object_title = biological_specimen.title.first

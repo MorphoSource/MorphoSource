@@ -29,8 +29,9 @@ class ImportUrlJob < Hyrax::ApplicationJob
     @operation = operation
 
     if file_set.is_remote_backed?
-      unless user.can_submit_remote_file? file_set.import_url
+      unless user.can_submit_remote_file?(file_set.import_url, file_set.parent.organization_id&.first)
         send_error('User is not allowed to submit the remote file')
+        Rails.logger.debug("User is not allowed to submit the remote file")
         return false
       end
       # url might not have an extension or not the actual content type extension

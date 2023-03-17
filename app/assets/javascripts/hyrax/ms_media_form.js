@@ -659,7 +659,7 @@ var remoteFileCheckAndSubmit = function(view=null) {
   disablePage();
   console.log("remote file check... ");
   $.ajax({
-    url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url),
+    url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url) + '&o=' + $('#organization_id').val(),
     type: 'POST',
     dataType: 'json',
     complete: function (xhr, status) {

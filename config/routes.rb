@@ -437,11 +437,14 @@ Rails.application.routes.draw do
 
       # request manager
       get 'dashboard/my/request_manager', action: :index, controller: :request_managers, as: 'request_manager'
-      get 'dashboard/my/previous_requests', action: :index, controller: :request_managers, as: 'previous_requests'
       put 'approve_download', action: :approve_download, controller: :request_managers, as: 'approve_download'
       put 'clear_request', action: :clear_request, controller: :request_managers, as: 'clear_request'
       put 'deny_download', action: :deny_download, controller: :request_managers, as: 'deny_download'
-      put 'edit_expiration', action: :edit_expiration, controller: :request_managers, as: 'edit_expiration'
+
+      # previous requests
+      get 'dashboard/my/previous_requests', action: :index, controller: :previous_requests, as: 'previous_requests'
+      put 'edit_expiration', action: :edit_expiration, controller: :previous_requests, as: 'edit_expiration'
+
 
       # fund codes
       get 'dashboard/my/fund_codes/(:id)', action: :index, controller: :fund_codes, as: 'my_fund_codes'

@@ -91,4 +91,15 @@ RSpec.describe 'cart items routing', type: :routing do
     route = { controller: 'morphosource/my/request_managers', action: 'deny_download' }
     expect(:put => 'deny_download').to route_to(route)
   end
+
+  # previous requests
+  it 'has a route for the previous requests page' do
+    route = { controller: 'morphosource/my/previous_requests', action: 'index' }
+    expect(:get => 'dashboard/my/previous_requests').to route_to(route)
+  end
+
+  it 'has a route to edit an approved request' do
+    route = { controller: 'morphosource/my/previous_requests', action: 'edit_expiration' }
+    expect(:put => 'edit_expiration').to route_to(route)
+  end
 end

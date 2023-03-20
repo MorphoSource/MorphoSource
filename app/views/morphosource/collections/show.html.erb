@@ -59,6 +59,13 @@ provide :page_title, construct_page_title(@presenter.title)
     </div>
   </div><!-- /row -->
 
+  <!-- Collection description -->
+  <% if @presenter.description.present? %>
+  <div class="row row-no-gutters no-gutter-padding">
+    <p><%= @presenter.description&.first %></p>
+  </div>
+  <% end %>
+
   <!-- Subcollections -->
   <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>
       <div class="hyc-blacklight hyc-bl-title">

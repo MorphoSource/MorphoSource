@@ -836,14 +836,14 @@ html {
     li {
       border-bottom: 3px solid transparent;
       a, a:hover {
-        border-top: none;
+        // border-top: none;
       }
     }
     li.active {
       border-bottom: 3px solid $line-color;
       a, a:hover {
         margin-right: 0;
-        border-top: none;
+        // border-top: none;
       }
     }
   }

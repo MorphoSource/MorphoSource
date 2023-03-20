@@ -10,5 +10,9 @@
       <%= ' · ' + @cho_count.to_s + ' Object'.pluralize(@cho_count) %>
     <% end %>
   </span>
-   · Managed by: <%= @presenter.collection_managers %>
+  <% if @presenter.creator %>
+    · Creator: <%= @presenter.creator.join(', ') %>
+  <% end %>
+  · Managed by: <%= @presenter.collection_managers %>
+  
 </div>

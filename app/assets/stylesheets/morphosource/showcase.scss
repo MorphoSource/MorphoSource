@@ -533,7 +533,7 @@ html {
   }
 
   .batch-action-buttons {
-    .btn {
+    .btn, .text {
       margin-right: 4px;
       font-size: 11px;
     }
@@ -541,10 +541,10 @@ html {
   }
   @media (max-width: 768px) {
     .batch-action-buttons {
-      .btn, form {
+      .btn, .text, form {
         width: 100%;
       }
-      .btn {
+      .btn, .text {
         margin: 0 0 3px;
       }
     }
@@ -1490,6 +1490,19 @@ html {
 
   [class*="col-"] {
     padding-left: 0;
+  }
+}
+
+.showcase .collection-media-preview {
+  float: none;
+  margin: 0 auto;
+  height: 300px;
+}
+
+@media (min-width: 992px) {
+  .showcase .collection-media-preview {
+    float: right !important;
+    height: 100%;
   }
 }
 

@@ -3,7 +3,21 @@
   <div>
       <div class="hyc-blacklight hyc-bl-results">
         <div class="row row-no-gutters no-padding">
-          <div class="col-xs-7 no-padding">
+          <div class="col-xs-12 col-md-5 no-padding collection-media-preview" style="padding-left: 10px !important;">
+            <div style="margin-top: 27px; margin-bottom: 10px; text-align: center;">
+              <div style="font-weight: bold;">Media Preview</div>
+            </div>
+            <%= image_tag "viewermock.png", style: 'width: 100%; height: 80%;' %>
+            <div style="margin-top: 5px; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+              <a class="btn btn-sm btn-default" style="min-width: 70px">Previous</a>
+              <div style="margin-left: 5px; margin-right: 5px;">
+                <b><a href="#">Media 000200016: Illegal Bunny [Mesh] [CT]</a></b>
+              </div>
+              <a class="btn btn-sm btn-default" style="min-width: 70px">Next</a>
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-7 no-padding">
             <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
               <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
 
@@ -34,22 +48,6 @@
                   </table>
 
             <% end # / form_tag %>
-          </div>
-
-          <div class="col-xs-5 no-padding" style="padding-left: 10px !important;">
-            <div style="margin-top: 27px; margin-bottom: 10px; text-align: center;">
-              <div style="font-weight: bold;">Media Preview</div>
-            </div>
-            <div>
-              <%= image_tag "viewermock.png", style: 'max-width: 100%;' %>
-            </div>
-            <div style="margin-top: 5px; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
-              <a class="btn btn-sm btn-default" style="min-width: 70px">Previous</a>
-              <div style="margin-left: 5px; margin-right: 5px;">
-                <b><a href="#">Media 000200016: Illegal Bunny [Mesh] [CT]</a></b>
-              </div>
-              <a class="btn btn-sm btn-default" style="min-width: 70px">Next</a>
-            </div>
           </div>
         </div>
       </div>

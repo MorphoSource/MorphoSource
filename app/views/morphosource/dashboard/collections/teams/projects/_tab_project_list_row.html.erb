@@ -8,7 +8,7 @@
     <!-- logo here -->
   </td>
   <td>
-    <%= link_to document["title_tesim"].first, project_media_path(id), target: "_blank", id: "src_copy_link_#id}" %>
+    <%= link_to document["title_tesim"].first, project_path(id), target: "_blank", id: "src_copy_link_#id}" %>
   </td>
   <td><%= document["media_count"] %></td>
   <td><%= display_date(document["system_modified_dtsi"]) %></td>

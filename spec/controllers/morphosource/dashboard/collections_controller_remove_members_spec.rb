@@ -36,7 +36,7 @@ RSpec.describe Morphosource::Dashboard::Collections::TeamsController, type: :con
 
       it 'redirects to the collection media page' do
         put :update, params: { id: team.id, collection: { members: 'remove' }, batch_document_ids: [ work.id ] }
-        expect(response).to redirect_to(team_media_path(team.id))
+        expect(response).to redirect_to(team_path(team.id))
       end
 
       context 'removing a single work' do

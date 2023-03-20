@@ -11,13 +11,13 @@ class MediaCatalogController < CatalogController
 
     # facet fields
     # type
-    config.add_facet_field solr_name("human_readable_media_type", :facetable), label: "Type", limit: 10
+    config.add_facet_field solr_name("human_readable_media_type", :symbol), label: "Type", limit: 10
     # modality - inherited from imaging event modality
-    config.add_facet_field solr_name("media_modality", :facetable), label: "Modality", limit: 10
+    config.add_facet_field solr_name("media_modality", :symbol), label: "Modality", limit: 10
     # object type - specimen or cho
-    config.add_facet_field solr_name("media_physical_object_type", :facetable), label: "Object Type", limit: 10
+    config.add_facet_field solr_name("media_physical_object_type", :symbol), label: "Object Type", limit: 10
     # organization that owns the object
-    config.add_facet_field solr_name("media_organization", :facetable), label: "Organization", limit: 10
+    config.add_facet_field solr_name("media_organization", :symbol), label: "Organization", limit: 10
     # organization that manages the imaging device
     config.add_facet_field solr_name("media_device_facility_organization", :symbol), label: "Imaging Facility", limit: 10
 
@@ -26,7 +26,9 @@ class MediaCatalogController < CatalogController
     # collections
     config.add_facet_field solr_name('member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :collection_title_by_id
     config.add_facet_field solr_name('member_of_project_ids', :symbol), label: 'Project', limit: 10, helper_method: :collection_title_by_id
-
+    # users
+    config.add_facet_field solr_name('user_with_ownership_name', :symbol), label: 'Data Managed By', limit: 10
+    config.add_facet_field solr_name('depositor_name', :symbol), label: 'Data Uploaded By', limit: 10
 
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
@@ -78,6 +80,8 @@ class MediaCatalogController < CatalogController
     config.add_show_field solr_name('z_spacing', :stored_searchable)
     config.add_show_field solr_name('doi', :stored_searchable)
     config.add_show_field solr_name('ark', :stored_searchable)
+    config.add_show_field solr_name('user_with_ownership_name', :stored_searchable)
+    config.add_show_field solr_name('depositor_name', :stored_searchable)
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields

@@ -39,7 +39,7 @@ RSpec.describe SubmissionsController, type: :controller do
         expect(JSON.parse(response.body)).to include_json(
           "status"=>"error", 
           "http_code"=>"", 
-          "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domains are allowed.", 
+          "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
           "resp_file_ext"=>""
         )
       end
@@ -58,7 +58,7 @@ RSpec.describe SubmissionsController, type: :controller do
         expect(JSON.parse(response.body)).to include_json(
           "status"=>"error", 
           "http_code"=>"", 
-          "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domains are allowed.", 
+          "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
           "resp_file_ext"=>""
         )
       end

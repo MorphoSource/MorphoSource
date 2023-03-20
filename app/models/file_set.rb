@@ -120,10 +120,12 @@ class FileSet < ActiveFedora::Base
   # this method is called after CharacterizeJob and CreateDerivativesJob
   def set_final_attributes
     if is_remote_backed?
-      self.mime_type_of_remote = characterization_proxy.mime_type
-      characterization_proxy.mime_type = "message/external-body; access-type=URL; URL=\"#{import_url}\""
-      characterization_proxy.save
-      self.save
+      if (!self.mime_type_of_remote.present?) || (self.mime_type_of_remote.include? "message/external-body")
+        self.mime_type_of_remote = characterization_proxy.mime_type
+        characterization_proxy.mime_type = "message/external-body; access-type=URL; URL=\"#{import_url}\""
+        characterization_proxy.save
+        self.save
+      end
     end
   end
 

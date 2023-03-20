@@ -15,6 +15,10 @@ class PrepareCharacterizeJob < Hyrax::ApplicationJob
 
     wrapper = JobIoWrapper.find_by(file_set_id: work.id)
     path_hint = wrapper.uploaded_file ? wrapper.uploaded_file.uploader.path : wrapper.path
-    CharacterizeJob.perform_later(work, work.original_file.id, path_hint)
+    if File.exists?(path_hint)
+      CharacterizeJob.perform_later(work, work.original_file.id, path_hint)
+    else
+      raise 'PrepareCharacterizeJob: Temp file does not exist'
+    end
   end
 end

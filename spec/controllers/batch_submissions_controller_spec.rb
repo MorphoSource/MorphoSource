@@ -162,6 +162,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
           expect(html).to include 'imaging_event.ct.pixel_spacing_calibration: Please enter a valid value: "Geometry", "Fiducial"'
           expect(html).to include 'media.keyword: Value(s) must be letters, accented letters, numbers, and spaces. Use comma as separator.'
+          expect(html).to include 'media.media_file: The remote file path is invalid or not allowed. Please make sure you have remote file submitter permissions and that the domain for the remote file is allowed.'
         end
       end
 

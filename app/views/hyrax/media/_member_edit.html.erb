@@ -3,13 +3,17 @@ member = member_edit
 file_set = member_edit
 %>
 <tr class="<%= dom_class(member) %> attributes">
-  <td class="thumbnail">
+  <td class="w-30 thumbnail">
     <%= render_thumbnail_tag(@presenter, {}, {suppress_link:true}) %>
   </td>
-  <td class="w-25 attribute attribute-filename ensure-wrapped">
-    <%= member.link_name %>
+  <td class="w-50 attribute attribute-filename ensure-wrapped">
+    <% if @presenter.file_origin == "Remote" %>
+      <%= @presenter.remote_origin_url.first %>
+    <% else %>
+      <%= member.link_name %>
+    <% end %>
     </td>
-  <td class="w-25">
+  <td class="w-20">
     <% if file_set.user_can_perform_any_action? %>
       <% if can?(:destroy, file_set.id) %>
 

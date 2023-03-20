@@ -124,7 +124,7 @@ module BatchSubmissionTools
         end
 
         def create_new_attributes
-          ::Importer::Factory::BiologicalSpecimenFactory.new(
+          ::BatchSubmissionsImporter::Factory::BiologicalSpecimenFactory.new(
             initial_attrs.except(:id)
           ).create_attributes
         end

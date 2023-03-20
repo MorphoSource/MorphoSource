@@ -143,35 +143,23 @@ class SubmissionsController < ApplicationController
   end
 
   def validate_remote_file_ajax
-    file_ext = ""
     if !current_user.can_submit_remote_file? params[:u]
       status = "error"
-      message = "The path is invalid or not allowed.  Please make sure you have the permissions and the domains are allowed."
+      message = "The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed."
       http_code = ""
+      resp_file_ext = ""
     else
-      begin
-        head = RestClient::Request.execute(method: :head, url: params[:u], timeout: 15)
-        http_code = head.code
-        file_ext = file_extension_from_content_type(head.headers[:content_type])
-        status = "success"
-        message = ""
-      rescue RestClient::Exception => e
-        message = "#{e.message}"
-        http_code = e.http_code        
-      rescue Exception => e
-        message = "#{e.message}"
-        http_code = ""        
-      end
-
-      unless status == "success"
-        status = http_code.present? ? "error" : "fail"
-      end
+      rf = MorphosourceHelper::RemoteFileInfo.new(params[:u])
+      status = rf.status
+      http_code = rf.http_code
+      message = rf.message
+      resp_file_ext = rf.file_ext
     end
     response_object = {
       status: status,
       http_code: http_code,
       message: message,
-      resp_file_ext: file_ext
+      resp_file_ext: resp_file_ext
     }
     render :json => response_object
   end

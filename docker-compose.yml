@@ -128,8 +128,8 @@ services:
     volumes:
       - fcrepo:/data
       - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
-    #ports: # Re-open ports for local dev environments
-    #  - 8080:8080
+    ports:
+     - 8080:8080
     networks:
       - morphosource
 
@@ -152,8 +152,8 @@ services:
   solr:
     image: solr:7.7.3
     container_name: solr
-    #ports: # Re-open ports for local dev environments
-    #  - 8983:8983
+    ports:
+     - 8983:8983
     command:
       - sh
       - "-c"

@@ -6,6 +6,6 @@
     <%= application_name %> currently has <%= published_mesh_number %> published 3D models, largely biological skeletal material. You can view all of these in your browser with no required software. <%= open_download_mesh_number %> of these media can be freely downloaded for further visualization and measurement. The remaining <%= published_mesh_number - open_download_mesh_number %> media can usually be downloaded after a simple request process. You can use our search page to see all of these published web-viewable 3D models, and you can refine the search further by anatomical element or by genus and species.
   </p>
   <div style="text-align: center; font-weight: 500;">
-    <%= link_to 'Search Published 3D Models', main_app.media_search_path('f[human_readable_media_type_sim][]' => 'Mesh') %>
+    <%= link_to 'Search Published 3D Models', main_app.media_search_path('f[human_readable_media_type_ssim][]' => 'Mesh') %>
   </div>
 </div>

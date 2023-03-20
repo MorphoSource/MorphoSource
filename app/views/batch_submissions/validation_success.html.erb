@@ -5,9 +5,9 @@
 
 <p><%= row_count %> <%= "row".pluralize(row_count) %> parsed 
 <% if warn_rows.present? %>
-	with <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-warnings">warnings</a>.
+	with <a class="link-alert" aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-warnings">warnings</a>.
 
-	<div id="collapse-block-warnings" class="collapse-block collapse out" aria-expanded="true">
+	<div id="collapse-block-warnings" class="collapse-block collapse out mb-3" aria-expanded="true">
 		<% warn_rows.map do |row_number, row| %>
 			<ul class="warn-list">Row <%= row_number %>: <%= warn_messages[row_number].to_wrapped_html('li') %></ul>
 		<% end %>

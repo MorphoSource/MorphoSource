@@ -56,11 +56,20 @@ module BatchSubmissionTools
           addl_attrs.merge!(visibility_mapped(@media_ownership_fields["visibility"]))
 
           p = media_file_path
-          addl_attrs[:file] = [p] if p.present?          
+          files_dir = nil
+          if p.present?
+            addl_attrs[:file] = [p] 
+            if is_remote_backed?
+              files_dir = :is_remote 
+              addl_attrs[:remote_origin_url] = [p]
+            else 
+              files_dir = File.dirname(p)
+            end
+          end
 
-          Importer::Factory::MediaFactory.new(
+          BatchSubmissionsImporter::Factory::MediaFactory.new(
             initial_attrs.except(:id, :media_file).merge(addl_attrs), 
-            ( File.dirname(p) if p.present? ),
+            files_dir,
             false
           ).create_attributes
         end
@@ -109,15 +118,20 @@ module BatchSubmissionTools
           end
         end
 
+        def is_remote_backed?
+          @is_remote_backed ||= initial_attrs[:media_file].first.match(/^https?:\/\//).present?
+        end
+
         def media_file_path
           if Dir.exists?(media_path) && initial_attrs[:media_file]&.first.present?
-            p = File.join(media_path, initial_attrs[:media_file]&.first) 
-            if File.exists?(p)
-              return p
+            # todo: use another way to check if this is for remote file
+            if is_remote_backed?
+              return initial_attrs[:media_file].first 
             else
-              return p #remove after initial testing
-              # raise "File at path #{p} not found"
+              return File.join(media_path, initial_attrs[:media_file].first) 
             end
+          else
+            return nil
           end
         end
 

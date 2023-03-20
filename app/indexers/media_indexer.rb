@@ -19,8 +19,12 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['download_access_person_ssim'] = object.download_users
       solr_doc['owner_ssim'] = object.owner
       solr_doc['user_with_ownership_ssi'] = object.user_with_ownership
-      solr_doc['user_with_ownership_name_tesim'] = User.find_by_user_key(object.user_with_ownership)&.name_and_email
-      solr_doc['depositor_name_tesim'] = User.find_by_user_key(object.depositor)&.name_and_email
+      user_with_ownership_name = User.find_by_user_key(object.user_with_ownership)&.name_and_email
+      solr_doc['user_with_ownership_name_tesim'] = user_with_ownership_name
+      solr_doc['user_with_ownership_name_ssim'] = user_with_ownership_name
+      depositor_name = User.find_by_user_key(object.depositor)&.name_and_email
+      solr_doc['depositor_name_tesim'] = depositor_name
+      solr_doc['depositor_name_ssim'] = depositor_name
       solr_doc['download_reviewer_ssim'] = object.download_reviewer
       solr_doc['ark_ssim'] = object.ark
       solr_doc['doi_ssim'] = object.doi
@@ -28,14 +32,10 @@ class MediaIndexer < Morphosource::WorkIndexer
       # add media type facet
       mt = object.human_readable_media_type
       solr_doc['human_readable_media_type_tesim'] = mt
-      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
-      solr_doc['human_readable_media_type_sim'] = mt
       solr_doc['human_readable_media_type_ssim'] = mt
       # add modality facet
       modality = object.modality
       solr_doc['media_modality_tesim'] = modality
-      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
-      solr_doc['media_modality_sim'] = modality
       solr_doc['media_modality_ssim'] = modality
 
       solr_doc['media_parent_id_ssim'] = object.media_parent&.id
@@ -88,8 +88,6 @@ class MediaIndexer < Morphosource::WorkIndexer
 
       # add physical object facet
       solr_doc['media_physical_object_type_tesim'] = physical_object_type
-      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
-      solr_doc['media_physical_object_type_sim'] = physical_object_type
       solr_doc['media_physical_object_type_ssim'] = physical_object_type
       # physical_object fields
       solr_doc['physical_object_id_ssim'] = physical_object_id
@@ -112,8 +110,6 @@ class MediaIndexer < Morphosource::WorkIndexer
       # add organization facet
       solr_doc['media_organization_tesim'] = organization_titles
       solr_doc['media_organization_ssim'] = organization_titles
-      # TODO: Delete _sim once media are reindexed w/ssim and catalog controller updated
-      solr_doc['media_organization_sim'] = organization_titles
       solr_doc['media_organization_id_ssim'] = organization_id
       solr_doc['media_organization_id_tesim'] = organization_id
 

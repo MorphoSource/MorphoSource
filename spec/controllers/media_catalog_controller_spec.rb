@@ -17,7 +17,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       let(:facet_fields) { config.facet_fields }
 
       it 'has 9 facet fields' do
-        expect(facet_fields.count).to eq(9)
+        expect(facet_fields.count).to eq(11)
       end
 
       describe 'generic type' do
@@ -28,7 +28,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'human readable media type' do
-        subject { facet_fields['human_readable_media_type_sim'] }
+        subject { facet_fields['human_readable_media_type_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Type")
           expect(subject.limit).to eq(10)
@@ -36,7 +36,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'modality' do
-        subject { facet_fields['media_modality_sim'] }
+        subject { facet_fields['media_modality_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Modality")
           expect(subject.limit).to eq(10)
@@ -44,7 +44,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'physical object type' do
-        subject { facet_fields['media_physical_object_type_sim'] }
+        subject { facet_fields['media_physical_object_type_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Object Type")
           expect(subject.limit).to eq(10)
@@ -52,7 +52,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'organization' do
-        subject { facet_fields['media_organization_sim'] }
+        subject { facet_fields['media_organization_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Organization")
           expect(subject.limit).to eq(10)
@@ -82,6 +82,22 @@ RSpec.describe MediaCatalogController, :type => :controller do
           expect(subject.label).to eq("Project")
           expect(subject.limit).to eq(10)
           expect(subject.helper_method).to eq(:collection_title_by_id)
+        end
+      end
+
+      describe 'user_with_ownership_name' do
+        subject { facet_fields['user_with_ownership_name_ssim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Data Managed By")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'depositor_name' do
+        subject { facet_fields['depositor_name_ssim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Data Uploaded By")
+          expect(subject.limit).to eq(10)
         end
       end
     end

@@ -39,7 +39,7 @@ RSpec.describe Morphosource::My::Collections::MediaLists::SequentialSectionLists
   end
 
   describe 'search_action_url' do
-    it 'is media_list_media_path' do
+    it 'is media_list_path' do
       expect(subject.search_action_url).to include("/dashboard/my/sequential_section_lists?locale=en")
     end
   end

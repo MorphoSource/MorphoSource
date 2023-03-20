@@ -77,7 +77,7 @@ Rails.application.routes.draw do
 
   scope module: :morphosource do
     # these get redirected to projects/teams
-    get 'collections/:id', to: 'collections#show', as: 'collection_show'
+    get 'collections/:id', to: 'collections#show', as: 'collection'
     get 'collections/:id/about', to: 'collections#about'
     get 'collections/:id/facet/:id', to: 'collections#facet'
 
@@ -96,7 +96,7 @@ Rails.application.routes.draw do
       get 'collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show'
 
       # projects
-      get 'projects/:id', to: 'projects#show', as: 'project_media'
+      get 'projects/:id', to: 'projects#show', as: 'project'
       get 'projects/:id/biological_specimens', to: 'biological_specimens#show', as: 'project_specimens'
       get 'projects/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'project_chos'
       get 'projects/:id/about', to: 'projects#about', as: 'project_about'
@@ -116,7 +116,7 @@ Rails.application.routes.draw do
       get 'projects/chos/:id', to: redirect('projects/%{id}/cultural_heritage_objects')
 
       # teams
-      get 'teams/:id', to: 'teams#show', as: 'team_media'
+      get 'teams/:id', to: 'teams#show', as: 'team'
       get 'teams/:id/biological_specimens', to: 'biological_specimens#show', as: 'team_specimens'
       get 'teams/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'team_chos'
       get 'teams/:id/about', to: 'teams#about', as: 'team_about'
@@ -137,7 +137,7 @@ Rails.application.routes.draw do
       get 'teams/:id/media_organization_transfer_status', to: 'teams#media_organization_transfer_status', as: 'team_media_organization_transfer_status'
 
       # media_lists
-      get 'media_lists/:id', to: 'media_lists#show', as: 'media_list_media'
+      get 'media_lists/:id', to: 'media_lists#show', as: 'media_list'
       get 'media_lists/:id/biological_specimens', to: 'biological_specimens#show', as: 'media_list_specimens'
       get 'media_lists/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'media_list_chos'
       get 'media_lists/:id/about', to: 'media_lists#about', as: 'media_list_about'
@@ -154,7 +154,7 @@ Rails.application.routes.draw do
 
       # sequential_section_lists
       scope module: :media_lists do
-        get 'sequential_section_lists/:id', to: 'sequential_section_lists#show', as: 'sequential_section_list_media'
+        get 'sequential_section_lists/:id', to: 'sequential_section_lists#show', as: 'sequential_section_list'
         get 'sequential_section_lists/:id/about', to: 'sequential_section_lists#about', as: 'sequential_section_list_about'
         get 'sequential_section_lists/:collection_id/facet/:id', to: 'sequential_section_lists#facet', as: 'sequential_section_list_media_facet'
 
@@ -342,8 +342,6 @@ Rails.application.routes.draw do
     # derivative (thumbnail and 3D/2D/AV preview) downloads
     get '/downloads/:id', to: 'derivative_downloads#show', as: 'download'
   end
-
-
 
   mount Hyrax::Engine, at: '/'
   resources :welcome, only: 'index'

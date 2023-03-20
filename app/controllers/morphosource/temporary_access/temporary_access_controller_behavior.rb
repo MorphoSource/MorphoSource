@@ -82,6 +82,10 @@ module Morphosource
         end
       end
 
+      def any_temporary_link_cookie_exists?
+        cookies.any? { |key, value| key.include?('ta_') }
+      end
+
       private
 
         # Methods that validate and set temporary access based on URL params
@@ -159,10 +163,6 @@ module Morphosource
             document_id_attribute => id, 
             :token => cookies.encrypted[cookie_name(id)]
           )
-        end
-
-        def any_temporary_link_cookie_exists?
-          cookies.any? { |key, value| key.include?('ta_') }
         end
 
         def temporary_access_link_from_cookie(id)

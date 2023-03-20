@@ -338,6 +338,10 @@ $( document ).ready(function() {
       $('#physical-object-details #physical-object-cho-type').text(po.cho_type || '');
       $('#physical-object-details #physical-object-material').text(po.material || '');
 
+      /* set the org id (if found) for validate_remote_file_ajax call.  
+         This is called when selecting org in edit media */
+      $('#associated_organization_id').val(po.organization_id || '');
+
       if (po.idigbio_uuid) {
         $('#physical-object-details #physical-object-source').text('iDigBio');
       } else {
@@ -659,7 +663,7 @@ var remoteFileCheckAndSubmit = function(view=null) {
   disablePage();
   console.log("remote file check... ");
   $.ajax({
-    url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url) + '&o=' + $('#organization_id').val(),
+    url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url) + '&o=' + $('#associated_organization_id').val(),
     type: 'POST',
     dataType: 'json',
     complete: function (xhr, status) {

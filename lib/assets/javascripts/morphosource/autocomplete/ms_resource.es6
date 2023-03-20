@@ -73,7 +73,8 @@ export default class MorphosourceResource extends Resource {
                                 is_type_specimen: obj.is_type_specimen,
                                 occurrence_id: obj.occurrence_id,
                                 source_of_record: obj.source_of_record,
-                                sex: obj.sex
+                                sex: obj.sex,
+                                organization_id: obj.organization_id
                               };
                             })
     } else if (this.url.indexOf('cultural_heritage_objects') != -1) {

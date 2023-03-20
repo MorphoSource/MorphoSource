@@ -16,8 +16,8 @@ provide :page_title, construct_page_title(@presenter.title)
   </div>
 
   <div class="row team-header">
-    <div class="col-xs-12 col-sm-8 col-md-8 title-wrapper">
-      <div class="col-sm-12 col-md-12 flex">
+    <div class="col-xs-12 col-sm-8 col-md-8 title-wrapper no-padding">
+      <div class="col-sm-12 col-md-12 flex no-padding">
         <div class="team-logo">
           <% unless @presenter.logo_record.blank? %>
             <% lr = @presenter.logo_record.first %>

@@ -175,7 +175,11 @@ $ms-dark-blue: #002c64;
   color: red !important;  
 }
 
-.no-gutter > [class*='col-'] {
+.no-padding {
+	padding: 0 !important;
+}
+
+.no-gutter-padding {
   padding-right:0 !important;
   padding-left:0 !important;
 }

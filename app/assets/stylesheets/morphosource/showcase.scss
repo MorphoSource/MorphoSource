@@ -254,7 +254,9 @@ html {
     display: flex;
     width: 100%;
     justify-content: space-between;
-    margin-right: 0px;
+    margin-right: 0;
+    margin-left: 0;
+    padding: 4px 0 !important;
 
     @media (max-width: 767px) {
       flex-wrap: wrap;
@@ -307,6 +309,8 @@ html {
       width: 225px;
       flex-grow: 0;
       justify-content: end;
+      margin: 0;
+      padding: 4px 0;
 
       .dropdown-menu {
         min-width: 320px !important;
@@ -847,6 +851,8 @@ html {
 
   .panel-default {border: none;}
 
+  .panel-body { padding: 15px 0; }
+
   .edit_media .panel {
     margin-bottom: 0 !important;
     box-shadow: none;
@@ -863,7 +869,7 @@ html {
     border-radius: 0;
   }
   .btn-wrapper.col-xs-12 {
-    padding: 16px;
+    padding: 16px 0;
   }
 
   .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big,
@@ -1472,6 +1478,18 @@ html {
     span.glyphicon-sort-by-attributes,span.glyphicon-sort-by-attributes-alt {
       opacity:  0.7;
     }
+  }
+}
+
+/* Works list table for media lists specifically */
+.showcase #datatable-media-list_wrapper .row {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+
+  [class*="col-"] {
+    padding-left: 0;
   }
 }
 

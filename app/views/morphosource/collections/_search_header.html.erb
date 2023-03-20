@@ -1,14 +1,14 @@
 <%= render 'did_you_mean' %>
 <%= render 'facets' %>
 <%= render 'constraints' %>
-<div class="row" style="display: flex; flex-direction: row; justify-content: flex-end; flex-wrap: wrap;">
+<div class="row row-no-gutters no-padding" style="display: flex; flex-direction: row; justify-content: flex-end; flex-wrap: wrap;">
 
   <% if morphosource_physical_objects_controller? %>
     <div class="col-xs-12 col-sm-5 col-md-4 batch-action-buttons">
     </div>
   <% elsif @document_list.count > 0 %>
     <div class="col-xs-12 col-sm-5 col-md-4 batch-action-buttons">
-      <div class="row">
+      <div class="row row-no-gutters no-gutter-padding">
           <%= render 'batch_actions' %>
       </div>
     </div>

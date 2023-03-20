@@ -61,7 +61,7 @@ provide :page_title, construct_page_title(@presenter.title)
 
   <!-- Collection description -->
   <% if @presenter.description.present? %>
-  <div class="row row-no-gutters no-gutter-padding">
+  <div class="row row-no-gutters no-gutter-padding mb-1">
     <p><%= @presenter.description&.first %></p>
   </div>
   <% end %>

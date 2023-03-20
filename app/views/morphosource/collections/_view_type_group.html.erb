@@ -2,6 +2,10 @@
 <div class="view-type">
   <span class="sr-only"><%= t('blacklight.search.view_title') %></span>
   <div class="view-type-group btn-group">
+    <a title="Media Preview Collapse/Expand" class="active btn btn-default" href="#">
+      <span class="glyphicon glyphicon-picture"></span>
+      <span class="caption">Media Preview Collapse/Expand</span>
+    </a>
     <%  document_index_view_controls.each do |view, config| %>
     <% collection_type = @collection.collection_type.machine_id.pluralize %>
       <%= link_to url_for(search_state.to_h.merge(view: view)).gsub("/collections/","/#{collection_type}/"), title: view_label(view), class: "btn btn-default view-type-#{ view.to_s.parameterize } #{"active" if document_index_view_type == view}" do %>

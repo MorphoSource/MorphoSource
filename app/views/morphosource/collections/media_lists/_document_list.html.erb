@@ -1,60 +1,57 @@
 <% if @document_list.count > 0 %>
   <!-- Works -->
   <div>
-    <div class="col-xs-7 no-padding">
       <div class="hyc-blacklight hyc-bl-results">
-        <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
-          <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
+        <div class="row row-no-gutters no-padding">
+          <div class="col-xs-7 no-padding">
+            <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
+              <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
 
-          
-              <table id="datatable-media-list" class="table teams-projects">
-                <caption class="sr-only">List of media items in this team</caption>
-                <thead>
-                <tr>
-                  <th class="checkbox no-sort"><input type="checkbox" id="select-all-for-download" /></th>
-                  <th><%= sortable_table_header('Media', 'id') %></th>
-                  <th style="max-width:300px; padding-top: 8px; padding-bottm: 8px; padding-left: 5px; padding-right: 5px;"><%= sortable_table_header('ID', 'id') %></th>
-                  <th><%= sortable_table_header('Part', 'part_si') %></th>
-                  <th><%= sortable_table_header('Object', 'physical_object_title_si') %></th>
-                  <th><%= sortable_table_header('Taxonomy', 'taxonomy_si') %></th>
-                  <th><%= sortable_table_header('Type', 'human_readable_media_type_si') %></th>
-                  <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
-                  <th style="padding: 8px 0px 8px 0px;"><%= sortable_table_header('Publication Status', 'publication_status_si') %></th>
-                </tr>
-                </thead>
-                <% if @can_edit %>
-                  <tbody id="sortable-media-list" data-url=<%= order_media_path(@collection) %> data-sort=<%= order_media_sort(params["sort"]) %> data-page=<%= order_media_page(params["page"]) %> data-per-page=<%= order_media_per_page(params["per_page"]) %> >
-                      <%= render partial: 'edit_document_list_row', collection: @document_list, as: :document, locals: { collection_type: @collection.collection_type.title.downcase, member_ids: Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}").map{|d| d["id"]} } %>
-                  </tbody>
-                <% else %>
-                  <tbody>
-                    <%= render partial: 'document_list_row', collection: @document_list, as: :document %>
-                  </tbody>
-                <% end %>
-              </table>
-            
+                  <table id="datatable-media-list" class="table teams-projects">
+                    <caption class="sr-only">List of media items in this team</caption>
+                    <thead>
+                    <tr>
+                      <th class="checkbox no-sort"><input type="checkbox" id="select-all-for-download" /></th>
+                      <th><%= sortable_table_header('Media', 'id') %></th>
+                      <th style="max-width:300px; padding-top: 8px; padding-bottm: 8px; padding-left: 5px; padding-right: 5px;"><%= sortable_table_header('ID', 'id') %></th>
+                      <th><%= sortable_table_header('Part', 'part_si') %></th>
+                      <th><%= sortable_table_header('Object', 'physical_object_title_si') %></th>
+                      <th><%= sortable_table_header('Taxonomy', 'taxonomy_si') %></th>
+                      <th><%= sortable_table_header('Type', 'human_readable_media_type_si') %></th>
+                      <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
+                      <th style="padding: 8px 0px 8px 0px;"><%= sortable_table_header('Publication Status', 'publication_status_si') %></th>
+                    </tr>
+                    </thead>
+                    <% if @can_edit %>
+                      <tbody id="sortable-media-list" data-url=<%= order_media_path(@collection) %> data-sort=<%= order_media_sort(params["sort"]) %> data-page=<%= order_media_page(params["page"]) %> data-per-page=<%= order_media_per_page(params["per_page"]) %> >
+                          <%= render partial: 'edit_document_list_row', collection: @document_list, as: :document, locals: { collection_type: @collection.collection_type.title.downcase, member_ids: Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}").map{|d| d["id"]} } %>
+                      </tbody>
+                    <% else %>
+                      <tbody>
+                        <%= render partial: 'document_list_row', collection: @document_list, as: :document %>
+                      </tbody>
+                    <% end %>
+                  </table>
 
-            
+            <% end # / form_tag %>
           </div>
-        <% end # / form_tag %>
-      </div>
-    </div>
-    <div class="col-xs-5 no-padding">
-      <div style="margin-top: 27px; margin-bottom: 10px; display: flex;">
-        <div style="flex: 1"></div>
-        <div style="font-weight: bold;">Media Preview</div>
-        <div style="font-weight: bold; flex: 1; text-align: right;"><a href="#">Collapse >></a></div>
-      </div>
-      <div>
-        <%= image_tag "viewermock.png", style: 'max-width: 100%;' %>
-      </div>
-      <div style="margin-top: 5px; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
-        <a class="btn btn-sm btn-default" style="min-width: 70px">Previous</a>
-        <div style="margin-left: 5px; margin-right: 5px;">
-          <b><a href="#">Media 000200016: Illegal Bunny [Mesh] [CT]</a></b>
+
+          <div class="col-xs-5 no-padding" style="padding-left: 10px !important;">
+            <div style="margin-top: 27px; margin-bottom: 10px; text-align: center;">
+              <div style="font-weight: bold;">Media Preview</div>
+            </div>
+            <div>
+              <%= image_tag "viewermock.png", style: 'max-width: 100%;' %>
+            </div>
+            <div style="margin-top: 5px; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+              <a class="btn btn-sm btn-default" style="min-width: 70px">Previous</a>
+              <div style="margin-left: 5px; margin-right: 5px;">
+                <b><a href="#">Media 000200016: Illegal Bunny [Mesh] [CT]</a></b>
+              </div>
+              <a class="btn btn-sm btn-default" style="min-width: 70px">Next</a>
+            </div>
+          </div>
         </div>
-        <a class="btn btn-sm btn-default" style="min-width: 70px">Next</a>
       </div>
-    </div>
   </div>
 <% end %>

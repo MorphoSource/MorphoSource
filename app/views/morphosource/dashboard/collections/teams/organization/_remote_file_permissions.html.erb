@@ -20,13 +20,11 @@
         </div>
       </div>
     </div>
+    <div class="text-center mt-1">
     <% if @form.can_submit_remote_files == "Yes" %>
       <%= submit_tag 'Update Remote File Submission Settings', class: 'btn btn-sm' %>
     <% else %>
       <%= submit_tag 'Update Remote File Submission Settings', class: 'btn btn-sm', disabled: !current_user.admin? %>
     <% end %>
-
-  <%= hidden_field_tag :type, params[:type] %>
-  <%= hidden_field_tag :stay_on_edit, true %>
-  <%= hidden_field_tag :collection_type_gid, @collection.collection_type_gid %>
+    </div>
 <% end %>

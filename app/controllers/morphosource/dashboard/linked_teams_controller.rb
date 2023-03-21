@@ -50,6 +50,7 @@ module Morphosource
         end
 
         update_organization
+        flash[:notice] = "Permissions updated."
         redirect_back_organization
       end
 

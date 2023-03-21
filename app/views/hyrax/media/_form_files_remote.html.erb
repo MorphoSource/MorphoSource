@@ -7,5 +7,5 @@
 <%# this org id field is being used when making validate_remote_file_ajax call
   for edit page the org id will be available from presenter
   for new submission, the org id will be set if user selects an org in a previous step %>
-<input type="text" id="associated_organization_id" name="associated_organization_id" 
+<input type="hidden" id="associated_organization_id" name="associated_organization_id" 
   value="<%= @presenter.present? ? @presenter.organization_id : '' %>" />

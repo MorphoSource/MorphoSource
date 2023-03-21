@@ -6,11 +6,10 @@ module Morphosource
       include Morphosource::CartItems::RequestManagerItems
       include Morphosource::CartItems::RequestItems
       include Morphosource::CartItems::RequestMessages
-      with_themed_layout 'morphosource_dashboard'      
+      with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items_by_id, only: [:clear_request, :approve_download, :deny_download, :edit_expiration]
       before_action :get_expiration_date_for_approve, only: [:approve_download]
-      before_action :get_expiration_date_for_edit, only: [:edit_expiration]
 
       def index
         get_items_for_tab
@@ -40,12 +39,6 @@ module Morphosource
         redirect_to main_app.request_manager_path
       end
 
-      def edit_expiration
-        mark_as('expired', value: @date)
-        flash[:notice] = get_flash('expiration')
-        redirect_to main_app.previous_requests_path
-      end
-
       def send_response_messages(items, action)
         if items.count == 1
           send_response_message(items.first, action)
@@ -73,24 +66,24 @@ module Morphosource
               message_to_requestor = "<p>Your download request has been #{action} for #{count} media.</p>" +
               "<li><a href='http://#{host_name}/dashboard/my/cart'>View my media cart</a></li>" +
               "<li><a href='http://#{host_name}/dashboard/my/requests'>View my requests</a></li>" +
-              "<p>Please contact #{user_email_link(reviewer)} if you have a question related to this request.</p>" 
+              "<p>Please contact #{user_email_link(reviewer)} if you have a question related to this request.</p>"
               deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
             end
           end
         end
       end
-      
+
       def send_response_message(item, action)
         work = Media.find(item.work_id)
-        if work.present?          
+        if work.present?
           reviewer = current_user
           requestor = User.where(ms_id:item.user_id).first
           if requestor.present?
-            message_to_requestor = "<p>Your download request has been #{action} for: " + 
+            message_to_requestor = "<p>Your download request has been #{action} for: " +
               cart_item_message_content([item], "requestor") + "</p>" +
             "<li><a href='http://#{host_name}/dashboard/my/cart'>View my media cart</a></li>" +
             "<li><a href='http://#{host_name}/dashboard/my/requests'>View my requests</a></li>" +
-            "<p>Please contact #{user_email_link(reviewer)} if you have a question related to this request.</p>" 
+            "<p>Please contact #{user_email_link(reviewer)} if you have a question related to this request.</p>"
             deliver(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
           end
         end
@@ -126,7 +119,7 @@ module Morphosource
           @date = params[:expiration_date]
           unless @date.present?
             flash[:error] = "Expiration date is missing"
-            redirect_to main_app.request_manager_path 
+            redirect_to main_app.request_manager_path
           end
         end
 

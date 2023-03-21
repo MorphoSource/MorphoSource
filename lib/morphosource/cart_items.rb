@@ -83,18 +83,18 @@ module Morphosource
     # Add a first download event with download hash to a CartItem
     def add_first_download(item, download_hash)
       item.update_attributes(
-        date_downloaded: Time.now, 
+        date_downloaded: Time.now,
         download_attempts: 1,
         download_hash: download_hash,
-        download_usage: usage, 
-        download_usage_list: usage_list, 
+        download_usage: usage,
+        download_usage_list: usage_list,
       ) if item.present?
     end
 
     # Add a subsequent (non-first) download event to a CartItem
     def add_subsequent_download(item)
       item.update_attributes(
-        date_downloaded: Time.now, 
+        date_downloaded: Time.now,
         download_attempts: (item.download_attempts || 0) + 1,
       ) if item.present?
     end
@@ -103,12 +103,12 @@ module Morphosource
     def create_downloaded_item(work_id, download_hash)
       item = create_cart_item(work_id)
       item.update_attributes(
-        in_cart: false, 
-        date_downloaded: Time.now, 
+        in_cart: false,
+        date_downloaded: Time.now,
         download_attempts: 1,
         download_hash: download_hash,
-        download_usage: usage, 
-        download_usage_list: usage_list, 
+        download_usage: usage,
+        download_usage_list: usage_list,
       ) if item.present?
     end
 
@@ -154,7 +154,9 @@ module Morphosource
     end
 
     def manager_action
-      self.class == Morphosource::My::RequestManagersController
+      request_manager_classes = [Morphosource::My::RequestManagersController,
+                                 Morphosource::My::PreviousRequestsController]
+      request_manager_classes.include? self.class
     end
 
     def get_items_by_id(ids=id_params)
@@ -174,9 +176,9 @@ module Morphosource
     def access_control_ids_from_work_ids
       return [] unless @work_ids.present?
       solr_docs = ActiveFedora::SolrService.query(
-        "*:*", 
-        rows: 999999, 
-        fq: ['has_model_ssim:Media', "id:(#{@work_ids.join(' OR ')})"], 
+        "*:*",
+        rows: 999999,
+        fq: ['has_model_ssim:Media', "id:(#{@work_ids.join(' OR ')})"],
         fl: ['id', 'accessControl_ssim']
       )
       return solr_docs.map { |d| d['accessControl_ssim']&.first }.compact

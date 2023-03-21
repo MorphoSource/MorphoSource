@@ -1,15 +1,22 @@
-<% org_form = Hyrax::OrganizationForm.new(@organization, @current_ability, controller) %>
-<%= simple_form_for org_form,
-  wrapper: :showcase_default,
-  :url => main_app.update_default_permissions_path(@collection),
-  html: {
-    class: ['editor', 'team_organization_permissions_edit'],
-    multipart: true
-  } do |f|
-%>
-
 <div class="row tab-action-buttons">
+  <% if current_user.admin? && @collection.organization %>
+  <div class="float-right ml-1">
+    <%= render 'morphosource/dashboard/collections/teams/organization/unlink_organization'%>
+  </div>
+  <% end %>
+
+  <div class="float-right">
+  <% org_form = Hyrax::OrganizationForm.new(@organization, @current_ability, controller) %>
+  <%= simple_form_for org_form,
+    wrapper: :showcase_default,
+    :url => main_app.update_default_permissions_path(@collection),
+    html: {
+      class: ['editor', 'team_organization_permissions_edit'],
+      multipart: true
+    } do |f|
+  %>
   <%= f.submit 'Save Default Permissions', class: 'btn btn-primary' %>
+  </div>
 </div>
 
 <div class="col-sm-12">
@@ -146,10 +153,6 @@
   <% end %>
 
   <% end #form %>
-
-  <% if current_user.admin? && @collection.organization %>
-    <%= render 'morphosource/dashboard/collections/teams/organization/unlink_organization'%>
-  <% end %>
 
   <% if @collection.organization %>
     <div class="form-group row">

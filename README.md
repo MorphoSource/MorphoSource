@@ -4,7 +4,7 @@ MorphoSource is a digital repository for 3D, 2D, and AV media content representi
 
 ## Technical stack
 
-The primary elements of the technical stack are as followss. Version numbers reflect the current Docker deployment environment, and may differ slightly in other environments.
+The primary elements of the technical stack are as follows. Version numbers reflect the current Docker deployment environment, and may differ slightly in other environments.
 
 * Ruby on Rails web application ([Ruby 2.6](https://www.ruby-lang.org/en/), [Rails 5.2.8](https://rubyonrails.org/)): Customized Hyrax 2.9 digital repository application. Connects to FCRepo, Solr, and application-specific Postgres DB for application state information.
 * [Fedora (FCRepo) 4.7.5](https://github.com/fcrepo/fcrepo/tree/fcrepo-4.7.5): Preservation and storage layer for binary files and primary record metadata. In production and docker environments, primary record metadata is stored using an FCRepo-managed Postgres DB distinct from the application DB.

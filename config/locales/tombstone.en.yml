@@ -1,0 +1,5 @@
+en:
+  show:
+    page_title: DOI Unavailable
+    title: Dataset associated with DOI is unavailable
+    body: We are sorry, but the dataset associated with the DOI you have accessed is unavailable. This happens only in rare circumstances. It is possible that this DOI was mistakenly created, or the dataset associated with it needed to be withdrawn for some significant reason.

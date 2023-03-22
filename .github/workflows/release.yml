@@ -3,9 +3,10 @@ name: release
 
 on:
   pull_request:
-    types: [closed]
-  push:
-    branches: [master]
+    types: 
+      - closed
+    branches:
+      - master
 
 jobs:
   release:
@@ -18,7 +19,7 @@ jobs:
         uses: nitinses/semver-release-action@v1.0.8
         with:
           release_branch: master
-          generate_release_notes: "true"
+          generate_release_notes: true
           tag_format: "%major%.%minor%.%patch%"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

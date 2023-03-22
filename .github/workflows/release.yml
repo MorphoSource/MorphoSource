@@ -16,5 +16,5 @@ jobs:
           generate_release_notes: true
           tag_format: "%major%.%minor%.%patch%"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
       

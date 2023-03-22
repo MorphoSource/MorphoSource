@@ -43,8 +43,6 @@ module Morphosource
 
         respond_to do |format|
           format.html {}
-          format.rss  { render layout: false }
-          format.atom { render layout: false }
         end
       end
 

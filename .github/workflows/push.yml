@@ -1,6 +1,8 @@
 # Push code commits to dev to GitLab to trigger CI/CD
 name: Push Commit To GitLab
-on: [push]
+on:
+  push:
+    branches: [dev, master]
 jobs:
   build:
     runs-on: ubuntu-latest

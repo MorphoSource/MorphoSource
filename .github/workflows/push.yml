@@ -1,0 +1,22 @@
+# Push code commits to dev to GitLab to trigger CI/CD
+name: Push Commit To GitLab
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with: 
+        fetch-depth: 0
+  
+    - name: Push To GitLab
+      env: 
+        TOKEN: ${{ secrets.GITLAB_ACCESS_TOKEN }}
+        TOKEN_NAME: ${{ secrets.GITLAB_ACCESS_TOKEN_NAME }}
+        BRANCH_NAME: ${{ github.ref_name }} 
+      run: |
+        echo Starting to push repo to gitlab
+        git config user.name "Julie Winchester"
+        git config user.email "julie.winchester@duke.edu"
+        git remote set-url origin "https://$TOKEN_NAME:$TOKEN@gitlab.oit.duke.edu/morphosource/MorphoSource.git"
+        git push origin $BRANCH_NAME

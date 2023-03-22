@@ -342,11 +342,13 @@ $( document ).ready(function() {
          Also show/hide the Remote File Location tab.
          This is called when selecting PO in edit media */
       if (po.organization_id) {
+        console.log('setting associated_organization_id ', po.organization_id)
         $('#associated_organization_id').val(po.organization_id);
-        $("[id$=remote-file-section]").addClass('show').removeClass('hide');
+        $("[id$=remote-file-section]").removeClass('hide');
       } else {
+        console.log('clearing associated_organization_id')
         $('#associated_organization_id').val('');
-        $("[id$=remote-file-section]").removeClass('show').addClass('hide');
+        $("[id$=remote-file-section]").addClass('hide');
       }
 
       if (po.idigbio_uuid) {

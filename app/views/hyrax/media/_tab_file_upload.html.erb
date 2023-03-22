@@ -13,7 +13,7 @@
             </a>
           </li>
           <li role="presentation" id="tab-remote-file-section" 
-            class="<%= current_user.can_submit_remote_file?(nil, @presenter.organization_id) ? "show" : "hide" %>">
+            class="<%= current_user.can_submit_remote_file?(nil, @presenter.team_linked_organization_id) ? "" : "hide" %>">
             <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
               Remote File Location
             </a>
@@ -28,7 +28,7 @@
             </div>
           </div>
           <div role="tabpanel" id="remote-file-section"  
-          class="tab-pane <%= current_user.can_submit_remote_file?(nil, @presenter.organization_id) ? "show" : "hide" %>">
+          class="tab-pane <%= current_user.can_submit_remote_file?(nil, @presenter.team_linked_organization_id) ? "" : "hide" %>">
             <div class="form-tab-content">
               <%= render 'form_files_remote', f: f %>
             </div>

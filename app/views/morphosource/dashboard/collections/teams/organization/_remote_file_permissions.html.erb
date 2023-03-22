@@ -5,26 +5,27 @@
 
   <%= render_edit_field_partial('can_submit_remote_files', f: f) %>
 
-    <div class="form-group row">
-      <div class="allowed-remote-source-wrapper <%= @form.can_submit_remote_files == "Yes" ? "show" : "hide" %>">
-        <div class="col-xs-6 showcase-label">
-        <%= f.label :allowed_remote_source, t("morphosource.dashboard.profiles.edit_primary.allowed_remote_source").html_safe %>
-        </div>
-        <div class="col-xs-6 showcase-value">
-          <%= f.text_area :allowed_remote_source, 
-          cols: 30, 
-          rows: 4, 
-          class: "form-control", 
-            placeholder: 'wwww.example1.com
-  www.example2.com' %>
-        </div>
+  <div class="form-group row">
+    <div class="allowed-remote-source-wrapper <%= @form.can_submit_remote_files == "Yes" ? "show" : "hide" %>">
+      <div class="col-xs-6 showcase-label">
+      <%= f.label :allowed_remote_source, t("morphosource.dashboard.profiles.edit_primary.allowed_remote_source").html_safe %>
+      </div>
+      <div class="col-xs-6 showcase-value">
+        <%= f.text_area :allowed_remote_source, 
+        cols: 30, 
+        rows: 4, 
+        class: "form-control", 
+          placeholder: 'wwww.example1.com
+www.example2.com' %>
       </div>
     </div>
-    <div class="text-center mt-1">
-    <% if @form.can_submit_remote_files == "Yes" %>
-      <%= submit_tag 'Update Remote File Submission Settings', class: 'btn btn-sm' %>
-    <% else %>
-      <%= submit_tag 'Update Remote File Submission Settings', class: 'btn btn-sm', disabled: !current_user.admin? %>
-    <% end %>
-    </div>
+  </div>
+  <div class="text-center mt-1">
+  <% if @form.can_submit_remote_files == "Yes" %>
+    <%= submit_tag 'Update Remote File Submission Settings', class: 'btn btn-sm' %>
+  <% else %>
+    <%= submit_tag 'Update Remote File Submission Settings', class: 'btn btn-sm', disabled: !current_user.admin? %>
+  <% end %>
+  </div>
+  <%= hidden_field_tag :update_remote_file_submission_settings, true %>
 <% end %>

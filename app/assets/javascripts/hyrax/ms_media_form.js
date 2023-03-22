@@ -339,8 +339,15 @@ $( document ).ready(function() {
       $('#physical-object-details #physical-object-material').text(po.material || '');
 
       /* set the org id (if found) for validate_remote_file_ajax call.  
-         This is called when selecting org in edit media */
-      $('#associated_organization_id').val(po.organization_id || '');
+         Also show/hide the Remote File Location tab.
+         This is called when selecting PO in edit media */
+      if (po.organization_id) {
+        $('#associated_organization_id').val(po.organization_id);
+        $("[id$=remote-file-section]").addClass('show').removeClass('hide');
+      } else {
+        $('#associated_organization_id').val('');
+        $("[id$=remote-file-section]").removeClass('show').addClass('hide');
+      }
 
       if (po.idigbio_uuid) {
         $('#physical-object-details #physical-object-source').text('iDigBio');

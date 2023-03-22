@@ -12,13 +12,12 @@
               Upload From Computer / Cloud
             </a>
           </li>
-          <% if current_user.remote_file_submitter? %>
-            <li role="presentation" id="tab-remote-file-section" class="">
-              <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
-                Remote File Location
-              </a>
-            </li>
-          <% end %>
+          <li role="presentation" id="tab-remote-file-section" 
+            class="<%= current_user.can_submit_remote_file?(nil, @presenter.organization_id) ? "show" : "hide" %>">
+            <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
+              Remote File Location
+            </a>
+          </li>
         </ul>
 
         <!-- Tab panes -->
@@ -28,13 +27,12 @@
               <%= render 'form_files_edit', f: f %>
             </div>
           </div>
-          <% if current_user.remote_file_submitter? %>
-            <div role="tabpanel" class="tab-pane" id="remote-file-section">
-              <div class="form-tab-content">
-                <%= render 'form_files_remote', f: f %>
-              </div>
+          <div role="tabpanel" id="remote-file-section"  
+          class="tab-pane <%= current_user.can_submit_remote_file?(nil, @presenter.organization_id) ? "show" : "hide" %>">
+            <div class="form-tab-content">
+              <%= render 'form_files_remote', f: f %>
             </div>
-          <% end %>    
+          </div>
         </div>
 
       <% else %>

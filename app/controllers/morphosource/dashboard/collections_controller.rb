@@ -35,7 +35,11 @@ module Morphosource
 
       def after_update
         respond_to do |format|
-          format.html { redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success') }
+          format.html { 
+            redirect_to team_organization_path(@collection), notice: "Remote file submission settings updated" and return if params[:update_remote_file_submission_settings]
+
+            redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success') 
+          }
           format.json { render json: @collection, status: :updated, location: collection_media_path(@collection) }
         end
       end

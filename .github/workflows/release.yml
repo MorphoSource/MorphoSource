@@ -1,0 +1,25 @@
+# Automatically generates release for pull request to master with tag
+name: release
+
+on:
+  pull_request:
+    types: [closed]
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    if: github.event.pull_request.merged
+    
+    steps:
+      - name: Tag
+        uses: JulieWinchester/semver-release-action@1.0.0
+        with:
+          release_branch: master
+          generate_release_notes: true
+          tag_format: "%major%.%minor%.%patch%"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      

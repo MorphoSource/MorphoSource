@@ -1,0 +1,17 @@
+# Require label on PR to master in order to merge
+name: Require Pull Request Label
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+    branches: [master]
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mheap/github-action-required-labels@v3
+        with:
+          mode: exactly
+          count: 1
+          labels: "patch, minor, major"
+          add_comment: true
+          message: "This PR is being prevented from merging because you have not added a required release label: patch, minor, or major. You'll need to provide a release label before this PR can be merged."

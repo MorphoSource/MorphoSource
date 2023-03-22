@@ -202,10 +202,10 @@ class SubmissionsController < ApplicationController
       organization_title = organization.title
       organization_id = organization.id
       organization_team_id = organization.team&.id
+      organization_team_can_submit_remote_files = organization.team&.can_submit_remote_files
       organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
       organization_data_manager = organization.data_manager&.first
       organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email
-      org_team_can_submit_remote_files = organization.team&.can_submit_remote_files
     else
       status = 'FAIL'
       message = 'Organization does not exist'
@@ -214,10 +214,10 @@ class SubmissionsController < ApplicationController
       organization_title = ''
       organization_id = nil
       organization_team_id = nil
+      organization_team_can_submit_remote_files = nil
       organization_permissions_mode = nil
       organization_data_manager = nil
       organization_data_manager_name = nil
-      org_team_can_submit_remote_files = nil
     end
     response_object = {
       status: status,
@@ -230,7 +230,7 @@ class SubmissionsController < ApplicationController
       organization_permissions_mode: organization_permissions_mode,
       organization_data_manager: organization_data_manager,
       organization_data_manager_name: organization_data_manager_name,
-      org_team_can_submit_remote_files: org_team_can_submit_remote_files
+      org_team_can_submit_remote_files: organization_team_can_submit_remote_files
     }
     render :json => response_object
   end

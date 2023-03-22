@@ -1,0 +1,7 @@
+# Release note settings
+
+changelog:
+  categories:
+    - title: "What's Changed ✨"
+      labels: 
+        - "*"

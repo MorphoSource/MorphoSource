@@ -1,0 +1,23 @@
+# Post to community discussions when release is published
+name: Post Release to Discussions
+on:
+  release:
+    types: [published]
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create A New GitHub Discussion
+        id: create-discussion
+        uses: abirismyname/create-discussion@v1.x
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
+        with:
+          title: Release ${{ github.event.release.name }}
+          body: ${{ github.event.release.body }}
+          repository-id: ${{ secrets.COMMUNITY_REPO_ID }}
+          category-id: ${{ secrets.COMMUNITY_REPO_ANNOUNCEMENTS_CATEGORY_ID }}  
+      - name: Print discussion url and id
+        run: |
+          echo discussion-id: ${{steps.create-discussion.outputs.discussion-id}} 
+          echo discussion-url: ${{steps.create-discussion.outputs.discussion-url}}

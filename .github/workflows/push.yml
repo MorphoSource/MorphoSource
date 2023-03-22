@@ -19,5 +19,5 @@ jobs:
         echo Starting to push repo to gitlab
         git config user.name "Julie Winchester"
         git config user.email "julie.winchester@duke.edu"
-        git remote set-url origin "https://oauth2:${TOKEN}@gitlab.oit.duke.edu/morphosource/MorphoSource.git"
-        git push origin ${BRANCH_NAME}
+        git remote set-url origin "https://oauth2:$TOKEN@gitlab.oit.duke.edu/morphosource/MorphoSource.git"
+        git push origin $BRANCH_NAME

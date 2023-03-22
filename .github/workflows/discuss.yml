@@ -14,7 +14,8 @@ jobs:
           GH_TOKEN: ${{ secrets.COMMUNITY_REPO_ACCESS_TOKEN }}      
         with:
           title: Release ${{ github.event.release.name }}
-          body: "Test body"
+          body: |
+            ${{ github.event.release.body }}
           repository-id: ${{ secrets.COMMUNITY_REPO_ID }}
           category-id: ${{ secrets.COMMUNITY_REPO_ANNOUNCEMENTS_CATEGORY_ID }}  
       - name: Print discussion url and id

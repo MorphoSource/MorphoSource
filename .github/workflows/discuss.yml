@@ -1,6 +1,8 @@
 # Post to community discussions when release is published
 name: Post Release to Discussions
-on: [release]
+on:
+  release:
+    types: [released]
 jobs:
   post:
     runs-on: ubuntu-latest
@@ -9,7 +11,7 @@ jobs:
         id: create-discussion
         uses: abirismyname/create-discussion@v1.x
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
+          GH_TOKEN: ${{ secrets.COMMUNITY_REPO_ACCESS_TOKEN }}      
         with:
           title: Release ${{ github.event.release.name }}
           body: "Test body"

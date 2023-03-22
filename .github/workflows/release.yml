@@ -1,5 +1,5 @@
 # Automatically generates release for pull request to master with tag
-name: release
+name: Generate Release From PR
 
 on:
   pull_request:

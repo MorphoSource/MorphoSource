@@ -1,19 +1,13 @@
 # Automatically generates release for pull request to master with tag
 name: Generate Release From PR
-
 on:
   pull_request:
-    types: 
-      - closed
-    branches:
-      - master
-
+    types: [closed]
+    branches: [master]
 jobs:
   release:
     runs-on: ubuntu-latest
-
     if: github.event.pull_request.merged
-    
     steps:
       - name: Tag
         uses: nitinses/semver-release-action@v1.0.8

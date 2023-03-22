@@ -15,7 +15,7 @@ jobs:
     
     steps:
       - name: Tag
-        uses: JulieWinchester/semver-release-action@1.0.0
+        uses: nitinses/semver-release-action@v1.0.8
         with:
           release_branch: master
           generate_release_notes: "true"

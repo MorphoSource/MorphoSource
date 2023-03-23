@@ -34,7 +34,7 @@ module Morphosource
         ClearOrganizationJob.perform_later(@team.id)
 
         flash[:notice] = 'Clear organization job has been submitted for background processing. Return to team or organization page later.'
-        redirect_to team_organization_path(@team), flash: { notice: flash[:notice] }
+        redirect_to team_edit_path(@team), flash: { notice: flash[:notice] }
       end
 
       def update_permissions

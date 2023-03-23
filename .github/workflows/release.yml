@@ -1,9 +1,9 @@
-# Automatically generates release for pull request to master with tag
+# Automatically generates release for pull request to main with tag
 name: Generate Release From PR
 on:
   pull_request:
     types: [closed]
-    branches: [master]
+    branches: [main]
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -12,7 +12,7 @@ jobs:
       - name: Tag
         uses: nitinses/semver-release-action@v1.0.8
         with:
-          release_branch: master
+          release_branch: main
           generate_release_notes: true
           tag_format: "%major%.%minor%.%patch%"
         env:

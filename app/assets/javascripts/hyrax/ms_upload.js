@@ -9,6 +9,7 @@ $( document ).ready(function() {
   justUploaded = 0;
   uploadStatusOK = true;
   isAutoSave = false;
+  changedPOandSave = false;
   // This file is the default initialization of the fileupload.  If you want to call
   // hyraxUploader with other options (like afterSubmit), then override this file.
   // Check if the file upload widget exists

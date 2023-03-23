@@ -327,44 +327,16 @@ $( document ).ready(function() {
     // select2-associated select physical object button
     $('#btn-select-physical-object').click(function() {
       var po = $('#s2id_imaging_event_find_physical_object').select2('data');
+      
+      if (po.id != $("#physical-object-id-value").val()) {
+        // display a modal to prompt the user to confirm to save the media
+        $('#modal-select-physical-object').modal();
 
-      // modify current physical object properties
-      $('#physical-object-details #physical-object-id-value').val(po.id);
-      $('#physical-object-details #physical-object-institution-code').text(po.institution_code || '');
-      $('#physical-object-details #physical-object-collection-code').text(po.collection_code || '');
-      $('#physical-object-details #physical-object-catalog-number').text(po.catalog_number || '');
-      $('#physical-object-details #physical-object-occurrence-id').text(po.occurrence_id || '');
-      $('#physical-object-details #physical-object-short-title').text(po.short_title || '');
-      $('#physical-object-details #physical-object-cho-type').text(po.cho_type || '');
-      $('#physical-object-details #physical-object-material').text(po.material || '');
+      } // po_changed
 
-      /* set the org id (if found) for validate_remote_file_ajax call.  
-         Also show/hide the Remote File Location tab.
-         This is called when selecting PO in edit media */
-      if (po.organization_id) {
-        console.log('setting associated_organization_id ', po.organization_id)
-        $('#associated_organization_id').val(po.organization_id);
-        $("[id$=remote-file-section]").removeClass('hide');
-      } else {
-        console.log('clearing associated_organization_id')
-        $('#associated_organization_id').val('');
-        $("[id$=remote-file-section]").addClass('hide');
-      }
-
-      if (po.idigbio_uuid) {
-        $('#physical-object-details #physical-object-source').text('iDigBio');
-      } else {
-        $('#physical-object-details #physical-object-source').text('');
-      }
-
-      // modify the form
-      $('form.edit_imaging_event input[name^="imaging_event[physical_object_id]"]').remove();
-      $('<input />').attr('type', 'hidden')
-        .attr('name', 'imaging_event[physical_object_id][]')
-        .attr('value', po.id )
-        .appendTo($('form.edit_imaging_event')
-      );
+ 
     });
+
 
     // Select Device Functions
 
@@ -717,6 +689,51 @@ var remoteFileCheckAndSubmit = function(view=null) {
   });
 }
 
+var updatePOandSave = function() {
+  var po = $('#s2id_imaging_event_find_physical_object').select2('data');
+
+  // modify current physical object properties
+  $('#physical-object-details #physical-object-id-value').val(po.id);
+  $('#physical-object-details #physical-object-institution-code').text(po.institution_code || '');
+  $('#physical-object-details #physical-object-collection-code').text(po.collection_code || '');
+  $('#physical-object-details #physical-object-catalog-number').text(po.catalog_number || '');
+  $('#physical-object-details #physical-object-occurrence-id').text(po.occurrence_id || '');
+  $('#physical-object-details #physical-object-short-title').text(po.short_title || '');
+  $('#physical-object-details #physical-object-cho-type').text(po.cho_type || '');
+  $('#physical-object-details #physical-object-material').text(po.material || '');
+
+  /* set the org id (if found) for validate_remote_file_ajax call.  
+     Also show/hide the Remote File Location tab.
+     This is called when selecting PO in edit media */
+  if (po.organization_id) {
+    console.log('setting associated_organization_id ', po.organization_id)
+    $('#associated_organization_id').val(po.organization_id);
+    $("[id$=remote-file-section]").removeClass('hide');
+  } else {
+    console.log('clearing associated_organization_id')
+    $('#associated_organization_id').val('');
+    $("[id$=remote-file-section]").addClass('hide');
+  }
+
+  if (po.idigbio_uuid) {
+    $('#physical-object-details #physical-object-source').text('iDigBio');
+  } else {
+    $('#physical-object-details #physical-object-source').text('');
+  }
+
+  // modify the form
+  $('form.edit_imaging_event input[name^="imaging_event[physical_object_id]"]').remove();
+  $('<input />').attr('type', 'hidden')
+    .attr('name', 'imaging_event[physical_object_id][]')
+    .attr('value', po.id )
+    .appendTo($('form.edit_imaging_event')
+  );
+
+  $('#modal-select-physical-object').modal('hide');
+  changedPOandSave = true;
+  $('.btn-save-media').click();
+}
+
 var setMediaLocalRemoteEvent = function() {
   $('#tab-local-file-section a').click(function(event) {
     if ($('#media_remote_origin_url').val() != "") {
@@ -738,7 +755,10 @@ var setMediaLocalRemoteEvent = function() {
 }
 
 var noFileCheck = function() {
-  if (fileOrigin == "local") {
+  if (changedPOandSave) {
+    // user just selected a PO.  bypass file check and save
+    return true;  
+  } else if (fileOrigin == "local") {
     if ($('.attribute-filename').length > 0) {
       // there is existing file associated with media
       return true;

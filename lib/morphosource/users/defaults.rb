@@ -68,6 +68,9 @@ module Morphosource
         ms1_user: false,
         ms_id: "3"
       }
+
+      # Default user roles
+      ROLES = ["admin", "batch_submission_contributor", "contributor", "charge_api", "remote_file_submitter"]
     end
   end
 end

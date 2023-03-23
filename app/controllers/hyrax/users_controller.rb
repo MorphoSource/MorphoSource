@@ -12,6 +12,7 @@ module Hyrax
       if request.format == :html
         authorize! :index, ::User
         only_active = false
+        @groups = Morphosource::Users::Defaults::ROLES
       end
       @users = search(params[:uq], only_active)
     end
@@ -44,16 +45,24 @@ module Hyrax
       # Returns a list of users excluding the system users and guest_users
       # @param query [String] the query string
       def search(query, only_active = true)
+        if current_user&.admin? && params[:group] && Morphosource::Users::Defaults::ROLES.include?(params[:group])
+          users = ::User.all.joins(:roles).where(:roles => { name: params[:group] }).distinct
+        else
+          users = ::User
+        end
+
         clause = query.blank? ? nil : "%" + query.downcase + "%"
-        base = ::User.where(*base_query)
+        base = users.where(*base_query)
         base = base.where("email like lower(?) OR lower(display_name) like lower(?)", clause, clause) if clause.present?
         base = base.where(active: true) if only_active
-        base.registered
+        base = base.registered
             .where("#{Hydra.config.user_key_field} not in (?)",
                    [::User.batch_user_key, ::User.audit_user_key])
             .references(:trophies)
             .order(sort_value)
             .page(params[:page] || 1).per(per_page_param)
+        
+        return base
       end
 
       # You can override base_query to return a list of arguments

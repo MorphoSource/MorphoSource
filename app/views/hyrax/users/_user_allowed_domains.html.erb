@@ -1,1 +1,2 @@
-<div>Team <%= item[0] %>: <%= item[1].gsub(/\r\n/, ', ') %></div>
+<div class="col-xs-6"><%= group_title_link(item[0]) %>: </div>
+<div class="col-xs-6"><%= item[1].gsub(/\r\n/, ',<br>').html_safe %></div>

@@ -504,7 +504,14 @@ $( document ).ready(function() {
     form.addEventListener("submit", function(mediaSubmitEvent) {
       mediaSubmitEvent.preventDefault();
       if (uploadStatusOK) {
-        if (noFileCheck()) {
+        if (skipNoFileCheck) {
+          if (fileOrigin == "remote") {
+            // make sure the field is empty before saving
+            $('#media_remote_origin_url').val('');
+            fileOrigin = "local";
+          }
+          editMediaSubmit();
+        } else if (noFileCheck()) {
           if (fileOrigin == "remote") {
             remoteFileCheckAndSubmit();
           } else {
@@ -706,19 +713,6 @@ var updatePOandSave = function() {
   $('#physical-object-details #physical-object-cho-type').text(po.cho_type || '');
   $('#physical-object-details #physical-object-material').text(po.material || '');
 
-  /* set the org id (if found) for validate_remote_file_ajax call.  
-     Also show/hide the Remote File Location tab.
-     This is called when selecting PO in edit media */
-  if (po.organization_id) {
-    console.log('setting associated_organization_id ', po.organization_id)
-    $('#associated_organization_id').val(po.organization_id);
-    $("[id$=remote-file-section]").removeClass('hide');
-  } else {
-    console.log('clearing associated_organization_id')
-    $('#associated_organization_id').val('');
-    $("[id$=remote-file-section]").addClass('hide');
-  }
-
   if (po.idigbio_uuid) {
     $('#physical-object-details #physical-object-source').text('iDigBio');
   } else {
@@ -733,7 +727,7 @@ var updatePOandSave = function() {
     .appendTo($('form.edit_imaging_event')
   );
 
-  changedPOandSave = true;
+  skipNoFileCheck = true;
   $('.btn-save-media').click();
   $('#modal-select-physical-object').modal('hide');
 }
@@ -759,8 +753,7 @@ var setMediaLocalRemoteEvent = function() {
 }
 
 var noFileCheck = function() {
-  if (changedPOandSave) {
-    // user just selected a PO.  bypass file check and save
+  if (skipNoFileCheck) {
     return true;  
   } else if (fileOrigin == "local") {
     if ($('.attribute-filename').length > 0) {

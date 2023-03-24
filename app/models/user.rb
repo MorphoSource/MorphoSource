@@ -194,8 +194,10 @@ class User < ApplicationRecord
     return false unless team.present?
     if url.nil?
       # if url not available (e.g. determine to show/hide remote file tab), 
-      # no need to check domain and return the permission at the team level
-      return team.can_submit_remote_files? && team.allowed_remote_source.present?
+      # no need to check domain.  Instead, check the permission at the team level and 
+      # the user's allowed_domains list for the team
+      return team.can_submit_remote_files? && team.allowed_remote_source.present? &&
+        allowed_domains[team.id].present?
     end    
 
     return false unless allowed_domains[team.id].present?

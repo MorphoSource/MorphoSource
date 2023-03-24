@@ -326,17 +326,21 @@ $( document ).ready(function() {
 
     // select2-associated select physical object button
     $('#btn-select-physical-object').click(function() {
-      var po = $('#s2id_imaging_event_find_physical_object').select2('data');
-      
-      if (po.id != $("#physical-object-id-value").val()) {
-        // display a modal to prompt the user to confirm to save the media
-        $('#modal-select-physical-object').modal();
-
-      } // po_changed
-
- 
+      var po = $('#s2id_imaging_event_find_physical_object').select2('data');      
+      if (po != null) {        
+        if (po.id != $("#physical-object-id-value").val()) {
+          // if different po selected, display a modal to prompt the user to confirm to save the media
+          $('#modal-select-physical-object').modal();
+        } else {
+          // reset the selection
+          $('#s2id_imaging_event_find_physical_object').select2("val", "");
+        }
+      } 
     });
 
+    $('#modal-select-physical-object').on('hidden.bs.modal', function (e) {
+      $('#s2id_imaging_event_find_physical_object').select2("val", "");
+    })
 
     // Select Device Functions
 
@@ -729,9 +733,9 @@ var updatePOandSave = function() {
     .appendTo($('form.edit_imaging_event')
   );
 
-  $('#modal-select-physical-object').modal('hide');
   changedPOandSave = true;
   $('.btn-save-media').click();
+  $('#modal-select-physical-object').modal('hide');
 }
 
 var setMediaLocalRemoteEvent = function() {

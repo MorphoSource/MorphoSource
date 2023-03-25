@@ -34,7 +34,7 @@ class BatchSubmissionsController < ApplicationController
       job = Resque::Failure.all(idx)
       if job.present? 
         begin
-          if job['payload']['args'][0]['job_id'] == last_job.main_job_id
+          if job['payload']['args'][0]['job_id'] == last_job.job_id
             failure_found_indexes << idx
             exceptions << "Exception: #{job['exception']}, Error: #{job['error']}"
           end
@@ -45,7 +45,7 @@ class BatchSubmissionsController < ApplicationController
     end
     if failure_found_indexes.present?
       # update both ActiveJob and BackgroundJob
-      status = ActiveJob::Status.get(last_job.main_job_id)
+      status = ActiveJob::Status.get(last_job.job_id)
       status.update(status: :failed)
       status.update(exception: exceptions.join('; '))
       last_job.update_status("failed", exceptions.join('; '))
@@ -189,7 +189,7 @@ class BatchSubmissionsController < ApplicationController
   
   def start_ingest_job
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
-    main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
+    main_job = BackgroundJob.create({ job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
 
   def initial_error_message

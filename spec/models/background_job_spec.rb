@@ -4,7 +4,7 @@ RSpec.describe BackgroundJob, type: :model do
 
   let(:user)          { User.create(email: "example@email.com", password: "password") }
   let!(:main_job1)     { BackgroundJob.create( 
-                                main_job_id: '123', 
+                                job_id: '123', 
                                 user_id: user.id, 
                                 status: 'working',
                                 exceptions: '',

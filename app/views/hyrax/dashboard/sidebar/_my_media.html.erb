@@ -1,0 +1,17 @@
+<li class="h5"><%= t('hyrax.admin.sidebar.my_media') %></li>
+
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_media_index_path) do %>
+  <span class="fa fa-cube" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media_and_objects') %></span>
+<% end %>
+
+<% if current_user.contributor? %>
+  <%= menu.nav_link(main_app.request_manager_path) do %>
+    <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.requests_for_my_media') %></span>
+  <% end %>
+
+  <%= menu.nav_link(hyrax.transfers_path) do %>
+    <span class="fa fas fa-arrows-alt-h" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.transfers') %></span>
+  <% end %>
+<% end %>
+
+

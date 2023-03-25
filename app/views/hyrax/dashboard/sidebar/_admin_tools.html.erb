@@ -1,5 +1,5 @@
 <% if menu.show_configuration? %>
-    <li class="h5"><%= t('hyrax.admin.sidebar.administration') %></li>
+    <li class="h5"><%= t('hyrax.admin.sidebar.admin_tools') %></li>
     
     <%= menu.nav_link(Rails.application.routes.url_helpers.admin_downloads_path) do %>
       <span class="fa fa-download" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_downloads') %></span>
@@ -34,6 +34,10 @@
 
     <%= menu.nav_link(main_app.fund_code_charges_path) do %>
       <span class="fa fas fa-money-check-alt" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_code_charges') %></span>
+    <% end %>
+
+    <%= menu.nav_link(hyrax.admin_stats_path) do %>
+      <span class="fa fa-bar-chart" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.statistics') %></span>
     <% end %>
 
     <li>

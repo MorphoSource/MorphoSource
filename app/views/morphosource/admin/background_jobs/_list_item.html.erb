@@ -1,0 +1,37 @@
+<% if get_resque_data? %>
+  <% jobs = (@all_resque_jobs || []).select { |job| job["job_id"] == item.job_id } %>
+<% end %>
+
+<tr id="item_<%= item.id %>">
+  <td><%= item.job_id %></td>
+  <td><%= link_to item.user.name_and_email, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
+  <td><%= t("job_class.#{item.job_class}") %> (<%= item.job_class.split('::').join(':: ') %>)</td>
+  <td><%= t("status.#{item.status}") %></td>
+  <td><%= item.exceptions %></td>
+  <td><%= item.created_objects %></td>
+  <td class="date"><%= item.created_at %></td>
+  <td class="date"><%= item.updated_at %></td> 
+  <% if get_resque_data? %>
+    <td>
+      <% if jobs.count == 1 %>
+        Yes
+      <% elsif jobs.count > 1 %>
+        <span style="color: red;">Multiple (<%= jobs.count %>), error?</span>
+      <% else %>
+        No
+      <% end %>
+    </td>
+    <td>
+      <% if jobs.count == 1 %>
+        <% if jobs[0]["run_at"].present? %>
+          Working, started <%= jobs[0]["run_at"] %>
+        <% elsif jobs[0]["failed_at"].present? %>
+          Failure, failed <%= jobs[0]["failed_at"] %>
+        <% else %>
+          Queued
+        <% end %>
+      <% end %>
+    </td>
+    <td></td>
+  <% end %>
+</tr>

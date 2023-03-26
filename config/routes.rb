@@ -452,6 +452,9 @@ Rails.application.routes.draw do
     end
 
     scope module: :admin do
+      # all background jobs
+      get 'admin/jobs', action: :index, controller: :background_jobs, as: 'admin_jobs'
+
       # all downloads
       get 'admin/downloads', action: :index, controller: :downloads, as: 'admin_downloads'
 

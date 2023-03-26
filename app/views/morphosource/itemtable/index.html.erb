@@ -8,22 +8,10 @@
   </ol>
 </nav>
 
-
-
-
-<% if @search %>
-  <%= render 'search_form' %>
-<% else %>
-  <div class="mb-1">
-    <%= link_to "Search #{page_title.pluralize}", url_for(search: true), class: 'btn btn-primary' %>
-    <%= link_to 'Export CSV', url_for(format: :csv), class: 'btn btn-primary' %>
-  </div>
-<% end %>
+<%= render 'search_container' %>
 
 <div class="panel panel-default itemtable <%= controller.controller_name %>">
-  <div class="panel-heading">
-    <h2 class="panel-title h2"><%= page_title %> (<%= @item_count %>)</h2>
-  </div>
+  <%= render 'heading' %>
   <div class="panel-body showcase">
     <%= render 'document_list' %>
     <div class="showcase">

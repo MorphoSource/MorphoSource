@@ -1,0 +1,13 @@
+<% if @search %>
+  <%= render 'search_form' %>
+<% else %>
+  <div class="mb-1">
+    <%= link_to "Search #{page_title.pluralize}", url_for(request.params.merge(search: true)), class: 'btn btn-primary' %>
+    <% if get_resque_data? %>
+      <%= link_to 'Exclude Resque Tools', url_for(request.params.merge(resque: nil)), class: 'btn btn-primary' %>
+    <% else %>
+      <%= link_to 'Include Resque Tools (May Be Slow)', url_for(request.params.merge(resque: true)), class: 'btn btn-primary' %>
+    <% end %>
+    <%= link_to 'Export CSV', url_for(format: :csv), class: 'btn btn-primary' %>
+  </div>
+<% end %>

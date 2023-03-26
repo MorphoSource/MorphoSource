@@ -189,7 +189,7 @@ class BatchSubmissionsController < ApplicationController
   
   def start_ingest_job
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
-    main_job = BackgroundJob.create({ job_id: job.job_id, job_class: job.class.to_s, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
+    main_job = BackgroundJob.create({ job_id: job.job_id, job_class: job.class.to_s, status: job.status.status.to_s, user_id: current_user.user_key, created_objects: {} })
   end
 
   def initial_error_message

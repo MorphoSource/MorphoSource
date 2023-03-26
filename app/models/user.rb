@@ -306,8 +306,12 @@ class User < ApplicationRecord
     fund_codes.joins(:fund_code_memberships).where(fund_code_memberships: { manager: false })
   end
 
+  def background_jobs
+    BackgroundJob.where(user: self)
+  end
+
   def batch_submission_jobs
-    BackgroundJob.where(user_id: self.id).where.not(status:nil)
+    BackgroundJob.where(user: self).where.not(status:nil)
   end
 
   def last_batch_submission_job

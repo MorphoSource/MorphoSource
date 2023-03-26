@@ -5,10 +5,10 @@
 <tr id="item_<%= item.id %>">
   <td><%= item.job_id %></td>
   <td><%= link_to item.user.name_and_email, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
-  <td><%= t("job_class.#{item.job_class}") %> (<%= item.job_class.split('::').join(':: ') %>)</td>
+  <td><%= job_classes[item.job_class] %> (<%= item.job_class.split('::').join(':: ') %>)</td>
   <td><%= t("status.#{item.status}") %></td>
-  <td><%= item.exceptions %></td>
-  <td><%= item.created_objects %></td>
+  <td><%= (item.exceptions || "").truncate(100) %></td>
+  <td><%= (item.created_objects.to_s || "").truncate(100) %></td>
   <td class="date"><%= item.created_at %></td>
   <td class="date"><%= item.updated_at %></td> 
   <% if get_resque_data? %>

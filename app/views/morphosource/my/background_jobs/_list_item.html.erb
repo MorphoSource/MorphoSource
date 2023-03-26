@@ -1,0 +1,8 @@
+<tr id="item_<%= item.id %>">
+  <td><%= item.job_id %></td>
+  <td><%= job_classes[item.job_class] %></td>
+  <td><%= t("morphosource.background_jobs.status.#{item.status}") %></td>
+  <td><%= (item.exceptions || "").truncate(100) %></td>
+  <td class="date"><%= item.created_at %></td>
+  <td class="date"><%= item.updated_at %></td> 
+</tr>

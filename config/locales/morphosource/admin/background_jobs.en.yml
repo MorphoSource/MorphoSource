@@ -1,9 +1,0 @@
-en:
-  page_title: All Background Jobs
-  job_class:
-    "BatchSubmissionJobs::Ms2Batch::ControlJob": Batch Media Submission
-  status:
-    completed: Complete
-    failed: Failed
-    queued: In queue
-    working: In progress

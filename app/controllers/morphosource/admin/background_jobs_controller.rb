@@ -5,7 +5,7 @@ module Morphosource
       helper_method :get_resque_data?
       # todo handle permissions outside of controller
 
-      PAGE_TITLE = I18n.t("page_title")
+      PAGE_TITLE = I18n.t("morphosource.admin.background_jobs.page_title")
 
       def index
         if get_resque_data?
@@ -27,6 +27,13 @@ module Morphosource
       def default_sort_param
         'created_at DESC'
       end
+
+      def job_classes
+        {
+          "BatchSubmissionJobs::Ms2Batch::ControlJob" => "Batch Media Submission"
+        }
+      end
+      helper_method :job_classes
 
       def get_resque_data?
         params[:resque].present? && params[:resque] == "true" 

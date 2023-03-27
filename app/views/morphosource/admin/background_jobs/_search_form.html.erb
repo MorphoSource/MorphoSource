@@ -6,7 +6,7 @@
     <%= simple_form_for :filter_items, url: url_for(request.params), method: "GET" do |f| %>
       <%= render partial: 'search_form_fields', locals: {f: f} %>
 
-      <%= link_to 'Close', url_for(request.params.merge(search: nil)), class: 'btn btn-danger pull-right', style: 'margin-left: 20px;' %>
+      <%= link_to 'Close', url_for, class: 'btn btn-danger pull-right', style: 'margin-left: 20px;' %>
       <%= link_to 'Start Over', url_for(search: true), class: 'btn btn-danger pull-right', style: 'margin-left: 20px;' %>
       <%= link_to 'Export CSV', url_for(request.params.merge(format: :csv)), class: 'btn btn-primary pull-right', style: 'margin-left: 20px;'  %>
       <% if get_resque_data? %>

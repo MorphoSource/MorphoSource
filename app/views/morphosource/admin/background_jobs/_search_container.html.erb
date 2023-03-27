@@ -2,7 +2,7 @@
   <%= render 'search_form' %>
 <% else %>
   <div class="mb-1">
-    <%= link_to "Search #{page_title.pluralize}", url_for(request.params.merge(search: true)), class: 'btn btn-primary' %>
+    <%= link_to "Search #{page_title.pluralize}", url_for(search: true), class: 'btn btn-primary' %>
     <% if get_resque_data? %>
       <%= link_to 'Exclude Resque Tools', url_for(request.params.merge(resque: nil)), class: 'btn btn-primary' %>
     <% else %>

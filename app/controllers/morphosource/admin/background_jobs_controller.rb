@@ -71,6 +71,8 @@ module Morphosource
         params[:resque].present? && params[:resque] == "true" 
       end
 
+      # Methods for getting resque jobs
+
       def queued_resque_jobs
         @queued_resque_jobs ||= begin
           Resque.data_store.queue_names

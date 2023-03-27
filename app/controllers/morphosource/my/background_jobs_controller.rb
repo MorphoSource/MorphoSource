@@ -2,6 +2,7 @@ module Morphosource
   module My
     class BackgroundJobsController < Morphosource::ItemtableController
       PAGE_TITLE = I18n.t("morphosource.dashboard.my.background_jobs.page_title")
+      PAGE_DESCRIPTION = I18n.t("morphosource.dashboard.my.background_jobs.page_description")
 
       private
 

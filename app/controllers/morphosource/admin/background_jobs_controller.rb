@@ -6,6 +6,7 @@ module Morphosource
       # todo handle permissions outside of controller
 
       PAGE_TITLE = I18n.t("morphosource.admin.background_jobs.page_title")
+      PAGE_DESCRIPTION = I18n.t("morphosource.admin.background_jobs.page_description")
 
       def index
         if get_resque_data?

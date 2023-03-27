@@ -1,5 +1,10 @@
 div.panel.itemtable {
   min-width: 1200px;
+
+  // Rules for optional description heading within body
+  .panel-body .panel-heading {
+    background-color: #f5f5f5
+  }
 }
 
 // Panel has controller name class, can override general behavior by controller

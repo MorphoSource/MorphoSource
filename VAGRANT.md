@@ -1,6 +1,6 @@
 # Using MorphoSource with Vagrant VM
 
-These instructions for running this application are intended to run within the [morphosource-vagrant](https://github.com/MorphoSource/morphosource-vagrant) virtual machine. Generally, we recommend using the [Docker environment](https://github.com/MorphoSource/MorphoSource_SF/blob/master/CONTAINERS.md) over this. There also exists an Ansible solution for running the application on production environments.
+These instructions for running this application are intended to run within the [morphosource-vagrant](https://github.com/MorphoSource/morphosource-vagrant) virtual machine. Generally, we recommend using the [Docker environment](https://github.com/MorphoSource/MorphoSource_SF/blob/main/CONTAINERS.md) over this. There also exists an Ansible solution for running the application on production environments.
 
 ## Prerequisites (vagrant / virtualbox)
 

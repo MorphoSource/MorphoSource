@@ -7,7 +7,7 @@ module BatchSubmissionTools
         :collection_ids, :fund_code_id,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields,
-        :skipped_row_count
+        :skipped_row_count, :summary
 
       def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, organization_transfer_immediately: false, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:, modality:)
         @input_path = input_path
@@ -31,7 +31,13 @@ module BatchSubmissionTools
         @rows_to_taxonomy = {}
 
         @media_ie_pe_ingests = []
-
+        
+        @summary = {
+          "depositor_id" => depositor.user_key,
+          "organization_id" => organization_id,
+          "media_files" => []
+        }
+byebug        
         call
       end
 
@@ -75,6 +81,7 @@ module BatchSubmissionTools
               children << row_index
               # look for the parent row index
               rows.each_with_index do |r , idx|
+                summary["media_files"] << r[:media][:media_file]&.first
                 if (r[:media][:media_file]&.first == row[:media][:parent_file].first) 
                   if r[:media][:raw_or_derived]&.first == "Derived" 
                     derived_parent_index = idx
@@ -347,6 +354,7 @@ module BatchSubmissionTools
       # Must convert entire object to hash for ActiveJob serialization
       def to_h
         {
+          summary: summary,
           biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),

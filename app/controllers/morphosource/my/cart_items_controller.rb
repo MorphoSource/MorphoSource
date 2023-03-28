@@ -3,15 +3,15 @@ module Morphosource
     class CartItemsController < Hyrax::MyController
 
       include Morphosource::CartItems
-      with_themed_layout 'morphosource_dashboard'      
+      with_themed_layout 'morphosource_dashboard'
 
       class_attribute :create_work_presenter_class
       self.create_work_presenter_class = Hyrax::SelectTypeListPresenter
 
       # Used by Add to Cart button on Work showcase page
       def create
-        work = Media.find(params[:work_id])
-        if work.can_add_to_cart? || current_user.can?(:download, work.id)
+        work = SolrDocument.find(params[:work_id])
+        if work.public? || current_user.can?(:download, work.id)
           unless work_already_in_cart?(work.id)
             if work_requested?(work.id)
               item = find_requested_item(work.id)

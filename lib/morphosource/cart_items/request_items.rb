@@ -16,7 +16,7 @@ module Morphosource
         return item
       end
 
-      def make_request(items)        
+      def make_request(items)
         items = Array(items)
         items.each do |item|
           item.update_attributes(date_cleared: nil, date_requested: Time.now, use: @intended_use)

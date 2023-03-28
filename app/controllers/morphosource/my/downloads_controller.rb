@@ -53,7 +53,7 @@ module Morphosource
 
       def titles_by_id
         @ids.each_with_object([]) do |id,titles|
-          titles << Media.find(id).title[0]
+          titles << SolrDocument.find(id).title.first
         end
       end
 

@@ -49,6 +49,8 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
     subject.instance_variable_set(:@user, user)
     subject.instance_variable_set(:@team, team)
     subject.instance_variable_set(:@remove_previous_reviewers, false)
+
+    allow(SolrDocument).to receive(:find).with(media.id).and_return(SolrDocument.find(media.id))
   end
 
   describe 'perform' do

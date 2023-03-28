@@ -10,8 +10,8 @@ RSpec.describe CartItem, type: :model do
 
   let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, download_reviewer: [], visibility: 'open', fileset_accessibility: ['open'])}
 
-  let!(:cartItem1)     { CartItem.create(user: user, work_id: work1.id) }
-  let!(:cartItem2)     { CartItem.create(user: user, work_id: work2.id) }
+  let!(:cartItem1)    { CartItem.create(user: user, work_id: work1.id) }
+  let!(:cartItem2)    { CartItem.create(user: user, work_id: work2.id) }
 
   describe '#active_request, #inactive_request' do
     context 'item is requested' do
@@ -186,8 +186,12 @@ RSpec.describe CartItem, type: :model do
   end
 
   describe '#work' do
-    it { expect(cartItem1.work).to eq(work1) }
-    it { expect(cartItem2.work).to eq(work2) }
+    it 'is a solr document' do
+      expect(cartItem1.work.class).to be(SolrDocument)
+      expect(cartItem1.work.id).to eq(cartItem1.work_id)
+      expect(cartItem2.work.class).to be(SolrDocument)
+      expect(cartItem2.work.id).to eq(cartItem2.work_id)
+    end
   end
 
   describe '#expired?' do
@@ -252,7 +256,8 @@ RSpec.describe CartItem, type: :model do
       context 'user is the work download reviewer' do
         before do
           work1.download_reviewer = [user.ms_id]
-          work1.save
+          work1.save!
+          allow(SolrDocument).to receive(:find).with(work1.id).and_return(SolrDocument.find(work1.id))
         end
         it { expect(subject).to be(true) }
       end
@@ -260,6 +265,7 @@ RSpec.describe CartItem, type: :model do
         before do
           work1.depositor = user.ms_id
           work1.save
+          allow(SolrDocument).to receive(:find).with(work1.id).and_return(SolrDocument.find(work1.id))
         end
         it { expect(subject).to be(true) }
       end
@@ -282,7 +288,8 @@ RSpec.describe CartItem, type: :model do
     context 'user is the reviewer' do
       before do
         work1.download_reviewer = [user.ms_id]
-        work1.save
+        work1.save!
+        allow(SolrDocument).to receive(:find).with(work1.id).and_return(SolrDocument.find(work1.id))
       end
       it { expect(subject).to be(true) }
     end

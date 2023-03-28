@@ -119,8 +119,8 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
     context 'the user uses the download all button' do
       context 'the cart has only unrestricted items' do
         let(:unrestricted_work_ids)  { [
-          Media.find(cartItem1.work_id).access_control_id, 
-          Media.find(cartItem2.work_id).access_control_id, 
+          Media.find(cartItem1.work_id).access_control_id,
+          Media.find(cartItem2.work_id).access_control_id,
           Media.find(cartItem3.work_id).access_control_id
         ] }
         before do
@@ -139,8 +139,9 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         before do
           cartItem1.date_approved = nil
           cartItem1.save
-          cartItem2.work.fileset_accessibility = ['restricted_download']
-          cartItem2.work.save
+          work2.fileset_accessibility = ['restricted_download']
+          work2.save!
+          allow(SolrDocument).to receive(:find).with(work2.id).and_return(SolrDocument.new(work2.to_solr))
           get :download, params: {}
         end
 
@@ -160,7 +161,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
 
         it "redirects to media/#zip with only the unrestricted work ids as params" do
           work_ids = [
-            Media.find(cartItem1.work_id).access_control_id, 
+            Media.find(cartItem1.work_id).access_control_id,
             Media.find(cartItem2.work_id).access_control_id
           ]
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)

@@ -1,5 +1,6 @@
 class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
+  include Morphosource::MediaBehavior
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter
   after_create :mint_ark
@@ -53,10 +54,6 @@ class Media < Morphosource::Works::Base
 
   def cart_items
     CartItem.where(work_id: id)
-  end
-
-  def reviewer
-    User.where(ms_id: download_reviewer.to_a).map { |u| u.ms_id.present? ? u.ms_id : nil }.compact.presence || [user_with_ownership]
   end
 
   def normalize_download_reviewer
@@ -141,56 +138,6 @@ class Media < Morphosource::Works::Base
     end
     # order unique visibilities in the order that they appear on the work form.
     all_visibilities & file_visibilities
-  end
-
-  def restricted?
-    publication_status == "restricted"
-  end
-
-  alias restricted_download? restricted?
-
-  def open?
-    publication_status == "open"
-  end
-
-  def private?
-    publication_status == "private"
-  end
-
-  # true if publication status is open, restricted, lease
-  def can_add_to_cart?
-    case publication_status
-    when 'open'
-      true
-    when 'lease'
-      true
-    when 'restricted'
-      true
-    else
-      false
-    end
-  end
-
-  # TODO - consider what happens with fileset_accessibility for lease/embargo
-  def publication_status
-    return 'private' if fileset_accessibility_not_set
-    access = fileset_accessibility.first
-    case
-    when under_embargo?
-      "embargo"
-    when active_lease?
-      "lease"
-    when access == "open"
-      "open"
-    when access == "restricted_download"
-      "restricted"
-    when access == "preview_only"
-      "preview"
-    when access == "hidden"
-      "hidden"
-    else
-      "private"
-    end
   end
 
   # true if nil, [], [''] unless under lease or embargo

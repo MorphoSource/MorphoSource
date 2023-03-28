@@ -33,11 +33,12 @@ module BatchSubmissionTools
         @media_ie_pe_ingests = []
         
         @summary = {
-          "depositor_id" => depositor.user_key,
-          "organization_id" => organization_id,
+          "depositor_id" => @depositor,
+          "organization_id" => @organization_id,
+          "device_id" => @device_id,
+          "collection_ids" => @collection_ids,
           "media_files" => []
         }
-byebug        
         call
       end
 
@@ -81,7 +82,6 @@ byebug
               children << row_index
               # look for the parent row index
               rows.each_with_index do |r , idx|
-                summary["media_files"] << r[:media][:media_file]&.first
                 if (r[:media][:media_file]&.first == row[:media][:parent_file].first) 
                   if r[:media][:raw_or_derived]&.first == "Derived" 
                     derived_parent_index = idx
@@ -123,8 +123,11 @@ byebug
             (media_group_to_rows[sheet_index][:derived_parents] << derived_parents).flatten!
             (media_group_to_rows[sheet_index][:children] << children).flatten!
 
+            summary["media_files"] << row[:media][:media_file]&.first
+
           end # /mg[:raw_list]
         end # /media_group_to_rows
+        #byebug # check summary
 
         if rows_to_remove.present?
           # when new parent media will be created,

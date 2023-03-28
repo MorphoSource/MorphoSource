@@ -5,17 +5,23 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   queue_as Hyrax.config.batch_submission_queue_name
 
   def perform(manifest, user)
-    begin
-byebug
-#      compare manifest["summary"] with
-#
-#      j = working_resque_jobs&.first
-#      j["arguments"][0]
+    # Step 0. Initial preparation
+    status.update(manifest: manifest)
+    @manifest = manifest
+    @main_job_id = status.job_id
 
-      # Step 0. Initial preparation
-      status.update(manifest: manifest)
-      @manifest = manifest
-      @main_job_id = status.job_id
+byebug
+    if dup_job_found?("BatchSubmissionJobs::Ms2Batch::ControlJob", manifest, status.job_id)
+      Rails.logger.debug "iN ControlJob #{@main_job_id}: Not starting ControlJob because duplicate job found"
+byebug
+      error_msg = "Batch submission job did not start because a duplicate job has been found."
+      status.update(status: :failed)
+      update_main_job("failed", error_msg)
+      status.update(manifest: manifest, exception: error_msg)
+      return nil
+    end
+
+    begin      
  byebug
       update_main_job(status.status.to_s, nil)
       exception_caught = false
@@ -43,39 +49,6 @@ byebug
       notify_user(user, "completed", @main_job_id)
     end
   end
-
-  # todo: move these methods to a shared helper
-  def queued_resque_jobs
-    @queued_resque_jobs ||= begin
-      Resque.data_store.queue_names
-        .map { |n| Resque.data_store.everything_in_queue(n) }
-        .flatten
-        .map { |j| Resque.decode(j)["args"][0] || {} }  
-    end
-  end
-
-  def failed_resque_jobs
-    @failed_resque_jobs ||= begin
-      Resque::Failure.all(0, 999999)
-        .map { |j| (j["payload"]["args"][0] || {}).merge(
-          "exception" => j["exception"], 
-          "error" => j["error"], 
-          "failed_at" => j["failed_at"]
-        )}  
-    end
-  end
-
-  def working_resque_jobs
-    @working_resque_jobs ||= begin
-      Resque.workers
-        .map { |w| w.job }
-        .select { |j| j.present? }
-        .map { |j| (j["payload"]["args"][0] || {}).merge(
-          "run_at" => j["run_at"] 
-        )}
-    end
-  end
-
 
   def sub_jobs
     [

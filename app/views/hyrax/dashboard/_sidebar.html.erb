@@ -14,11 +14,17 @@
       </div>
     </li>
 
-    <%= render 'hyrax/dashboard/sidebar/activity', menu: menu %>
-    <%= render 'hyrax/dashboard/sidebar/downloads', menu: menu %>
-    <%= render 'hyrax/dashboard/sidebar/requests', menu: menu %>
-    <%= render 'hyrax/dashboard/sidebar/repository_content', menu: menu %>
-    <%# <%= render 'hyrax/dashboard/sidebar/tasks', menu: menu %>
-    <%= render 'hyrax/dashboard/sidebar/administration', menu: menu %>
+    <%= render 'hyrax/dashboard/sidebar/user', menu: menu %>
+    <% if current_user.contributor? || current_user.admin? %>
+      <%= render 'hyrax/dashboard/sidebar/my_media', menu: menu %>
+      <%= render 'hyrax/dashboard/sidebar/my_media_collections', menu: menu %>
+      <%= render 'hyrax/dashboard/sidebar/my_downloads', menu: menu %>
+      <%= render 'hyrax/dashboard/sidebar/contributor_tools', menu: menu %>
+    <% else %>
+      <%= render 'hyrax/dashboard/sidebar/my_downloads', menu: menu %>
+      <%= render 'hyrax/dashboard/sidebar/my_media', menu: menu %>
+      <%= render 'hyrax/dashboard/sidebar/my_media_collections', menu: menu %>
+    <% end %>
+    <%= render 'hyrax/dashboard/sidebar/admin_tools', menu: menu %>
   </ul>
 </nav>

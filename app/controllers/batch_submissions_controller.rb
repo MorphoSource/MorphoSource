@@ -188,7 +188,6 @@ class BatchSubmissionsController < ApplicationController
   end
   
   def start_ingest_job
-byebug
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
     main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
   end
@@ -992,17 +991,12 @@ byebug
       end
     end
 
-def check_dup_job
-end
-
-#    def check_dup_job
-#byebug
-#      if dup_job_found?("BatchSubmissionJobs::Ms2Batch::ControlJob", @request_manifest_object)
-#        Rails.logger.debug "iN BatchSubmissionsController: Not starting ControlJob because duplicate job found"
-#byebug
-#        flash[:error] = "Batch submission job did not start because a duplicate job has been found.  Please contact MorphoSource team if needed."
-#        return redirect_to main_app.new_batch_submission_path
-#      end
-#    end
+    def check_dup_job
+      if (dup_job_id = dup_job_found("BatchSubmissionJobs::Ms2Batch::ControlJob", @request_manifest_object)).present?
+        Rails.logger.debug "iN BatchSubmissionsController: Not starting ControlJob because duplicate job found: #{dup_job_id}"
+        flash[:error] = "Batch submission job did not start because a duplicate job has been found: #{dup_job_id}  Please contact MorphoSource team if needed."
+        return redirect_to main_app.new_batch_submission_path
+      end
+    end
 
 end

@@ -4,19 +4,15 @@ module BatchSubmissionTools
 
       include Morphosource::MessageHelper
 
-      def dup_job_found?(job_class, manifest_object, ignore_job_id = nil)
+      def dup_job_found(job_class, manifest_object, ignore_job_id = nil)
         active_jobs(job_class).each do |j|
-          
-byebug
           unless ignore_job_id.present? && j["job_id"] == ignore_job_id
             if j["arguments"][0]["summary"].except("_aj_symbol_keys") == manifest_object["summary"]
-              return true
+              return j["job_id"]
             end
           end
-
-
         end
-        return false
+        return nil
       end
 
       def active_jobs(job_class)

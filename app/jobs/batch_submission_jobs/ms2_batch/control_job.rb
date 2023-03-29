@@ -10,11 +10,9 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     @manifest = manifest
     @main_job_id = status.job_id
 
-byebug
-    if dup_job_found?("BatchSubmissionJobs::Ms2Batch::ControlJob", manifest, status.job_id)
-      Rails.logger.debug "iN ControlJob #{@main_job_id}: Not starting ControlJob because duplicate job found"
-byebug
-      error_msg = "Batch submission job did not start because a duplicate job has been found."
+    if (dup_job_id = dup_job_found("BatchSubmissionJobs::Ms2Batch::ControlJob", manifest, status.job_id)).present?
+      Rails.logger.debug "iN ControlJob #{@main_job_id}: Not starting ControlJob because duplicate job found: #{dup_job_id}"
+      error_msg = "Batch submission job did not start because a duplicate job has been found: #{dup_job_id}"
       status.update(status: :failed)
       update_main_job("failed", error_msg)
       status.update(manifest: manifest, exception: error_msg)
@@ -22,7 +20,6 @@ byebug
     end
 
     begin      
- byebug
       update_main_job(status.status.to_s, nil)
       exception_caught = false
  

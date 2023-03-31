@@ -962,7 +962,12 @@ class BatchSubmissionsController < ApplicationController
         elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
           File.join(Hyrax.config.sftp_share_root, user_set_path, '/')
         elsif Dir.exist?(user_set_path)
-          File.join(user_set_path, '/')
+          unless user_set_path.match(/^\//)
+            # if relative path, change it to absolute
+            File.join(Rails.root, user_set_path, '/')
+          else
+            File.join(user_set_path, '/')
+          end
         else
           "NOT_FOUND"
         end

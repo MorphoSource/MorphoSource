@@ -4,7 +4,7 @@
   "private": true,
   "repository": "git@github.com:MorphoSource/MorphoSource.git",
   "dependencies": {
-  "universalviewer": "MorphoSource/universalviewer#webpack-al_aleph-0.0.21_dist"
+  "universalviewer": "MorphoSource/universalviewer#webpack-al-old_aleph-0.0.21_dist"
 },
 "scripts": {
   "preinstall": "rm -rf ./public/uv/ & rm -rf ./public/uv-assets/ & rm -rf ./public/uv-dist-umd/",

@@ -34,8 +34,10 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
 
       context 'work cannot be added to the cart' do
         before do
-          work6.fileset_accessibility = ['hidden']
-          work6.save
+          work6.fileset_accessibility = ['private']
+          work6.visibility = 'restricted'
+          work6.save!
+          allow(SolrDocument).to receive(:find).with(work6.id).and_return(SolrDocument.new(work6.to_solr))
         end
         context 'user does not have download access' do
           it 'returns flash message Download Unauthorized' do

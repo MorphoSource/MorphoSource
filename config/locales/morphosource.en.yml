@@ -22,7 +22,7 @@ en:
             user_department: 'Department'
             user_advisor: 'Student Advisor'
       sidebar:
-        contributor_petitions: 'Contributor Applications'
+        contributor_petitions: 'Contrib. Applications'
         downloads: 'Downloads'
         fund_codes: 'Fund Codes'
         fund_code_charges: 'Fund Code Charges'
@@ -85,7 +85,6 @@ en:
           date_canceled: 'Date Canceled'
           date_cleared: 'Date Cleared'
           date_denied: 'Date Denied'
-          date_downloaded: 'Date Downloaded'
           date_expired: 'Date Expired'
           date_requested: 'Date Requested'
           publication_status: 'Publication Status'

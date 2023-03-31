@@ -1,0 +1,116 @@
+require 'rails_helper'
+
+RSpec.describe Morphosource::MediaBehavior do
+
+  let(:depositor)             { FactoryBot.create(:contributor) }
+  let(:user)                  { FactoryBot.create(:registered_user) }
+
+  let(:open_media)            { FactoryBot.create(:public_media, depositor: depositor.ms_id) }
+  let(:private_media)         { FactoryBot.create(:private_media, depositor: depositor.ms_id) }
+  let(:restricted_media)      { FactoryBot.create(:restricted_media, depositor: depositor.ms_id) }
+
+  let(:open_media_solr)       { SolrDocument.find(open_media.id) }
+  let(:private_media_solr)    { SolrDocument.find(private_media.id) }
+  let(:restricted_media_solr) { SolrDocument.find(restricted_media.id) }
+
+  describe 'publication_status' do
+    it 'is has the correct status' do
+      # open
+      expect(open_media.publication_status).to eq('open')
+      expect(open_media_solr.publication_status).to eq('open')
+      # restricted download
+      expect(restricted_media.publication_status).to eq('restricted')
+      expect(restricted_media_solr.publication_status).to eq('restricted')
+      # private
+      expect(private_media.publication_status).to eq('private')
+      expect(private_media_solr.publication_status).to eq('private')
+    end
+  end
+
+  describe 'can_add_to_cart?' do
+    it 'has the correct value' do
+      # open
+      expect(open_media.can_add_to_cart?).to be(true)
+      expect(open_media_solr.can_add_to_cart?).to be(true)
+      # restricted download
+      expect(restricted_media.can_add_to_cart?).to be(true)
+      expect(restricted_media_solr.can_add_to_cart?).to be(true)
+      # private
+      expect(private_media.can_add_to_cart?).to be(false)
+      expect(private_media_solr.can_add_to_cart?).to be(false)
+    end
+  end
+
+  describe 'open_download?' do
+    it 'has the correct value' do
+      # open
+      expect(open_media.open_download?).to be(true)
+      expect(open_media_solr.open_download?).to be(true)
+      # restricted download
+      expect(restricted_media.open_download?).to be(false)
+      expect(restricted_media_solr.open_download?).to be(false)
+      # private
+      expect(private_media.open_download?).to be(false)
+      expect(private_media_solr.open_download?).to be(false)
+    end
+  end
+
+  describe 'restricted_download?' do
+    it 'has the correct value' do
+      # open
+      expect(open_media.restricted_download?).to be(false)
+      expect(open_media_solr.restricted_download?).to be(false)
+      # restricted download
+      expect(restricted_media.restricted_download?).to be(true)
+      expect(restricted_media_solr.restricted_download?).to be(true)
+      # private
+      expect(private_media.restricted_download?).to be(false)
+      expect(private_media_solr.restricted_download?).to be(false)
+    end
+  end
+
+  describe 'private?' do
+    it 'has the correct value' do
+      # open
+      expect(open_media.private?).to be(false)
+      expect(open_media_solr.private?).to be(false)
+      # restricted download
+      expect(restricted_media.private?).to be(false)
+      expect(restricted_media_solr.private?).to be(false)
+      # private
+      expect(private_media.private?).to be(true)
+      expect(private_media_solr.private?).to be(true)
+    end
+  end
+
+  describe 'reviewer' do
+    context 'media does not have a download reviewer set' do
+      context 'media has an owner' do
+        before do
+          restricted_media.owner = user.ms_id
+          restricted_media.save!
+        end
+        it 'returns the media owner' do
+          expect(restricted_media.reviewer).to match_array([user.ms_id])
+          expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+        end
+      end
+      context 'media does not have an owner' do
+        it 'returns the media depositor' do
+          expect(restricted_media.reviewer).to match_array([depositor.ms_id])
+          expect(restricted_media_solr.reviewer).to match_array([depositor.ms_id])
+        end
+      end
+    end
+    context 'media does have a download reviewer set' do
+      before do
+        restricted_media.download_reviewer = [user.ms_id, depositor.ms_id]
+        restricted_media.save!
+      end
+      it 'returns the download reviewer(s)' do
+        expect(restricted_media.reviewer).to match_array([user.ms_id, depositor.ms_id])
+          expect(restricted_media_solr.reviewer).to match_array([user.ms_id, depositor.ms_id])
+      end
+    end
+  end
+end

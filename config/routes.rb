@@ -297,7 +297,7 @@ Rails.application.routes.draw do
   mount Riiif::Engine => 'images', as: :riiif if Hyrax.config.iiif_image_server?
   mount Blacklight::Engine => '/'
 
-    concern :searchable, Blacklight::Routes::Searchable.new
+  concern :searchable, Blacklight::Routes::Searchable.new
 
   # send to all_catalog controller in order to restrict access to admins only
   resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'all_catalog' do
@@ -513,6 +513,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Universal Viewer Static Redirect
+  get '/uv.html', to: redirect('/uv/uv.html', status: 301)
+
   # MS1 Static Redirects
   get '/About/home', to: redirect('/docs/about', status: 301)
   get '/About/contact', to: redirect('/docs/about', status: 301)
@@ -547,6 +550,9 @@ Rails.application.routes.draw do
   end
 
   get '/contributor_terms', to: 'docs#contributor_terms', as: 'contributor_terms'
+  
+  # DOI unavailable tombstone page show
+  get '/unavailable/doi', controller: :tombstone, action: :show
 
   # ms1 users changing their password must agree to terms and conditions
   devise_scope :user do

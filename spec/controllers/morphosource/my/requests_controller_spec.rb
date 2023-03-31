@@ -87,18 +87,18 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
 
       context 'the item is a previous request' do
-        let(:depositor)   { User.create(email: "test@test.com", password: "password")}
+        let(:depositor)       { User.create(email: "test@test.com", password: "password")}
 
-        let(:requested_work) { Media.create(id: "abc", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'])}
+        let(:requested_work)  { Media.create(id: "abc", title: ["Test Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['restricted_download'])}
 
-        let(:requested_item) { CartItem.create(user_id: current_user.ms_id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday)}
+        let!(:requested_item)  { CartItem.create(user_id: current_user.ms_id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday)}
 
-        let(:put_params) { {item_id: requested_item.id, intended_use: ["Intended Use"]} }
-        let(:items_in_cart) { current_user.items_in_cart }
+        let(:put_params)      { {item_id: requested_item.id, intended_use: ["Intended Use"]} }
+        let(:items_in_cart)   { current_user.items_in_cart }
 
         before do
           request.env["HTTP_REFERER"] = "original_page"
-          allow(Media).to receive(:find).with('abc').and_return(requested_work)
+          allow(SolrDocument).to receive(:find).with(requested_work.id).and_return(SolrDocument.new(requested_work.to_solr))
           allow(subject).to receive(:work_in_cart_or_requested?).with(requested_work.id).and_return(false)
         end
 
@@ -109,7 +109,6 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
 
         it 'creates a new cart item' do
-          requested_item.touch
           expect{
             process :request_item, method: :put, params: { item_id: requested_item.id, intended_use: ["Intended Use"] }
           }.to change{CartItem.count}.by(1)
@@ -386,18 +385,19 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
   end
 
   describe "POST #request_work" do
-    let(:depositor) { User.create(email: "test@test.com", password: "password")}
-    let(:new_work)    { Media.create(id: 'zzz', fileset_accessibility: ["restricted_download"], depositor: depositor.ms_id)}
+    let(:depositor)   { User.create(email: "test@test.com", password: "password")}
+    let(:new_work)    { Media.create(id: 'zzz', title: ['new work'], visibility: 'open', fileset_accessibility: ["restricted_download"], depositor: depositor.ms_id)}
     let(:post_params) { { work_id: [new_work.id], intended_use: ["Intended Use"] } }
 
     before do
       request.env["HTTP_REFERER"] = "original_page"
       allow(Media).to receive(:find).with('zzz').and_return(new_work)
+      allow(SolrDocument).to receive(:find).with(new_work.id).and_return(SolrDocument.new(new_work.to_solr))
     end
 
     context "work can't be added to cart and the user doesn't have download access" do
       before do
-        allow(new_work).to receive(:can_add_to_cart?).and_return(false)
+        allow(SolrDocument.find(new_work.id)).to receive(:public?).and_return(false)
         allow(subject.current_user).to receive(:can?).with(:download, new_work.id).and_return(false)
       end
       it 'does not request the work' do

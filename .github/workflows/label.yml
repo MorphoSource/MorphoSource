@@ -1,9 +1,9 @@
-# Require label on PR to master in order to merge
+# Require label on PR to main in order to merge
 name: Require Pull Request Label
 on:
   pull_request:
     types: [opened, labeled, unlabeled, synchronize]
-    branches: [master]
+    branches: [main]
 jobs:
   label:
     runs-on: ubuntu-latest

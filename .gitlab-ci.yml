@@ -56,7 +56,7 @@ test_until_fail_job:
     RSPEC_FAIL_FAST: "true"
   except:
     refs: 
-      - master
+      - main
     variables:
       - $SKIP_TESTS == "true"
   script:
@@ -68,7 +68,7 @@ test_all_job:
     variables:
       - $SKIP_TESTS == "true"
   only:
-    - master
+    - main
   script:
     - bin/rake ci:wrapped_spec[~accessibility]
 
@@ -110,6 +110,6 @@ deploy_prod:
     name: production
     url: https://www.morphosource.org/
   only:
-    - master
+    - main
   tags:
     - production

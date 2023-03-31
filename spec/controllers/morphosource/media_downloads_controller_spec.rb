@@ -8,7 +8,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
   describe "GET #show" do
     let(:user)        { User.create(email: 'user@email.com', password: 'password') }
     let(:depositor)   { User.create(email: 'depositor@email.com', password: 'password') }
-    
+
     let(:download_hash) { SecureRandom.uuid }
 
     let(:work1)       { Media.create(title: ["Test Media Work"], depositor: depositor.ms_id) }
@@ -44,7 +44,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
       work1.ordered_members << file_set_1
       work2.ordered_members << file_set_2
       work_dup.ordered_members << file_set_dup
-      
+
       file_set_1.original_file.file_size = [100]
       file_set_1.original_file.crc32 = [100]
       file_set_1.original_file.save!
@@ -59,6 +59,11 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
       file_set_dup.original_file.crc32 = [100]
       file_set_dup.original_file.save!
       file_set_dup.reload
+
+      allow(SolrDocument).to receive(:find).and_call_original
+      works.each do |work|
+        allow(SolrDocument).to receive(:find).with(work.id).and_return(SolrDocument.find(work.id))
+      end
     end
 
     describe 'response' do
@@ -78,7 +83,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
           expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
           expect(response.headers["Content-Disposition"]).to end_with('.zip"')
         end
-        
+
         it "returns a zip for multiple works" do
           get :show, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash }
           expect(response.status).to eq(200)
@@ -146,14 +151,14 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         before do
           allow_any_instance_of(User).to receive(:can?).with(:download, work1.id).and_return(true)
           allow_any_instance_of(User).to receive(:can?).with(:download, work2.id).and_return(true)
-          allow_any_instance_of(User).to receive(:can?).with(:download, work1).and_return(true)
-          allow_any_instance_of(User).to receive(:can?).with(:download, work2).and_return(true)
+          allow_any_instance_of(User).to receive(:can?).with(:download, SolrDocument.find(work1.id)).and_return(true)
+          allow_any_instance_of(User).to receive(:can?).with(:download, SolrDocument.find(work2.id)).and_return(true)
         end
 
         context 'user has already downloaded media using the same download URL hash' do
           let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, in_cart: false, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday) }
           let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, in_cart: false, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday) }
-          
+
           it 'increments download attempts and updates download time on existing downloaded cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
             [cart_item1, cart_item2].each(&:reload)
@@ -167,7 +172,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         context 'user has already downloaded media using a different download URL hash' do
           let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, in_cart: false, download_hash: SecureRandom.uuid, download_attempts: 1, date_downloaded: Date.yesterday) }
           let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, in_cart: false, download_hash: SecureRandom.uuid, download_attempts: 1, date_downloaded: Date.yesterday) }
-          
+
           it 'creates new downloaded cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(2)
           end

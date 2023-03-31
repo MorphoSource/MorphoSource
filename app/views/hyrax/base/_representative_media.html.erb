@@ -9,7 +9,7 @@
           <iframe id="uv-iframe"
             height="100%"
             width="100%"
-            src="<%= PulUvRails::UniversalViewer.viewer_src %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: curation_concern.access_control_id) %>&config=<%= PulUvRails::UniversalViewer.config_src %>"
+            src="<%= universal_viewer_base_url %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: curation_concern.access_control_id) %>&config=<%= universal_viewer_config_url %>"
             allowfullscreen
             frameborder="0"
           ></iframe>

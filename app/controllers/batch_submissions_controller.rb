@@ -349,6 +349,7 @@ class BatchSubmissionsController < ApplicationController
         error_msg = "media.media_file: Please enter a value."
       else
         if val.match(/^https?:\/\//).present?
+          # remote file upload
           if !current_user.can_submit_remote_file?(val, params['organization_id'])
             error_msg = "media.media_file: The remote file path is invalid or not allowed. Please make sure you have remote file submitter permissions and that the domain for the remote file is allowed."
           else
@@ -366,16 +367,19 @@ class BatchSubmissionsController < ApplicationController
               end
             end            
           end
-
-#todo: check for valid file name first?
-
-        elsif !File.exist?(user_share_full_path + val)
-          error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
-        end
-        if !error_msg.present?
-          duplicate_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
-          if duplicate_media_found_row + 1 != current_row
-            error_msg = "media.media_file: File #{val} found in more than one row (see row #{duplicate_media_found_row+1})."
+        else
+          # local file upload
+          if val.match(/[\/\\]/).present?   
+            # avoid any slashes that will set a path
+            error_msg = "media.media_file: File name #{val} is not valid.  Please use a valid file name."
+          elsif !File.exist?(user_share_full_path + val)
+            error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
+          end
+          if !error_msg.present?
+            duplicate_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
+            if duplicate_media_found_row + 1 != current_row
+              error_msg = "media.media_file: File #{val} found in more than one row (see row #{duplicate_media_found_row+1})."
+            end
           end
         end
       end

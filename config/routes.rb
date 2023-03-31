@@ -513,6 +513,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Universal Viewer Static Redirect
+  get '/uv.html', to: redirect('/uv/uv.html', status: 301)
+
   # MS1 Static Redirects
   get '/About/home', to: redirect('/docs/about', status: 301)
   get '/About/contact', to: redirect('/docs/about', status: 301)

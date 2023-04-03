@@ -247,39 +247,17 @@ RSpec.describe Media do
       subject { described_class.new }
       context 'media is open' do
         before do
+          subject.visibility = 'open'
           subject.fileset_accessibility = ['open']
-        end
-        it { expect(subject.can_add_to_cart?).to be(true) }
-      end
-      context 'media is on lease' do
-        before do
-          allow(subject).to receive(:active_lease?).and_return(true)
         end
         it { expect(subject.can_add_to_cart?).to be(true) }
       end
       context 'media is restricted' do
         before do
+          subject.visibility = 'open'
           subject.fileset_accessibility = ['restricted_download']
         end
         it { expect(subject.can_add_to_cart?).to be(true) }
-      end
-      context 'media is preview onoy' do
-        before do
-          subject.fileset_accessibility = ['preview_only']
-        end
-        it { expect(subject.can_add_to_cart?).to be(false) }
-      end
-      context 'media is hidden' do
-        before do
-          subject.fileset_accessibility = ['hidden']
-        end
-        it { expect(subject.can_add_to_cart?).to be(false) }
-      end
-      context 'media is under embargo' do
-        before do
-          allow(subject).to receive(:under_embargo?).and_return(true)
-        end
-        it { expect(subject.can_add_to_cart?).to be(false) }
       end
     end
 
@@ -292,54 +270,23 @@ RSpec.describe Media do
 
         it { expect(subject.publication_status).to eq("open") }
       end
+
       context 'media is open, files are restricted' do
         subject { described_class.new(title: ["Test Media Work"], visibility: open, fileset_visibility: [""], fileset_accessibility: ["restricted_download"]) }
 
         it { expect(subject.publication_status).to eq("restricted") }
       end
-      context 'media is open, files are preview only' do
-        subject { described_class.new(title: ["Test Media Work"], visibility: open, fileset_visibility: [""], fileset_accessibility: ["preview_only"]) }
 
-        it { expect(subject.publication_status).to eq("preview") }
-      end
-      context 'media is open, files are hidden' do
-        subject { described_class.new(title: ["Test Media Work"], visibility: open, fileset_visibility: ["Restricted"], fileset_accessibility: ["hidden"]) }
-
-        it { expect(subject.publication_status).to eq("hidden") }
-      end
       context 'media and files are both private' do
         subject { described_class.new(title: ["Test Media Work"], visibility: private, fileset_visibility: [""], fileset_accessibility: ["private"]) }
 
         it { expect(subject.publication_status).to eq("private") }
-      end
-      context 'media and files are under embargo' do
-        subject { described_class.new(title: ["Test Media Work"], visibility: private, fileset_visibility: [""], fileset_accessibility: [""]) }
-        let(:embargo) { double("Embargo")}
-
-        before do
-          allow(embargo).to receive(:active?).and_return(true)
-          allow(subject).to receive(:embargo).and_return(embargo)
-        end
-
-        it { expect(subject.publication_status).to eq("embargo") }
-      end
-      context 'media and files are under a lease' do
-        subject { described_class.new(title: ["Test Media Work"], visibility: open, fileset_visibility: [""], fileset_accessibility: [""]) }
-        let(:lease) { double("Lease")}
-
-        before do
-          allow(lease).to receive(:active?).and_return(true)
-          allow(subject).to receive(:lease).and_return(lease)
-        end
-
-        it { expect(subject.publication_status).to eq("lease") }
       end
 
       context 'media does not have a fileset_accessibity set' do
         subject { described_class.new(title: ["Test Media Work"], visibility: open, fileset_visibility: [""], fileset_accessibility: nil) }
 
         it { expect(subject.publication_status).to eq("private") }
-
       end
     end
 

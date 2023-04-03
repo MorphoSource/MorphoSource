@@ -30,7 +30,7 @@ module Morphosource
       def cart_item_message_content(items, message_for="requestor")
         content = ""
         items.each do |item|
-          work = Media.find(item.work_id)
+          work = SolrDocument.find(item.work_id)
           if work.present?
             content += "<p>" +
               "<b><a href='http://#{host_name}/media/#{work.id}'>Media #{work.id}: #{work.title.first}</a></b>"
@@ -42,19 +42,19 @@ module Morphosource
                   content += " (<i>" + object.taxonomies_titles.first + "</i>)"
                 end
               else
-                content += " of " + work.physical_object_type.downcase + 
-                  " <b><a href='http://#{host_name}/cultural_heritage_objects/#{object.id}'>#{object.title.first}</a>" + "</b>" 
+                content += " of " + work.physical_object_type.downcase +
+                  " <b><a href='http://#{host_name}/cultural_heritage_objects/#{object.id}'>#{object.title.first}</a>" + "</b>"
               end
             end
             content += " for intended use: <i>\"" + item.use + "\"</i>" if item.use.present?
             reviewers = []
-            work.reviewer.each do |r|
+            Array(work.reviewer).each do |r|
               if User.where(ms_id:r).present?
                 # todo: check and skip if current reviewer?
-                reviewers << User.where(ms_id:r).first  
+                reviewers << User.where(ms_id:r).first
               end
             end
-            if message_for == "reviewer" && work.reviewer.count > 1
+            if message_for == "reviewer" && Array(work.reviewer).count > 1
               content += "<br/><small>(This request has been sent to multiple reviewers: #{user_email_link(reviewers)} who are all able to approve, deny, or clear this request.  Please coordinate your response if appropriate.)</small>"
             elsif message_for == "requestor"
               content += "<br/><small>(This request has been sent to: #{user_email_link(reviewers)})</small>"

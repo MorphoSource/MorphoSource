@@ -2,7 +2,7 @@
 name: Push Commit To GitLab
 on:
   push:
-    branches: [dev, master]
+    branches: [dev, main]
 jobs:
   build:
     runs-on: ubuntu-latest

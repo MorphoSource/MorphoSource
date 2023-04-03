@@ -10,14 +10,14 @@ RSpec.shared_context 'cart items', :shared_context => :metadata do
   let(:required_archival_of_published_derivatives) { ['test'] }
   let(:permits_3d_use) { ['test'] }
   let(:permits_commercial_use) { ['test'] }
-    
-  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
-  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['open'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
-  let(:work3)         { Media.create(id: "ccc", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
-  let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: depositor.ms_id, fileset_accessibility: ['open'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
-  let(:work5)         { Media.create(id: "eee", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
-  let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['open'], download_reviewer: ['xxx'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
-  let(:work7)         { Media.create(id: "ggg", title: ["Test Work Title"], depositor: depositor.ms_id, fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
+
+  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
+  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['open'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
+  let(:work3)         { Media.create(id: "ccc", title: ["Test Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
+  let(:work4)         { Media.create(id: "ddd", title: ["Test Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['open'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use)}
+  let(:work5)         { Media.create(id: "eee", title: ["Test Work Title"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
+  let(:work6)         { Media.create(id: "fff", title: ["Test Work Title"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['open'], download_reviewer: [reviewer.ms_id], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
+  let(:work7)         { Media.create(id: "ggg", title: ["Test Work Title"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['restricted_download'], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
 
   let(:cartItem1)     { CartItem.create( user_id: current_user.ms_id, work_id: work1.id, in_cart: true, date_requested: Date.yesterday, date_downloaded: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow, reviewers: [depositor.ms_id]) }
   let(:cartItem2)     { CartItem.create( user_id: current_user.ms_id, work_id: work2.id, in_cart: true, date_downloaded: Date.yesterday, reviewers: [depositor.ms_id]) }
@@ -27,13 +27,13 @@ RSpec.shared_context 'cart items', :shared_context => :metadata do
   let(:cartItem6)     { CartItem.create( user_id: current_user.ms_id, work_id: work6.id, in_cart: false, date_downloaded: nil, reviewers: [depositor.ms_id]) }
   let(:cartItem7)     { CartItem.create( user_id: current_user.ms_id, work_id: work7.id, in_cart: false, date_downloaded: nil, reviewers: [depositor.ms_id]) }
 
-  let(:doc1)          { SolrDocument.new(id: work1.id) }
-  let(:doc2)          { SolrDocument.new(id: work2.id) }
-  let(:doc3)          { SolrDocument.new(id: work3.id) }
-  let(:doc4)          { SolrDocument.new(id: work4.id) }
-  let(:doc5)          { SolrDocument.new(id: work5.id) }
-  let(:doc6)          { SolrDocument.new(id: work6.id) }
-  let(:doc7)          { SolrDocument.new(id: work7.id) }
+  let(:doc1)          { SolrDocument.find(work1.id) }
+  let(:doc2)          { SolrDocument.find(work2.id) }
+  let(:doc3)          { SolrDocument.find(work3.id) }
+  let(:doc4)          { SolrDocument.find(work4.id) }
+  let(:doc5)          { SolrDocument.find(work5.id) }
+  let(:doc6)          { SolrDocument.find(work6.id) }
+  let(:doc7)          { SolrDocument.find(work7.id) }
 
 
   let(:allCartItems)  { [cartItem1, cartItem2, cartItem3, cartItem4, cartItem5, cartItem6, cartItem7] }

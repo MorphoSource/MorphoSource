@@ -1,7 +1,17 @@
 {
-  "name": "MorphoSource_SF",
+  "name": "morphosource",
+  "description": "This is a simple package file to help developers periodically install or update the Universal Viewer packaged with MorphoSource. It is not part of regular install or setup processes.",
   "private": true,
+  "repository": "git@github.com:MorphoSource/MorphoSource.git",
   "dependencies": {
-    "jquery-ui": "^1.13.2"
-  }
+  "universalviewer": "MorphoSource/universalviewer#webpack-al-old_aleph-0.0.21_dist"
+},
+"scripts": {
+  "preinstall": "rm -rf ./public/uv/ & rm -rf ./public/uv-assets/ & rm -rf ./public/uv-dist-umd/",
+  "postinstall": "yarn run uv-install && yarn run uv-subdir-copy && yarn run uv-config",
+  "uv-install": "cp -r ./node_modules/universalviewer/dist ./public/uv",
+  "uv-subdir-copy": "cp -r ./node_modules/universalviewer/dist/uv-assets ./public/uv-assets & cp -r ./node_modules/universalviewer/dist/uv-dist-umd ./public/uv-dist-umd",
+  "uv-config": "cp ./config/uv/uv.html ./public/uv/uv.html & cp ./config/uv/uv-config.json ./public/uv/uv-config.json & cp ./config/uv/uv-config-front-page.json ./public/uv/uv-config-front-page.json"
+  },
+  "devDependencies": {}
 }

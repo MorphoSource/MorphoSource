@@ -68,6 +68,10 @@ class SolrDocument
     self[Solrizer.solr_name('has_model', :symbol)]
   end
 
+  def title
+    self['title_tesim']
+  end
+
   # Add custom metadata fields to show view
   def in_works_ids
     self[Solrizer.solr_name('in_works_ids', :stored_searchable)]
@@ -120,13 +124,8 @@ class SolrDocument
     self["edit_access_person_ssim"]
   end
 
-  # Request Management
-  def reviewer
-    self["download_reviewer_ssim"].presence || self["owner_ssim"].presence || self["depositor_ssim"]
-  end
-
-  def owner
-    self["owner_ssim"]
+  def open?
+    self["visibility_ssi"] == 'open'
   end
 
   def user_with_ownership

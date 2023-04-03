@@ -1,13 +1,11 @@
 RSpec.shared_examples '#index' do
+  it 'responds with ok' do
+    expect(subject).to respond_with(:ok)
+  end
 
-    it 'responds with ok' do
-      expect(subject).to respond_with(:ok)
-    end
-
-    it 'renders index' do
-      expect(subject).to render_template(:index)
-    end
-
+  it 'renders index' do
+    expect(subject).to render_template(:index)
+  end
 end
 
 RSpec.shared_examples '#get_items instance variables' do |page|
@@ -32,7 +30,6 @@ RSpec.shared_examples '#get_items instance variables' do |page|
   end
 
   it 'retrieves a formatted item count' do
-
     expect(subject.instance_variable_get(:@item_count)).to eq(count[page])
   end
 

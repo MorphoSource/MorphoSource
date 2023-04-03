@@ -1,0 +1,21 @@
+{
+  "options": {
+    "footerPanelEnabled": false,
+    "rightPanelEnabled": false,
+    "leftPanelEnabled": false,
+    "headerPanelEnabled": false
+  },
+  "modules": {
+    "alephCenterPanel": {
+      "options": {
+        "dracoDecoderPath": "./lib/"
+      }
+    },
+    "footerPanel": {
+      "options": {
+        "downloadEnabled": false,
+        "shareEnabled": false
+      }
+    }
+  }
+}

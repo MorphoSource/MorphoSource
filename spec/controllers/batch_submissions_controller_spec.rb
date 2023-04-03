@@ -40,7 +40,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
     context "render index page" do
       render_views
       it "returns only one job allowed message" do
-        BackgroundJob.create({ job_id: '123', status: 'queued', user_id: user.id, created_objects: {} })
+        BackgroundJob.create({ job_id: '123', status: 'queued', user_id: user.user_key, created_objects: {} })
         get :index
         expect(response.body).to include 'Only one batch submission job is allowed at a time.'
       end
@@ -48,7 +48,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
     context "render new submission page" do
       render_views
       it "returns currently have job running message" do
-        BackgroundJob.create({ job_id: '234', status: 'working', user_id: user.id, created_objects: {} })
+        BackgroundJob.create({ job_id: '234', status: 'working', user_id: user.user_key, created_objects: {} })
         get :new
         expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
       end
@@ -61,7 +61,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         }
       } }
       it "returns" do
-        BackgroundJob.create({ job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
+        BackgroundJob.create({ job_id: '456', status: 'working', user_id: user.user_key, created_objects: {} })
         post 'submit', :params => params
         expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
       end
@@ -70,7 +70,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       render_views
       let(:params) { {"manifest_object" => {}} }
       it "returns" do
-        BackgroundJob.create({ job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
+        BackgroundJob.create({ job_id: '456', status: 'working', user_id: user.user_key, created_objects: {} })
         post 'ingest', :params => params
         expect(response.body).to include 'Sorry, you currently have a batch submission job running.'
       end

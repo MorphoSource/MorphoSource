@@ -5,11 +5,12 @@ RSpec.describe BackgroundJob, type: :model do
   let(:user)          { User.create(email: "example@email.com", password: "password") }
   let!(:main_job1)     { BackgroundJob.create( 
                                 job_id: '123', 
-                                user_id: user.id, 
+                                user_id: user.user_key, 
                                 status: 'working',
                                 exceptions: '',
-                                created_objects: { 'file1': 'media_id1'} ) }
-  let(:new_params)      { {'file2': 'media_id2'} }
+                                created_objects: { "file1" => 'media_id1' } 
+                        ) }
+  let(:new_params)      { { "file2" => "media_id2" } }
   let(:new_status)      { 'failed' }
   let(:new_exceptions)  { "new exceptions" }
 
@@ -18,7 +19,7 @@ RSpec.describe BackgroundJob, type: :model do
       before do
         main_job1.update_created_objects(new_params)
       end
-      it { expect(main_job1.created_objects).to eq( {"file1"=>"media_id1", "file2"=>"media_id2"} ) }
+      it { expect(main_job1.created_objects).to eq( { "file1"=>"media_id1", "file2"=>"media_id2" } ) }
     end
   end
 

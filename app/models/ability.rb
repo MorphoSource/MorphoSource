@@ -6,7 +6,7 @@ class Ability
   # Define any customized permissions here.
   def custom_permissions
 
-    if current_user.admin?
+    if admin?
       can [:create, :show, :add_user, :remove_user, :index, :edit, :update, :destroy], Role
       can [:manage], ::User
       can [:manage], BackgroundJob

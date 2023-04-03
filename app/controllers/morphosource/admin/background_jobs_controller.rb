@@ -2,8 +2,9 @@
 module Morphosource
   module Admin
     class BackgroundJobsController < Morphosource::ItemtableController
+      prepend_before_action :authorize_index, only: [:index]
+
       helper_method :get_resque_data?
-      # todo handle permissions outside of controller
 
       PAGE_TITLE = I18n.t("morphosource.admin.background_jobs.page_title")
       PAGE_DESCRIPTION = I18n.t("morphosource.admin.background_jobs.page_description")
@@ -16,6 +17,11 @@ module Morphosource
       end
 
       private
+
+      # Only admins can access this index route
+      def authorize_index
+        authorize! :manage, BackgroundJob
+      end
 
       def get_items
         @items = BackgroundJob.includes(:user).all.order(sort_param)

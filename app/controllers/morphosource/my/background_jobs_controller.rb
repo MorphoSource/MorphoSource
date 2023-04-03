@@ -1,10 +1,16 @@
 module Morphosource
   module My
     class BackgroundJobsController < Morphosource::ItemtableController
+      prepend_before_action :authorize_index, only: [:index]
+
       PAGE_TITLE = I18n.t("morphosource.dashboard.my.background_jobs.page_title")
       PAGE_DESCRIPTION = I18n.t("morphosource.dashboard.my.background_jobs.page_description")
 
       private
+
+      def authorize_index
+        authorize! :index, BackgroundJob
+      end
 
       def get_items
         @items = current_user&.background_jobs&.order(sort_param) || []

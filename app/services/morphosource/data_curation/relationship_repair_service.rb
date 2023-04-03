@@ -2,6 +2,15 @@ module Morphosource
   module DataCuration
     class RelationshipRepairService
 
+      # Takes either a single media id or an array of ids to repair.
+      # Broken relationships can be found by searching for media without physical objects: Morphosource::SolrService.new.get_docs("has_model_ssim:Media NOT physical_object_id_ssim:*")
+      # Intended for situations where a user manually submits a media and all of the works are created, but for some reason one or more are lacking parent/child relationships.
+      # For each media, prepares a work list of preceding imaging and processing events by working backwards from the media according to Fedora id.
+      # For each work in the sorted work list, adds the following work as an ordered member, unless an ordered member already exists.
+      # Only repairs unlinked chains of neighboring imaging events, processing events, and media.
+      # If there are no event works preceding the media, or a work does not exist for the preceding id, no action is taken, and the media id is reported as being unable to be repaired.
+      # Verifies that the service worked after any events/media are linked; if the media's solr record still does not have a physical object id, the media is reported as being unable to be repaired.
+
       def self.call(media_id: nil)
         new(media_id: media_id).call
       end

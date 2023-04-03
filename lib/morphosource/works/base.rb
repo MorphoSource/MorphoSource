@@ -74,6 +74,10 @@ module Morphosource
         self.class == ProcessingEvent
       end
 
+      def event?
+        self.class == ImagingEvent || self.class == ProcessingEvent
+      end
+
       def device?
         self.class == Device
       end
@@ -133,7 +137,7 @@ module Morphosource
           end
         end
       end
-      
+
       private
 
       # if everything is working as it should be, the solr document should already have been deleted before this.

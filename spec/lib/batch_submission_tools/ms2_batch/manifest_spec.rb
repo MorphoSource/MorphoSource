@@ -41,6 +41,13 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
       expect(subject.instance_variable_get(:@rows).first.count).to eq(5)
     end
 
+    it "contains summary" do
+      expect(subject.instance_variable_get(:@summary)["depositor_id"]).to eql(depositor.ms_id)
+      # media files come from the test manifest xlsx
+      expect(subject.instance_variable_get(:@summary)["media_files"]).to eql(
+        ["ANSP_Fish_181150.zip", "ANSP_Fish_180334_Head.jpg", "ANSP_Fish_181150.zip"])
+    end
+
     it "contains biological_specimen_ingests and rows_to_bso data" do
       expect(subject.instance_variable_get(:@biological_specimen_ingests).count).to eq(2)
       expect(subject.instance_variable_get(:@biological_specimen_ingests).first.to_h[:attrs]).to include(

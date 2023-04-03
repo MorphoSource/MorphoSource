@@ -3,6 +3,52 @@ module BatchSubmissionTools
     module BatchSubmissionHelper
 
       include Morphosource::MessageHelper
+
+      def dup_job_found(job_class, manifest_object, ignore_job_id = nil)
+        active_jobs(job_class).each do |j|
+          unless ignore_job_id.present? && j["job_id"] == ignore_job_id
+            if j["arguments"][0]["summary"].except("_aj_symbol_keys") == manifest_object["summary"]
+              return j["job_id"]
+            end
+          end
+        end
+        return nil
+      end
+
+      def active_jobs(job_class)
+        (queued_resque_jobs + working_resque_jobs).select { |j| j["job_class"] == job_class }
+      end
+
+      def queued_resque_jobs
+        @queued_resque_jobs ||= begin
+          Resque.data_store.queue_names
+            .map { |n| Resque.data_store.everything_in_queue(n) }
+            .flatten
+            .map { |j| Resque.decode(j)["args"][0] || {} }  
+        end
+      end
+
+      def failed_resque_jobs
+        @failed_resque_jobs ||= begin
+          Resque::Failure.all(0, 999999)
+            .map { |j| (j["payload"]["args"][0] || {}).merge(
+              "exception" => j["exception"], 
+              "error" => j["error"], 
+              "failed_at" => j["failed_at"]
+            )}  
+        end
+      end
+
+      def working_resque_jobs
+        @working_resque_jobs ||= begin
+          Resque.workers
+            .map { |w| w.job }
+            .select { |j| j.present? }
+            .map { |j| (j["payload"]["args"][0] || {}).merge(
+              "run_at" => j["run_at"] 
+            )}
+        end
+      end
  
       def pad(id)
         return id unless id.present?

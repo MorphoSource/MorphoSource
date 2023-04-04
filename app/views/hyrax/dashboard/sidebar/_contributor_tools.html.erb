@@ -2,6 +2,10 @@
   <li class="h5"><%= t('hyrax.admin.sidebar.contributor_tools') %></li>
 
   <% if current_user.batch_submission_contributor? %>
+    <%= menu.nav_link(Rails.application.routes.url_helpers.jobs_path) do %>
+      <span class="fa fa-robot" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.background_jobs') %></span>
+    <% end %>
+
     <%= menu.nav_link(main_app.batch_submissions_path) do %>
       <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
     <% end %>

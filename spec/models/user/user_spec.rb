@@ -122,7 +122,7 @@ RSpec.describe User, type: :model do
     describe '#can_submit_new_batch_submission?' do
       context 'user cannot submit' do
         it 'returns false when job is working' do
-          BackgroundJob.create({ main_job_id: '456', status: 'working', user_id: user.id, created_objects: {} })
+          BackgroundJob.create({ job_id: '456', status: 'working', user_id: user.user_key, created_objects: {} })
           expect(user.can_submit_new_batch_submission?).to be(false)
         end
       end
@@ -131,7 +131,7 @@ RSpec.describe User, type: :model do
           expect(user.can_submit_new_batch_submission?).to be(true)
         end
         it 'returns true when job completed' do
-          BackgroundJob.create({ main_job_id: '456', status: 'completed', user_id: user.id, created_objects: {} })
+          BackgroundJob.create({ job_id: '456', status: 'completed', user_id: user.user_key, created_objects: {} })
           expect(user.can_submit_new_batch_submission?).to be(true)
         end
       end

@@ -180,7 +180,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
   end
 
   def main_job
-    BackgroundJob.where(main_job_id: @main_job_id).first
+    BackgroundJob.where(job_id: @main_job_id).first
   end
 
   def add_media_to_collections(media, collection_ids)

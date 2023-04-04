@@ -12,6 +12,10 @@
           'admin/stats'
         ].any? { |path| url_for.include?(path) } do %>
 
+        <%= menu.nav_link(Rails.application.routes.url_helpers.admin_jobs_path) do %>
+          <span class="fa fa-robot" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_background_jobs') %></span>
+        <% end %>
+
         <%= menu.nav_link(Rails.application.routes.url_helpers.admin_downloads_path) do %>
           <span class="fa fa-download" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.all_downloads') %></span>
         <% end %>

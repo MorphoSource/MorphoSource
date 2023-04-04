@@ -93,7 +93,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   end
 
   def main_job
-    BackgroundJob.where(main_job_id: main_job_id).first
+    BackgroundJob.where(job_id: main_job_id).first
   end
 
   def update_main_job(status_str=nil, exceptions=nil)

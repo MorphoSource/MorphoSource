@@ -401,7 +401,16 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       it 'returns the approver name' do
         expect(action_by(item)).to eq(approver.display_name)
       end
+      context 'approver no longer exists' do
+        before do
+          approver.destroy
+        end
+        it 'returns nil' do
+          expect(action_by(item)).to be(nil)
+        end
+      end
     end
+
   end
 
 end

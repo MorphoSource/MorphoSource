@@ -93,39 +93,6 @@ module SubmissionsControllerAjaxBehavior
     render :json => response_object
   end
 
-  def new_device_submit
-    # this method is expected to be called from a form in modal, or an ajax post
-    begin
-      new_device_id = prepare_and_create_work('device', { 'device' => params[:device] })[0]
-    rescue Exception => ex
-      new_device_id = nil
-      exception_message = "Exception: #{ex.class}, #{ex.message}"
-    end
-    if new_device_id.present?
-      status = 'OK'
-      message = 'New device created'
-      new_device = Device.where('id' => new_device_id).first
-      new_work = {
-        :id => new_device_id,
-        :title => new_device.title.first,
-        :creator => new_device.creator.first,
-        :modality => new_device.modality.first,
-        :description => new_device.description.first,
-        :organization_institution => organization_institution(new_device_id)
-      }
-    else
-      status = 'FAIL'
-      message = 'There is a problem creating the device. ' + exception_message
-      new_work = {}
-    end
-    response_object = {
-      :work => new_work,
-      :status => status,
-      :message => message
-    }
-    render :json => response_object
-  end
-
   def new_processing_event_submit
     handle_ajax_submit do
       new_processing_event_id = prepare_and_create_work('processing_event', { 'processing_event' => params[:processing_event] })[0]

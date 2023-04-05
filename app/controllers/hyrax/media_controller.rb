@@ -79,8 +79,6 @@ module Hyrax
         pe_work = @presenter.this_media_processing_event
         @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
       end
-      @new_device_submit_submissions_url = '/submissions/new_device_submit'
-      @new_device_form = Hyrax::WorkFormService.build(::Device.new, current_ability, self)
       @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
       @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
       @countries_service = Morphosource::CountriesService.new
@@ -167,8 +165,6 @@ module Hyrax
               pe_work = @presenter.this_media_processing_event
               @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
             end
-            @new_device_submit_submissions_url = '/submissions/new_device_submit'
-            @new_device_form = Hyrax::WorkFormService.build(::Device.new, current_ability, self)
             @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
             @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
             @countries_service = Morphosource::CountriesService.new

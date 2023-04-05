@@ -13,7 +13,7 @@ class SubmissionsController < ApplicationController
 
   load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, :validate_remote_file_ajax,
     :save_data, :organization_for_recordset, :organization_default_media_fields,
-    :new_organization_submit, :new_taxonomy_submit, :new_device_submit,
+    :new_organization_submit, :new_taxonomy_submit,
     :new_processing_event_submit]
 
   before_action :instantiate_work_forms

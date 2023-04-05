@@ -104,21 +104,6 @@
 
 <% end %>
 
-<div id="embedded_div_new_organization" class="embedded_div" data-relationship-control="#parent-relationships-organizations" data-add-button="#btn-add-organization" style="display: none;">
-  <div class="col-sm-12">
-    <div class="content-block">
-      <%= simple_form_for [main_app, @new_organization_form],
-                          wrapper: :showcase_default,
-                          url: @new_organization_submit_submissions_url,
-                          html: {
-                            data: { behavior: 'work-form' }
-                          } do |i| %>
-          <%= render 'form_new_organization', i: i %>
-      <% end %>
-    </div>
-  </div>
-</div>
-
 <% if can? :transfer, @presenter.id %>
 <div class="row related_form share" style="display:none">
   <%= render_async hyrax.new_work_transfer_path(@presenter.id), event_name: "share-tab-loaded" do %>

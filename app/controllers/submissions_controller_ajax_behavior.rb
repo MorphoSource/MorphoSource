@@ -6,6 +6,7 @@ module SubmissionsControllerAjaxBehavior
     before_action :initialize_submission, only: [:new_processing_event_submit]
   end
 
+  # todo: refactor this to use handle_ajax_submit
   def new_taxonomy_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin

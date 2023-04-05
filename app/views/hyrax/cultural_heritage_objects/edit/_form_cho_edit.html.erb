@@ -19,31 +19,3 @@
 
   <%= render 'hyrax/cultural_heritage_objects/edit/guts4form', f: f %>
 <% end %>
-
-<%
-# the embedded divs are created here so that the forms will not be nested
-# after page is loaded, the divs will be moved to the corresponding tabs
-# see function moveWorkForms()
-%>
-  <div class="col-sm-12">
-    <div class="content-block">
-
-      <div id="embedded_div_new_organization" class="embedded_div" data-relationship-control="#parent-relationships-organizations" data-add-button="#btn-add-organization" style="display: none;">
-          <%= simple_form_for @new_organization_form,
-                              wrapper: :showcase_default,
-                              url: @new_organization_submit_submissions_url do |i| %>
-              <%= render 'form_new_organization', i: i %>
-          <% end %>
-      </div>
-
-  </div>
-</div>
-
-<%# TODO: Commented out when turbolinks removed. Delete if nothing breaks. %>
-<!-- <script type="text/javascript">
-  Blacklight.onLoad(function() { -->
-    <%# This causes the page to switch back to the default template if they've
-        previously visited the batch download page in this Turbolinks session %>
-    <%# $("#fileupload").fileupload('option', 'downloadTemplateId', 'template-download')
-  });
-</script> %>

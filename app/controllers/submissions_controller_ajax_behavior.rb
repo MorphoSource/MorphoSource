@@ -6,46 +6,6 @@ module SubmissionsControllerAjaxBehavior
     before_action :initialize_submission, only: [:new_processing_event_submit]
   end
 
-  # AJAX Physical object and media edit page submission methods
-  def new_organization_submit
-    # this method is expected to be called from a form in modal, or an ajax post
-    begin
-      new_organization_id = prepare_and_create_work('organization', { 'organization' => params[:organization] })[0]
-    rescue
-      new_organization_id = nil
-    end
-
-    if new_organization_id.present?
-      status = 'OK'
-      message = 'New organization created'
-      new_organization = Organization.where('id' => new_organization_id).first
-      new_work = {
-        :id => new_organization_id,
-        :title => new_organization.title.first,
-        :institution_code => new_organization.institution_code.first,
-        :institution_name => new_organization.institution_name.first,
-        :collection_code => new_organization.collection_code.first,
-        :description => new_organization.description.first,
-        :related_url => new_organization.related_url.first,
-        :address => new_organization.address.first,
-        :city => new_organization.city.first,
-        :state_province => new_organization.state_province.first,
-        :postal_code => new_organization.postal_code.first,
-        :country => new_organization.country.first
-      }
-    else
-      status = 'FAIL'
-      message = 'There is a problem creating the organization.'
-      new_work = {}
-    end
-    response_object = {
-      :work => new_work,
-      :status => status,
-      :message => message
-    }
-    render :json => response_object
-  end
-
   def new_taxonomy_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin

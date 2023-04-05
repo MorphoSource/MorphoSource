@@ -368,8 +368,7 @@ Rails.application.routes.draw do
 
   resources :submissions, only: [ :new, :create, :search_bso_ajax,
     :search_taxonomy_ajax, :validate_remote_file_ajax, :organization_for_recordset, :organization_default_media_fields,
-    :new_organization_submit, :new_taxonomy_submit,
-    :new_processing_event_submit] do
+    :new_taxonomy_submit, :new_processing_event_submit] do
     collection do
       # AJAX in-submission-flow methods
       post 'validate_remote_file_ajax'

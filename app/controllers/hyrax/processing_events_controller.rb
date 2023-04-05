@@ -33,6 +33,7 @@ module Hyrax
       emancipate_if_necessary(env)
       if actor.update(env)
         update_media_team_access
+        update_child_media_if_necessary
         after_update_response
       else
         respond_to do |wants|
@@ -51,6 +52,7 @@ module Hyrax
         curation_concern.media.map(&:id).include?(params["media_id"]) && 
         current_user.can?(:edit, params["media_id"])
       )
+        @update_child_media_after_pe_update = true
         update
       else
         # unauthorized, return
@@ -85,6 +87,13 @@ module Hyrax
         end
 
       attrs
+      end
+    end
+
+    # If request from media edit page, update associated media
+    def update_child_media_if_necessary
+      if @update_child_media_after_pe_update
+        curation_concern.media.find { |m| m.id == params["media_id"] }.save!
       end
     end
 

@@ -1,7 +1,8 @@
+<% job = nil %>
 <% if get_resque_data? %>
   <% jobs = (@all_resque_jobs || []).select { |job| job["job_id"] == item.job_id } %>
   <% if jobs.present? && jobs.count == 1 %>
-    <%= @job = jobs.first %>
+    <% job = jobs.first %>
   <% end %>
 <% end %>
 
@@ -25,11 +26,11 @@
       <% end %>
     </td>
     <td>
-      <% if @job %>
-        <% if @job["run_at"].present? %>
-          Working, started <%= @job["run_at"] %>
-        <% elsif @job["failed_at"].present? %>
-          Failure, failed <%= @job["failed_at"] %>
+      <% if job %>
+        <% if job["run_at"].present? %>
+          Working, started <%= job["run_at"] %>
+        <% elsif job["failed_at"].present? %>
+          Failure, failed <%= job["failed_at"] %>
         <% else %>
           Queued
         <% end %>

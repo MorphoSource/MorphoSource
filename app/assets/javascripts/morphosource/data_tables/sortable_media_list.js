@@ -1,6 +1,9 @@
 $( document ).ready(function() {
     // initialize sortable
-    $("#sortable-media-list").sortable();
+    $("#sortable-media-list").sortable({
+      handle: ".sort-handle"
+    });
+    
     $("#save-media-order").on("click", function() {
       $("#save-media-order").prop('disabled', true);
       $.ajax({

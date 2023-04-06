@@ -99,5 +99,11 @@ module Morphosource
         main_app.url_for(options)
       end
       helper_method :remove_constraint_url
+
+      # does the collection show page include UV preview pane? no by default
+      def has_uv_preview?
+        false
+      end
+      helper_method :has_uv_preview?
   end
 end

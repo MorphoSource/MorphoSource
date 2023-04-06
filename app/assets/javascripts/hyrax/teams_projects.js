@@ -6,7 +6,7 @@ $(document).ready(function() {
 
     if ($('body[class*="teams"]').length) { // check if the page is teams/projects show page
 
-      if ($('body[class*="media-list edit"]').length) {
+      if ($('body[class*="media-list"]').length) {
         var mediaTable = createMediaTableNarrow('#datatable-media-list');
       } else {
         var mediaTable = createMediaTable('#datatable-media-list');

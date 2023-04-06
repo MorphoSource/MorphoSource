@@ -53,6 +53,12 @@ module Morphosource
           Hyrax::CollectionType.find_by(title: 'Media List')
         end
 
+        # unlike most collections, media lists have uv preview pane
+        def has_uv_preview?
+          true
+        end
+        helper_method :has_uv_preview?
+
     end
   end
 end

@@ -1,0 +1,27 @@
+@import "font-awesome";
+
+table#datatable-media-list {
+  tr.highlight {
+    background-color: #f9f9f9;
+  }
+
+  // Edit page, to support custom sorting
+  #sortable-media-list {
+    .ui-sortable-handle {
+      cursor: pointer;
+    }
+  }
+}
+
+.collection-media-preview {
+  float: none;
+  margin: 0 auto;
+  height: 300px;
+}
+
+@media (min-width: 992px) {
+  .collection-media-preview {
+    float: right !important;
+    height: 100%;
+  }
+}

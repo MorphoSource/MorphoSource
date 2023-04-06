@@ -1,0 +1,105 @@
+@import 'shared';
+
+div.collection-header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-right: 0;
+  margin-left: 0;
+  padding: 4px 0 !important;
+
+  .btn-wrapper.col-xs-12 {
+    padding: 16px 0;
+  }
+
+  @media (max-width: 767px) {
+    flex-wrap: wrap;
+
+    .title-wrapper {
+      width: 100%;
+    }
+
+    .btn-wrapper {
+      max-width: 100% !important;
+    }
+
+    .collection-manage-buttons {
+      width: 100% !important;
+      justify-content: space-around !important;
+      margin: 0px !important;
+    }
+
+    .collection-manage-button-wrapper {
+      width: 30%;
+    }
+
+    .btn {
+      width: 100% !important;
+      font-size: 14px !important;
+      margin: 0px !important;
+    }
+
+    .dropdown-menu {
+      left: 0px;
+    }
+
+    li {
+      margin: 0px !important;
+    }
+  }
+
+  .title-wrapper {
+    min-width: 67%;
+    flex-grow: 1;
+  }
+
+  .btn-wrapper {
+    flex-grow: 0;
+  }
+
+  .collection-manage-buttons {
+    display: flex;
+    width: 234px;
+    flex-grow: 0;
+    justify-content: end;
+    margin: 0;
+    padding: 4px 0;
+
+    .dropdown-menu {
+      min-width: 320px !important;
+      right: 0px !important;
+      top: unset !important;
+
+      .btn {
+        width: 100%;
+        text-align: left;
+        padding: 5px 5px 5px 10px;
+      }
+
+      .btn:hover {
+        color: $button-hover-font-color;
+        background-color: $button-hover-color;
+        border-color: $button-hover-border-color;
+      }
+    }
+
+    .btn {
+      width: 75px;
+      border-radius: 3px;
+      margin-left: 3px;
+      font-size: 14px;
+    }
+  }
+}
+
+div.collection-page {
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+  }
+
+  [class*='col-'] {
+    padding: 0;
+  }
+}

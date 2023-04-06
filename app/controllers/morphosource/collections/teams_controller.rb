@@ -97,8 +97,8 @@ module Morphosource
         # get project or team URL for collection
         def collection_url(coll_hash)
           coll_hash[:project_or_team] == ['Project'] ?
-            main_app.project_media_url(coll_hash[:id]) :
-            main_app.team_media_url(coll_hash[:id])
+            main_app.project_url(coll_hash[:id]) :
+            main_app.team_url(coll_hash[:id])
         end
 
         # get number of media in collection hash, based on facets

@@ -90,6 +90,11 @@ module Morphosource
       def file_set_visibilities
         self["file_set_visibilities_ssim"]
       end
+
+      def taxonomies_titles
+        self["taxonomy_ssim"]
+      end
+
     end
   end
 end

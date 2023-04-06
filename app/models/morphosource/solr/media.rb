@@ -63,7 +63,7 @@ module Morphosource
       end
 
       def physical_object_type
-        self[Solrizer.solr_name('physical_object_type', :stored_searchable)]
+        self[Solrizer.solr_name('media_physical_object_type', :stored_searchable)]&.first
       end
 
       def proxy_depositor

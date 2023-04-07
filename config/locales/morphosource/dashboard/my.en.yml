@@ -16,3 +16,5 @@ en:
         requests:
           request_item:
             alert: 'Error requesting selected items: missing item ids. If the problem persists, please contact MorphoSource administrators at morphosource@duke.edu.'
+            messages:
+              error: 'Error: notification emails not sent to media managers. Please contact morphosource@duke.edu if problem persists.'

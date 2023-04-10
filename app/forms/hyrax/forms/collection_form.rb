@@ -28,7 +28,8 @@ module Hyrax
       self.terms = [:alternative_title, :resource_type, :title, :creator, :contributor, :description,
                     :keyword, :license, :publisher, :date_created, :subject, :language,
                     :representative_id, :thumbnail_id, :identifier, :based_near,
-                    :related_url, :visibility, :collection_type_gid]
+                    :related_url, :visibility, :collection_type_gid, :can_submit_remote_files,
+                    :allowed_remote_source]
 
       self.required_fields = [:title]
 

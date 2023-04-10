@@ -2,8 +2,9 @@ require 'rails_helper'
 
 RSpec.describe SubmissionsController, type: :controller do
 
-  let(:user)          { FactoryBot.create(:user) }
+  let(:user)          { FactoryBot.build(:confirmed_user) }
   let(:contributors)  { Role.create(name: 'contributor') }
+  let(:remote_file_submitters)  { Role.create(name: 'remote_file_submitter') }
 
   before do
     contributors.users << user
@@ -22,32 +23,9 @@ RSpec.describe SubmissionsController, type: :controller do
   end
 
   describe '#validate_remote_file_ajax' do
-    let(:remote_file_submitters)  { Role.create(name: 'remote_file_submitter') }
-
-    context 'with domain not allowed' do
-      let(:user) { User.create(email: 'user@email.com', password: 'password', allowed_remote_source: "")}
-      let(:params) { { u: "https://www.morphosource.org/banner_image.png" } }
-
-      before do
-        remote_file_submitters.users << user
-        remote_file_submitters.save
-        sign_in user
-      end
-
-      it 'returns not allowed error' do
-        post :validate_remote_file_ajax, params: params, xhr: true
-        expect(JSON.parse(response.body)).to include_json(
-          "status"=>"error", 
-          "http_code"=>"", 
-          "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
-          "resp_file_ext"=>""
-        )
-      end
-    end
 
     context 'with user is not remote_file_submitter' do
-      let(:user) { User.create(email: 'user@email.com', password: 'password', allowed_remote_source: "www.morphosource.org")}
-      let(:params) { { u: "https://www.morphosource.org/banner_image.png" } }
+      let(:params) { { u: "https://www.morphosource.org/banner_image.png", o: "does_not_matter" } }
 
       before do
         sign_in user
@@ -64,25 +42,85 @@ RSpec.describe SubmissionsController, type: :controller do
       end
     end
 
-    context 'with domain allowed' do
-      let(:user) { User.create(email: 'user@email.com', password: 'password', allowed_remote_source: "www.morphosource.org")}
-      let(:params) { { u: "https://www.morphosource.org/banner_image.png" } }
+    context 'check org-linked team remote file permissions' do
+      let(:depositor)          { FactoryBot.build(:contributor) }
+      let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
+      let(:team)                    { Collection.create(title: ['Team'], 
+                                      collection_type_gid: team_collection_type.gid, 
+                                      depositor: user.ms_id, can_submit_remote_files: "Yes", 
+                                      allowed_remote_source: "www.morphosource.org") }
+      let(:org)                 { Organization.create(title: ['org'], institution_code: ['DEF'], team_id: [team.id]) }
+
+      let(:params1) { { u: "https://www.morphosource.org/banner_image.png", o: org.id } }
+      let(:params2) { { u: "https://www.notallowed.org/banner_image.png", o: org.id } }
 
       before do
-        remote_file_submitters.users << user
+        remote_file_submitters.users << depositor
         remote_file_submitters.save
-        sign_in user
+
+        team.create_collection_groups
+        team.depositors << depositor
+        team.depositors_group.save
+
+        sign_in depositor
       end
 
-      it 'returns success' do
-        post :validate_remote_file_ajax, params: params, xhr: true
-        expect(JSON.parse(response.body)).to include_json(
-          "status"=>"success", 
-          "http_code"=>200, 
-          "message"=>"", 
-          "resp_file_ext"=>".png"
-        )
+      context 'domain allowed' do
+        it 'returns success' do
+          post :validate_remote_file_ajax, params: params1, xhr: true
+          expect(JSON.parse(response.body)).to include_json(
+            "status"=>"success", 
+            "http_code"=>200, 
+            "message"=>"", 
+            "resp_file_ext"=>".png"
+          )
+        end
       end
+
+      context 'domain not allowed' do
+        it 'returns error' do
+          post :validate_remote_file_ajax, params: params2, xhr: true
+          expect(JSON.parse(response.body)).to include_json(
+            "status"=>"error", 
+            "http_code"=>"", 
+            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
+            "resp_file_ext"=>""
+          )
+        end
+      end
+
+      context 'team cannot submit remote files' do
+        before do
+          team.can_submit_remote_files = "No"
+          team.save
+        end
+        it 'returns error' do
+          post :validate_remote_file_ajax, params: params2, xhr: true
+          expect(JSON.parse(response.body)).to include_json(
+            "status"=>"error", 
+            "http_code"=>"", 
+            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
+            "resp_file_ext"=>""
+          )
+        end
+      end
+
+      context 'org has no team' do
+        before do
+          org.team_id = []
+          org.save
+        end
+        it 'returns error' do
+          post :validate_remote_file_ajax, params: params2, xhr: true
+          expect(JSON.parse(response.body)).to include_json(
+            "status"=>"error", 
+            "http_code"=>"", 
+            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
+            "resp_file_ext"=>""
+          )
+        end
+      end
+
     end
 
   end

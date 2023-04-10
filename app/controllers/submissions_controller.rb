@@ -143,7 +143,7 @@ class SubmissionsController < ApplicationController
   end
 
   def validate_remote_file_ajax
-    if !current_user.can_submit_remote_file? params[:u]
+    if !current_user.can_submit_remote_file?(params[:u], params[:o])
       status = "error"
       message = "The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed."
       http_code = ""
@@ -202,6 +202,7 @@ class SubmissionsController < ApplicationController
       organization_title = organization.title
       organization_id = organization.id
       organization_team_id = organization.team&.id
+      organization_team_can_submit_remote_files = organization.team&.can_submit_remote_files
       organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
       organization_data_manager = organization.data_manager&.first
       organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email
@@ -213,6 +214,7 @@ class SubmissionsController < ApplicationController
       organization_title = ''
       organization_id = nil
       organization_team_id = nil
+      organization_team_can_submit_remote_files = nil
       organization_permissions_mode = nil
       organization_data_manager = nil
       organization_data_manager_name = nil
@@ -227,7 +229,8 @@ class SubmissionsController < ApplicationController
       organization_team_id: organization_team_id,
       organization_permissions_mode: organization_permissions_mode,
       organization_data_manager: organization_data_manager,
-      organization_data_manager_name: organization_data_manager_name
+      organization_data_manager_name: organization_data_manager_name,
+      org_team_can_submit_remote_files: organization_team_can_submit_remote_files
     }
     render :json => response_object
   end

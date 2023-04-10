@@ -30,7 +30,8 @@ module Qa::Authorities
         is_type_specimen = doc.is_type_specimen
         occurrence_id = doc.occurrence_id
         sex = doc.sex
-        source_of_record = source_of_record(idigbio_uuid, idigbio_recordset_id) 
+        source_of_record = source_of_record(idigbio_uuid, idigbio_recordset_id)
+        organization_id = doc.organization_id 
         {
           id: id,
           label: title,
@@ -51,7 +52,8 @@ module Qa::Authorities
           is_type_specimen: is_type_specimen,
           occurrence_id: occurrence_id,
           sex: sex,
-          source_of_record: source_of_record
+          source_of_record: source_of_record,
+          organization_id: organization_id
         }
       end
     end

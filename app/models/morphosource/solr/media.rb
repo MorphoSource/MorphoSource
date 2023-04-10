@@ -94,7 +94,6 @@ module Morphosource
       def taxonomies_titles
         self["taxonomy_ssim"]
       end
-
     end
   end
 end

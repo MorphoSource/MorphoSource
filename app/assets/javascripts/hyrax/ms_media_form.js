@@ -50,12 +50,12 @@ $( document ).ready(function() {
       url.searchParams.set("expires_at", $(this).val());
       a.attr('href', url);
     });
-  
+
     var clipboard = new Clipboard('.copy-temporary-media-link');
     clipboard.on('success', function(e) {
       $(e.trigger).tooltip('show');
       e.clearSelection();
-    }); 
+    });
 
     // Hidden Default Scale Bar Field
     scaleBarGroup = document.querySelector('div.media_scale_bar');
@@ -519,7 +519,7 @@ $( document ).ready(function() {
           if (fileOrigin == "remote") {
             remoteFileCheckAndSubmit();
           } else {
-            editMediaSubmit();            
+            editMediaSubmit();
           }
         }
       } else {
@@ -544,7 +544,7 @@ function isModalityValid() {
   if ($('#imaging_event_ie_modality').length)
     var imagingEventModality = $('#imaging_event_ie_modality').val();
   if (deviceModality && imagingEventModality) {
-    if (deviceModality.split(',').includes(imagingEventModality)) {
+    if (deviceModality.trim().split(/\s*,\s*/).includes(imagingEventModality)) {
       return true;
     } else {
       console.log('deviceModality '+ deviceModality);
@@ -670,7 +670,7 @@ var remoteFileCheckAndSubmit = function(view=null) {
           // Check if the file extension evaluated from headers content type an accepted format
          var acceptedFormats = $('#media_accepted_formats').val().split(', ');
          if ($.inArray(results.resp_file_ext, acceptedFormats) == -1) {
-            console.log("acceptedFormats: " + acceptedFormats);                        
+            console.log("acceptedFormats: " + acceptedFormats);
             $.confirm({
                 title: 'Please confirm',
                 content: 'The file format returned by the Remote Origin URL is ' + (results.resp_file_ext || "unknown") + ' and it does not match an accepted format.  Click CONFIRM to save the media, or CANCEL to go back.',
@@ -708,7 +708,7 @@ var setMediaLocalRemoteEvent = function() {
   $('#tab-local-file-section a').click(function(event) {
     if ($('#media_remote_origin_url').val() != "") {
       $.alert('Please clear the Remote Origin URL if the file is not from a remote location.');
-      return false;        
+      return false;
     } else {
       fileOrigin = "local";
     }
@@ -721,7 +721,7 @@ var setMediaLocalRemoteEvent = function() {
     } else {
       fileOrigin = "remote";
     }
-  });    
+  });
 }
 
 var noFileCheck = function() {
@@ -732,10 +732,10 @@ var noFileCheck = function() {
     } else if (justUploaded > 0) {
       // file just uploaded waiting to be save
       return true;
-    }  
+    }
   } else if (fileOrigin == "remote") {
     return true;
-  } 
+  }
 
   return confirm('The media currently has no file associated.  Please click OK if you want to proceed.')
 }

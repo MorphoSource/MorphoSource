@@ -1,0 +1,8 @@
+<% if @search %>
+  <%= render 'search_form' %>
+<% else %>
+  <div class="mb-1">
+    <%= link_to "Search #{page_title.pluralize}", url_for(search: true), class: 'btn btn-primary' %>
+    <%= link_to 'Export CSV', url_for(format: :csv), class: 'btn btn-primary' %>
+  </div>
+<% end %>

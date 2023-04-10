@@ -8,6 +8,8 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
 
   let!(:user2) { User.create(email: "user2@test.com", password: 'password', display_name: "Test User 2", ms_id: "msid22") }
 
+  let(:admin_user) { FactoryBot.create(:admin) }
+
   let(:update_params) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", postal_code: "New Code", telephone: "New Phone", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], software: ["new software1", "new software2", ""], mesh_file_type: ["new type1", "new type2", ""], volume_file_type: ["new type3", "new type4", ""], printer_model: ["new model1", "new model2", ""], printer_file: ["new type5", "new type6", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true, sftp_share: 'testshare', allowed_remote_source: 'validdomain.com'}, id: user.ms_id} }
 
   let(:update_params_invalid_domain) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", postal_code: "New Code", telephone: "New Phone", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], software: ["new software1", "new software2", ""], mesh_file_type: ["new type1", "new type2", ""], volume_file_type: ["new type3", "new type4", ""], printer_model: ["new model1", "new model2", ""], printer_file: ["new type5", "new type6", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true, sftp_share: 'testshare', allowed_remote_source: 'invalid_domain'}, id: user.ms_id} }
@@ -101,8 +103,8 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
     end
     context 'admin user is signed in' do
       before do
-        sign_in user2
-        allow(subject.current_user).to receive(:admin?).and_return(true)
+        sign_in admin_user
+        allow(subject).to receive(:current_user).and_return(admin_user)
       end
       it 'is renders edit profile page when editing other user profile' do
         get :edit, params: { id: user.ms_id }

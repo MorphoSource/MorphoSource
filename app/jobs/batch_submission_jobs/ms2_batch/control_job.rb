@@ -5,14 +5,24 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   queue_as Hyrax.config.batch_submission_queue_name
 
   def perform(manifest, user)
-    begin
-      # Step 0. Initial preparation
-      status.update(manifest: manifest)
-      @manifest = manifest
-      @main_job_id = status.job_id
+    # Step 0. Initial preparation
+    status.update(manifest: manifest)
+    @manifest = manifest
+    @main_job_id = status.job_id
+
+    if (dup_job_id = dup_job_found("BatchSubmissionJobs::Ms2Batch::ControlJob", manifest, status.job_id)).present?
+      Rails.logger.debug "iN ControlJob #{@main_job_id}: Not starting ControlJob because duplicate job found: #{dup_job_id}"
+      error_msg = "Batch submission job did not start because a duplicate job has been found: #{dup_job_id}"
+      status.update(status: :failed)
+      update_main_job("failed", error_msg)
+      status.update(manifest: manifest, exception: error_msg)
+      return nil
+    end
+
+    begin      
       update_main_job(status.status.to_s, nil)
       exception_caught = false
-
+ 
       sub_jobs.each do |job_class|
         Rails.logger.debug "iN ControlJob #{@main_job_id}: sending to sub_job  " 
         job = job_class.send :perform_later, @manifest, @main_job_id
@@ -46,7 +56,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   end
 
   def main_job
-    BackgroundJob.where(main_job_id: main_job_id).first
+    BackgroundJob.where(job_id: main_job_id).first
   end
 
   def update_main_job(status_str=nil, exceptions=nil)

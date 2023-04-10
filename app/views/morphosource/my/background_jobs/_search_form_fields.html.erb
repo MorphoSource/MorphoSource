@@ -1,0 +1,31 @@
+<%= f.input :job_id, label: "Job ID", :input_html => {value: @job_id }, required: false %>
+
+<%= f.input :job_class, label: "Job Class", collection: job_classes.map { |k, v| [v, k] }, selected: @job_class, required: false, include_blank: true %>
+
+<div class="form-group search_start_date">
+  <label class="control-label" for="search_start_date">
+    <%= t('simple_form.labels.background_jobs.started_after') %>
+  </label>
+  <%= f.date_field :created_after, value: @created_after, class: 'datepicker form-control' %>
+</div>
+
+<div class="form-group search_end_date">
+  <label class="control-label" for="search_end_date">
+    <%= t('simple_form.labels.fbackground_jobs.started_before') %>
+  </label>
+  <%= f.date_field :created_before, value: @created_before, class: 'datepicker form-control' %>
+</div>
+
+<div class="form-group search_start_date">
+  <label class="control-label" for="search_start_date">
+    <%= t('simple_form.labels.background_jobs.updated_after') %>
+  </label>
+  <%= f.date_field :updated_after, value: @updated_after, class: 'datepicker form-control' %>
+</div>
+
+<div class="form-group search_end_date">
+  <label class="control-label" for="search_end_date">
+    <%= t('simple_form.labels.fbackground_jobs.updated_before') %>
+  </label>
+  <%= f.date_field :updated_before, value: @updated_before, class: 'datepicker form-control' %>
+</div>

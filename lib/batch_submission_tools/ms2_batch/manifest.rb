@@ -7,7 +7,7 @@ module BatchSubmissionTools
         :collection_ids, :fund_code_id,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields,
-        :skipped_row_count
+        :skipped_row_count, :summary
 
       def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, organization_transfer_immediately: false, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:, modality:)
         @input_path = input_path
@@ -31,7 +31,14 @@ module BatchSubmissionTools
         @rows_to_taxonomy = {}
 
         @media_ie_pe_ingests = []
-
+        
+        @summary = {
+          "depositor_id" => @depositor,
+          "organization_id" => @organization_id,
+          "device_id" => @device_id,
+          "collection_ids" => @collection_ids,
+          "media_files" => []
+        }
         call
       end
 
@@ -116,8 +123,11 @@ module BatchSubmissionTools
             (media_group_to_rows[sheet_index][:derived_parents] << derived_parents).flatten!
             (media_group_to_rows[sheet_index][:children] << children).flatten!
 
+            summary["media_files"] << row[:media][:media_file]&.first
+
           end # /mg[:raw_list]
         end # /media_group_to_rows
+        #byebug # check summary
 
         if rows_to_remove.present?
           # when new parent media will be created,
@@ -347,6 +357,7 @@ module BatchSubmissionTools
       # Must convert entire object to hash for ActiveJob serialization
       def to_h
         {
+          summary: summary,
           biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),

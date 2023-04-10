@@ -12,6 +12,7 @@ module Morphosource
     with_themed_layout 'morphosource_dashboard'
 
     PAGE_TITLE = nil # Overwrite in controller
+    PAGE_DESCRIPTION = nil # Overwrite in controller if desired
 
     def index
       @search = true if search_form_present?
@@ -32,6 +33,11 @@ module Morphosource
       self.class::PAGE_TITLE
     end
     helper_method :page_title
+
+    def page_description
+      self.class::PAGE_DESCRIPTION
+    end
+    helper_method :page_description
 
     def search_form_present?
       params[:search].present? || params[:commit] == 'Search' || params[:filter_items].present?

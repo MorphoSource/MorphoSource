@@ -18,7 +18,7 @@
 			<th class="col-xs-5">Error Message</th>
 		</tr>
 		<tr>
-			<td><%= job.main_job_id %></td>
+			<td><%= job.job_id %></td>
 			<td><%= job.status.capitalize %></td>
 			<td><%= time_ago_in_words(job.created_at).capitalize %> ago</td>
 			<td><%= job.exceptions %></td>

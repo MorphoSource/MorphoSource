@@ -25,6 +25,10 @@ FactoryBot.define do
       groups { ['admin'] }
     end
 
+    factory :batch_submission_contributor do
+      groups { ['batch_submission_contributor', 'contributor'] }
+    end
+
     factory :contributor do
       groups { ['contributor'] }
     end

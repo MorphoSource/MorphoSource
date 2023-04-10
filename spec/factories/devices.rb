@@ -1,0 +1,10 @@
+FactoryBot.define do
+  factory :device do
+    title { ["example device title"] }
+    visibility { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
+    depositor { nil }
+    modality { ["BornDigital", "ConfocalImageStacking", "Infrared", "LaserAidedProfiling", "LaserScan", "MagneticResonanceImaging", "MicroNanoXRayComputedTomography", "NeutronComputedTomography", "Photogrammetry", "Photography", "PositronEmissionTomography", "ReflectanceTransformationImaging", "ScanningElectronMicroscopy", "SequentialSectionScan", "SinglePhotonEmissionComputedTomography", "StructuredLight", "Video", "XRay"] }
+  end
+
+end
+

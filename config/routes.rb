@@ -436,6 +436,8 @@ Rails.application.routes.draw do
       get 'dashboard/my/previous_requests', action: :index, controller: :previous_requests, as: 'previous_requests'
       put 'edit_expiration', action: :edit_expiration, controller: :previous_requests, as: 'edit_expiration'
 
+      # background jobs
+      get 'dashboard/my/jobs', action: :index, controller: :background_jobs, as: 'jobs'
 
       # fund codes
       get 'dashboard/my/fund_codes/(:id)', action: :index, controller: :fund_codes, as: 'my_fund_codes'
@@ -452,6 +454,9 @@ Rails.application.routes.draw do
     end
 
     scope module: :admin do
+      # all background jobs
+      get 'admin/jobs', action: :index, controller: :background_jobs, as: 'admin_jobs'
+
       # all downloads
       get 'admin/downloads', action: :index, controller: :downloads, as: 'admin_downloads'
 

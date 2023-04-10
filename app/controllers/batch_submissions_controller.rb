@@ -9,7 +9,7 @@ class BatchSubmissionsController < ApplicationController
   before_action :check_batch_submission_access, only: [:index, :new, :submit, :ingest]
   before_action :check_new_submit_allowed, only: [:new, :submit, :ingest]
   before_action :check_params, only: [:submit]
-  before_action :check_request_manifest_object, only: [:ingest]
+  before_action :check_request_manifest_object, :check_dup_job, only: [:ingest]
   after_action :start_ingest_job, only: [:ingest]
 
   attr_accessor :parent_media_row, :parent_media_id
@@ -34,7 +34,7 @@ class BatchSubmissionsController < ApplicationController
       job = Resque::Failure.all(idx)
       if job.present? 
         begin
-          if job['payload']['args'][0]['job_id'] == last_job.main_job_id
+          if job['payload']['args'][0]['job_id'] == last_job.job_id
             failure_found_indexes << idx
             exceptions << "Exception: #{job['exception']}, Error: #{job['error']}"
           end
@@ -45,7 +45,7 @@ class BatchSubmissionsController < ApplicationController
     end
     if failure_found_indexes.present?
       # update both ActiveJob and BackgroundJob
-      status = ActiveJob::Status.get(last_job.main_job_id)
+      status = ActiveJob::Status.get(last_job.job_id)
       status.update(status: :failed)
       status.update(exception: exceptions.join('; '))
       last_job.update_status("failed", exceptions.join('; '))
@@ -184,12 +184,12 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def ingest
-     redirect_to ({:action=>'index'}), :notice => "Your submission job has started.  You can check the job status below."
+    redirect_to ({:action=>'index'}), :notice => "Your submission job has started.  You can check the job status below."
   end
   
   def start_ingest_job
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
-    main_job = BackgroundJob.create({ main_job_id: job.job_id, status: job.status.status.to_s, user_id: current_user.id, created_objects: {} })
+    main_job = BackgroundJob.create({ job_id: job.job_id, job_class: job.class.to_s, status: job.status.status.to_s, user_id: current_user.user_key, created_objects: {} })
   end
 
   def initial_error_message
@@ -962,7 +962,12 @@ class BatchSubmissionsController < ApplicationController
         elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
           File.join(Hyrax.config.sftp_share_root, user_set_path, '/')
         elsif Dir.exist?(user_set_path)
-          File.join(user_set_path, '/')
+          unless user_set_path.match(/^\//)
+            # if relative path, change it to absolute
+            File.join(Rails.root, user_set_path, '/')
+          else
+            File.join(user_set_path, '/')
+          end
         else
           "NOT_FOUND"
         end
@@ -987,6 +992,14 @@ class BatchSubmissionsController < ApplicationController
       @request_manifest_object = JSON.parse(request.params["manifest_object"])
       if !@request_manifest_object.present?
         flash[:error] = 'The manifest is missing.  Please submit the batch submission form again.'
+        return redirect_to main_app.new_batch_submission_path
+      end
+    end
+
+    def check_dup_job
+      if (dup_job_id = dup_job_found("BatchSubmissionJobs::Ms2Batch::ControlJob", @request_manifest_object)).present?
+        Rails.logger.debug "iN BatchSubmissionsController: Not starting ControlJob because duplicate job found: #{dup_job_id}"
+        flash[:error] = "Batch submission job did not start because a duplicate job has been found: #{dup_job_id}  Please contact MorphoSource team if needed."
         return redirect_to main_app.new_batch_submission_path
       end
     end

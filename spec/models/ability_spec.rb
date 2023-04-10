@@ -3,15 +3,17 @@ require 'cancan/matchers'
 
 RSpec.describe Ability, type: :model do
 
-  let(:user)        { FactoryBot.build(:registered_user) }
-  let(:contributor) { FactoryBot.build(:contributor) }
-  let(:admin)       { FactoryBot.build(:admin) }
-  let(:guest)       { FactoryBot.build(:user, :guest) }
+  let(:user)                         { FactoryBot.build(:registered_user) }
+  let(:contributor)                  { FactoryBot.build(:contributor) }
+  let(:admin)                        { FactoryBot.build(:admin) }
+  let(:guest)                        { FactoryBot.build(:user, :guest) }
+  let(:batch_submission_contributor) { FactoryBot.build(:batch_submission_contributor) }
 
-  let(:user_ability)        { Ability.new(user) }
-  let(:contributor_ability) { Ability.new(contributor) }
-  let(:admin_ability)       { Ability.new(admin) }
-  let(:guest_ability)       { Ability.new(guest) }
+  let(:user_ability)                         { Ability.new(user) }
+  let(:contributor_ability)                  { Ability.new(contributor) }
+  let(:admin_ability)                        { Ability.new(admin) }
+  let(:guest_ability)                        { Ability.new(guest) }
+  let(:batch_submission_contributor_ability) { Ability.new(batch_submission_contributor) }
 
   describe 'Submissions user abilities' do
     let(:submission_actions) { [ :new, :create, :stage_biological_specimen, :stage_biological_specimen_from_idigbio, :stage_cultural_heritage_object, :stage_device, :stage_imaging_event, :stage_organization, :stage_device_organization, :stage_media, :stage_processing_event, :stage_cho, :stage_taxonomy, :new_organization, :new_organization_submit, :new_taxonomy, :new_taxonomy_submit, :new_device_submit, :new_processing_event_submit ] }
@@ -23,6 +25,23 @@ RSpec.describe Ability, type: :model do
         expect(user_ability).not_to be_able_to(action, Submission)
         expect(guest_ability).not_to be_able_to(action, Submission)
       end
+    end
+  end
+
+  describe 'BackgroundJob user abilities' do
+    it 'only batch submission contributors and admins can :index BackgroundJob' do
+      expect(admin_ability).to be_able_to(:index, BackgroundJob)
+      expect(batch_submission_contributor_ability).to be_able_to(:index, BackgroundJob)
+      expect(contributor_ability).not_to be_able_to(:index, BackgroundJob)
+      expect(user_ability).not_to be_able_to(:index, BackgroundJob)
+      expect(guest_ability).not_to be_able_to(:index, BackgroundJob)
+    end
+
+    it 'only admins can :manage BackgroundJob' do
+      expect(admin_ability).to be_able_to(:manage, BackgroundJob)
+      expect(contributor_ability).not_to be_able_to(:manage, BackgroundJob)
+      expect(user_ability).not_to be_able_to(:manage, BackgroundJob)
+      expect(guest_ability).not_to be_able_to(:manage, BackgroundJob)
     end
   end
 

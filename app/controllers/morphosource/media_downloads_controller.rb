@@ -170,17 +170,24 @@ module Morphosource
 
       def prepare_files
         media.map do |m|
-          file_set, original_file = get_and_validate_fileset(m)
-          return [] unless file_set.present? && original_file.present?
+          if m.is_remote_backed?
+            file_set = get_and_validate_fileset_for_remote(m)
+            file_uri = file_set.import_url
+            return [] unless file_set.present?
+          else
+            file_set, original_file = get_and_validate_fileset(m)
+            file_uri = file_set.original_file.uri
+            return [] unless file_set.present? && original_file.present?
+          end
           
           attrs = {
             name: File.join(
               output_dirname(m), 
-              output_filename(original_file.original_name, m.id)
+              output_filename(file_set, m.id)
             ),
             size: file_set.file_size&.first.to_i,
             crc32: file_set.crc32&.first.to_i,
-            file: RemoteInclusion.new(original_file.uri, file_set.file_size&.first.to_i)
+            file: RemoteInclusion.new(file_uri, file_set.file_size&.first.to_i)
           }
 
           if attrs.values.all? { |v| v.present? }
@@ -189,6 +196,20 @@ module Morphosource
             nil
           end
         end.compact
+      end
+
+      def get_and_validate_fileset_for_remote(m)
+        if (
+          (file_set = m.file_sets&.first).present? &&
+          file_set.file_size&.first.present? &&
+          file_set.crc32&.first.present? &&
+          file_set.original_file.uri.present? &&
+          file_set.original_file.original_name.present?
+        ) 
+          return file_set
+        else
+          return nil
+        end
       end
 
       def get_and_validate_fileset(m)
@@ -361,7 +382,6 @@ module Morphosource
       def csv_manifest
         file_name = "#{manifest_filename}.csv"
         csv_path = File.join(temp_manifest_directory, file_name)
-
         CSV.open(csv_path, "wb") do |csv|
           csv << manifest_headers
           media_hashes.each do |h|
@@ -442,7 +462,11 @@ module Morphosource
           media.each do |m|
             doc = SolrDocument.find(m.id)
             if doc.present?
-              file_set, original_file = get_and_validate_fileset(m)
+              if m.is_remote_backed?
+                file_set = get_and_validate_fileset_for_remote(m)
+              else
+                file_set, original_file = get_and_validate_fileset(m)
+              end
               if file_set.present?
                 media_list << {
                   :id => [m.id],
@@ -450,7 +474,7 @@ module Morphosource
                   :file_name => [file_set.label], 
                   :file_size => file_set.file_size,
                   :media_type => m.media_type,
-                  :mime_type => [file_set.mime_type]
+                  :mime_type => [m.is_remote_backed? ? file_set.mime_type_of_remote : file_set.mime_type]
                 }.merge(doc.to_semantic_values).merge({
                   :points => file_set.point_count,
                   :polygons => file_set.face_count,
@@ -484,7 +508,11 @@ module Morphosource
         "Media #{media.id} - #{media.title.join('-').tr('[]:','').tr('/\\','-')}"
       end
 
-      def output_filename(file_name, media_id)
+      def output_filename(file_set, media_id)
+        file_name = file_set.original_file.original_name
+        if file_set.is_remote_backed? && !File.extname(file_name).present?
+          file_name = file_set.label || ""
+        end
         File.basename(file_name, File.extname(file_name)) + "-#{media_id}" + File.extname(file_name)
       end
   end

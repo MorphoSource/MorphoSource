@@ -34,12 +34,9 @@ $( document ).ready(function() {
     else
       HasEditProcessingEventForm = false;
 
-    // setupEmbeddedWorkForm('device', 'new', false, updateMediaTitle);
-    // setupEmbeddedWorkForm('organization', 'new', false, updateDevice);
     setupEmbeddedWorkForm('biological_specimen', false, 'new');
     setupEmbeddedWorkForm('processing_event', 'new', true, reloadPage);
     setupTooltip();
-    //removeLastRepeatable();  // this should not be needed since it's already called inside 'if edit media form page' block
 
     form = $('form[id*="media"]')[0];
 

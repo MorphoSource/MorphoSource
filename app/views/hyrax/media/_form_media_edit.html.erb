@@ -104,56 +104,6 @@
 
 <% end %>
 
-
-<div id="embedded_div_new_device" class="embedded_div" data-relationship-control="#parent-relationships-devices" data-add-button="#btn-add-device" data-linked-content-blocks="#embedded_div_new_organization" style="display: none">
-    <%= simple_form_for [main_app, @new_device_form],
-                        wrapper: :showcase_default,
-                        url: @new_device_submit_submissions_url,
-                        html: {
-                          data: { behavior: 'work-form' }
-                        } do |d| %>
-
-      <div class="col-sm-4">
-        <div class="content-block">
-        <%= render 'form_new_device', f: d %>
-        </div>
-      </div>
-
-      <div id="parent-relationships-organizations" class="form-group" data-behavior="parent-relationships-organizations" data-param-key="<%= d.object.model_name.param_key %>" data-members="<%= d.object.member_of_organizations_json('Organization') %>" data-new-work-created="" data-repeatable="no" data-work-type="organization">
-
-        <div class="col-sm-4">
-          <div class="content-block">
-            <%= render 'form_parent_work_relationships_organization', f: d %>
-          </div>
-        </div>
-
-        <div class="col-sm-4">
-          <div class="content-block">
-          <%= render 'organization_details', presenter: @presenter %>
-          </div>
-        </div>
-
-      </div>
-
-    <% end %>
-</div>
-
-<div id="embedded_div_new_organization" class="embedded_div" data-relationship-control="#parent-relationships-organizations" data-add-button="#btn-add-organization" style="display: none;">
-  <div class="col-sm-12">
-    <div class="content-block">
-      <%= simple_form_for [main_app, @new_organization_form],
-                          wrapper: :showcase_default,
-                          url: @new_organization_submit_submissions_url,
-                          html: {
-                            data: { behavior: 'work-form' }
-                          } do |i| %>
-          <%= render 'form_new_organization', i: i %>
-      <% end %>
-    </div>
-  </div>
-</div>
-
-
 <% if can? :transfer, @presenter.id %>
 <div class="row related_form share" style="display:none">
   <%= render_async hyrax.new_work_transfer_path(@presenter.id), event_name: "share-tab-loaded" do %>

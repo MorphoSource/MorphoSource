@@ -28,7 +28,6 @@ module Morphosource
         @device = device
         @collection = create_series_collection
         # return import_errors if import_errors.present?
-        byebug
         import_slides
       end
 
@@ -55,7 +54,7 @@ module Morphosource
                                              depositor: @manager.user_key,
                                              device_id: [@device.id],
                                              focal_length: @slide.focal_length,
-                                             ie_modality: ["SlideScan"],
+                                             ie_modality: ["SequentialSectionScan"],
                                              optical_magnification: @slide.magnification,
                                              physical_object_id: [@specimen.id],
                                              slide_type: ['Histological'],
@@ -74,7 +73,8 @@ module Morphosource
                                   description: @slide.description,
                                   fileset_accessibility: @slide.fileset_accessibility,
                                   identifier: @slide.identifier,
-                                  import_url: @slide.import_url,
+                                  # import_url: @slide.import_url,
+                                  import_url: "http://iiif.mcz.harvard.edu/iiif/3/specialcollections%2FNorthcuttSlides%2F1014PLACE3961.tif/full/100,/270/default.png",
                                   license: @slide.license,
                                   media_type: ["Image"],
                                   orientation: @slide.orientation,
@@ -125,11 +125,8 @@ module Morphosource
 
       def find_or_create_specimen
         specimen_doc = Morphosource::SolrService.new.get_docs("occurrence_id_tesim:#{occurrence_id} AND has_model_ssim:BiologicalSpecimen")&.first
-
-        byebug
-
         return BiologicalSpecimen.find(specimen_doc["id"]) if specimen_doc.present?
-        byebug
+\
         specimen = BiologicalSpecimen.new(title: ['new specimen'],
                                           depositor: @admin.user_key,
                                           date_uploaded: Date.today,
@@ -138,41 +135,37 @@ module Morphosource
                                           taxonomy_id: [taxonomy.id])
 
         params = Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(occurrence_id)
-        byebug
-        params.each do |key,value|
+        params.first.each do |key,value|
           specimen.send(key + '=', [value].flatten)
         end
 
         specimen.save
 
         Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(BiologicalSpecimen.new, ::Ability.new(@admin), specimen.attributes))
-        byebug
         specimen.reload
       end
 
       def taxonomy
         taxonomy_doc = Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_tesim:#{gbif_key}")&.first
-        byebug
         return Taxonomy.find(taxonomy_doc["id"]) if taxonomy_doc.present?
 
         taxonomy = Taxonomy.new(title: ['new taxonomy'], visibility: 'open', depositor: @admin.user_key, source: ["Imported by Morphosource::Import::SlideSeriesService"])
-        byebug
         params = Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key, correct_synonym=false)
-        byebug
         params.each do |key,value|
-          specimen.send(key + '=', [value].flatten)
+          taxonomy.send(key + '=', [value].flatten)
         end
 
+        taxonomy.save
+
         Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(Taxonomy.new, ::Ability.new(@admin), taxonomy.attributes))
-        byebug
         taxonomy.reload
       end
 
       private
 
         def create_series_collection
-          project_collection_type = Hyrax::CollectionType.where(title: "Project").first
-          collection = Collection.create(title: collection_title, collection_type_gid: project_collection_type.gid, depositor: @manager.ms_id, visibility: 'open', related_url: collection_related_url, description: collection_description)
+          collection_type = Hyrax::CollectionType.where(title: "Sequential Section List").first
+          collection = SequentialSectionList.create(title: collection_title, collection_type_gid: collection_type.gid, depositor: @manager.ms_id, visibility: 'open', related_url: collection_related_url, description: collection_description)
           collection.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
           collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX

@@ -14,7 +14,7 @@ module Morphosource
         user_email = params["user_email"]
         @collection = import_service_class.new(service: service, resource_id:resource_id, user_email: user_email).call
 
-        redirect_to project_media_path(@collection)
+        redirect_to sequential_section_list_media_path(@collection)
       end
 
       def import_service_class

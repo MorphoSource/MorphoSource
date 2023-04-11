@@ -129,7 +129,7 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
         put :approve_download, params: { item_id: cartItem1.id, expiration_date: expiration_date }
       end
       it 'produces a flash error' do
-        expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.manage_requests.approve_request.messages.error'))
+        expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.manage_requests.approved_request.messages.error'))
       end
     end
   end

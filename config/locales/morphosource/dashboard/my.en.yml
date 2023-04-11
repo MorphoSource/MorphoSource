@@ -14,7 +14,7 @@ en:
         media_objects:
           title: "Media and Objects"
         manage_requests:
-          approve_request:
+          approved_request:
             messages:
               error: 'Error: approval notification emails not sent to media requesters. Please contact morphosource@duke.edu if problem persists.'
           denied_request:

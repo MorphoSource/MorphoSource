@@ -9,7 +9,7 @@
       <!-- TODO: removing form tags below makes add group form hit the collections controller - needs more investigation -->
       <form></form>
       <% if @collection.organization %>
-        <%= render 'morphosource/dashboard/collections/teams/organization/ms_form_organization' %>
+        <%= render 'morphosource/dashboard/collections/teams/organization/ms_form_organization', f: f %>
       <% else %>
         <div class="alert alert-warning" role="alert">
           <%= t('morphosource.dashboard.collections.organization.info').html_safe %>

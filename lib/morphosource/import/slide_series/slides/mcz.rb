@@ -63,7 +63,8 @@ module Morphosource
           # identifier
           #["5c454d3c70aaa9064404a300"]
           def identifier
-            [@slide_json["http://rs.tdwg.org/ac/terms/accessURI"][/\/item\/(.*?)\/tiles\//,1]]
+            # [@slide_json["http://rs.tdwg.org/ac/terms/accessURI"][/\/item\/(.*?)\/tiles\//,1]]
+            Array(@import_url.split('/#item/').last)
           end
 
           # license

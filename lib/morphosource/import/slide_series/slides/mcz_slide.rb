@@ -8,7 +8,8 @@ module Morphosource
 
           #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300/tiles/thumbnail
           def slide_thumbnail_path
-            @slide_thumbnail_path ||= @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split("?").first
+            # @slide_thumbnail_path ||= @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split("?").first
+            tiles_uri + '/thumbnail'
           end
 
           #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300"
@@ -24,7 +25,7 @@ module Morphosource
 
             def gather_metadata
               @import_url = import_url
-              @item_json = json(@import_url)
+              @item_json = json(@import_url.gsub('#', 'api/v1/'))
               @slide_thumbnail_path = slide_thumbnail_path
               @file_json = json(file_uri)
               @tiles_json = json(tiles_uri)
@@ -35,7 +36,7 @@ module Morphosource
             end
 
             def tiles_uri
-              @import_url + "/tiles"
+              @import_url.gsub('#', 'api/v1/') + "/tiles"
             end
 
             # file_id
@@ -45,7 +46,8 @@ module Morphosource
 
             #"https://images.slide-atlas.org/#item/5c454d3c70aaa9064404a300"
             def slide_atlas_url
-              @import_url.gsub('api/v1/','#')
+              # @import_url.gsub('api/v1/','#')
+              @import_url
             end
 
         end

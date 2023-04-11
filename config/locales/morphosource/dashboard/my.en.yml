@@ -13,6 +13,18 @@ en:
               delete: 'Delete List'
         media_objects:
           title: "Media and Objects"
+        manage_requests:
+          approve_request:
+            messages:
+              error: 'Error: approval notification emails not sent to media requesters. Please contact morphosource@duke.edu if problem persists.'
+          denied_request:
+            messages:
+              error: 'Error: denial notification emails not sent to media requesters. Please contact morphosource@duke.edu if problem persists.'
+          cleared_request:
+            messages:
+              error: 'Error: request cleared notification emails not sent to media requesters. Please contact morphosource@duke.edu if problem persists.'
         requests:
           request_item:
             alert: 'Error requesting selected items: missing item ids. If the problem persists, please contact MorphoSource administrators at morphosource@duke.edu.'
+            messages:
+              error: 'Error: request notification emails not sent to media managers. Please contact morphosource@duke.edu if problem persists.'

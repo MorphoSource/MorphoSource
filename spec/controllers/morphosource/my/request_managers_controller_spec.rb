@@ -123,6 +123,15 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
         expect(response).to redirect_to(request_manager_path)
       end
     end
+    context 'messages fail to send' do
+      before do
+        allow(subject).to receive(:send_response_message).with(any_args).and_raise(NoMethodError)
+        put :approve_download, params: { item_id: cartItem1.id, expiration_date: expiration_date }
+      end
+      it 'produces a flash error' do
+        expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.manage_requests.approve_request.messages.error'))
+      end
+    end
   end
 
   describe 'PUT #clear_request' do
@@ -145,24 +154,45 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
     it 'redirects to the request manager page' do
       expect(response).to redirect_to(request_manager_path)
     end
+    context 'messages fail to send' do
+      before do
+        allow(subject).to receive(:send_response_message).with(any_args).and_raise(NoMethodError)
+        put :clear_request, params: { item_id: cartItem5.id }
+        cartItem5.reload
+      end
+      it 'produces a flash error' do
+        expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.manage_requests.cleared_request.messages.error'))
+      end
+    end
   end
 
   describe "PUT #deny_download" do
-    before do
-      put :deny_download, params: { item_id: cartItem5.id }
-      cartItem5.reload
+    context 'it is successful' do
+      before do
+        put :deny_download, params: { item_id: cartItem5.id }
+        cartItem5.reload
+      end
+      it "marks the item's date denied to today" do
+        expect(cartItem5.date_denied.to_date).to eq(Date.today)
+      end
+      it 'records action_by' do
+        expect(cartItem5.action_by).to eq(current_user.ms_id)
+      end
+      it "creates a flash message" do
+        expect(response.flash[:notice]).to eq("Download Denied")
+      end
+      it "redirects to the request manager page" do
+        expect(response).to redirect_to(request_manager_path)
+      end
     end
-    it "marks the item's date denied to today" do
-      expect(cartItem5.date_denied.to_date).to eq(Date.today)
-    end
-    it 'records action_by' do
-      expect(cartItem5.action_by).to eq(current_user.ms_id)
-    end
-    it "creates a flash message" do
-      expect(response.flash[:notice]).to eq("Download Denied")
-    end
-    it "redirects to the request manager page" do
-      expect(response).to redirect_to(request_manager_path)
+    context 'messages fail to send' do
+      before do
+        allow(subject).to receive(:send_response_message).with(any_args).and_raise(NoMethodError)
+        put :deny_download, params: { item_id: cartItem5.id }
+      end
+      it 'produces a flash error' do
+        expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.manage_requests.denied_request.messages.error'))
+      end
     end
   end
 end

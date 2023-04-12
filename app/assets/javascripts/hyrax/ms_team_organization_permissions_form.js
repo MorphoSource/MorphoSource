@@ -41,6 +41,10 @@ $( document ).ready(function() {
 
   if ( $('form.team_organization_permissions_edit').length ) {
 
+    $('.btn-save-remote-file-settings').on('click', function() {
+      $('form.remote-file-permissions').submit();
+    });
+
     $('#collection_can_submit_remote_files').on('change', function() {
       if ($(this).val() == 'Yes') {
         $('.allowed-remote-source-wrapper').addClass('show').removeClass('hidden');

@@ -96,13 +96,13 @@ module Morphosource
         return unless (@_request.fullpath.include?('/collections/') && @collection.present?)
         remove_extra_params
         if @_request.fullpath.include? '/biological_specimens'
-          redirect_to main_app.send("#{@collection.collection_type.machine_id}_specimens_path")
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_specimens_path", request.parameters)
         elsif @_request.fullpath.include? '/cultural_heritage_objects'
-          redirect_to main_app.send("#{@collection.collection_type.machine_id}_chos_path")
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_chos_path", request.parameters)
         elsif @_request.fullpath.include? '/about'
-          redirect_to main_app.send("#{@collection.collection_type.machine_id}_about_path")
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_about_path", request.parameters)
         else
-          redirect_to main_app.send("#{@collection.collection_type.machine_id}_path")
+          redirect_to main_app.send("#{@collection.collection_type.machine_id}_path", request.parameters)
         end
       end
 

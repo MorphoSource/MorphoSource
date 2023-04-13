@@ -59,6 +59,7 @@ module Morphosource
                                              physical_object_id: [@specimen.id],
                                              slide_type: ['Histological'],
                                              software: @slide.scanning_software,
+                                             description: @slide.imaging_description,
                                              title: ['new imaging event'] )
 
         Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(ImagingEvent.new, ::Ability.new(@admin), imaging_event.attributes))
@@ -67,6 +68,7 @@ module Morphosource
       end
 
       def create_new_media
+        byebug
         media =  Media.create(date_created: @slide.date_created,
                                   date_uploaded: Date.today,
                                   depositor: @manager.user_key,

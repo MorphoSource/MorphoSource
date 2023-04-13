@@ -1,28 +1,11 @@
 <% if @document_list.count > 0 %>
   <!-- Works -->
-  <div class="row hyc-blacklight hyc-bl-results">
-    <div class="col-xs-12 col-md-5 collection-media-preview">
-      <div class="preview-title">
-        <div>Media Preview</div>
-      </div>
-
-      <%= image_tag "us_404.png", style: 'width: 100%; height: 80%;' %>
-
-      <div class="preview-controls">
-        <a class="btn btn-sm btn-default">Previous</a>
-        <div class="name">
-          <a href="#">Media 000200016: Illegal Bunny [Mesh] [CT]</a>
-        </div>
-        <a class="btn btn-sm btn-default">Next</a>
-      </div>
-    </div>
-
-    <div class="col-xs-12 col-md-7">
+  <div class="hyc-blacklight hyc-bl-results media-list-results">
+    <div class="collection-table">
       <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
         <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
 
-        <table id="datatable-media-list" class="table teams-projects">
-          <caption class="sr-only">List of media items in this team</caption>
+        <table id="datatable-media-list" class="table teams-projects media-list-show">
           <thead>
             <tr>
               <th class="checkbox no-sort"><input type="checkbox" id="select-all-for-download" /></th>
@@ -33,6 +16,7 @@
               <th><%= sortable_table_header('Type', 'human_readable_media_type_si') %></th>
               <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
               <th style="padding: 8px 0px 8px 0px;"><%= sortable_table_header('Publication Status', 'publication_status_si') %></th>
+              <th class="view-column">View</th>
             </tr>
           </thead>
           <tbody 
@@ -47,8 +31,16 @@
             <%= render partial: 'document_list_row', collection: @document_list, as: :document %>
           </tbody>
         </table>
-        
+
       <% end # / form_tag %>
+    </div>
+
+    <div class="collection-media-preview <%= @hide_viewer ? "hide" : "" %>">
+      <div class="preview-title">
+        <div>Media Display</div>
+      </div>
+
+      <%= render 'preview_body' %>
     </div>
   </div>
 <% end %>

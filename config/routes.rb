@@ -145,6 +145,7 @@ Rails.application.routes.draw do
       get 'media_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'media_list_specimens_facet'
       get 'media_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
       get 'media_lists/:id/order_media', to: 'media_lists#order_media', as: 'media_list_order_media'
+      get 'media_lists/:id/preview/:media_id', to: 'media_lists#preview', as: 'media_list_preview'
 
       # csv exports
       get 'media_lists/:id/media_export', to: 'media_lists#media_export_with_intersections_facet', as: 'media_list_media_export'

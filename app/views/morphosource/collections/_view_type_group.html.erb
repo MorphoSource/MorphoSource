@@ -3,10 +3,13 @@
   <span class="sr-only"><%= t('blacklight.search.view_title') %></span>
   <div class="view-type-group btn-group">
     <% if has_uv_preview? %>
-      <a title="Media Preview Collapse/Expand" class="active btn btn-default" href="#">
+      <%= link_to url_for(request.params.merge(view: (@hide_viewer ? nil : false))), 
+        title: "Show or hide media display", 
+        class: "#{@hide_viewer ? "" : "active"} btn btn-default" do
+      %>
         <span class="glyphicon glyphicon-picture"></span>
-        <span class="caption">Media Preview Collapse/Expand</span>
-      </a>
+        <span class="caption">Show or hide media display</span>
+      <% end %>
     <% end %>
     <% document_index_view_controls.each do |view, config| %>
     <% collection_type = @collection.collection_type.machine_id.pluralize %>

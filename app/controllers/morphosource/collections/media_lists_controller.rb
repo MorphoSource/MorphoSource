@@ -18,6 +18,39 @@ module Morphosource
 
       self.collection_type = collection_type
 
+      def show
+        @tab = tab
+        # save abilities so we won't have to check multiple times in views.
+        @can_edit = current_ability.can? :edit, @collection
+        @can_deposit = current_ability.can? :deposit, @collection
+        presenter
+        (@media_count, @object_ids) = collection_media
+        (@response, @document_list) = query_solr
+
+        if params[:view].present?
+          if params[:view] == 'false'
+            @hide_viewer = true
+          elsif @document_list.map(&:id).include?(params[:view])
+            @preview_document_id = params[:view]
+          else
+            redirect_to request.params.except(:view) and return
+          end
+        end
+
+        if params[:view] == 'false'
+          @hide_viewer = true
+        end
+
+
+        publication_settings_nag
+        query_collection_counts
+        query_collection_members
+  
+        respond_to do |format|
+          format.html { store_preferred_view }
+        end
+      end
+
       def query_solr
         if @collection.ordered_media.present?
           response = search_results(params)[0]
@@ -29,10 +62,40 @@ module Morphosource
         end
       end
 
+      # Load UV media preview via ajax
+      def preview
+        redirect_to show and return unless has_uv_preview?
+
+        if (
+          params[:media_id].present? &&
+          Media.where(id: params[:media_id]).count > 0 &&
+          doc = SolrDocument.find(params[:media_id])
+        )
+          @media_presenter = Hyrax::MediaPresenter.new(doc, current_ability)
+          @media_presenter.get_showcase_data
+        end
+
+        respond_to do |format|
+          format.js { render layout: false }
+          format.html { render 'show'}
+        end
+      end
+
       private
 
         def authorize_admin
           redirect_to root_path and return unless current_user&.admin?
+        end
+
+        def load_media_preview_presenter(id)
+          if (
+            has_uv_preview? && 
+            @document_list&.first.present? && 
+            (doc = SolrDocument.find(@document_list&.first&.id))
+          )
+            @media_presenter = Hyrax::MediaPresenter.new(doc, current_ability)
+            @media_presenter.get_showcase_data
+          end
         end
 
         # link for facet filters

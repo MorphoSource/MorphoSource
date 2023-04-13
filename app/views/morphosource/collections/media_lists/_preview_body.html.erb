@@ -1,0 +1,17 @@
+<div class="preview-body">
+  <div id="preview-wrapper">
+    <%= render "preview" %>
+  </div>
+
+  <div class="preview-controls">
+    <a class="btn btn-sm btn-default previous disabled">Previous</a>
+    <div class="name">
+      <% if @media_presenter %>
+        <a class="preview-name-link" href="#">Media <%= @media_presenter&.id %>: <%= @media_presenter&.title&.first %></a>
+      <% else %>
+        <a class="preview-name-link hide" target="_blank"></a>
+      <% end %>
+    </div>
+    <a class="btn btn-sm btn-default next disabled">Next</a>
+  </div>
+</div>

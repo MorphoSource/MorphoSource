@@ -53,6 +53,15 @@
           </div>
         </div>
 
+        <% if @collection.organization %>
+        <div class="col-sm-6">
+          <div class="content-block">
+            <h2>Remote File Submission Settings</h2>
+            <%= render 'morphosource/dashboard/collections/teams/organization/remote_file_permissions', k: f %>
+          </div>
+        </div>
+        <% end %>
+
       <% if @collection.project? %>
         <%= render 'morphosource/dashboard/collections/details/temporary_access_links', f: f %>
       <% end %>

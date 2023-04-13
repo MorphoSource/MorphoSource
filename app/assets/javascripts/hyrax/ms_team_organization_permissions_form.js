@@ -39,12 +39,8 @@ $( document ).ready(function() {
       }
   };
 
-  if ( $('form.team_organization_permissions_edit').length ) {
-
-    $('.btn-save-remote-file-settings').on('click', function() {
-      $('form.remote-file-permissions').submit();
-    });
-
+  // todo: move this to js that handles the form in Details tab
+  if ( $('.allowed-remote-source-wrapper').length ) {
     $('#collection_can_submit_remote_files').on('change', function() {
       if ($(this).val() == 'Yes') {
         $('.allowed-remote-source-wrapper').addClass('show').removeClass('hidden');
@@ -52,6 +48,9 @@ $( document ).ready(function() {
         $('.allowed-remote-source-wrapper').addClass('hidden').removeClass('show');        
       }
     });
+  }
+
+  if ( $('form.team_organization_permissions_edit').length ) {
 
     $('div#organization-permissions input:checkbox').each(function() {
       blankValueEffect($(this));

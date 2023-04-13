@@ -102,4 +102,27 @@ div.collection-page {
   [class*='col-'] {
     padding: 0;
   }
+
+  .hyc-bl-pager {
+    .paginate-wrapper {
+      align-items: center;
+      font-size: 12px;
+      font-weight: normal;
+      justify-content: space-between;
+      padding: 14px 0 4px 0;
+    }
+
+    .paginate-wrapper [class*='col-'] {
+      padding: 0;
+    }
+
+    .per-page-container form label {
+      font-weight: normal;
+      margin: 0;
+    }
+
+    .pagination-container .pagination li:last-child a {
+      margin-right: 0;
+    }
+  }
 }

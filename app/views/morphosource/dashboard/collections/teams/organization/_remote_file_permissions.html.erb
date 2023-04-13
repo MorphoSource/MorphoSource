@@ -1,8 +1,7 @@
 <%= simple_form_for @form, 
     url: collection_form_url(@form),  
     wrapper: :showcase_default, 
-    id: 'remote-file-permissions',
-    html: { class: 'remote-file-permissions' } do |k| %>
+    html: { id: 'remote-file-permissions', class: 'remote-file-permissions' } do |k| %>
 
   <%= render_edit_field_partial('can_submit_remote_files', f: k) %>
 

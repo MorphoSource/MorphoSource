@@ -184,6 +184,7 @@ Rails.application.routes.draw do
       patch 'dashboard/collections/:id', to: 'collections#update'
       delete 'dashboard/collections/:id', to: 'collections#destroy', as: 'destroy_collection'
       get 'dashboard/collections/new', to: 'collections#new', as: 'new_collection'
+      get 'dashboard/collections/:id/remove/:member_id', to: 'collections#remove_member', as: 'collection_remove_member'
 
       scope module: :collections, path: :dashboard do
         get 'teams/new', to: 'teams#new', as: 'new_team'

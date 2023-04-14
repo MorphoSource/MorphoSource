@@ -89,7 +89,6 @@ $(document).ready(function() {
         }
       }
 
-
       #activateListeners() {
         // Load view from row click
         const rowClickListener = (event) => {

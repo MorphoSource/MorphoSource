@@ -40,6 +40,14 @@ module Morphosource
         end
       end
 
+      # Simple end-point to remove single collection member
+      def remove_member
+        authorize! :update, @collection
+        @collection.remove_member_objects([params[:member_id]])
+        after_update
+      end
+
+
       def process_member_changes
         case member_params
         when 'add' then add_members_to_collection

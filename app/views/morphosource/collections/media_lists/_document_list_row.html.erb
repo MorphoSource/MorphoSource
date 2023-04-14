@@ -7,19 +7,17 @@
   data-document-id="<%= document.id %>" 
   data-collection-id="<%= @collection.id %>"
 >
-  <td class="checkbox" data-behavior="batch-add-button">
+  <td>
     <div class="document-row-interact-panel">
-      <span class="interact-item"><%= document["position"] || (document_counter + 1) %>.</span>
-      <%= check_box_tag "batch_work_ids[]", document.id, false, class: "batch_add_selector interact-item", id: "batch_work_#{document.id}" %>
-      <%= check_box_tag "batch_document_ids[]", document.id, false, class: "batch_document_selector hidden", id: "batch_document_#{document.id}" %>
+      <span class="interact-item"><%= document_counter + 1 + (@response&.offset_value || 0) %>.</span>
+      <div class="checkbox" data-behavior="batch-add-button">
+        <%= check_box_tag "batch_work_ids[]", document.id, false, class: "batch_add_selector interact-item", id: "batch_work_#{document.id}" %>
+        <%= check_box_tag "batch_document_ids[]", document.id, false, class: "batch_document_selector hidden", id: "batch_document_#{document.id}" %>
+      </div>
       <% if @can_edit %>
         <i class="fa fa-solid fa-bars sort-handle interact-item"></i>
-        <%= form_for @collection, url: update_team_path(@collection), method: :put, as: 'collection' do |f| %>
-          <%= single_item_action_remove_form_fields(f, document) %>
-          <%= hidden_field_tag(:showcase, 'true') %>
-          <%= button_tag(class: "collection-remove btn-remove-media #{@collection.collection_type.title.downcase}-remove-media interact-item") do %>
-              <i class="fa fa-solid fa-trash"></i>
-          <% end %>
+        <%= link_to main_app.collection_remove_member_path(@collection, member_id: document.id), class: "interact-item" do %>
+          <i class="fa fa-solid fa-trash"></i>
         <% end %>
       <% end %>
     </div>

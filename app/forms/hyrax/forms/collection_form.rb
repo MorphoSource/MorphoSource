@@ -68,7 +68,7 @@ module Hyrax
 
       # Terms that appear within the accordion
       def secondary_terms
-        [:creator, :contributor, :based_near, :related_url, :can_submit_remote_files, :allowed_remote_source]
+        [:can_submit_remote_files, :allowed_remote_source, :creator, :contributor, :based_near, :related_url]
       end
 
       def banner_info

@@ -68,7 +68,6 @@ module Morphosource
       end
 
       def create_new_media
-        byebug
         media =  Media.create(date_created: @slide.date_created,
                                   date_uploaded: Date.today,
                                   depositor: @manager.user_key,

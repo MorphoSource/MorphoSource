@@ -11,7 +11,7 @@ module Hyrax
       attr_reader :scope
 
       delegate :id, :depositor, :permissions, :human_readable_type, :member_ids, :nestable?,
-               :alternative_title, to: :model
+               :alternative_title, :can_submit_remote_files, :allowed_remote_source, to: :model
 
       class_attribute :membership_service_class
       class_attribute :single_valued_fields
@@ -68,7 +68,7 @@ module Hyrax
 
       # Terms that appear within the accordion
       def secondary_terms
-        [:creator, :contributor, :based_near, :related_url]
+        [:creator, :contributor, :based_near, :related_url, :can_submit_remote_files, :allowed_remote_source]
       end
 
       def banner_info

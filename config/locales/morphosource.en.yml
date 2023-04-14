@@ -62,6 +62,12 @@ en:
         nest_collections:
           desc: 'Add a project to this team'
           button_label: 'Add a Project'
+        order_member:
+          handle:
+            title: "Drag to reorder"
+        remove_member:
+          title: Remove from %{collection_type}
+          confirm: Removing this work will not remove it from MorphoSource, only from this %{collection_type}. Are you sure you want to remove this work from the %{collection_type}?
     dashboard:
       landing_page:
         title: 'MorphoSource Dashboard'

@@ -11,6 +11,7 @@
   .media-list-results {
     display: flex;
     flex-direction: column;
+    margin-bottom: 2em;
 
     .collection-table {
       flex: 1;
@@ -94,6 +95,10 @@
 
             a.interact-item {
               color: unset;
+
+              &:hover {
+                text-decoration: none;
+              }
             }
     
             button {
@@ -120,8 +125,7 @@
       order: 1;
   
       .preview-title {
-        // border-bottom: 2px solid #ddd; // Match table header
-        padding-top: 15px; 
+        padding-top: 13px; 
         padding-bottom: 10px;
         text-align: center; 
         font-weight: bold;
@@ -129,110 +133,137 @@
   
       .preview-body {
         padding: 0;
-      }
+
+        .preview-wrapper-and-controls {
+          align-items: center;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          width: 100%;
   
-      .preview-container {
-        background-color: black;
-        border-color: #212121;
-        border-style: solid;
-        border-width: 10px 10px 0 10px;
-        height: 510px; 
+          #preview-wrapper {
+            width: 100%;
   
-        .viewer {
-          padding: 0;
-  
-          .image-wrapper {
-            text-align: center;
+            .preview-container {
+              background-color: black;
+              height: 200px;
+    
+              .viewer-wrapper, .viewer-wrapper-2d {
+                height: 100%;
+    
+                .viewer {
+                  padding: 0;
+          
+                  .image-wrapper {                    
+                    text-align: center;
+
+                    img {
+                      max-height: 125px;
+                    }
+                  }
+          
+                  .not-ready {
+                    color: #C7C5C7;
+                    text-align: center;
+          
+                    &.not-loaded {
+                      align-items: center;
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: center;
+                      height: 100%;
+          
+                      .load-instructions-container {
+                        background-color: #212121;
+                        border-radius: 5px;
+                        padding: 20px;
+                      }
+          
+                      .btn {
+                        background-color: #00B0FF;
+                        font-size: 10px;
+                        min-width: 70px;
+                        text-transform: uppercase;
+                      }
+                    }
+                  }
+                }
+              } 
+            }
           }
-  
-          .not-ready {
-            color: #C7C5C7;
-            text-align: center;
-  
-            &.not-loaded {
-              align-items: center;
+          
+          .preview-controls {
+            align-items: center;
+            background-color: black;
+            display: flex; 
+            flex-direction: row; 
+            height: 30px;
+            justify-content: space-between;
+            width: 50%;
+            position: absolute;
+            bottom: 6px;
+      
+            .btn {
+              background-color: #00B0FF;
+              font-size: 10px;
+              min-width: 70px;
+              text-transform: uppercase;
+            }
+    
+            a {
+              color: white;
+              cursor: pointer;
               display: flex;
-              flex-direction: column;
-              justify-content: center;
-              height: 100%;
-  
-              .load-instructions-container {
-                background-color: #212121;
-                border-radius: 5px;
-                padding: 20px;
+              align-items: center;
+              font-family: sans-serif;
+              font-size: 12px;
+              text-transform: uppercase;
+    
+              &:hover {
+                text-decoration: none;
               }
-  
-              .btn {
-                background-color: #00B0FF;
-                font-size: 10px;
-                min-width: 70px;
-                text-transform: uppercase;
+    
+              &.disabled {
+                opacity: 0.5;
+                pointer-events: none;
               }
+    
+              i {
+                margin-left: 10px;
+                margin-right: 10px;
+                font-size: 1.5em;
+              }
+    
+              span {
+                padding-top: 0.3em;
+              }
+              
             }
           }
         }
-      }
-  
-      .preview-controls {
-        align-items: center;
-        background-color: #212121;
-        display: flex; 
-        flex-direction: row; 
-        justify-content: space-between;
-        min-height: 60px; 
-        padding: 10px;
-  
-        .btn {
-          background-color: #00B0FF;
-          font-size: 10px;
-          min-width: 70px;
-          text-transform: uppercase;
-        }
-  
-        .name {
-          margin-left: 5px; 
-          margin-right: 5px;
+
+        .name-container {
+          font-weight: bold;
+          min-height: 20px;
           text-align: center;
   
-          a {
-            color: #C7C5C7;
+          .name {
+            padding: 10px;
           }
         }
       }
-      
     }
 
     // Responsive styling
 
-    // Mobile phones
-    @media (min-width: 320px) {
-      div.collection-media-preview {
-        .preview-container {
-          height: 210px;
-
-          .viewer {
-            height: 200px;
-
-            .image-wrapper img {
-              max-height: 150px;
-            }
-          }
-        }
-      }
-    }
-
-    // 
+    // Tablets
     @media (min-width: 768px) {
       div.collection-media-preview {
         .preview-container {
-          height: 310px;
+          height: 300px !important;
 
-          .viewer {
-            height: 300px;
-
-            .image-wrapper img {
-              max-height: 250px;
-            }
+          .viewer .image-wrapper img {
+              max-height: 225px !important;
           }
         }
       }
@@ -264,16 +295,12 @@
 
         .preview-body {
           padding-left: 10px;
-        }
 
-        .preview-container {
-          height: 510px;
-
-          .viewer {
-            height: 500px;
-
-            .image-wrapper img {
-              max-height: 400px;
+          .preview-container {
+            height: 500px !important;
+  
+            .viewer .image-wrapper img {
+                max-height: 400px !important;
             }
           }
         }

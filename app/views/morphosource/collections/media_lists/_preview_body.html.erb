@@ -1,17 +1,25 @@
 <div class="preview-body">
-  <div id="preview-wrapper">
-    <%= render "preview" %>
+  <div class="preview-wrapper-and-controls">
+    <div id="preview-wrapper">
+      <%= render "preview" %> <!-- <div class="preview-container"> -->
+    </div>
+
+    <div class="preview-controls">
+      <a class="previous disabled"><i class="fa fa-backward"></i><span>Prev</span></a>
+      <a class="next disabled"><span>Next</span><i class="fa fa-forward"></i></a>
+    </div>
   </div>
 
-  <div class="preview-controls">
-    <a class="btn btn-sm btn-default previous disabled">Previous</a>
+  <div class="name-container">
     <div class="name">
       <% if @media_presenter %>
-        <a class="preview-name-link" href="#">Media <%= @media_presenter&.id %>: <%= @media_presenter&.title&.first %></a>
+        <a class="preview-name-link" href="#">
+          Media <%= @media_presenter&.id %>: <%= @media_presenter&.title&.first %>
+        </a>
       <% else %>
         <a class="preview-name-link hide" target="_blank"></a>
       <% end %>
     </div>
-    <a class="btn btn-sm btn-default next disabled">Next</a>
   </div>
 </div>
+

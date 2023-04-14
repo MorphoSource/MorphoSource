@@ -4,9 +4,14 @@ $(document).ready(function() {
     class MediaList {
       constructor(html) {
         this.html = html;
+
+        // initialize sortable media list
+        $("#sortable-media-list").sortable({ handle: ".sort-handle" });
+
+        // initialize active row if one is available
         this.activeRow = this.html.querySelector("tr.previewable.view-active");
         if (this.activeRow) this.#loadMediaView({ scrollWindow: true });
-        
+
         this.#activateListeners();
       }
 
@@ -56,22 +61,24 @@ $(document).ready(function() {
         if (window.matchMedia("(min-width: 992px)").matches) {
           const allRows = this.activeRow.parentNode.children;
           const rowIndex = Array.prototype.indexOf.call(allRows, this.activeRow);
-          const viewer = this.html.querySelector(".preview-body")
+          const viewerBody = this.html.querySelector(".preview-body");
+          const viewer = this.html.querySelector(".preview-container");
     
-          if (rowIndex && rowIndex > 4) {
+          if (rowIndex && rowIndex > 3) {
             // Retain original transform
             const oldTransform = viewer.style.transform;
             const oldYPixels = oldTransform ? oldTransform.replace(/[^\d.]/g, '') : 0;
     
             // Calc new transform and apply
-            const newYPixels = this.activeRow.offsetHeight * (rowIndex + 1) - viewer.offsetHeight;
-            viewer.style.transform = `translateY(${newYPixels}px)`;
+            const newYPixels = 
+              this.activeRow.offsetHeight * (rowIndex + 1) - viewer.offsetHeight;
+            viewerBody.style.transform = `translateY(${newYPixels}px)`;
     
             if (scrollWindow) {
               window.scrollBy(0, newYPixels - oldYPixels);
             }      
           } else {
-            viewer.style.transform = null;
+            viewerBody.style.transform = null;
           }
         }
       }
@@ -90,6 +97,43 @@ $(document).ready(function() {
       }
 
       #activateListeners() {
+        /**
+         * General UI Listeners 
+         */
+
+        const removeMemberListener = (event) => {
+          if (confirm(event.currentTarget.dataset.confirmText)) {
+            $.loader.open({ imgUrl: "/loading32x32.gif "});
+          } else {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }
+        this.html.querySelectorAll("a.media-list-remove-member").forEach((a) => {
+          a.addEventListener("click", removeMemberListener);
+        })
+
+        // todo: refactor this to not be AJAX
+        const saveOrderListener = (event) => {
+          $.loader.open({ imgUrl: "/loading32x32.gif" });
+          $.ajax({
+            url: $("#sortable-media-list").data("url"),
+            type: "GET",
+            data: new URLSearchParams({
+              sort: $("#sortable-media-list").data("sort"), 
+              page: $("#sortable-media-list").data("page"), 
+              per_page: 
+                $("#sortable-media-list").data("per-page")}).toString() + 
+                '&' + 
+                $("#sortable-media-list").sortable('serialize')
+          });
+        }
+        document.querySelector("#save-media-order").addEventListener("click", saveOrderListener);
+
+        /**
+         * Media view load UI Listeners 
+         */
+
         // Load view from row click
         const rowClickListener = (event) => {
           // ignore if row is active or if target is interactable in some other ways

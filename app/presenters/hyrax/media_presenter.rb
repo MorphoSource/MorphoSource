@@ -129,10 +129,6 @@ module Hyrax
       return viewer_ready
     end
 
-    def external_file?
-      media.external_file?
-    end
-
     def is_file_uploaded?
       if !@file_set_list.present? && @file_status != "added" && @file_status != "updated"
         is_uploaded = false

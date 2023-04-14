@@ -28,7 +28,6 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['download_reviewer_ssim'] = object.download_reviewer
       solr_doc['ark_ssim'] = object.ark
       solr_doc['doi_ssim'] = object.doi
-      solr_doc['external_file_ssim'] = object.external_file
 
       # add media type facet
       mt = object.human_readable_media_type
@@ -56,7 +55,7 @@ class MediaIndexer < Morphosource::WorkIndexer
           taxonomy_titles = nil
         elsif types == [BiologicalSpecimen]
           taxonomy_titles = physical_objects.map(&:taxonomies_titles).flatten
-          occurrence_id = physical_objects.map { |po| po.occurrence_id&.first }.compact
+          occurrence_id = physical_objects.map { |po| po.occurrence_id&.first }.compact 
         else
           taxonomy_titles = []
           physical_objects.each do |object|

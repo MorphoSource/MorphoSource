@@ -5,7 +5,8 @@ $( document ).ready(function() {
     });
     
     $("#save-media-order").on("click", function() {
-      $("#save-media-order").prop('disabled', true);
+      $("#save-media-order").addClass("disabled");
+      $.loader.open({ imgUrl: "/loading32x32.gif" });
       $.ajax({
         url: $("#sortable-media-list").data("url"),
         type: "GET",

@@ -1,12 +1,12 @@
-<a id="add-selected-to-cart" class="btn btn-sm btn-default disabled" href="javascript:void(0)">Add <i class="material-icons">check_box</i> to download</a>
+<a id="add-selected-to-cart" class="btn btn-sm btn-default disabled" href="javascript:void(0)">Add <i class="material-icons">check_box</i> to cart</a>
 <% if @can_edit %>
   <% if params["f"].present? %>
-    <a id="save-media-order-disabled" class="btn btn-sm btn-default" disabled="disabled" style="background-color: #f5f5f5;
-  color: black;">Remove Filter to Save Order</a>
+    <a id="save-media-order-disabled" class="save-media-order btn btn-sm btn-default" disabled="disabled" style="background-color: #f5f5f5;
+  color: black;">Remove filter to save order</a>
   <% else %>
-    <a id="save-media-order" class="btn btn-sm btn-default">Save Order</a>
+    <a id="save-media-order" class="save-media-order btn btn-sm btn-default">Save order</a>
   <% end %>
   <div class="text">
-    Drag <i class="fa fa-solid fa-bars"></i> to Reorder
+    Drag <i class="fa fa-solid fa-bars"></i> to reorder
   </div>
 <% end %>

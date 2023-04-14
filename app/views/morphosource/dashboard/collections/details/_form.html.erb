@@ -14,7 +14,6 @@
                 input_html: { class: 'form-control' }, 
                 disabled: !current_user.admin?
             %>
-
             <div class="form-group row">
               <div class="allowed-remote-source-wrapper <%= @form.can_submit_remote_files == "Yes" ? "" : "hide" %>">
                 <div class="col-xs-6 showcase-label">

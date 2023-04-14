@@ -2,6 +2,39 @@
   <div class="panel panel-default labels">
     <div class="panel-body">
       <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+
+        <% if @collection.organization %>
+        <div class="col-sm-6">
+          <div class="content-block">
+            <h2>Remote File Submission Settings</h2>
+
+            <%= f.input :can_submit_remote_files, as: :select,
+                collection: ['No','Yes'],
+                include_blank: false,
+                input_html: { class: 'form-control' }, 
+                disabled: !current_user.admin?
+            %>
+
+            <div class="form-group row">
+              <div class="allowed-remote-source-wrapper <%= @form.can_submit_remote_files == "Yes" ? "" : "hide" %>">
+                <div class="col-xs-6 showcase-label">
+                <%= f.label :allowed_remote_source, t("morphosource.dashboard.profiles.edit_primary.allowed_remote_source").html_safe %>
+                </div>
+                <div class="col-xs-6 showcase-value">
+                  <%= f.text_area :allowed_remote_source, 
+                  cols: 30, 
+                  rows: 4, 
+                  class: "form-control", 
+                    placeholder: 'wwww.example1.com
+          www.example2.com' %>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <% end %>
+
       <div class="row">
         <%= render 'morphosource/dashboard/collections/details/action_buttons', f: f %>
         <div class="col-sm-6">
@@ -52,15 +85,6 @@
             <% end %>
           </div>
         </div>
-
-        <% if @collection.organization %>
-        <div class="col-sm-6">
-          <div class="content-block">
-            <h2>Remote File Submission Settings</h2>
-            <%= render 'morphosource/dashboard/collections/teams/organization/remote_file_permissions', k: f %>
-          </div>
-        </div>
-        <% end %>
 
       <% if @collection.project? %>
         <%= render 'morphosource/dashboard/collections/details/temporary_access_links', f: f %>

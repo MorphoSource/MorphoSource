@@ -39,7 +39,6 @@ $( document ).ready(function() {
       }
   };
 
-  // todo: move this to js that handles the form in Details tab
   if ( $('.allowed-remote-source-wrapper').length ) {
     $('#collection_can_submit_remote_files').on('change', function() {
       if ($(this).val() == 'Yes') {

@@ -30,6 +30,7 @@ module Morphosource
 
       def update
         update_thumbnail
+        self.form_class.terms = (self.form_class.terms + [:can_submit_remote_files, :allowed_remote_source]).uniq
         super
       end
 

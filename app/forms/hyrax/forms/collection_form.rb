@@ -71,6 +71,10 @@ module Hyrax
         [ :contributor, :based_near, :related_url]
       end
 
+      def self.build_permitted_params
+        super + [:can_submit_remote_files, :allowed_remote_source]
+      end
+
       def banner_info
         @banner_info ||= begin
           # Find Banner filename

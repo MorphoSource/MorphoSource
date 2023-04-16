@@ -30,8 +30,6 @@ module Morphosource
 
       def update
         update_thumbnail
-        # todo: need to investigate why these two terms are missing (after rails restart)
-        self.form_class.terms = (self.form_class.terms + [:can_submit_remote_files, :allowed_remote_source]).uniq
         super
       end
 

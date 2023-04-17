@@ -140,7 +140,7 @@ module Morphosource::CartItemHelper
         else
           content_tag(:button, 'Item in Cart', class: "btn btn-success", disabled: true)
         end
-      elsif item.request_status != "Denied" && 
+      elsif item.request_status != "Denied" &&
         item.request_status != "Canceled" &&
         item.request_status != "Expired"
           make_download_button(item)
@@ -186,7 +186,7 @@ module Morphosource::CartItemHelper
     media = Media.find(item.work_id)
     if media.present?
       if media.file_sets.present?
-        tags = ( button_tag("Download Item", class: "btn-download-item btn btn-info btn-xs", data: {item_id: item.id}) ) + 
+        tags = ( button_tag("Download Item", class: "btn-download-item btn btn-info btn-xs", data: {item_id: item.id}) ) +
           ( link_to item.id, main_app.download_items_path(item_id: item.id), class: "hide", id: 'link-to-download-item-'+item.id.to_s, method: :get )
       end
     end
@@ -200,8 +200,11 @@ module Morphosource::CartItemHelper
 
   def action_by(item)
     return if item.action_by.nil?
-    ms_id = item.action_by
-    User.find_by(ms_id: ms_id).name
+
+    user = User.find_by(ms_id: item.action_by)
+    return if user.nil?
+
+    user.name
   end
 
   def get_requester_items(items,requester)

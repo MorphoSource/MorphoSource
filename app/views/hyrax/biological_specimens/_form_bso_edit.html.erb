@@ -27,15 +27,6 @@
 %>
   <div class="col-sm-12">
     <div class="content-block">
-
-      <div id="embedded_div_new_organization" class="embedded_div" data-relationship-control="#parent-relationships-organizations" data-add-button="#btn-add-organization" style="display: none;">
-          <%= simple_form_for @new_organization_form,
-                              wrapper: :showcase_default,
-                              url: @new_organization_submit_submissions_url do |i| %>
-              <%= render 'form_new_organization', i: i %>
-          <% end %>
-      </div>
-
       <div id="embedded_div_new_taxonomy" class="embedded_div" data-relationship-control="#parent-relationships-taxonomies" data-add-button="#btn-add-taxonomy" style="display: none;">
           <%= simple_form_for @new_taxonomy_form,
                               wrapper: :showcase_default,
@@ -43,15 +34,5 @@
               <%= render 'form_new_taxonomy', t: t %>
           <% end %>
       </div>
-
   </div>
 </div>
-
-<%# TODO: Commented out when turbolinks removed. Delete if nothing breaks. %>
-<!-- <script type="text/javascript">
-  Blacklight.onLoad(function() { -->
-    <%# This causes the page to switch back to the default template if they've
-        previously visited the batch download page in this Turbolinks session %>
-    <%# $("#fileupload").fileupload('option', 'downloadTemplateId', 'template-download')
-  });
-</script> %>

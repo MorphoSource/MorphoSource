@@ -40,10 +40,14 @@ module Morphosource
       end
 
       def send_response_messages(items, action)
-        if items.count == 1
-          send_response_message(items.first, action)
-        else
-          send_batch_response_messages(items, action)
+        begin
+          if items.count == 1
+            send_response_message(items.first, action)
+          else
+            send_batch_response_messages(items, action)
+          end
+        rescue
+          flash[:error] = I18n.t("morphosource.dashboard.my.manage_requests.#{action}_request.messages.error")
         end
       end
 

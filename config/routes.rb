@@ -368,8 +368,7 @@ Rails.application.routes.draw do
 
   resources :submissions, only: [ :new, :create, :search_bso_ajax,
     :search_taxonomy_ajax, :validate_remote_file_ajax, :organization_for_recordset, :organization_default_media_fields,
-    :new_organization_submit, :new_taxonomy_submit, :new_device_submit,
-    :new_processing_event_submit] do
+    :new_taxonomy_submit, :new_processing_event_submit] do
     collection do
       # AJAX in-submission-flow methods
       post 'validate_remote_file_ajax'
@@ -381,7 +380,6 @@ Rails.application.routes.draw do
       # AJAX physical object or media edit page submission methods
       post 'new_organization_submit'
       post 'new_taxonomy_submit'
-      post 'new_device_submit'
       post 'new_processing_event_submit'
     end
   end

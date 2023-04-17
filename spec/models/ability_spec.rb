@@ -16,7 +16,7 @@ RSpec.describe Ability, type: :model do
   let(:batch_submission_contributor_ability) { Ability.new(batch_submission_contributor) }
 
   describe 'Submissions user abilities' do
-    let(:submission_actions) { [ :new, :create, :stage_biological_specimen, :stage_biological_specimen_from_idigbio, :stage_cultural_heritage_object, :stage_device, :stage_imaging_event, :stage_organization, :stage_device_organization, :stage_media, :stage_processing_event, :stage_cho, :stage_taxonomy, :new_organization, :new_organization_submit, :new_taxonomy, :new_taxonomy_submit, :new_device_submit, :new_processing_event_submit ] }
+    let(:submission_actions) { [ :new, :create, :stage_biological_specimen, :stage_biological_specimen_from_idigbio, :stage_cultural_heritage_object, :stage_device, :stage_imaging_event, :stage_organization, :stage_device_organization, :stage_media, :stage_processing_event, :stage_cho, :stage_taxonomy, :new_organization, :new_taxonomy, :new_taxonomy_submit, :new_processing_event_submit ] }
 
     it 'denies registered users and guests, authorizes admins and contributors' do
       submission_actions.each do |action|

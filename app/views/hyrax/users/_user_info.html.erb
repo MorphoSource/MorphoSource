@@ -4,60 +4,62 @@
 
   <% if user.display_name %>
   <div class="row">
-    <div class="col-xs-6 showcase-label">Display Name</div>
-    <div class="col-xs-6 showcase-value"><%= user.display_name %></div>
+    <div class="col-xs-3 showcase-label">Display Name</div>
+    <div class="col-xs-9 showcase-value"><%= user.display_name %></div>
   </div>
   <% end %>
 
   <div class="row">
-    <div class="col-xs-6 showcase-label">Email</div>
-    <div class="col-xs-6 showcase-value break-all"><%= mail_to user.email, user.email %></div>
+    <div class="col-xs-3 showcase-label">Email</div>
+    <div class="col-xs-9 showcase-value break-all"><%= mail_to user.email, user.email %></div>
   </div>
 
   <% if current_user.present? && ( (user == current_user) || current_user.admin? ) %>
     <% if user.sftp_share %>
     <div class="row">
-      <div class="col-xs-6 showcase-label">SFTP Share</div>
-      <div class="col-xs-6 showcase-value break-all"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
+      <div class="col-xs-3 showcase-label">SFTP Share</div>
+      <div class="col-xs-9 showcase-value break-all"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
     </div>
     <% end %>
-    <% if user.allowed_remote_source %>
+    <% if user.remote_file_submitter? %>
     <div class="row">
-      <div class="col-xs-6 showcase-label"><%= t("morphosource.dashboard.profiles.edit_primary.allowed_remote_source") %></div>
-      <div class="col-xs-6 showcase-value break-all"><%= user.allowed_remote_source %></div>
+      <div class="col-xs-3 showcase-label">Allowed Remote File Domains</div>
+      <div class="col-xs-9 showcase-value break-all">
+        <%= render partial: 'user_allowed_domains', collection: user.allowed_domains, as: :item %>
+      </div>
     </div>
     <% end %>
   <% end %>
 
   <% if user.affiliation %>
   <div class="row">
-    <div class="col-xs-6 showcase-label">Organization</div>
-    <div class="col-xs-6 showcase-value"><%= user.affiliation %></div>
+    <div class="col-xs-3 showcase-label">Organization</div>
+    <div class="col-xs-9 showcase-value"><%= user.affiliation %></div>
   </div>
   <% end %>
 
   <% if user.department %>
   <div class="row">
-    <div class="col-xs-6 showcase-label">Department</div>
-    <div class="col-xs-6 showcase-value"><%= user.department %></div>
+    <div class="col-xs-3 showcase-label">Department</div>
+    <div class="col-xs-9 showcase-value"><%= user.department %></div>
   </div>
   <% end %>
 
   <% if @dashboard %>
     <% if user.address %>
     <div class="row">
-      <div class="col-xs-6 showcase-label">Address</div>
-      <div class="col-xs-6 showcase-value"><%= user.address %></div>
+      <div class="col-xs-3 showcase-label">Address</div>
+      <div class="col-xs-9 showcase-value"><%= user.address %></div>
     </div>
     <% end %>
 
     <% if user.state %>
     <div class="row">
-      <div class="col-xs-6 showcase-label">State/Province</div>
+      <div class="col-xs-3 showcase-label">State/Province</div>
         <% if Morphosource::UserProfile::LocationHelper::STATE[user.country]&.key(user.state) %>
-          <div class="col-xs-6 showcase-value"><%= Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) %></div>
+          <div class="col-xs-9 showcase-value"><%= Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) %></div>
         <% else %>
-          <div class="col-xs-6 showcase-value"><%= user.state %></div>
+          <div class="col-xs-9 showcase-value"><%= user.state %></div>
         <% end %>
     </div>
     <% end %>
@@ -65,52 +67,52 @@
 
   <% if user.country %>
   <div class="row">
-    <div class="col-xs-6 showcase-label">Country</div>
-    <div class="col-xs-6 showcase-value"><%= Morphosource::UserProfile::LocationHelper::COUNTRY.key(user.country) %></div>
+    <div class="col-xs-3 showcase-label">Country</div>
+    <div class="col-xs-9 showcase-value"><%= Morphosource::UserProfile::LocationHelper::COUNTRY.key(user.country) %></div>
   </div>
   <% end %>
 
   <% if @dashboard %>
     <% if user.postal_code %>
     <div class="row">
-      <div class="col-xs-6 showcase-label">Postal Code</div>
-      <div class="col-xs-6 showcase-value"><%= user.postal_code %></div>
+      <div class="col-xs-3 showcase-label">Postal Code</div>
+      <div class="col-xs-9 showcase-value"><%= user.postal_code %></div>
     </div>
     <% end %>
 
     <% if user.telephone %>
     <div class="row">
-      <div class="col-xs-6 showcase-label">Telephone</div>
-      <div class="col-xs-6 showcase-value"><%= link_to_telephone(user) %></div>
+      <div class="col-xs-3 showcase-label">Telephone</div>
+      <div class="col-xs-9 showcase-value"><%= link_to_telephone(user) %></div>
     </div>
     <% end %>
   <% end %>
 
   <% if user.orcid.present? %>
   <div class="row">
-    <div class="col-xs-6 showcase-label"><%= orcid_label('profile') %></div>
-    <div class="col-xs-6 showcase-value break-all"><%= link_to user.orcid, user.orcid, { target: '_blank' } %></div>
+    <div class="col-xs-3 showcase-label"><%= orcid_label('profile') %></div>
+    <div class="col-xs-9 showcase-value break-all"><%= link_to user.orcid, user.orcid, { target: '_blank' } %></div>
   </div>
   <% end %>
 
   <% if user.twitter_handle.present? %>
   <div class="row">
-    <div class="col-xs-6 showcase-label"><i class="fab fa-twitter" aria-hidden="true"></i> Twitter Handle</div>
-    <div class="col-xs-6 showcase-value break-all"><%= link_to user.twitter_handle, "http://twitter.com/#{user.twitter_handle}", {target:'_blank'} %></div>
+    <div class="col-xs-3 showcase-label"><i class="fab fa-twitter" aria-hidden="true"></i> Twitter Handle</div>
+    <div class="col-xs-9 showcase-value break-all"><%= link_to user.twitter_handle, "http://twitter.com/#{user.twitter_handle}", {target:'_blank'} %></div>
   </div>
   <% end %>
 
   <% if user.facebook_handle.present? %>
   <div class="row">
-    <div class="col-xs-6 showcase-label"><i class="fab fa-facebook"></i> Facebook Handle</div>
-    <div class="col-xs-6 showcase-value break-all"><%= link_to user.facebook_handle, "http://facebook.com/#{user.facebook_handle}", {target:'_blank'} %></div>
+    <div class="col-xs-3 showcase-label"><i class="fab fa-facebook"></i> Facebook Handle</div>
+    <div class="col-xs-9 showcase-value break-all"><%= link_to user.facebook_handle, "http://facebook.com/#{user.facebook_handle}", {target:'_blank'} %></div>
   </div>
   <% end %>
 
   <% if user.website %>
   <div class="row">
-    <div class="col-xs-6 showcase-label"><i class="glyphicon glyphicon-globe"></i> Website(s)</div>
-    <div class="col-xs-6 showcase-value break-all"><%= iconify_auto_link(user.website) %></div>
+    <div class="col-xs-3 showcase-label"><i class="glyphicon glyphicon-globe"></i> Website(s)</div>
+    <div class="col-xs-9 showcase-value break-all"><%= iconify_auto_link(user.website) %></div>
   </div>
   <% end %>
 

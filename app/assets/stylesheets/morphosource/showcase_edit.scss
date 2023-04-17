@@ -126,6 +126,9 @@ input[type=checkbox].disabled {
     height: 30px;
     padding: 2px 8px;
   }
+  textarea.form-control {
+    height: auto;
+  }
 
   .multi_value .listing li:not(:last-child), .controlled_vocabulary .listing li:not(:last-child) {
     margin-bottom: 0rem;

@@ -39,13 +39,11 @@
                     Upload From Computer / Cloud
                   </a>
                 </li>
-                <% if current_user.remote_file_submitter? %>
-                  <li role="presentation" id="tab-remote-file-section" class="">
-                    <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
-                      Remote File Location
-                    </a>
-                  </li>
-                <% end %>
+                <li role="presentation" id="tab-remote-file-section" class="hide">
+                  <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
+                    Remote File Location
+                  </a>
+                </li>
               </ul>
 
               <!-- Tab panes -->
@@ -55,13 +53,11 @@
                     <%= render 'hyrax/media/form_files_edit', f: f %>
                   </div>
                 </div>
-                <% if current_user.remote_file_submitter? %>
-                  <div role="tabpanel" class="tab-pane" id="remote-file-section">
-                    <div class="form-tab-content">
-                      <%= render 'hyrax/media/form_files_remote', f: f %>
-                    </div>
+                <div role="tabpanel" class="tab-pane hide" id="remote-file-section">
+                  <div class="form-tab-content">
+                    <%= render 'hyrax/media/form_files_remote', f: f %>
                   </div>
-                <% end %>    
+                </div>
               </div>
             </div>
 

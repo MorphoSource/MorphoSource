@@ -42,8 +42,6 @@ module Hyrax
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      @new_organization_submit_submissions_url = '/submissions/new_organization_submit'
-      @new_organization_form = Hyrax::WorkFormService.build(::Organization.new, current_ability, self)
       @countries_service = Morphosource::CountriesService.new
       render 'edit', presenter: @presenter
     end

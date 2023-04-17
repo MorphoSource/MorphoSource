@@ -39,7 +39,18 @@ $( document ).ready(function() {
       }
   };
 
+  if ( $('.allowed-remote-source-wrapper').length ) {
+    $('#collection_can_submit_remote_files').on('change', function() {
+      if ($(this).val() == 'Yes') {
+        $('.allowed-remote-source-wrapper').addClass('show').removeClass('hidden');
+      } else {
+        $('.allowed-remote-source-wrapper').addClass('hidden').removeClass('show');        
+      }
+    });
+  }
+
   if ( $('form.team_organization_permissions_edit').length ) {
+
     $('div#organization-permissions input:checkbox').each(function() {
       blankValueEffect($(this));
     });

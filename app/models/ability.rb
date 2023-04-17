@@ -20,7 +20,7 @@ class Ability
         :stage_cultural_heritage_object, :stage_device, :stage_imaging_event, :stage_organization, 
         :stage_device_organization, :stage_media, :stage_processing_event, :stage_cho, 
         :stage_taxonomy, :new_organization, :new_organization_submit, :new_taxonomy, 
-        :new_taxonomy_submit, :new_device_submit, :new_processing_event_submit 
+        :new_taxonomy_submit, :new_processing_event_submit 
       ], Submission
     end
 

@@ -34,12 +34,9 @@ $( document ).ready(function() {
     else
       HasEditProcessingEventForm = false;
 
-    // setupEmbeddedWorkForm('device', 'new', false, updateMediaTitle);
-    // setupEmbeddedWorkForm('organization', 'new', false, updateDevice);
     setupEmbeddedWorkForm('biological_specimen', false, 'new');
     setupEmbeddedWorkForm('processing_event', 'new', true, reloadPage);
     setupTooltip();
-    //removeLastRepeatable();  // this should not be needed since it's already called inside 'if edit media form page' block
 
     form = $('form[id*="media"]')[0];
 
@@ -326,32 +323,21 @@ $( document ).ready(function() {
 
     // select2-associated select physical object button
     $('#btn-select-physical-object').click(function() {
-      var po = $('#s2id_imaging_event_find_physical_object').select2('data');
-
-      // modify current physical object properties
-      $('#physical-object-details #physical-object-id-value').val(po.id);
-      $('#physical-object-details #physical-object-institution-code').text(po.institution_code || '');
-      $('#physical-object-details #physical-object-collection-code').text(po.collection_code || '');
-      $('#physical-object-details #physical-object-catalog-number').text(po.catalog_number || '');
-      $('#physical-object-details #physical-object-occurrence-id').text(po.occurrence_id || '');
-      $('#physical-object-details #physical-object-short-title').text(po.short_title || '');
-      $('#physical-object-details #physical-object-cho-type').text(po.cho_type || '');
-      $('#physical-object-details #physical-object-material').text(po.material || '');
-
-      if (po.idigbio_uuid) {
-        $('#physical-object-details #physical-object-source').text('iDigBio');
-      } else {
-        $('#physical-object-details #physical-object-source').text('');
-      }
-
-      // modify the form
-      $('form.edit_imaging_event input[name^="imaging_event[physical_object_id]"]').remove();
-      $('<input />').attr('type', 'hidden')
-        .attr('name', 'imaging_event[physical_object_id][]')
-        .attr('value', po.id )
-        .appendTo($('form.edit_imaging_event')
-      );
+      var po = $('#s2id_imaging_event_find_physical_object').select2('data');      
+      if (po != null) {        
+        if (po.id != $("#physical-object-id-value").val()) {
+          // if different po selected, display a modal to prompt the user to confirm to save the media
+          $('#modal-select-physical-object').modal();
+        } else {
+          // reset the selection
+          $('#s2id_imaging_event_find_physical_object').select2("val", "");
+        }
+      } 
     });
+
+    $('#modal-select-physical-object').on('hidden.bs.modal', function (e) {
+      $('#s2id_imaging_event_find_physical_object').select2("val", "");
+    })
 
     // Select Device Functions
 
@@ -515,7 +501,14 @@ $( document ).ready(function() {
     form.addEventListener("submit", function(mediaSubmitEvent) {
       mediaSubmitEvent.preventDefault();
       if (uploadStatusOK) {
-        if (noFileCheck()) {
+        if (skipNoFileCheck) {
+          if (fileOrigin == "remote") {
+            // make sure the field is empty before saving
+            $('#media_remote_origin_url').val('');
+            fileOrigin = "local";
+          }
+          editMediaSubmit();
+        } else if (noFileCheck()) {
           if (fileOrigin == "remote") {
             remoteFileCheckAndSubmit();
           } else {
@@ -659,7 +652,7 @@ var remoteFileCheckAndSubmit = function(view=null) {
   disablePage();
   console.log("remote file check... ");
   $.ajax({
-    url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url),
+    url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url) + '&o=' + $('#associated_organization_id').val(),
     type: 'POST',
     dataType: 'json',
     complete: function (xhr, status) {
@@ -704,6 +697,38 @@ var remoteFileCheckAndSubmit = function(view=null) {
   });
 }
 
+var updatePOandSave = function() {
+  var po = $('#s2id_imaging_event_find_physical_object').select2('data');
+
+  // modify current physical object properties
+  $('#physical-object-details #physical-object-id-value').val(po.id);
+  $('#physical-object-details #physical-object-institution-code').text(po.institution_code || '');
+  $('#physical-object-details #physical-object-collection-code').text(po.collection_code || '');
+  $('#physical-object-details #physical-object-catalog-number').text(po.catalog_number || '');
+  $('#physical-object-details #physical-object-occurrence-id').text(po.occurrence_id || '');
+  $('#physical-object-details #physical-object-short-title').text(po.short_title || '');
+  $('#physical-object-details #physical-object-cho-type').text(po.cho_type || '');
+  $('#physical-object-details #physical-object-material').text(po.material || '');
+
+  if (po.idigbio_uuid) {
+    $('#physical-object-details #physical-object-source').text('iDigBio');
+  } else {
+    $('#physical-object-details #physical-object-source').text('');
+  }
+
+  // modify the form
+  $('form.edit_imaging_event input[name^="imaging_event[physical_object_id]"]').remove();
+  $('<input />').attr('type', 'hidden')
+    .attr('name', 'imaging_event[physical_object_id][]')
+    .attr('value', po.id )
+    .appendTo($('form.edit_imaging_event')
+  );
+
+  skipNoFileCheck = true;
+  $('.btn-save-media').click();
+  $('#modal-select-physical-object').modal('hide');
+}
+
 var setMediaLocalRemoteEvent = function() {
   $('#tab-local-file-section a').click(function(event) {
     if ($('#media_remote_origin_url').val() != "") {
@@ -725,7 +750,9 @@ var setMediaLocalRemoteEvent = function() {
 }
 
 var noFileCheck = function() {
-  if (fileOrigin == "local") {
+  if (skipNoFileCheck) {
+    return true;  
+  } else if (fileOrigin == "local") {
     if ($('.attribute-filename').length > 0) {
       // there is existing file associated with media
       return true;

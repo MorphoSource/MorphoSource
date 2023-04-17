@@ -9,11 +9,11 @@ class SubmissionsController < ApplicationController
   include Morphosource::PermissionsHelper
   include Morphosource::LinkedTeams::LinkedTeamsManagement
   include Morphosource::CustomThumbnails
+  include SubmissionsControllerAjaxBehavior
 
   load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, :validate_remote_file_ajax,
     :save_data, :organization_for_recordset, :organization_default_media_fields,
-    :new_organization_submit, :new_taxonomy_submit, :new_device_submit,
-    :new_processing_event_submit]
+    :new_taxonomy_submit, :new_processing_event_submit]
 
   before_action :instantiate_work_forms
 
@@ -143,7 +143,7 @@ class SubmissionsController < ApplicationController
   end
 
   def validate_remote_file_ajax
-    if !current_user.can_submit_remote_file? params[:u]
+    if !current_user.can_submit_remote_file?(params[:u], params[:o])
       status = "error"
       message = "The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed."
       http_code = ""
@@ -202,6 +202,7 @@ class SubmissionsController < ApplicationController
       organization_title = organization.title
       organization_id = organization.id
       organization_team_id = organization.team&.id
+      organization_team_can_submit_remote_files = organization.team&.can_submit_remote_files
       organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
       organization_data_manager = organization.data_manager&.first
       organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email
@@ -213,6 +214,7 @@ class SubmissionsController < ApplicationController
       organization_title = ''
       organization_id = nil
       organization_team_id = nil
+      organization_team_can_submit_remote_files = nil
       organization_permissions_mode = nil
       organization_data_manager = nil
       organization_data_manager_name = nil
@@ -227,7 +229,8 @@ class SubmissionsController < ApplicationController
       organization_team_id: organization_team_id,
       organization_permissions_mode: organization_permissions_mode,
       organization_data_manager: organization_data_manager,
-      organization_data_manager_name: organization_data_manager_name
+      organization_data_manager_name: organization_data_manager_name,
+      org_team_can_submit_remote_files: organization_team_can_submit_remote_files
     }
     render :json => response_object
   end
@@ -330,46 +333,6 @@ class SubmissionsController < ApplicationController
     I18n.t("morphosource.media.alert.browse_everything") if ( params[:selected_files].present? && params[:uploaded_files].present? )
   end
 
-  # AJAX Physical object and media edit page submission methods
-  def new_organization_submit
-    # this method is expected to be called from a form in modal, or an ajax post
-    begin
-      new_organization_id = prepare_and_create_work('organization', { 'organization' => params[:organization] })[0]
-    rescue
-      new_organization_id = nil
-    end
-
-    if new_organization_id.present?
-      status = 'OK'
-      message = 'New organization created'
-      new_organization = Organization.where('id' => new_organization_id).first
-      new_work = {
-        :id => new_organization_id,
-        :title => new_organization.title.first,
-        :institution_code => new_organization.institution_code.first,
-        :institution_name => new_organization.institution_name.first,
-        :collection_code => new_organization.collection_code.first,
-        :description => new_organization.description.first,
-        :related_url => new_organization.related_url.first,
-        :address => new_organization.address.first,
-        :city => new_organization.city.first,
-        :state_province => new_organization.state_province.first,
-        :postal_code => new_organization.postal_code.first,
-        :country => new_organization.country.first
-      }
-    else
-      status = 'FAIL'
-      message = 'There is a problem creating the organization.'
-      new_work = {}
-    end
-    response_object = {
-      :work => new_work,
-      :status => status,
-      :message => message
-    }
-    render :json => response_object
-  end
-
   def new_taxonomy_create(params)
     # this method is expected to be called from the backend
     begin
@@ -377,126 +340,6 @@ class SubmissionsController < ApplicationController
     rescue
       nil
     end
-  end
-
-  def new_taxonomy_submit
-    # this method is expected to be called from a form in modal, or an ajax post
-    begin
-      new_taxonomy_id = prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })[0]
-    rescue
-      new_taxonomy_id = nil
-    end
-
-    if new_taxonomy_id.present?
-      status = 'OK'
-      message = 'New Taxonomy created'
-      new_taxonomy = Taxonomy.where('id' => new_taxonomy_id).first
-      new_work = {
-        :id => new_taxonomy_id,
-        :title => new_taxonomy.title.first,
-        :taxonomy_domain => new_taxonomy.taxonomy_domain.first,
-        :taxonomy_kingdom => new_taxonomy.taxonomy_kingdom.first,
-        :taxonomy_phylum => new_taxonomy.taxonomy_phylum.first,
-        :taxonomy_superclass => new_taxonomy.taxonomy_superclass.first,
-        :taxonomy_class => new_taxonomy.taxonomy_class.first,
-        :taxonomy_subclass => new_taxonomy.taxonomy_subclass.first,
-        :taxonomy_superorder => new_taxonomy.taxonomy_superorder.first,
-        :taxonomy_order => new_taxonomy.taxonomy_order.first,
-        :taxonomy_suborder => new_taxonomy.taxonomy_suborder.first,
-        :taxonomy_superfamily => new_taxonomy.taxonomy_superfamily.first,
-        :taxonomy_family => new_taxonomy.taxonomy_family.first,
-        :taxonomy_subfamily => new_taxonomy.taxonomy_subfamily.first,
-        :taxonomy_tribe => new_taxonomy.taxonomy_tribe.first,
-        :taxonomy_genus => new_taxonomy.taxonomy_genus.first,
-        :taxonomy_subgenus => new_taxonomy.taxonomy_subgenus.first,
-        :taxonomy_species => new_taxonomy.taxonomy_species.first,
-        :taxonomy_subspecies => new_taxonomy.taxonomy_subspecies.first,
-        :depositor => new_taxonomy.depositor
-      }
-    else
-      status = 'FAIL'
-      message = 'There is a problem creating the taxonomy.'
-      new_work = {}
-    end
-    response_object = {
-      :work => new_work,
-      :status => status,
-      :message => message
-    }
-    render :json => response_object
-  end
-
-  def new_device_submit
-    # this method is expected to be called from a form in modal, or an ajax post
-    begin
-      new_device_id = prepare_and_create_work('device', { 'device' => params[:device] })[0]
-    rescue Exception => ex
-      new_device_id = nil
-      exception_message = "Exception: #{ex.class}, #{ex.message}"
-    end
-    if new_device_id.present?
-      status = 'OK'
-      message = 'New device created'
-      new_device = Device.where('id' => new_device_id).first
-      new_work = {
-        :id => new_device_id,
-        :title => new_device.title.first,
-        :creator => new_device.creator.first,
-        :modality => new_device.modality.first,
-        :description => new_device.description.first,
-        :organization_institution => organization_institution(new_device_id)
-      }
-    else
-      status = 'FAIL'
-      message = 'There is a problem creating the device. ' + exception_message
-      new_work = {}
-    end
-    response_object = {
-      :work => new_work,
-      :status => status,
-      :message => message
-    }
-    render :json => response_object
-  end
-
-  def new_processing_event_submit
-    # this method is expected to be called from a form in modal, or an ajax post
-    begin
-      new_processing_event_id = prepare_and_create_work('processing_event', { 'processing_event' => params[:processing_event] })[0]
-    rescue Exception => ex
-      new_processing_event_id = nil
-      exception_message = "Exception: #{ex.class}, #{ex.message}"
-    end
-    if new_processing_event_id.present?
-      if params['child_media_id'].present?
-        # update the child media (by setting this PE as a parent)
-        # child < PE < parent
-        child_media_id = params['child_media_id']
-        child_media = Media.find(child_media_id)
-        processing_event = ::ActiveFedora::Base.find(new_processing_event_id)
-        processing_event.ordered_members << child_media
-        processing_event.save!
-        child_media.save!
-        new_processing_event_updates(child_media)
-      end
-      status = 'OK'
-      message = 'New processing_event created'
-      new_processing_event = ProcessingEvent.where('id' => new_processing_event_id).first
-      new_work = {
-        :id => new_processing_event_id,
-        :title => new_processing_event.title.first
-      }
-    else
-      status = 'FAIL'
-      message = 'There is a problem creating the processing_event. ' + exception_message
-      new_work = {}
-    end
-    response_object = {
-      :work => new_work,
-      :status => status,
-      :message => message
-    }
-    render :json => response_object
   end
 
   private
@@ -599,9 +442,12 @@ class SubmissionsController < ApplicationController
         # absentee parent media
         parents = [@submission.imaging_event_id]
       else
-        parents = @submission.parent_media_list.split(',')
+        parents = @submission.parent_media_list&.split(',')
       end
-      model_params = assign_model_params_parents(model_params, parents)
+      # in some cases, parents are provided through another route (ajax manually adds to params)
+      if parents.present?
+        model_params = assign_model_params_parents(model_params, parents)
+      end
       @processing_event_create_params = model_params
 
     when 'media'

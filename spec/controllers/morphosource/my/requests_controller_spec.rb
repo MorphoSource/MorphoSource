@@ -230,6 +230,17 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
       end
     end
+
+    context 'messages do not send' do
+      before do
+        request.env["HTTP_REFERER"] = "original_page"
+        allow(subject).to receive(:send_request_message_to_reviewer).with(any_args).and_raise(NoMethodError)
+        put :request_item, params: { item_id: cartItem3.id, intended_use: ["Intended Use"] }
+      end
+      it 'produces a flash error' do
+        expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.messages.error'))
+      end
+    end
   end
 
   describe "GET #request_again" do
@@ -280,6 +291,18 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it "reloads the page" do
           expect(response).to redirect_to("original_page")
+        end
+      end
+      context 'messages fail to send' do
+        before do
+          allow(subject).to receive(:send_request_message_to_reviewer).with(any_args).and_raise(NoMethodError)
+          cartItem1.date_expired = Date.yesterday
+          cartItem1.save
+          request.env["HTTP_REFERER"] = "original_page"
+          get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"] }
+        end
+        it 'produces a flash error' do
+          expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.messages.error'))
         end
       end
     end
@@ -346,24 +369,47 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
           expect(response).to redirect_to("original_page")
         end
+
+        context 'messages fail to send' do
+          before do
+            allow(subject).to receive(:send_request_message_to_reviewer).with(any_args).and_raise(NoMethodError)
+          end
+          it 'produces a flash error' do
+            get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+            expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.messages.error'))
+          end
+        end
       end
     end
   end
 
   describe "PUT #cancel_request" do
-    before do
-      request.env["HTTP_REFERER"] = "original_page"
-      put :cancel_request, params: { item_id: cartItem1.id }
+    context 'it is successful' do
+      before do
+        request.env["HTTP_REFERER"] = "original_page"
+        put :cancel_request, params: { item_id: cartItem1.id }
+      end
+      it "marks the cart item as canceled" do
+        cartItem1.reload
+        expect(cartItem1.date_canceled.to_date).to eq(Date.today)
+      end
+      it 'creates a new flash message' do
+        expect(response.flash[:notice]).to eq("Request Canceled")
+      end
+      it "reloads the page" do
+        expect(response).to redirect_to("original_page")
+      end
     end
-    it "marks the cart item as canceled" do
-      cartItem1.reload
-      expect(cartItem1.date_canceled.to_date).to eq(Date.today)
-    end
-    it 'creates a new flash message' do
-      expect(response.flash[:notice]).to eq("Request Canceled")
-    end
-    it "reloads the page" do
-      expect(response).to redirect_to("original_page")
+
+    context 'message to reviewer fails to send' do
+      before do
+        allow(subject).to receive(:send_requestor_action_message).with(any_args).and_raise(NoMethodError)
+        request.env["HTTP_REFERER"] = "original_page"
+        put :cancel_request, params: { item_id: cartItem1.id }
+      end
+      it 'produces a flash error' do
+        expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.messages.error'))
+      end
     end
   end
 
@@ -463,6 +509,16 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       it "reloads the page" do
         post :request_work, params: post_params
         expect(response).to redirect_to("original_page")
+      end
+    end
+
+    context 'message to reviewer fails to send' do
+      before do
+        allow(subject).to receive(:send_request_messages).with(any_args).and_raise(NoMethodError)
+        post :request_work, params: post_params
+      end
+      it 'produces a flash error' do
+        expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.messages.error'))
       end
     end
   end

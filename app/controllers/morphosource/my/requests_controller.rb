@@ -32,23 +32,27 @@ module Morphosource
       end
 
       def send_request_messages(items)
-        requestor = current_user
-        # get a list of reviewer id => item, e.g.
-        #   reviewer 1 => item 1, item 2
-        #   reviewer 12 => item 1
-        #   reviewer 23 => item 2
-        # then send message for each reviewer
-        items_reviewers = []
-        reviewer_items = {}
-        items.each do |item|
-          item.reviewers.each do |r_id|
-            (reviewer_items[r_id] ||= []) << item # store the item for sending details
+        begin
+          requestor = current_user
+          # get a list of reviewer id => item, e.g.
+          #   reviewer 1 => item 1, item 2
+          #   reviewer 12 => item 1
+          #   reviewer 23 => item 2
+          # then send message for each reviewer
+          items_reviewers = []
+          reviewer_items = {}
+          items.each do |item|
+            item.reviewers.each do |r_id|
+              (reviewer_items[r_id] ||= []) << item # store the item for sending details
+            end
           end
+          reviewer_items.each do |reviewer_id, items|
+            send_request_message_to_reviewer(reviewer_id, items)
+          end
+          send_request_message_to_requestor(items)
+        rescue
+          flash[:error] = I18n.t('morphosource.dashboard.my.requests.request_item.messages.error')
         end
-        reviewer_items.each do |reviewer_id, items|
-          send_request_message_to_reviewer(reviewer_id, items)
-        end
-        send_request_message_to_requestor(items)
       end
 
       def send_request_message_to_requestor(items)
@@ -100,7 +104,11 @@ module Morphosource
       end
 
       def cancel_request
-        send_requestor_action_message(@items.first, 'canceled')
+        begin
+          send_requestor_action_message(@items.first, 'canceled')
+        rescue
+          flash[:error] = I18n.t('morphosource.dashboard.my.requests.request_item.messages.error')
+        end
         mark_as('canceled')
         flash[:notice] = "Request Canceled"
         redirect_back(fallback_location: my_requests_path)
@@ -130,7 +138,11 @@ module Morphosource
           else
             item = create_new_requested_item(work_id)
           end
-          send_request_messages([item])
+          begin
+            send_request_messages([item])
+          rescue
+            flash[:error] = I18n.t('morphosource.dashboard.my.requests.request_item.messages.error')
+          end
         else
           flash[:alert] = 'You are not authorized to request this work.'
         end

@@ -103,117 +103,120 @@ function setupEmbeddedWorkForm(work_name, action, submit_only, callbackAfterSubm
     $('.btn').addClass('disabled');
 
     // replace with ajax form post to trigger other actions
-    $.post($(this_form).attr('action'),
-    $(this_form).serialize(), function(data, status){
-      // got the data back after the new work has been created
-      //console.log("ms_helper, after post: ", data.message, data);
-      var relationship_element = $(this_div).data("relationship-control");
-      var relationship_input = $(relationship_element).find('input[name*="[find_parent_work]"]');
-      $(relationship_input).val(data.work.id);
-      if (work_name == 'organization') {
-        var new_data = {
-          id: data.work.id,
-          text: data.work.title,
-          organization_type: data.work.organization_type,
-          institution_name: data.work.institution_name,
-          institution_code: data.work.institution_code,
-          collection_code: data.work.collection_code,
-          recordset_id: data.work.recordset_id,
-              description: data.work.description,
-              related_url: data.work.related_url,
-              address: data.work.address,
-              city: data.work.city,
-              state_province: data.work.state_province,
-              postal_code: data.work.postal_code,
-              country: data.work.country,
-              contact_person: data.work.contact_person
-        };
-      } else if (work_name == 'device') {
-        var new_data = {
-          id: data.work.id,
-          text: data.work.title,
-          creator: data.work.creator,
-          modality: data.work.modality,
-          description: data.work.description,
-          organization_institution: data.work.organization_institution
-        };
-      } else if (work_name == 'taxonomy') {
-        var new_data = {
-          id: data.work.id,
-          text: data.work.title,
-          taxonomy_domain: data.work.taxonomy_domain,
-          taxonomy_kingdom: data.work.taxonomy_kingdom,
-          taxonomy_phylum: data.work.taxonomy_phylum,
-          taxonomy_superclass: data.work.taxonomy_superclass,
-          taxonomy_class: data.work.taxonomy_class,
-          taxonomy_subclass: data.work.taxonomy_subclass,
-          taxonomy_superorder: data.work.taxonomy_superorder,
-          taxonomy_order: data.work.taxonomy_order,
-          taxonomy_suborder: data.work.taxonomy_suborder,
-          taxonomy_superfamily: data.work.taxonomy_superfamily,
-          taxonomy_family: data.work.taxonomy_family,
-          taxonomy_subfamily: data.work.taxonomy_subfamily,
-          taxonomy_tribe: data.work.taxonomy_tribe,
-          taxonomy_genus: data.work.taxonomy_genus,
-          taxonomy_subgenus: data.work.taxonomy_subgenus,
-          taxonomy_species: data.work.taxonomy_species,
-          taxonomy_subspecies: data.work.taxonomy_subspecies,
-          depositor: data.work.depositor,
-          depositor_link: depositorLink(data.work.depositor)
+    $.post(
+      $(this_form).attr('action'),
+      $(this_form).serialize(), 
+      function(data) {
+        // got the data back after the new work has been created
+        //console.log("ms_helper, after post: ", data.message, data);
+        var relationship_element = $(this_div).data("relationship-control");
+        var relationship_input = $(relationship_element).find('input[name*="[find_parent_work]"]');
+        $(relationship_input).val(data.work.id);
+        if (work_name == 'organization') {
+          var new_data = {
+            id: data.work.id,
+            text: data.work.title,
+            organization_type: data.work.organization_type,
+            institution_name: data.work.institution_name,
+            institution_code: data.work.institution_code,
+            collection_code: data.work.collection_code,
+            recordset_id: data.work.recordset_id,
+                description: data.work.description,
+                related_url: data.work.related_url,
+                address: data.work.address,
+                city: data.work.city,
+                state_province: data.work.state_province,
+                postal_code: data.work.postal_code,
+                country: data.work.country,
+                contact_person: data.work.contact_person
+          };
+        } else if (work_name == 'device') {
+          var new_data = {
+            id: data.work.id,
+            text: data.work.title,
+            creator: data.work.creator,
+            modality: data.work.modality,
+            description: data.work.description,
+            organization_institution: data.work.organization_institution
+          };
+        } else if (work_name == 'taxonomy') {
+          var new_data = {
+            id: data.work.id,
+            text: data.work.title,
+            taxonomy_domain: data.work.taxonomy_domain,
+            taxonomy_kingdom: data.work.taxonomy_kingdom,
+            taxonomy_phylum: data.work.taxonomy_phylum,
+            taxonomy_superclass: data.work.taxonomy_superclass,
+            taxonomy_class: data.work.taxonomy_class,
+            taxonomy_subclass: data.work.taxonomy_subclass,
+            taxonomy_superorder: data.work.taxonomy_superorder,
+            taxonomy_order: data.work.taxonomy_order,
+            taxonomy_suborder: data.work.taxonomy_suborder,
+            taxonomy_superfamily: data.work.taxonomy_superfamily,
+            taxonomy_family: data.work.taxonomy_family,
+            taxonomy_subfamily: data.work.taxonomy_subfamily,
+            taxonomy_tribe: data.work.taxonomy_tribe,
+            taxonomy_genus: data.work.taxonomy_genus,
+            taxonomy_subgenus: data.work.taxonomy_subgenus,
+            taxonomy_species: data.work.taxonomy_species,
+            taxonomy_subspecies: data.work.taxonomy_subspecies,
+            depositor: data.work.depositor,
+            depositor_link: depositorLink(data.work.depositor)
+          }
+        } else if (work_name == 'biological_specimen') {
+          var new_data = {
+            id: data.work.id,
+            text: data.work.title,
+            bibliographic_citation: data.bibliographic_citation,
+            catalog_number: data.catalog_number,
+            collection_code: data.collection_code,
+            canonical_taxonomy: data.canonical_taxonomy,
+            institution_code: data.institution_code,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            numeric_time: data.numeric_time,
+            original_location: data.original_location,
+            periodic_time: data.periodic_time,
+            vouchered: data.vouchered,
+            idigbio_recordset_id: data.idigbio_recordset_id,
+            idigbio_uuid: data.idigbio_uuid,
+            is_type_specimen: data.is_type_specimen,
+            occurrence_id: data.occurrence_id,
+            sex: data.sex
+          }
+        } else if (work_name == 'cultural_heritage_object') {
+          var new_data = {
+            id: data.work.id,
+            text: data.work.title,
+            bibliographic_citation: data.bibliographic_citation,
+            catalog_number: data.catalog_number,
+            collection_code: data.collection_code,
+            institution_code: data.institution_code,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            numeric_time: data.numeric_time,
+            original_location: data.original_location,
+            periodic_time: data.periodic_time,
+            vouchered: data.vouchered,
+            cho_type: data.cho_type,
+            material: data.material,
+            short_title: data.short_title
+          }
+        } else {
+          var new_data = {
+            id: data.work.id,
+            text: data.work.title
+          };
         }
-      } else if (work_name == 'biological_specimen') {
-        var new_data = {
-          id: data.work.id,
-          text: data.work.title,
-          bibliographic_citation: data.bibliographic_citation,
-          catalog_number: data.catalog_number,
-          collection_code: data.collection_code,
-          canonical_taxonomy: data.canonical_taxonomy,
-          institution_code: data.institution_code,
-          latitude: data.latitude,
-          longitude: data.longitude,
-          numeric_time: data.numeric_time,
-          original_location: data.original_location,
-          periodic_time: data.periodic_time,
-          vouchered: data.vouchered,
-          idigbio_recordset_id: data.idigbio_recordset_id,
-          idigbio_uuid: data.idigbio_uuid,
-          is_type_specimen: data.is_type_specimen,
-          occurrence_id: data.occurrence_id,
-          sex: data.sex
-        }
-      } else if (work_name == 'cultural_heritage_object') {
-        var new_data = {
-          id: data.work.id,
-          text: data.work.title,
-          bibliographic_citation: data.bibliographic_citation,
-          catalog_number: data.catalog_number,
-          collection_code: data.collection_code,
-          institution_code: data.institution_code,
-          latitude: data.latitude,
-          longitude: data.longitude,
-          numeric_time: data.numeric_time,
-          original_location: data.original_location,
-          periodic_time: data.periodic_time,
-          vouchered: data.vouchered,
-          cho_type: data.cho_type,
-          material: data.material,
-          short_title: data.short_title
-        }
-      } else {
-        var new_data = {
-          id: data.work.id,
-          text: data.work.title
-        };
-      }
 
-      if (!submit_only) {
-        console.log('populating new_data into new-work-created ', new_data)
-        $(relationship_element).data('new-work-created', new_data);
-        var relationship_add_btn = $(this_div).data("add-button");
-        $(relationship_add_btn).trigger("click");
+        if (!submit_only) {
+          console.log('populating new_data into new-work-created ', new_data)
+          $(relationship_element).data('new-work-created', new_data);
+          var relationship_add_btn = $(this_div).data("add-button");
+          $(relationship_add_btn).trigger("click");
+        }
       }
-
+    ).always(function() {
       // perform any on-the-fly form update after new work has been created
       if(callbackAfterSubmit) callbackAfterSubmit();
 

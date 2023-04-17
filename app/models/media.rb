@@ -34,7 +34,6 @@ class Media < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
-
   def self.parent_works(work)
     if work.in_works.empty?
       return []
@@ -60,6 +59,20 @@ class Media < Morphosource::Works::Base
     self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
   end
 
+  # Generate a formatted Media work title from work attributes, using part, media_type, and modality
+  #
+  # @return [String] formatted title
+  def generate_title_from_attributes
+    parts = part.presence || ['Element unspecified']
+    media_type_first = media_type&.first.presence || ''
+    modality_abbrevs = (imaging_event&.ie_modality || []).
+      map { |m| Morphosource::ModalitiesService.abbreviation(m) }
+
+    parts.sort.join(', ').titleize +
+      (media_type_first.presence ? ' [' + media_type_first.to_s + ']' : '') +
+      (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : ' [Etc]')
+  end
+
   def human_readable_media_type
     case media_type.first
     when "CTImageSeries"
@@ -72,46 +85,7 @@ class Media < Morphosource::Works::Base
   end
 
   def modality
-    case imaging_event&.ie_modality&.first
-    when "MicroNanoXRayComputedTomography"
-      "X-Ray Computed Tomography (CT/microCT)"
-    when "MagneticResonanceImaging"
-      "Magnetic Resonance Imaging (MRI)"
-    when "PositronEmissionTomography"
-      "Positron Emission Tomography (PET)"
-    when "SinglePhotonEmissionComputedTomography"
-      "Single Photon Emission Computed Tomography (SPECT)"
-    when "NeutronComputedTomography"
-      "Neutron Computed Tomography (NCT)"
-    when "SynchrotronImaging"
-      "Synchrotron Imaging"
-    when "Photogrammetry"
-      "Photogrammetry"
-    when "StructuredLight"
-      "Structured Light"
-    when "LaserScan"
-      "Laser Scan"
-    when "ConfocalImageStacking"
-      "Confocal Image Stacking"
-    when "Infrared"
-      "Infrared"
-    when "ReflectanceTransformationImaging"
-      "Reflectance Transformation Imaging"
-    when "Photography"
-      "Photography"
-    when "ScanningElectronMicroscopy"
-      "Scanning Electron Microscopy"
-    when "BornDigital"
-      "Born Digital"
-    when "XRay"
-      "X-Ray"
-    when "LaserAidedProfiling"
-      "Laser Aided Profiling"
-    when "Video"
-      "Video"
-    else
-      imaging_event&.ie_modality&.first
-    end
+    Morphosource::ModalitiesService.label(imaging_event&.ie_modality&.first) || ""
   end
 
   # array of all visibilities that apply to the file sets of a Media work
@@ -148,6 +122,10 @@ class Media < Morphosource::Works::Base
     return true if fileset_accessibility.first.blank?
     false
   end
+
+  #
+  # Methods for related works and related work attributes
+  #
 
   def specimens
     physical_objects.select(&:specimen?)
@@ -264,6 +242,10 @@ class Media < Morphosource::Works::Base
     taxonomies.map{ |t| t.title.first }
   end
 
+  #
+  # Collection membership methods
+  #
+
   def member_of_teams
     member_of_collections.select { |c| c.team? }
   end
@@ -295,6 +277,10 @@ class Media < Morphosource::Works::Base
   def member_of_sequential_section_list_ids
     member_of_sequential_section_lists.map(&:id)
   end
+
+  #
+  # Persistent identifier methods
+  #
 
   def ark_resource_type
     # Valid ARK resource types:
@@ -393,6 +379,10 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  #
+  # Methods for persisting and monitoring save around work updates
+  #
+
   def record_original_member_of_public_collection_ids
     @original_member_of_public_collection_ids = member_of_public_collection_ids
   end
@@ -409,7 +399,9 @@ class Media < Morphosource::Works::Base
     @original_related_media_ids.sort != related_media_ids.sort
   end
 
+  #
   # Fund Code Methods
+  #
 
   def fund_code_associations
     FundCodeMediaAssociation
@@ -448,7 +440,10 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  #
   # Temporary View Access Link methods
+  #
+
   def temporary_links
     TemporaryMediaAccessLink.where(media_id: id)
   end
@@ -456,6 +451,10 @@ class Media < Morphosource::Works::Base
   def active_temporary_links
     temporary_links.where('expires_at > ?', DateTime.now)
   end
+
+  #
+  # Organization media transfer
+  #
 
   # Create request to transfer ownership of media and/or move media to organization team
   # generally, don't use this for where media data manager == org data manager,

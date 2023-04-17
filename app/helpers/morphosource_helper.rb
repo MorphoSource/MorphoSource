@@ -283,60 +283,6 @@ module MorphosourceHelper
     Hyrax::PermissionBadge.new(value).render
   end
 
-  def generated_media_title(part, media_type, ie_modality)
-    # id will be added by add_id_to_title in Media model
-    parts = part.presence || ['Element unspecified']
-    media_type = media_type&.first.presence || ''
-    modality_abbrevs = ie_modality.map { |m| modality_abbrev(m) }
-    title = parts.sort.join(', ').titleize + (media_type.presence ? ' [' + media_type.to_s + ']' : '') + (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : ' [Etc]')
-    title
-  end
-
-  def modality_abbrev(m)
-    case m
-    when 'MicroNanoXRayComputedTomography'
-      'CT'
-    when 'MagneticResonanceImaging'
-      'MRI'
-    when 'PositronEmissionTomography'
-      'PET'
-    when 'SinglePhotonEmissionComputedTomography'
-      'SPECT'
-    when 'NeutronComputedTomography'
-      'NCT'
-    when 'SynchrotronImaging'
-      'Synchro'
-    when 'NeutrinoImaging'
-      'Neutrino'
-    when 'Photogrammetry'
-      'Photogram'
-    when 'StructuredLight'
-      'StrLight'
-    when 'LaserScan'
-      'Laser'
-    when 'ConfocalImageStacking'
-      'Confocal'
-    when 'Infrared'
-      'Infrared'
-    when 'ReflectanceTransformationImaging'
-      'RTI'
-    when 'Photography'
-      'Photo'
-    when 'ScanningElectronMicroscopy'
-      'SEM'
-    when 'BornDigital'
-      'BD'
-    when 'XRay'
-      'XRay'
-    when 'LaserAidedProfiling'
-      'LAP'
-    when 'Video'
-      'Video'
-    else
-      'Etc'
-    end
-  end
-
   def organization_institution(id)
       # get the device organization title and institution name for a device
       organization_institution = ''

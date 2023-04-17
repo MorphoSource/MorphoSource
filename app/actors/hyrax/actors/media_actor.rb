@@ -36,9 +36,9 @@ module Hyrax
         end
 
         if attrs.key?('media_type')
-          media_type = attrs['media_type'].presence || ''
+          media_type = attrs['media_type']&.first.presence || ''
         else
-          media_type = env.curation_concern.media_type.presence || ''
+          media_type = env.curation_concern.media_type&.first.presence || ''
         end
 
         # get the modality from the parent imaging event
@@ -63,21 +63,16 @@ module Hyrax
           ie_modality = []
         end
 
-        # MorphosourceHelper's generated_media_title method is shared by different actors
-        # (e.g. media actor, IE actor)
-        updated_title = generated_media_title(part, media_type, ie_modality)
-        updated_title
+        # Final formatting and backup values
+        parts = part.presence || ['Element unspecified']
+        modality_abbrevs = ie_modality.map { |m| Morphosource::ModalitiesService.abbreviation(m) }
+
+        parts.sort.join(', ').titleize +
+          (media_type.presence ? ' [' + media_type.to_s + ']' : '') +
+          (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : ' [Etc]')
       end
 
       private
-
-      def generated_title_parts(attrs)
-        attrs['part'].sort.join(', ').titleize
-      end
-
-      def modalities_service
-        @modalities_service ||= Morphosource::ModalitiesService.new
-      end
 
       def add_team_access(env)
         return unless env.attributes[:work_parents_attributes] && env.attributes[:work_parents_attributes].present?

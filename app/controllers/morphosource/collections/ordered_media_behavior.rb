@@ -55,27 +55,20 @@ module Morphosource
         Array((low_index..high_index))
       end
 
-      # called from media list controller if @collection.ordered_media is present
-      # adds position to each of the media docs
+      # Sorts list of solr documents (for media list show page, for example)
       def sort_document_list(document_list)
+        if @collection.ordered_media.present? && !params["sort"].present?
+          # Order based on .ordered_media
+          # May only partly overlap with document_list, may contain additional media or not have all media
+          uniq_ordered_media = @collection.ordered_media.first.split(",").uniq
+          docs_hash = document_list.compact.map { |doc| [doc.id, doc] }.to_h
+          sortable = docs_hash.extract! *uniq_ordered_media
+          sorted = sortable.sort_by { |id, doc| uniq_ordered_media.index(id) }.to_h
+          document_list = sorted.values + docs_hash.values
+        end
+
         page = params["page"].present? ? params["page"].to_i : 1
         per = params["per_page"].present? ? params["per_page"].to_i : @blacklight_config.default_solr_params[:rows]
-        @collection.ordered_media.first.split(",").each_with_index do |id, index|
-          doc = document_list.find {|x| x['id'] == id }
-          if doc.nil?
-            next
-          else
-            # Blacklight::Document#[]= is deprecated; using obj.to_h.[]= instead.
-            new_doc = doc.dup.to_h
-            new_doc["position"] = index + 1
-            document_list[document_list.index(doc)] = SolrDocument.new(new_doc)
-          end
-        end
-        # if the user is sorting by a column value, use that. Otherwise, sort on position.
-        unless params["sort"].present?
-          document_list.sort_by! { |doc| doc["position"] || 999999 }
-        end
-        # Paginate document list
         Kaminari.paginate_array(document_list, total_count: document_list.count).page(page).per(per)
       end
 

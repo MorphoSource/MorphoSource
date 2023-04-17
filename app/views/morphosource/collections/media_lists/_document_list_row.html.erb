@@ -1,31 +1,69 @@
-<tr id="document_<%= document.id %>">
-  <td class="checkbox" data-behavior="batch-add-button">
-    <%= check_box_tag "batch_work_ids[]", document.id, false, class:"batch_add_selector", id: "batch_work_#{document.id}" %>
-    <%= check_box_tag "batch_document_ids[]", document.id, false, class:"batch_document_selector hidden", id: "batch_document_#{document.id}" %>
-  </td>
-  <td class='handle' style="max-width: 30px;"><%= document["position"] %></td>
+<tr 
+  id="document_<%= document.id %>" 
+  class="
+    <%= @hide_viewer ? "" : "previewable" %> 
+    <%= (@preview_document_id && @preview_document_id == document.id) ? "view-active" : "" %>
+  " 
+  data-document-id="<%= document.id %>" 
+  data-collection-id="<%= @collection.id %>"
+>
   <td>
-    <div class="media">
-      <%= link_to [main_app, document], target: :_blank, class: "media-left" do %>
-        <%= render_thumbnail_tag document, { class: "file_listing_thumbnail" }, { suppress_link: true } %>
+    <div class="document-row-interact-panel">
+      <span class="interact-item"><%= document_counter + 1 + (@response&.offset_value || 0) %>.</span>
+      <div class="checkbox" data-behavior="batch-add-button">
+        <%= check_box_tag "batch_work_ids[]", document.id, false, class: "batch_add_selector interact-item", id: "batch_work_#{document.id}" %>
+        <%= check_box_tag "batch_document_ids[]", document.id, false, class: "batch_document_selector hidden", id: "batch_document_#{document.id}" %>
+      </div>
+      <% if @can_edit %>
+        <i 
+          class="fa fa-solid fa-bars sort-handle interact-item"
+          title="<%= t("morphosource.collection.actions.order_member.handle.title") %>"
+        ></i>
+        <%= 
+          link_to main_app.collection_remove_member_path(@collection, member_id: document.id), 
+          method: :post,
+          class: "interact-item media-list-remove-member",
+          title: t("morphosource.collection.actions.remove_member.title", collection_type: "media list"),
+          data: {
+            confirm_text: t("morphosource.collection.actions.remove_member.confirm", collection_type: "media list")
+          } do 
+        %>
+          <i class="fa fa-solid fa-trash"></i>
+        <% end %>
       <% end %>
-      <%# div class="media-body">
-        <p class="media-heading">
-          <strong><%= link_to document.title_or_label, [main_app, document], id: "src_copy_link#{id}", class: "#{'document-title' if document.title_or_label == document.label}" % ></strong>
-        </p>
-        <%= render_collection_links(document) % >
-      </div %>
     </div>
   </td>
-  <td><%= document.id %></td>
+  <td>
+    <div class="media">
+      <%= link_to [main_app, document], target: :_blank do %>
+        <%= render_thumbnail_tag document, { class: "file_listing_thumbnail" }, { suppress_link: true } %>
+        <div><%= document.id %></div>
+      <% end %>
+      <div>
+        <%= document["human_readable_media_type_tesim"]&.first %>
+      </div>
+    </div>
+  </td>
   <td><%= document.part&.first %></td>
   <td class="break-all"><%= document["physical_object_title_ssim"]&.first %></td>
   <td><i><%= document["taxonomy_ssim"]&.first %></i></td>
   <td><%= document["human_readable_media_type_tesim"]&.first %></td>
   <td><%= document.date_uploaded %></td>
   <td class='long-badge'><%= render_publication_status_badge(document) %></td>
-  <td class="text-center">
-      &nbsp;
+  <td class="view-column">
+    <div class="view-label">
+      <% if @hide_viewer %>
+        <%= 
+          link_to "View", 
+            url_for(request.params.merge(view: document.id)),
+            class: "view-media btn btn-sm btn-default"
+        %>
+      <% else %>
+        <div class="view-media dynamic btn btn-sm btn-default">View</div>
+        <div class="currently-viewing hide">
+          Currently Viewing
+        </div>
+      <% end %>
+    </div>
   </td>
-
 </tr>

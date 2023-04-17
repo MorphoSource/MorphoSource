@@ -6,7 +6,7 @@ provide :page_title, construct_page_title(@presenter.title)
 %>
 <%= render '/flash_msg' %>
 
-<div class="hyc-container" style="margin-top: 10px;" itemscope itemtype="http://schema.org/CollectionPage">
+<div class="hyc-container collection-page" style="margin-top: 10px;" data-collection-id="<%= @presenter.id %>" itemscope itemtype="http://schema.org/CollectionPage">
   <div class="hyc-header">
     <% unless @presenter.banner_file.blank? %>
         <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
@@ -15,9 +15,9 @@ provide :page_title, construct_page_title(@presenter.title)
     <% end %>
   </div>
 
-  <div class="row team-header">
+  <div class="row collection-header">
     <div class="col-xs-12 col-sm-8 col-md-8 title-wrapper">
-      <div class="col-sm-12 col-md-12 flex">
+      <div class="col-sm-12 col-md-12 flex title-content">
         <div class="team-logo">
           <% unless @presenter.logo_record.blank? %>
             <% lr = @presenter.logo_record.first %>
@@ -59,6 +59,13 @@ provide :page_title, construct_page_title(@presenter.title)
     </div>
   </div><!-- /row -->
 
+  <!-- Collection description -->
+  <% if @presenter.description.present? %>
+    <div class="row mb-1">
+      <p><%= @presenter.description&.first %></p>
+    </div>
+  <% end %>
+
   <!-- Subcollections -->
   <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>
       <div class="hyc-blacklight hyc-bl-title">
@@ -75,7 +82,7 @@ provide :page_title, construct_page_title(@presenter.title)
     <!-- Tab panes -->
     <!-- <div class="tab-content"> -->
 
-      <div class="panel-body">
+      <div class="collection panel-body">
         <%= render 'search_header' %>
         <%= render_document_index %>
         <%# <%= render 'document_list' %>

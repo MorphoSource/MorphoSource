@@ -250,98 +250,13 @@ html {
     }
   }
 
-  .team-header {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    margin-right: 0px;
-
-    @media (max-width: 767px) {
-      flex-wrap: wrap;
-
-      .title-wrapper {
-        width: 100%;
-      }
-
-      .btn-wrapper {
-        max-width: 100% !important;
-      }
-
-      .collection-manage-buttons {
-        width: 100% !important;
-        justify-content: space-around !important;
-        margin: 0px !important;
-      }
-
-      .collection-manage-button-wrapper {
-        width: 30%;
-      }
-
-      .btn {
-        width: 100% !important;
-        font-size: 14px !important;
-        margin: 0px !important;
-      }
-
-      .dropdown-menu {
-        left: 0px;
-      }
-
-      li {
-        margin: 0px !important;
-      }
-    }
-
-    .title-wrapper {
-      min-width: 67%;
-      flex-grow: 1;
-    }
-
-    .btn-wrapper {
-      max-width: 225px;
-      flex-grow: 0;
-    }
-
-    .collection-manage-buttons {
-      display: flex;
-      width: 225px;
-      flex-grow: 0;
-      justify-content: end;
-
-      .dropdown-menu {
-        min-width: 320px !important;
-        right: 0px !important;
-        top: unset !important;
-
-        .btn {
-          width: 100%;
-          text-align: left;
-          padding: 5px 5px 5px 10px;
-        }
-
-        .btn:hover {
-          color: $button-hover-font-color;
-          background-color: $button-hover-color;
-          border-color: $button-hover-border-color;
-        }
-      }
-
-      .btn {
-        width: 75px;
-        border-radius: 3px;
-        margin-left: 3px;
-        font-size: 14px;
-      }
-    }
-  }
-
   .team-logo img {
     width: 60px;
     margin-right:16px;
     margin-bottom: 8px;
   }
-  .team-title {
 
+  .team-title {
     .label, td.status span {
       display: inline;
       padding: .2em .6em .3em;
@@ -354,7 +269,6 @@ html {
       vertical-align: middle;
       border-radius: 0;
     }
-
   }
 
   h1 {
@@ -529,7 +443,7 @@ html {
   }
 
   .batch-action-buttons {
-    .btn {
+    .btn, .text {
       margin-right: 4px;
       font-size: 11px;
     }
@@ -537,10 +451,10 @@ html {
   }
   @media (max-width: 768px) {
     .batch-action-buttons {
-      .btn, form {
+      .btn, .text, form {
         width: 100%;
       }
-      .btn {
+      .btn, .text {
         margin: 0 0 3px;
       }
     }
@@ -831,21 +745,23 @@ html {
     border-bottom: 1px solid $line-inactive-color;
     li {
       border-bottom: 3px solid transparent;
-      a, a:hover {
-        border-top: none;
-      }
     }
     li.active {
       border-bottom: 3px solid $line-color;
       a, a:hover {
         margin-right: 0;
-        border-top: none;
       }
     }
   }
 
 
-  .panel-default {border: none;}
+  .panel-default {
+    border: none;
+  }
+
+  .panel-body {
+    padding: 15px;
+  }
 
   .edit_media .panel {
     margin-bottom: 0 !important;

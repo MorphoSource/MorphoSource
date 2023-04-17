@@ -1,23 +1,25 @@
 <div class="hyc-blacklight hyc-bl-pager">
-  <div class="row record-padding paginate-wrapper ms-works-pagination-wrapper">
-    <div class="col-md-12 col-lg-2">
-      <%= render 'shared/lists/rows_per_page' %>
-    </div>
-    <div class="col-md-12 col-lg-2">
-      <% if @response.docs.count == 0 %>
+  <div class="record-padding paginate-wrapper ms-works-pagination-wrapper">
+    <% if @response.docs.count == 0 %>
+      <div class="col-xs-12">
         <div class="row">
           <div class="no-result">
-            No matching records found.
+            No records found.
           </div>
         </div>
-      <% else %>
+      </div>
+    <% else %>
+      <div class="per-page-container">
+        <%= render 'shared/lists/rows_per_page' %>
+      </div>
+      <div class="showing-container">
         <div>Showing <%= page_entries_info @response %></div>
-      <% end %>
-    </div>
-    <div class="col-md-12 col-lg-8">
-      <% if @response.total_pages > 1 %>
-        <%= paginate @response, outer_window: 2, theme: 'blacklight', route_set: main_app %>
-      <% end %>
-    </div>
+      </div>
+      <div class="pagination-container <%= @response.total_pages == 1 ? "hide" : "" %>">
+        <% if @response.total_pages > 1 %>
+          <%= paginate @response, outer_window: 2, theme: 'blacklight', route_set: main_app %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </div>

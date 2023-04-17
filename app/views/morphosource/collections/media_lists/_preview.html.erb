@@ -1,0 +1,27 @@
+<div 
+  class="preview-container" 
+  data-media-id="<%= @media_presenter&.id %>"
+  data-media-title="<%= @media_presenter&.title&.first %>"
+>
+  <% if @media_presenter %>
+    <%= render 'representative_media', presenter: @media_presenter %>
+  <% else %>
+    <div class="viewer-wrapper">
+      <div class="viewer">
+        <div class="not-ready not-loaded">
+          <% if @document_list.present? && @document_list&.first&.id.present? %>
+            <div class="load-instructions-container">
+              <div class="view-initial-media btn btn-sm btn-default mb-1">
+                Load first media
+              </div>
+              <div class="mb-1">- or -</div>
+              <div>Select media from list</div>
+            </div>
+          <% else %>
+            <div>Viewer is not loaded. No media found.</div>
+          <% end %>
+        </div>
+      </div>
+    </div>    
+  <% end %>
+</div>

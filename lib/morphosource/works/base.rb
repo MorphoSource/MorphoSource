@@ -29,6 +29,15 @@ module Morphosource
         Morphosource::SolrService.new.get_docs("#{Solrizer.solr_name('has_model', :symbol)}:#{name}")
       end
 
+      # Determine if work already exists that matches provided conditions.
+      # Faster than ActiveFedora::Base.exists? for String ID by bypassing ActiveFedora::Base.find().
+      # @param [ActiveFedora::Base, String, Hash] object, id or hash of conditions
+      # @return [Boolean] true if object having the id or matching the conditions exists in the repository
+      def self.exists?(conditions)
+        conditions = { id: conditions } if conditions.is_a? String
+        super(conditions)
+      end
+
       def descendants
         @descendants = ActiveFedora::Base.find(member_ids)
         get_all_children(@descendants)

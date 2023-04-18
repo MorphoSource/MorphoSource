@@ -744,6 +744,20 @@ namespace :morphosource do
     puts "\nTotal imaging event count: #{ie_total}" if report_only
   end
 
+  desc "Verify remote backed media files"
+  task :verify_remote_backed_media => :environment do 
+
+    output = []
+    # loop
+      m = Media.find('000200066')
+      rfi = Morphosource::RemoteFileVerificationService.call(m)
+      if rfi.present?
+        output << "media: #{m.id}, url: #{m.remote_origin_url}, message: #{rfi.message}" 
+      end
+    # end
+    puts output
+  end
+
   desc "Update specimens from IDigbio"
   task :update_bso_from_idigbio, [:update, :project_id] => :environment do |task, args|
     log_file = 'log/idigbio_update_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'

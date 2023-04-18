@@ -47,6 +47,7 @@ module Hyrax
     #
     # @return [Hash] a Ruby hash representation of a IIIF manifest document
     def manifest_for(presenter:)
+      byebug
       sanitized_manifest(presenter: presenter)
     end
 

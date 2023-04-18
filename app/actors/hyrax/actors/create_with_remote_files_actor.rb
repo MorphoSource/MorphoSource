@@ -14,6 +14,7 @@ module Hyrax
       def create(env)
         remote_files = env.attributes.delete(:remote_files)
         # set file attributes for remote backed media
+        # byebug
         if env.curation_concern.media? && env.attributes["remote_origin_url"]&.present?
           remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"])
         end
@@ -36,6 +37,7 @@ module Hyrax
       private
 
         def remote_files_from_remote_origin_url(u)
+          # byebug
           uri = URI.parse(u)
           remote_files = [{:url => u, :file_name => File.basename(uri.path)}]
         end
@@ -46,6 +48,9 @@ module Hyrax
 
         # @param uri [URI] the uri fo the resource to import
         def validate_remote_url(uri)
+          # byebug
+          return true
+
           if uri.scheme == 'file'
             path = File.absolute_path(CGI.unescape(uri.path))
             whitelisted_ingest_dirs.any? do |dir|
@@ -61,6 +66,7 @@ module Hyrax
         # @param [HashWithIndifferentAccess] remote_files
         # @return [TrueClass]
         def attach_files(env, remote_files)
+          # byebug
           return true unless remote_files.present?
           remote_files.each do |file_info|
             next if file_info.blank? || file_info[:url].blank?
@@ -71,6 +77,7 @@ module Hyrax
               return false
             end
             auth_header = file_info.fetch(:auth_header, {})
+            byebug
             create_file_from_url(env, uri, file_info[:file_name], auth_header)
           end
           true
@@ -79,12 +86,14 @@ module Hyrax
         # Generic utility for creating FileSet from a URL
         # Used in to import files using URLs from a file picker like browse_everything
         def create_file_from_url(env, uri, file_name, auth_header = {})
+        byebug
           import_url = URI.decode_www_form_component(uri.to_s)
           ::FileSet.new(import_url: import_url, label: file_name) do |fs|
             actor = Hyrax::Actors::FileSetActor.new(fs, env.user)
             actor.create_metadata(visibility: env.curation_concern.visibility)
             actor.attach_to_work(env.curation_concern)
             fs.save!
+            byebug
             if uri.scheme == 'file'
               # Turn any %20 into spaces.
               file_path = CGI.unescape(uri.path)

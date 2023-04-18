@@ -74,12 +74,12 @@ Hyrax.config do |config|
   config.ms_init_usr = Morphosource.ms_init_usr
   # Set by ENV["MS_INIT_PW"]
   config.ms_init_pw = Morphosource.ms_init_pw
-  
+
   # Email message sender (for download review notifications, contributor app responses, etc.)
   # Rake task create_production_users will create a user account corresponding to this email
   config.contact_email = ENV['CONTACT_EMAIL'] || "do.not.reply@morphosource.org"
 
-  # Email address for overriding all mail recipients when sending emails from actionmailer 
+  # Email address for overriding all mail recipients when sending emails from actionmailer
   # (for receiving emails in dev / local test environments)
   config.override_mail_recipient = ENV['OVERRIDE_MAIL_RECIPIENT'] || ""
 
@@ -155,7 +155,7 @@ Hyrax.config do |config|
 
   # Path to where derivative generation tmp files should be placed (temporary method)
   config.derivatives_tmp_path = ENV.fetch("DERIVATIVES_TMP_PATH", Rails.root.join("tmp"))
-  
+
   # directory path for finding MS1 dropbox user folders
   config.sftp_share_root = ENV['SFTP_SHARE_ROOT']
 
@@ -378,8 +378,8 @@ Hyrax.config do |config|
   config.index_related_works = true
 
   # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
-  config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil) 
-  config.unused_storage_fund_code_id = ENV.fetch('UNUSED_STORAGE_FUND_CODE_ID', Rails.env.production? ? 18 : nil) 
+  config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil)
+  config.unused_storage_fund_code_id = ENV.fetch('UNUSED_STORAGE_FUND_CODE_ID', Rails.env.production? ? 18 : nil)
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

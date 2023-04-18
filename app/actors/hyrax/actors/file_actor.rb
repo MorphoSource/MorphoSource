@@ -9,6 +9,7 @@ module Hyrax
       # @param [Symbol, #to_sym] relation the type/use for the file
       # @param [User] user the user to record as the Agent acting upon the file
       def initialize(file_set, relation, user)
+        byebug
         @file_set = file_set
         @relation = relation.to_sym
         @user = user
@@ -22,9 +23,9 @@ module Hyrax
       # @todo create a job to monitor the temp directory (or in a multi-worker system, directories!) to prune old files that have made it into the repo
       def ingest_file(io)
         # Skip versioning because versions will be minted by VersionCommitter as necessary during save_characterize_and_record_committer.
-
+        byebug
         if file_set.is_remote_backed?
-          Rails.logger.debug "in FileActor: media is_remote_backed, calling AddExternalFileToFileSet..."          
+          Rails.logger.debug "in FileActor: media is_remote_backed, calling AddExternalFileToFileSet..."
           Hydra::Works::AddExternalFileToFileSet.call(file_set,
                                             file_set.import_url,
                                             relation,

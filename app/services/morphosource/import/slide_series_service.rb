@@ -68,15 +68,16 @@ module Morphosource
       end
 
       def create_new_media
-        byebug
-        media =  Media.create(date_created: @slide.date_created,
-                                  date_uploaded: Date.today,
+        # byebug
+        remote_origin_url = "https://iiif.mcz.harvard.edu/iiif/3/1485160/full/max/0/default.jpg"
+        attributes = ( { date_created: @slide.date_created,
                                   depositor: @manager.user_key,
                                   description: @slide.description,
                                   fileset_accessibility: @slide.fileset_accessibility,
                                   identifier: @slide.identifier,
-                                  import_url: @slide.import_url,
+                                  # import_url: @slide.import_url,
                                   # import_url: "http://iiif.mcz.harvard.edu/iiif/3/specialcollections%2FNorthcuttSlides%2F1014PLACE3961.tif/full/100,/270/default.png",
+                                  remote_origin_url: remote_origin_url,
                                   license: @slide.license,
                                   media_type: ["Image"],
                                   orientation: @slide.orientation,
@@ -91,10 +92,21 @@ module Morphosource
                                   visibility: @slide.visibility,
                                   x_spacing: @slide.x_spacing,
                                   y_spacing: @slide.y_spacing,
-                                  z_spacing: @slide.z_spacing)
+                                  z_spacing: @slide.z_spacing,
+                                  remote_files: { url: "#{remote_origin_url}", file_name: File.basename(remote_origin_url) } } )
 
-        Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(Media.new, ::Ability.new(@admin), media.attributes))
+        media = Media.new
+        Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(media, ::Ability.new(@admin), attributes))
+        byebug
         media.reload
+      end
+
+      def create_media(attributes_for_actor)
+        # TODO: Refactor this to rely on appropriate model methods and not submissions controller
+        # curation_concern = Media.new
+        env = Hyrax::Actors::Environment.new(Media.new, current_ability, attributes_for_actor)
+        Hyrax::CurationConcern.actor.create(env)
+        return curation_concern.id, curation_concern
       end
 
       def add_media_to_imaging_event
@@ -103,19 +115,19 @@ module Morphosource
       end
 
       def add_fileset_and_file
-        name = @slide.file_name
-        file_set = FileSet.create(title: [name], label: name)
-        @media.ordered_members << file_set
-        file = Tempfile.new(name)
-        Hydra::Works::AddFileToFileSet.call(file_set, file, :original_file, update_existing: true, versioning: true)
+        # name = @slide.file_name
+        # file_set = FileSet.create(title: [name], label: name)
+        # @media.ordered_members << file_set
+        # file = Tempfile.new(name)
+        # Hydra::Works::AddFileToFileSet.call(file_set, file, :original_file, update_existing: true, versioning: true)
       end
 
       def characterize_file
-        file = @media.file_sets.first.original_file
-        @slide.file_characterization_methods.each do |method|
-          file.send(method+'=', @slide.send(method))
-        end
-        file.save!
+        # file = @media.file_sets.first.original_file
+        # @slide.file_characterization_methods.each do |method|
+        #   file.send(method+'=', @slide.send(method))
+        # end
+        # file.save!
       end
 
       def add_to_collection_and_save

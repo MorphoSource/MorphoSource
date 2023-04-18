@@ -45,7 +45,7 @@
 
   <div class="viewer-wrapper-2d">
     <div class="viewer">
-      <% if presenter.present? %>
+      <% if presenter.universal_viewable_ready? %>
         <div class="image-wrapper"><%= render_thumbnail_tag(presenter, {}, {suppress_link:true}) %></div>
       <% end %>
       <div class="not-ready"><%= error_msg %></div>

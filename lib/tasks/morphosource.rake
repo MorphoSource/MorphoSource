@@ -746,15 +746,17 @@ namespace :morphosource do
 
   desc "Verify remote backed media files"
   task :verify_remote_backed_media => :environment do 
-
     output = []
-    # loop
-      m = Media.find('000200066')
+    qry = "has_model_ssim:Media AND remote_origin_url_tesim:*"
+    media_solr = ActiveFedora::SolrService.query(qry, rows: 999999)
+    puts "Number of media with remote_origin_url: #{media_solr.count}"
+    media_solr.each do |hit|
+      m = Media.find(hit.id)
       rfi = Morphosource::RemoteFileVerificationService.call(m)
       if rfi.present?
         output << "media: #{m.id}, url: #{m.remote_origin_url}, message: #{rfi.message}" 
       end
-    # end
+    end
     puts output
   end
 

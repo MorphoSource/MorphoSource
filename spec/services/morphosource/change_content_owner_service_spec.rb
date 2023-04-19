@@ -15,8 +15,8 @@ RSpec.describe Morphosource::ChangeContentOwnerService do
       before do
         media.ordered_members << file_set
         media.edit_users = [depositor]
-        InheritPermissionsJob.perform_now(media)
         media.save!
+        InheritPermissionsJob.perform_now(media.id)
         file_set.reload
       end
       context 'reset == "true"' do
@@ -58,8 +58,8 @@ RSpec.describe Morphosource::ChangeContentOwnerService do
       before do
         media.ordered_members << file_set
         media.edit_users = [depositor, old_owner]
-        InheritPermissionsJob.perform_now(media)
         media.save!
+        InheritPermissionsJob.perform_now(media.id)
         file_set.reload
       end
       context 'reset == "true"' do

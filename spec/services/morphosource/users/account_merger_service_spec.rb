@@ -84,7 +84,7 @@ RSpec.describe Morphosource::Users::AccountMergerService do
       media4.ordered_members << file_set4
       media5.ordered_members << file_set5
       [media1, media2, media3, media4, media5].each(&:save!)
-      media.each { |m| InheritPermissionsJob.perform_now(m) }
+      media.each { |m| InheritPermissionsJob.perform_now(m.id) }
       subject
       works.each(&:reload)
     end

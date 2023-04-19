@@ -146,7 +146,7 @@ class Media < Morphosource::Works::Base
         file_set.save! if save_file_set
       end
 
-      InheritPermissionsJob.perform_later(self) if save_media
+      InheritPermissionsJob.perform_later(id) if save_media
     else
       raise ValueError "No publication status ID #{status} found in publication statuses authority"
     end

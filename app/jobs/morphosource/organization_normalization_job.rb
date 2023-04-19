@@ -112,7 +112,7 @@ module Morphosource
       @media.member_of_collections += [@team]
       Hyrax::PermissionTemplateApplicator.apply(@team.permission_template).to(model: @media)
       @media.save!
-      InheritPermissionsJob.perform_later(@media)
+      InheritPermissionsJob.perform_later(@media.id)
     end
   end
 end

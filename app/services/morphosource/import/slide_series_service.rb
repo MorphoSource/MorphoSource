@@ -115,11 +115,11 @@ module Morphosource
       end
 
       def add_fileset_and_file
-        # name = @slide.file_name
-        # file_set = FileSet.create(title: [name], label: name)
-        # @media.ordered_members << file_set
-        # file = Tempfile.new(name)
-        # Hydra::Works::AddFileToFileSet.call(file_set, file, :original_file, update_existing: true, versioning: true)
+        name = @slide.file_name
+        file_set = FileSet.create(title: [name], label: name)
+        @media.ordered_members << file_set
+        file = Tempfile.new(name)
+        Hydra::Works::AddExternalFileToFileSet.call(file_set, file_set.import_url, :original_file, update_existing: true, versioning: true)
       end
 
       def characterize_file

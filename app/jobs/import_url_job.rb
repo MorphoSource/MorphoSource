@@ -8,7 +8,7 @@ require 'browse_everything/retriever'
 # and CreateWithRemoteFilesActor when files are located in some other service.
 class ImportUrlJob < Hyrax::ApplicationJob
   include MorphosourceHelper
-  
+
   queue_as Hyrax.config.ingest_queue_name
   attr_reader :file_set, :operation
 
@@ -46,12 +46,14 @@ class ImportUrlJob < Hyrax::ApplicationJob
         return false
       end
     end
-
+    byebug
     # @todo Use Hydra::Works::AddExternalFileToFileSet instead of manually
     #       copying the file here. This will be gnarly.
     copy_remote_file(uri, name, headers) do |f|
       # reload the FileSet once the data is copied since this is a long running task
+      byebug
       file_set.reload
+      byebug
       # FileSetActor operates synchronously so that this tempfile is available.
       # If asynchronous, the job might be invoked on a machine that did not have this temp file on its file system!
       # NOTE: The return status may be successful even if the content never attaches.
@@ -80,7 +82,9 @@ class ImportUrlJob < Hyrax::ApplicationJob
           if file_set.is_remote_backed?
             # BrowseEverything::Retriever cannot download certain remote file (Failed to download error)
             # Download by open-uri methods instead
+            byebug
             download = URI.open(uri.to_s)
+            byebug
             IO.copy_stream(download, f.path)
           else
             # for BrowseEverywhere file

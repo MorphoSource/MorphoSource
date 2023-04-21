@@ -1266,9 +1266,9 @@ html {
       background-color: transparent;
       border: 1px solid transparent;
 
-      .viewer-wrapper-2d {
-        margin-top: 10px;
+      .viewer-wrapper, .viewer-wrapper-2d {
         background-color: transparent;
+        height: 200px; // mobile view default
 
         p {
           text-align: center;
@@ -1279,50 +1279,52 @@ html {
           height: 100%;
           padding: 10px;
 
-          @media (max-width: 767px) {
-            .image-wrapper {
-              width: 82vw;
-              height: 82vw;
-            }
-          }
-          @media (min-width: 768px) {
-            .image-wrapper {
-              width: 42vw;
-              height: 42vw;
-              max-width: 500px;
-              max-height: 500px;
-            }
-          }
+          .viewer-content-2d {
+            align-items: center;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: flex-start;
 
-          .image-wrapper {
-            background-color: #000;
-            margin-left: auto;
-            margin-right: auto;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-              .not-ready {
-              color: #ccc;
-              font-size: 12px;
-              margin: 30px;
-              text-align: center;
-            }
-            img {
-              max-width: 250px;
-              margin: auto;
-            }
-            @media
-            (-webkit-min-device-pixel-ratio: 2),
-            (min-resolution: 192dpi) {
-              /* Retina-specific */
+            .image-wrapper {              
               img {
-                max-width: 500px;
+                max-height: 125px; // mobile view default
               }
+            }
+
+            .not-ready {
+              color: #ccc;
+              font-size: 16px;
+              padding: 0 20px 0 20px;
+              text-align: center;
+              overflow: hidden;
             }
           }
         }
       }
 
+      // Medium screens, tablets (1 column)
+      @media (min-width: 768px) {
+        .viewer-wrapper, .viewer-wrapper-2d {
+          height: 300px !important;
+
+          .viewer .image-wrapper img {
+            max-height: 225px !important;
+          }
+        }
+      }
+
+      // Large screens (2 column)
+      @media (min-width: 992px) {
+        .viewer-wrapper, .viewer-wrapper-2d {
+          height: 500px !important;
+
+          .viewer .image-wrapper img {
+            max-height: 400px !important;
+          }
+        }
+      }
     }
 
   }

@@ -55,7 +55,7 @@
       <% if @hide_viewer %>
         <%= 
           link_to "View", 
-            url_for(request.params.merge(view: document.id)),
+            url_for(request.params.merge(preview: document.id)),
             class: "view-media btn btn-sm btn-default"
         %>
       <% else %>

@@ -749,7 +749,7 @@ namespace :morphosource do
     output = []
     qry = "has_model_ssim:Media AND remote_origin_url_tesim:*"
     media_solr = ActiveFedora::SolrService.query(qry, rows: 999999)
-    puts "Number of media with remote_origin_url: #{media_solr.count}"
+    puts "Number of remote-backed media: #{media_solr.count}"
     media_solr.each do |hit|
       m = Media.find(hit.id)
       rfi = Morphosource::RemoteFileVerificationService.call(m)
@@ -758,6 +758,7 @@ namespace :morphosource do
       end
     end
     puts output
+    puts "Issue count: #{output.count}"
   end
 
   desc "Update specimens from IDigbio"

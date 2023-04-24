@@ -5,7 +5,7 @@ module MorphosourceHelper
   include Hyrax::Renderers
 
   class RemoteFileInfo
-    attr_accessor :message, :http_code, :file_ext, :status, :last_modified, :content_length
+    attr_accessor :message, :http_code, :file_ext, :status, :last_modified, :content_length, :e_tag
 
     def initialize(url)
       @message = ""
@@ -14,6 +14,7 @@ module MorphosourceHelper
       @file_ext = ""
       @last_modified = ""
       @content_length = ""
+      @e_tag = ""
       begin
         head = RestClient::Request.execute(method: :head, url: url, timeout: 15)
         @http_code = head.code
@@ -29,6 +30,7 @@ module MorphosourceHelper
       if @status == "success"
         @last_modified = head.headers[:last_modified]
         @content_length = head.headers[:content_length]
+        @e_tag = head.headers[:etag].gsub(/^\"|\"?$/, '')
       else
         @status = @http_code.present? ? "error" : "fail"
       end

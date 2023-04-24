@@ -18,7 +18,9 @@ module Morphosource
           def import_url
             # byebug
             # @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split.present? ?  @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split("/tiles/", 2).first : nil
-            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].present? ? @slide_json["http://rs.tdwg.org/ac/terms/accessURI"] : nil
+
+            # @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].present? ? @slide_json["http://rs.tdwg.org/ac/terms/accessURI"] : nil
+            "https://iiif.mcz.harvard.edu/iiif/3/1485160/full/200,/0/default.jpg"
           end
 
           def external_file

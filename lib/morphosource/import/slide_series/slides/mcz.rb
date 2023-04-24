@@ -9,6 +9,7 @@ module Morphosource
 
           # bits_per_sample
           def bits_per_sample
+            return nil
             # byebug
             @iiif_exif["fields"]["BitsPerSample"]
           end
@@ -16,18 +17,21 @@ module Morphosource
           # color_space
           # See https://exiftool.org/TagNames/EXIF.html for values
           def color_space
+            return nil
             ExifData::PHOTOMETRIC_INTERPRETATION[@iiif_exif["fields"]["PhotometricInterpretation"]] || []
           end
 
           # compression
           # See https://exiftool.org/TagNames/EXIF.html#Compression
           def compression
+            return nil
             ExifData::COMPRESSION[@iiif_exif["fields"]["Compression"]] || []
           end
 
           # file.create_date
           # date_created
           def date_created
+            return nil
             # byebug
             [Date.parse(@iiif_exif['fields']["DateTime"].split(' ').first.gsub(':','-')).strftime("%Y-%m-%d")]
             # [Date.parse(@file_json["created"]).strftime("%Y-%m-%d")]
@@ -36,12 +40,14 @@ module Morphosource
           # date_modified
           # ["2018:12:17 17:03:34"]
           def date_modified
+            return nil
             # byebug
             # @item_json["updated"]
             []
           end
 
           def description
+            return nil
             # byebug
             [JSON.parse(@slide_json["http://rs.tdwg.org/dwc/terms/preparations"]).map{|k,v| k.dup.concat(': ').concat(v)}.join(', ')]
             # if @json["preparations"].present? &&  @json["identificationRemarks"].present?
@@ -63,6 +69,7 @@ module Morphosource
 
           # file_size
           def file_size
+            return nil
             # byebug
             # [@file_json["size"].to_s]
             @iiif_json["fileSize"]
@@ -74,6 +81,7 @@ module Morphosource
 
           # height
           def height
+            return nil
             # byebug
             @iiif_json["height"].to_s
             # @tiles_json["sizeY"].to_s
@@ -89,6 +97,7 @@ module Morphosource
           end
 
           def imaging_description
+            return nil
             # byebug
             Array(@iiif_exif["fields"]["ImageDescription"])
           end
@@ -96,6 +105,8 @@ module Morphosource
           # license
           #["http://creativecommons.org/licences/by-nc-sa/3.0/"]
           def license
+            return nil
+
             # byebug
             [@slide_json["http://ns.adobe.com/xap/1.0/rights/WebStatement"]]
           end
@@ -107,12 +118,14 @@ module Morphosource
 
           # mime_type
           def mime_type
-            [@slide_json["http://purl.org/dc/elements/1.1/format"]]
-            # @file_json["mimeType"]
+            "image/jpeg"
+
+            # [@slide_json["http://purl.org/dc/elements/1.1/format"]]
           end
 
           # pixel_spacing
           def pixel_spacing
+            return nil
             # byebug
             # [@tiles_json["mm_x"].to_s + '\\' + @tiles_json["mm_y"].to_s]
             [x_spacing.first + '\\' + y_spacing.first]
@@ -140,6 +153,7 @@ module Morphosource
           end
 
           def scanning_software
+            return nil
             # byebug
             Array(@iiif_exif['fields']["Software"])
             # scan_date = Date.parse(date_created.first)
@@ -169,6 +183,7 @@ module Morphosource
 
           # unit
           def unit
+            return nil
             ExifData::RESOLUTION_UNIT[@iiif_exif["ResolutionUnit"]] || []
           end
 
@@ -178,12 +193,14 @@ module Morphosource
 
           # width
           def width
+            return nil
             # byebug
             @iiif_json["width"].to_s
           end
 
           # x_spacing
           def x_spacing
+            return nil
             # byebug
             # [@tiles_json["mm_x"].to_s]
             d = @iiif_exif['fields']["XResolution"]["denominator"].to_f
@@ -193,6 +210,7 @@ module Morphosource
 
           # y_spacing
           def y_spacing
+            return nil
             d = @iiif_exif['fields']["YResolution"]["denominator"].to_f
             n = @iiif_exif['fields']["YResolution"]["numerator"].to_f
             ["%f" % (d/n)]

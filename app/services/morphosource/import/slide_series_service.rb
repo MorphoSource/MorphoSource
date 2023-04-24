@@ -68,7 +68,6 @@ module Morphosource
       end
 
       def create_new_media
-        byebug
         media =  Media.create(date_created: @slide.date_created,
                                   date_uploaded: Date.today,
                                   depositor: @manager.user_key,
@@ -76,7 +75,7 @@ module Morphosource
                                   fileset_accessibility: @slide.fileset_accessibility,
                                   identifier: @slide.identifier,
                                   import_url: @slide.import_url,
-                                  # import_url: "http://iiif.mcz.harvard.edu/iiif/3/specialcollections%2FNorthcuttSlides%2F1014PLACE3961.tif/full/100,/270/default.png",
+                                  remote_origin_url: @slide.import_url,
                                   license: @slide.license,
                                   media_type: ["Image"],
                                   orientation: @slide.orientation,
@@ -91,30 +90,35 @@ module Morphosource
                                   visibility: @slide.visibility,
                                   x_spacing: @slide.x_spacing,
                                   y_spacing: @slide.y_spacing,
-                                  z_spacing: @slide.z_spacing)
+                                  z_spacing: @slide.z_spacing,
+                                  admin_set_id: "admin_set/default")
 
-        Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(Media.new, ::Ability.new(@admin), media.attributes))
-        media.reload
+        # Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(Media.new, ::Ability.new(@admin), media.attributes))
+        # media.remote_origin_url = @slide.import_url
+        # media.reload
       end
 
       def add_media_to_imaging_event
-        @imaging_event.ordered_members << media
+        @imaging_event.ordered_members << @media
         @imaging_event.save!
       end
 
       def add_fileset_and_file
         name = @slide.file_name
-        file_set = FileSet.create(title: [name], label: name)
+        file_set = FileSet.create(title: ["default.jpg"], label: "default.jpg", accessibility: ["open"], import_url: @slide.import_url, mime_type_of_remote: "image/jpeg")
         @media.ordered_members << file_set
-        file = Tempfile.new(name)
-        Hydra::Works::AddFileToFileSet.call(file_set, file, :original_file, update_existing: true, versioning: true)
+        # file = Tempfile.new(name)
+        # Hydra::Works::AddFileToFileSet.call(file_set, file, :original_file, update_existing: true, versioning: true)
+        Hydra::Works::AddExternalFileToFileSet.call(file_set, file_set.import_url, :original_file, versioning: false)
       end
 
       def characterize_file
+        byebug
         file = @media.file_sets.first.original_file
         @slide.file_characterization_methods.each do |method|
           file.send(method+'=', @slide.send(method))
         end
+        file.mime_type = "message/external-body; access-type=URL; URL=\"#{@slide.import_url}\""
         file.save!
       end
 

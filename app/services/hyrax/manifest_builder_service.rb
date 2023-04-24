@@ -62,7 +62,10 @@ module Hyrax
       #
       # wild times. maybe there's a better way to do this with the
       # ManifestFactory interface?
-      manifest = manifest_factory.new(presenter).to_h
+      manifest = manifest_factory.new(presenter)
+      # byebug
+      manifest = manifest.to_h
+      # byebug
       hash = JSON.parse(manifest.to_json)
 
       # Sanitize for IIIF API V3 label language maps
@@ -77,6 +80,7 @@ module Hyrax
           canvas['label'] = sanitize_value(canvas['label'])
         end
       end
+      byebug
 
       hash
     end

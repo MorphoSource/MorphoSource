@@ -1,6 +1,7 @@
 $(document).ready(function() {
   // Only load for media list media works table
   if (document.querySelector("div.media-list-results")) {
+    // UI and behavior for Media List collections
     class MediaList {
       constructor(html) {
         this.html = html;
@@ -10,7 +11,18 @@ $(document).ready(function() {
 
         // initialize active row if one is available
         this.activeRow = this.html.querySelector("tr.previewable.view-active");
-        if (this.activeRow) this.#loadMediaView({ scrollWindow: true });
+        if (this.activeRow) this.#loadMediaView();
+
+        // initialize viewer sticky position
+        const viewer = this.html.querySelector("div.preview-body");
+        if (viewer) {
+          if (window.innerHeight >= 1020) {
+            const rect = viewer.getBoundingClientRect();
+            if (rect.top) viewer.style.top = `${rect.top}px`;
+          } else {
+            viewer.style.top = "10px";
+          }
+        }
 
         this.#activateListeners();
       }
@@ -39,46 +51,29 @@ $(document).ready(function() {
       }
 
       // UI updates and AJAX call for media view load
-      #loadMediaView({ callAjax = true, scrollWindow = false } = {}) {
-        // Move viewer up or down 
-        this.#transformViewerYPosition(scrollWindow);
-
+      #loadMediaView() {
         // Add loading UI overlay
-        $('.preview-body').loader({ imgUrl: "/loading32x32.gif "});
+        this.html.querySelector(".preview-disabled-wrap").classList.remove("hide");
+
+        // Move viewer up or down 
+        this.#scrollWindow();
 
         // Enable or disable prev/next buttons
         this.#togglePrevNextButtonState();
 
         // Call AJAX media view load
-        if (callAjax) $.get(
-          `/media_lists/${this.activeRow.dataset.collectionId}/preview/${this.activeRow.dataset.documentId}`
-        );
+        $.get(`/media_lists/${this.activeRow.dataset.collectionId}/preview/${this.activeRow.dataset.documentId}`);
       }
 
-      // Move viewer down the page for lower table rows, possibly scrolling window as well
-      #transformViewerYPosition(scrollWindow) {
-        // Only transform or scroll at large screen widths (e.g., in side-by-side UI)
+      // Scroll window to ensure active row is in viewport
+      #scrollWindow() {
+        // Only scroll at large screen widths (e.g., in side-by-side UI)
         if (window.matchMedia("(min-width: 992px)").matches) {
-          const allRows = this.activeRow.parentNode.children;
-          const rowIndex = Array.prototype.indexOf.call(allRows, this.activeRow);
-          const viewerBody = this.html.querySelector(".preview-body");
-          const viewer = this.html.querySelector(".preview-container");
-    
-          if (rowIndex && rowIndex > 3) {
-            // Retain original transform
-            const oldTransform = viewer.style.transform;
-            const oldYPixels = oldTransform ? oldTransform.replace(/[^\d.]/g, '') : 0;
-    
-            // Calc new transform and apply
-            const newYPixels = 
-              this.activeRow.offsetHeight * (rowIndex + 1) - viewer.offsetHeight;
-            viewerBody.style.transform = `translateY(${newYPixels}px)`;
-    
-            if (scrollWindow) {
-              window.scrollBy(0, newYPixels - oldYPixels);
-            }      
-          } else {
-            viewerBody.style.transform = null;
+          const rect = this.activeRow.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight) {
+            this.activeRow.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+          } else if (rect.top < 0) {
+            this.activeRow.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
           }
         }
       }

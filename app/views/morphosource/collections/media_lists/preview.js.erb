@@ -3,11 +3,12 @@ $('#preview-wrapper').html(
 )
 
 updateNameLink();
-$.loader.close();
+document.querySelector(".preview-disabled-wrap").classList.add("hide");
 
 // Update preview media name link
 function updateNameLink() {
   const link = document.querySelector("a.preview-name-link");
+  const linkContainer = link.parentElement;
   const previewContainer = document.querySelector(".preview-container");
   const mediaID = previewContainer?.dataset?.mediaId;
   const mediaTitle = previewContainer?.dataset?.mediaTitle;
@@ -15,8 +16,8 @@ function updateNameLink() {
   if (link && mediaID && mediaTitle) {
     link.innerHTML = `Media ${mediaID}: ${mediaTitle}`;
     link.href = `/media/${mediaID}`
-    link.classList.remove("hide");
+    linkContainer.classList.remove("hide");
   } else {
-    link.classList.add("hide");
+    linkContainer.classList.add("hide");
   }
 }

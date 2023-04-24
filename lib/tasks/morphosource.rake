@@ -755,6 +755,8 @@ namespace :morphosource do
       rfi = Morphosource::RemoteFileVerificationService.call(m)
       if rfi.present?
         output << "media: #{m.id}, url: #{m.remote_origin_url}, message: #{rfi.message}" 
+      else
+        output << "media: #{m.id}, url: #{m.remote_origin_url}, message: No issue"  
       end
     end
     puts output

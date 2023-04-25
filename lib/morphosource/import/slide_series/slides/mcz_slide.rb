@@ -6,46 +6,33 @@ module Morphosource
 
           include Morphosource::Import::SlideSeries::Slides::Mcz
 
-          #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300/tiles/thumbnail
           def slide_thumbnail_path
-            @slide_thumbnail_path ||= import_url.concat('/tiles/thumbnail')
+            iiif_base_uri.concat('/full/200,/0/default.jpg')
           end
 
-          #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300"
           def import_url
-            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].gsub('#','api/v1/')
-          end
-
-          def external_file
-            [import_url.concat("/download")]
+            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"]
           end
 
           private
 
             def gather_metadata
               @import_url = import_url
-              @item_json = json(@import_url)
+              @iiif_json = iiif_json
+              @iiif_exif = iiif_exif
               @slide_thumbnail_path = slide_thumbnail_path
-              @file_json = json(file_uri)
-              @tiles_json = json(tiles_uri)
             end
 
-            def file_uri
-              "https://images.slide-atlas.org/api/v1/file/#{image_file_id}"
+            def iiif_base_uri
+              import_url.split('/full/').first
             end
 
-            def tiles_uri
-              @import_url + "/tiles"
+            def iiif_json
+              json(iiif_base_uri.concat('/info.json'))
             end
 
-            # file_id
-            def image_file_id
-              @item_json["largeImage"]["fileId"]
-            end
-
-            #"https://images.slide-atlas.org/#item/5c454d3c70aaa9064404a300"
-            def slide_atlas_url
-              @slide_json["http://rs.tdwg.org/ac/terms/accessURI"]
+            def iiif_exif
+              @iiif_json["exif"]
             end
 
         end

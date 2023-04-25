@@ -36,7 +36,13 @@ module Morphosource
       end
 
       def device
-        @device ||= @organization.devices.detect { |d| d.title == ["TissueScope LE 120"] }
+        first_slide_iiif = slides.first["http://rs.tdwg.org/ac/terms/accessURI"].split('/full/').first.concat("/info.json")
+        first_slide_device = JSON.parse((RestClient.get first_slide_iiif).body).dig("exif","fields","Model")
+        if first_slide_device.present?
+          @device ||= @organization.devices.detect { |d| d.title == Array(first_slide_device) }
+        else
+          @device ||= @organization.devices.detect { |d| d.title == Array("TissueScope LE 120") }
+        end
       end
 
       def gbif_key

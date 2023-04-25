@@ -13,15 +13,7 @@
   </div>
 
   <div class="name-container">
-    <div class="name <%= @media_presenter ? "" : "hide" %>">
-      <% if @media_presenter %>
-        <a class="preview-name-link" href="#">
-          Media <%= @media_presenter&.id %>: <%= @media_presenter&.title&.first %>
-        </a>
-      <% else %>
-        <a class="preview-name-link" target="_blank"></a>
-      <% end %>
-    </div>
+    <%= render "preview_name" %>
   </div>
 </div>
 

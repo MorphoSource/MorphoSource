@@ -5,6 +5,7 @@ $(document).ready(function() {
     class MediaList {
       constructor(html) {
         this.html = html;
+        this.html.mediaList = this;
 
         // initialize sortable media list
         $("#sortable-media-list").sortable({ handle: ".sort-handle" });
@@ -14,15 +15,7 @@ $(document).ready(function() {
         if (this.activeRow) this.#loadMediaView();
 
         // initialize viewer sticky position
-        const viewer = this.html.querySelector("div.preview-body");
-        if (viewer) {
-          if (window.innerHeight >= 1020) {
-            const rect = viewer.getBoundingClientRect();
-            if (rect.top) viewer.style.top = `${rect.top}px`;
-          } else {
-            viewer.style.top = "10px";
-          }
-        }
+        this.#setViewerStickyTop();
 
         this.#activateListeners();
       }
@@ -53,7 +46,7 @@ $(document).ready(function() {
       // UI updates and AJAX call for media view load
       #loadMediaView() {
         // Add loading UI overlay
-        this.html.querySelector(".preview-disabled-wrap").classList.remove("hide");
+        this.toggleViewerDisabledWrap();
 
         // Move viewer up or down 
         this.#scrollWindow();
@@ -76,6 +69,27 @@ $(document).ready(function() {
             this.activeRow.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
           }
         }
+      }
+
+      // Set viewer with position sticky to have top equal to initial distance from document top
+      #setViewerStickyTop() {
+        const viewer = this.html.querySelector("div.preview-body");
+        if (viewer) {
+          if (window.innerHeight >= 1020) {
+            viewer.style.top = null;
+            const rect = viewer.getBoundingClientRect();
+            if (rect.top) {
+              const val = rect.top + (window.scrollY || window.pageYOffset);
+              viewer.style.top = `${val}px`;
+            }
+          } else {
+            viewer.style.top = "10px";
+          }
+        }
+      }
+
+      toggleViewerDisabledWrap() {
+        this.html.querySelector(".preview-disabled-wrap").classList.toggle("hide");
       }
 
       #togglePrevNextButtonState() {
@@ -192,6 +206,9 @@ $(document).ready(function() {
         this.html.querySelectorAll("a.previous, a.next").forEach((btn) => {
           btn.addEventListener("click", prevNextListener);
         });
+
+        // Update viewer top position on window resize
+        addEventListener("resize", () => { this.#setViewerStickyTop() });
       }
 
       // Utility methods

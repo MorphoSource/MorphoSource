@@ -56,6 +56,10 @@
             vertical-align: middle;
             padding-left: 2px;
             padding-right: 2px;
+
+            .object-col-taxonomy {
+              display: none;
+            }
           }
     
   
@@ -162,6 +166,14 @@
     
                 .viewer {
                   padding: 0;
+
+                  .viewer-content-2d {
+                    display: flex;
+                    flex-direction: column;
+                    align-content: center;
+                    justify-content: center;
+                    height: calc(100% - 30px);
+                  }
           
                   .image-wrapper {                    
                     text-align: center;
@@ -252,11 +264,14 @@
         }
 
         .name-container {
-          font-weight: bold;
           text-align: center;
   
           .name {
             padding: 10px 10px 0 10px;
+
+            .preview-name-link {
+              font-weight: bold;
+            }
           }
         }
       }
@@ -294,6 +309,10 @@
           .view-media:focus {
             opacity: 1;
           }
+
+          td .object-col-taxonomy {
+            display: block;
+          }
         }
       }
 
@@ -310,6 +329,26 @@
   
             .viewer .image-wrapper img {
                 max-height: 350px !important;
+            }
+          }
+        }
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .collection-table {
+        table#datatable-media-list tr {
+          td .object-col-taxonomy {
+            display: none;
+          }
+        }
+      }
+
+      div.collection-media-preview {
+        .preview-body {
+          .preview-container {
+            .viewer .image-wrapper img {
+                max-height: 400px !important;
             }
           }
         }

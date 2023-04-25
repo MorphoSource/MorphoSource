@@ -1,23 +1,9 @@
 $('#preview-wrapper').html(
-  "<%= j (render partial: 'preview', locals: { presenter: @media_presenter } ) %>"
+  "<%= j (render partial: 'preview') %>"
+)
+$('.name-container').html(
+  "<%= j (render partial: 'preview_name') %>"
 )
 
-updateNameLink();
-document.querySelector(".preview-disabled-wrap").classList.add("hide");
-
-// Update preview media name link
-function updateNameLink() {
-  const link = document.querySelector("a.preview-name-link");
-  const linkContainer = link.parentElement;
-  const previewContainer = document.querySelector(".preview-container");
-  const mediaID = previewContainer?.dataset?.mediaId;
-  const mediaTitle = previewContainer?.dataset?.mediaTitle;
-
-  if (link && mediaID && mediaTitle) {
-    link.innerHTML = `Media ${mediaID}: ${mediaTitle}`;
-    link.href = `/media/${mediaID}`
-    linkContainer.classList.remove("hide");
-  } else {
-    linkContainer.classList.add("hide");
-  }
-}
+const mediaList = document.querySelector("div.media-list-results")?.mediaList;
+mediaList?.toggleViewerDisabledWrap();

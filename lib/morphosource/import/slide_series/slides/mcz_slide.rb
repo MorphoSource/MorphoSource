@@ -8,12 +8,12 @@ module Morphosource
 
           #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300/tiles/thumbnail
           def slide_thumbnail_path
-            @slide_thumbnail_path ||= @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split("?").first
+            @slide_thumbnail_path ||= import_url.concat('/tiles/thumbnail')
           end
 
           #"https://images.slide-atlas.org/api/v1/item/5c454d3c70aaa9064404a300"
           def import_url
-            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split.present? ?  @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split("/tiles/", 2).first : nil
+            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].gsub('#','api/v1/')
           end
 
           def external_file
@@ -45,7 +45,7 @@ module Morphosource
 
             #"https://images.slide-atlas.org/#item/5c454d3c70aaa9064404a300"
             def slide_atlas_url
-              @import_url.gsub('api/v1/','#')
+              @slide_json["http://rs.tdwg.org/ac/terms/accessURI"]
             end
 
         end

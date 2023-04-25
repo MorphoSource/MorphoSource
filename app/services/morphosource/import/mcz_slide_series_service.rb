@@ -12,7 +12,7 @@ module Morphosource
       end
 
       def slides
-        @json["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"].select { |slide| slide["http://rs.tdwg.org/ac/terms/variant"] == "ac:Thumbnail" }
+        @json["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"].select { |slide| slide["http://rs.tdwg.org/ac/terms/variant"] == "ac:BestQuality" }
       end
 
       def collection_title

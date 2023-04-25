@@ -747,20 +747,22 @@ namespace :morphosource do
   desc "Verify remote backed media files"
   task :verify_remote_backed_media => :environment do 
     output = []
-    qry = "has_model_ssim:Media AND remote_origin_url_tesim:*"
+    issues_count = 0
+    qry = "has_model_ssim:Media AND remote_origin_url_tesim:* AND file_set_ids_ssim:*"
     media_solr = ActiveFedora::SolrService.query(qry, rows: 999999)
-    puts "Number of remote-backed media: #{media_solr.count}"
     media_solr.each do |hit|
       m = Media.find(hit.id)
-      rfi = Morphosource::RemoteFileVerificationService.call(m)
-      if rfi.present?
-        output << "media: #{m.id}, url: #{m.remote_origin_url}, message: #{rfi.message}" 
+      issues = Morphosource::RemoteFileVerificationService.call(m)
+      if issues.empty?
+        output << "media: #{m.id}, url: #{m.remote_origin_url}, issues: None"  
       else
-        output << "media: #{m.id}, url: #{m.remote_origin_url}, message: No issue"  
+        output << "media: #{m.id}, url: #{m.remote_origin_url}, issues: #{issues.join('; ')}" 
+        issues_count += 1
       end
     end
     puts output
-    puts "Issue count: #{output.count}"
+    puts "Number of remote-backed media checked: #{media_solr.count}"
+    puts "Issue count: #{issues_count}"
   end
 
   desc "Update specimens from IDigbio"

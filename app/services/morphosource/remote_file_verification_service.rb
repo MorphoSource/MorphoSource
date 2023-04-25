@@ -11,24 +11,22 @@ module Morphosource
     end
 
     def call
-      return nil unless @media.remote_origin_url.present?
-      return nil unless @file_set.present?
+      return ["No remote_origin_url"] unless @media.remote_origin_url.present?
+      return ["No file_set"] unless @file_set.present?
       rfi = MorphosourceHelper::RemoteFileInfo.new(@media.remote_origin_url)
       return rfi if rfi.status != "success" # there is an error already (e.g. 404)
-      messages = []
+      issues = []
       if !(e_tag = rfi.e_tag).present?
-        messages << "ETag not in request"        
+        issues << "ETag not in request headers"        
       elsif e_tag != @file_set.e_tag
-        messages << "ETag #{e_tag} does not match existing media's ETag #{@file_set.e_tag}"
+        issues << "ETag (#{e_tag}) does not match existing media's ETag (#{@file_set.e_tag})"
       end
       if !(content_length = rfi.content_length).present? 
-        messages << "content_length not in request"
+        issues << "Content_length not in request headers"
       elsif content_length != @file_set.file_size&.first
-        messages << "content_length #{rfi.content_length} does not match existing media's file_size #{@file_set.file_size&.first}"
+        issues << "Content_length (#{rfi.content_length}) does not match existing media's file_size (#{@file_set.file_size&.first})"
       end
-      return nil if messages.empty?
-      rfi.message = messages.join('; ')
-      return rfi
+      return issues
     end
 
   end

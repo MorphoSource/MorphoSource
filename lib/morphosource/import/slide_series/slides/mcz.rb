@@ -63,13 +63,16 @@ module Morphosource
           # identifier
           #["5c454d3c70aaa9064404a300"]
           def identifier
-            [@slide_json["http://rs.tdwg.org/ac/terms/accessURI"][/\/item\/(.*?)\/tiles\//,1]]
+            slide_atlas_id = slide_atlas_url.split('/').last
+            slide_atlas_id.present? ? [slide_atlas_id] : ['abc']
           end
 
           # license
           #["http://creativecommons.org/licences/by-nc-sa/3.0/"]
+          # leaving blank for now - MCZ has licenses not included in MorphoSource
           def license
-            [@slide_json["http://ns.adobe.com/xap/1.0/rights/WebStatement"]]
+            # [@slide_json["http://ns.adobe.com/xap/1.0/rights/WebStatement"]]
+            []
           end
 
           def file_magnification

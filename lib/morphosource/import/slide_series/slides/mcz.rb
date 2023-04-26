@@ -14,13 +14,15 @@ module Morphosource
           # color_space
           # See https://exiftool.org/TagNames/EXIF.html for values
           def color_space
-            ExifData::PHOTOMETRIC_INTERPRETATION[@iiif_exif.dig("fields","PhotometricInterpretation")] || super
+            cs = @iiif_exif.dig("fields","PhotometricInterpretation")
+            cs.present? ? Array(Morphosource::ExifData::PhotometricInterpretationService.new.label(cs)) : super
           end
 
           # compression
           # See https://exiftool.org/TagNames/EXIF.html#Compression
           def compression
-            ExifData::COMPRESSION[@iiif_exif.dig("fields","Compression")] || super
+            comp = @iiif_exif.dig("fields","Compression")
+            comp.present? ? Array(Morphosource::ExifData::CompressionService.new.label(comp)) : super
           end
 
           # file.create_date
@@ -99,6 +101,7 @@ module Morphosource
 
           # related_url
           #["http://mczbase.mcz.harvard.edu/media/1468742"]
+          def related_url
             ref = @slide_json["http://purl.org/dc/terms/identifier"]
             ref.present? ? Array(ref) : super
           end
@@ -131,7 +134,8 @@ module Morphosource
           # unit
           # See https://exiftool.org/TagNames/EXIF.html
           def unit
-            ExifData::RESOLUTION_UNIT[@iiif_exif["ResolutionUnit"]] || super
+            ru = @iiif_exif["ResolutionUnit"]
+            ru.present? ? Array(Morphosource::ExifData::ResolutionUnitService.new.label(ru)) : super
           end
 
           def visibility
@@ -165,6 +169,7 @@ module Morphosource
               super
             end
           end
+
         end
       end
     end

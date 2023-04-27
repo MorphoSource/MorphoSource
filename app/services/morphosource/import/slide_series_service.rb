@@ -4,16 +4,17 @@ module Morphosource
 
       include Morphosource::CustomThumbnails
 
-      def self.call(service: nil, resource_id: nil, user_email: nil)
-        self.new(service, resource_id, user_email).call
+      def self.call(service: nil, resource_id: nil, user_email: nil, list_visibility: 'restricted')
+        self.new(service, resource_id, user_email, list_visibility).call
       end
 
-      def initialize(service: nil, resource_id: nil, user_email: nil)
+      def initialize(service: nil, resource_id: nil, user_email: nil, list_visibility: 'restricted')
         @organization = organization
         @service = service
         @resource_id = resource_id
         @manager = User.find_by(email: user_email)
         @admin = User.find_by(ms_id: Hyrax.config.batch_user_key)
+        @list_visibility = list_visibility
       end
 
       def call
@@ -27,7 +28,6 @@ module Morphosource
         @taxonomy = @specimen.taxonomies.first
         @device = device
         @collection = create_series_collection
-        # return import_errors if import_errors.present?
         import_slides
       end
 
@@ -37,8 +37,9 @@ module Morphosource
           @slide = slide_class.new(@json, slide_json)
           @imaging_event = create_new_imaging_event
           @media = create_new_media
+          @file_set = file_set
           add_media_to_imaging_event
-          add_fileset_and_file
+          add_original_file
           characterize_file
           create_thumbnail
           add_to_collection_and_save
@@ -48,68 +49,68 @@ module Morphosource
       end
 
       def create_new_imaging_event
-        imaging_event = ImagingEvent.create( aperture_value: @slide.aperture_value,
-                                             creator: @slide.creator,
-                                             date_created: @slide.date_created,
-                                             depositor: @manager.user_key,
-                                             device_id: [@device.id],
-                                             focal_length: @slide.focal_length,
-                                             ie_modality: ["SequentialSectionScan"],
-                                             optical_magnification: @slide.magnification,
-                                             physical_object_id: [@specimen.id],
-                                             slide_type: ['Histological'],
-                                             software: @slide.scanning_software,
-                                             description: @slide.imaging_description,
-                                             title: ['new imaging event'] )
+        imaging_event = ImagingEvent.create(aperture_value: @slide.aperture_value,
+                                            creator: @slide.creator,
+                                            date_created: @slide.date_created,
+                                            depositor: @manager.user_key,
+                                            device_id: [@device.id],
+                                            focal_length: @slide.focal_length,
+                                            ie_modality: ["SequentialSectionScan"],
+                                            optical_magnification: @slide.magnification,
+                                            physical_object_id: [@specimen.id],
+                                            slide_type: ['Histological'],
+                                            software: @slide.scanning_software,
+                                            description: @slide.imaging_description,
+                                            title: ['new imaging event'])
 
         Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(ImagingEvent.new, ::Ability.new(@admin), imaging_event.attributes))
-
         imaging_event.reload
       end
 
       def create_new_media
-        media =  Media.create(date_created: @slide.date_created,
-                                  date_uploaded: Date.today,
-                                  depositor: @manager.user_key,
-                                  description: @slide.description,
-                                  fileset_accessibility: @slide.fileset_accessibility,
-                                  identifier: @slide.identifier,
-                                  import_url: @slide.import_url,
-                                  license: @slide.license,
-                                  media_type: ["Image"],
-                                  orientation: @slide.orientation,
-                                  part: @slide.short_description,
-                                  preview_mode: ["Interactive/Embeddable"],
-                                  publisher: @slide.publisher,
-                                  rights_holder: @slide.rights_holder,
-                                  related_url: @slide.related_url,
-                                  slice_thickness: @slide.slice_thickness,
-                                  title: @slide.title,
-                                  unit: @slide.unit,
-                                  visibility: @slide.visibility,
-                                  x_spacing: @slide.x_spacing,
-                                  y_spacing: @slide.y_spacing,
-                                  z_spacing: @slide.z_spacing)
+        media = Media.create(date_created: @slide.date_created,
+                             date_uploaded: Date.today,
+                             depositor: @manager.user_key,
+                             description: @slide.description,
+                             fileset_accessibility: @slide.fileset_accessibility,
+                             identifier: @slide.identifier,
+                             remote_origin_url: @slide.remote_origin_url,
+                             remote_manifest_url: @slide.remote_manifest_url,
+                             license: @slide.license,
+                             media_type: @slide.media_type,
+                             orientation: @slide.orientation,
+                             part: @slide.short_description,
+                             preview_mode: @slide.preview_mode,
+                             publisher: @slide.publisher,
+                             rights_holder: @slide.rights_holder,
+                             related_url: @slide.related_url,
+                             slice_thickness: @slide.slice_thickness,
+                             title: @slide.title,
+                             unit: @slide.unit,
+                             visibility: @slide.visibility,
+                             x_spacing: @slide.x_spacing,
+                             y_spacing: @slide.y_spacing,
+                             z_spacing: @slide.z_spacing)
 
         Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(Media.new, ::Ability.new(@admin), media.attributes))
         media.reload
       end
 
+      def file_set
+        @media.file_sets.first.update(title: [@slide.file_name], label: @slide.file_name, mime_type_of_remote: @slide.mime_type)
+      end
+
       def add_media_to_imaging_event
-        @imaging_event.ordered_members << media
+        @imaging_event.ordered_members << @media
         @imaging_event.save!
       end
 
-      def add_fileset_and_file
-        name = @slide.file_name
-        file_set = FileSet.create(title: [name], label: name)
-        @media.ordered_members << file_set
-        file = Tempfile.new(name)
-        Hydra::Works::AddFileToFileSet.call(file_set, file, :original_file, update_existing: true, versioning: true)
+      def add_original_file
+        Hydra::Works::AddExternalFileToFileSet.call(@file_set, @file_set.import_url, :original_file, update_existing: true, versioning: false)
       end
 
       def characterize_file
-        file = @media.file_sets.first.original_file
+        file = @file_set.original_file
         @slide.file_characterization_methods.each do |method|
           file.send(method+'=', @slide.send(method))
         end
@@ -165,11 +166,14 @@ module Morphosource
 
         def create_series_collection
           collection_type = Hyrax::CollectionType.where(title: "Sequential Section List").first
-          collection = SequentialSectionList.create(title: collection_title, collection_type_gid: collection_type.gid, depositor: @manager.ms_id, visibility: 'open', related_url: collection_related_url, description: collection_description)
+          collection = SequentialSectionList.create(title: collection_title,
+                                                    collection_type_gid: collection_type.gid, depositor: @manager.ms_id,
+                                                    visibility: @list_visibility,
+                                                    related_url: collection_related_url, description: collection_description)
           collection.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
           collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-          collection
+          collection.reload
         end
 
         # override Morphosource::CustomThumbnails create_thumbnail

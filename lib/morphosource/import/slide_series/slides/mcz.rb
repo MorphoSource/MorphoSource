@@ -48,7 +48,7 @@ module Morphosource
           end
 
           def fileset_accessibility
-            ["open"]
+            ["private"]
           end
 
           # height
@@ -99,11 +99,24 @@ module Morphosource
             ["Museum of Comparative Zoology, Harvard University"]
           end
 
+          def preview_mode
+            ["Interactive/Embeddable"]
+          end
+
           # related_url
           #["http://mczbase.mcz.harvard.edu/media/1468742"]
           def related_url
             ref = @slide_json["http://purl.org/dc/terms/identifier"]
             ref.present? ? Array(ref) : super
+          end
+
+          def remote_origin_url
+            iiif_base_uri.concat("/full/max/0/default#{File.extname(file_name)}")
+          end
+          alias import_url remote_origin_url
+
+          def remote_manifest_url
+            iiif_base_uri.concat('/info.json')
           end
 
           # rights_holder
@@ -123,6 +136,10 @@ module Morphosource
           def short_description
             description = @slide_json["http://purl.org/dc/terms/description"]
             description.present? ? Array(description) : super
+          end
+
+          def slide_thumbnail_path
+            iiif_base_uri.concat('/full/400,/0/default.jpg')
           end
 
           # title

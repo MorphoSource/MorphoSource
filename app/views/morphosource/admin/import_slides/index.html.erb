@@ -18,6 +18,10 @@
     <%= form.text_field :user_email %>
   </div>
   <div>
+    <%= form.label :list_visibility, "Publication Status" %>
+    <%= form.select_tag(:list_visibility, options_for_select([['open', 'open'], ['private', 'restricted']])) %>
+  </div>
+  <div>
     <%= form.submit "Import Slides" %>
   </div>
 <% end %>

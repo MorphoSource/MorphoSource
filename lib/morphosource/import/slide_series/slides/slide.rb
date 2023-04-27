@@ -5,7 +5,7 @@ module Morphosource
         class Slide
 
           # Default values for slide object
-          MEDIA_ARRAY_METHODS = %w[description fileset_accessibility identifier import_url license magnification publisher related_url rights_holder short_description slice_thickness title unit x_spacing y_spacing z_spacing]
+          MEDIA_ARRAY_METHODS = %w[description fileset_accessibility identifier import_url license magnification preview_mode publisher related_url rights_holder short_description slice_thickness title unit x_spacing y_spacing z_spacing]
 
           MEDIA_STRING_METHODS = %w[visibility]
 
@@ -46,6 +46,11 @@ module Morphosource
           def slide_thumbnail_path
             ""
           end
+
+          def media_type
+            ["Image"]
+          end
+
         end
       end
     end

@@ -12,6 +12,7 @@ module Morphosource
         service = params["service"]
         resource_id = params["resource_id"]
         user_email = params["user_email"]
+        list_visibility = params["list_visibility"]
         @collection = import_service_class.new(service: service, resource_id:resource_id, user_email: user_email).call
 
         redirect_to sequential_section_list_path(@collection)

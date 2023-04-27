@@ -133,4 +133,9 @@ class FileSet < ActiveFedora::Base
     return false unless self.parent.present?
     return self.parent.is_remote_backed?
   end
+
+  def has_remote_manifest?
+    return false unless self.parent.present?
+    return self.parent.has_remote_manifest?
+  end
 end

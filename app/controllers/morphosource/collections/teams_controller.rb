@@ -86,8 +86,8 @@ module Morphosource
           main_app.team_path(@curation_concern, *args)
         end
 
-         # The url of the "more" link for additional facet values
-         def search_facet_path(args = {})
+        # The url of the "more" link for additional facet values
+        def search_facet_path(args = {})
           # args id is the solr facet
           # params id is the collection id
           request.params.delete("id")

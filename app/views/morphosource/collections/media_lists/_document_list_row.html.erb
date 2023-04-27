@@ -45,7 +45,10 @@
     </div>
   </td>
   <td><%= document.part&.first %></td>
-  <td class="break-all"><%= document["physical_object_title_ssim"]&.first %></td>
+  <td class="break-all">
+    <div><%= document["physical_object_title_ssim"]&.first %></div>
+    <div class="object-col-taxonomy"><i><%= document["taxonomy_ssim"]&.first %></i></div>
+  </td>
   <td><i><%= document["taxonomy_ssim"]&.first %></i></td>
   <td><%= document["human_readable_media_type_tesim"]&.first %></td>
   <td><%= document.date_uploaded %></td>
@@ -55,7 +58,7 @@
       <% if @hide_viewer %>
         <%= 
           link_to "View", 
-            url_for(request.params.merge(view: document.id)),
+            url_for(request.params.merge(preview: document.id)),
             class: "view-media btn btn-sm btn-default"
         %>
       <% else %>

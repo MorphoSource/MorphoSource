@@ -1,4 +1,6 @@
 <div class="preview-body">
+  <div class="preview-disabled-wrap hide"></div>
+
   <div class="preview-wrapper-and-controls">
     <div id="preview-wrapper">
       <%= render "preview" %> <!-- <div class="preview-container"> -->
@@ -11,15 +13,7 @@
   </div>
 
   <div class="name-container">
-    <div class="name">
-      <% if @media_presenter %>
-        <a class="preview-name-link" href="#">
-          Media <%= @media_presenter&.id %>: <%= @media_presenter&.title&.first %>
-        </a>
-      <% else %>
-        <a class="preview-name-link hide" target="_blank"></a>
-      <% end %>
-    </div>
+    <%= render "preview_name" %>
   </div>
 </div>
 

@@ -103,6 +103,18 @@ div.collection-page {
     padding: 0;
   }
 
+  .collection.panel-body {
+    div#documents.gallery {
+      margin-left: -6px;
+      margin-right: -6px;
+
+      .document {
+        margin-top: 15px;
+        padding: 6px 6px 0 6px;
+      }
+    }
+  }
+
   .hyc-bl-pager {
     .paginate-wrapper {
       align-items: center;

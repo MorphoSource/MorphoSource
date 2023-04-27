@@ -27,17 +27,17 @@ module Morphosource
         (@media_count, @object_ids) = collection_media
         (@response, @document_list) = query_solr
 
-        if params[:view].present?
-          if params[:view] == 'false'
+        if params[:preview].present?
+          if params[:preview] == 'false'
             @hide_viewer = true
-          elsif @document_list.map(&:id).include?(params[:view])
-            @preview_document_id = params[:view]
+          elsif @document_list.map(&:id).include?(params[:preview])
+            @preview_document_id = params[:preview]
           else
-            redirect_to request.params.except(:view) and return
+            redirect_to request.params.except(:preview) and return
           end
         end
 
-        if params[:view] == 'false'
+        if params[:preview] == 'false'
           @hide_viewer = true
         end
 

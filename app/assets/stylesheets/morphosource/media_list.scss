@@ -56,6 +56,10 @@
             vertical-align: middle;
             padding-left: 2px;
             padding-right: 2px;
+
+            .object-col-taxonomy {
+              display: none;
+            }
           }
     
   
@@ -134,6 +138,15 @@
       .preview-body {
         padding: 0;
 
+        .preview-disabled-wrap {
+          background: white url("/loading32x32.gif") center center no-repeat;
+          height: 100%;
+          width: 100%;
+          position: absolute;
+          z-index: 9999;
+          opacity: 0.5;
+        }
+
         .preview-wrapper-and-controls {
           align-items: center;
           display: flex;
@@ -153,6 +166,14 @@
     
                 .viewer {
                   padding: 0;
+
+                  .viewer-content-2d {
+                    display: flex;
+                    flex-direction: column;
+                    align-content: center;
+                    justify-content: center;
+                    height: calc(100% - 30px);
+                  }
           
                   .image-wrapper {                    
                     text-align: center;
@@ -243,12 +264,14 @@
         }
 
         .name-container {
-          font-weight: bold;
-          min-height: 20px;
           text-align: center;
   
           .name {
-            padding: 10px;
+            padding: 10px 10px 0 10px;
+
+            .preview-name-link {
+              font-weight: bold;
+            }
           }
         }
       }
@@ -286,19 +309,44 @@
           .view-media:focus {
             opacity: 1;
           }
+
+          td .object-col-taxonomy {
+            display: block;
+          }
         }
       }
 
       div.collection-media-preview {
         flex: 5;
         order: 2;
-
+        
         .preview-body {
           padding-left: 10px;
+          position: sticky;
 
           .preview-container {
             height: 500px !important;
   
+            .viewer .image-wrapper img {
+                max-height: 350px !important;
+            }
+          }
+        }
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .collection-table {
+        table#datatable-media-list tr {
+          td .object-col-taxonomy {
+            display: none;
+          }
+        }
+      }
+
+      div.collection-media-preview {
+        .preview-body {
+          .preview-container {
             .viewer .image-wrapper img {
                 max-height: 400px !important;
             }

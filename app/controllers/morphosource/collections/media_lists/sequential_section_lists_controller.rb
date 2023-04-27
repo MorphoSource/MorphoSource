@@ -18,12 +18,14 @@ module Morphosource
           end
 
           # The url of the "more" link for additional facet values
-          def search_facet_path(args = {})
+            def search_facet_path(args = {})
             # args id is the solr facet
             # params id is the collection id
+            request.params.delete("id")
             args.merge!(request.params)
             main_app.sequential_section_list_media_facet_path(@collection.id, args)
           end
+
 
         def collection_type
           Hyrax::CollectionType.find_by(title: 'Sequential Section List')

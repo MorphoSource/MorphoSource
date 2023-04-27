@@ -78,11 +78,12 @@ module Morphosource
 
           # mime_type
           def mime_type
-            if file_name.present?
-              Rack::Mime.mime_type(File.extname(file_name))
-            else
-              super
-            end
+            # if file_name.present?
+            #   Rack::Mime.mime_type(File.extname(file_name))
+            # else
+            #   super
+            # end
+            "image/jpeg"
           end
 
           # pixel_spacing

@@ -11,7 +11,8 @@ module Morphosource
           end
 
           def import_url
-            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"]
+            # @slide_json["http://rs.tdwg.org/ac/terms/accessURI"]
+            "https://iiif.mcz.harvard.edu/iiif/3/3816312/full/1000,/0/default.jpg"
           end
 
           private

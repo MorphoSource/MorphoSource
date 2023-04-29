@@ -17,8 +17,30 @@ module BatchSubmissionsImporter
 
     def call
       fc = factory_class(model)
-      f = fc.new(attributes, files_directory, update, preview_file)
-      f.run
+byebug
+# need to handle , ::LDP::HttpError
+
+      num_retries = 5
+      retry_interval = 5 # 180 # seconds
+
+      begin
+        f = fc.new(attributes, files_directory, update, preview_file)
+        object = f.run          
+      rescue Faraday::ConnectionFailed => e
+        if num_retries > 0 && !object.present?
+          puts "Exception in BatchObjectImporter: #{e.message}  Retrying in #{retry_interval} seconds..."
+          num_retries -= 1
+          sleep retry_interval
+          retry
+        else
+          byebug
+          if !object.present?
+            raise "Exception in BatchObjectImporter (max retries reached): #{e.message}"
+          end
+        end
+      end
+
+
     end
 
     def factory_class(model)

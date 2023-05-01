@@ -74,10 +74,8 @@ module Morphosource
                                   description: @slide.description,
                                   fileset_accessibility: @slide.fileset_accessibility,
                                   identifier: @slide.identifier,
-                                  # import_url: @slide.import_url,
-                                  # remote_origin_url: @slide.import_url,
-                                  import_url: "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg",
-                                  remote_origin_url: "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg",
+                                  import_url: @slide.import_url,
+                                  remote_origin_url: @slide.import_url,
                                   license: @slide.license,
                                   media_type: ["Image"],
                                   orientation: @slide.orientation,
@@ -112,22 +110,20 @@ module Morphosource
         file_set.accessibility = ["open"]
         # need to update this to use full size
         # file_set.import_url = @slide.import_url
-        # file_set.import_url = @slide.reduced_size_url
-        file_set.import_url = "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg"
+        file_set.import_url = @slide.reduced_size_url
         file_set.mime_type_of_remote = "image/jpeg"
         file_set.save
 
-        # Morphosource::Works::AddExternalFileToFileSet.call(file_set, file_set.import_url, :original_file, update_existing: true, versioning: false)
-        Morphosource::Works::AddExternalFileToFileSet.call(file_set, "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg", :original_file, update_existing: true, versioning: false)
+        Morphosource::Works::AddExternalFileToFileSet.call(file_set, file_set.import_url, :original_file, update_existing: true, versioning: false)
+        # Morphosource::Works::AddExternalFileToFileSet.call(file_set, "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg", :original_file, update_existing: true, versioning: false)
       end
 
       def characterize_file
         file = @media.file_sets.first.original_file
-        @slide.file_characterization_methods.each do |method|
-          file.send(method+'=', @slide.send(method))
-        end
+        # @slide.file_characterization_methods.each do |method|
+        #   file.send(method+'=', @slide.send(method))
+        # end
         # file.mime_type = "message/external-body; access-type=URL; URL=\"#{@slide.import_url}\""
-        file.mime_type = "message/external-body; access-type=URL; URL=\"#{"https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg"}\""
 
         file.save!
       end

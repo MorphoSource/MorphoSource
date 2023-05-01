@@ -39,12 +39,12 @@ module Morphosource
 
           # file_name
           def file_name
-            @iiif_json["originalFilename"] || super
+            @iiif_json&.dig("originalFilename") || super
           end
 
           # file_size
           def file_size
-            @iiif_json["fileSize"] || super
+            @iiif_json&.dig("fileSize") || super
           end
 
           def fileset_accessibility
@@ -53,7 +53,7 @@ module Morphosource
 
           # height
           def height
-            @iiif_json["height"]&.to_s || super
+            @iiif_json&.dig("height")&.to_s || super
           end
 
           # identifier
@@ -135,7 +135,7 @@ module Morphosource
           # unit
           # See https://exiftool.org/TagNames/EXIF.html
           def unit
-            ru = @iiif_exif["ResolutionUnit"]
+            ru = @iiif_exif&.dig("ResolutionUnit")
             ru.present? ? Array(Morphosource::ExifData::ResolutionUnitService.new.label(ru)) : super
           end
 
@@ -145,7 +145,7 @@ module Morphosource
 
           # width
           def width
-            w = @iiif_json["width"]&.to_s
+            w = @iiif_json&.dig("width")&.to_s
             w.present? ? w : super
           end
 

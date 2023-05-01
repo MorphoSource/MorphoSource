@@ -74,8 +74,10 @@ module Morphosource
                                   description: @slide.description,
                                   fileset_accessibility: @slide.fileset_accessibility,
                                   identifier: @slide.identifier,
-                                  import_url: @slide.import_url,
-                                  remote_origin_url: @slide.import_url,
+                                  # import_url: @slide.import_url,
+                                  # remote_origin_url: @slide.import_url,
+                                  import_url: "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg",
+                                  remote_origin_url: "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg",
                                   license: @slide.license,
                                   media_type: ["Image"],
                                   orientation: @slide.orientation,
@@ -103,25 +105,20 @@ module Morphosource
 
       def add_fileset_and_file
         name = @slide.file_name
-        # file_set = FileSet.create(title: [name], label: name)
-        # file_set = FileSet.create(title: ["default.jpg"],
-        #                           label: "default.jpg",
-        #                           accessibility: ["open"],
-        #                           import_url: @slide.import_url,
-        #                           mime_type_of_remote: "image/jpeg")
+
         file_set = @media.file_sets.first
         file_set.title = ["default.jpg"]
         file_set.label = "default.jpg"
         file_set.accessibility = ["open"]
-        file_set.import_url = @slide.import_url
+        # need to update this to use full size
+        # file_set.import_url = @slide.import_url
+        # file_set.import_url = @slide.reduced_size_url
+        file_set.import_url = "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg"
         file_set.mime_type_of_remote = "image/jpeg"
         file_set.save
 
-        # @media.ordered_members << file_set
-        # @media.save!
-        # file = Tempfile.new(name)
-        # Hydra::Works::AddFileToFileSet.call(file_set, file, :original_file, update_existing: true, versioning: true)
-        Morphosource::Works::AddExternalFileToFileSet.call(file_set, file_set.import_url, :original_file, update_existing: true, versioning: false)
+        # Morphosource::Works::AddExternalFileToFileSet.call(file_set, file_set.import_url, :original_file, update_existing: true, versioning: false)
+        Morphosource::Works::AddExternalFileToFileSet.call(file_set, "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg", :original_file, update_existing: true, versioning: false)
       end
 
       def characterize_file
@@ -129,7 +126,9 @@ module Morphosource
         @slide.file_characterization_methods.each do |method|
           file.send(method+'=', @slide.send(method))
         end
-        file.mime_type = "message/external-body; access-type=URL; URL=\"#{@slide.import_url}\""
+        # file.mime_type = "message/external-body; access-type=URL; URL=\"#{@slide.import_url}\""
+        file.mime_type = "message/external-body; access-type=URL; URL=\"#{"https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg"}\""
+
         file.save!
       end
 

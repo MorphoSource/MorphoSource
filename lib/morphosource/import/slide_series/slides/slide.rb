@@ -13,7 +13,9 @@ module Morphosource
 
           FILE_STRING_METHODS = %w[image_type mime_type original_name]
 
-          (MEDIA_ARRAY_METHODS + FILE_ARRAY_METHODS).each do |method|
+          IMAGING_EVENT_ARRAY_METHODS = %w[imaging_description]
+
+          (MEDIA_ARRAY_METHODS + FILE_ARRAY_METHODS + IMAGING_EVENT_ARRAY_METHODS).each do |method|
             define_method(method) do
               []
             end

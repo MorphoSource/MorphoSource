@@ -11,9 +11,17 @@ module Morphosource
           end
 
           def import_url
-            # @slide_json["http://rs.tdwg.org/ac/terms/accessURI"]
-            "https://iiif.mcz.harvard.edu/iiif/3/3816312/full/1000,/0/default.jpg"
+            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"]
+            # "https://iiif.mcz.harvard.edu/iiif/3/3816312/full/1000,/0/default.jpg"
+            # "https://ids.lib.harvard.edu/ids/iiif/47174896/full/full/0/default.jpg"
           end
+
+          # mcz server is not delivering full size images right now, fix this later.
+          # file set should be able to use import_url.
+          def reduced_size_url
+            iiif_base_uri.concat('/full/5000,/0/default.jpg')
+          end
+
 
           private
 

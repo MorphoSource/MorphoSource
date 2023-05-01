@@ -8,27 +8,27 @@ module Morphosource
 
           # bits_per_sample
           def bits_per_sample
-            @iiif_exif.dig("fields","BitsPerSample") || super
+            @iiif_exif&.dig("fields","BitsPerSample") || super
           end
 
           # color_space
           # See https://exiftool.org/TagNames/EXIF.html for values
           def color_space
-            cs = @iiif_exif.dig("fields","PhotometricInterpretation")
+            cs = @iiif_exif&.dig("fields","PhotometricInterpretation")
             cs.present? ? Array(Morphosource::ExifData::PhotometricInterpretationService.new.label(cs)) : super
           end
 
           # compression
           # See https://exiftool.org/TagNames/EXIF.html#Compression
           def compression
-            comp = @iiif_exif.dig("fields","Compression")
+            comp = @iiif_exif&.dig("fields","Compression")
             comp.present? ? Array(Morphosource::ExifData::CompressionService.new.label(comp)) : super
           end
 
           # file.create_date
           # date_created
           def date_created
-            date = @iiif_exif.dig('fields',"DateTime")
+            date = @iiif_exif&.dig('fields',"DateTime")
             date.present? ? Array(Date.parse(date.split(' ').first.gsub(':','-')).strftime("%Y-%m-%d")) : super
           end
 
@@ -63,7 +63,7 @@ module Morphosource
           end
 
           def imaging_description
-            description = @iiif_exif.dig("fields","ImageDescription")
+            description = @iiif_exif&.dig("fields","ImageDescription")
             description.present? ? Array(description) : super
           end
 
@@ -115,7 +115,7 @@ module Morphosource
           end
 
           def scanning_software
-            software = @iiif_exif.dig('fields',"Software")
+            software = @iiif_exif&.dig('fields',"Software")
             software.present? ? Array(software) : super
           end
 
@@ -151,8 +151,8 @@ module Morphosource
 
           # x_spacing
           def x_spacing
-            denominator = @iiif_exif.dig('fields',"XResolution","denominator")&.to_f
-            numerator = @iiif_exif.dig('fields',"XResolution","numerator")&.to_f
+            denominator = @iiif_exif&.dig('fields',"XResolution","denominator")&.to_f
+            numerator = @iiif_exif&.dig('fields',"XResolution","numerator")&.to_f
             if denominator && numerator
               Array("%f" % (denominator/numerator))
             else
@@ -162,8 +162,8 @@ module Morphosource
 
           # y_spacing
           def y_spacing
-            denominator = @iiif_exif.dig('fields',"YResolution","denominator")&.to_f
-            numerator = @iiif_exif.dig('fields',"YResolution","numerator")&.to_f
+            denominator = @iiif_exif&.dig('fields',"YResolution","denominator")&.to_f
+            numerator = @iiif_exif&.dig('fields',"YResolution","numerator")&.to_f
             if denominator && numerator
               Array("%f" % (denominator/numerator))
             else

@@ -108,9 +108,11 @@ module Morphosource
         def search_facet_path(args = {})
           # args id is the solr facet
           # params id is the collection id
+          request.params.delete("id")
           args.merge!(request.params)
           main_app.media_list_media_facet_path(@collection.id, args)
         end
+
 
         def collection_type
           Hyrax::CollectionType.find_by(title: 'Media List')

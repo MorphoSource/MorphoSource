@@ -108,9 +108,10 @@ module Morphosource
         file_set.title = ["default.jpg"]
         file_set.label = "default.jpg"
         file_set.accessibility = ["open"]
+        file_set.digest = "cc52221b34a430b293965b7bfd03c51059fe1d3f"
         # need to update this to use full size
         # file_set.import_url = @slide.import_url
-        file_set.import_url = @slide.reduced_size_url
+        file_set.import_url = @slide.import_url
         file_set.mime_type_of_remote = "image/jpeg"
         file_set.save
 

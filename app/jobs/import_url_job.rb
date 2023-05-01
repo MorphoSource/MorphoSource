@@ -8,7 +8,7 @@ require 'browse_everything/retriever'
 # and CreateWithRemoteFilesActor when files are located in some other service.
 class ImportUrlJob < Hyrax::ApplicationJob
   include MorphosourceHelper
-  
+
   queue_as Hyrax.config.ingest_queue_name
   attr_reader :file_set, :operation
 
@@ -20,6 +20,7 @@ class ImportUrlJob < Hyrax::ApplicationJob
   # @param [FileSet] file_set
   # @param [Hyrax::BatchCreateOperation] operation
   def perform(file_set, operation, headers = {})
+    byebug
     operation.performing!
     user = User.find_by_user_key(file_set.depositor)
     uri = URI(file_set.import_url)

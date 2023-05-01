@@ -16,14 +16,14 @@ module Morphosource
             # "https://ids.lib.harvard.edu/ids/iiif/47174896/full/max/0/default.jpg"
             # "https://iiif.mcz.harvard.edu/iiif/3/3823276/full/1000,/0/default.jpg"
             # iiif_base_uri.concat('/full/5000,/0/default.jpg')
-            "https://iiif.mcz.harvard.edu/iiif/3/3823276/full/2000,/0/default.png"
+            "https://iiif.mcz.harvard.edu/iiif/3/3823276/full/2000,/0/default.jpg"
           end
 
           # mcz server is not delivering full size images right now, fix this later.
           # file set should be able to use import_url.
           def reduced_size_url
             # iiif_base_uri.concat('/full/1000,/0/default.jpg')
-            "https://iiif.mcz.harvard.edu/iiif/3/3823276/full/2000,/0/default.png"
+            "https://iiif.mcz.harvard.edu/iiif/3/3823276/full/2000,/0/default.jpg"
           end
 
 

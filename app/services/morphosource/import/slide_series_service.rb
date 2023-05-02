@@ -113,10 +113,10 @@ module Morphosource
         file_set.title = ["default.jpg"]
         file_set.label = "default.jpg"
         file_set.accessibility = ["open"]
-        file_set.import_url = @slide.import_url
+        # file_set.import_url = @slide.import_url
         file_set.mime_type_of_remote = "image/jpeg"
-        file_set.save
-
+        file_set.save!
+        # byebug
         # @media.ordered_members << file_set
         # @media.save!
         # file = Tempfile.new(name)

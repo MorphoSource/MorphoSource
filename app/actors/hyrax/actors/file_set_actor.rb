@@ -28,7 +28,7 @@ module Hyrax
         end
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)
-        file_set.title = [file_set.label] if file_set.title.blank?        
+        file_set.title = [file_set.label] if file_set.title.blank?
 
         return false unless file_set.save # Need to save to get an id
 
@@ -93,7 +93,7 @@ module Hyrax
           end
           # update fileset_accessibility
           file_set.accessibility = work.fileset_accessibility
-          
+
           work.ordered_members << file_set
           work.representative = file_set if work.representative_id.blank?
           work.thumbnail = file_set if work.thumbnail_id.blank?
@@ -179,7 +179,7 @@ module Hyrax
         def unlink_from_work
           work = file_set.parent
           return unless work && (work.thumbnail_id == file_set.id || work.representative_id == file_set.id || work.rendering_ids.include?(file_set.id))
-          
+
           new_fileset = other_fileset(work) # is nil if no other fileset
           work.thumbnail = new_fileset if work.thumbnail_id == file_set.id
           work.representative = new_fileset if work.representative_id == file_set.id

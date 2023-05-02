@@ -24,7 +24,7 @@ module Hyrax
         # Skip versioning because versions will be minted by VersionCommitter as necessary during save_characterize_and_record_committer.
 
         if file_set.is_remote_backed?
-          Rails.logger.debug "in FileActor: media is_remote_backed, calling AddExternalFileToFileSet..."          
+          Rails.logger.debug "in FileActor: media is_remote_backed, calling AddExternalFileToFileSet..."
           Hydra::Works::AddExternalFileToFileSet.call(file_set,
                                             file_set.import_url,
                                             relation,

@@ -746,7 +746,6 @@ namespace :morphosource do
 
   desc "Verify remote backed media files"
   task :verify_remote_backed_media => :environment do 
-    output = []
     issues_count = 0
     qry = "has_model_ssim:Media AND remote_origin_url_tesim:* AND file_set_ids_ssim:*"
     media_solr = ActiveFedora::SolrService.query(qry, rows: 999999)
@@ -754,13 +753,21 @@ namespace :morphosource do
       m = Media.find(hit.id)
       issues = Morphosource::RemoteFileVerificationService.call(m)
       if issues.empty?
-        output << "media: #{m.id}, url: #{m.remote_origin_url}, issues: None"  
+        status = "Ok"
+        details = "None"
       else
-        output << "media: #{m.id}, url: #{m.remote_origin_url}, issues: #{issues.join('; ')}" 
         issues_count += 1
+        status = "Issue found"
+        details = issues.join('; ')
       end
+      puts "media: #{m.id}, url: #{m.remote_origin_url}, issues: #{details}"  
+#     health = RemoteFileHealth.create({ 
+#       media: hit.id, 
+#       status: status,
+#       details: issues.join('; ')
+#       })
     end
-    puts output
+
     puts "Number of remote-backed media checked: #{media_solr.count}"
     puts "Issue count: #{issues_count}"
   end

@@ -36,11 +36,12 @@ module Morphosource
                     "type": "Annotation",
                     "motivation": "painting",
                     "body": {
-                      "id": "#{manifest_path}/annotations/girder",
+                      # "id": "#{manifest_path}/annotations/girder",
+                      id: "http://iiif.mcz.harvard.edu/iiif/3/1485160/full/600,/0/default.jpg",
                       "type": "Image",
-                      # "height"=>166,
-                      # "width"=>192,
-                      "format": "image/vnd.kitware.girder",
+                      "height": 183946,
+                      "width": 68736,
+                      "format": "image/jpeg",
                       "label": {
                         "@none": [
                           label
@@ -48,9 +49,13 @@ module Morphosource
                       },
                       "service": [
                         {
-                          "id": media.import_url,
-                          "type": "GirderService",
-                          "profile": "https://images.slide-atlas.org/api/v1"
+                          # "id": media.import_url,
+                          id: "http://iiif.mcz.harvard.edu/iiif/3/1485160",
+                          # "type": "GirderService",
+                          type: "ImageService3",
+                          protocol: "http://iiif.io/api/image",
+                          # "profile": "https://images.slide-atlas.org/api/v1"
+                          profile: "level2"
                         }
                       ]
                     },

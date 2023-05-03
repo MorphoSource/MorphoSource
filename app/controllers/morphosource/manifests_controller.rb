@@ -24,9 +24,10 @@ module Morphosource
         #   response = RestClient.get "https://iiif.mcz.harvard.edu/iiif/3/1485160/info.json"
         #   json = JSON.parse(response.body)
         # else
-        json = iiif_manifest_builder.manifest_for(
-          presenter: iiif_manifest_presenter(m)
-        )
+        # json = iiif_manifest_builder.manifest_for(
+        #   presenter: iiif_manifest_presenter(m)
+        # )
+        json = remote_manifest_builder.manifest_for(m)
         # end
         # byebug
         respond_to do |wants|

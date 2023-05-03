@@ -47,7 +47,7 @@ en:
         date_requested: 'Req.'
       remote_file_health:
         page_title: Remote File Health
-        page_description: This is a report of remote file status and issues 
+        page_description: This is a report of remote file status and issues.
     background_jobs:
       status:
         completed: Complete

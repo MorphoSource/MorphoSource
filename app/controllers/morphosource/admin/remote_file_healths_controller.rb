@@ -7,7 +7,15 @@ module Morphosource
       PAGE_TITLE = I18n.t("morphosource.admin.remote_file_health.page_title")
       PAGE_DESCRIPTION = I18n.t("morphosource.admin.remote_file_health.page_description")
 
-
+      def index
+        if RemoteFileHealth.count > 0
+          @last_checked =  RemoteFileHealth.last.created_at.strftime("%A, %B %d, %Y at %I:%M %p")
+        else
+          @last_checked = "(none)"
+        end
+        super
+      end
+      
       private
 
       # Only admins can access this index route
@@ -16,7 +24,7 @@ module Morphosource
       end
 
       def get_items
-        @items = RemoteFileHealth.all.order(sort_param)
+        @items = RemoteFileHealth.where(status:'Problematic').order(sort_param)
       end
 
       def valid_sort_attributes

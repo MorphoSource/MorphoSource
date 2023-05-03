@@ -7,10 +7,12 @@
 
     <div class="row button-container mt-1 mb-1">
       <div class="col-xs-5 col-align">
-        <%= link_to 'Characterize Media', main_app.media_characterize_path, class: 'btn btn-sm w-100' %>
+        <%= link_to 'Characterize Media', main_app.media_characterize_path, 
+          disabled: @presenter.file_origin == "Remote", class: 'btn btn-sm w-100' %>
       </div>
       <div class="col-xs-5 col-align">
-        <%= link_to 'Derive Media', main_app.media_create_derivatives_path, class: 'btn btn-sm w-100' %>
+        <%= link_to 'Derive Media', main_app.media_create_derivatives_path, 
+          disabled: @presenter.file_origin == "Remote", class: 'btn btn-sm w-100' %>
       </div>
     </div>
   </div>

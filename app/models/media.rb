@@ -59,7 +59,7 @@ class Media < Morphosource::Works::Base
       status = "Ok"
       details = "None"
     else
-      status = "Issue found"
+      status = "Problematic"
       details = issues.join('; ')
     end
         

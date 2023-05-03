@@ -6,8 +6,8 @@ $(document).ready(function() {
 
     if ($('body[class*="teams"]').length) { // check if the page is teams/projects show page
 
-      if ($('body[class*="media-list edit"]').length) {
-        var mediaTable = createOrderedMediaTable('#datatable-media-list');
+      if ($('body[class*="media-list"]').length) {
+        var mediaTable = createMediaTableWithPreview('#datatable-media-list');
       } else {
         var mediaTable = createMediaTable('#datatable-media-list');
       }
@@ -31,9 +31,9 @@ $(document).ready(function() {
 
       $('input.batch_add_selector').on('change', function(e){
         if ($('input.batch_add_selector:checked').length) {
-          $('.batch-action-buttons .btn').removeAttr('disabled').removeClass('disabled');
+          $('.batch-action-buttons .btn:not(.save-media-order)').removeAttr('disabled').removeClass('disabled');
         } else {
-          $('.batch-action-buttons .btn').attr('disabled', 'disabled').addClass('disabled');
+          $('.batch-action-buttons .btn:not(.save-media-order)').attr('disabled', 'disabled').addClass('disabled');
         }
       });
 
@@ -43,9 +43,9 @@ $(document).ready(function() {
           $(this).prop('checked', checkedStatus);
         });
         if ($('input.batch_add_selector:checked').length) {
-          $('.batch-action-buttons .btn').removeAttr('disabled').removeClass('disabled');
+          $('.batch-action-buttons .btn:not(.save-media-order)').removeAttr('disabled').removeClass('disabled');
         } else {
-          $('.batch-action-buttons .btn').attr('disabled', 'disabled').addClass('disabled');
+          $('.batch-action-buttons .btn:not(.save-media-order)').attr('disabled', 'disabled').addClass('disabled');
         }
       });
 

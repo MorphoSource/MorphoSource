@@ -1,0 +1,9 @@
+$('#preview-wrapper').html(
+  "<%= j (render partial: 'preview') %>"
+)
+$('.name-container').html(
+  "<%= j (render partial: 'preview_name') %>"
+)
+
+const mediaList = document.querySelector("div.media-list-results")?.mediaList;
+mediaList?.toggleViewerDisabledWrap();

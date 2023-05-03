@@ -175,10 +175,20 @@ $ms-dark-blue: #002c64;
   color: red !important;  
 }
 
-.no-gutter > [class*='col-'] {
-  padding-right:0 !important;
-  padding-left:0 !important;
+.no-padding {
+	padding: 0 !important;
 }
+
+.no-vertical-padding {
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+}
+
+.no-horizontal-padding {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
 .ui-loading-whole-page {
   background: image-url('loading.gif') center center no-repeat;
   background-color: #fff;

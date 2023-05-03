@@ -1,40 +1,46 @@
 <% if @document_list.count > 0 %>
   <!-- Works -->
-  <div class="hyc-blacklight hyc-bl-results">
-    <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
-      <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
+  <div class="hyc-blacklight hyc-bl-results media-list-results">
+    <div class="collection-table">
+      <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
+        <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
 
-      <table id="datatable-media-list" class="table table-striped teams-projects">
-        <caption class="sr-only">List of media items in this team</caption>
-        <thead>
-        <tr>
-          <th class="checkbox no-sort"><input type="checkbox" id="select-all-for-download" /></th>
-          <% if @current_ability.can? :edit, @collection %>
-            <th class="no-sort" style="max-width:35px; padding-top: 8px; padding-bottm: 8px; padding-left: 5px; padding-right: 5px;">Drag to Reorder</td>
-          <% else %>
-            <th class="no-sort" style="max-width:35px; padding-top: 8px; padding-bottm: 8px; padding-left: 5px; padding-right: 5px;">Order</td>
-          <% end %>
-          <th>&nbsp;<!-- thumbnail column --></th>
-          <th style="max-width:300px; padding-top: 8px; padding-bottm: 8px; padding-left: 5px; padding-right: 5px;"><%= sortable_table_header('ID', 'id') %></th>
-          <th><%= sortable_table_header('Part', 'part_si') %></th>
-          <th><%= sortable_table_header('Object', 'physical_object_title_si') %></th>
-          <th><%= sortable_table_header('Taxonomy', 'taxonomy_si') %></th>
-          <th><%= sortable_table_header('Type', 'human_readable_media_type_si') %></th>
-          <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
-          <th style="padding: 8px 0px 8px 0px;"><%= sortable_table_header('Publication Status', 'publication_status_si') %></th>
-          <th class="remove-column">&nbsp;</th>
-        </tr>
-        </thead>
-        <% if @can_edit %>
-          <tbody id="sortable-media-list" data-url=<%= order_media_path(@collection) %> data-sort=<%= order_media_sort(params["sort"]) %> data-page=<%= order_media_page(params["page"]) %> data-per-page=<%= order_media_per_page(params["per_page"]) %> >
-              <%= render partial: 'edit_document_list_row', collection: @document_list, as: :document, locals: { collection_type: @collection.collection_type.title.downcase, member_ids: Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{@collection.id}").map{|d| d["id"]} } %>
-          </tbody>
-        <% else %>
-          <tbody>
+        <table id="datatable-media-list" class="table teams-projects media-list-show">
+          <thead>
+            <tr>
+              <th class="checkbox no-sort"><input type="checkbox" id="select-all-for-download" /></th>
+              <th><%= sortable_table_header('Media', 'id') %></th>
+              <th><%= sortable_table_header('Part', 'part_si') %></th>
+              <th><%= sortable_table_header('Object', 'physical_object_title_si') %></th>
+              <th><%= sortable_table_header('Taxonomy', 'taxonomy_si') %></th>
+              <th><%= sortable_table_header('Type', 'human_readable_media_type_si') %></th>
+              <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
+              <th style="padding: 8px 0px 8px 0px;"><%= sortable_table_header('Publication Status', 'publication_status_si') %></th>
+              <th class="view-column">View</th>
+            </tr>
+          </thead>
+          <tbody 
+            <% if @can_edit %>
+              id="sortable-media-list" 
+              data-url=<%= order_media_path(@collection) %> 
+              data-sort=<%= order_media_sort(params["sort"]) %> 
+              data-page=<%= order_media_page(params["page"]) %> 
+              data-per-page=<%= order_media_per_page(params["per_page"]) %> 
+            <% end %>
+          >
             <%= render partial: 'document_list_row', collection: @document_list, as: :document %>
           </tbody>
-        <% end %>
-      </table>
-    <% end # / form_tag %>
+        </table>
+
+      <% end # / form_tag %>
+    </div>
+
+    <div class="collection-media-preview <%= @hide_viewer ? "hide" : "" %>">
+      <div class="preview-title">
+        <div>Media Display</div>
+      </div>
+
+      <%= render 'preview_body' %>
+    </div>
   </div>
 <% end %>

@@ -15,6 +15,7 @@ module Hyrax
       :permits_3d_use,
       :physical_object_id,
       :remote_origin_url,
+      :access_control_id,
       to: :solr_document
 
     attr_accessor :team_linked_organization_id, :file_origin, :file_status, :physical_object_type, :idigbio_uuid, :vouchered,

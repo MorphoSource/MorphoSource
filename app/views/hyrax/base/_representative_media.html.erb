@@ -1,62 +1,56 @@
-<% if presenter.is_file_uploaded? %>
-<%# if presenter.representative_id.present? && presenter.representative_presenter.present? %>
-  <% if presenter.preview_in_3D? %>
 
-    <%# if presenter.universal_viewable_ready? && defined?(viewer) && viewer %>
-    <% if presenter.universal_viewer? && presenter.derivative_present? %>
-      <div class="viewer-wrapper">
-        <div class="viewer">
-          <iframe id="uv-iframe"
-            height="100%"
-            width="100%"
-            src="<%= universal_viewer_base_url %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: curation_concern.access_control_id) %>&config=<%= universal_viewer_config_url %>"
-            allowfullscreen
-            frameborder="0"
-          ></iframe>
-        </div>
-      </div>
-    <% else %>
-      <div class="viewer-wrapper-2d">
-        <div class="viewer">
-          <div class="image-wrapper">
-            <div class="not-ready">Interactive/Embeddable Media Preview is currently unavailable. Please check back later.</div>
-          </div>
-        </div>
-      </div>
-    <% end %>
-
-  <% else %>
-
-    <% if presenter.universal_viewable_ready? %>
-      <div class="viewer-wrapper-2d">
-        <div class="viewer">
-          <div class="image-wrapper">
-            <%= render_thumbnail_tag(presenter, {}, {suppress_link:true}) %>
-          </div>
-        </div>
-        <p>Interactive/Embeddable Media Preview disabled by data contributor</p>
-      </div>
-    <% else %>
-      <div class="viewer-wrapper-2d">
-        <div class="viewer">
-          <div class="image-wrapper">
-            <div class="not-ready">Media Preview is currently unavailable. Please check back later.</div>
-            <%#= image_tag 'default.png', class: "canonical-image" %>
-          </div>
-        </div>
-      </div>
-    <% end %>
-
-  <% end %>
-
+<% 
+  if (
+    presenter.present? &&
+    presenter.is_file_uploaded? &&
+    presenter.preview_in_3D? &&
+    presenter.universal_viewer? && 
+    presenter.derivative_present? 
+  )
+%>
+  <%
+    base = universal_viewer_base_url
+    manifest = Rails.application.routes.url_helpers.manifest_path(
+      id: presenter.access_control_id || curation_concern.access_control_id
+    )
+    config = local_assigns[:config] || universal_viewer_config_url
+  %>
+  <div class="viewer-wrapper">
+    <div class="viewer">
+      <iframe id="uv-iframe"
+        height="100%"
+        width="100%"
+        src= <%= "#{base}#?manifest=#{manifest}&config=#{config}" %>
+        allowfullscreen
+        frameborder="0"
+      ></iframe>
+    </div>
+  </div>
 <% else %>
+  <%# Can't preview, fallback handling %>
+  <% error_msg = "" %>
+  <% if !presenter.present? %>
+    <% error_msg = "Unknown error loading preview." %>
+  <% elsif !presenter.is_file_uploaded? %>
+    <% error_msg = "No file uploaded." %>
+  <% elsif !presenter.preview_in_3D? %>
+    <% if presenter.universal_viewable_ready? %>
+      <% error_msg = "Media preview disabled by data contributor." %>
+    <% else %>
+      <% error_msg = "Media preview currently unavailable. Please check back later." %>
+    <% end %>
+  <% elsif !presenter.universal_viewer? || !presenter.derivative_present? %>
+    <% error_msg = "Media preview currently unavailable. Please check back later." %>
+  <% end %>
 
   <div class="viewer-wrapper-2d">
     <div class="viewer">
-      <div class="image-wrapper">
-        <div class="not-ready">No file uploaded</div>
+      <div class="viewer-content-2d">
+        <% if presenter.present? %>
+          <div class="image-wrapper"><%= render_thumbnail_tag(presenter, {}, {suppress_link:true}) %></div>
+        <% end %>
+        <div class="not-ready"><%= error_msg %></div>
       </div>
     </div>
   </div>
-
 <% end %>

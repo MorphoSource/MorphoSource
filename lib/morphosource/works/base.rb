@@ -4,7 +4,7 @@ module Morphosource
   module Works
     class Base < ActiveFedora::Base
       include Morphosource::AccessControls::Permissions
-      include Morphosource::Works::IndexRelatedWorks
+      include IndexRelatedWorks
 
       class_attribute :work_parents_attributes
       class_attribute :work_requires_files

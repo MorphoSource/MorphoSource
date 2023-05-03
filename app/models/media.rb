@@ -123,6 +123,36 @@ class Media < Morphosource::Works::Base
     false
   end
 
+  # Update media publication status, optionally saving Media and any Media FileSets
+  #
+  # @param status [String] new publication status code (one of "open", "restricted", "private")
+  # @raise [ValueError] when publication status is not found in publication statuses authority
+  def update_publication_status(status, save_media = true, save_file_set = true)
+    qa_status_service = Morphosource::Qa::PublicationStatusesService.new
+    qa_entry = qa_status_service.authority.find(status)
+    new_visibility = qa_entry[:visibility]
+    new_accessibility = qa_entry[:accessibility]
+
+    if new_visibility && new_accessibility
+      return if visibility == new_visibility && fileset_accessibility == [new_accessibility]
+
+      self.visibility = new_visibility
+      self.fileset_accessibility = [new_accessibility]
+      self.save! if save_media
+
+      file_sets.each do |file_set|
+        file_set.visibility = new_visibility
+        file_set.accessibility = [new_accessibility]
+        file_set.save! if save_file_set
+      end
+
+      InheritPermissionsJob.perform_later(id) if save_media
+    else
+      raise ValueError "No publication status ID #{status} found in publication statuses authority"
+    end
+
+  end
+
   #
   # Methods for related works and related work attributes
   #

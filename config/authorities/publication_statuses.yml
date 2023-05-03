@@ -1,0 +1,15 @@
+# config/authorities/publication_statuses.yml
+# Possible Media work publication statuses with Media and FileSet visibility and accessibility
+terms:
+  - id: open
+    term: Open Download
+    visibility: open
+    accessibility: open
+  - id: restricted
+    term: Restricted Download
+    visibility: open
+    accessibility: restricted_download
+  - id: private
+    term: Private
+    visibility: restricted
+    accessibility: private

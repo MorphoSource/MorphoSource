@@ -52,7 +52,7 @@ class Media < Morphosource::Works::Base
     return (is_remote_backed? ? "Remote" : "Local")
   end
 
-  def verify_remote_file
+  def set_remote_file_health
     return unless self.is_remote_backed?
     issues = Morphosource::RemoteFileVerificationService.call(self)
     if issues.empty?
@@ -62,7 +62,7 @@ class Media < Morphosource::Works::Base
       status = "Issue found"
       details = issues.join('; ')
     end
-    
+        
     if (health = RemoteFileHealth.where(media: self.id)&.first).present?
       health.update({ 
         status: status,

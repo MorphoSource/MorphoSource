@@ -746,11 +746,15 @@ namespace :morphosource do
 
   desc "Verify remote backed media files"
   task :verify_remote_backed_media => :environment do 
+
+    # todo: allow delete all in dashboard? or delete every time? 
+    #RemoteFileHealth.delete_all
+
     qry = "has_model_ssim:Media AND remote_origin_url_tesim:* AND file_set_ids_ssim:*"
     media_solr = ActiveFedora::SolrService.query(qry, rows: 999999)
     media_solr.each do |hit|
       m = Media.find(hit.id)
-      m.verify_remote_file if m.present?
+      m.set_remote_file_health if m.present?
     end
     puts "Number of remote-backed media checked: #{media_solr.count}"
   end

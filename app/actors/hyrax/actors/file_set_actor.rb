@@ -25,6 +25,7 @@ module Hyrax
           file_set.digest = Digest::SHA1.file(file.path).to_s
           # get the actual file name set previously in import_url_job (to avoid no/wrong file ext)
           file_set.label = File.basename(file.path)
+          file_set.e_tag = MorphosourceHelper::RemoteFileInfo.new(file_set.import_url)&.e_tag
         end
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)

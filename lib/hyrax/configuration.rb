@@ -163,7 +163,7 @@ module Hyrax
     def python_path
       @python_path ||= 'python3'
     end
-    
+
     attr_writer :derivatives_tmp_path
     def derivatives_tmp_path
       @derivatives_tmp_path ||= Rails.root.join("tmp")
@@ -223,21 +223,21 @@ module Hyrax
     end
 
     # @!attribute [w] update_fast_queue_name
-    #   ActiveJob queue to handle background work or collection update jobs that need to be run relatively soon. 
+    #   ActiveJob queue to handle background work or collection update jobs that need to be run relatively soon.
     attr_writer :update_fast_queue_name
     def update_fast_queue_name
       @update_fast_queue_name ||= :update_fast
     end
 
     # @!attribute [w] update_medium_queue_name
-    #   ActiveJob queue to handle background work or collection update jobs that can be run with medium priority. 
+    #   ActiveJob queue to handle background work or collection update jobs that can be run with medium priority.
     attr_writer :update_medium_queue_name
     def update_medium_queue_name
       @update_medium_queue_name ||= :update_medium
     end
 
     # @!attribute [w] update_slow_queue_name
-    #   ActiveJob queue to handle background work or collection update jobs that can be run relatively slowly. 
+    #   ActiveJob queue to handle background work or collection update jobs that can be run relatively slowly.
     attr_writer :update_slow_queue_name
     def update_slow_queue_name
       @update_slow_queue_name ||= :update_slow
@@ -467,7 +467,7 @@ module Hyrax
 
     attr_writer :default_show_work_item_rows
     def default_show_work_item_rows
-      @default_show_work_item_rows ||= 10 # default rows per page 
+      @default_show_work_item_rows ||= 10 # default rows per page
     end
 
     attr_writer :default_rows_per_page_range
@@ -497,7 +497,7 @@ module Hyrax
 
     attr_writer :batch_user_key
     def batch_user_key
-      @batch_user_key 
+      @batch_user_key
     end
 
     attr_writer :audit_user_key
@@ -599,6 +599,11 @@ module Hyrax
       @iiif_metadata_fields ||= Hyrax::Forms::WorkForm.required_fields
     end
     attr_writer :iiif_metadata_fields
+
+    def iiif_remote_manifest_servers
+      @iiif_remote_manifest_servers
+    end
+    attr_writer :iiif_remote_manifest_servers
 
     # Should a button with "Share my work" show on the front page to users who are not logged in?
     attr_writer :display_share_button_when_not_logged_in

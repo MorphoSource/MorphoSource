@@ -11,17 +11,24 @@ module Morphosource
       iiif_manifest_factory: ::IIIFManifest::V3::ManifestFactory
     )
 
+    class_attribute :remote_manifest_builder
+    self.remote_manifest_builder = Morphosource::RemoteManifestBuilderService
+
     def show
       headers['Access-Control-Allow-Origin'] = '*'
-
       if params.include?(:id) && (m = media_from_access_control(params[:id]))
         authorize_media_with_temporary_link m.id
         authorize! :read, m.id
 
+        # if remote_iiif_server?(m)
+        #   response = RestClient.get "https://iiif.mcz.harvard.edu/iiif/3/1485160/info.json"
+        #   json = JSON.parse(response.body)
+        # else
         json = iiif_manifest_builder.manifest_for(
           presenter: iiif_manifest_presenter(m)
         )
-
+        # end
+        # byebug
         respond_to do |wants|
           wants.json { render json: json }
           wants.html { render json: json }
@@ -34,7 +41,7 @@ module Morphosource
       redirect_to '/'
     end
 
-    private 
+    private
       def media_from_access_control(access_control_id)
         Media.where(accessControl_ssim: access_control_id)&.first
       end
@@ -48,6 +55,14 @@ module Morphosource
           p.hostname = request.base_url
           p.ability = current_ability
         end
+      end
+
+      def remote_iiif_server?(m)
+        remote_servers = Hyrax.config.iiif_remote_manifest_servers
+        remote_servers.any? {|server| m.remote_origin_url.include? server}
+
+        # haystack.match? Regexp.union(needles)
+
       end
   end
 end

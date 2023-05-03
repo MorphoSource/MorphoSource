@@ -4,6 +4,7 @@ module Morphosource
     queue_as Hyrax.config.update_medium_queue_name
 
     def perform(media_id: nil, organization_id: nil, user_email: nil, remove_previous_reviewers: false, update_publication_status: nil)
+      byebug
       return false if [media_id, organization_id, user_email, remove_previous_reviewers, update_publication_status].any?(&:blank?)
       @media = Media.find(media_id)
       @organization = Organization.find(organization_id)
@@ -79,6 +80,7 @@ module Morphosource
     end
 
     def copy_organization_permissions
+      byebug
       # copy organization settings to media if filled out or intentionally blank
       if @organization.rights_holder.present? || @organization.rights_holder_blank == ["1"]
         @media.rights_holder = @organization.rights_holder

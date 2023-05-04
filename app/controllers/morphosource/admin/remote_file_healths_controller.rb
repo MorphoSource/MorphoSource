@@ -15,6 +15,17 @@ module Morphosource
         end
         super
       end
+
+      def verify
+        if current_user.admin?
+          Process.fork do
+            system("rake morphosource:verify_remote_backed_media")
+          end
+          flash[:notice] = "System-wide remote file verification has been started.  Please check this page later to see the updates."
+        end
+        redirect_to(main_app.remote_file_health_path) and return      
+      end
+
       
       private
 

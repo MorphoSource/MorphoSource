@@ -1,7 +1,28 @@
+<% 
+media_doc = solr_doc_find(item.media)
+org_doc = solr_doc_find(media_doc&.media_organization_id)
+team_doc = solr_doc_find(org_doc&.team_id)
+%>
+
 <tr id="item_<%= item.id %>">
-  <td><%= item.media %></td>
+  <td>
+    <% if media_doc.present? %>
+      <%= link_to [main_app, media_doc], id: "src_copy_link#{media_doc.id}" do %>
+        <%= media_doc.id %>
+      <% end %>
+    <% else %>
+      (Media missing)
+    <% end %>
+  </td>
+  <td>
+    <% if team_doc.present? %>
+      <%= link_to [main_app, team_doc], id: "src_copy_link#{team_doc.id}" do %>
+        <%= team_doc.title.first %>
+      <% end %>
+    <% end %>
+  </td>
+  <td><%= media_doc&.remote_origin_url&.first %></td>
   <td><%= item.details %></td>
-  <td>org team</td>
   <td class="date"><%= item.created_at %></td> 
   <td class="date"><%= item.updated_at %></td> 
 </tr>

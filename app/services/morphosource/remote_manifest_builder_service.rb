@@ -37,10 +37,10 @@ module Morphosource
                     "motivation": "painting",
                     "body": {
                       # "id": "#{manifest_path}/annotations/girder",
-                      id: "http://iiif.mcz.harvard.edu/iiif/3/1485160/full/600,/0/default.jpg",
+                      id: "https://iiif.mcz.harvard.edu/iiif/3/3823362/info.json",
                       "type": "Image",
-                      "height": 183946,
-                      "width": 68736,
+                      "width": 159920,
+                      "height": 196312,
                       "format": "image/jpeg",
                       "label": {
                         "@none": [
@@ -50,7 +50,7 @@ module Morphosource
                       "service": [
                         {
                           # "id": media.import_url,
-                          id: "http://iiif.mcz.harvard.edu/iiif/3/1485160",
+                          id: "https://iiif.mcz.harvard.edu/iiif/3/3823362",
                           # "type": "GirderService",
                           type: "ImageService3",
                           protocol: "http://iiif.io/api/image",

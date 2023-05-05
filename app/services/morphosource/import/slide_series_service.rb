@@ -37,7 +37,7 @@ module Morphosource
           @slide = slide_class.new(@json, slide_json)
           @imaging_event = create_new_imaging_event
           @media = create_new_media
-          @file_set = file_set
+          @file_set = update_file_set
           add_media_to_imaging_event
           add_original_file
           characterize_file
@@ -96,8 +96,10 @@ module Morphosource
         media.reload
       end
 
-      def file_set
-        @media.file_sets.first.update(title: [@slide.file_name], label: @slide.file_name, mime_type_of_remote: @slide.mime_type)
+      def update_file_set
+        fs = @media.file_sets.first
+        fs.update(title: [@slide.file_name], label: @slide.file_name, mime_type_of_remote: @slide.mime_type)
+        fs.reload
       end
 
       def add_media_to_imaging_event
@@ -114,6 +116,7 @@ module Morphosource
         @slide.file_characterization_methods.each do |method|
           file.send(method+'=', @slide.send(method))
         end
+        file.mime_type = "message/external-body; access-type=URL; URL=\"#{@file_set.import_url}\""
         file.save!
       end
 

@@ -138,4 +138,8 @@ class FileSet < ActiveFedora::Base
     return false unless self.parent.present?
     return self.parent.has_remote_manifest?
   end
+
+  def remote_manifest_url
+    self.parent&.remote_manifest_url
+  end
 end

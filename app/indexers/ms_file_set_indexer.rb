@@ -3,6 +3,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
   def generate_solr_document
     super.tap do |solr_doc|
       solr_doc['mime_type_ssi'] = object.is_remote_backed? ? object.mime_type_of_remote : object.mime_type
+      solr_doc['remote_manifest_url_ssi'] = object.remote_manifest_url
       solr_doc['download_access_group_ssim'] = object.download_groups
       solr_doc['download_access_person_ssim'] = object.download_users
       solr_doc['crc32_tesim'] = object.crc32

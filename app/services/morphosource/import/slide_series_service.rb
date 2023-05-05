@@ -130,7 +130,7 @@ module Morphosource
       def find_or_create_specimen
         specimen_doc = Morphosource::SolrService.new.get_docs("occurrence_id_tesim:#{occurrence_id} AND has_model_ssim:BiologicalSpecimen")&.first
         return BiologicalSpecimen.find(specimen_doc["id"]) if specimen_doc.present?
-\
+
         specimen = BiologicalSpecimen.new(title: ['new specimen'],
                                           depositor: @admin.user_key,
                                           date_uploaded: Date.today,

@@ -17,9 +17,6 @@ terms:
   - id: http://creativecommons.org/licenses/by-nc-sa/3.0/us/
     term: Attribution-NonCommercial-ShareAlike 3.0 United States
     active: false
-  - id: http://creativecommons.org/licences/by-nc-sa/3.0/
-    term: Creative Commons BY-NC-SA Attribution-NonCommercial-ShareAlike 3.0 International
-    active: false
   - id: http://www.europeana.eu/portal/rights/rr-r.html
     term: All rights reserved
     active: false

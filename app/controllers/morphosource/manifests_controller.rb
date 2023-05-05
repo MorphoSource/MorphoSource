@@ -17,7 +17,7 @@ module Morphosource
 
     def show
       headers['Access-Control-Allow-Origin'] = '*'
-      byebug
+
       if params.include?(:id) && (m = media_from_access_control(params[:id]))
         authorize_media_with_temporary_link m.id
         authorize! :read, m.id

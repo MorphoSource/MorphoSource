@@ -136,4 +136,13 @@ class SolrDocument
   def specimen?
     self["has_model_ssim"] == ["BiologicalSpecimen"]
   end
+
+  # Remote manifests
+  def remote_manifest_url
+    self['remote_manifest_url_ssi']
+  end
+
+  def has_remote_manifest?
+    self['remote_manifest_url_ssi'].present?
+  end
 end

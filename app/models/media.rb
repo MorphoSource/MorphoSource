@@ -46,6 +46,10 @@ class Media < Morphosource::Works::Base
     self.remote_origin_url&.match(/^https?:\/\//).present?
   end
 
+  def has_remote_manifest?
+    remote_manifest_url.present?
+  end
+
   def file_origin
     return "" unless self.file_sets.present?
     return (is_remote_backed? ? "Remote" : "Local")

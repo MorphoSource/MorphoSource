@@ -8,7 +8,7 @@ file_set = member_edit
   </td>
   <td class="w-50 attribute attribute-filename ensure-wrapped">
     <% if @presenter.file_origin == "Remote" %>
-      <%= @presenter.remote_origin_url&.first %>
+      <%= @presenter.remote_origin_url %>
     <% else %>
       <%= member.link_name %>
     <% end %>

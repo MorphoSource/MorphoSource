@@ -172,12 +172,12 @@ module Morphosource
         media.map do |m|
           if m.is_remote_backed?
             file_set = get_and_validate_fileset_for_remote(m)
-            file_uri = file_set.import_url
             return [] unless file_set.present?
+            file_uri = file_set.import_url
           else
             file_set, original_file = get_and_validate_fileset(m)
-            file_uri = file_set.original_file.uri
             return [] unless file_set.present? && original_file.present?
+            file_uri = file_set.original_file.uri
           end
           
           attrs = {

@@ -4,7 +4,7 @@ module Morphosource
     class RemoteFileHealthsController < Morphosource::ItemtableController
       include MorphosourceHelper
       include Morphosource::ResqueJobsHelper
-      prepend_before_action :authorize_index, only: [:index]
+      prepend_before_action :authorize, only: [:index, :verify]
 
       PAGE_TITLE = I18n.t("morphosource.admin.remote_file_health.page_title")
       PAGE_DESCRIPTION = I18n.t("morphosource.admin.remote_file_health.page_description")
@@ -19,22 +19,19 @@ module Morphosource
       end
 
       def verify
-        if current_user.admin?
-          if active_jobs("RemoteFileVerificationJob").count > 0
-            flash[:error] = "An existing system-wide remote file verification is running."
-          else
-            RemoteFileVerificationJob.perform_later
-            flash[:notice] = "System-wide remote file verification has been started.  Please check this page later to see the updates."
-          end          
-        end
+        if active_jobs("RemoteFileVerificationJob").count > 0
+          flash[:error] = "An existing system-wide remote file verification is running."
+        else
+          RemoteFileVerificationJob.perform_later
+          flash[:notice] = "System-wide remote file verification has been started.  Please check this page later to see the updates."
+        end          
         redirect_to(main_app.remote_file_health_path) and return      
       end
 
       
       private
 
-      # Only admins can access this index route
-      def authorize_index
+      def authorize
         authorize! :manage, RemoteFileHealth
       end
 

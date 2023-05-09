@@ -25,6 +25,7 @@ module Hyrax
           file_set.digest = Digest::SHA1.file(file.path).to_s
           # get the actual file name set previously in import_url_job (to avoid no/wrong file ext)
           file_set.label = File.basename(file.path)
+          file_set.e_tag = MorphosourceHelper::RemoteFileInfo.new(file_set.import_url)&.e_tag
         end
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)
@@ -41,12 +42,12 @@ module Hyrax
           # Copy visibility and permissions from parent (work) to
           # FileSets even if they come in from BrowseEverything
           VisibilityCopyJob.perform_later(file_set.parent)
-          InheritPermissionsJob.perform_later(file_set.parent)
+          InheritPermissionsJob.perform_later(file_set.parent.id)
         else
           IngestJob.perform_later(wrapper!(file: file, relation: relation))
           # DropBox BrowseEverything does not use from_url, but needs these set
           VisibilityCopyJob.perform_later(file_set.parent) if file_set.parent.present?
-          InheritPermissionsJob.perform_later(file_set.parent) if file_set.parent.present?
+          InheritPermissionsJob.perform_later(file_set.parent.id) if file_set.parent.present?
         end
       end
 

@@ -5,6 +5,7 @@ class FileSet < ActiveFedora::Base
   property :accessibility, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/accessibility")
   property :mime_type_of_remote, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mimeTypeOfRemote"), multiple: false
   property :digest, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/digest"), multiple: false
+  property :e_tag, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/ETag"), multiple: false
 
   include Morphosource::FileSetBehavior
 
@@ -132,5 +133,14 @@ class FileSet < ActiveFedora::Base
   def is_remote_backed?
     return false unless self.parent.present?
     return self.parent.is_remote_backed?
+  end
+
+  def has_remote_manifest?
+    return false unless self.parent.present?
+    return self.parent.has_remote_manifest?
+  end
+
+  def remote_manifest_url
+    self.parent&.remote_manifest_url
   end
 end

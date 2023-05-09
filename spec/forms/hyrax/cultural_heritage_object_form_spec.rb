@@ -61,7 +61,7 @@ RSpec.describe Hyrax::CulturalHeritageObjectForm do
 
     it 'has the expected primary metadata terms' do
       expect(subject.primary_terms).to match_array(required_fields + [ :short_title, :bibliographic_citation,
-                                                                       :based_near, :catalog_number, :collection_code,
+                                                                       :catalog_number, :collection_code,
                                                                        :date_created, :identifier, :related_url ])
     end
 

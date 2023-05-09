@@ -411,7 +411,7 @@ module Hyrax
             end
           end
           if curation_concern.attributes["fileset_visibility"] == ["restricted"]
-            InheritPermissionsJob.perform_later(curation_concern) if permissions_changed?
+            InheritPermissionsJob.perform_later(curation_concern.id) if permissions_changed?
             restrict_all_filesets
             flash_message = 'Updating file permissions to restricted. This may take a few minutes. You may want to refresh your browser or return to this record later to see the updated file permissions.'
             return redirect_to [main_app, curation_concern], notice: flash_message

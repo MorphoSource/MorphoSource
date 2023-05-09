@@ -46,7 +46,7 @@
           main_app.admin_fund_codes_path,
           main_app.fund_code_charges_path
         ].any? { |path| current_page?(path) } do %>
-        
+
         <%= menu.nav_link(main_app.admin_contributor_petitions_path) do %>
           <span class="fa fa-award" aria-hidden="true"></span> <span class="sidebar-action-text">
             <%= t('morphosource.admin.sidebar.contributor_petitions') %>
@@ -70,12 +70,16 @@
           <span class="fa fas fa-money-check-alt" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.fund_code_charges') %></span>
         <% end %>
 
+        <%= menu.nav_link(main_app.admin_import_slides_path) do %>
+          <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.import_slides') %></span>
+        <% end %>
+
       <% end %>
     </li>
-  
-    
 
-    
+
+
+
 
     <li>
       <%= menu.collapsable_section t('hyrax.admin.sidebar.settings'),

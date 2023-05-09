@@ -636,7 +636,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           end
 
           it 'calls the InheritPermissionsJob' do
-            expect(InheritPermissionsJob).to receive(:perform_later).with(curation_concern)
+            expect(InheritPermissionsJob).to receive(:perform_later).with(curation_concern.id)
             patch :update, params: { id: curation_concern, media: {visibility: "hidden"}, action: "update" }
           end
         end
@@ -647,7 +647,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           end
 
           it 'does not call the InheritPermissionsJob' do
-            expect(InheritPermissionsJob).not_to receive(:perform_later).with(curation_concern)
+            expect(InheritPermissionsJob).not_to receive(:perform_later).with(curation_concern.id)
             patch :update, params: { id: curation_concern, media: {visibility: "hidden"}, action: "update" }
           end
         end

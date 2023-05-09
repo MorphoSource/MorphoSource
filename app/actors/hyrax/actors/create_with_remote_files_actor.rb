@@ -90,7 +90,9 @@ module Hyrax
               file_path = CGI.unescape(uri.path)
               IngestLocalFileJob.perform_later(fs, file_path, env.user)
             else
-              ImportUrlJob.perform_later(fs, operation_for(user: actor.user), auth_header)
+              unless env.curation_concern.has_remote_manifest?
+                ImportUrlJob.perform_later(fs, operation_for(user: actor.user), auth_header)
+              end
             end
           end
         end

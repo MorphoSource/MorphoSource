@@ -14,6 +14,7 @@ module Hyrax
       :required_archival_of_published_derivatives,
       :permits_3d_use,
       :physical_object_id,
+      :remote_manifest_url,
       :remote_origin_url,
       :access_control_id,
       to: :solr_document
@@ -198,6 +199,10 @@ module Hyrax
       @media ||= Media.where('id' => solr_document.id).first
     end
 
+    def has_remote_manifest?
+      remote_manifest_url.present?
+    end
+
     def get_showcase_data
       # todo: need to get the user name (and a link to user) from the email address
       @data_managed_by = solr_document.user_with_ownership
@@ -247,11 +252,11 @@ module Hyrax
       @file_set_list = media.file_set_ids
       @file_set_list.each do |id|
         file_set = ::FileSet.find(id)
-        if file_set.is_remote_backed? 
+        if file_set.is_remote_backed?
           if !file_set.mime_type_of_remote.present?
             @file_set_original_file_ready = false
           end
-        elsif !file_set.original_file.present?          
+        elsif !file_set.original_file.present?
           @file_set_original_file_ready = false
         end
 

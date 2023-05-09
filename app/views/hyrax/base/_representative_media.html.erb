@@ -1,11 +1,13 @@
 
-<% 
+<%
   if (
-    presenter.present? &&
-    presenter.is_file_uploaded? &&
-    presenter.preview_in_3D? &&
-    presenter.universal_viewer? && 
-    presenter.derivative_present? 
+    presenter&.has_remote_manifest? ||
+    (
+      presenter&.is_file_uploaded? &&
+      presenter.preview_in_3D? &&
+      presenter.universal_viewer? &&
+      presenter.derivative_present?
+    )
   )
 %>
   <%

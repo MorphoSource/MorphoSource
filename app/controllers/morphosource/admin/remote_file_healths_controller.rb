@@ -4,7 +4,7 @@ module Morphosource
     class RemoteFileHealthsController < Morphosource::ItemtableController
       include MorphosourceHelper
       include Morphosource::ResqueJobsHelper
-      prepend_before_action :authorize, only: [:index, :verify]
+      prepend_before_action :authorize, only: [:index, :verify_all, :verify_media]
 
       PAGE_TITLE = I18n.t("morphosource.admin.remote_file_health.page_title")
       PAGE_DESCRIPTION = I18n.t("morphosource.admin.remote_file_health.page_description")
@@ -15,10 +15,18 @@ module Morphosource
         else
           @last_checked = "(none)"
         end
+        @disable_verify_button = active_jobs("RemoteFileVerificationJob").count > 0
         super
       end
 
-      def verify
+      def verify_media
+        media = Media.find(params[:id])
+        media.set_remote_file_health
+        flash[:notice] = "Remote file of media #{media.id} has been verified."    
+        redirect_to(main_app.remote_file_health_path) and return      
+      end
+
+      def verify_all
         if active_jobs("RemoteFileVerificationJob").count > 0
           flash[:error] = "An existing system-wide remote file verification is running."
         else

@@ -25,4 +25,7 @@ team = solr_doc_find(org&.team_id)
   <td><%= item.details %></td>
   <td class="date"><%= item.created_at %></td> 
   <td class="date"><%= item.updated_at %></td> 
+  <td>
+    <%= link_to 'Verify', main_app.remote_file_health_verify_media_path(id: media.id), class: 'btn btn-xs' %>
+  </td>
 </tr>

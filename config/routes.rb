@@ -465,7 +465,8 @@ Rails.application.routes.draw do
 
       # remote file health dashboard
       get 'admin/remote_file_health', action: :index, controller: :remote_file_healths, as: 'remote_file_health'
-      get 'admin/remote_file_health/verify', action: :verify, controller: :remote_file_healths, as: 'remote_file_health_verify'
+      get 'admin/remote_file_health/verify_all', action: :verify_all, controller: :remote_file_healths, as: 'remote_file_health_verify_all'
+      get 'admin/remote_file_health/verify_media/:id', action: :verify_media, controller: :remote_file_healths, as: 'remote_file_health_verify_media'
 
       # contributor petitions
       get 'admin/contributor_applications', action: :current_applications, controller: :contributor_petitions, as: 'admin_contributor_petitions'

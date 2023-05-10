@@ -15,11 +15,10 @@ module Hyrax
       :permits_3d_use,
       :physical_object_id,
       :remote_manifest_url,
-      :remote_origin_url,
       :access_control_id,
       to: :solr_document
 
-    attr_accessor :team_linked_organization_id, :file_origin, :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
+    attr_accessor :file_label, :team_linked_organization_id, :remote_origin_url, :file_origin, :file_status, :physical_object_type, :idigbio_uuid, :vouchered,
       :physical_object_title, :physical_object_taxonomy_title, :physical_object_link, :physical_object_id,
       :device_and_facility, :device_link, :device, :device_id, :device_label, :device_manufacturer, :device_description,
       :device_organization_institution, :device_modality, :device_modality_term,
@@ -245,7 +244,13 @@ module Hyrax
       @color_depth = []
       @team_linked_organization_id = ""
       @file_status = ""
-      @file_origin = (media.file_origin == "Local") ? "" : media.file_origin # don't display if Local
+      @file_label = ""
+      @remote_origin_url = media.remote_origin_url || ""
+      if media.file_origin == "Remote"
+        @file_origin = "Remote"
+      else
+        @file_origin = ""  # don't display if Local
+      end
       temp = ""
       contents_mime_type = ""
       @file_set_original_file_ready = true
@@ -256,8 +261,11 @@ module Hyrax
           if !file_set.mime_type_of_remote.present?
             @file_set_original_file_ready = false
           end
+          @file_label = @remote_origin_url
         elsif !file_set.original_file.present?
           @file_set_original_file_ready = false
+        else
+          @file_label = file_set.label || ""
         end
 
         # since mime type can me a zip, first try to get the actual content mime type if exists

@@ -57,20 +57,10 @@ module Morphosource
       def team_has_view_access_to_another_organization?
         @view_access_message = ""
         docs = Morphosource::SolrService.new.get_docs("read_access_group_ssim:#{@team.id}_managers")
-        if docs.count > 0
-          media_ids = []
-          po_ids = []
-          rogue_orgs = []
-          docs.each do |d|
-            if d["has_model_ssim"] == ["Media"]
-              media_ids << d["id"]
-              rogue_orgs << d["media_organization_ssim"]
-            elsif d["has_model_ssim"] == ["BiologicalSpecimen"] || d["has_model_ssim"] == ["CulturalHeritageObject"]
-              po_ids << d["id"]
-              rogue_orgs << d["organization_ssim"]
-            end
-          end
-        end
+        return false if docs.empty?
+
+        media_ids, po_ids, rogue_orgs = filter_docs_for_access(docs)
+
         if (media_ids.present? || po_ids.present?)
           @view_access_message = "<p>This team has view access to #{rogue_orgs.uniq.join(', ')} media and/or physical objects.  If the team has recently been unlinked from that organization, check back later. Otherwise, check the following: </p>"
           if media_ids.present?
@@ -88,20 +78,10 @@ module Morphosource
       def team_has_edit_access_to_another_organization?
         @edit_access_message = ""
         docs = Morphosource::SolrService.new.get_docs("edit_access_group_ssim:#{@team.id}_managers")
-        if docs.count > 0
-          media_ids = []
-          po_ids = []
-          rogue_orgs = []
-          docs.each do |d|
-            if d["has_model_ssim"] == ["Media"]
-              media_ids << d["id"]
-              rogue_orgs << d["media_organization_ssim"]
-            elsif d["has_model_ssim"] == ["BiologicalSpecimen"] || d["has_model_ssim"] == ["CulturalHeritageObject"]
-              po_ids << d["id"]
-              rogue_orgs << d["organization_ssim"]
-            end
-          end
-        end
+        return false if docs.empty?
+
+        media_ids, po_ids, rogue_orgs = filter_docs_for_access(docs)
+
         if (media_ids.present? || po_ids.present?)
           @edit_access_message = "<p>This team has edit access to #{rogue_orgs.uniq.join(', ')} media and/or physical objects.  If the team has recently been unlinked from that organization, check back later. Otherwise, check the following: </p>"
           if media_ids.present?
@@ -115,6 +95,32 @@ module Morphosource
           return false
         end
       end
+
+      private
+
+        def filter_docs_for_access(docs)
+          media_ids = []
+          po_ids = []
+          rogue_orgs = []
+          docs.each do |d|
+            if (
+              d["has_model_ssim"] == ["Media"] &&
+              d["media_organization_id_ssim"] != [@organization.id]
+            )
+              media_ids << d["id"]
+              rogue_orgs << d["media_organization_ssim"]
+            elsif (
+              (
+                d["has_model_ssim"] == ["BiologicalSpecimen"] ||
+                d["has_model_ssim"] == ["CulturalHeritageObject"]
+              ) && d["organization_id_ssim"] != [@organization.id]
+            )
+              po_ids << d["id"]
+              rogue_orgs << d["organization_ssim"]
+            end
+          end
+          return media_ids, po_ids, rogue_orgs
+        end
 
     end
   end

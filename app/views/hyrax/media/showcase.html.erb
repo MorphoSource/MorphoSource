@@ -9,6 +9,11 @@
     <div class="content-block preview">
       <%= render @presenter.showcase_viewer_partial, presenter: @presenter %>
     </div>
+    <% if @presenter.remote_file_issues %>
+      <div class="alert-block">
+        <p><%= t('morphosource.media.remote_file_alert.general_message') %></p>
+      </div>
+    <% end %>
     <div class="content-block">
       <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
     </div>

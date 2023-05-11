@@ -78,6 +78,12 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  def remote_file_issues
+    return "" unless self.is_remote_backed?
+    return "" unless (health = RemoteFileHealth.where(media: self.id, status: "Problematic")&.first).present?
+    return health.details
+  end
+
   def cart_items
     CartItem.where(work_id: id)
   end

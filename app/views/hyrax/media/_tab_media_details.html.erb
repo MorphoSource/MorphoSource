@@ -51,11 +51,14 @@
   <!-- right column  -->
   <div class="col-sm-6">
 
-    <%#= render 'edit_media_items', presenter: @presenter, f: f %>
-
     <div class="content-block preview">
       <%= render @presenter.showcase_viewer_partial, presenter: @presenter %>
     </div>
+    <% if @presenter.remote_file_issues %>
+      <div class="alert-block ml-1 mr-1">
+        <p><%= t('morphosource.media.remote_file_alert.edit_access_message') %> Issue(s): <%= @presenter.remote_file_issues %></p>
+      </div>
+    <% end %>
     <div class="content-block">
       <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
     </div>

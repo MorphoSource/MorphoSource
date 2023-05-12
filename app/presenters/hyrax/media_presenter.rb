@@ -252,7 +252,7 @@ module Hyrax
           if !file_set.mime_type_of_remote.present?
             @file_set_original_file_ready = false
           end
-          @remote_file_issues = media.remote_file_issues
+          @remote_file_issues = media.remote_file_health_details.split('; ')
         elsif !file_set.original_file.present?          
           @file_set_original_file_ready = false
         end

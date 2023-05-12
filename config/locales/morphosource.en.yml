@@ -158,7 +158,7 @@ en:
         sequential_section: 'Sequential Section Image Series'
         other: 'Other'
       remote_file_alert:
-        general_message: "File associated with Media record is located in remote storage but MorphoSource is currently unable to verify remote file integrity. File may have changed compared to information listed. Please contact MorphoSource admins if you experience issues with this Media."
+        general_message: "File associated with Media record is located in remote storage but MorphoSource is currently unable to verify remote file integrity. File may have changed compared to information listed. Please contact <a class='link-alert' href='mailto:morphosource@duke.edu'>MorphoSource admins</a> if you experience issues with this Media."
         edit_access_message: "You have edit access to this Media with a File located in remote storage. There is a file integrity verification issue for this record. "
     modal:
       approve:

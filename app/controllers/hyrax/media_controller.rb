@@ -145,6 +145,10 @@ module Hyrax
         params.delete(:media_attachment_delete)
       end
 
+      if params[:media][:remote_origin_url].present?
+        curation_concern.set_remote_file_health
+      end
+
       if file_formats_valid? && actor.update(actor_environment)
         after_update_response
       else

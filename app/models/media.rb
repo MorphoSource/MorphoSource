@@ -78,7 +78,7 @@ class Media < Morphosource::Works::Base
     end
   end
 
-  def remote_file_issues
+  def remote_file_health_details
     return "" unless self.is_remote_backed?
     return "" unless (health = RemoteFileHealth.where(media: self.id, status: "Problematic")&.first).present?
     return health.details

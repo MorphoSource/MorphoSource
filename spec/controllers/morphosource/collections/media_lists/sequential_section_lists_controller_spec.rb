@@ -7,6 +7,7 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
   let(:depositor)                               { User.create(email: 'depositor@email.com', password: 'password') }
   let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'Sequential Section List') }
   let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential Section list'], collection_type_gid: sequential_section_list_collection_type.gid, depositor: depositor.ms_id) }
+  let(:media)                                   { Media.create(title: ['media'], depositor: depositor.ms_id, visibility: 'open') }
 
   describe 'temporary admin-only restriction' do
     let(:params)  { { id: sequential_section_list.id } }
@@ -32,6 +33,8 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
         expect(response.status).to eq(200)
         get :media_download_counts_with_intersections_facet, format: :csv, params: params
         expect(response.status).to eq(200)
+        get :preview, params: params.merge( { media_id: media.id } )
+        expect(response.status).to eq(200)
       end
     end
 
@@ -40,6 +43,8 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
         get :show, params: params
         expect(response.status).to eq(200)
         get :about, params: params
+        expect(response.status).to eq(200)
+        get :preview, params: params.merge( { media_id: media.id } )
         expect(response.status).to eq(200)
       end
 

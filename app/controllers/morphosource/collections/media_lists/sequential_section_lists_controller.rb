@@ -3,9 +3,11 @@ module Morphosource
     module MediaLists
       class SequentialSectionListsController < Morphosource::Collections::MediaListsController
 
-        skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media], instance_name: :sequential_section_list
+        skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media, :preview], instance_name: :sequential_section_list
 
         before_action :redirect_to_collection_type, only: []
+
+        before_action :authorize_admin, only: []
 
         self.presenter_class = Morphosource::Collections::MediaLists::SequentialSectionListPresenter
 

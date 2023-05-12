@@ -40,7 +40,7 @@ $(document).ready(function() {
           activeRow.classList.add("view-active");
           activeRow.querySelector(".currently-viewing").classList.remove("hide");
           activeRow.querySelector(".view-media").classList.add("hide");
-        }   
+        }
       }
 
       // UI updates and AJAX call for media view load
@@ -48,14 +48,15 @@ $(document).ready(function() {
         // Add loading UI overlay
         this.toggleViewerDisabledWrap();
 
-        // Move viewer up or down 
+        // Move viewer up or down
         this.#scrollWindow();
 
         // Enable or disable prev/next buttons
         this.#togglePrevNextButtonState();
 
         // Call AJAX media view load
-        $.get(`/media_lists/${this.activeRow.dataset.collectionId}/preview/${this.activeRow.dataset.documentId}`);
+        let listType = window.location.pathname.split('/')[1] // media_lists or sequential_section_lists
+        $.get(`/${listType}/${this.activeRow.dataset.collectionId}/preview/${this.activeRow.dataset.documentId}`);
       }
 
       // Scroll window to ensure active row is in viewport
@@ -107,7 +108,7 @@ $(document).ready(function() {
 
       #activateListeners() {
         /**
-         * General UI Listeners 
+         * General UI Listeners
          */
 
         const removeMemberListener = (event) => {
@@ -129,18 +130,18 @@ $(document).ready(function() {
             url: $("#sortable-media-list").data("url"),
             type: "GET",
             data: new URLSearchParams({
-              sort: $("#sortable-media-list").data("sort"), 
-              page: $("#sortable-media-list").data("page"), 
-              per_page: 
-                $("#sortable-media-list").data("per-page")}).toString() + 
-                '&' + 
+              sort: $("#sortable-media-list").data("sort"),
+              page: $("#sortable-media-list").data("page"),
+              per_page:
+                $("#sortable-media-list").data("per-page")}).toString() +
+                '&' +
                 $("#sortable-media-list").sortable('serialize')
           });
         }
         document.querySelector("#save-media-order").addEventListener("click", saveOrderListener);
 
         /**
-         * Media view load UI Listeners 
+         * Media view load UI Listeners
          */
 
         // Load view from row click
@@ -216,7 +217,7 @@ $(document).ready(function() {
       // Is there an active row that is not the first possible row?
       #canEnablePrevButton() {
         return (
-          (this.activeRow && this.activeRow != this.activeRow.parentNode.firstElementChild) || 
+          (this.activeRow && this.activeRow != this.activeRow.parentNode.firstElementChild) ||
           this.#prevPageExists()
         );
       }
@@ -224,7 +225,7 @@ $(document).ready(function() {
       // Is there an active row that is not the last row OR is there a next page button?
       #canEnableNextButton() {
         return (
-          (this.activeRow && this.activeRow != this.activeRow.parentNode.lastElementChild) || 
+          (this.activeRow && this.activeRow != this.activeRow.parentNode.lastElementChild) ||
           this.#nextPageExists()
         );
       }

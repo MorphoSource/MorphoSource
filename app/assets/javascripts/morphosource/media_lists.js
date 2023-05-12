@@ -55,7 +55,7 @@ $(document).ready(function() {
         this.#togglePrevNextButtonState();
 
         // Call AJAX media view load
-        let listType = window.location.pathname.split('/')[1] // media_lists or sequential_section_lists
+        const listType = window.location.pathname.split('/')[1]; // media_lists or sequential_section_lists
         $.get(`/${listType}/${this.activeRow.dataset.collectionId}/preview/${this.activeRow.dataset.documentId}`);
       }
 

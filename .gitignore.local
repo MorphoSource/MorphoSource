@@ -1,2 +1,2 @@
 /vendor/docker/docker-compose.env
-docker-compose.yml
+/docker-compose.yml

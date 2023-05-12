@@ -1,0 +1,2414 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MorphoSource Terms Vocabulary</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="msterms.css" rel="stylesheet" type="text/css">
+    <link href="ms/msterms.css" rel="stylesheet" type="text/css">
+    <script id="schema.org" type="application/ld+json">
+[
+  {
+    "@id": "http://www.morphosource.org/terms/ms",
+    "@type": [
+      "https://schema.org/DefinedTermSet"
+    ],
+    "https://schema.org/description": [
+      {
+        "@language": "en",
+        "@value": "Test description for MorphoSource Terms Vocabulary"
+      }
+    ],
+    "https://schema.org/name": [
+      {
+        "@language": "en",
+        "@value": "MorphoSource Terms Vocabulary"
+      }
+    ]
+  }
+]
+	</script>
+  </head>
+  <body>
+    <div id="content">
+      <div class="section" id="Media">
+        <h2>Media Class</h2>
+        <div class="property entity" id="Media">
+          <h3>Term Name ms:Media
+            <sup class="sup-c" title="Class">c</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/Media">http://www.morphosource.org/terms/ms/Media</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Media</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>3D, 2D, or AV media representing a physical object.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subClassOf" title="The subject is a subclass of a class. Defined in The RDF Schema vocabulary (RDFS)">Sub Class Of</a>
+              </td>
+              <td>
+                <a href="http://pcdm.org/works#Work">http://pcdm.org/works#Work</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="https://w3id.org/profile/ontdoc/inDomainOf" title="Property terms referenced by this class as metadata to describe or contextualize a record. Inverse of rdfs:domain. Defined in Ontology Documentation Profile">Property Terms</a>
+              </td>
+              <td>
+                <div>
+                  <a href="#hasMember">pcdm:hasMember</a>
+                  <span> | </span>
+                  <a href="#memberOf">pcdm:memberOf</a>
+                  <span> | </span>
+                  <a href="#creator">dc:creator</a>
+                  <span> | </span>
+                  <a href="#description">dc:description</a>
+                  <span> | </span>
+                  <a href="#publisher">dc:publisher</a>
+                  <span> | </span>
+                  <a href="#available">dcterms:available</a>
+                  <span> | </span>
+                  <a href="#created">dcterms:created</a>
+                  <span> | </span>
+                  <a href="#identifier">dcterms:identifier</a>
+                  <span> | </span>
+                  <a href="#license">dcterms:license</a>
+                  <span> | </span>
+                  <a href="#title">dcterms:title</a>
+                  <span> | </span>
+                  <a href="#SliceThickness">dicom:SliceThickness</a>
+                  <span> | </span>
+                  <a href="#ID">ms:ID</a>
+                  <span> | </span>
+                  <a href="#agreementURI">ms:agreementURI</a>
+                  <span> | </span>
+                  <a href="#ark">ms:ark</a>
+                  <span> | </span>
+                  <a href="#attachmentFile">ms:attachmentFile</a>
+                  <span> | </span>
+                  <a href="#citeAs">ms:citeAs</a>
+                  <span> | </span>
+                  <a href="#dateModified">ms:dateModified</a>
+                  <span> | </span>
+                  <a href="#dateUploaded">ms:dateUploaded</a>
+                  <span> | </span>
+                  <a href="#depositor">ms:depositor</a>
+                  <span> | </span>
+                  <a href="#doi">ms:doi</a>
+                  <span> | </span>
+                  <a href="#downloadReviewer">ms:downloadReviewer</a>
+                  <span> | </span>
+                  <a href="#funding">ms:funding</a>
+                  <span> | </span>
+                  <a href="#imagingEventID">ms:imagingEventID</a>
+                  <span> | </span>
+                  <a href="#legacyMediaFileID">ms:legacyMediaFileID</a>
+                  <span> | </span>
+                  <a href="#legacyMediaGroupID">ms:legacyMediaGroupID</a>
+                  <span> | </span>
+                  <a href="#mapType">ms:mapType</a>
+                  <span> | </span>
+                  <a href="#mediaParentID">ms:mediaParentID</a>
+                  <span> | </span>
+                  <a href="#mediaType">ms:mediaType</a>
+                  <span> | </span>
+                  <a href="#morphosourceUseAgreementType">ms:morphosourceUseAgreementType</a>
+                  <span> | </span>
+                  <a href="#numberOfImagesInSet">ms:numberOfImagesInSet</a>
+                  <span> | </span>
+                  <a href="#orientation">ms:orientation</a>
+                  <span> | </span>
+                  <a href="#owner">ms:owner</a>
+                  <span> | </span>
+                  <a href="#part">ms:part</a>
+                  <span> | </span>
+                  <a href="#permits3DUse">ms:permits3DUse</a>
+                  <span> | </span>
+                  <a href="#permitsCommercialUse">ms:permitsCommercialUse</a>
+                  <span> | </span>
+                  <a href="#physicalObjectID">ms:physicalObjectID</a>
+                  <span> | </span>
+                  <a href="#relatedURL">ms:relatedURL</a>
+                  <span> | </span>
+                  <a href="#requiredArchivalOfPublishedDerivatives">ms:requiredArchivalOfPublishedDerivatives</a>
+                  <span> | </span>
+                  <a href="#rightsHolder">ms:rightsHolder</a>
+                  <span> | </span>
+                  <a href="#rightsStatement">ms:rightsStatement</a>
+                  <span> | </span>
+                  <a href="#scaleBar">ms:scaleBar</a>
+                  <span> | </span>
+                  <a href="#seriesType">ms:seriesType</a>
+                  <span> | </span>
+                  <a href="#shortDescription">ms:shortDescription</a>
+                  <span> | </span>
+                  <a href="#side">ms:side</a>
+                  <span> | </span>
+                  <a href="#tag">ms:tag</a>
+                  <span> | </span>
+                  <a href="#unit">ms:unit</a>
+                  <span> | </span>
+                  <a href="#visibility">ms:visibility</a>
+                  <span> | </span>
+                  <a href="#xSpacing">ms:xSpacing</a>
+                  <span> | </span>
+                  <a href="#ySpacing">ms:ySpacing</a>
+                  <span> | </span>
+                  <a href="#zSpacing">ms:zSpacing</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="https://w3id.org/profile/ontdoc/inRangeOf" title="An individual instance of this class can be the value of these property terms. Inverse of rdfs:range. Defined in Ontology Documentation Profile">Value Of Property Terms</a>
+              </td>
+              <td>
+                <div>
+                  <a href="#hasMember">pcdm:hasMember</a>
+                  <span> | </span>
+                  <a href="#memberOf">pcdm:memberOf</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Class</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="section" id="properties">
+        <h2>Media Properties</h2>
+        <div class="property entity" id="hasMember">
+          <h3>Term Name pcdm:hasMember
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://pcdm.org/models#hasMember">http://pcdm.org/models#hasMember</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>has member</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://pcdm.org/models#">http://pcdm.org/models#</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Links to a subsidiary Object or Collection. Typically used to link
+          to component parts, such as a book linking to a page.  Note on transitivity: hasMember is
+          not defined as transitive, but applications may treat it as transitive as local needs
+          dictate.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <div>
+                  <a href="/terms/ms/Device">ms:Device</a>
+                  <span> | </span>
+                  <a href="/terms/ms/FileSet">ms:FileSet</a>
+                  <span> | </span>
+                  <a href="#Media">ms:Media</a>
+                  <span> | </span>
+                  <a href="/terms/ms/ProcessingEvent">ms:ProcessingEvent</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="memberOf">
+          <h3>Term Name pcdm:memberOf
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://pcdm.org/models#memberOf">http://pcdm.org/models#memberOf</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>is member of</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://pcdm.org/models#">http://pcdm.org/models#</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Links from an Object or Collection to a containing Object or Collection.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <div>
+                  <a href="/terms/ms/ImagingEvent">ms:ImagingEvent</a>
+                  <span> | </span>
+                  <a href="#Media">ms:Media</a>
+                  <span> | </span>
+                  <a href="/terms/ms/Organization">ms:Organization</a>
+                  <span> | </span>
+                  <a href="/terms/ms/ProcessingEvent">ms:ProcessingEvent</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="creator">
+          <h3>Term Name dc:creator
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://purl.org/dc/elements/1.1/creator">http://purl.org/dc/elements/1.1/creator</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Creator</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td>
+                <div>
+                  <div><p>Examples of a Creator include a person, an organization, or a service. Typically, the name of a Creator should be used to indicate the entity.</p></div>
+                  <div><p>An entity primarily responsible for making the resource.</p></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#note" title="A general note, for any purpose. Defined in SKOS Vocabulary">Note</a>
+              </td>
+              <td><p>A <a href="/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/creator">second property</a> with the same name as this property has been declared in the <a href="http://purl.org/dc/terms/">dcterms: namespace</a>.  See the Introduction to the document <a href="/specifications/dublin-core/dcmi-terms/">DCMI Metadata Terms</a> for an explanation.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="description">
+          <h3>Term Name dc:description
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://purl.org/dc/elements/1.1/description">http://purl.org/dc/elements/1.1/description</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Description</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td>
+                <div>
+                  <div><p>Description may include but is not limited to: an abstract, a table of contents, a graphical representation, or a free-text account of the resource.</p></div>
+                  <div><p>An account of the resource.</p></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#note" title="A general note, for any purpose. Defined in SKOS Vocabulary">Note</a>
+              </td>
+              <td><p>A <a href="/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/description">second property</a> with the same name as this property has been declared in the <a href="http://purl.org/dc/terms/">dcterms: namespace</a>.  See the Introduction to the document <a href="/specifications/dublin-core/dcmi-terms/">DCMI Metadata Terms</a> for an explanation.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="https://w3id.org/profile/ontdoc/superPropertyOf" title="Inverse of RDFS' subPropertyOf. Defined in Ontology Documentation Profile">Super Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/processingActivityDescription">ms:processingActivityDescription</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="publisher">
+          <h3>Term Name dc:publisher
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://purl.org/dc/elements/1.1/publisher">http://purl.org/dc/elements/1.1/publisher</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Publisher</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td>
+                <div>
+                  <div><p>Examples of a Publisher include a person, an organization, or a service. Typically, the name of a Publisher should be used to indicate the entity.</p></div>
+                  <div><p>An entity responsible for making the resource available.</p></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#note" title="A general note, for any purpose. Defined in SKOS Vocabulary">Note</a>
+              </td>
+              <td><p>A <a href="/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/terms/publisher">second property</a> with the same name as this property has been declared in the <a href="http://purl.org/dc/terms/">dcterms: namespace</a>.  See the Introduction to the document <a href="/specifications/dublin-core/dcmi-terms/">DCMI Metadata Terms</a> for an explanation.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="available">
+          <h3>Term Name dcterms:available
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://purl.org/dc/terms/available">http://purl.org/dc/terms/available</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Date Available</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/terms/">http://purl.org/dc/terms/</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td>
+                <div>
+                  <div><p>Recommended practice is to describe the date, date/time, or period of time as recommended for the property Date, of which this is a subproperty.</p></div>
+                  <div><p>Date that the resource became or will become available.</p></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#dateTime">xsd:dateTime</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="created">
+          <h3>Term Name dcterms:created
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://purl.org/dc/terms/created">http://purl.org/dc/terms/created</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Date Created</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/terms/">http://purl.org/dc/terms/</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td>
+                <div>
+                  <div><p>Recommended practice is to describe the date, date/time, or period of time as recommended for the property Date, of which this is a subproperty.</p></div>
+                  <div><p>Date of creation of the resource.</p></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#dateTime">xsd:dateTime</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="identifier">
+          <h3>Term Name dcterms:identifier
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://purl.org/dc/terms/identifier">http://purl.org/dc/terms/identifier</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Identifier</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/terms/">http://purl.org/dc/terms/</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td>
+                <div>
+                  <div><p>Recommended practice is to identify the resource by means of a string conforming to an identification system. Examples include International Standard Book Number (ISBN), Digital Object Identifier (DOI), and Uniform Resource Name (URN).  Persistent identifiers should be provided as HTTP URIs.</p></div>
+                  <div><p>An unambiguous reference to the resource within a given context.</p></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="license">
+          <h3>Term Name dcterms:license
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://purl.org/dc/terms/license">http://purl.org/dc/terms/license</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>License</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/terms/">http://purl.org/dc/terms/</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td>
+                <div>
+                  <div><p>Recommended practice is to identify the license document with a URI. If this is not possible or feasible, a literal value that identifies the license may be provided.</p></div>
+                  <div><p>A legal document giving official permission to do something with the resource.</p></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://creativecommons.org/ns#License">cc:License</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="title">
+          <h3>Term Name dcterms:title
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://purl.org/dc/terms/title">http://purl.org/dc/terms/title</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Title</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#isDefinedBy" title="The definition of the subject resource. Defined in The RDF Schema vocabulary (RDFS)">Is Defined By</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/terms/">http://purl.org/dc/terms/</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>A name given to the resource.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="SliceThickness">
+          <h3>Term Name dicom:SliceThickness
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="http://purl.org/healthcarevocab/v1#SliceThickness">http://purl.org/healthcarevocab/v1#SliceThickness</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Slice Thickness</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Nominal slice thickness, in mm.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#float">xsd:float</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="ID">
+          <h3>Term Name ms:ID
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/ID">http://www.morphosource.org/terms/ms/ID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>ID</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Morphosource-specific unique ID identifier for a Work (Media, Organization, Device, etc.).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="https://w3id.org/profile/ontdoc/superPropertyOf" title="Inverse of RDFS' subPropertyOf. Defined in Ontology Documentation Profile">Super Property Of</a>
+              </td>
+              <td>
+                <div>
+                  <a href="/terms/ms/canonicalTaxonomy">ms:canonicalTaxonomy</a>
+                  <span> | </span>
+                  <a href="/terms/ms/deviceID">ms:deviceID</a>
+                  <span> | </span>
+                  <a href="#imagingEventID">ms:imagingEventID</a>
+                  <span> | </span>
+                  <a href="#mediaParentID">ms:mediaParentID</a>
+                  <span> | </span>
+                  <a href="/terms/ms/objectID">ms:objectID</a>
+                  <span> | </span>
+                  <a href="/terms/ms/organizationID">ms:organizationID</a>
+                  <span> | </span>
+                  <a href="/terms/ms/taxonomyID">ms:taxonomyID</a>
+                  <span> | </span>
+                  <a href="/terms/ms/teamID">ms:teamID</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="agreementURI">
+          <h3>Term Name ms:agreementURI
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/agreementURI">http://www.morphosource.org/terms/ms/agreementURI</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Agreement URI</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>A Web URI for a statement of the ownership and usage rights for Media. This more accurately maps to xmpRights:WebStatement than xmpRights:UsageTerms, and should be changed accordingly.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://ns.adobe.com/xap/1.0/rights/UsageTerms">xmpRights:UsageTerms</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#anyURI">xsd:anyURI</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="ark">
+          <h3>Term Name ms:ark
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/ark">http://www.morphosource.org/terms/ms/ark</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>ARK (Archival Resource Key)</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Persistent identifier for MorphoSource Media automatically created on Media submission. ARKs can apply to both unpublished and published media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/mediaARK">ms:mediaARK</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="attachmentFile">
+          <h3>Term Name ms:attachmentFile
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/attachmentFile">http://www.morphosource.org/terms/ms/attachmentFile</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Attachment File</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>A binary attachment file associated with a Work record. Often used to provide additional description beyond that allowed by object properties.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="https://w3id.org/profile/ontdoc/superPropertyOf" title="Inverse of RDFS' subPropertyOf. Defined in Ontology Documentation Profile">Super Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/photographicReference">ms:photographicReference</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="citeAs">
+          <h3>Term Name ms:citeAs
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/citeAs">http://www.morphosource.org/terms/ms/citeAs</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Cite As</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Instructions and guidelines for the citation of a Media. This should include additional instructions beyond those included in other metadata fields or in any download usage agreement.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://ns.adobe.com/photoshop/1.0/Credit">photoshop:Credit</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="dateModified">
+          <h3>Term Name ms:dateModified
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/dateModified">http://www.morphosource.org/terms/ms/dateModified</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Date Modified</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td>
+                <div>
+                  <div><p>Recommended practice is to describe the date, date/time, or period of time as recommended for the property Date, of which this is a subproperty.</p></div>
+                  <div><p>Date on which the resource was changed.</p></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#dateTime">xsd:dateTime</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="dateUploaded">
+          <h3>Term Name ms:dateUploaded
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/dateUploaded">http://www.morphosource.org/terms/ms/dateUploaded</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Date Uploaded</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td>
+                <div>
+                  <div><p>Recommended practice is to describe the date, date/time, or period of time as recommended for the property Date, of which this is a subproperty.</p></div>
+                  <div><p>Date of upload of the resource.</p></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/terms/dateSubmitted">dcterms:dateSubmitted</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#dateTime">xsd:dateTime</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="depositor">
+          <h3>Term Name ms:depositor
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/depositor">http://www.morphosource.org/terms/ms/depositor</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Depositor</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>A current owner of an item who deposited the item into the custody of another person, family, or organization, while still retaining ownership</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/ms/User">ms:User</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="doi">
+          <h3>Term Name ms:doi
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/doi">http://www.morphosource.org/terms/ms/doi</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>DOI (Digital Object Identifier)</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Persistent identifier for MorphoSource Media created only on user request. DOIs can apply only to published media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/mediaDOI">ms:mediaDOI</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="downloadReviewer">
+          <h3>Term Name ms:downloadReviewer
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/downloadReviewer">http://www.morphosource.org/terms/ms/downloadReviewer</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Download Reviewer</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>User(s) that receive and may decide approval requests to download media that is Published with Restricted Download.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/ms/User">ms:User</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="funding">
+          <h3>Term Name ms:funding
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/funding">http://www.morphosource.org/terms/ms/funding</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Funding</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Text description of organizations or individuals who funded the creation of the resource.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://rs.tdwg.org/ac/terms/fundingAttribution">ac:fundingAttribution</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="imagingEventID">
+          <h3>Term Name ms:imagingEventID
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/imagingEventID">http://www.morphosource.org/terms/ms/imagingEventID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Imaging Event ID</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="#ID">ms:ID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="legacyMediaFileID">
+          <h3>Term Name ms:legacyMediaFileID
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/legacyMediaFileID">http://www.morphosource.org/terms/ms/legacyMediaFileID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Legacy Media File ID</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>MorphoSource-specific unique ID identifier that was used to represent a Media in the now-defunct 1.0 version of the MorphoSource repository. Only present if Media was originally contributed to MorphoSource 1.0. Different from morphosource:ID identifier.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://rs.tdwg.org/ac/terms/providerManagedID">ac:providerManagedID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="legacyMediaGroupID">
+          <h3>Term Name ms:legacyMediaGroupID
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/legacyMediaGroupID">http://www.morphosource.org/terms/ms/legacyMediaGroupID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Legacy Media Group ID</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>MorphoSource-specific unique ID identifier that was used to group Media together in the now-defunct 1.0 version of the MorphoSource repository. In MorphoSource 1.0, Media groups were used to collect all media derived from the same Imaging Event. Media groups are no longer used, with media-to-media imaging and processing event relationships now being used instead to track hierarchical relationships between Media. Only present if Media was originally contributed to MorphoSource 1.0. Different from morphosource:ID identifier.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://rs.tdwg.org/ac/terms/IDofContainingCollection">ac:IDofContainingCollection</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="mapType">
+          <h3>Term Name ms:mapType
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/mapType">http://www.morphosource.org/terms/ms/mapType</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Map Type</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Type of texture map or projection that accompanies a 3D mesh model Media, such as color or normal maps. Values must be from the Mesh Map Type controlled vocabulary (http://www.morphosource.org/terms/ms/MeshMapType). This only applies to Mesh Media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`Color`, `Normal`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/MeshMapType">mscv:MeshMapType</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="mediaParentID">
+          <h3>Term Name ms:mediaParentID
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/mediaParentID">http://www.morphosource.org/terms/ms/mediaParentID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Media Parent ID</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>MorphoSource-specific unique ID identifier for the parent Media of a Media. This is the ID of the Media from which the current Media is immediately derived.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="#ID">ms:ID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="mediaType">
+          <h3>Term Name ms:mediaType
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/mediaType">http://www.morphosource.org/terms/ms/mediaType</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Media Type</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Type, nature, or classification of a Media file dataset, which may include one or more specific files. This is the general or high-level type of all file data, it is not the file type of any specific file. Most Media Types encompass a variety of different specific file types. Values must be from the Media Type controlled vocabulary (http://www.morphosource.org/terms/ms/MediaType).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`Mesh`,`Image`,`CTImageSeries`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://rs.tdwg.org/ac/terms/subtypeLiteral">ac:subtypeLiteral</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/MediaType">mscv:MediaType</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="morphosourceUseAgreementType">
+          <h3>Term Name ms:morphosourceUseAgreementType
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/morphosourceUseAgreementType">http://www.morphosource.org/terms/ms/morphosourceUseAgreementType</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>MorphoSource Use Agreement Type</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Type of MorphoSource use agreement that users must agree to in order to download Media and that is packaged with an associated Media download. Values must be from the Use Agreement Type controlled vocabulary (http://www.morphosource.org/terms/ms/UseAgreementType).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`Standard`, `Permissive`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/UseAgreementType">mscv:UseAgreementType</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="numberOfImagesInSet">
+          <h3>Term Name ms:numberOfImagesInSet
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/numberOfImagesInSet">http://www.morphosource.org/terms/ms/numberOfImagesInSet</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Number of Images In Set</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>For Media with a ZIP archive with many component files, this is the number of files in the primary image collection in a CT image stack or photogrammetry image collection. This only applies to CTImageSeries or PhotogrammetryImageSeries Media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/dicomNumberOfSeriesRelatedInstances">ms:dicomNumberOfSeriesRelatedInstances</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#int">xsd:int</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="orientation">
+          <h3>Term Name ms:orientation
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/orientation">http://www.morphosource.org/terms/ms/orientation</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Orientation</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Specific orientation (= direction, view angle) of the subject represented in the media resource with respect to the acquisition device, denoted by an IRI.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://rs.tdwg.org/ac/terms/subjectOrientation">ac:subjectOrientation</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="owner">
+          <h3>Term Name ms:owner
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/owner">http://www.morphosource.org/terms/ms/owner</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Owner</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>The user that has the highest level of management control over a Media or another Work record. For Media, this user is also known as the Data Manager.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/ms/User">ms:User</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="part">
+          <h3>Term Name ms:part
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/part">http://www.morphosource.org/terms/ms/part</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Part</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>The portion or product of organism morphology, behaviour, environment, etc. that is either predominantly shown or particularly well exemplified by the media resource, denoted by an IRI.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://rs.tdwg.org/ac/terms/subjectPart">ac:subjectPart</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="permits3DUse">
+          <h3>Term Name ms:permits3DUse
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/permits3DUse">http://www.morphosource.org/terms/ms/permits3DUse</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Permits 3D Use</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Whether Media may be 3D printed freely, may be 3D printed in limited ways, or if 3D printing is prohibited. Values must be from the 3D Printing Permission controlled vocabulary (http://www.morphosource.org/terms/ms/3DPrintingPermission).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`3DPrintingPermitted`, `3DPrintingLimited`, `3DPrintingProhibited`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/3DPrintingPermission">mscv:3DPrintingPermission</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="permitsCommercialUse">
+          <h3>Term Name ms:permitsCommercialUse
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/permitsCommercialUse">http://www.morphosource.org/terms/ms/permitsCommercialUse</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Permits Commercial Use</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Whether commercial use of Media is permitted. Values must be from the Commercial Use Permission controlled vocabulary (http://www.morphosource.org/terms/ms/CommercialUsePermission).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`CommercialUseNotPermitted`, `CommercialUsePermitted`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/CommercialUsePermission">mscv:CommercialUsePermission</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="physicalObjectID">
+          <h3>Term Name ms:physicalObjectID
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/physicalObjectID">http://www.morphosource.org/terms/ms/physicalObjectID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Physical Object ID</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>MorphoSource-specific unique ID identifier for a Physical Object represented by a Media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/objectID">ms:objectID</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="relatedURL">
+          <h3>Term Name ms:relatedURL
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/relatedURL">http://www.morphosource.org/terms/ms/relatedURL</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Related URL</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>URL for additional resource that might provide additional information about the Media or Physical Object.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2000/01/rdf-schema#seeAlso">rdfs:seeAlso</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#anyURI">xsd:anyURI</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="requiredArchivalOfPublishedDerivatives">
+          <h3>Term Name ms:requiredArchivalOfPublishedDerivatives
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/requiredArchivalOfPublishedDerivatives">http://www.morphosource.org/terms/ms/requiredArchivalOfPublishedDerivatives</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Required Archival Of Published Derivatives</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Whether and how future derivatives created from Media must be rearchived on a public-facing digital repository such as MorphoSource. Values may include mandatory requirements or optional suggestions. Values must be from Derivative Rearchival Statement controlled vocabulary (http://www.morphosource.org/terms/ms/DerivativeRearchivalStatement).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`OnMorphoSource`, `OnAnyRepository`, `EncouragedButNotRequired`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/DerivativeRearchivalStatement">mscv:DerivativeRearchivalStatement</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="rightsHolder">
+          <h3>Term Name ms:rightsHolder
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/rightsHolder">http://www.morphosource.org/terms/ms/rightsHolder</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Rights Holder</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>List of holders of intellectual property rights (copyright or license-based) for the Media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://ns.adobe.com/xap/1.0/rights/Owner">xmpRights:Owner</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="rightsStatement">
+          <h3>Term Name ms:rightsStatement
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/rightsStatement">http://www.morphosource.org/terms/ms/rightsStatement</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Rights Statement</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Standardized rights statement used to communicate the copyright and/or reuse status of digital objects. Values must be from the Rights Statement controlled vocabulary (https://rightsstatements.org).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`http://rightsstatements.org/vocab/NoC-NC/1.0/`, `http://rightsstatements.org/vocab/UND/1.0/`, `http://rightsstatements.org/vocab/InC/1.0/`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://www.europeana.eu/schemas/edm/rights">edm:rights</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://purl.org/dc/terms/RightsStatement">dcterms:RightsStatement</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="scaleBar">
+          <h3>Term Name ms:scaleBar
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/scaleBar">http://www.morphosource.org/terms/ms/scaleBar</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Scale Bar</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Details of scale bar accompany a photogrammetry image series. Value should include three elements: the scale bar target type, the scale bar distance, and the units of the scale bar distance. If values are encoded as a string, they should be separate by semicolons. This only applies to PhotogrammetryImageSeries Media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="seriesType">
+          <h3>Term Name ms:seriesType
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/seriesType">http://www.morphosource.org/terms/ms/seriesType</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Series Type</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Broad type or kind of CT image series, distiguishing between initial X-Ray projections and other derived series forms. Values must be from the CT Image Series Type controlled vocabulary (http://www.morphosource.org/terms/ms/CTImageSeriesType).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`Projections`, `Sinograms`, `Reconstructed image stack`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/CTImageSeriesType">mscv:CTImageSeriesType</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="shortDescription">
+          <h3>Term Name ms:shortDescription
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/shortDescription">http://www.morphosource.org/terms/ms/shortDescription</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Short Description</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Brief summary description of Media. This could include a brief summary of what is represented in the Media or the context surrounding the Media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="side">
+          <h3>Term Name ms:side
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/side">http://www.morphosource.org/terms/ms/side</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Side</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>The side of a larger object on which is located a represented component part, if media represents a component part of a larger whole object. Values must be from the Side controlled vocabulary (http://www.morphosource.org/terms/ms/Side). Values are somewhat oriented toward objects with bilateral symmetry, but may in some cases be applied for objects with other kinds of symmetry.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`Left`, `Midline`, `Not Applicable`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://rs.tdwg.org/ac/terms/comments">ac:comments</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/Side">mscv:Side</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="tag">
+          <h3>Term Name ms:tag
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/tag">http://www.morphosource.org/terms/ms/tag</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Tag</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>All-purpose label attached to Media for the purpose of identification, context, or to give other information.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="unit">
+          <h3>Term Name ms:unit
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/unit">http://www.morphosource.org/terms/ms/unit</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Unit</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Length measurement unit. For Mesh Media, this is the length unit associated with the 3D coordinate space of the mesh. For CTImageSeries Media, this is the length unit for X/Y/Z pixel spacing. Values must be from the Length Measurement Unit controlled vocabulary (http://www.morphosource.org/terms/ms/LengthMeasurementUnit).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`Mm`, `Um`, `M`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="http://id.loc.gov/ontologies/bibframe/unit">bf:unit</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/LengthMeasurementUnit">mscv:LengthMeasurementUnit</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="visibility">
+          <h3>Term Name ms:visibility
+            <sup class="sup-op" title="Object Property">op</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/visibility">http://www.morphosource.org/terms/ms/visibility</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Visibility</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Publication status, denoting whether or not Media may be found in public search and whether or not Media files may be downloaded. Values must be from Publication Status controlled vocabulary (http://www.morphosource.org/terms/ms/PublicationStatus).</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2004/02/skos/core#example" title="An example of the use of a concept. Defined in SKOS Vocabulary">Example</a>
+              </td>
+              <td>
+                <pre>`Open`, `Restricted`, `Private`</pre>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/filesetAccessibility">ms:filesetAccessibility</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="/terms/mscv/PublicationStatus">mscv:PublicationStatus</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Object Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="xSpacing">
+          <h3>Term Name ms:xSpacing
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/xSpacing">http://www.morphosource.org/terms/ms/xSpacing</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>X Pixel Spacing</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Distance between centers of adjacent pixels in the X axis, for Media with pixel data where pixel spacing corresponds to real-world length measurement. Unit of measurement is described by morphosource:unit. Applies to Image and CTImageSeries media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/dicomPixelSpacingWidth">ms:dicomPixelSpacingWidth</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#float">xsd:float</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="ySpacing">
+          <h3>Term Name ms:ySpacing
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/ySpacing">http://www.morphosource.org/terms/ms/ySpacing</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Y Pixel Spacing</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Distance between centers of adjacent pixels in the Y axis, for Media with pixel data where pixel spacing corresponds to real-world length measurement. Unit of measurement is described by morphosource:unit. Applies to Image and CTImageSeries media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/dicomPixelSpacingHeight">ms:dicomPixelSpacingHeight</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#float">xsd:float</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+        <div class="property entity" id="zSpacing">
+          <h3>Term Name ms:zSpacing
+            <sup class="sup-dp" title="Datatype Property">dp</sup>
+          </h3>
+          <table>
+            <tr>
+              <td>Term IRI</td>
+              <td>
+                <a href="/terms/ms/zSpacing">http://www.morphosource.org/terms/ms/zSpacing</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td>Z Pixel Spacing</td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://purl.org/dc/terms/description" title="An account of the resource. Defined in DCMI Metadata Terms">Description</a>
+              </td>
+              <td><p>Distance between centers of adjacent pixels in the Z axis, for Media with 3D pixel data where pixel spacing corresponds to real-world length measurement. Unit of measurement is described by morphosource:unit. Applies to CTImageSeries media.</p></td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#subPropertyOf" title="The subject is a subproperty of a property. Defined in The RDF Schema vocabulary (RDFS)">Sub Property Of</a>
+              </td>
+              <td>
+                <a href="/terms/ms/dicomSpacingBetweenSlices">ms:dicomSpacingBetweenSlices</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a class="hover_property" href="http://www.w3.org/2000/01/rdf-schema#range" title="Value(s) of the property must conform to this restriction. For Datatype Properties, value must be of the listed data type. For Object Properties, value must be an individual instance of the listed class. Also known as rdfs:range. Defined in The RDF Schema vocabulary (RDFS)">Value Restriction</a>
+              </td>
+              <td>
+                <a href="http://www.w3.org/2001/XMLSchema#float">xsd:float</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Type</td>
+              <td>Datatype Property</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="toc">
+      <div id="toc-content">
+        <div class="toc-title">Go to</div>
+        <div class="toc-item">
+          <a href="/terms/ms">Terms Index</a>
+        </div>
+        <div class="toc-title">On this page</div>
+        <div class="toc-item">
+          <a href="#Media">Media Class</a>
+        </div>
+        <div class="toc-item">
+          <a href="#properties">Media Properties</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

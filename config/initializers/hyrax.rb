@@ -77,7 +77,7 @@ Hyrax.config do |config|
   
   # Email message sender (for download review notifications, contributor app responses, etc.)
   # Rake task create_production_users will create a user account corresponding to this email
-  config.contact_email = ENV['CONTACT_EMAIL'] || "jmw110@duke.edu"
+  config.contact_email = ENV['CONTACT_EMAIL'] || "do.not.reply@morphosource.org"
 
   # Email address for overriding all mail recipients when sending emails from actionmailer 
   # (for receiving emails in dev / local test environments)

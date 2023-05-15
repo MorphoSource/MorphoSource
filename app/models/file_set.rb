@@ -127,6 +127,7 @@ class FileSet < ActiveFedora::Base
         characterization_proxy.save
         self.save
       end
+      self.parent.set_remote_file_health
     end
   end
 

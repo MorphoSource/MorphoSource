@@ -16,7 +16,7 @@ module Morphosource
         assigns_visibility: false,
         share_applies_to_new_works: false,
         brandable: true,
-        badge_color: "#"
+        badge_color: "#059aad"
       }
 
     end

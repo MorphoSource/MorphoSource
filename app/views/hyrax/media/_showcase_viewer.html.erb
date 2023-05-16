@@ -1,16 +1,1 @@
 <%= render 'representative_media', presenter: @presenter, viewer: true %>
-
-<% if @presenter.remote_file_issues.present? %>
-  <div class="text-padding text-alert">
-	<% if can? :edit, @presenter.id %>
-	  <%= t('morphosource.media.remote_file_alert.edit_access_message') %> Issue(s): 
-		<ul class="align-li">
-		  <% @presenter.remote_file_issues.each do |item| %>
-		    <%= content_tag :li, item %>
-		  <% end %>
-		</ul>
-  <% else %>
-	  <%= t('morphosource.media.remote_file_alert.general_message').html_safe %>
-	<% end %>
-  </div>
-<% end %>

@@ -22,7 +22,7 @@ module Morphosource
       def verify_media
         media = Media.find(params[:id])
         media.set_remote_file_health
-        flash[:notice] = "Remote file of media #{media.id} has been verified."    
+        flash[:notice] = "Remote file verification of media #{media.id} has been completed."    
         redirect_to(request.referrer || main_app.remote_file_health_path) and return      
       end
 

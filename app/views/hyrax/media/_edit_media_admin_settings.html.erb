@@ -9,11 +9,11 @@
       <div class="col-xs-5 col-align">
         <%# todo: remove the @presenter.file_origin == "Remote" condition for characterize and derive when the functionality for remote file is ready %>
         <%= link_to 'Characterize Media', main_app.media_characterize_path, 
-          disabled: (@presenter.file_origin == "Remote" || @presenter.file_set_list.empty?), class: 'btn btn-sm w-100' %>
+          disabled: @presenter.file_set_list.empty?, class: 'btn btn-sm w-100' %>
       </div>
       <div class="col-xs-5 col-align">
         <%= link_to 'Derive Media', main_app.media_create_derivatives_path, 
-          disabled: (@presenter.file_origin == "Remote" || @presenter.file_set_list.empty?), class: 'btn btn-sm w-100' %>
+          disabled: @presenter.file_set_list.empty?, class: 'btn btn-sm w-100' %>
       </div>
       <% if @presenter.file_origin == "Remote" %>
         <div class="col-xs-5 col-align">

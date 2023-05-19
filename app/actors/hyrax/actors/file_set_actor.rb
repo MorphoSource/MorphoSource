@@ -42,12 +42,12 @@ module Hyrax
           # Copy visibility and permissions from parent (work) to
           # FileSets even if they come in from BrowseEverything
           VisibilityCopyJob.perform_later(file_set.parent)
-          InheritPermissionsJob.perform_later(file_set.parent)
+          InheritPermissionsJob.perform_later(file_set.parent.id)
         else
           IngestJob.perform_later(wrapper!(file: file, relation: relation))
           # DropBox BrowseEverything does not use from_url, but needs these set
           VisibilityCopyJob.perform_later(file_set.parent) if file_set.parent.present?
-          InheritPermissionsJob.perform_later(file_set.parent) if file_set.parent.present?
+          InheritPermissionsJob.perform_later(file_set.parent.id) if file_set.parent.present?
         end
       end
 

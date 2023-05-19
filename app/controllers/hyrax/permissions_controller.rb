@@ -23,7 +23,7 @@ module Hyrax
       VisibilityCopyJob.perform_later(curation_concern)
 
       # copy permissions
-      InheritPermissionsJob.perform_later(curation_concern)
+      InheritPermissionsJob.perform_later(curation_concern.id)
       redirect_to [main_app, curation_concern], notice: I18n.t("hyrax.upload.change_access_flash_message"), alert: flash[:alert]
     end
 

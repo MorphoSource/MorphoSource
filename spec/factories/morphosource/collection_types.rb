@@ -13,7 +13,7 @@ FactoryBot.define do
     assigns_visibility { false }
     share_applies_to_new_works { false }
     brandable { true }
-    badge_color { "#" }
+    badge_color { "#8612c4" }
   end
 
   factory :project_collection_type, class: Hyrax::CollectionType do
@@ -61,7 +61,7 @@ FactoryBot.define do
     assigns_visibility { false }
     share_applies_to_new_works { false }
     brandable { true }
-    badge_color { "#" }
+    badge_color { "#059aad" }
   end
 
 end

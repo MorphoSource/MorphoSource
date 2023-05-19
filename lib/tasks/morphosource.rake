@@ -448,7 +448,7 @@ namespace :morphosource do
   task :inherit_permissions_on_media => :environment do
     Media.find_each do |m|
       Rails.logger.warn ("Running InheritPermissionsJob on id:#{m.id}")
-      InheritPermissionsJob.perform_later(m)
+      InheritPermissionsJob.perform_later(m.id)
     end
   end
 

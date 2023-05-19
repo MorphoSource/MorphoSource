@@ -67,7 +67,7 @@ RSpec.describe Morphosource::Users::WorksTransferService do
       media1.ordered_members << file_set1
       media2.ordered_members << file_set2
       [media1, media2].each(&:save!)
-      media.each { |m| InheritPermissionsJob.perform_now(m) }
+      media.each { |m| InheritPermissionsJob.perform_now(m.id) }
       subject
       works.each(&:reload)
     end

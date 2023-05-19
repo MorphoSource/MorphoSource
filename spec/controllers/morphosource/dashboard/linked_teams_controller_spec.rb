@@ -88,6 +88,58 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
               expect(response).to redirect_to('original_page')
             end
           end
+          context "the team has read access to the linked organization's media" do
+            let!(:rogue_media) { Media.create(title: ['rogue media']) }
+            before do
+              rogue_media.read_groups += [team.managers_group.name]
+              imagingEvent.ordered_members << rogue_media
+              imagingEvent.save!
+              rogue_media.save!
+            end
+            it 'updates organization link and media permissions' do
+              post :link_organization, params: params
+              # it adds the new organization
+              expect(org1.reload.team_id).to eq([team.id])
+              # it adds view access for the linked team's members to the new organization's media
+              expect(media.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+              expect(team_manager.can?(:read, media)).to be(true)
+              expect(team_depositor.can?(:read, media)).to be(true)
+              expect(team_viewer.can?(:read, media)).to be(true)
+              # it adds view access for the linked team's members to the new organization's file_set
+              expect(file_set.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+              expect(team_manager.can?(:read, file_set)).to be(true)
+              expect(team_depositor.can?(:read, file_set)).to be(true)
+              expect(team_viewer.can?(:read, file_set)).to be(true)
+              # it redirects back to the collection dashboard page
+              expect(response).to redirect_to('original_page')
+            end
+          end
+          context "the team has edit access to the linked organization's media" do
+            let!(:rogue_media) { Media.create(title: ['rogue media']) }
+            before do
+              rogue_media.edit_groups += [team.managers_group.name]
+              imagingEvent.ordered_members << rogue_media
+              imagingEvent.save!
+              rogue_media.save!
+            end
+            it 'updates organization link and media permissions' do
+              post :link_organization, params: params
+              # it adds the new organization
+              expect(org1.reload.team_id).to eq([team.id])
+              # it adds view access for the linked team's members to the new organization's media
+              expect(media.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+              expect(team_manager.can?(:read, media)).to be(true)
+              expect(team_depositor.can?(:read, media)).to be(true)
+              expect(team_viewer.can?(:read, media)).to be(true)
+              # it adds view access for the linked team's members to the new organization's file_set
+              expect(file_set.read_groups).to include(team.managers_group.name, team.depositors_group.name, team.viewers_group.name)
+              expect(team_manager.can?(:read, file_set)).to be(true)
+              expect(team_depositor.can?(:read, file_set)).to be(true)
+              expect(team_viewer.can?(:read, file_set)).to be(true)
+              # it redirects back to the collection dashboard page
+              expect(response).to redirect_to('original_page')
+            end
+          end
         end
         context 'the team was converted from a project' do
           let!(:project_collection_type)  { Hyrax::CollectionType.create(title: 'Project') }

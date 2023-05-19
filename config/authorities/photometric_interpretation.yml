@@ -1,0 +1,35 @@
+terms:
+  - id: 0
+    term: WhiteIsZero
+  - id: 1
+    term: BlackIsZero
+  - id: 2
+    term: RGB
+  - id: 3
+    term: RGB Palette
+  - id: 4
+    term: Transparency Mask
+  - id: 5
+    term: CMYK
+  - id: 6
+    term: YCbCr
+  - id: 8
+    term: CIELab
+  - id: 9
+    term: ICCLab
+  - id: 10
+    term: ITULab
+  - id: 32803
+    term: Color Filter Array
+  - id: 32844
+    term: Pixar LogL
+  - id: 32845
+    term: Pixar LogLuv
+  - id: 32892
+    term: Sequential Color Filter
+  - id: 34892
+    term: Linear Raw
+  - id: 51177
+    term: Depth Map
+  - id: 52527
+    term: Semantic Mask

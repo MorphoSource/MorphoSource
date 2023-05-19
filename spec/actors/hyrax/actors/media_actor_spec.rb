@@ -219,9 +219,9 @@ RSpec.describe Hyrax::Actors::MediaActor do
     let(:ability) { Ability.new(user) }
     let(:work) { Media.new }
     let(:device1) { Device.create(title: ['device1'], modality: ['MagneticResonanceImaging']) }
-    let(:device2) { Device.create(title: ['device2'], modality: ['NeutrinoImaging']) }
+    let(:device2) { Device.create(title: ['device2'], modality: ['ScanningElectronMicroscopy']) }
     # let(:modality_attr) { [ device1.modality.first, device2.modality.first ] }
-    let(:modality_labels) { [ 'MRI', 'Neutrino' ] }
+    let(:modality_labels) { [ 'MRI', 'SEM' ] }
     let(:part_attr) { [ 'leg', 'arm' ] }
     let(:work_parents_attributes) { { "0"=>{"id"=>"parentIE1", "_destroy"=>"false"} } }
     let(:work_parents_attributes_multiple) { { "0"=>{"id"=>"parentIE1", "_destroy"=>"false"}, "1"=>{"id"=>"parentIE2", "_destroy"=>"false"} } }

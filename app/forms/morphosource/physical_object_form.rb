@@ -69,8 +69,7 @@ module Morphosource
                                  :vouchered]
 
     def primary_terms
-      required_fields + [:based_near,
-                         :bibliographic_citation,
+      required_fields + [:bibliographic_citation,
                          :catalog_number,
                          :collection_code,
                          :date_created,

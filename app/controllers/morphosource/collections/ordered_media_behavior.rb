@@ -61,7 +61,7 @@ module Morphosource
           # Order based on .ordered_media
           # May only partly overlap with document_list, may contain additional media or not have all media
           uniq_ordered_media = @collection.ordered_media.first.split(",").uniq
-          docs_hash = document_list.compact.map { |doc| [doc.id, doc] }.to_h
+          docs_hash = document_list.compact.map { |doc| [doc["id"], doc] }.to_h
           sortable = docs_hash.extract! *uniq_ordered_media
           sorted = sortable.sort_by { |id, doc| uniq_ordered_media.index(id) }.to_h
           document_list = sorted.values + docs_hash.values

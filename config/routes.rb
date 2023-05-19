@@ -165,7 +165,11 @@ Rails.application.routes.draw do
 
         # order media
         get 'sequential_section_lists/:id/order_media', to: 'sequential_section_lists#order_media', as: 'sequential_section_list_order_media'
+
+        # preview media
+        get 'sequential_section_lists/:id/preview/:media_id', to: 'sequential_section_lists#preview', as: 'sequential_section_list_preview'
       end
+
       get 'sequential_section_lists/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'sequential_section_list_specimens_export'
       get 'sequential_section_lists/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'sequential_section_list_chos_export'
 
@@ -484,6 +488,8 @@ Rails.application.routes.draw do
       # data curation
       get 'admin/data_curation', action: :index, controller: :data_curation, as: 'admin_data_curation'
       post 'admin/data_curation/apply_permission_template', action: :apply_permission_template, controller: :data_curation, as: 'admin_apply_permission_template'
+      get 'admin/import_slides', action: :index, controller: :import_slides, as: 'admin_import_slides'
+      post 'admin/import_slides', action: :import_slides, controller: :import_slides, as: 'import_slides'
     end
 
     # ARK and DOI resolving routes
@@ -560,7 +566,7 @@ Rails.application.routes.draw do
   end
 
   get '/contributor_terms', to: 'docs#contributor_terms', as: 'contributor_terms'
-  
+
   # DOI unavailable tombstone page show
   get '/unavailable/doi', controller: :tombstone, action: :show
 

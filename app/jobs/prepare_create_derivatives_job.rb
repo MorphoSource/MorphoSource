@@ -28,6 +28,5 @@ class PrepareCreateDerivativesJob < Hyrax::ApplicationJob
     else
       CreateDerivativesJob.perform_later(work, work.original_file.id, path_hint)
     end
-
   end
 end

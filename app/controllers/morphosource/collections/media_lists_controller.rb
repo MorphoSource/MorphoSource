@@ -27,17 +27,17 @@ module Morphosource
         (@media_count, @object_ids) = collection_media
         (@response, @document_list) = query_solr
 
-        if params[:view].present?
-          if params[:view] == 'false'
+        if params[:preview].present?
+          if params[:preview] == 'false'
             @hide_viewer = true
-          elsif @document_list.map(&:id).include?(params[:view])
-            @preview_document_id = params[:view]
+          elsif @document_list.map(&:id).include?(params[:preview])
+            @preview_document_id = params[:preview]
           else
-            redirect_to request.params.except(:view) and return
+            redirect_to request.params.except(:preview) and return
           end
         end
 
-        if params[:view] == 'false'
+        if params[:preview] == 'false'
           @hide_viewer = true
         end
 
@@ -108,9 +108,11 @@ module Morphosource
         def search_facet_path(args = {})
           # args id is the solr facet
           # params id is the collection id
+          request.params.delete("id")
           args.merge!(request.params)
           main_app.media_list_media_facet_path(@collection.id, args)
         end
+
 
         def collection_type
           Hyrax::CollectionType.find_by(title: 'Media List')

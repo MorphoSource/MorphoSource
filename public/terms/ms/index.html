@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MorphoSource Terms Vocabulary</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="msterms.css" rel="stylesheet" type="text/css">
+    <link href="ms/msterms.css" rel="stylesheet" type="text/css">
+    <script id="schema.org" type="application/ld+json">
+[
+  {
+    "@id": "http://www.morphosource.org/terms/ms",
+    "@type": [
+      "https://schema.org/DefinedTermSet"
+    ],
+    "https://schema.org/description": [
+      {
+        "@language": "en",
+        "@value": "Test description for MorphoSource Terms Vocabulary"
+      }
+    ],
+    "https://schema.org/name": [
+      {
+        "@language": "en",
+        "@value": "MorphoSource Terms Vocabulary"
+      }
+    ]
+  }
+]
+	</script>
+  </head>
+  <body>
+    <div id="content">
+      <div class="section" id="metadata">
+        <h1>MorphoSource Terms Vocabulary</h1>
+        <dl>
+          <div>
+            <dt>
+              <strong>IRI</strong>
+            </dt>
+            <dd>http://www.morphosource.org/terms/ms</dd>
+          </div>
+          <div>
+            <dt>
+              <strong>Title</strong>
+            </dt>
+            <dd>MorphoSource Terms Vocabulary</dd>
+          </div>
+          <div>
+            <dt>
+              <strong>Version Info</strong>
+            </dt>
+            <dd>0.5.1</dd>
+          </div>
+          <div>
+            <dt>
+              <strong>Description</strong>
+            </dt>
+            <dd>Test description for MorphoSource Terms Vocabulary</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="section" id="introduction"><h2>Introduction</h2>
+<p>This document describes the MorphoSource Data Vocabulary, a vocabulary schema for documenting and transmitting information concerning 3D, 2D, and audiovisual media that represent some kind of object, whether a physical object or born digital, and the initial imaging and derived processing workflows used to produce media. This data vocabulary allows for describing media, detailing how media were created, and documenting crucial management, curation, and access or re-use details that pertain either to media or to objects. This data vocabulary is used by the MorphoSource 3D Data Repository as an integral part of the repository platform, but the use of the vocabulary is not limited to data reposited on MorphoSource. Rather, the intent of the vocabulary is to provide a suitable schema to describe 3D, 2D, and AV media representing objects that can be used broadly and for a variety of use cases, although the focus of the terms in this vocabulary skews toward academic use cases and especially use cases within biodiversity or cultural heritage fields.</p>
+<p>The data vocabulary is presented both as human-readable web documentation, of which this page is part, and also as a machine-readable RDF/OWL-schema ontology.</p>
+<h3>Contextual Notes</h3>
+<p>This web documentation strives to be as intuitive and comprehensible as possible, but for clarity, some RDF/OWL concepts and conventions are used that may or may not be familiar to readers. This document describes terms in the MorphoSource Data Vocabulary namespace <code>http://www.morphosource.org/terms/ms</code> which is prefixed here as <code>ms:</code>. Each term in the data vocabulary has a full web-resolvable Internationalized Resource Identifier (IRI) used to uniquely identify that term, but that IRI can be shortened by replacing the full namespace with the namespace prefix. As an example, the record type term IRI <a href="/terms/ms/Media">http://www.morphosource.org/terms/ms/Media</a> is shortened to <a href="/terms/ms/Media">ms:Media</a>. In this document, term names are given as shortened prefixed IRIs, but full IRIs are also listed.</p>
+<p>Some terms described here in this data vocabulary make reference to the MorphoSource Controlled Vocabularies term set with the namespace <code>http://www.morphosource.org/terms/mscv</code> or <code>mscv:</code>. MorphoSource Controlled Vocabularies is a separate data schema that provides a collection of controlled vocabularies and specific enumerated values for controlled vocabularies that are either necessary or useful when documenting image media, such as 3D imaging modality type (<a href="/terms/mscv/ImageModalityType">mscv:ImageModalityType</a>) or copyright and permissions rights statement (<a href="http://purl.org/dc/terms/RightsStatement">dcterms:RightsStatement</a>). Please see the MorphoSource Controlled Vocabularies (link TBA) documentation for more details on this term set.</p>
+<h3>Organization and Basic Concepts</h3>
+<p>To describe media and object data, as well as how media are produced and how media and objects are managed, MorphoSource uses multiple record types, where each record type is a digital entity, a physical entity, or an event in which a digital entity is created or processed. Each record type has a specific and distinctive profile of metadata fields used to document and contextualize that record and relationships between records. </p>
+<p>In RDF/OWL language, each MorphoSource record type is characterized as a class (<strong>OWL:Class</strong>), and each record type class is associated with multiple metadata field Properties (<strong>OWL:DatatypeProperty</strong> or <strong>OWL:ObjectProperty</strong>). Some record type classes “inherit” from parent classes; that is, the inheriting class describes a more specific form of the parent class, and it is both associated with the properties of the parent class and has separate properties that uniquely describe the child class. Another way of describing these is to refer to subclasses and superclasses, respectively. The following diagram demonstrates the basic classes that comprise the MorphoSource data vocabulary, along with specific properties that relate classes to each other, and intuitive descriptions of how records relate to each other.</p>
+<p><img alt="MorphoSource data vocabulary class diaram" src="/diagram.png" /></p>
+<p>The diagram is not intended to be an exhaustive representation of all possible relationships that these classes can have among themselves, but it provides some common examples of how classes can be related. In particular, two common but different ways that individual <a href="/terms/ms/Media">ms:Media</a> can be related to an individual <a href="/terms/ms/ImagingEvent">ms:ImagingEvent</a> are depicted. The left media example closest to the ms:ImagingEvent diagram item depicts a “raw” media, where the media is generated using a device in an imaging event that involves no or minimal digital post-processing. The ms:ImagingEvent creates the ms:Media, characterized via a <a href="http://pcdm.org/models#hasMember">pcdm:hasMember</a> property. Subsequently, a second derived ms:Media is created from the first media through digital post-processing. The processing is documented with an <a href="/terms/ms/ProcessingEvent">ms:ProcessingEvent</a> record, and a chain of pcdm:hasMember properties is used to document the hierarchy between all of these records. The right media example further away from the ms:ImagingEvent diagram item depicts a more nuanced media hierarchy, where a derived media with significant software post-processing was created, but no record exists to represent the initial raw media produced directly by the imaging event. This corresponds to an actual use case where the reconstruction of a CT scan is to be documented without the presence of initial CT projections from which the reconstruction was created. In this case, the ms:ImagingEvent is directly followed by a ms:ProcessingEvent with no interposing media, and the ms:ProcessingEvent creates the ms:Media. This example also demonstrates how files are associated with a ms:Media through <a href="/terms/ms/FileSet">ms:FileSet</a>, which is a record that documents file-specific technical metadata and is itself associated with the actual file (represented as <a href="http://pcdm.org/models#File">pcdm:File</a>). </p>
+<h3>Other Vocabularies and Data Standards</h3>
+<p>This data vocabulary conforms to data standards and uses pre-existing terms from other best practice community-approved vocabularies and ontologies wherever possible and practical to do so. Other term sets are used in a variety of different ways. Where an existing term from another data standard matches the use case of this vocabulary perfectly, the existing term is used directly. As an example, the Darwin Core property term <a href="http://rs.tdwg.org/dwc/terms/catalogNumber">dwc:catalogNumber</a> is used directly to document a physical object’s catalog number identifier within a collection. In other cases, a broader or more general existing term can be found that corresponds to a more specific implementation in this data vocabulary. In those cases, a <code>ms:</code> term is created but is classified as a sub-class (if a class) or a sub-property (if a property) of the more general term. As an example, the term <a href="/terms/ms/projections">ms:projections</a>, used to record the number of projection images generated as part of a scan with CT modality or a related modality, is classified as a sub-property of the DICOM property term <strong>dicom:ImagesinAcquisition</strong>. The full list of all term namespaces used throughout this documentation is listed below. </p>
+<h3>Using the Documentation</h3>
+<p>The most straightforward place to start when familiarizing oneself with the data vocabulary is with the list of record type classes below this section. Each class described in the MorphoSource data vocabulary is defined and a link is provided to a documentation page specific to that class. Class-specific documentation pages describe the individual record type class and list and describe all metadata field properties associated with that class, both for properties directly associated with the class and properties associated with the class through subclass inheritance (if present). Accessing a class IRI in a browser will also direct to class-specific documentation. Accessing a property IRI in a browser will display a property-specific documentation page, which will describe the property and list all classes that make use of the property. It is also possible to view the <a href="/terms/ms/all">entire data vocabulary</a> in a single condensed document, or to view <a href="/terms/ms/classes">all classes</a> or <a href="/terms/ms/properties">all properties</a>. </p></div>
+      <div class="section" id="classes">
+        <h2>Classes</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Label</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <a href="/terms/ms/BiologicalSpecimenObject">Biological Specimen Object</a>
+              </td>
+              <td>A physical object that is a biological specimen, such as a skeleton, a whole body, or a fossil.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/CTImageSeriesImagingEvent">CT Image Series Imaging Event</a>
+              </td>
+              <td>Imaging Event with CT, MRI, or similar Image Modality. Has specific metadata fields other Imaging Events may not have.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/CulturalHeritageObject">Cultural Heritage Object</a>
+              </td>
+              <td>A physical object that is usually non-biological and is of some human cultural significance.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/Device">Device</a>
+              </td>
+              <td>A device used to image a physical object to create media.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/FileSet">FileSet</a>
+              </td>
+              <td>A sequence of binary data accompanied by technical metadata.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/ImagingEvent">Imaging Event</a>
+              </td>
+              <td>An active event in which a physical object is imaging to produce media.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/Media">Media</a>
+              </td>
+              <td>3D, 2D, or AV media representing a physical object.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/Organization">Organization</a>
+              </td>
+              <td>A relatively autonomous bureaucratic unit responsible for controlling physical objects or devices. Often a museum collection, an entire museum institution, or a faculty lab department.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/PhotogrammetryImagingEvent">Photogrammetry Imaging Event</a>
+              </td>
+              <td>Imaging Event with Photogrammetry Image Modality. Has specific metadata fields other Imaging Events may not have.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/PhotographyImagingEvent">Photography Imaging Event</a>
+              </td>
+              <td>Imaging Event with Photography Image Modality. Has specific metadata fields other Imaging Events may not have.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/PhysicalObject">Physical Object</a>
+              </td>
+              <td>A physical object, usually of scholarly interest, that is imaged to create media.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/ProcessingEvent">Processing Event</a>
+              </td>
+              <td>An active event in which a media is processed to produce another media. Belongs to Imaging Event or Media as a member (as either of these can lead to a processing event), and has member Media (as the processing event leads to the production of Media).</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/SequentialSectionImagingEvent">Sequential Section Imaging Event</a>
+              </td>
+              <td>Imaging Event with Sequential Section Image Modality. Has specific metadata fields other Imaging Events may not have.</td>
+            </tr>
+            <tr>
+              <td>
+                <a href="/terms/ms/User">User</a>
+              </td>
+              <td>Individual user of MorphoSource.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="section" id="namespaces">
+        <h2>Namespace abbreviations</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>abbreviation</th>
+              <th>IRI</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tr>
+            <td>ac</td>
+            <td>http://rs.tdwg.org/ac/terms/</td>
+          </tr>
+          <tr>
+            <td>attributes</td>
+            <td>http://rs.tdwg.org/dwc/terms/attributes/</td>
+          </tr>
+          <tr>
+            <td>bf</td>
+            <td>http://id.loc.gov/ontologies/bibframe/</td>
+          </tr>
+          <tr>
+            <td>cc</td>
+            <td>http://creativecommons.org/ns#</td>
+          </tr>
+          <tr>
+            <td>dc</td>
+            <td>http://purl.org/dc/elements/1.1/</td>
+          </tr>
+          <tr>
+            <td>dcam</td>
+            <td>http://purl.org/dc/dcam/</td>
+          </tr>
+          <tr>
+            <td>dcmitype</td>
+            <td>http://purl.org/dc/dcmitype/</td>
+          </tr>
+          <tr>
+            <td>dcterms</td>
+            <td>http://purl.org/dc/terms/</td>
+          </tr>
+          <tr>
+            <td>dicom</td>
+            <td>http://purl.org/healthcarevocab/v1#</td>
+          </tr>
+          <tr>
+            <td>dwc</td>
+            <td>http://rs.tdwg.org/dwc/terms/</td>
+          </tr>
+          <tr>
+            <td>edm</td>
+            <td>http://www.europeana.eu/schemas/edm/</td>
+          </tr>
+          <tr>
+            <td>exif</td>
+            <td>http://www.w3.org/2003/12/exif/ns#</td>
+          </tr>
+          <tr>
+            <td>mrel</td>
+            <td>http://id.loc.gov/vocabulary/relators/</td>
+          </tr>
+          <tr>
+            <td>ms</td>
+            <td>http://www.morphosource.org/terms/ms/</td>
+          </tr>
+          <tr>
+            <td>mscv</td>
+            <td>http://www.morphosource.org/terms/mscv/</td>
+          </tr>
+          <tr>
+            <td>ns1</td>
+            <td>http://www.morphosource.org/terms/</td>
+          </tr>
+          <tr>
+            <td>owl</td>
+            <td>http://www.w3.org/2002/07/owl#</td>
+          </tr>
+          <tr>
+            <td>pcdm</td>
+            <td>http://pcdm.org/models#</td>
+          </tr>
+          <tr>
+            <td>photoshop</td>
+            <td>http://ns.adobe.com/photoshop/1.0/</td>
+          </tr>
+          <tr>
+            <td>rdf</td>
+            <td>http://www.w3.org/1999/02/22-rdf-syntax-ns#</td>
+          </tr>
+          <tr>
+            <td>rdfs</td>
+            <td>http://www.w3.org/2000/01/rdf-schema#</td>
+          </tr>
+          <tr>
+            <td>skos</td>
+            <td>http://www.w3.org/2004/02/skos/core#</td>
+          </tr>
+          <tr>
+            <td>v1</td>
+            <td>http://www.loc.gov/mads/rdf/v1#</td>
+          </tr>
+          <tr>
+            <td>xmpRights</td>
+            <td>http://ns.adobe.com/xap/1.0/rights/</td>
+          </tr>
+          <tr>
+            <td>xsd</td>
+            <td>http://www.w3.org/2001/XMLSchema#</td>
+          </tr>
+        </table>
+      </div>
+      <div class="section" id="acknowledgements"><h3>Acknowledgements</h3>
+<p>TBA.</p></div>
+    </div>
+    <div id="toc">
+      <div id="toc-content">
+        <div class="toc-title">On this page</div>
+        <div class="toc-item">
+          <a href="#metadata">Metadata</a>
+        </div>
+        <div class="toc-item">
+          <a href="#introduction">Introduction</a>
+        </div>
+        <div class="toc-item">
+          <a href="#classes">Classes</a>
+        </div>
+        <div class="toc-item">
+          <a href="#namespaces">Namespaces</a>
+        </div>
+        <div class="toc-item">
+          <a href="#acknowledgements">Acknowledgements</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

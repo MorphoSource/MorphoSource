@@ -241,7 +241,7 @@ RSpec.describe Collection, type: :model do
     end
     it 'calls inherit permissions' do
       works.each do |work|
-        expect(InheritPermissionsJob).to receive(:perform_later).with(work)
+        expect(InheritPermissionsJob).to receive(:perform_later).with(work.id)
       end
       team.add_member_objects(work_ids)
     end
@@ -275,7 +275,7 @@ RSpec.describe Collection, type: :model do
     end
     it 'calls inherit permissions' do
       works.each do |work|
-        expect(InheritPermissionsJob).to receive(:perform_later).with(work)
+        expect(InheritPermissionsJob).to receive(:perform_later).with(work.id)
       end
       team.add_member_objects(work_ids)
     end

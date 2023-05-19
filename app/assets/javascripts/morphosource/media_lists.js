@@ -1,16 +1,21 @@
 $(document).ready(function() {
   // Only load for media list media works table
   if (document.querySelector("div.media-list-results")) {
+    // UI and behavior for Media List collections
     class MediaList {
       constructor(html) {
         this.html = html;
+        this.html.mediaList = this;
 
         // initialize sortable media list
         $("#sortable-media-list").sortable({ handle: ".sort-handle" });
 
         // initialize active row if one is available
         this.activeRow = this.html.querySelector("tr.previewable.view-active");
-        if (this.activeRow) this.#loadMediaView({ scrollWindow: true });
+        if (this.activeRow) this.#loadMediaView();
+
+        // initialize viewer sticky position
+        this.#setViewerStickyTop();
 
         this.#activateListeners();
       }
@@ -35,52 +40,57 @@ $(document).ready(function() {
           activeRow.classList.add("view-active");
           activeRow.querySelector(".currently-viewing").classList.remove("hide");
           activeRow.querySelector(".view-media").classList.add("hide");
-        }   
+        }
       }
 
       // UI updates and AJAX call for media view load
-      #loadMediaView({ callAjax = true, scrollWindow = false } = {}) {
-        // Move viewer up or down 
-        this.#transformViewerYPosition(scrollWindow);
-
+      #loadMediaView() {
         // Add loading UI overlay
-        $('.preview-body').loader({ imgUrl: "/loading32x32.gif "});
+        this.toggleViewerDisabledWrap();
+
+        // Move viewer up or down
+        this.#scrollWindow();
 
         // Enable or disable prev/next buttons
         this.#togglePrevNextButtonState();
 
         // Call AJAX media view load
-        if (callAjax) $.get(
-          `/media_lists/${this.activeRow.dataset.collectionId}/preview/${this.activeRow.dataset.documentId}`
-        );
+        const listType = window.location.pathname.split('/')[1]; // media_lists or sequential_section_lists
+        $.get(`/${listType}/${this.activeRow.dataset.collectionId}/preview/${this.activeRow.dataset.documentId}`);
       }
 
-      // Move viewer down the page for lower table rows, possibly scrolling window as well
-      #transformViewerYPosition(scrollWindow) {
-        // Only transform or scroll at large screen widths (e.g., in side-by-side UI)
+      // Scroll window to ensure active row is in viewport
+      #scrollWindow() {
+        // Only scroll at large screen widths (e.g., in side-by-side UI)
         if (window.matchMedia("(min-width: 992px)").matches) {
-          const allRows = this.activeRow.parentNode.children;
-          const rowIndex = Array.prototype.indexOf.call(allRows, this.activeRow);
-          const viewerBody = this.html.querySelector(".preview-body");
-          const viewer = this.html.querySelector(".preview-container");
-    
-          if (rowIndex && rowIndex > 3) {
-            // Retain original transform
-            const oldTransform = viewer.style.transform;
-            const oldYPixels = oldTransform ? oldTransform.replace(/[^\d.]/g, '') : 0;
-    
-            // Calc new transform and apply
-            const newYPixels = 
-              this.activeRow.offsetHeight * (rowIndex + 1) - viewer.offsetHeight;
-            viewerBody.style.transform = `translateY(${newYPixels}px)`;
-    
-            if (scrollWindow) {
-              window.scrollBy(0, newYPixels - oldYPixels);
-            }      
-          } else {
-            viewerBody.style.transform = null;
+          const rect = this.activeRow.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight) {
+            this.activeRow.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+          } else if (rect.top < 0) {
+            this.activeRow.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
           }
         }
+      }
+
+      // Set viewer with position sticky to have top equal to initial distance from document top
+      #setViewerStickyTop() {
+        const viewer = this.html.querySelector("div.preview-body");
+        if (viewer) {
+          if (window.innerHeight >= 1020) {
+            viewer.style.top = null;
+            const rect = viewer.getBoundingClientRect();
+            if (rect.top) {
+              const val = rect.top + (window.scrollY || window.pageYOffset);
+              viewer.style.top = `${val}px`;
+            }
+          } else {
+            viewer.style.top = "10px";
+          }
+        }
+      }
+
+      toggleViewerDisabledWrap() {
+        this.html.querySelector(".preview-disabled-wrap").classList.toggle("hide");
       }
 
       #togglePrevNextButtonState() {
@@ -98,7 +108,7 @@ $(document).ready(function() {
 
       #activateListeners() {
         /**
-         * General UI Listeners 
+         * General UI Listeners
          */
 
         const removeMemberListener = (event) => {
@@ -120,18 +130,18 @@ $(document).ready(function() {
             url: $("#sortable-media-list").data("url"),
             type: "GET",
             data: new URLSearchParams({
-              sort: $("#sortable-media-list").data("sort"), 
-              page: $("#sortable-media-list").data("page"), 
-              per_page: 
-                $("#sortable-media-list").data("per-page")}).toString() + 
-                '&' + 
+              sort: $("#sortable-media-list").data("sort"),
+              page: $("#sortable-media-list").data("page"),
+              per_page:
+                $("#sortable-media-list").data("per-page")}).toString() +
+                '&' +
                 $("#sortable-media-list").sortable('serialize')
           });
         }
         document.querySelector("#save-media-order").addEventListener("click", saveOrderListener);
 
         /**
-         * Media view load UI Listeners 
+         * Media view load UI Listeners
          */
 
         // Load view from row click
@@ -197,6 +207,9 @@ $(document).ready(function() {
         this.html.querySelectorAll("a.previous, a.next").forEach((btn) => {
           btn.addEventListener("click", prevNextListener);
         });
+
+        // Update viewer top position on window resize
+        addEventListener("resize", () => { this.#setViewerStickyTop() });
       }
 
       // Utility methods
@@ -204,7 +217,7 @@ $(document).ready(function() {
       // Is there an active row that is not the first possible row?
       #canEnablePrevButton() {
         return (
-          (this.activeRow && this.activeRow != this.activeRow.parentNode.firstElementChild) || 
+          (this.activeRow && this.activeRow != this.activeRow.parentNode.firstElementChild) ||
           this.#prevPageExists()
         );
       }
@@ -212,7 +225,7 @@ $(document).ready(function() {
       // Is there an active row that is not the last row OR is there a next page button?
       #canEnableNextButton() {
         return (
-          (this.activeRow && this.activeRow != this.activeRow.parentNode.lastElementChild) || 
+          (this.activeRow && this.activeRow != this.activeRow.parentNode.lastElementChild) ||
           this.#nextPageExists()
         );
       }

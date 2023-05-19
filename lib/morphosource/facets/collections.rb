@@ -8,7 +8,9 @@ module Morphosource
       def facet
         @facet = blacklight_config.facet_fields[params[:id]]
         if @facet.helper_method == :collection_title_by_id && params["facet.sort"] == "index"
-          alphabetized_collections_facet
+          alphabetized_facet(facet_type: 'collection')
+        elsif @facet.helper_method == :user_name_by_id && params["facet.sort"] == "index"
+          alphabetized_facet(facet_type: 'user')
         else
           super
         end
@@ -16,7 +18,7 @@ module Morphosource
 
       # modifies blacklight behavior to retrieve all values for a collection id facet instead of only the values for one page.
       # can then sort all of the collections by title, and then return the section of the sorted array that corresponds to the requested page
-      def alphabetized_collections_facet
+      def alphabetized_facet(facet_type: nil)
         raise ActionController::RoutingError, 'Not Found' unless @facet
         # save page number, but delete facet.page to set offset to 0 for searching
         params["az_facet.page"] = params.delete("facet.page")
@@ -24,7 +26,7 @@ module Morphosource
         blacklight_config.default_more_limit = 999999
         @response = get_facet_field_response(@facet.key, params)
         # sort all the facet items by title
-        sort_collections_by_title
+        facet_type == 'collection' ? sort_collections_by_title : sort_users_by_display_name
         # modify the display facet to include only the items for the current page
         set_display_facet_items
         # pass the modified display_facet to the facet_paginator
@@ -41,6 +43,10 @@ module Morphosource
 
       def sort_collections_by_title
         @response.aggregations[@facet.field].items.sort_by! { |i| filtered_collection_title_by_id(i.value).downcase }
+      end
+
+      def sort_users_by_display_name
+        @response.aggregations[@facet.field].items.sort_by! { |i| filtered_display_name_by_id(i.value).downcase }
       end
 
       def set_display_facet_items
@@ -65,10 +71,23 @@ module Morphosource
         @collection_titles[id] || "Collection #{id} Not Found"
       end
 
+      def filtered_display_name_by_id(id)
+        @display_names ||= display_names
+        @display_names[id] || "User #{id} Not Found"
+      end
+
       # returns a hash of collection ids and titles:
       # ex: {"000202905"=>"Collection Title 1", "000200071"=>"Collection Title 2"}
       def collection_titles
         Morphosource::SolrService.new.get_docs('has_model_ssim:Collection', fl: 'id,title_tesim').map {|h| [h["id"], h["title_tesim"].first]}.to_h
+      end
+
+      # returns a hash of user ids and display names:
+      # ex:
+      def display_names
+        User.all.each_with_object({}) do |u, names|
+          names[u.ms_id] = u.name_or_email
+        end
       end
 
     end

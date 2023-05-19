@@ -171,7 +171,7 @@ class Collection < ActiveFedora::Base
         if media_inherit_permissions?
           Hyrax::PermissionTemplateApplicator.apply(permission_template).to(model: member)
           member.save!
-          InheritPermissionsJob.perform_later(member)
+          InheritPermissionsJob.perform_later(member.id)
         else
           member.save!
         end
@@ -189,7 +189,7 @@ class Collection < ActiveFedora::Base
       end
       work.save!
       if media_inherit_permissions?
-        InheritPermissionsJob.perform_later(work)
+        InheritPermissionsJob.perform_later(work.id)
       end
     end
   end

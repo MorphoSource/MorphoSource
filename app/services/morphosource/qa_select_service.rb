@@ -1,5 +1,16 @@
 module Morphosource
   class QaSelectService < Hyrax::QaSelectService
+    # Fetch field value for the authority
+    #
+    # @param id [String] authority entry ID
+    # @param field [String] Field key to find value for
+    # @return [String] Field value matching ID for the authority
+    # @yield when no field value is present for the id
+    # @yieldreturn [String] an alternate value to return
+    # @raise [KeyError] when no field value is present for the id and no yield provided
+    def self.fetch(id, field, &block)
+      new.fetch(id, field, &block)
+    end
 
     def option_values
       select_all_options.map{ |o| o[1] }
@@ -55,5 +66,16 @@ module Morphosource
       end
     end
 
+    # Fetch field value for the authority
+    #
+    # @param id [String] authority entry ID
+    # @param field [String] Field key to find value for
+    # @return [String] Field value matching ID for the authority
+    # @yield when no field value is present for the id
+    # @yieldreturn [String] an alternate value to return
+    # @raise [KeyError] when no field value is present for the id and no yield provided
+    def fetch(id, field, &block)
+      authority.find(id).fetch(field, &block)
+    end
   end
 end

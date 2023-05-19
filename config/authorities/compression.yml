@@ -1,0 +1,99 @@
+terms:
+  - id: 1
+    term: Uncompressed
+  - id: 2
+    term: CCITT 1D
+  - id: 3
+    term: T4/Group 3 Fax
+  - id: 4
+    term: T6/Group 4 Fax
+  - id: 5
+    term: LZW
+  - id: 6
+    term: JPEG (old-style)
+  - id: 7
+    term: JPEG
+  - id: 8
+    term: Adobe Deflate
+  - id: 9
+    term: JBIG B&W
+  - id: 10
+    term: JBIG Color
+  - id: 99
+    term: JPEG
+  - id: 262
+    term: Kodak 262
+  - id: 32766
+    term: Next
+  - id: 32767
+    term: Sony ARW Compressed
+  - id: 32769
+    term: Packed RAW
+  - id: 32770
+    term: Samsung SRW Compressed
+  - id: 32771
+    term: CCIRLEW
+  - id: 32772
+    term: Samsung SRW Compressed 2
+  - id: 32773
+    term: PackBits
+  - id: 32809
+    term: Thunderscan
+  - id: 32867
+    term: Kodak KDC Compressed
+  - id: 32895
+    term: IT8CTPAD
+  - id: 32896
+    term: IT8LW
+  - id: 32897
+    term: IT8MP
+  - id: 32898
+    term: IT8BL
+  - id: 32908
+    term: PixarFilm
+  - id: 32909
+    term: PixarLog
+  - id: 32946
+    term: Deflate
+  - id: 32947
+    term: DCS
+  - id: 33003
+    term: Aperio JPEG 2000 YCbCr
+  - id: 33005
+    term: Aperio JPEG 2000 RGB
+  - id: 34661
+    term: JBIG
+  - id: 34676
+    term: SGILog
+  - id: 34677
+    term: SGILog24
+  - id: 34712
+    term: JPEG 2000
+  - id: 34713
+    term: Nikon NEF Compressed
+  - id: 34715
+    term: JBIG2 TIFF FX
+  - id: 34718
+    term: Microsoft Document Imaging (MDI) Binary Level Codec
+  - id: 34719
+    term: Microsoft Document Imaging (MDI) Progressive Transform Codec
+  - id: 34720
+    term: Microsoft Document Imaging (MDI) Vector
+  - id: 34887
+    term: ESRI Lerc
+  - id: 34892
+    term: Lossy JPEG
+  - id: 34925
+    term: LZMA2
+  - id: 34926
+    term: Zstd
+  - id: 34927
+    term: WebP
+  - id: 34933
+    term: PNG
+  - id: 34934
+    term: JPEG XR
+  - id: 65000
+    term: Kodak DCR Compressed
+  - id: 65535
+    term: Pentax PEF Compressed

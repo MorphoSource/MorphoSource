@@ -6,7 +6,7 @@
   <% if @media_presenter %>
     <%= render 'representative_media', presenter: @media_presenter %>
   <% else %>
-    <div class="viewer-wrapper">
+    <div class="viewer-wrapper-2d">
       <div class="viewer">
         <div class="not-ready not-loaded">
           <% if @document_list.present? && @document_list&.first&.id.present? %>

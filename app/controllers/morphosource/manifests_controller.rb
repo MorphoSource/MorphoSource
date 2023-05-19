@@ -11,6 +11,10 @@ module Morphosource
       iiif_manifest_factory: ::IIIFManifest::V3::ManifestFactory
     )
 
+    class_attribute :remote_manifest_builder
+    self.remote_manifest_builder = Morphosource::RemoteManifestBuilderService
+
+
     def show
       headers['Access-Control-Allow-Origin'] = '*'
 
@@ -18,9 +22,13 @@ module Morphosource
         authorize_media_with_temporary_link m.id
         authorize! :read, m.id
 
-        json = iiif_manifest_builder.manifest_for(
-          presenter: iiif_manifest_presenter(m)
-        )
+        if m.has_remote_manifest?
+          json = remote_manifest_builder.manifest_for(m)
+        else
+          json = iiif_manifest_builder.manifest_for(
+            presenter: iiif_manifest_presenter(m)
+          )
+        end
 
         respond_to do |wants|
           wants.json { render json: json }
@@ -34,7 +42,7 @@ module Morphosource
       redirect_to '/'
     end
 
-    private 
+    private
       def media_from_access_control(access_control_id)
         Media.where(accessControl_ssim: access_control_id)&.first
       end

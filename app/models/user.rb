@@ -213,13 +213,11 @@ class User < ApplicationRecord
     domains = {}
     ids = roles.map{ |r| r.name.gsub(/(_managers|_editors|_depositors)/, "") if r.name.match(/(_managers|_editors|_depositors)/) }.compact
     ids.each do |id|
-      begin
+      if Collection.exists?(id)
         c = Collection.find(id)
         if c.organization.present? && c.can_submit_remote_files? && c.allowed_remote_source.present?
           domains[id] = c.allowed_remote_source
         end
-      rescue Exception => e
-        Rails.logger.debug "Error in finding allowed domains: #{e.message}"
       end
     end
     return domains

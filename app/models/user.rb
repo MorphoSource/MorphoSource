@@ -218,8 +218,8 @@ class User < ApplicationRecord
         if c.organization.present? && c.can_submit_remote_files? && c.allowed_remote_source.present?
           domains[id] = c.allowed_remote_source
         end
-      rescue ActiveFedora::ObjectNotFoundError
-        Rails.logger.debug "Error in finding allowed domains: collection not found"
+      rescue Exception => e
+        Rails.logger.debug "Error in finding allowed domains: #{e.message}"
       end
     end
     return domains

@@ -46,6 +46,7 @@
 /public/export_files
 
 /public/system
+/public/terms
 /public/uploads
 
 # Batch import config

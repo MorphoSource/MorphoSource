@@ -18,7 +18,7 @@ RSpec.describe Morphosource::CollectionTypes::MediaLists do
       expect(media_list_collection_type.assigns_visibility).to be(false)
       expect(media_list_collection_type.share_applies_to_new_works).to be(false)
       expect(media_list_collection_type.brandable).to be(true)
-      expect(media_list_collection_type.badge_color).to eq("#")
+      expect(media_list_collection_type.badge_color).to eq("#8612c4")
     end
   end
 end

@@ -18,7 +18,7 @@ RSpec.describe Morphosource::CollectionTypes::SequentialSectionLists do
       expect(sequential_section_list_collection_type.assigns_visibility).to be(false)
       expect(sequential_section_list_collection_type.share_applies_to_new_works).to be(false)
       expect(sequential_section_list_collection_type.brandable).to be(true)
-      expect(sequential_section_list_collection_type.badge_color).to eq("#")
+      expect(sequential_section_list_collection_type.badge_color).to eq("#059aad")
     end
   end
 end

@@ -46,6 +46,7 @@ gem 'activejob-status'
 
 gem 'puma', '~> 5.5.0'
 
+gem 'minitar'
 gem 'rubyzip'
 gem 'zipline', '~> 1.0'
 gem 'zip_tricks'

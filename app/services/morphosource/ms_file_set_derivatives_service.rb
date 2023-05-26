@@ -62,8 +62,10 @@ module Morphosource
 
         # Create derivatives based on work media type
         if ( parent_work&.media_type&.first == 'SequentialSectionImageSeries' || parent_work&.media_type&.first == 'PhotogrammetryImageSeries' )
+byebug
           create_thumbnail_from_series_image(filename)
         elsif parent_work&.media_type&.first == 'CTImageSeries'
+byebug
           create_thumbnail_from_series_image(filename)
           create_3d_ct_image_series_derivative(
             filename,
@@ -74,6 +76,7 @@ module Morphosource
             parent_work&.z_spacing&.first
           )
         elsif parent_work&.media_type&.first == 'Mesh'
+byebug
           create_mesh_derivatives(filename)
         end
 

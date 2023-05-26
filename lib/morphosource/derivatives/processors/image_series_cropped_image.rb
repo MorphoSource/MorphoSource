@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'zip'
+require 'archive/tar/minitar'
 
 module Morphosource::Derivatives::Processors
   class TimeoutError < Hydra::Derivatives::TimeoutError
@@ -26,6 +27,7 @@ module Morphosource::Derivatives::Processors
     protected
     
     def create_image_series_cropped_image_derivative
+byebug
       @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
 
@@ -46,8 +48,24 @@ module Morphosource::Derivatives::Processors
     def extract_image_for_thumbnail
       img = img_coll[img_coll.count/2]
       img_path = File.join(tmp_dir_path, File.basename(img))
-      Zip::File.open(source_path) do |zip_file|
-        zip_file.extract(img, img_path)
+
+byebug
+# check img and img_path, source_path ext
+
+      if File.extname(source_path).downcase == '.tar'
+        Archive::Tar::Minitar::unpack(source_path, img_path) do |entry|
+          if entry.file? && entry.name == img
+            File.open(File.join(img_path, entry.name), 'wb') do |f|
+              f.write(entry.read)
+            end
+          end
+        end
+        byebug
+        # check img_path
+      else
+        Zip::File.open(source_path) do |zip_file|
+          zip_file.extract(img, img_path)
+        end
       end
       @source_path = img_path
     end

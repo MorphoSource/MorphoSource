@@ -93,10 +93,29 @@ module Morphosource::Derivatives::Processors
     end
 
     def extract_images
-      Zip::File.open(source_path) do |zip_file|
-        img_coll.each do |f|
-          f_path = File.join(input_path, File.basename(f))
-          zip_file.extract(f, f_path)
+byebug 
+
+# img_coll = ?
+
+      if File.extname(source_path).downcase == '.tar'
+
+#        Archive::Tar::Minitar::unpack(source_path, f_path) do |entry|
+#
+#            if entry.file? && entry.name == img
+#              File.open(File.join(img_path, entry.name), 'wb') do |f|
+#                f.write(entry.read)
+#              end
+#            end
+#
+#        end
+#        byebug
+#
+      else
+        Zip::File.open(source_path) do |zip_file|
+          img_coll.each do |f|
+            f_path = File.join(input_path, File.basename(f))
+            zip_file.extract(f, f_path)
+          end
         end
       end
     end

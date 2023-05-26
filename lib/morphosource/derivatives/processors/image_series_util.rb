@@ -18,23 +18,53 @@ module Morphosource::Derivatives::Processors
     def locate_images
       # get all image files and locations in zip
       img_locs = {}
-      Zip::File.open(source_path) do |zip_file|
-        zip_file.each do |f|
-          next if File.basename(f.name).start_with?('.')
-          ext = File.extname(f.name).downcase
-          if acceptable_image_formats.include? ext
-            loc = File.dirname(f.name)
-            if !img_locs.key?(ext)
-              img_locs[ext] = {}
+byebug
+
+
+      if File.extname(source_path).downcase == '.tar'
+
+        Archive::Tar::Minitar.open(source_path) do |tar|
+          tar.each do |entry|
+            next if !f.file? || File.basename(entry.name).start_with?('.')
+            ext = File.extname(entry.name).downcase
+            if acceptable_image_formats.include?(ext)
+              loc = File.dirname(entry.name)
+              img_locs[ext] ||= {}
+              img_locs[ext][loc] ||= []
+              img_locs[ext][loc] << entry.name
             end
-            if !img_locs[ext].key?(loc)
-              img_locs[ext][loc] = []
-            end
-            img_locs[ext][loc] << f.name
           end
         end
-      end
+  
 
+
+  byebug
+  
+  # check img_locs for skipping paxheader
+
+
+
+      else
+
+        Zip::File.open(source_path) do |zip_file|
+          zip_file.each do |f|
+            next if File.basename(f.name).start_with?('.')
+            ext = File.extname(f.name).downcase
+            if acceptable_image_formats.include? ext
+              loc = File.dirname(f.name)
+              if !img_locs.key?(ext)
+                img_locs[ext] = {}
+              end
+              if !img_locs[ext].key?(loc)
+                img_locs[ext][loc] = []
+              end
+              img_locs[ext][loc] << f.name
+            end
+          end
+        end
+
+      end
+      
       # sort image collections by extension and location
       coll_by_ext = {}
       img_locs.each do |k, v|

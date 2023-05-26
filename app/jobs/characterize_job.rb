@@ -39,6 +39,10 @@ class CharacterizeJob < Hyrax::ApplicationJob
         Rails.logger.debug "Running zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
         Hydra::Works::ZipContentsCharacterizationService.run(file_set.characterization_proxy, filepath)
         Rails.logger.debug "Ran zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+      elsif (ext =~ /\.(tar)$/)
+        Rails.logger.debug "Running tar contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+        Hydra::Works::TarContentsCharacterizationService.run(file_set.characterization_proxy, filepath)
+        Rails.logger.debug "Ran tar contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
       end
     ensure
       file_set.characterization_proxy.save!
@@ -47,6 +51,7 @@ class CharacterizeJob < Hyrax::ApplicationJob
     end
     
     Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
+byebug
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end
 end

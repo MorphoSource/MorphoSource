@@ -44,8 +44,14 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       end            
 
       if derived_parent_file.present?
-        Rails.logger.debug "iN MediaSubcontrolJob: waiting for parent media creation: #{derived_parent_file}"        
-        sleep(30.seconds) until (target_parent_id = created_parent_id(derived_parent_file)).present?
+        Rails.logger.debug "iN MediaSubcontrolJob: waiting for parent media creation: #{derived_parent_file}"
+
+        wait_started = Time.now
+
+byebug
+
+        sleep(30.seconds) until (target_parent_id = created_parent_id(derived_parent_file, wait_started)).present?
+
         Rails.logger.debug "iN MediaSubcontrolJob: parent media found: #{derived_parent_file} > #{target_parent_id}"
       end
 
@@ -87,9 +93,21 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     status.update(manifest: @manifest)
   end
 
-  def created_parent_id(parent_file)
-    Rails.logger.debug "iN created_parent_id: looking for #{parent_file} in job #{main_job_id}"        
-    return main_job.created_objects[parent_file]
+  def created_parent_id(parent_file, wait_started)
+    Rails.logger.debug "iN created_parent_id: looking for #{parent_file} in job #{main_job_id}"
+byebug
+    if main_job.created_objects[parent_file].present?
+      return main_job.created_objects[parent_file]
+    else 
+      duration = Time.now - wait_started
+      Rails.logger.debug "iN created_parent_id: WAITED #{duration} seconds"
+byebug
+      if duration > 1
+        raise "WAIT_TOO_LONG"
+      else
+        return nil
+      end
+    end
   end
 
   def main_job

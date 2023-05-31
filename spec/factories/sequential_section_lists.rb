@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :sequential_section_list, class: SequentialSectionList do
-    Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
+    # Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
 
     title               { ["example sequential section list"] }
     depositor           { nil }

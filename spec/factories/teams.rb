@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :team, class: Collection do
-    Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Teams::SETTINGS)
+    # Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Teams::SETTINGS)
 
     title               { ["example team"] }
     depositor           { nil }

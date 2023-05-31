@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :media_list, class: MediaList do
-    Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)
+    # Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)
 
     title               { ["example media list"] }
     depositor           { nil }

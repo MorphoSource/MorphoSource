@@ -31,9 +31,9 @@ module Morphosource
         @json["references"]
       end
 
-      def organization
-        @organization ||= Organization.where(title: ["MCZ Special Collections"]).first
-      end
+      # def organization
+      #   @organization ||= Organization.where(title: ["MCZ Special Collections"]).first
+      # end
 
       def device
         first_slide_iiif = slides.first["http://rs.tdwg.org/ac/terms/accessURI"].split('/full/').first.concat("/info.json")

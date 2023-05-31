@@ -8,7 +8,7 @@ module Morphosource
       end
 
       def import_slides
-        organization_id = params["organization"]
+        # organization_id = params["organization"]
         service = params["service"]
         resource_id = params["resource_id"]
         user_email = params["user_email"]
@@ -19,10 +19,14 @@ module Morphosource
       end
 
       def import_service_class
-        case params["organization"]
-        when "MCZ"
-          Morphosource::Import::MczSlideSeriesService
-        end
+        # case params["organization"]
+        # when "MCZ"
+        #   Morphosource::Import::MczSlideSeriesService
+        # end
+
+        Morphosource::Import::MczSlideSeriesService
+
+
       end
 
     private

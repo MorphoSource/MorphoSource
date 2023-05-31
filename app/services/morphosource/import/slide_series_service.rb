@@ -9,8 +9,8 @@ module Morphosource
       end
 
       def initialize(service: nil, resource_id: nil, user_email: nil, list_visibility: 'restricted')
-        @organization = organization
         @service = service
+        # @organization = organization
         @resource_id = resource_id
         @manager = User.find_by(email: user_email)
         @admin = User.find_by(ms_id: Hyrax.config.batch_user_key)
@@ -24,6 +24,7 @@ module Morphosource
 
       def import_slide_series
         @json = fetch_json
+        @organization = organization
         @specimen = find_or_create_specimen
         @taxonomy = @specimen.taxonomies.first
         @device = device
@@ -203,6 +204,13 @@ module Morphosource
             @tempfile.write(chunk)
           end
           @tempfile.rewind
+        end
+
+        def organization
+          case @service
+          when 'GBIF'
+            byebug
+          end
         end
     end
   end

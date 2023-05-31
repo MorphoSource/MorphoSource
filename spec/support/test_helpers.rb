@@ -12,4 +12,12 @@ module TestHelpers
     fake.string
   end
 
+  def is_contributor(user)
+    allow(user).to receive(:contributor?).and_return(true)
+  end
+
+  def is_not_contributor(user)
+    allow(user).to receive(:contributor?).and_return(false)
+  end
+
 end

@@ -4,8 +4,7 @@ module Morphosource
       include Morphosource::CollectionHelper
 
       before_action :filter_docs_with_read_access!, except: [:update_members]
-
-      before_action :filter_docs_with_access_by_collection_type, only: [:update_members]
+      before_action :filter_docs_with_edit_access!, only: [:update_members]
 
       def update_members
         err_msg = validate
@@ -43,15 +42,6 @@ module Morphosource
         collection_media_path(@collection)
       end
 
-      private
-
-        def filter_docs_with_access_by_collection_type
-          if collection.list?
-            filter_docs_with_read_access!
-          else
-            filter_docs_with_edit_access!
-          end
-        end
 
     end
   end

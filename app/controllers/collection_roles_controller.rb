@@ -12,6 +12,7 @@ class CollectionRolesController < ApplicationController
 
   def update_collection_groups
     return unless can? :edit, collection
+
     if users_are_eligible?
       update_subcollections
       update_agent_access
@@ -26,8 +27,6 @@ class CollectionRolesController < ApplicationController
   # users are eligible if they are being removed from a role, are being added to a downloader or viewer role, or have contributor status.
   def users_are_eligible?
     if @remove
-      return true
-    elsif @collection.list?
       return true
     elsif group_is_downloader_or_viewer?
       return true

@@ -5,8 +5,7 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
 
   let(:user)                                    { User.create(email: 'user@email.com', password: 'password') }
   let(:depositor)                               { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'Sequential Section List') }
-  let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential Section list'], collection_type_gid: sequential_section_list_collection_type.gid, depositor: depositor.ms_id) }
+  let(:sequential_section_list)                 { FactoryBot.create(:sequential_section_list, title: ['sequential Section list'], depositor: depositor.ms_id) }
   let(:media)                                   { Media.create(title: ['media'], depositor: depositor.ms_id, visibility: 'open') }
 
   describe 'temporary admin-only restriction' do

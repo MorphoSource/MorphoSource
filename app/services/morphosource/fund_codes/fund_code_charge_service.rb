@@ -132,8 +132,7 @@ module Morphosource
 
       def query_media_filesize(media_id)
         if (
-          Media.exists?(media_id) &&
-          (m = Media.find(media_id)).present? &&
+          (m = Media.find_by(id: media_id)).present? &&
           (fs = m.file_sets.first).present? &&
           (of = fs.original_file).present?
         )

@@ -1,6 +1,5 @@
 FactoryBot.define do
   factory :project, class: Collection do
-    # Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Projects::SETTINGS)
 
     title               { ["example project"] }
     depositor           { nil }

@@ -4,10 +4,14 @@ FactoryBot.define do
     title               { ["example project"] }
     depositor           { nil }
     visibility          { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
-    collection_type_gid { Hyrax::CollectionType.find_by(machine_id: Morphosource::CollectionTypes::Projects::SETTINGS[:machine_id]).gid }
+
+    after(:build) do |project|
+      project_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Projects::SETTINGS)
+      project.collection_type_gid = project_collection_type.gid
+    end
 
     after(:create) do |project|
-      # find team by id
+      # find project by id
       ::RSpec::Mocks.allow_message(project.class, :find).with(project.id).and_return(project)
     end
   end

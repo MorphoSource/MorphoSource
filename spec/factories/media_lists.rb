@@ -4,7 +4,11 @@ FactoryBot.define do
     title               { ["example media list"] }
     depositor           { nil }
     visibility          { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
-    collection_type_gid { Hyrax::CollectionType.find_by(machine_id: Morphosource::CollectionTypes::MediaLists::SETTINGS[:machine_id]).gid }
+
+    after(:build) do |media_list|
+      media_list_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)
+      media_list.collection_type_gid = media_list_collection_type.gid
+    end
 
     after(:create) do |media_list|
       # find media_list by id

@@ -4,7 +4,11 @@ FactoryBot.define do
     title               { ["example sequential section list"] }
     depositor           { nil }
     visibility          { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
-    collection_type_gid { Hyrax::CollectionType.find_by(machine_id: Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS[:machine_id]).gid }
+
+    after(:build) do |sequential_section_list|
+      sequential_section_list_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
+      sequential_section_list.collection_type_gid = sequential_section_list_collection_type.gid
+    end
 
     after(:create) do |sequential_section_list|
       # find sequential_section_list by id

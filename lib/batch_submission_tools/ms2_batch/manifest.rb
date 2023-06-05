@@ -133,7 +133,27 @@ module BatchSubmissionTools
           # when new parent media will be created,
           # Only the parent items of the media group is needed for ingest job for all media
           # otherwise duplicate media will be created
-          rows_to_remove.each { |k| media_group_to_rows.delete [k] }
+          rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
+        end
+
+        # re-order rows to have parent media first if needed
+        p_index = nil
+        p_row = nil
+        row_with_parent = nil
+        rows_with_parents = media_group_to_rows.select { |_, value| !value[:parents].empty? }.values
+        rows_with_parents.each do |row|
+          row_with_parent = row
+          p_index = row[:parents]
+          p_row = @media_group_to_rows[p_index]
+          break if p_row.present?
+        end
+        if !p_row.present?
+          # if parent row not found, put the row_with_parent on top
+          p_row = row_with_parent
+          p_index = @media_group_to_rows.key(row_with_parent)
+        end
+        if @media_group_to_rows.keys.first != p_index
+          @media_group_to_rows = { p_index => p_row }.merge(@media_group_to_rows.reject { |key| key == p_index })
         end
         #byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"

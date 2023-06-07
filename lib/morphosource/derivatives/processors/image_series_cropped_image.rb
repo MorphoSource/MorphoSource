@@ -27,16 +27,21 @@ module Morphosource::Derivatives::Processors
     protected
     
     def create_image_series_cropped_image_derivative
-byebug
       @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
 
-      begin
+#      begin
+
         @img_coll, @ext = locate_images
+byebug
         return unless img_coll.present?
 
         extract_image_for_thumbnail
         convert_dicom_image if dicom_image_formats.include?(ext)
+
+begin
+
+
         create_resized_image
       rescue StandardError => e
         raise e
@@ -49,19 +54,34 @@ byebug
       img = img_coll[img_coll.count/2]
       img_path = File.join(tmp_dir_path, File.basename(img))
 
+
+      if File.extname(source_path).downcase == '.tar'
+
+byebug
 byebug
 # check img and img_path, source_path ext
 
-      if File.extname(source_path).downcase == '.tar'
-        Archive::Tar::Minitar::unpack(source_path, img_path) do |entry|
-          if entry.file? && entry.name == img
-            File.open(File.join(img_path, entry.name), 'wb') do |f|
-              f.write(entry.read)
+        File.open(source_path, 'rb') do |file|
+byebug
+          Archive::Tar::Minitar::Reader.open(file) do |tar|
+            tar.each_entry do |entry|
+              if entry.name == img
+                f_path = File.join(img_path, entry.name)
+                directory = File.dirname(f_path)
+                FileUtils.mkdir_p(directory) unless Dir.exist?(directory)
+                File.new(f_path, 'wb')
+                File.open(f_path, 'wb') do |output_file|
+                  output_file.write(entry.read)
+                end
+                break
+              end
             end
           end
         end
-        byebug
-        # check img_path
+
+byebug
+byebug
+# check img_path
       else
         Zip::File.open(source_path) do |zip_file|
           zip_file.extract(img, img_path)

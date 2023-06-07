@@ -61,17 +61,25 @@ module Morphosource::Derivatives::Processors
       # If unit is not Mm, must convert spacing values to Mm
       @unit = directives.fetch(:unit, 'Mm').presence || 'Mm'
       correct_spacing_scale if unit != 'Mm'
-      begin
+
+
+#      begin
+
         @img_coll, @ext = locate_images
         return unless img_coll.present?
 
         # extract and process images
         extract_images
+byebug  
+byebug      
+# !!! check files in input_path
         uncompress_dcm if dicom_image_formats.include?(ext)
         extract_image_metadata
         scale_images
         tif_to_raw_dcm
         compress_dcm
+
+begin
 
         # place files
         write_files
@@ -93,23 +101,35 @@ module Morphosource::Derivatives::Processors
     end
 
     def extract_images
-byebug 
-
-# img_coll = ?
 
       if File.extname(source_path).downcase == '.tar'
+byebug
+# fail here
 
-#        Archive::Tar::Minitar::unpack(source_path, f_path) do |entry|
-#
-#            if entry.file? && entry.name == img
-#              File.open(File.join(img_path, entry.name), 'wb') do |f|
-#                f.write(entry.read)
-#              end
-#            end
-#
-#        end
-#        byebug
-#
+      File.open(source_path, 'rb') do |file|
+        Archive::Tar::Minitar::Reader.open(file) do |tar|
+byebug
+# tar.count?
+          tar.each_entry do |entry|
+            if img_coll.include? entry.name
+              f_path = File.join(input_path, entry.name)
+#byebug
+              directory = File.dirname(f_path)
+              FileUtils.mkdir_p(directory) unless Dir.exist?(directory)
+              File.new(f_path, 'wb')
+              File.open(f_path, 'wb') do |output_file|
+                output_file.write(entry.read)
+              end
+            end
+          end
+        end
+      end
+
+byebug 
+byebug 
+# img_coll = ?
+# !!! check files in input_path
+
       else
         Zip::File.open(source_path) do |zip_file|
           img_coll.each do |f|

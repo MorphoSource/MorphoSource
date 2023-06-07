@@ -1,5 +1,6 @@
 require 'hydra/works/services/crc32_characterization_service.rb'
 require 'hydra/works/services/zip_contents_characterization_service.rb'
+require 'hydra/works/services/tar_contents_characterization_service.rb'
 
 class CharacterizeJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.heavy_queue_name
@@ -51,7 +52,6 @@ class CharacterizeJob < Hyrax::ApplicationJob
     end
     
     Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
-byebug
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end
 end

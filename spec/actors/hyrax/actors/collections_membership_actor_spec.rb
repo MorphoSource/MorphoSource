@@ -8,7 +8,7 @@ RSpec.describe Hyrax::Actors::CollectionsMembershipActor do
   let(:work)                  { Media.create(id: "OriginalWork", title: ["Work Being Updated"], depositor: user.ms_id ) }
   let(:user)                  { User.create(email: 'user@email.com', password: 'password') }
   let(:ability)               { Ability.new(user) }
-  let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
+  let(:team_collection_type)  { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Teams::SETTINGS) }
   let(:teamA)                 { Collection.create(title: ['TeamA'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let(:teamB)                 { Collection.create(title: ['TeamB'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let(:env)                   { Hyrax::Actors::Environment.new(work, ability, attributes) }

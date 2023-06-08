@@ -47,7 +47,6 @@ build_job:
     - dcmdjpeg --version
     - gltf-pipeline --version
     - bin/rake db:reset
-    - bin/rake morphosource:setup
   tags:
     - test
 

@@ -1,6 +1,7 @@
 FactoryBot.define do
 
   factory :media_list_collection_type, class: Hyrax::CollectionType do
+    byebug
     title { "Media List" }
     description { "Assortment of media records. Media records can belong to multiple media lists. Multiple users can manage media lists." }
     machine_id { "media_list" }

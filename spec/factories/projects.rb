@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :project, class: Collection do
 
-    title               { ["example project"] }
-    depositor           { nil }
-    visibility          { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
+    title       { ["example project"] }
+    depositor   { nil }
+    visibility  { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
 
     after(:build) do |project|
       project_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Projects::SETTINGS)

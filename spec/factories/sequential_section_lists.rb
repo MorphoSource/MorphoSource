@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :sequential_section_list, class: SequentialSectionList do
 
-    title               { ["example sequential section list"] }
-    depositor           { nil }
-    visibility          { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
+    title       { ["example sequential section list"] }
+    depositor   { nil }
+    visibility  { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
 
     after(:build) do |sequential_section_list|
       sequential_section_list_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)

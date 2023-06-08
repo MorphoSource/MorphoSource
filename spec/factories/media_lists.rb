@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :media_list, class: MediaList do
 
-    title               { ["example media list"] }
-    depositor           { nil }
-    visibility          { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
+    title       { ["example media list"] }
+    depositor   { nil }
+    visibility  { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
 
     after(:build) do |media_list|
       media_list_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)

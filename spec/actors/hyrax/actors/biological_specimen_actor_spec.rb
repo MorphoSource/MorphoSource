@@ -33,7 +33,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
 
       context 'bso is created with organization through the submission process' do
         let(:organization) { Organization.new(title: ['org'], team_id: []) }
-        
+
         before do
           organization.save
           env.attributes[:organization_id] = [organization.id]
@@ -49,8 +49,7 @@ RSpec.describe Hyrax::Actors::BiologicalSpecimenActor do
 
         context 'and organization with a linked team' do
           let(:user)      { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
-          let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
-          let(:team)           { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+          let(:team)           { FactoryBot.create(:team, depositor: user.ms_id) }
           let(:team_manager)   { User.create(email: 'newmanager@test.com', password: 'password') }
           let(:team_depositor) { User.create(email: 'newdepositor@test.com', password: 'password') }
           let(:team_viewer)    { User.create(email: 'newviewer@test.com', password: 'password') }

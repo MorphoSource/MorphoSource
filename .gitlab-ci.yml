@@ -47,7 +47,6 @@ build_job:
     - dcmdjpeg --version
     - gltf-pipeline --version
     - bin/rake db:reset
-    - bin/rake morphosource:setup
   tags:
     - test
 
@@ -61,6 +60,7 @@ test_until_fail_job:
     variables:
       - $SKIP_TESTS == "true"
   script:
+    - bin/rake morphosource:setup
     - bin/rake ci:wrapped_spec[~accessibility]
 
 test_all_job:

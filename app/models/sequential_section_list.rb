@@ -1,7 +1,7 @@
 class SequentialSectionList < MediaList
 
   def self.collection_type
-    Hyrax::CollectionType.find_by(machine_id: 'sequential_section_list')
+    Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
   end
 
   def collection_type

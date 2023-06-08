@@ -4,8 +4,6 @@ RSpec.describe Hyrax::TeamPresenter do
 
   let(:ability) { double Ability }
 
-  let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
   let(:user) { User.create(display_name: 'John Doe', email: 'johndoe@email.com', password: 'password', ms_id: 'abc123') }
 
@@ -56,7 +54,7 @@ RSpec.describe Hyrax::TeamPresenter do
     end
 
     it '#collection_type' do
-      expect(presenter.collection_type.title).to eq("Team")
+      expect(presenter.collection_type.title).to eq(team_collection_type.title)
     end
 
     it '#manager_list' do

@@ -10,7 +10,6 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
   let(:user)                  { User.create(email: 'user@email.com', password: 'password') }
   let(:depositor)             { User.create(email: 'depositor@email.com', password: 'password') }
   let(:manager)               { User.create(email: 'manager@email.com', password: 'password') }
-  let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team') }
   let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let!(:media)                { Media.create(title: ['Media'],
                                              depositor: depositor.ms_id,

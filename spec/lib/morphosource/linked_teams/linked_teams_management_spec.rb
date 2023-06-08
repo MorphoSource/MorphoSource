@@ -4,7 +4,6 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
   describe '#new_processing_event_media_updates' do
     let(:subject)               { SubmissionsController.new() }
     let(:user)                  { User.create(email: 'email@email.com', password: 'password') }
-    let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
     let(:team)                  { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
     let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
     let(:organization)          { Organization.create(title: ['new organization']) }

@@ -4,8 +4,6 @@ RSpec.describe Hyrax::Dashboard::NestCollectionsController, type: :controller do
   routes { Hyrax::Engine.routes }
 
   let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
   let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
   let(:manager)                 { User.create(email: 'manager@email.com', password: 'password') }

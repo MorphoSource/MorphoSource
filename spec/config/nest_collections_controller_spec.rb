@@ -7,8 +7,6 @@ RSpec.describe Hyrax::Dashboard::NestCollectionsController, type: :controller do
 
   let(:child_id) { 'child1' }
   let(:child) { instance_double(Collection, title: ['Awesome Child']) }
-  let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 'project') }
   let(:parent) { Collection.create(id: 'parent1', title: ['Uncool Parent'], collection_type_gid: team_collection_type.gid) }
 
   describe '#selected_type_id' do

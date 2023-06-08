@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
   let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
   let(:new_team)                { Collection.create(title: ['new team'], collection_type_gid: team_collection_type.gid) }
 
@@ -21,7 +20,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
   let(:processing_event1)       { ProcessingEvent.create(title: ['processing event 1']) }
   let(:media1b)                 { Media.create(title: ['media 1b']) }
-  
+
   let(:imaging_event2)          { ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id], physical_object_id: [cho.id], ie_modality: device.modality) }
   let(:media2a)                 { Media.create(title: ['media 2a']) }
   let(:processing_event2)       { ProcessingEvent.create(title: ['processing event 2']) }
@@ -137,7 +136,6 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
     context 'work is an organization' do
       let(:media)                   { [media1a, media1b, media2a, media2b] }
       let(:objects)                 { [specimen, cho] }
-      let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
       let(:projectA)                { Collection.create(title: ['project A'], collection_type_gid: project_collection_type.gid) }
       let(:projectB)                { Collection.create(title: ['project B'], collection_type_gid: project_collection_type.gid) }
       let(:team_projects)           { [projectA, projectB] }

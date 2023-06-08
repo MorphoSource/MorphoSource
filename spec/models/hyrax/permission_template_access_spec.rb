@@ -5,7 +5,6 @@ require 'rails_helper'
 RSpec.describe Hyrax::PermissionTemplateAccess do
   let(:depositor)            { User.create(email: 'depositor@email.com', password: 'password') }
   let(:downloader)           { User.create(email: 'downloader@email.com', password: 'password') }
-  let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:collection)           { Collection.create(id: 'team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: team_collection_type.gid) }
 
   before do

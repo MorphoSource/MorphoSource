@@ -17,7 +17,6 @@ RSpec.describe MediaList, type: :model do
   end
 
   describe 'collection_type' do
-    let!(:media_list_collection_type)  { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS) }
     it { expect(described_class.collection_type).to eq(media_list_collection_type) }
     it { expect(subject.collection_type).to eq(media_list_collection_type) }
   end

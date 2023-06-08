@@ -40,10 +40,8 @@ RSpec.describe Morphosource::Collections::NestedCollectionQueryService do
 
     describe 'parent is nestable, user can edit the parent, and the parent is a team' do
       let(:depositor)               { User.create(email:'depositor@email.com', password: 'password') }
-      let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
       let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
       let(:another_team)            { Collection.create(title: ['Another Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-      let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
       let(:projectA)                { Collection.create(title: ['ProjectA'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
       let(:projectB)                { Collection.create(title: ['ProjectB'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
       let(:projectC)                { Collection.create(title: ['ProjectC'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }

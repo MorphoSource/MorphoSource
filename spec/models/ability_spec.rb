@@ -101,12 +101,6 @@ RSpec.describe Ability, type: :model do
     end
     context 'collections' do
       let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
-
-      let(:team_collection_type)                    { Hyrax::CollectionType.create(title: 'Team') }
-      let(:project_collection_type)                 { Hyrax::CollectionType.create(title: 'Project') }
-      let(:media_list_collection_type)              { Hyrax::CollectionType.create(title: 'Media List') }
-      let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'Sequential Section List') }
-
       let(:team)                    { Collection.new(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
       let(:project)                 { Collection.new(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
       let(:media_list)              { MediaList.new(title: ['media list'], visibility: 'open', collection_type_gid: media_list_collection_type.gid, depositor: depositor.ms_id) }

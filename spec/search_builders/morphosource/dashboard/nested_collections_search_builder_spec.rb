@@ -6,7 +6,6 @@ RSpec.describe Morphosource::Dashboard::NestedCollectionsSearchBuilder do
   let(:scope)               { double('Scope') }
   let(:nesting_attributes)  { double('Nesting Attributes') }
   let(:nest_direction)      { double('Nest Direction') }
-  let!(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
   let(:solr_parameters)     { {} }
 
   let(:builder)             { described_class.new(access: access, collection: collection, scope: scope, nesting_attributes: nesting_attributes, nest_direction: nest_direction) }

@@ -20,4 +20,20 @@ module TestHelpers
     allow(user).to receive(:contributor?).and_return(false)
   end
 
+  def team_collection_type
+    Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Teams::SETTINGS)
+  end
+
+  def project_collection_type
+    Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Projects::SETTINGS)
+  end
+
+  def media_list_collection_type
+    Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)
+  end
+
+  def sequential_section_list_collection_type
+    Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
+  end
+
 end

@@ -11,7 +11,7 @@ class MediaList < Collection
   end
 
   def self.collection_type
-    Hyrax::CollectionType.find_by(machine_id: 'media_list')
+    Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)
   end
 
   def collection_type

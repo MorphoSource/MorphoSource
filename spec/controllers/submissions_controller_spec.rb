@@ -34,9 +34,9 @@ RSpec.describe SubmissionsController, type: :controller do
       it 'returns not allowed error' do
         post :validate_remote_file_ajax, params: params, xhr: true
         expect(JSON.parse(response.body)).to include_json(
-          "status"=>"error", 
-          "http_code"=>"", 
-          "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
+          "status"=>"error",
+          "http_code"=>"",
+          "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.",
           "resp_file_ext"=>""
         )
       end
@@ -44,10 +44,9 @@ RSpec.describe SubmissionsController, type: :controller do
 
     context 'check org-linked team remote file permissions' do
       let(:depositor)          { FactoryBot.build(:contributor) }
-      let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-      let(:team)                    { Collection.create(title: ['Team'], 
-                                      collection_type_gid: team_collection_type.gid, 
-                                      depositor: user.ms_id, can_submit_remote_files: "Yes", 
+      let(:team)                    { Collection.create(title: ['Team'],
+                                      collection_type_gid: team_collection_type.gid,
+                                      depositor: user.ms_id, can_submit_remote_files: "Yes",
                                       allowed_remote_source: "www.morphosource.org") }
       let(:org)                 { Organization.create(title: ['org'], institution_code: ['DEF'], team_id: [team.id]) }
 
@@ -69,9 +68,9 @@ RSpec.describe SubmissionsController, type: :controller do
         it 'returns success' do
           post :validate_remote_file_ajax, params: params1, xhr: true
           expect(JSON.parse(response.body)).to include_json(
-            "status"=>"success", 
-            "http_code"=>200, 
-            "message"=>"", 
+            "status"=>"success",
+            "http_code"=>200,
+            "message"=>"",
             "resp_file_ext"=>".png"
           )
         end
@@ -81,9 +80,9 @@ RSpec.describe SubmissionsController, type: :controller do
         it 'returns error' do
           post :validate_remote_file_ajax, params: params2, xhr: true
           expect(JSON.parse(response.body)).to include_json(
-            "status"=>"error", 
-            "http_code"=>"", 
-            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
+            "status"=>"error",
+            "http_code"=>"",
+            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.",
             "resp_file_ext"=>""
           )
         end
@@ -97,9 +96,9 @@ RSpec.describe SubmissionsController, type: :controller do
         it 'returns error' do
           post :validate_remote_file_ajax, params: params2, xhr: true
           expect(JSON.parse(response.body)).to include_json(
-            "status"=>"error", 
-            "http_code"=>"", 
-            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
+            "status"=>"error",
+            "http_code"=>"",
+            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.",
             "resp_file_ext"=>""
           )
         end
@@ -113,9 +112,9 @@ RSpec.describe SubmissionsController, type: :controller do
         it 'returns error' do
           post :validate_remote_file_ajax, params: params2, xhr: true
           expect(JSON.parse(response.body)).to include_json(
-            "status"=>"error", 
-            "http_code"=>"", 
-            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.", 
+            "status"=>"error",
+            "http_code"=>"",
+            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.",
             "resp_file_ext"=>""
           )
         end

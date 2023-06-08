@@ -91,7 +91,8 @@ byebug
       end
 
       def create_thumbnail_from_series_image(filename)
-        begin
+byebug
+#        begin
           # Pull out a single image as 2D thumbnail
           Morphosource::Derivatives::ImageSeriesCroppedImageDerivatives.create(
             filename,
@@ -100,14 +101,18 @@ byebug
               url: derivative_url('thumbnail')
             } ]
           )
-        rescue StandardError => e
-          @errors << e
-        end
+#        rescue StandardError => e
+#byebug
+#          @errors << e
+#        end
       end
 
       def create_3d_ct_image_series_derivative(filename, unit, slice_thickness, x_spacing, y_spacing, z_spacing)
-        begin
+
+#        begin
           # Create 3D derivative asset
+byebug
+
           Morphosource::Derivatives::CTImageSeriesDerivatives.create(
             filename,
             outputs: [ { 
@@ -121,9 +126,9 @@ byebug
               z_spacing: z_spacing
             } ]
           )
-        rescue StandardError => e
-          @errors << e
-        end
+#        rescue StandardError => e
+#          @errors << e
+#        end
       end
   end
 end

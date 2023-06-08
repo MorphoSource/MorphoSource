@@ -70,7 +70,6 @@ module Morphosource::Derivatives::Processors
 
         # extract and process images
         extract_images
-byebug  
 byebug      
 # !!! check files in input_path
         uncompress_dcm if dicom_image_formats.include?(ext)
@@ -103,29 +102,23 @@ begin
     def extract_images
 
       if File.extname(source_path).downcase == '.tar'
-byebug
-# fail here
 
-      File.open(source_path, 'rb') do |file|
-        Archive::Tar::Minitar::Reader.open(file) do |tar|
-byebug
-# tar.count?
-          tar.each_entry do |entry|
-            if img_coll.include? entry.name
-              f_path = File.join(input_path, entry.name)
-#byebug
-              directory = File.dirname(f_path)
-              FileUtils.mkdir_p(directory) unless Dir.exist?(directory)
-              File.new(f_path, 'wb')
-              File.open(f_path, 'wb') do |output_file|
-                output_file.write(entry.read)
+        File.open(source_path, 'rb') do |file|
+          Archive::Tar::Minitar::Reader.open(file) do |tar|
+  byebug
+
+            tar.each_entry do |entry|
+              if img_coll.include? entry.name
+                f_path = File.join(input_path, File.basename(entry.name))
+                File.new(f_path, 'wb')
+                File.open(f_path, 'wb') do |output_file|
+                  output_file.write(entry.read)
+                end
               end
             end
           end
         end
-      end
 
-byebug 
 byebug 
 # img_coll = ?
 # !!! check files in input_path

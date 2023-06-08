@@ -33,44 +33,35 @@ module Morphosource::Derivatives::Processors
 #      begin
 
         @img_coll, @ext = locate_images
-byebug
+#byebug
         return unless img_coll.present?
 
+#byebug
         extract_image_for_thumbnail
+#byebug
         convert_dicom_image if dicom_image_formats.include?(ext)
 
-begin
 
 
+byebug
         create_resized_image
-      rescue StandardError => e
-        raise e
-      ensure
-        cleanup_tmp_files
-      end
+#      rescue StandardError => e
+#        raise e
+#      ensure
+#        cleanup_tmp_files
+#      end
     end
 
     def extract_image_for_thumbnail
       img = img_coll[img_coll.count/2]
       img_path = File.join(tmp_dir_path, File.basename(img))
-
-
       if File.extname(source_path).downcase == '.tar'
-
-byebug
-byebug
-# check img and img_path, source_path ext
-
         File.open(source_path, 'rb') do |file|
-byebug
           Archive::Tar::Minitar::Reader.open(file) do |tar|
             tar.each_entry do |entry|
               if entry.name == img
-                f_path = File.join(img_path, entry.name)
-                directory = File.dirname(f_path)
-                FileUtils.mkdir_p(directory) unless Dir.exist?(directory)
-                File.new(f_path, 'wb')
-                File.open(f_path, 'wb') do |output_file|
+                File.new(img_path, 'wb')
+                File.open(img_path, 'wb') do |output_file|
                   output_file.write(entry.read)
                 end
                 break
@@ -78,9 +69,7 @@ byebug
             end
           end
         end
-
-byebug
-byebug
+#byebug
 # check img_path
       else
         Zip::File.open(source_path) do |zip_file|

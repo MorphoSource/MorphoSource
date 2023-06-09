@@ -29,27 +29,17 @@ module Morphosource::Derivatives::Processors
     def create_image_series_cropped_image_derivative
       @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
-
-#      begin
-
+      begin
         @img_coll, @ext = locate_images
-#byebug
         return unless img_coll.present?
-
-#byebug
         extract_image_for_thumbnail
-#byebug
         convert_dicom_image if dicom_image_formats.include?(ext)
-
-
-
-byebug
         create_resized_image
-#      rescue StandardError => e
-#        raise e
-#      ensure
-#        cleanup_tmp_files
-#      end
+      rescue StandardError => e
+        raise e
+      ensure
+        cleanup_tmp_files
+      end
     end
 
     def extract_image_for_thumbnail
@@ -69,8 +59,6 @@ byebug
             end
           end
         end
-#byebug
-# check img_path
       else
         Zip::File.open(source_path) do |zip_file|
           zip_file.extract(img, img_path)

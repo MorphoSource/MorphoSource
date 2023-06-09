@@ -21,7 +21,6 @@ module Hydra::Works
 
     def characterize
       @content, @file_name, @accepted_file_count = source_to_content
-#byebug
       raise "Error characterizing #{source}: no representative file found" if file_name.nil?
       @parser_class, @tools = blender_options if mesh_file_types.include? File.extname(file_name).downcase
       extracted_md = extract_metadata(content)
@@ -37,9 +36,6 @@ def source_to_content
   rep_f_content = nil
   accepted_file_count = 0
 
-#byebug
-# @source = "/app/samvera/hyrax-webapp/uploads/hyrax/uploaded_file/file/15/ct_stack_small.tar"
-
   Archive::Tar::Minitar.open(source) do |tar|
     tar.each do |f|
       next if !f.file? || File.basename(f.name).start_with?('.')
@@ -53,19 +49,10 @@ def source_to_content
       end
     end
     if !rep_f.presence
-#byebug
       rep_f = zip_file.first 
       rep_f_content = rep_f.read
     end
-#    input_stream = StringIO.new(rep_f_content)
 
-# (byebug) rep_f_content.class
-# String
-# (byebug) rep_f.name
-# "ct_stack/lry2_Yohe_278401_Lophostoma_evotis_st10 [2021-07-20 10.35.04]269.tif"
-
-#byebug 
-# check content and name
     return rep_f_content, rep_f.name, accepted_file_count if rep_f
   end
 

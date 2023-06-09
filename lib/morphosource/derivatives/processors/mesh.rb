@@ -43,8 +43,11 @@ module Morphosource::Derivatives::Processors
       @draco_glb_path = File.join(tmp_dir_path, draco_glb_name)
 
       begin
-byebug
-        extract_mesh_archive if File.extname(source_path).downcase == '.zip'
+        if File.extname(source_path).downcase == '.zip'
+          extract_mesh_zip
+        elsif File.extname(source_path).downcase == '.tar'
+          extract_mesh_tar
+        end
         create_tmp_nondraco_glb
         create_tmp_draco_glb
         write_draco_glb
@@ -59,7 +62,26 @@ byebug
       @derivatives_tmp_path = Hyrax.config.derivatives_tmp_path
     end
 
-    def extract_mesh_archive
+    def extract_mesh_tar
+      File.open(source_path, 'rb') do |file|
+        Archive::Tar::Minitar::Reader.open(file) do |tar|
+          tar.each_entry do |entry|
+            next if entry.name.start_with?('PaxHeader')
+            next if File.basename(entry.name).start_with?('.')
+            fpath = File.join(tmp_dir_path, File.basename(entry.name))
+            unless File.exist?(fpath)
+              File.new(fpath, 'wb')
+              File.open(fpath, 'wb') do |output_file|
+                output_file.write(entry.read)
+              end
+              @source_path = fpath if acceptable_archive_mesh_formats.include? File.extname(entry.name).downcase 
+            end
+          end
+        end
+      end
+    end
+
+    def extract_mesh_zip
       Zip::File.open(source_path) do |zip_file|
         zip_file.each do |f|
           next if File.basename(f.name).start_with?('.')

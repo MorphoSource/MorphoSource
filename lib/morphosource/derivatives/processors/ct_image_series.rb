@@ -63,23 +63,19 @@ module Morphosource::Derivatives::Processors
       correct_spacing_scale if unit != 'Mm'
 
 
-#      begin
+      begin
 
         @img_coll, @ext = locate_images
         return unless img_coll.present?
 
         # extract and process images
         extract_images
-byebug      
-# !!! check files in input_path
+        # byebug -- check files in input_path here
         uncompress_dcm if dicom_image_formats.include?(ext)
         extract_image_metadata
         scale_images
         tif_to_raw_dcm
         compress_dcm
-
-begin
-
         # place files
         write_files
       rescue StandardError => e
@@ -100,13 +96,9 @@ begin
     end
 
     def extract_images
-
       if File.extname(source_path).downcase == '.tar'
-
         File.open(source_path, 'rb') do |file|
           Archive::Tar::Minitar::Reader.open(file) do |tar|
-  byebug
-
             tar.each_entry do |entry|
               if img_coll.include? entry.name
                 f_path = File.join(input_path, File.basename(entry.name))
@@ -118,11 +110,6 @@ begin
             end
           end
         end
-
-byebug 
-# img_coll = ?
-# !!! check files in input_path
-
       else
         Zip::File.open(source_path) do |zip_file|
           img_coll.each do |f|

@@ -18,11 +18,11 @@ module Morphosource::Derivatives::Processors
     def locate_images
       # get all image files and locations in zip
       img_locs = {}
-byebug
 
       if File.extname(source_path).downcase == '.tar'
         Archive::Tar::Minitar.open(source_path) do |tar|
           tar.each do |entry|
+            next if entry.name.start_with?('PaxHeader')
             next if !entry.file? || File.basename(entry.name).start_with?('.')
             ext = File.extname(entry.name).downcase
             if acceptable_image_formats.include?(ext)
@@ -51,9 +51,6 @@ byebug
           end
         end
       end
-
-byebug
-  # check img_locs for skipping paxheader
       
       # sort image collections by extension and location
       coll_by_ext = {}
@@ -61,7 +58,6 @@ byebug
         max = v.max_by { |sub_k, sub_v| sub_v.length }
         coll_by_ext[k] = max[1] if (max[1].length > 19 || k.downcase == '.dcm' || k.downcase == '.dicom')
       end
-byebug
 
       # return largest group of most preferred file type
       acceptable_image_formats.each do |ext|
@@ -69,7 +65,6 @@ byebug
           return coll_by_ext[ext], ext
         end
       end
-byebug
 
       # case where acceptable image collection not found
       return [], nil

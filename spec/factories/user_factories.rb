@@ -19,12 +19,20 @@ FactoryBot.define do
       # We need to ensure that each instantiation of the admin user behaves as expected.
       # This resolves the issue of both the created object being used as well as re-finding the created object.
       ::RSpec::Mocks.allow_message(user.class.group_service, :fetch_groups).with(user: user).and_return(Array.wrap(evaluator.groups))
+
       # find user by ms_id
+      ::RSpec::Mocks.allow_message(user.class, :find).and_call_original
+      ::RSpec::Mocks.allow_message(user.class, :find_by).and_call_original
       ::RSpec::Mocks.allow_message(user.class, :find_by).with(ms_id: user.ms_id).and_return(user)
+      # # ms_id is nil
+      # ::RSpec::Mocks.allow_message(user.class, :find_by).with(ms_id: nil).and_return(nil)
       # find user by id
       ::RSpec::Mocks.allow_message(user.class, :find).with(user.id).and_return(user)
-      # ms_id is nil
-      ::RSpec::Mocks.allow_message(user.class, :find_by).with(ms_id: nil).and_return(nil)
+      # # find user by id
+      # ::RSpec::Mocks.allow_message(user.class, :find).with(user.id.to_s).and_return(user)
+      # id is nil
+      # ::RSpec::Mocks.allow_message(user.class, :find).with(nil).and_return(nil)
+
     end
 
     factory :admin do

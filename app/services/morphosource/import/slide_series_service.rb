@@ -10,7 +10,6 @@ module Morphosource
 
       def initialize(service: nil, resource_id: nil, user_email: nil, list_visibility: 'restricted')
         @service = service
-        # @organization = organization
         @resource_id = resource_id
         @manager = User.find_by(email: user_email)
         @admin = User.find_by(ms_id: Hyrax.config.batch_user_key)
@@ -207,11 +206,29 @@ module Morphosource
         end
 
         def organization
-          case @service
-          when 'GBIF'
-            byebug
-          end
+          Organization.find(sources[@source][@org_key]["id"])
         end
+
+        def device
+          @device ||= Device.find(providers[@organization.id]['device_id'])
+
+        def fetch_json
+          response = RestClient.get sources[@source][api].concat(@resource_id)
+          JSON.parse(response.body)
+        end
+
+        def org_key
+          @json[sources[@source]['org_key']]
+        end
+
+        def sources
+          @sources ||= YAML.load_file('config/import/slides/sources.yml') || {}
+        end
+
+        def providers
+          @providers ||= YAML.load_file('config/import/slides/providers.yml') || {}
+        end
+
     end
   end
 end

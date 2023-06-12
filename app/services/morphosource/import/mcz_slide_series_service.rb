@@ -7,9 +7,9 @@ module Morphosource
       class_attribute :slide_class
       self.slide_class = Morphosource::Import::SlideSeries::Slides::MczSlide
 
-      def fetch_json
-        gbif_json
-      end
+      # def fetch_json
+      #   gbif_json
+      # end
 
       def slides
         @json["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"].select { |slide| slide["http://rs.tdwg.org/ac/terms/variant"] == "ac:BestQuality" }
@@ -61,12 +61,12 @@ module Morphosource
         @json["occurrenceID"]
       end
 
-      private
+      # private
 
-        def gbif_json
-          response = RestClient.get gbif_occurrence_api
-          JSON.parse(response.body)
-        end
+      #   def gbif_json
+      #     response = RestClient.get gbif_occurrence_api
+      #     JSON.parse(response.body)
+      #   end
 
     end
   end

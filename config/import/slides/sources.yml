@@ -1,0 +1,6 @@
+source:
+  GBIF:
+    api: https://api.gbif.org/v1/occurrence/
+    org_key: publishingOrgKey
+    b4640710-8e03-11d8-b956-b8a03c50a862:
+      id: 000357979

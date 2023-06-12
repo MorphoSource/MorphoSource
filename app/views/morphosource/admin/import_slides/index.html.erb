@@ -1,10 +1,7 @@
 <h1>Import Sequential Section Scans</h1>
 
 <%= form_with url: import_slides_path, method: :post, local: true do |form| %>
-  # <div>
-  #   <%= form.label :organization, "Organization" %>
-  #   <%= form.select_tag(:organization, options_for_select([['MCZ', 'MCZ']])) %>
-  # </div>
+
   <div>
     <%= form.label :service, "Service" %>
     <%= form.select_tag(:service, options_for_select([['GBIF', 'GBIF']])) %>

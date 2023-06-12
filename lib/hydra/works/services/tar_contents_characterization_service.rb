@@ -30,7 +30,8 @@ module Hydra::Works
       transfer_special_fields_to_object
     end
 
-
+# todo: combine this service with ZipContentsCharacterizationService
+# since only a different source_to_content method for TAR is needed
 def source_to_content
   rep_f = nil
   rep_f_content = nil
@@ -55,9 +56,7 @@ def source_to_content
 
     return rep_f_content, rep_f.name, accepted_file_count if rep_f
   end
-
 end
-
 
     def f_priority(f)
       file_type_priorities.find_index(File.extname(f.name).downcase)
@@ -114,8 +113,6 @@ end
     end
 
     def extract_metadata(content)
-#byebug
-# tar
       Hydra::FileCharacterization.characterize(content, file_name, tools) do |cfg|
         cfg[:fits] = Hydra::Derivatives.fits_path
         cfg[:blender] = Hyrax.config.blender_path

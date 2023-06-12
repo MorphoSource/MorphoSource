@@ -1,7 +1,8 @@
 require 'zip'
+require 'archive/tar/minitar'
 
 module Hydra::Works
-  class ZipContentsCharacterizationService
+  class ArchiveContentsCharacterizationService
     # @param [Hydra::PCDM::File] object which has properties to recieve characterization values.
     # @param [String, File] source for characterization to be run on.  File object or path on disk.
     #   If none is provided, it will assume the binary content already present on the object.
@@ -23,7 +24,11 @@ module Hydra::Works
     end
 
     def characterize
-      @content, @file_name, @accepted_file_count = source_to_content
+      if File.extname(@source).downcase == ".tar"
+        @content, @file_name, @accepted_file_count = tar_to_content
+      else
+        @content, @file_name, @accepted_file_count = zip_to_content
+      end
       raise "Error characterizing #{source}: no representative file found" if file_name == nil
       @parser_class, @tools = blender_options if mesh_file_types.include? File.extname(file_name).downcase
       extracted_md = extract_metadata(content)
@@ -35,7 +40,7 @@ module Hydra::Works
 
     # Gets representative zip file as content.
     # Unlike Morphosource::Works::CharacterizationService, expects source to be a string.
-    def source_to_content
+    def zip_to_content
       rep_f = nil
       accepted_file_count = 0
       Zip::File.open(source) do |zip_file|
@@ -48,6 +53,32 @@ module Hydra::Works
         end
         rep_f = zip_file.first if !rep_f.presence
         return rep_f.get_input_stream, rep_f.name, accepted_file_count if rep_f
+      end
+    end
+
+    def tar_to_content
+      rep_f = nil
+      rep_f_content = nil
+      accepted_file_count = 0
+
+      Archive::Tar::Minitar.open(source) do |tar|
+        tar.each do |f|
+          next if !f.file? || File.basename(f.name).start_with?('.')
+
+          puts f.name
+          puts f_priority(f)
+          accepted_file_count = accepted_file_count + 1 if f_priority(f) 
+          if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
+            rep_f = f
+            rep_f_content = rep_f.read
+          end
+        end
+        if !rep_f.presence
+          rep_f = zip_file.first 
+          rep_f_content = rep_f.read
+        end
+
+        return rep_f_content, rep_f.name, accepted_file_count if rep_f
       end
     end
 

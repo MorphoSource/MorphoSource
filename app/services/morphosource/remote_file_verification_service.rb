@@ -17,14 +17,14 @@ module Morphosource
       return [rfi.message] if rfi.status != "success" # there is an error already (e.g. 404)
       issues = []
       if !(e_tag = rfi.e_tag).present?
-        issues << "ETag not in request headers"        
+        issues << "Missing ETag header"        
       elsif e_tag != @file_set.e_tag
         issues << "ETag (#{e_tag}) does not match stored media's ETag (#{@file_set.e_tag})"
       end
       if !(content_length = rfi.content_length).present? 
-        issues << "content_length not in request headers"
+        issues << "Missing Content-Length header"
       elsif content_length != @file_set.file_size&.first
-        issues << "content_length (#{rfi.content_length}) does not match stored media's file_size (#{@file_set.file_size&.first})"
+        issues << "Content-Length (#{rfi.content_length}) does not match stored media's file_size (#{@file_set.file_size&.first})"
       end
       return issues
     end

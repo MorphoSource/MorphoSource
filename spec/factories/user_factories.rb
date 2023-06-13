@@ -29,6 +29,10 @@ FactoryBot.define do
       groups { ['batch_submission_contributor', 'contributor'] }
     end
 
+    factory :remote_file_submitter do
+      groups { ['remote_file_submitter', 'contributor'] }
+    end
+
     factory :contributor do
       groups { ['contributor'] }
     end

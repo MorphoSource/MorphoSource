@@ -107,6 +107,24 @@ module Hyrax
       #added_flash << " ... universal_viewable_ready : " + @presenter.universal_viewable_ready?.to_s
       #added_flash << " ... is_file_uploaded : " + @presenter.is_file_uploaded?.to_s
       flash[:notice] << added_flash
+      flash[:error] ||= [] << get_remote_file_issues if get_remote_file_issues.present?
+    end
+
+    def get_remote_file_issues
+      msg = ""
+      if (issues = curation_concern.remote_file_health_details.split('; ')).present?
+        if can? :edit, curation_concern.id
+          msg = t('morphosource.media.remote_file_alert.edit_access_message') + ' Issue(s):' +
+          '<ul class="align-li">'
+          issues.each do |item|
+            msg += '<li>' + item + '</li>'
+          end
+          msg += '</ul>'
+        else
+          msg = t('morphosource.media.remote_file_alert.general_message').html_safe
+        end
+      end
+      msg
     end
 
     # in case we need to reference the old edit page. remove this action later

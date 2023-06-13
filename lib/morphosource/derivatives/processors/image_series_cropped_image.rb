@@ -45,7 +45,12 @@ module Morphosource::Derivatives::Processors
     def extract_image_for_thumbnail
       img = img_coll[img_coll.count/2]
       img_path = File.join(tmp_dir_path, File.basename(img))
-      if File.extname(source_path).downcase == '.tar'
+      case File.extname(source_path).downcase
+      when '.zip'
+        Zip::File.open(source_path) do |zip_file|
+          zip_file.extract(img, img_path)
+        end
+      when '.tar'
         File.open(source_path, 'rb') do |file|
           Archive::Tar::Minitar::Reader.open(file) do |tar|
             tar.each_entry do |entry|
@@ -60,9 +65,7 @@ module Morphosource::Derivatives::Processors
           end
         end
       else
-        Zip::File.open(source_path) do |zip_file|
-          zip_file.extract(img, img_path)
-        end
+        raise "Archive file extension not valid"
       end
       @source_path = img_path
     end

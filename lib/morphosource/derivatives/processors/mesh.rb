@@ -47,6 +47,8 @@ module Morphosource::Derivatives::Processors
           extract_mesh_zip
         elsif File.extname(source_path).downcase == '.tar'
           extract_mesh_tar
+        else
+          raise "Archive file extension not valid"
         end
         create_tmp_nondraco_glb
         create_tmp_draco_glb

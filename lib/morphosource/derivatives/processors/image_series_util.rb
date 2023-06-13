@@ -19,21 +19,8 @@ module Morphosource::Derivatives::Processors
       # get all image files and locations in zip
       img_locs = {}
 
-      if File.extname(source_path).downcase == '.tar'
-        Archive::Tar::Minitar.open(source_path) do |tar|
-          tar.each do |entry|
-            next if entry.name.start_with?('PaxHeader')
-            next if !entry.file? || File.basename(entry.name).start_with?('.')
-            ext = File.extname(entry.name).downcase
-            if acceptable_image_formats.include?(ext)
-              loc = File.dirname(entry.name)
-              img_locs[ext] ||= {}
-              img_locs[ext][loc] ||= []
-              img_locs[ext][loc] << entry.name
-            end
-          end
-        end
-      else # handle zip
+      case File.extname(source_path).downcase
+      when '.zip'
         Zip::File.open(source_path) do |zip_file|
           zip_file.each do |f|
             next if File.basename(f.name).start_with?('.')
@@ -49,7 +36,23 @@ module Morphosource::Derivatives::Processors
               img_locs[ext][loc] << f.name
             end
           end
+        end      
+      when '.tar'
+        Archive::Tar::Minitar.open(source_path) do |tar|
+          tar.each do |entry|
+            next if entry.name.start_with?('PaxHeader')
+            next if !entry.file? || File.basename(entry.name).start_with?('.')
+            ext = File.extname(entry.name).downcase
+            if acceptable_image_formats.include?(ext)
+              loc = File.dirname(entry.name)
+              img_locs[ext] ||= {}
+              img_locs[ext][loc] ||= []
+              img_locs[ext][loc] << entry.name
+            end
+          end
         end
+      else
+        raise "Archive file extension not valid"
       end
       
       # sort image collections by extension and location

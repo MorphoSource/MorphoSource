@@ -19,12 +19,10 @@ module Morphosource
         @json["scientificName"].present? ? [@json["identifier"] + ' ' + @json["scientificName"]] : [@json["identifier"] + ' ' + @specimen.title.first + ' ' + @specimen.taxonomies.first.title.first]
       end
 
-      def collection_description
-        ["Slide collection imported on #{Date.today} based on metadata harvested from GBIF: #{gbif_occurrence_uri}."]
-      end
+
 
       def collection_related_url
-        [gbif_occurrence_uri, mczbase_specimen_uri]
+        [occurrence_uri, mczbase_specimen_uri]
       end
 
       def mczbase_specimen_uri
@@ -45,28 +43,11 @@ module Morphosource
         end
       end
 
-      def gbif_key
-        @json["taxonKey"]
-      end
+      # def gbif_key
+      #   @json["taxonKey"]
+      # end
 
-      def gbif_occurrence_api
-        "https://api.gbif.org/v1/occurrence/#{@resource_id}"
-      end
 
-      def gbif_occurrence_uri
-        "https://gbif.org/occurrence/#{@resource_id}"
-      end
-
-      def occurrence_id
-        @json["occurrenceID"]
-      end
-
-      # private
-
-      #   def gbif_json
-      #     response = RestClient.get gbif_occurrence_api
-      #     JSON.parse(response.body)
-      #   end
 
     end
   end

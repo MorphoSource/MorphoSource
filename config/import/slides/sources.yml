@@ -1,6 +1,12 @@
-source:
-  GBIF:
-    api: https://api.gbif.org/v1/occurrence/
-    org_key: publishingOrgKey
+GBIF:
+  api: https://api.gbif.org/v1/occurrence/
+  gbif_key: taxonKey
+  org_key: publishingOrgKey
+  occurrence_api: https://api.gbif.org/v1/occurrence/
+  occurrence_id: occurrenceID
+  occurrence_uri: https://gbif.org/occurrence/
+  organizations:
     b4640710-8e03-11d8-b956-b8a03c50a862:
-      id: 000357979
+      ms_id: 000357979
+
+

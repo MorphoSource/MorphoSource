@@ -1,5 +1,6 @@
 require 'retriable'
 
+# TODO: Deprecate this!
 module Morphosource
   # Cache work view, file view & file download stats for all users
   # Modified from Hyrax::UserStatImporter to reduce DB bloat of rows with 0 views & downloads
@@ -26,7 +27,7 @@ module Morphosource
 
       def process_works(stats, user, start_date)
         media_ids_for_user(user).each do |work_id|
-          work_stats = extract_stats_for(object: work_id, from: ::Morphosource::WorkViewStat, start_date: start_date, user: user)
+          work_stats = extract_stats_for(object: work_id, from: ::Morphosource::Analytics::WorkViewStat, start_date: start_date, user: user)
           stats = tally_results(work_stats, :work_views, stats) if work_stats.present?
           delay
         end

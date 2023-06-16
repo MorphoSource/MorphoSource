@@ -1,6 +1,6 @@
 # Based on but extended from Hyrax::Pageview
 module Morphosource
-  class Analytics
+  module Analytics
     class Pageview
       extend ::Legato::Model
 

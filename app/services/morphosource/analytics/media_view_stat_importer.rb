@@ -28,18 +28,26 @@ module Morphosource
       def import
         log_message("Begin import of Google Analytics pageviews for Media works.")
 
-        docs = solr.get_docs("has_model_ssim:Media", { rows: 999_999, fl: ["id", "depositor_tesim"] })
+        docs = @solr.get_docs("has_model_ssim:Media", { rows: 999_999, fl: ["id"] })
         @media_ids = docs.map { |d| d["id"] }
-        @media_id_to_depositor = docs.map { |d| [ d["id"], d["depositor_tesim"]&.first ] }.to_h
-        log_message("#{docs.count} Media found, beginning import of chunked Media groups.")
+        log_message("#{docs.count} Media found.")
+
+        log_message("Excluding Media with saved statistics within import time period.")
+        @media_ids = @media_ids.select do |id| 
+          !Morphosource::Analytics::WorkViewStat.where(work_id: id).where(
+            "date >= ? AND date <= ?", @start_date, @end_date
+          ).present?
+        end
+        log_message("#{@media_ids.count} Media do not have saved statistics in import period, and will be imported now.")
 
         @media_ids.each_slice(@media_group_size).with_index do |ids_to_query, idx|
           log_message("Importing Media group #{idx} with Media IDs: #{ids_to_query.join(", ")}")
-          paths = ids_to_query.map(&:media_path)
+
+          paths = ids_to_query.map { |id| media_path(id) }
 
           ga_results = get_all_pageview_results(paths)
           sorted_results = group_results_by_id_and_date(ga_results)
-          save_statistics(sorted_results, media_ids)
+          save_statistics(sorted_results)
         end
       end
 
@@ -47,9 +55,11 @@ module Morphosource
 
       # Date after last WorkViewStat date (if any) or Jan 1 2021
       def default_start_date
-        WorkViewStat.any? 
-          ? ( WorkViewStat.order('date DESC').first.date.to_date + 1.day ) 
-          : "2021/01/01".to_date
+        if Morphosource::Analytics::WorkViewStat.any?
+          Morphosource::Analytics::WorkViewStat.order('date DESC').first.date.to_date + 1.day
+        else
+          "2021/01/01".to_date
+        end
       end
 
       # Yesterday
@@ -89,7 +99,7 @@ module Morphosource
 
       def ga_pageview_query(paths, offset = 1)
         retry_n ||= 0
-        @profile.morphosource__analytics__pageview(
+        profile.morphosource__analytics__pageview(
           start_date: @start_date, 
           end_date: @end_date,
           limit: @limit,
@@ -124,12 +134,12 @@ module Morphosource
       # Get media ID from URL string assuming ID present in form "media/#{id}"
       def id_from_path(path)
         id = path.partition("media/").last[0...9]
-        return id if (id.length == 9 && Integer(id)) rescue raise "Could not convert path #{path} to media ID" 
+        return id if (id.length == 9 && Float(id)) rescue raise "Could not convert path #{path} to media ID" 
       end
 
       # Save WorkViewStat with summed pageviews per media per date
       def save_statistics(results)
-        return unless results.present? && (results & @media_ids).present? && !(results - @media_ids).present?
+        return unless results.present? && (results.keys & @media_ids).present? && !(results.keys - @media_ids).present?
 
         # For each media on each date, sum pageviews and save
         results.each do |media_id, date_results|
@@ -138,14 +148,12 @@ module Morphosource
             if (
               (date.to_date != Date.current) && 
               pageviews.present? && 
-              media_id.present? &&
-              @media_id_to_depositor[media_id].present?
+              media_id.present?
             )
               Morphosource::Analytics::WorkViewStat.create(
                 date: date.to_date,
                 work_views: pageviews,
-                work_id: media_id,
-                user_id: @media_id_to_depositor[media_id]
+                work_id: media_id
               )
             else
               raise "Something went wrong saving statistics for media ID #{media_id} with pageviews #{pageviews} on date #{date}"

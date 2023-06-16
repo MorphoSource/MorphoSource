@@ -1,7 +1,7 @@
 # Tracks number of page views per work per day
 # Note: user_id field refers to work depositor, not to viewing user (we can't track that)
 module Morphosource
-  class Analytics
+  module Analytics
     class WorkViewStat < ::WorkViewStat
       def self.filter(work)
         if work.is_a? String

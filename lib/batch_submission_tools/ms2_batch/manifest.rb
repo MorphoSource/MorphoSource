@@ -129,16 +129,9 @@ module BatchSubmissionTools
         end # /media_group_to_rows
         #byebug # check summary
 
-        if rows_to_remove.present?
-          # when new parent media will be created,
-          # Only the parent items of the media group is needed for ingest job for all media
-          # otherwise duplicate media will be created
-          rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
-        end
-
-byebug
+#byebug
+puts "\n#{@media_group_to_rows.inspect}"
         # re-order rows to have parent > child > ... ingestion order 
-        self_parent = []
         hierarchy = []
         largest_hierarchy = []
         # sort list by hierarchy
@@ -151,7 +144,7 @@ byebug
           while parent && parent != key
             if @media_group_to_rows[parent].nil? || @media_group_to_rows[parent][:parents].nil?
               # Parent not found, add to self_parent list, exit the loop
-              self_parent << key
+  byebug
               break
             end
             item_hierarchy.unshift(parent)  # Add the parent at the beginning of the hierarchy array
@@ -160,22 +153,27 @@ byebug
             end
             parent = @media_group_to_rows[parent][:parents]
           end
-          # Check if the current item_hierarchy is larger than the previous largest_hierarchy
           if item_hierarchy.length > largest_hierarchy.length
             largest_hierarchy = item_hierarchy
           end
-          # Add the item hierarchy to the main hierarchy array
           hierarchy << item_hierarchy
         end
-        largest_hierarchy += self_parent if self_parent.present?
 
         ordered_list = largest_hierarchy
-        if ordered_list.count != @media_group_to_rows.count
-          byebug
-        end
 puts "ordered_list #{ordered_list.inspect}"
         sorted_media_group_to_rows = ordered_list.map { |index| [index, @media_group_to_rows[index]] }.to_h
         @media_group_to_rows = sorted_media_group_to_rows
+puts "#{@media_group_to_rows.inspect}"
+
+
+        if rows_to_remove.present?
+          # when new parent media will be created,
+          # Only the parent items of the media group is needed for ingest job for all media
+          # otherwise duplicate media will be created
+          rows_to_remove.each { |k| @media_group_to_rows.delete [k]; puts "removed row #{k}" }
+        end
+
+puts "#{@media_group_to_rows.inspect}"
 
 byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"

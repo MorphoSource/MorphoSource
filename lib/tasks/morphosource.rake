@@ -789,4 +789,13 @@ namespace :morphosource do
     end
   end
 
+  desc "Import Media work view stats from Google Analytics"
+  task :import_media_view_stats => :environment do
+    Morphosource::Analytics::Pageview # necessary for Legato to read class
+    Morphosource::Analytics::MediaViewStatImporter.new({
+      verbose: true, 
+      logging: true, 
+      retries: 3 
+    }).import
+  end
 end

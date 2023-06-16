@@ -136,26 +136,48 @@ module BatchSubmissionTools
           rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
-        # re-order rows to have parent media first if needed
-        p_index = nil
-        p_row = nil
-        row_with_parent = nil
-        rows_with_parents = media_group_to_rows.select { |_, value| !value[:parents].empty? }.values
-        rows_with_parents.each do |row|
-          row_with_parent = row
-          p_index = row[:parents]
-          p_row = @media_group_to_rows[p_index]
-          break if p_row.present?
+byebug
+        # re-order rows to have parent > child > ... ingestion order 
+        self_parent = []
+        hierarchy = []
+        largest_hierarchy = []
+        # sort list by hierarchy
+        @media_group_to_rows.each do |key, value|
+          item_hierarchy = []
+          # Add the current item to the hierarchy array
+          item_hierarchy << key
+          # Traverse the parents of the current item until reaching the root parent
+          parent = value[:parents]
+          while parent && parent != key
+            if @media_group_to_rows[parent].nil? || @media_group_to_rows[parent][:parents].nil?
+              # Parent not found, add to self_parent list, exit the loop
+              self_parent << key
+              break
+            end
+            item_hierarchy.unshift(parent)  # Add the parent at the beginning of the hierarchy array
+            if @media_group_to_rows[parent][:parents] == parent
+              break # parent is itself, exit
+            end
+            parent = @media_group_to_rows[parent][:parents]
+          end
+          # Check if the current item_hierarchy is larger than the previous largest_hierarchy
+          if item_hierarchy.length > largest_hierarchy.length
+            largest_hierarchy = item_hierarchy
+          end
+          # Add the item hierarchy to the main hierarchy array
+          hierarchy << item_hierarchy
         end
-        if !p_row.present?
-          # if parent row not found, put the row_with_parent on top
-          p_row = row_with_parent
-          p_index = @media_group_to_rows.key(row_with_parent)
+        largest_hierarchy += self_parent if self_parent.present?
+
+        ordered_list = largest_hierarchy
+        if ordered_list.count != @media_group_to_rows.count
+          byebug
         end
-        if @media_group_to_rows.keys.first != p_index
-          @media_group_to_rows = { p_index => p_row }.merge(@media_group_to_rows.reject { |key| key == p_index })
-        end
-        #byebug # check media_group_to_rows
+puts "ordered_list #{ordered_list.inspect}"
+        sorted_media_group_to_rows = ordered_list.map { |index| [index, @media_group_to_rows[index]] }.to_h
+        @media_group_to_rows = sorted_media_group_to_rows
+
+byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
       end
 

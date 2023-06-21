@@ -118,6 +118,7 @@ module Morphosource
         end
         file.mime_type = "message/external-body; access-type=URL; URL=\"#{@file_set.import_url}\""
         file.save!
+        CalculateFileSetCrc32Job.perform_later(@file_set.id)
       end
 
       def add_to_collection_and_save

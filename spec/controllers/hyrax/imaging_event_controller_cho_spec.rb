@@ -4,7 +4,6 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::ImagingEventsController do
   let(:actor)                 { double(update: true) }
-  let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
   let(:old_cho)               { CulturalHeritageObject.create(title: ['private cho 1'], visibility: 'restricted', vouchered: ['Yes'], organization_id: [old_organization.id]) }

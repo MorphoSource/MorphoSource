@@ -10,8 +10,7 @@ RSpec.describe 'Hyrax::Ability::CollectionAbility' do
   let(:current_user)    { user }
   let(:ability)         { Ability.new(current_user) }
   let!(:depositor)      { User.create(email: 'email2@email.com', password: 'password') }
-  let(:collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
-  let(:collection)      { Collection.create(id: 'Team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: collection_type.gid) }
+  let(:collection)      { Collection.create(id: 'Team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: team_collection_type.gid) }
   let(:solr_document)   { SolrDocument.new(collection.to_solr) }
 
   before do

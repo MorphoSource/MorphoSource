@@ -4,7 +4,6 @@ include Warden::Test::Helpers
 
 RSpec.describe Morphosource::My::AddMediaController, type: :controller do
   let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
   let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
 
   describe '#index' do

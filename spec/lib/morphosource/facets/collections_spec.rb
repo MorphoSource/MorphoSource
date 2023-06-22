@@ -1,11 +1,9 @@
 require 'rails_helper'
 RSpec.describe Morphosource::Facets::Collections do
   let(:admin)                   { User.create(email: 'admin@email.com', password: 'password')}
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
   let(:private_team)            { Collection.create(title: ['private team'], collection_type_gid: team_collection_type.gid, visibility: 'restricted', depositor: admin.ms_id) }
   let(:open_team)               { Collection.create(title: ['open team'], collection_type_gid: team_collection_type.gid, visibility: 'open', depositor: admin.ms_id) }
 
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
   let(:private_project)         { Collection.create(title: ['private project'], collection_type_gid: project_collection_type.gid, visibility: 'restricted', depositor: admin.ms_id) }
   let(:open_project)            { Collection.create(title: ['open project'], collection_type_gid: project_collection_type.gid, visibility: 'open', depositor: admin.ms_id) }
 

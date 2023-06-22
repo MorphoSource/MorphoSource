@@ -6,7 +6,6 @@ RSpec.describe Morphosource::Dashboard::Collections::MediaLists::SequentialSecti
 
   let(:user)                                    { User.create(email: 'user@email.com', password: 'password') }
   let(:depositor)                               { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'Sequential Section List') }
   let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential section list'], collection_type_gid: sequential_section_list_collection_type.gid, depositor: depositor.ms_id) }
 
   describe 'temporary admin-only restriction' do

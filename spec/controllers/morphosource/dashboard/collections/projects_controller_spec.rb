@@ -5,7 +5,6 @@ RSpec.describe Morphosource::Dashboard::Collections::ProjectsController, type: :
 
   let(:user)  { User.create(email: 'email@email.com', password: 'password')}
   let!(:contributors)  { Role.create(name: 'contributor') }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 'project') }
   let(:project)  { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
   let(:media) { Media.create(title: ['media']) }
   let(:params)  { { "id" => project.id, "collection" => { "representative_id" => media.id } } }

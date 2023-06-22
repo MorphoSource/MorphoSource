@@ -6,7 +6,6 @@ include ActionDispatch::TestProcess
 RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller do
   let(:org1)                  { Organization.create(title: ['new organization'], institution_code: ['ABC']) }
   let!(:org2)                 { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
-  let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
   let(:admin)                 { User.create(email: 'email@email.com', password: 'password') }
   let(:team)                  { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: admin.ms_id) }
   let(:params)                { { id: team.id, collection: { organization_id: org1.id } } }
@@ -142,7 +141,6 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
           end
         end
         context 'the team was converted from a project' do
-          let!(:project_collection_type)  { Hyrax::CollectionType.create(title: 'Project') }
           let(:project)                   { Collection.create(title: ['Project_A'], collection_type_gid: project_collection_type.gid, depositor: admin.ms_id) }
           let(:params)                    { { id: project.id, collection: { organization_id: org1.id } } }
           let(:project_manager)           { User.create(email: 'manager@test.com', password: 'password') }

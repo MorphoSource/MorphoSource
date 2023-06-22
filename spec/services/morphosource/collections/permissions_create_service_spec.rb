@@ -1,9 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::Collections::PermissionsCreateService do
-  let(:collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
   let(:depositor)       { User.create(email: 'email@email.com', password: 'password') }
-  let(:collection)      { Collection.create(id: 'team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: collection_type.gid) }
+  let(:collection)      { Collection.create(id: 'team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: team_collection_type.gid) }
 
   before do
     collection.create_collection_groups

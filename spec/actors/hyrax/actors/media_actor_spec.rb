@@ -43,7 +43,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
         let(:biological_specimen) { BiologicalSpecimen.create(title: ['title'], vouchered: [ "Yes" ], taxonomy_id: [taxonomy.id]) }
         let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [biological_specimen.id]) }
         let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }
-        
+
 
         before do
           imaging_event.ordered_members << processing_event
@@ -79,7 +79,6 @@ RSpec.describe Hyrax::Actors::MediaActor do
           end
 
           context 'the organization has a linked team' do
-            let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
             let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: team_creator.ms_id) }
             let(:team_creator)          { User.create(email: 'creator@test.com', password: 'password') }
             let(:team_manager)          { User.create(email: 'manager@test.com', password: 'password') }
@@ -116,7 +115,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
         let(:device)              { Device.create(title: ['device'], modality: ['Photogrammetry']) }
         let(:cho)                 { CulturalHeritageObject.create(title: ['private cho'], visibility: 'restricted', vouchered: ['Yes']) }
         let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [cho.id]) }
-        let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }        
+        let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }
 
         before do
           imaging_event.ordered_members << processing_event
@@ -152,7 +151,6 @@ RSpec.describe Hyrax::Actors::MediaActor do
           end
 
           context 'the organization has a linked team' do
-            let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
             let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: team_creator.ms_id) }
             let(:team_creator)          { User.create(email: 'creator@test.com', password: 'password') }
             let(:team_manager)          { User.create(email: 'manager@test.com', password: 'password') }

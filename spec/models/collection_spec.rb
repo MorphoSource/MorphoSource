@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe Collection, type: :model do
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
   let(:user)                    { User.create(email: 'email@email.com', password: 'password', ms_id: 'abc123') }
   let(:team)                    { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }

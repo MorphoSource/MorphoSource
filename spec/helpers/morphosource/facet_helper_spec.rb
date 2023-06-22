@@ -14,7 +14,6 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
     end
 
     context 'collection with id exists' do
-      let!(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
       let!(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
 
       it 'returns the collection title' do
@@ -30,7 +29,6 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
   end
 
   describe 'visibility_label' do
-    let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team') }
     context 'open' do
       let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, visibility: 'open') }
       it { expect(helper.visibility_label(team.visibility)).to eq('Public') }

@@ -4,7 +4,6 @@ require 'spec_helper'
 RSpec.describe Morphosource::Collections::OrderedMediaBehavior, type: :controller do
 
   let(:user)                        { FactoryBot.create(:contributor) }
-  let(:media_list_collection_type)  { FactoryBot.create(:media_list_collection_type) }
   let(:media_list)                  { MediaList.create(title: ['media list'], collection_type_gid: media_list_collection_type.gid, depositor: user.ms_id) }
 
   let(:media1)                      { FactoryBot.create(:public_media) }

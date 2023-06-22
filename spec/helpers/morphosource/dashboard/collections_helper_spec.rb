@@ -4,13 +4,9 @@ RSpec.describe Morphosource::Dashboard::CollectionsHelper, type: :helper do
   include Rails.application.routes.url_helpers
 
   let(:user)                                    { User.create(email: 'user@email.com', password: 'password') }
-  let(:team_collection_type)                    { Hyrax::CollectionType.create(title: 'Team') }
   let(:team)                                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-  let(:project_collection_type)                 { Hyrax::CollectionType.create(title: 'Project') }
   let(:project)                                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
-  let(:media_list_collection_type)              { Hyrax::CollectionType.create(title: 'Media List') }
   let(:media_list)                              { MediaList.create(title: ['media list'], collection_type_gid: media_list_collection_type.gid, depositor: user.ms_id) }
-  let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'Sequential Section List') }
   let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential section list'], collection_type_gid: sequential_section_list_collection_type.gid, depositor: user.ms_id) }
 
   describe 'details_tab_url' do

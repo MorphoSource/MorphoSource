@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe Morphosource::My::Collections::MediaListsController, type: :controller do
 
   let(:user)                        { User.create(email: 'user@email.com', password: 'password') }
-  let!(:media_list_collection_type) { Hyrax::CollectionType.create(title: 'Media List') }
 
   describe 'temporary admin-only restriction' do
     before do

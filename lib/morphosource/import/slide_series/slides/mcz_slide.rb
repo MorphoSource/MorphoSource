@@ -24,7 +24,6 @@ module Morphosource
             def iiif_exif
               @iiif_json["exif"]
             end
-
         end
       end
     end

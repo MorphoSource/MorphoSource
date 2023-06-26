@@ -7,12 +7,14 @@ module Morphosource
       class_attribute :slide_class
       self.slide_class = Morphosource::Import::SlideSeries::Slides::MczSlide
 
+
       # def fetch_json
       #   gbif_json
       # end
 
       def slides
-        @json["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"].select { |slide| slide["http://rs.tdwg.org/ac/terms/variant"] == "ac:BestQuality" }
+        # @json["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"].select { |slide| slide["http://rs.tdwg.org/ac/terms/variant"] == "ac:BestQuality" }
+        Array(@json["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"].select { |slide| slide["http://rs.tdwg.org/ac/terms/variant"] == "ac:BestQuality" }.first)
       end
 
       def collection_title

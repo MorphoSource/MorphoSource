@@ -1,19 +1,17 @@
 providers:
-  # MCZ Special Collections
-  000357979:
-    publisher: Museum of Comparative Zoology, Harvard University
-    rights_holder: President and Fellows of Harvard College (Copyright and License)
-    data_manager_id: f95e50
-    list_visibility: 'restricted'
-    visibility: 'open'
-    fileset_accessibility: 'restricted_download'
-    download_permission: restricted_download
+  000357979: # MCZ Special Collections
+    agreement_uri: https://mcz.harvard.edu/permissions-copyright
     download_reviewer: 2956
-    preview_mode: Interactive/Embeddable
-    copyright_statement: http://rightsstatements.org/vocab/InC/1.0/
+    fileset_accessibility: 'restricted_download'
     license: https://creativecommons.org/licenses/by-nc-nd/4.0/
+    list_visibility: 'restricted'
+    manager: f95e50
     morphosource_use_agreement_type: Standard
+    preview_mode: Interactive/Embeddable
+    publication_status: restricted_download
     permits_3d_use: 3D Printing Limited
+    publisher: Museum of Comparative Zoology, Harvard University
     required_archival_of_published_derivatives: On MorphoSource
-    media_agreement_uri: https://mcz.harvard.edu/permissions-copyright
-
+    rights_holder: President and Fellows of Harvard College (Copyright and License)
+    rights_statement: http://rightsstatements.org/vocab/InC/1.0/
+    visibility: 'open'

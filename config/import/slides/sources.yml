@@ -7,6 +7,6 @@ GBIF:
   occurrence_uri: https://gbif.org/occurrence/
   organizations:
     b4640710-8e03-11d8-b956-b8a03c50a862:
-      ms_id: 000357979
+      ms_id: 000357979 # MCZ Special Collections
 
 

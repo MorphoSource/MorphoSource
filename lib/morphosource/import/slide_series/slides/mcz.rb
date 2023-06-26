@@ -14,6 +14,7 @@ module Morphosource
           # color_space
           # See https://exiftool.org/TagNames/EXIF.html for values
           def color_space
+            byebug
             cs = @iiif_exif.dig("fields","PhotometricInterpretation")
             cs.present? ? Array(Morphosource::ExifData::PhotometricInterpretationService.new.label(cs)) : super
           end
@@ -81,9 +82,9 @@ module Morphosource
             end
           end
 
-          def preview_mode
-            ["Interactive/Embeddable"]
-          end
+          # def preview_mode
+          #   ["Interactive/Embeddable"]
+          # end
 
           # related_url
           #["http://mczbase.mcz.harvard.edu/media/1468742"]
@@ -137,9 +138,9 @@ module Morphosource
             ru.present? ? Array(Morphosource::ExifData::ResolutionUnitService.new.label(ru)) : super
           end
 
-          def visibility
-            'open'
-          end
+          # def visibility
+          #   'open'
+          # end
 
           # width
           def width

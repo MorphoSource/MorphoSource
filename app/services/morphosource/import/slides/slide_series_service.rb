@@ -3,6 +3,7 @@ module Morphosource
     class SlideSeriesService
 
       include Morphosource::CustomThumbnails
+      include Morphosource::Import::Slides::SlideSeriesService::Sources
 
       def self.call(source: nil, resource_id: nil)
         @source = source
@@ -12,15 +13,9 @@ module Morphosource
       end
 
       def initialize(source: nil, resource_id: nil, json: nil)
-        byebug
         @source = source
         @resource_id = resource_id
         @json = json
-        @provider = provider
-        @resource_id = resource_id
-        @manager = User.find_by(id: @provider['data_manager_id'])
-        @admin = User.find_by(ms_id: Hyrax.config.batch_user_key)
-        @list_visibility = @provider['list_visibility']
       end
 
       def call
@@ -58,7 +53,7 @@ module Morphosource
         imaging_event = ImagingEvent.create(aperture_value: @slide.aperture_value,
                                             creator: @slide.creator,
                                             date_created: @slide.date_created,
-                                            depositor: @manager.user_key,
+                                            depositor: manager.user_key,
                                             device_id: [@device.id],
                                             focal_length: @slide.focal_length,
                                             ie_modality: ["SequentialSectionScan"],
@@ -76,24 +71,24 @@ module Morphosource
       def create_new_media
         media = Media.create(date_created: @slide.date_created,
                              date_uploaded: Date.today,
-                             depositor: @manager.user_key,
+                             depositor: manager.user_key,
                              description: @slide.description,
-                             fileset_accessibility: [@provider['fileset_accessibility']],
+                             fileset_accessibility: fileset_accessibility,
                              identifier: @slide.identifier,
                              remote_origin_url: @slide.remote_origin_url,
                              remote_manifest_url: @slide.remote_manifest_url,
-                             license: [@provider['license']],
+                             license: license,
                              media_type: @slide.media_type,
                              orientation: @slide.orientation,
                              part: @slide.short_description,
-                             preview_mode: [@provider['preview_mode']],
-                             publisher: [@provider['publisher']],
-                             rights_holder: [@provider['rights_holder']],
+                             preview_mode: preview_mode,
+                             publisher: publisher,
+                             rights_holder: rights_holder,
                              related_url: @slide.related_url,
                              slice_thickness: @slide.slice_thickness,
                              title: @slide.title,
                              unit: @slide.unit,
-                             visibility: @provider['visibility'],
+                             visibility: visibility,
                              x_spacing: @slide.x_spacing,
                              y_spacing: @slide.y_spacing,
                              z_spacing: @slide.z_spacing)
@@ -176,8 +171,8 @@ module Morphosource
         def create_series_collection
           collection_type = Hyrax::CollectionType.find(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
           collection = SequentialSectionList.create(title: collection_title,
-                                                    collection_type_gid: collection_type.gid, depositor: @manager.ms_id,
-                                                    visibility: @provider['list_visibility'],
+                                                    collection_type_gid: collection_type.gid, depositor: manager.ms_id,
+                                                    visibility: list_visibility,
                                                     related_url: collection_related_url, description: collection_description)
           collection.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
@@ -211,13 +206,17 @@ module Morphosource
           @tempfile.rewind
         end
 
-        def organization
-          Organization.find(sources[@source][@org_key]["id"])
-        end
+        # def organization
+        #   source_organizations = sources[@source]['organizations']
+        #   source_provider_organization = source_organizations[@json[sources[@source]['org_key']]]
+        #   ms_id = source_provider_organization['ms_id']
 
-        def device
-          @device ||= Device.find(providers[@organization.id]['device_id'])
-        end
+        #   @organization ||= Organization.find(sources[@source]['organizations'][@org_key]["ms_id"])
+        # end
+
+        # def device
+        #   @device ||= Device.find(providers[@organization.id]['device_id'])
+        # end
 
         def self.fetch_json
           response = RestClient.get occurrence_api
@@ -225,30 +224,30 @@ module Morphosource
         end
 
         # Ex: publishingOrgKey
-        def self.org_key
-          @org_key ||= @json[sources[@source]['org_key']]
-        end
+        # def self.org_key
+        #   @org_key ||= @json[sources[@source]['org_key']]
+        # end
 
         # def org_key
         #   self.class.org_key
         # end
 
-        def self.sources
-          @sources ||= YAML.load_file('config/import/slides/sources.yml') || {}
-        end
+        # def self.sources
+        #   @sources ||= YAML.load_file('config/import/slides/sources.yml') || {}
+        # end
 
         # def self.provider
         #   @provider ||= providers[@organization.id]
         # end
 
-        def provider
-          byebug
-          @provider ||= providers[@organization.id]
-        end
+        # def provider
+        #   byebug
+        #   @provider ||= providers[organization.id]
+        # end
 
-        def providers
-          @providers ||= YAML.load_file('config/import/slides/providers.yml') || {}
-        end
+        # def providers
+        #   @providers ||= YAML.load_file('config/import/slides/providers.yml') || {}
+        # end
 
         def gbif_key
           @json[@source['gbif_key']]
@@ -274,7 +273,7 @@ module Morphosource
         end
 
         def self.import_service_class
-          case sources[@source][org_key]["id"]
+          case sources[@source]['organizations'][org_key]["ms_id"]
           when '000357979'
             Morphosource::Import::MczSlideSeriesService
           else
@@ -282,6 +281,9 @@ module Morphosource
           end
         end
 
+        def admin
+          @admin ||= User.find_by(ms_id: Hyrax.config.batch_user_key)
+        end
     end
   end
 end

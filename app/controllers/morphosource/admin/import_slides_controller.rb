@@ -10,7 +10,7 @@ module Morphosource
       def import_slides
         source = params["service"]
         resource_id = params["resource_id"]
-        @collection = Morphosource::Import::SlideSeriesService.call(source: source, resource_id: resource_id)
+        @collection = Morphosource::Import::Slides::SlideSeriesService.call(source: source, resource_id: resource_id)
 
         redirect_to sequential_section_list_path(@collection)
       end

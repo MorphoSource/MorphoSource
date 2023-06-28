@@ -6,6 +6,18 @@ module Morphosource
         include Morphosource::Import::Slides::SlideSeries::Sources
         include Morphosource::Import::Slides::SlideSeries::Providers
 
+        self.provider_string_methods.each do |method|
+          define_method(method) do
+            provider[method.to_s]
+          end
+        end
+
+        self.provider_array_methods.each do |method|
+          define_method(method) do
+            Array(provider[method.to_s])
+          end
+        end
+
         def self.call(source: nil, resource_id: nil)
           @source = source
           @resource_id = resource_id

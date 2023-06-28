@@ -9,7 +9,6 @@ module Morphosource
           delegate :sources, :org_key, :org_key_field, to: :class
 
           class_methods do
-
             def sources
               @sources ||= YAML.load_file('config/import/slides/sources.yml')
             end

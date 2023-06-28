@@ -6,18 +6,6 @@ module Morphosource
         include Morphosource::Import::Slides::SlideSeries::Sources
         include Morphosource::Import::Slides::SlideSeries::Providers
 
-        self.provider_string_methods.each do |method|
-          define_method(method) do
-            provider[method.to_s]
-          end
-        end
-
-        self.provider_array_methods.each do |method|
-          define_method(method) do
-            Array(provider[method.to_s])
-          end
-        end
-
         def self.call(source: nil, resource_id: nil)
           @source = source
           @resource_id = resource_id
@@ -179,6 +167,24 @@ module Morphosource
           taxonomy.reload
         end
 
+        def self.define_string_methods(methods)
+          methods.each do |method|
+            define_method(method) do
+              provider[method.to_s]
+            end
+          end
+        end
+        define_string_methods(self.provider_string_methods)
+
+        def self.define_array_methods(methods)
+          methods.each do |method|
+            define_method(method) do
+              Array(provider[method.to_s])
+            end
+          end
+        end
+        define_array_methods(self.provider_array_methods)
+
         private
 
           def create_series_collection
@@ -300,6 +306,7 @@ module Morphosource
           def admin
             @admin ||= User.find_by(ms_id: Hyrax.config.batch_user_key)
           end
+
       end
     end
   end

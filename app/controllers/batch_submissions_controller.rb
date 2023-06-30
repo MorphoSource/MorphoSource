@@ -338,7 +338,7 @@ class BatchSubmissionsController < ApplicationController
         )
     )
   end
-  
+
   def error_found(field_name, cell, current_row)
     val = cell.present? ? cell.value.to_s.strip : ""
     error_msg = ""
@@ -356,15 +356,9 @@ class BatchSubmissionsController < ApplicationController
             rf = MorphosourceHelper::RemoteFileInfo.new(val)
             error_msg = "media.media_file: " + rf.message if rf.message.present?
             # Check if the file extension evaluated from headers content type is an accepted format
-            if rf.file_ext.present?
-              supplied_media_type = cell_value(current_row, field_column("media.media_type"))
-              if valid_media_types.ignore_case_include? supplied_media_type # check only if media type is valid
-                media_type = valid_media_types.ignore_case_included_value supplied_media_type
-                accepted_formats = Morphosource::MEDIA_FORMATS[media_type][:extensions]
-                if !accepted_formats.include? rf.file_ext
-                  warn_msg += "The file format returned by the media.media_file URL is " + (rf.file_ext || "unknown") + " and it does not match an accepted format: " + accepted_formats.join(', ')
-                end
-              end
+            if rf.file_ext.present? && !valid_file_type?(rf.file_ext, cell_value(current_row, field_column("media.media_type")))
+              accepted_formats = accepted_file_formats(cell_value(current_row, field_column("media.media_type")))
+              warn_msg += "The file format returned by the media.media_file URL is " + (rf.file_ext || "unknown") + " and it does not match an accepted format: " + accepted_formats.join(', ')
             end            
           end
         else
@@ -372,8 +366,13 @@ class BatchSubmissionsController < ApplicationController
           if val.match(/[\/\\]/).present?   
             # avoid any slashes that will set a path
             error_msg = "media.media_file: File name #{val} is not valid.  Please use a valid file name."
-          elsif !File.exist?(user_share_full_path + val)
+          elsif !File.exist?(File.join(user_share_full_path, val))
             error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
+          elsif File.directory?(user_share_full_path + val)
+            error_msg = "media.media_file: #{val} is a directory, not a file. Please use a valid file name."
+          elsif !valid_file_type?(File.extname(val), cell_value(current_row, field_column("media.media_type")))
+            accepted_formats = accepted_file_formats(cell_value(current_row, field_column("media.media_type")))
+            error_msg = "media.media_file: File #{val} has file format #{File.extname(val)}, which is not an accepted format for chosen media type. Please use a file with a valid file format or modify the media type to match your file format. Accepted file formats include: #{accepted_formats.join(', ')}."
           end
           if !error_msg.present?
             duplicate_media_found_row = @xlsx.column(field_column("media.media_file")).index(val)
@@ -792,7 +791,17 @@ class BatchSubmissionsController < ApplicationController
 
   def valid_media_types
     @valid_media_types ||= Morphosource::MediaTypesService.new.select_all_options.map { |o| o[1] }
-  end  
+  end
+
+  def valid_file_type?(file_ext, media_type)
+    accepted_file_formats(media_type).include? file_ext
+  end
+
+  def accepted_file_formats(media_type)
+    return [] unless valid_media_types.ignore_case_include? media_type
+    media_type = valid_media_types.ignore_case_included_value media_type
+    Morphosource::MEDIA_FORMATS[media_type][:extensions]
+  end
 
   def valid_media_raw_or_derived
     @valid_media_raw_or_derived ||= ["Raw", "Derived"]

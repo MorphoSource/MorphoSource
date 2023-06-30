@@ -51,7 +51,6 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
   describe 'search_action_url, search_facet_path' do
     let(:facet_id)  { 'depositor_ssi' }
     context 'collection is a team' do
-      let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
       let!(:team) { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
       before do
         subject.instance_variable_set(:@collection, team)
@@ -68,7 +67,6 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       end
     end
     context 'collection is a project' do
-      let!(:project_collection_type) { Hyrax::CollectionType.create(title: 'project', machine_id: 'project') }
       let!(:project) { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
       before do
         subject.instance_variable_set(:@collection, project)
@@ -85,7 +83,6 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       end
     end
     context 'collection is a media list' do
-      let!(:media_list_collection_type) { Hyrax::CollectionType.create(title: 'media_list', machine_id: 'media_list') }
       let!(:media_list) { Collection.create(title: ['media_list'], collection_type_gid: media_list_collection_type.gid) }
       before do
         subject.instance_variable_set(:@collection, media_list)
@@ -102,7 +99,6 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       end
     end
     context 'collection is a sequential section list' do
-      let!(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'sequential_section_list', machine_id: 'sequential_section_list') }
       let!(:sequential_section_list) { Collection.create(title: ['sequential_section_list'], collection_type_gid: sequential_section_list_collection_type.gid) }
       before do
         subject.instance_variable_set(:@collection, sequential_section_list)

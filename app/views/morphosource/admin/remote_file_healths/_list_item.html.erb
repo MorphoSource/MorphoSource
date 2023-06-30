@@ -1,0 +1,31 @@
+<% 
+media = solr_doc_find(item.media)
+org = solr_doc_find(media&.media_organization_id)
+team = solr_doc_find(org&.team_id)
+%>
+
+<tr id="item_<%= item.id %>">
+  <td>
+    <% if media.present? %>
+      <%= link_to [main_app, media], id: "src_copy_link#{media.id}" do %>
+        <%= media.id %>
+      <% end %>
+    <% else %>
+      (Media missing)
+    <% end %>
+  </td>
+  <td>
+    <% if team.present? %>
+      <%= link_to [main_app, team], id: "src_copy_link#{team.id}" do %>
+        <%= team.title.first %>
+      <% end %>
+    <% end %>
+  </td>
+  <td><%= media&.remote_origin_url&.first %></td>
+  <td><%= item.details %></td>
+  <td class="date"><%= item.created_at %></td> 
+  <td class="date"><%= item.updated_at %></td> 
+  <td>
+    <%= link_to 'Verify', main_app.remote_file_health_verify_media_path(id: media.id), class: 'btn btn-xs' %>
+  </td>
+</tr>

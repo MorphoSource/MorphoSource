@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe ::SolrDocument, type: :model do
-  let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team') }
   let!(:team)                 { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
   let(:organization)          { Organization.create(title: ['Organization Title']) }
 
@@ -60,7 +59,6 @@ RSpec.describe ::SolrDocument, type: :model do
   end
 
   describe 'project' do
-    let!(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
     let!(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid) }
 
     before do

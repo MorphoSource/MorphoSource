@@ -8,7 +8,6 @@ RSpec.describe Morphosource::HomepageHelper, type: :helper do
     let(:ability) { ::Ability.new(guest) }
     let(:scope)   { double(blacklight_config: CatalogController.blacklight_config, current_ability: ability) }
 
-    let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
     let!(:projectA)               { Collection.create(id: 'projectA', title: ['Project_A'], collection_type_gid: project_collection_type.gid, visibility: 'open') }
     let!(:projectB)               { Collection.create(id: 'projectB', title: ['Project_B'], collection_type_gid: project_collection_type.gid, visibility: 'open') }
     let!(:projectC)               { Collection.create(id: 'projectC', title: ['Project_C'], collection_type_gid: project_collection_type.gid, visibility: 'open') }

@@ -10,6 +10,7 @@ class Ability
       can [:create, :show, :add_user, :remove_user, :index, :edit, :update, :destroy], Role
       can [:manage], ::User
       can [:manage], BackgroundJob
+      can [:manage], RemoteFileHealth
     end
 
     # Limits creating new objects to admins and contributors

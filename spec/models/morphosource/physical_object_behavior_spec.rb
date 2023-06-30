@@ -110,8 +110,6 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
     end
 
     describe 'media collections' do
-      let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-      let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
       let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, visibility: 'open')}
       let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, visibility: 'restricted') }
 

@@ -5,7 +5,6 @@ RSpec.describe Morphosource::Dashboard::Collections::MediaListsController, type:
 
   let(:user)                        { User.create(email: 'user@email.com', password: 'password') }
   let(:depositor)                   { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:media_list_collection_type)  { Hyrax::CollectionType.create(title: 'Media List') }
   let(:media_list)                  { MediaList.create(title: ['media list'], collection_type_gid: media_list_collection_type.gid, depositor: depositor.ms_id) }
 
   describe 'temporary admin-only restriction' do

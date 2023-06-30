@@ -4,7 +4,6 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::Collections::PermissionsService do
   let(:user)                 { User.create(email: 'user@example.com', password: 'password') }
-  let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
 
   context 'collection specific methods' do
     let(:collection)           { Collection.create(id: 'team', title: ['Team'], depositor: user.ms_id, collection_type_gid: team_collection_type.gid) }
@@ -368,8 +367,6 @@ RSpec.describe Hyrax::Collections::PermissionsService do
       end
 
       describe 'lists' do
-        let(:media_list_collection_type)              { Hyrax::CollectionType.create(title: ['Media List']) }
-        let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: ['Sequential Section List']) }
         let(:media_list)                              { MediaList.create(title: ['media_list'], depositor: user2.ms_id, collection_type_gid: media_list_collection_type.gid) }
         let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential_section_list'], depositor: user2.ms_id, collection_type_gid: sequential_section_list_collection_type.gid) }
 

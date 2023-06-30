@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::Collections::PermissionsCreateService do
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
 
   let(:team_a)    { Collection.new(id: 'Team_A', title: ['Team A'], collection_type_gid: team_collection_type.gid) }

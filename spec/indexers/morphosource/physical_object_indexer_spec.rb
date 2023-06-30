@@ -7,9 +7,7 @@ RSpec.describe Morphosource::PhysicalObjectIndexer do
   let(:media)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
   let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
   let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
   let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: 'msid', visibility: 'open') }
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
   let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: 'msid', visibility: 'open') }
   let!(:works)                  { [imaging_event, media] }
 

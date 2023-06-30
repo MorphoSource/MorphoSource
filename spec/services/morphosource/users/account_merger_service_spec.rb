@@ -114,8 +114,6 @@ RSpec.describe Morphosource::Users::AccountMergerService do
   end
 
   describe 'transfer_collections' do
-    let!(:team_collection_type)     { Hyrax::CollectionType.create(title: 'Team') }
-    let!(:project_collection_type)  { Hyrax::CollectionType.create(title: 'Project') }
     let!(:deposited_team)           { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: old_user.ms_id) }
     let!(:deposited_project)        { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: old_user.ms_id) }
 
@@ -235,8 +233,6 @@ RSpec.describe Morphosource::Users::AccountMergerService do
   end
 
   describe 'collections' do
-    let!(:team_collection_type)     { Hyrax::CollectionType.create(title: 'Team') }
-    let!(:project_collection_type)  { Hyrax::CollectionType.create(title: 'Project') }
     let!(:deposited_team)           { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: old_user.ms_id) }
     let!(:deposited_project)        { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: old_user.ms_id) }
     let!(:another_project)          { Collection.create(title: ['Another Project'], collection_type_gid: project_collection_type.gid) }

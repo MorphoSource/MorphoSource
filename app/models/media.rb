@@ -55,6 +55,38 @@ class Media < Morphosource::Works::Base
     return (is_remote_backed? ? "Remote" : "Local")
   end
 
+  def set_remote_file_health
+    return unless self.is_remote_backed?
+    issues = Morphosource::RemoteFileVerificationService.call(self)
+    if issues.empty?
+      status = "Ok"
+      details = "None"
+    else
+      status = "Problematic"
+      details = issues.join('; ')
+    end
+        
+    if (health = RemoteFileHealth.where(media: self.id)&.first).present?
+      health.update({ 
+        status: status,
+        details: details
+      })
+      health.touch
+    else
+      RemoteFileHealth.create({ 
+        media: self.id, 
+        status: status,
+        details: details
+      })
+    end
+  end
+
+  def remote_file_health_details
+    return "" unless self.is_remote_backed?
+    return "" unless (health = RemoteFileHealth.where(media: self.id, status: "Problematic")&.first).present?
+    return health.details
+  end
+
   def cart_items
     CartItem.where(work_id: id)
   end

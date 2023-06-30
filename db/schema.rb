@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_26_000508) do
+ActiveRecord::Schema.define(version: 2023_05_18_204452) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -432,6 +432,14 @@ ActiveRecord::Schema.define(version: 2023_03_26_000508) do
     t.index ["uri"], name: "index_qa_local_authority_entries_on_uri", unique: true
   end
 
+  create_table "remote_file_healths", force: :cascade do |t|
+    t.string "media"
+    t.string "status"
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "roles", id: :serial, force: :cascade do |t|
     t.string "name"
   end
@@ -737,7 +745,6 @@ ActiveRecord::Schema.define(version: 2023_03_26_000508) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
-    t.text "allowed_remote_source"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["ms_id"], name: "index_users_on_ms_id"

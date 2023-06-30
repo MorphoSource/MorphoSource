@@ -5,9 +5,7 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
   let!(:user)                   { User.create(email: 'user@email.com', password: 'password') }
   let!(:depositor)              { User.create(email: 'depositor@email.com', password: 'password') }
   let!(:manager)                { User.create(email: 'manager@email.com', password: 'password') }
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
   let!(:team)                   { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
   let!(:project)                { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
   let!(:org_data_manager)       { User.create(email: 'data_manager@email.com', password: 'password') }
   let!(:organization)           { Organization.create(title: ['Organization'], team_id: [team.id], data_manager: [org_data_manager.ms_id]) }

@@ -13,7 +13,6 @@ RSpec.describe Hyrax::OrganizationPresenter do
   it { is_expected.to delegate_method(:country).to(:solr_document) }
 
   describe 'linked_team' do
-    let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team') }
     let!(:team)                 { Collection.create(title: ['collection'], collection_type_gid: team_collection_type.gid) }
 
     context 'there is no linked team' do

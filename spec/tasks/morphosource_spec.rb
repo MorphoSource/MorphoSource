@@ -16,6 +16,8 @@ describe 'morphosource rake tasks' do
   before do
     Rails.application.load_tasks if Rake::Task.tasks.empty?
     tasks.each(&:reenable)
+    # reset collection type count to 0
+    Hyrax::CollectionType.destroy_all
   end
 
   describe "morphosource:create_collection_types", type: :task do

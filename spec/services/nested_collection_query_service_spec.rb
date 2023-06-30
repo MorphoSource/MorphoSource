@@ -9,8 +9,6 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
   let(:current_ability) { ability }
   let(:scope) { double('Scope', can?: true, current_ability: current_ability, repository: repository, blacklight_config: blacklight_config) }
 
-  let(:team_collection_type) { Hyrax::CollectionType.create(title: "Team", machine_id: 88) }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: "Project", machine_id: 77) }
   let(:another_collection_type) { Hyrax::CollectionType.create(title: "Another", machine_id: 99) }
 
   describe '.parent_and_child_can_nest?' do

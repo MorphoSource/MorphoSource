@@ -26,8 +26,7 @@ RSpec.describe 'Morphosource::SolrDocumentBehavior', type: :model do
   end
 
   describe 'collection_member_count' do
-    let!(:collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
-    let!(:collection)         { Collection.create(title: ['collection'], collection_type_gid: collection_type.gid) }
+    let!(:collection)         { Collection.create(title: ['collection'], collection_type_gid: team_collection_type.gid) }
     let(:attributes)          { {"id" => collection.id } }
 
     before do

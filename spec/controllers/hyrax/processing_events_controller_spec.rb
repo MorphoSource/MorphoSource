@@ -47,7 +47,6 @@ RSpec.describe Hyrax::ProcessingEventsController do
         let(:media)                 { Media.create(title: ['media']) }
         let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry']) }
         let(:imaging_event)         { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [old_specimen.id], ie_modality: device.modality) }
-        let(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
         let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
         let(:old_team_manager)      { User.create(email: 'oldmanager@test.com', password: 'password') }
         let(:old_team_depositor)    { User.create(email: 'olddepositor@test.com', password: 'password') }

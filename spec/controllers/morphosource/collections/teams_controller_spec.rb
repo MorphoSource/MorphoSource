@@ -4,7 +4,6 @@ require 'spec_helper'
 RSpec.describe Morphosource::Collections::TeamsController, type: :controller do
 
   let(:user)                    { User.create(email: 'user@email.com', password: 'password')}
-  let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
   let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
 
   describe "search_builder_class" do

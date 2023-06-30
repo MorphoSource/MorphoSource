@@ -10,7 +10,8 @@
           Rails.application.routes.url_helpers.admin_requests_path,
           hyrax.dashboard_works_path,
           hyrax.my_works_path,
-          hyrax.admin_stats_path
+          hyrax.admin_stats_path,
+          Rails.application.routes.url_helpers.remote_file_health_path
         ].any? { |path| current_page?(path) } do %>
 
         <%= menu.nav_link(Rails.application.routes.url_helpers.admin_jobs_path) do %>
@@ -31,6 +32,10 @@
 
         <%= menu.nav_link(hyrax.admin_stats_path) do %>
           <span class="fa fa-bar-chart" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.statistics') %></span>
+        <% end %>
+
+        <%= menu.nav_link(Rails.application.routes.url_helpers.remote_file_health_path) do %>
+          <span class="fa fa-heartbeat" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.remote_file_health') %></span>
         <% end %>
 
       <% end %>

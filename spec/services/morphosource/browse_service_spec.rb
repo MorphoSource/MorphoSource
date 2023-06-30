@@ -24,8 +24,6 @@ RSpec.describe Morphosource::BrowseService do
     )
   }
 
-  let!(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 88) }
-  let!(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 77) }
   let!(:user) { User.create(display_name: 'John Doe', email: 'johndoe@email.com', password: 'password', ms_id: 'abc123') }
   let!(:team1) { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id, visibility: public) }
 

@@ -308,7 +308,6 @@ RSpec.describe MorphosourceHelper, type: :helper do
   end
 
   describe 'eligible_child_projects' do
-    let(:team_collection_type)    { Hyrax::CollectionType.create(title: 'Team') }
     let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
 
     let(:user)  { double('user') }

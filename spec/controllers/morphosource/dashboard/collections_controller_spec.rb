@@ -9,8 +9,6 @@ RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller
   let(:user)  { User.create(email: 'email@email.com', password: 'password')}
   let!(:contributors)  { Role.create(name: 'contributor') }
 
-  let(:team_collection_type) { Hyrax::CollectionType.create(title: 'Team', machine_id: 'team') }
-  let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project', machine_id: 'project') }
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another') }
   let(:collection_params) { { collection: { title: 'New Collection' } } }
 

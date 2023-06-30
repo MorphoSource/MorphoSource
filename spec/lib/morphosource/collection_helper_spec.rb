@@ -10,7 +10,6 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
   end
 
   describe 'team paths' do
-    let!(:team_collection_type)  { Hyrax::CollectionType.create(title: 'Team') }
     let!(:collection)            { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
 
 
@@ -34,7 +33,6 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
   end
 
   describe 'project paths' do
-    let(:project_collection_type) { Hyrax::CollectionType.create(title: 'Project') }
     let(:collection)              { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
 
     it 'has all the correct paths' do
@@ -57,7 +55,6 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
   end
 
   describe 'media list paths' do
-    let(:media_list_collection_type)  { Hyrax::CollectionType.create(title: 'Media List') }
     let(:collection)                  { MediaList.create(title: ['media list'], collection_type_gid: media_list_collection_type.gid, depositor: user.ms_id) }
 
     it 'has all the correct paths' do
@@ -80,7 +77,6 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
   end
 
   describe 'sequential section list paths' do
-    let(:sequential_section_list_collection_type) { Hyrax::CollectionType.create(title: 'Sequential Section List') }
     let(:collection)                              { SequentialSectionList.create(title: ['sequential section list'], collection_type_gid: sequential_section_list_collection_type.gid, depositor: user.ms_id) }
 
     it 'has all the correct paths' do

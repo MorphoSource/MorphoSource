@@ -16,7 +16,7 @@ module Morphosource
         @delay_secs = options[:delay_secs].to_f
         @retries = options[:retries].to_i
         
-        @media_group_size = options[:media_group_size] || 50
+        @media_group_size = options[:media_group_size] || 100
         @limit = options[:limit] || 10_000
 
         @start_date = options[:start_date] || default_start_date
@@ -31,14 +31,6 @@ module Morphosource
         docs = @solr.get_docs("has_model_ssim:Media", { rows: 999_999, fl: ["id"] })
         @media_ids = docs.map { |d| d["id"] }.sort
         log_message("#{docs.count} Media found.")
-
-        log_message("Excluding Media with saved statistics within import time period.")
-        @media_ids = @media_ids.select do |id| 
-          !Morphosource::Analytics::WorkViewStat.where(work_id: id).where(
-            "date >= ? AND date <= ?", @start_date, @end_date
-          ).present?
-        end
-        log_message("#{@media_ids.count} Media do not have saved statistics in import period, and will be imported now.")
 
         @media_ids.each_slice(@media_group_size).with_index do |ids_to_query, idx|
           log_message("Importing Media group #{idx} with Media IDs: #{ids_to_query.join(", ")}")
@@ -143,15 +135,20 @@ module Morphosource
 
         # For each media on each date, sum pageviews and save
         results.each do |media_id, date_results|
+          saved_stat_dates = Morphosource::Analytics::WorkViewStat.where(work_id: media_id).pluck(:date)
           date_results.each do |date, path_pageviews|
+            date_date = date.to_date
             pageviews = path_pageviews.pluck(:pageviews).map { |n| n.to_i }.sum
+
+            # Don't save if statistic is for today or if we already have a saved satistic on the date
             if (
-              (date.to_date != Date.current) && 
+              (date_date != Date.current) && 
+              !saved_stat_dates.include?(date_date)
               pageviews.present? && 
               media_id.present?
             )
               Morphosource::Analytics::WorkViewStat.create(
-                date: date.to_date,
+                date: date_date,
                 work_views: pageviews,
                 work_id: media_id
               )

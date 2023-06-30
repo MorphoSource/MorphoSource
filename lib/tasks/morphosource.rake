@@ -58,14 +58,6 @@ namespace :morphosource do
     Rake::Task['dev:cache'].invoke if !Rails.root.join('tmp', 'caching-dev.txt').exist?
   end
 
-  # Taken from hyrax:stats:user_stats at https://github.com/samvera/hyrax/blob/v2.9.0/lib/tasks/stats_tasks.rake
-  # But using a slightly customized UserStatImporter to prevent DB row bloat
-  desc "Cache work view, file view & file download stats for all users"
-  task import_user_stats: :environment do
-    importer = Morphosource::UserStatImporter.new(verbose: true, logging: true)
-    importer.import
-  end
-
   # Loosely adapted from https://github.com/curationexperts/nurax/blob/master/lib/tasks/nurax.rake
   # Hyrax's CharacterizeJob performs file characterization and then queues up CreativeDerivativesJob.
   desc 'Loop over all FileSets, (re-)characterize the files, and (re-)generate derivatives'

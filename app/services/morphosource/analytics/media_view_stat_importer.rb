@@ -29,7 +29,7 @@ module Morphosource
         log_message("Begin import of Google Analytics pageviews for Media works.")
 
         docs = @solr.get_docs("has_model_ssim:Media", { rows: 999_999, fl: ["id"] })
-        @media_ids = docs.map { |d| d["id"] }
+        @media_ids = docs.map { |d| d["id"] }.sort
         log_message("#{docs.count} Media found.")
 
         log_message("Excluding Media with saved statistics within import time period.")

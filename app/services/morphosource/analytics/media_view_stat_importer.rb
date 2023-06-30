@@ -1,4 +1,3 @@
-require 'morphosource/analytics/pageview'
 require 'retriable'
 
 module Morphosource
@@ -17,7 +16,7 @@ module Morphosource
         @delay_secs = options[:delay_secs].to_f
         @retries = options[:retries].to_i
         
-        @media_group_size = options[:media_group_size] || 100
+        @media_group_size = options[:media_group_size] || 50
         @limit = options[:limit] || 10_000
 
         @start_date = options[:start_date] || default_start_date
@@ -27,11 +26,19 @@ module Morphosource
       end
 
       def import
-        log_message("Begin import of Google Analytics pageviews for Media works from #{@start_date} to #{@end_date}.")
+        log_message("Begin import of Google Analytics pageviews for Media works.")
 
         docs = @solr.get_docs("has_model_ssim:Media", { rows: 999_999, fl: ["id"] })
         @media_ids = docs.map { |d| d["id"] }.sort
         log_message("#{docs.count} Media found.")
+
+        log_message("Excluding Media with saved statistics within import time period.")
+        @media_ids = @media_ids.select do |id| 
+          !Morphosource::Analytics::WorkViewStat.where(work_id: id).where(
+            "date >= ? AND date <= ?", @start_date, @end_date
+          ).present?
+        end
+        log_message("#{@media_ids.count} Media do not have saved statistics in import period, and will be imported now.")
 
         @media_ids.each_slice(@media_group_size).with_index do |ids_to_query, idx|
           log_message("Importing Media group #{idx} with Media IDs: #{ids_to_query.join(", ")}")
@@ -84,24 +91,14 @@ module Morphosource
       end
 
       def get_some_pageview_results(paths, offset = 1, results = [])
-
-        # Set up API call with retries
-        retry_n ||= 0
-        begin
-          q = ga_pageview_query(paths, offset)
-          results.concat(q.to_a)
-        rescue Exception => e
-          log_message(e)
-          retry_n += 1
-          retry if ( retry_n < @retries )
-          raise "Maximum number of retries reached in get GA pageview results: #{e.message}"
-        end
-        
+        q = ga_pageview_query(paths, offset)
+        results.concat(q.to_a)
         delay
         return q, results   
       end
 
       def ga_pageview_query(paths, offset = 1)
+        retry_n ||= 0
         profile.morphosource__analytics__pageview(
           start_date: @start_date, 
           end_date: @end_date,
@@ -109,6 +106,11 @@ module Morphosource
           offset: offset,
           sort: 'date'
         ).for_paths(*paths)
+      rescue Exception => e
+        log_message(e)
+        retry_n += 1
+        retry if ( retry_n < @retries )
+        raise "Maximum number of retries reached in get GA pageview results: #{e.message}"
       end
 
       def log_message(message)
@@ -141,23 +143,20 @@ module Morphosource
 
         # For each media on each date, sum pageviews and save
         results.each do |media_id, date_results|
-          saved_stat_dates = Morphosource::Analytics::WorkViewStat.where(work_id: media_id).pluck(:date)
           date_results.each do |date, path_pageviews|
-            date_date = date.to_date
             pageviews = path_pageviews.pluck(:pageviews).map { |n| n.to_i }.sum
-
-            # Don't save if statistic is for today or if we already have a saved satistic on the date
             if (
-              (date_date != Date.current) && 
-              !saved_stat_dates.include?(date_date) &&
+              (date.to_date != Date.current) && 
               pageviews.present? && 
               media_id.present?
             )
               Morphosource::Analytics::WorkViewStat.create(
-                date: date_date,
+                date: date.to_date,
                 work_views: pageviews,
                 work_id: media_id
               )
+            else
+              raise "Something went wrong saving statistics for media ID #{media_id} with pageviews #{pageviews} on date #{date}"
             end
           end
         end

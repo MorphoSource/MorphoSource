@@ -25,9 +25,9 @@ module Morphosource
     # and create MorphoSource Taxonomy params
     # using the resulting mapped metadata
     def self.taxonomy_params_from_gbif(gbif_key, correct_synonym=false)
-      gbif = Morphosource::Gbif.view(gbif_key)
+      gbif = Morphosource::Gbif.view('specimen', gbif_key)
       if correct_synonym && gbif['taxonomicStatus'] == 'SYNONYM' && gbif.has_key?('acceptedKey')
-        gbif = Morphosource::Gbif.view(gbif['acceptedKey'])
+        gbif = Morphosource::Gbif.view('specimen', gbif['acceptedKey'])
       end
 
       return {} if !gbif.present?
@@ -117,8 +117,8 @@ module Morphosource
       title = build_title(name, taxon['rank'], source_info)
       id_value = ms_id ? ms_id : 'gbif:' + taxon['key'].to_s
       prepared_taxon = {
-        id: id_value, 
-        label: [title], 
+        id: id_value,
+        label: [title],
         value: id_value,
         name: name,
         gbif_key: taxon['key'].to_s,
@@ -138,13 +138,13 @@ module Morphosource
       return prepared_taxon
     end
 
-    def prepare_name(taxon) 
+    def prepare_name(taxon)
       # Has to be done due to GBIF canonicalName/genus name mismatches
       if taxon['rank'] == 'SPECIES' || taxon['rank'] == 'SUBSPECIES'
         genus = taxon['genus']
         if (taxon[GBIF_NAME_TERM]).present?
           nt = taxon[GBIF_NAME_TERM]&.split(' ') || []
-          species = (nt.length > 1) ? nt[1] : nil 
+          species = (nt.length > 1) ? nt[1] : nil
           subspecies = (nt.length > 2) ? nt[2] : nil
         else
           species = taxon['species']
@@ -158,12 +158,12 @@ module Morphosource
 
     def higher_taxon_string(terms)
       s = terms.map.with_index { |t, idx| t.present? ? t : higher_taxon_terms[idx] + ' undefined' }
-      s.join(' > ') 
+      s.join(' > ')
     end
 
     def higher_taxon_terms
       ['kingdom', 'phylum', 'class', 'order', 'family', 'genus']
-    end  
+    end
 
     def ms_taxonomy_id_from_gbif_key(gbif_key)
       gbif_result = Morphosource::TaxonomySearchService.call({ gbif_key: gbif_key.to_s })
@@ -183,5 +183,5 @@ module Morphosource
       ( rank.present? ? ' · ' + rank.titleize : '' ) +
       ( source_info.present? ? ' · ' + source_info : '' )
     end
-  end 
+  end
 end

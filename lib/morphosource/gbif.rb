@@ -5,20 +5,20 @@ module Morphosource
   module Gbif
     extend ActiveSupport::Autoload
 
-    API_ENDPOINT = 'https://api.gbif.org/v1/species'
+    API_ENDPOINT = 'https://api.gbif.org/v1'
     ::RestClient.log = Rails.logger
 
     def self.search(name, dataset_key, limit = 3)
       response = RestClient.get(
-        "#{API_ENDPOINT}",
+        "#{API_ENDPOINT}/species",
         { params: { name: name, datasetKey: dataset_key, limit: limit } }
       )
       response.body.force_encoding('utf-8').to_json({content_type: :json, accept: :json})
       JSON.parse(response.body)['results'] if response
     end
 
-    def self.view(key)
-      request_url = "#{API_ENDPOINT}/#{key}"
+    def self.view(scope, key)
+      request_url = "#{API_ENDPOINT}/#{scope}/#{key}"
       begin
         response = RestClient.get request_url
         return JSON.parse(response.body) if response

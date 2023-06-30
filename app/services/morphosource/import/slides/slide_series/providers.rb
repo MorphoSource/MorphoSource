@@ -21,7 +21,7 @@ module Morphosource
             end
           end
 
-          def related_url
+          def provider_related_url
             eval("#{@json}#{provider['related_url']}")
           end
 

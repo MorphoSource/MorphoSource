@@ -205,7 +205,7 @@ module Morphosource
           end
 
           def collection_related_url
-            related_url.present? ? [occurrence_uri, related_url] : [occurrence_uri]
+            provider_related_url.present? ? [occurrence_uri, provider_related_url] : [occurrence_uri]
           end
 
           # override Morphosource::CustomThumbnails create_thumbnail
@@ -235,8 +235,9 @@ module Morphosource
           end
 
           def self.fetch_json
-            response = RestClient.get occurrence_api
-            JSON.parse(response.body)
+            if @source == 'GBIF'
+              Morphosource::Gbif.view('occurrence', @resource_id)
+            end
           end
 
           def gbif_key

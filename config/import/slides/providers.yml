@@ -1,0 +1,19 @@
+000357979: # MCZ Special Collections
+  agreement_uri: https://mcz.harvard.edu/permissions-copyright
+  download_reviewer: 2956
+  filter_slides: '["http://rs.tdwg.org/ac/terms/variant"] == "ac:BestQuality"'
+  fileset_accessibility: 'restricted_download'
+  license: https://creativecommons.org/licenses/by-nc-nd/4.0/
+  list_visibility: 'restricted'
+  manager: f95e50
+  morphosource_use_agreement_type: Standard
+  preview_mode: Interactive/Embeddable
+  publication_status: restricted_download
+  permits_3d_use: 3D Printing Limited
+  publisher: Museum of Comparative Zoology, Harvard University
+  required_archival_of_published_derivatives: On MorphoSource
+  related_url: '["references"]'
+  rights_holder: President and Fellows of Harvard College (Copyright and License)
+  rights_statement: http://rightsstatements.org/vocab/InC/1.0/
+  visibility: 'open'
+

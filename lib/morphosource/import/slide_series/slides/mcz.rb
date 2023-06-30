@@ -47,10 +47,6 @@ module Morphosource
             @iiif_json["fileSize"] || super
           end
 
-          def fileset_accessibility
-            ["private"]
-          end
-
           # height
           def height
             @iiif_json["height"]&.to_s || super
@@ -65,15 +61,6 @@ module Morphosource
           def imaging_description
             description = @iiif_exif.dig("fields","ImageDescription")
             description.present? ? Array(description) : super
-          end
-
-          # license
-          #["http://creativecommons.org/licences/by-nc-sa/3.0/"]
-          # do not use mcz license - hardcode
-          def license
-            # lic = @slide_json["http://ns.adobe.com/xap/1.0/rights/WebStatement"]
-            # lic.present? ? Array(lic) : super
-            super
           end
 
           # mime_type
@@ -92,15 +79,6 @@ module Morphosource
             else
               super
             end
-          end
-
-          # publisher
-          def publisher
-            ["Museum of Comparative Zoology, Harvard University"]
-          end
-
-          def preview_mode
-            ["Interactive/Embeddable"]
           end
 
           # related_url
@@ -153,10 +131,6 @@ module Morphosource
           def unit
             ru = @iiif_exif["ResolutionUnit"]
             ru.present? ? Array(Morphosource::ExifData::ResolutionUnitService.new.label(ru)) : super
-          end
-
-          def visibility
-            'open'
           end
 
           # width

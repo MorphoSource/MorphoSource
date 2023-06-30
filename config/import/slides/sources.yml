@@ -1,0 +1,11 @@
+GBIF:
+  api: https://api.gbif.org/v1/occurrence/
+  gbif_key: taxonKey
+  org_key: publishingOrgKey
+  occurrence_api: https://api.gbif.org/v1/occurrence/
+  occurrence_id: occurrenceID
+  occurrence_uri: https://gbif.org/occurrence/
+  slides_field: '["extensions"]["http://rs.tdwg.org/ac/terms/Multimedia"]'
+  organizations:
+    b4640710-8e03-11d8-b956-b8a03c50a862:
+      ms_id: 000357979

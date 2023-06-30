@@ -26,8 +26,8 @@ module Morphosource
           end
 
           def initialize(json, slide_json)
-            @json = json
-            @slide_json = slide_json
+            @json = json # series-level json
+            @slide_json = slide_json # individual slide json
             gather_metadata
           end
 

@@ -781,10 +781,20 @@ namespace :morphosource do
     end
   end
 
-  desc "Import Media work view stats from Google Analytics"
+  desc "Import Media work view stats from Google Analytics, starting from 2021-01-1 or last saved statistic date"
   task :import_media_view_stats => :environment do
-    Morphosource::Analytics::Pageview # necessary for Legato to read class
     Morphosource::Analytics::MediaViewStatImporter.new({
+      verbose: true, 
+      logging: true, 
+      retries: 3 
+    }).import
+  end
+
+  desc "Import Media work view stats from Google Analytics for the last 3 days prior to today, excluding today"
+  task :import_media_view_stats_3_days => :environment do
+    Morphosource::Analytics::MediaViewStatImporter.new({
+      start_date: Date.current - 3.day,
+      end_date: Date.current - 1.day,
       verbose: true, 
       logging: true, 
       retries: 3 

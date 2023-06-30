@@ -1,3 +1,4 @@
+require 'morphosource/analytics/pageview'
 require 'retriable'
 
 module Morphosource
@@ -26,7 +27,7 @@ module Morphosource
       end
 
       def import
-        log_message("Begin import of Google Analytics pageviews for Media works.")
+        log_message("Begin import of Google Analytics pageviews for Media works from #{@start_date} to #{@end_date}.")
 
         docs = @solr.get_docs("has_model_ssim:Media", { rows: 999_999, fl: ["id"] })
         @media_ids = docs.map { |d| d["id"] }.sort
@@ -83,14 +84,24 @@ module Morphosource
       end
 
       def get_some_pageview_results(paths, offset = 1, results = [])
-        q = ga_pageview_query(paths, offset)
-        results.concat(q.to_a)
+
+        # Set up API call with retries
+        retry_n ||= 0
+        begin
+          q = ga_pageview_query(paths, offset)
+          results.concat(q.to_a)
+        rescue Exception => e
+          log_message(e)
+          retry_n += 1
+          retry if ( retry_n < @retries )
+          raise "Maximum number of retries reached in get GA pageview results: #{e.message}"
+        end
+        
         delay
         return q, results   
       end
 
       def ga_pageview_query(paths, offset = 1)
-        retry_n ||= 0
         profile.morphosource__analytics__pageview(
           start_date: @start_date, 
           end_date: @end_date,
@@ -98,11 +109,6 @@ module Morphosource
           offset: offset,
           sort: 'date'
         ).for_paths(*paths)
-      rescue Exception => e
-        log_message(e)
-        retry_n += 1
-        retry if ( retry_n < @retries )
-        raise "Maximum number of retries reached in get GA pageview results: #{e.message}"
       end
 
       def log_message(message)
@@ -143,7 +149,7 @@ module Morphosource
             # Don't save if statistic is for today or if we already have a saved satistic on the date
             if (
               (date_date != Date.current) && 
-              !saved_stat_dates.include?(date_date)
+              !saved_stat_dates.include?(date_date) &&
               pageviews.present? && 
               media_id.present?
             )
@@ -152,8 +158,6 @@ module Morphosource
                 work_views: pageviews,
                 work_id: media_id
               )
-            else
-              raise "Something went wrong saving statistics for media ID #{media_id} with pageviews #{pageviews} on date #{date}"
             end
           end
         end

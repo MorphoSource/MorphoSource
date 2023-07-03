@@ -11,8 +11,12 @@ module Morphosource
         source = params["service"]
         resource_id = params["resource_id"]
         @collection = Morphosource::Import::Slides::SlideSeriesService.call(source: source, resource_id: resource_id)
-
-        redirect_to sequential_section_list_path(@collection)
+        if @collection.nil?
+          flash[:error] = "There was an error importing resource id: #{resource_id}. Check the logs for more information."
+          redirect_to import_slides_path
+        else
+          redirect_to sequential_section_list_path(@collection)
+        end
       end
 
     private

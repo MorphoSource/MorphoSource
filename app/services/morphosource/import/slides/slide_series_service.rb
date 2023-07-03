@@ -10,6 +10,8 @@ module Morphosource
           @source = source
           @resource_id = resource_id
           @json = self.fetch_json
+          return if @json.empty?
+
           self.import_service_class.new(source: @source, resource_id: @resource_id, json: @json).call
         end
 

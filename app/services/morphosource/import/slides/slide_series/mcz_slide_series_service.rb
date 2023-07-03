@@ -27,6 +27,7 @@ module Morphosource
           def collection_title
             ["#{@specimen.title.first} #{@json["scientificName"]}"]
           end
+
         end
       end
     end

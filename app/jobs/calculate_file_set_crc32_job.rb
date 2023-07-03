@@ -18,21 +18,16 @@ class CalculateFileSetCrc32Job < Hyrax::ApplicationJob
   end
 
   def calculate_file_crc32(file_set)
-    file = File.open(Hyrax::WorkingDirectory.find_or_retrieve(file_set.original_file.id, file_set.id))
-    crc = crc32_from_io(file)
-    file.rewind
-    crc
+    crc = ZipTricks::StreamCRC32.new
+    file_set.original_file.stream.each { |chunk| crc << chunk }
+    [crc.to_i]
   end
 
   def calculate_remote_file_crc32(file_set)
     file = URI.parse(file_set.import_url).open
-    crc = crc32_from_io(file)
+    crc = Array(ZipTricks::StreamCRC32.from_io(file))
     file.close
     file.unlink
     crc
-  end
-
-  def crc32_from_io(file)
-    Array(ZipTricks::StreamCRC32.from_io(file))
   end
 end

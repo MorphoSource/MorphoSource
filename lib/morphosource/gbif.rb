@@ -5,25 +5,30 @@ module Morphosource
   module Gbif
     extend ActiveSupport::Autoload
 
-    API_ENDPOINT = 'https://api.gbif.org/v1/species'
+    API_ENDPOINT = 'https://api.gbif.org/v1'
     ::RestClient.log = Rails.logger
 
     def self.search(name, dataset_key, limit = 3)
-      response = RestClient.get(
-        "#{API_ENDPOINT}",
-        { params: { name: name, datasetKey: dataset_key, limit: limit } }
-      )
-      response.body.force_encoding('utf-8').to_json({content_type: :json, accept: :json})
-      JSON.parse(response.body)['results'] if response
+      begin
+        request_url = "#{API_ENDPOINT}/species"
+        response = RestClient::Request.execute(method: 'get', url: request_url, params: { name: name, datasetKey: dataset_key, limit: limit }, timeout: 15)
+        response.body.force_encoding('utf-8').to_json({content_type: :json, accept: :json})
+        JSON.parse(response.body)['results'] if response
+      rescue
+        Rails.logger.error("GBIF request error")
+      end
     end
 
-    def self.view(key)
-      request_url = "#{API_ENDPOINT}/#{key}"
+    def self.view(key, scope = 'species')
+      request_url = "#{API_ENDPOINT}/#{scope}/#{key}"
       begin
-        response = RestClient.get request_url
+        response = RestClient::Request.execute(method: 'get', url: request_url, timeout: 15)
         return JSON.parse(response.body) if response
       rescue RestClient::NotFound => e
         Rails.logger.error("GBIF returned 404 for: #{request_url}")
+        return {}
+      rescue RestClient::Exceptions::Timeout => e
+        Rails.logger.error("GBIF request timeout")
         return {}
       end
     end

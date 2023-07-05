@@ -237,8 +237,9 @@ module Morphosource
           end
 
           def self.fetch_json
+            byebug
             if @source == 'GBIF'
-              Morphosource::Gbif.view('occurrence', @resource_id)
+              Morphosource::Gbif.view(@resource_id, scope: 'occurrence')
             end
           end
 

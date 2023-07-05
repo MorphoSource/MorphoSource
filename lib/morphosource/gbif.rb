@@ -10,9 +10,9 @@ module Morphosource
 
     def self.search(name, dataset_key, limit = 3)
       # byebug
-      scope = 'species'
+      # scope = 'species'
       begin
-        request_url = "#{API_ENDPOINT}/#{scope}"
+        request_url = "#{API_ENDPOINT}/species"
         # byebug
         # byebug
         # response = RestClient.get(
@@ -24,12 +24,11 @@ module Morphosource
         response.body.force_encoding('utf-8').to_json({content_type: :json, accept: :json})
         JSON.parse(response.body)['results'] if response
       rescue
-        byebug
         Rails.logger.error("GBIF request error")
       end
     end
 
-    def self.view(scope, key)
+    def self.view(key, scope = 'specimen')
       request_url = "#{API_ENDPOINT}/#{scope}/#{key}"
       begin
         response = RestClient::Request.execute(method: 'get', url: request_url, timeout: 15)

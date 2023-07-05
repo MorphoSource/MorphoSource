@@ -64,8 +64,7 @@ module Morphosource
       private
 
         def gbif_json
-          response = RestClient.get gbif_occurrence_api
-          JSON.parse(response.body)
+          Morphosource::Gbif.view(@resource_id, 'occurrence')
         end
 
     end

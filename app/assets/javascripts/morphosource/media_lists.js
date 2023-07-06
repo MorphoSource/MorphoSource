@@ -138,7 +138,7 @@ $(document).ready(function() {
                 $("#sortable-media-list").sortable('serialize')
           });
         }
-        document.querySelector("#save-media-order").addEventListener("click", saveOrderListener);
+        document.querySelector("#save-media-order")?.addEventListener("click", saveOrderListener);
 
         /**
          * Media view load UI Listeners

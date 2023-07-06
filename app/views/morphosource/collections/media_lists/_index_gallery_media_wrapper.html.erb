@@ -1,4 +1,12 @@
-<div class="document col-xs-5 col-sm-4 col-md-3 media">
+<div 
+  id="document_<%= document.id %>" 
+  class="document col-xs-5 col-sm-4 col-md-3 media
+    <%= @hide_viewer ? "" : "previewable" %> 
+    <%= (@preview_document_id && @preview_document_id == document.id) ? "view-active" : "" %>
+  "
+  data-document-id="<%= document.id %>" 
+  data-collection-id="<%= @collection.id %>"
+>
   <%= check_box_tag "batch_work_ids[]", document.id, false, class:"batch_add_selector", id: "batch_work_#{document.id}" %>
   <div class="thumbnail text-center">
     <div class="media text-center">
@@ -7,10 +15,23 @@
         <%= render_thumbnail_tag document, { class: "file_listing_thumbnail" }, { suppress_link: true } %>
       <% end %>
     </div>
-
     <%#= collection_thumbnail(document, {}, counter: document_counter_with_offset(document_counter)) %>
     <div class="caption text-center">
       <%= render_document_partials document, blacklight_config.view_config(:gallery).partials, :document_counter => document_counter %>
+    </div>
+    <div class="view-label">
+      <% if @hide_viewer %>
+        <%= 
+          link_to "View", 
+            url_for(request.params.merge(preview: document.id)),
+            class: "view-media btn btn-sm btn-default"
+        %>
+      <% else %>
+        <div tabindex="0" class="view-media dynamic btn btn-sm btn-default">View</div>
+        <div class="currently-viewing hide">
+          Currently Viewing
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

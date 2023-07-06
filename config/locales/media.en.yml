@@ -68,3 +68,5 @@ en:
         x_spacing: The distance from the center of one pixel to the center of an adjacent pixel on the X axis
         y_spacing: The distance from the center of one pixel to the center of an adjacent pixel on the Y axis
         z_spacing: The distance between adjacent slices, measured from center to center on the Z axis
+  value_null:
+    part: "Element unspecified"

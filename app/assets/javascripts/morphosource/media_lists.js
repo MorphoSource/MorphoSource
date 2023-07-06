@@ -11,7 +11,7 @@ $(document).ready(function() {
         $("#sortable-media-list").sortable({ handle: ".sort-handle" });
 
         // initialize active row if one is available
-        this.activeRow = this.html.querySelector("tr.previewable.view-active");
+        this.activeRow = this.html.querySelector(".previewable.view-active");
         if (this.activeRow) this.#loadMediaView();
 
         // initialize viewer sticky position
@@ -20,7 +20,7 @@ $(document).ready(function() {
         this.#activateListeners();
       }
 
-      // Row (tr.previewable) currently viewed, has special UI highlighting
+      // Row (.previewable) currently viewed, has special UI highlighting
       #activeRow = null;
       get activeRow() {
         return this.#activeRow;
@@ -30,16 +30,16 @@ $(document).ready(function() {
 
         if (activeRow) {
           // Reset hide and show for all rows
-          this.html.querySelectorAll("tr.previewable").forEach((row) => {
+          this.html.querySelectorAll(".previewable").forEach((row) => {
             row.classList.remove("view-active");
-            row.querySelector(".currently-viewing").classList.add("hide");
-            row.querySelector(".view-media").classList.remove("hide");
+            row.querySelector(".currently-viewing")?.classList?.add("hide");
+            row.querySelector(".view-media")?.classList?.remove("hide");
           });
 
           // Hide and show for active row
           activeRow.classList.add("view-active");
-          activeRow.querySelector(".currently-viewing").classList.remove("hide");
-          activeRow.querySelector(".view-media").classList.add("hide");
+          activeRow.querySelector(".currently-viewing")?.classList?.remove("hide");
+          activeRow.querySelector(".view-media")?.classList?.add("hide");
         }
       }
 
@@ -155,13 +155,13 @@ $(document).ready(function() {
             this.#loadMediaView();
           }
         };
-        this.html.querySelectorAll("tr.previewable").forEach((row) => {
+        this.html.querySelectorAll(".previewable").forEach((row) => {
           row.addEventListener("click", rowClickListener);
         });
 
         // View button (for keyboard navigation)
         const viewButtonListener = (event) => {
-          this.activeRow = event.currentTarget.closest("tr.previewable");
+          this.activeRow = event.currentTarget.closest(".previewable");
           this.#loadMediaView();
         };
         this.html.querySelectorAll("a.view-media.dynamic").forEach((btn) => {
@@ -170,7 +170,7 @@ $(document).ready(function() {
 
         // Initial media view button
         this.html.querySelector(".view-initial-media")?.addEventListener("click", () => {
-          this.activeRow = this.html.querySelector("tr.previewable");
+          this.activeRow = this.html.querySelector(".previewable");
           this.#loadMediaView();
         });
 
@@ -179,7 +179,7 @@ $(document).ready(function() {
           event.preventDefault();
           const button = event.currentTarget;
 
-          const oldRow = this.html.querySelector("tr.view-active");
+          const oldRow = this.html.querySelector(".view-active");
           let newRow = null;
           if (button.classList.contains("previous")) {
             newRow = this.activeRow.previousElementSibling;

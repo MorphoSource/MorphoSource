@@ -6,7 +6,7 @@
   <% if morphosource_physical_objects_controller? %>
     <div class="col-xs-12 col-sm-5 col-md-4 batch-action-buttons">
     </div>
-  <% elsif @document_list.count > 0 %>
+  <% elsif @document_list.count > 0 && params[:view] != "gallery" %>
     <div class="col-xs-12 col-sm-5 col-md-4 batch-action-buttons">
       <div class="row">
           <%= render 'batch_actions' %>
